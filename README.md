@@ -15,8 +15,9 @@ Core api will be available in Jitpack.
 If you'd rather compile on your own, `gradlew server:dist`.
 
 ### Commit Tag
-* S: server only change
-* SC: server and client all need to update
-* EX: extend game content, like more game rule
-* API: pure api for mod/plugin
+* S: server only change.
+* SO: server and optional client.
+* SC: server and client all need to update, otherwise will disable.
+* C: client only change.
+* API: no effect, pure api for mod/plugin.
 * None tag means not game change.
