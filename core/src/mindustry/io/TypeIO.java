@@ -372,8 +372,8 @@ public class TypeIO{
         if(!plan.breaking){
             write.s(plan.block.id);
             write.b((byte)plan.rotation);
-            write.b(1); //always has config
-            writeObject(write, plan.config);
+            write.b(0); //always has config
+            writeObject(write, net.server() ? null : plan.config);
         }
     }
 
