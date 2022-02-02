@@ -403,8 +403,9 @@ public class TypeIO{
         if(!plan.breaking){
             write.s(plan.block.id);
             write.b((byte)plan.rotation);
-            write.b(1); //always has config
-            writeObject(write, plan.config);
+            boolean writePlan = !headless || !net.server();
+            write.b(writePlan ? 1 : 0); //always has config
+            writeObject(write, writePlan ? plan.config : null);
         }
     }
 
