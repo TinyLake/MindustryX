@@ -8,6 +8,7 @@ import arc.util.*;
 import mindustry.gen.*;
 import mindustry.net.Packets.*;
 import mindustry.net.Streamable.*;
+import mindustryX.events.*;
 import net.jpountz.lz4.*;
 
 import java.io.*;
@@ -15,7 +16,7 @@ import java.nio.*;
 import java.nio.channels.*;
 import java.util.concurrent.*;
 
-import static arc.util.Log.*;
+import static arc.util.Log.debug;
 import static mindustry.Vars.*;
 
 @SuppressWarnings("unchecked")
@@ -220,6 +221,7 @@ public class Net{
 
     /** Send an object to all connected clients, or to the server if this is a client.*/
     public void send(Object object, boolean reliable){
+        if(!SendPacketEvent.emit(null, null, object)) return;
         if(server){
             for(NetConnection con : provider.getConnections()){
                 con.send(object, reliable);
@@ -231,6 +233,7 @@ public class Net{
 
     /** Send an object to everyone EXCEPT a certain client. Server-side only.*/
     public void sendExcept(NetConnection except, Object object, boolean reliable){
+        if(!SendPacketEvent.emit(null, except, object)) return;
         for(NetConnection con : getConnections()){
             if(con != except){
                 con.send(object, reliable);
