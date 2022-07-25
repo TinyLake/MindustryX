@@ -49,18 +49,8 @@ public class NetworkIO{
             stream.writeInt(player.id);
             player.write(write);
 
-            boolean any = !state.rules.fog;
-
-            stream.writeInt(any ? Groups.sync.size() : 0);
-
-            if(any){
-                //write all synced entities *immediately*
-                for(Syncc entity : Groups.sync){
-                    stream.writeInt(entity.id());
-                    stream.writeByte(entity.classId());
-                    entity.writeSync(write);
-                }
-            }
+            //mdtX: don't write syncC, as there are sync packets.
+            stream.writeInt(0);
 
             SaveIO.getSaveWriter().writeContentHeader(stream);
             SaveIO.getSaveWriter().writeMap(stream);
