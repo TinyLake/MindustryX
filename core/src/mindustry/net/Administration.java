@@ -37,7 +37,7 @@ public class Administration{
                 if(resetTime > 0 && Time.timeSinceMillis(player.getInfo().lastMessageTime) < resetTime){
                     //supress message
                     player.sendMessage("[scarlet]You may only send messages every " + Config.messageRateLimit.num() + " seconds.");
-                    player.getInfo().messageInfractions ++;
+                    player.getInfo().messageInfractions++;
                     //kick player for spamming and prevent connection if they've done this several times
                     if(player.getInfo().messageInfractions >= Config.messageSpamKick.num() && Config.messageSpamKick.num() != 0){
                         player.con.kick("You have been kicked for spamming.", 1000 * 60 * 2);
@@ -63,8 +63,8 @@ public class Administration{
         //block interaction rate limit
         addActionFilter(action -> {
             if(action.type != ActionType.breakBlock &&
-                action.type != ActionType.placeBlock &&
-                Config.antiSpam.bool()){
+            action.type != ActionType.placeBlock &&
+            Config.antiSpam.bool()){
 
                 Ratekeeper rate = action.player.getInfo().rate;
                 if(rate.allow(Config.interactRateWindow.num() * 1000, Config.interactRateLimit.num())){
@@ -115,9 +115,11 @@ public class Administration{
         return subnetBans.contains(ip::startsWith);
     }
 
-    /** Adds a chat filter. This will transform the chat messages of every player.
+    /**
+     * Adds a chat filter. This will transform the chat messages of every player.
      * This functionality can be used to implement things like swear filters and special commands.
-     * Note that commands (starting with /) are not filtered.*/
+     * Note that commands (starting with /) are not filtered.
+     */
     public void addChatFilter(ChatFilter filter){
         chatFilters.add(filter);
     }
@@ -456,7 +458,7 @@ public class Administration{
     /**
      * Server configuration definition. Each config value can be a string, boolean or number.
      * Creating a new Config instance implicitly adds it to the list of server configs. This can be used for custom plugin configuration.
-     * */
+     */
     public static class Config{
         public static final Seq<Config> all = new Seq<>();
 
@@ -465,6 +467,7 @@ public class Administration{
         serverName = new Config("name", "The server name as displayed on clients.", "Server", "servername"),
         desc = new Config("desc", "The server description, displayed under the name. Max 100 characters.", "off"),
         port = new Config("port", "The port to host on.", Vars.port),
+        locale = new Config("locale", "The locale for localizedName.", "default", "locale"),
         autoUpdate = new Config("autoUpdate", "Whether to auto-update and exit when a new bleeding-edge update arrives.", false),
         showConnectMessages = new Config("showConnectMessages", "Whether to display connect/disconnect messages.", true),
         enableVotekick = new Config("enableVotekick", "Whether votekick is enabled.", true),
@@ -511,7 +514,8 @@ public class Administration{
             this.description = description;
             this.key = key == null ? name : key;
             this.defaultValue = def;
-            this.changed = changed == null ? () -> {} : changed;
+            this.changed = changed == null ? () -> {
+            } : changed;
 
             all.add(this);
         }
@@ -586,7 +590,8 @@ public class Administration{
     /** Handles chat messages from players and changes their contents. */
     public interface ChatFilter{
         /** @return the filtered message; a null string signals that the message should not be sent. */
-        @Nullable String filter(Player player, String message);
+        @Nullable
+        String filter(Player player, String message);
     }
 
     /** Allows or disallows player actions. */
@@ -610,8 +615,10 @@ public class Administration{
         }
     }
 
-    /** Defines a (potentially dangerous) action that a player has done in the world.
-     * These objects are pooled; do not cache them! */
+    /**
+     * Defines a (potentially dangerous) action that a player has done in the world.
+     * These objects are pooled; do not cache them!
+     */
     public static class PlayerAction implements Poolable{
         public Player player;
         public ActionType type;
