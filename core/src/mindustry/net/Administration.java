@@ -467,7 +467,7 @@ public class Administration{
         serverName = new Config("name", "The server name as displayed on clients.", "Server", "servername"),
         desc = new Config("desc", "The server description, displayed under the name. Max 100 characters.", "off"),
         port = new Config("port", "The port to host on.", Vars.port),
-        locale = new Config("locale", "The locale for localizedName.", "default", "locale"),
+        locale = new Config("locale", "There locale for localizedName.", "default", "locale"),
         autoUpdate = new Config("autoUpdate", "Whether to auto-update and exit when a new bleeding-edge update arrives.", false),
         showConnectMessages = new Config("showConnectMessages", "Whether to display connect/disconnect messages.", true),
         enableVotekick = new Config("enableVotekick", "Whether votekick is enabled.", true),

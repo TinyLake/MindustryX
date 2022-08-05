@@ -44,13 +44,8 @@ public class NetworkIO{
             stream.writeLong(GlobalVars.rand.seed0);
             stream.writeLong(GlobalVars.rand.seed1);
 
-            Writes write = new Writes(stream);
-
             stream.writeInt(player.id);
-            player.write(write);
-
-            //mdtX: don't write syncC, as there are sync packets.
-            stream.writeInt(0);
+            player.write(new Writes(stream));
 
             SaveIO.getSaveWriter().writeContentHeader(stream);
             SaveIO.getSaveWriter().writeMap(stream);
@@ -82,12 +77,6 @@ public class NetworkIO{
             player.read(read);
             player.id = id;
             player.add();
-
-            int entities = stream.readInt();
-
-            for(int j = 0; j < entities; j++){
-                NetClient.readSyncEntity(stream, read);
-            }
 
             SaveIO.getSaveWriter().readContentHeader(stream);
             SaveIO.getSaveWriter().readMap(stream, world.context);
