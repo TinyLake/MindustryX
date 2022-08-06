@@ -438,10 +438,10 @@ public class ControlPathfinder{
                         //total update time no longer than maxUpdate
                         //MDTX: changed
                         var ns = Time.nanos();
-                        var count = Math.min(requestSize, 20);
+                        var count = Math.min(requestSize, maxWorking);
                         for(var req : requests){
                             if(Time.timeSinceNanos(ns) > maxUpdate) break;
-                            if(!req.done && !workingRequests.containsKey(req) && workingRequests.size() > 20) continue;
+                            if(!req.done && !workingRequests.containsKey(req) && workingRequests.size() > maxWorking) continue;
                             req.update(maxUpdate / count);
                             if(req.done) workingRequests.remove(req);
                             else workingRequests.put(req, null);
