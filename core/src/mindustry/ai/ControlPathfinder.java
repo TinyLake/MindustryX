@@ -13,6 +13,10 @@ import mindustry.game.EventType.*;
 import mindustry.gen.*;
 import mindustry.graphics.*;
 import mindustry.world.*;
+import mindustryX.*;
+
+import java.util.*;
+import java.util.concurrent.*;
 
 import static mindustry.Vars.*;
 import static mindustry.ai.Pathfinder.*;
@@ -20,6 +24,8 @@ import static mindustry.ai.Pathfinder.*;
 public class ControlPathfinder{
     //TODO this FPS-based update system could be flawed.
     private static final long maxUpdate = Time.millisToNanos(30);
+    @MindustryXApi
+    public static int maxWorking = 20;
     private static final int updateFPS = 60;
     private static final int updateInterval = 1000 / updateFPS;
     private static final int wallImpassableCap = 1_000_000;
@@ -70,6 +76,7 @@ public class ControlPathfinder{
     int lastTargetId = 1;
     /** requests per-unit */
     ObjectMap<Unit, PathRequest> requests = new ObjectMap<>();
+    static Map<PathRequest, Object> workingRequests = new ConcurrentHashMap<>();
 
     public ControlPathfinder(){
 
@@ -102,7 +109,10 @@ public class ControlPathfinder{
                 //skipped N update -> drop it
                 if(req.lastUpdateId <= state.updateId - 10){
                     //concurrent modification!
-                    Core.app.post(() -> requests.remove(req.unit));
+                    Core.app.post(() -> {
+                        requests.remove(req.unit);
+                        workingRequests.remove(req);
+                    });
                     req.thread.queue.post(() -> req.thread.requests.remove(req));
                 }
             }
@@ -304,6 +314,7 @@ public class ControlPathfinder{
         }
         threads = null;
         requests.clear();
+        workingRequests.clear();
     }
 
     private static boolean raycast(int team, PathCost type, int x1, int y1, int x2, int y2){
@@ -433,9 +444,15 @@ public class ControlPathfinder{
                         requestSize = requests.size;
 
                         //total update time no longer than maxUpdate
+                        //MDTX: changed
+                        var ns = Time.nanos();
+                        var count = Math.min(requestSize, maxWorking);
                         for(var req : requests){
-                            //TODO this is flawed with many paths
-                            req.update(maxUpdate / requests.size);
+                            if(Time.timeSinceNanos(ns) > maxUpdate) break;
+                            if(!req.done && !workingRequests.containsKey(req) && workingRequests.size() > maxWorking) continue;
+                            req.update(maxUpdate / count);
+                            if(req.done) workingRequests.remove(req);
+                            else workingRequests.put(req, this);
                         }
                     }
 
