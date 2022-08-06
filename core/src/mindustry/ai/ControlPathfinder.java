@@ -13,6 +13,10 @@ import mindustry.game.EventType.*;
 import mindustry.gen.*;
 import mindustry.graphics.*;
 import mindustry.world.*;
+import mindustryX.*;
+
+import java.util.*;
+import java.util.concurrent.*;
 
 import static mindustry.Vars.*;
 import static mindustry.ai.Pathfinder.*;
@@ -20,6 +24,8 @@ import static mindustry.ai.Pathfinder.*;
 public class ControlPathfinder{
     //TODO this FPS-based update system could be flawed.
     private static final long maxUpdate = Time.millisToNanos(30);
+    @MindustryXApi
+    public static int maxWorking = 20;
     private static final int updateFPS = 60;
     private static final int updateInterval = 1000 / updateFPS;
     private static final int wallImpassableCap = 100_000;
@@ -65,7 +71,8 @@ public class ControlPathfinder{
     static volatile int worldUpdateId;
 
     /** Current pathfinding threads, contents may be null */
-    @Nullable PathfindThread[] threads;
+    @Nullable
+    PathfindThread[] threads;
     /** for unique target IDs */
     int lastTargetId = 1;
     /** requests per-unit */
@@ -84,13 +91,13 @@ public class ControlPathfinder{
         //only update the world when a solid block is removed or placed, everything else doesn't matter
         Events.on(TilePreChangeEvent.class, e -> {
             if(e.tile.solid()){
-                worldUpdateId ++;
+                worldUpdateId++;
             }
         });
 
         Events.on(TileChangeEvent.class, e -> {
             if(e.tile.solid()){
-                worldUpdateId ++;
+                worldUpdateId++;
             }
         });
 
@@ -152,7 +159,7 @@ public class ControlPathfinder{
 
     /** @return the next target ID to use as a unique path identifier. */
     public int nextTargetId(){
-        return lastTargetId ++;
+        return lastTargetId++;
     }
 
     /** @return whether a path is ready */
@@ -272,6 +279,7 @@ public class ControlPathfinder{
 
         return false;
     }
+
     /** Starts or restarts the pathfinding thread. */
     private void start(){
         stop();
@@ -280,7 +288,7 @@ public class ControlPathfinder{
 
         //TODO currently capped at 6 threads, might be a good idea to make it more?
         threads = new PathfindThread[Mathf.clamp(Runtime.getRuntime().availableProcessors() - 2, 1, 6)];
-        for(int i = 0; i < threads.length; i ++){
+        for(int i = 0; i < threads.length; i++){
             threads[i] = new PathfindThread("ControlPathfindThread-" + i);
             threads[i].setPriority(Thread.MIN_PRIORITY);
             threads[i].setDaemon(true);
@@ -411,6 +419,8 @@ public class ControlPathfinder{
         /** volatile for access across threads */
         volatile int requestSize;
 
+        Map<PathRequest, Object> workingRequests = new ConcurrentHashMap<>();
+
         public PathfindThread(String name){
             super(name);
         }
@@ -426,9 +436,15 @@ public class ControlPathfinder{
                         requestSize = requests.size;
 
                         //total update time no longer than maxUpdate
+                        //MDTX: changed
+                        var ns = Time.nanos();
+                        var count = Math.min(requestSize, 20);
                         for(var req : requests){
-                            //TODO this is flawed with many paths
-                            req.update(maxUpdate / requests.size);
+                            if(Time.timeSinceNanos(ns) > maxUpdate) break;
+                            if(!req.done && !workingRequests.containsKey(req) && workingRequests.size() > 20) continue;
+                            req.update(maxUpdate / count);
+                            if(req.done) workingRequests.remove(req);
+                            else workingRequests.put(req, null);
                         }
                     }
 
@@ -540,7 +556,7 @@ public class ControlPathfinder{
                 }
 
                 //only check every N iterations to prevent nanoTime spam (slow)
-                if((counter ++) >= 100){
+                if((counter++) >= 100){
                     counter = 0;
 
                     //exit when out of time.
@@ -571,7 +587,10 @@ public class ControlPathfinder{
 
             done = true;
 
-            //TODO free resources?
+            //MDTX: free resource
+            frontier = new PathfindQueue(20);
+            cameFrom = new IntIntMap();
+            costs = new IntFloatMap();
         }
 
         void smoothPath(){

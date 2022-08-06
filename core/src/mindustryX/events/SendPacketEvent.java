@@ -3,7 +3,9 @@ package mindustryX.events;
 import arc.*;
 import arc.util.*;
 import mindustry.net.*;
+import mindustryX.*;
 
+@MindustryXApi
 public class SendPacketEvent{
     /** null for all, may emit again */
     @Nullable
