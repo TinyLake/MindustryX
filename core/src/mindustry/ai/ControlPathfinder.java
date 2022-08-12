@@ -419,7 +419,7 @@ public class ControlPathfinder{
         /** volatile for access across threads */
         volatile int requestSize;
 
-        Map<PathRequest, Object> workingRequests = new ConcurrentHashMap<>();
+        static Map<PathRequest, Object> workingRequests = new ConcurrentHashMap<>();
 
         public PathfindThread(String name){
             super(name);
@@ -444,7 +444,7 @@ public class ControlPathfinder{
                             if(!req.done && !workingRequests.containsKey(req) && workingRequests.size() > maxWorking) continue;
                             req.update(maxUpdate / count);
                             if(req.done) workingRequests.remove(req);
-                            else workingRequests.put(req, null);
+                            else workingRequests.put(req, this);
                         }
                     }
 
