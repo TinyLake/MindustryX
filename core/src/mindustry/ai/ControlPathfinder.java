@@ -77,6 +77,7 @@ public class ControlPathfinder{
     int lastTargetId = 1;
     /** requests per-unit */
     ObjectMap<Unit, PathRequest> requests = new ObjectMap<>();
+    static Map<PathRequest, Object> workingRequests = new ConcurrentHashMap<>();
 
     public ControlPathfinder(){
 
@@ -109,7 +110,10 @@ public class ControlPathfinder{
                 //skipped N update -> drop it
                 if(req.lastUpdateId <= state.updateId - 10){
                     //concurrent modification!
-                    Core.app.post(() -> requests.remove(req.unit));
+                    Core.app.post(() -> {
+                        requests.remove(req.unit);
+                        workingRequests.remove(req);
+                    });
                     req.thread.queue.post(() -> req.thread.requests.remove(req));
                 }
             }
@@ -305,6 +309,7 @@ public class ControlPathfinder{
         }
         threads = null;
         requests.clear();
+        workingRequests.clear();
     }
 
     private static boolean raycast(int team, PathCost type, int x1, int y1, int x2, int y2){
@@ -418,8 +423,6 @@ public class ControlPathfinder{
         Seq<PathRequest> requests = new Seq<>();
         /** volatile for access across threads */
         volatile int requestSize;
-
-        static Map<PathRequest, Object> workingRequests = new ConcurrentHashMap<>();
 
         public PathfindThread(String name){
             super(name);
