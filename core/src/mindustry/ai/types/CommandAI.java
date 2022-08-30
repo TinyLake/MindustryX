@@ -129,8 +129,6 @@ public class CommandAI extends AIController{
                         attackTarget != null ? engageRange :
                         0f, unit.isFlying() ? 40f : 100f, false, null, true);
                 }
-
-                //calculateFlock().limit(unit.speed() * flockMult)
             }
 
             //if stopAtTarget is set, stop trying to move to the target once it is reached - used for defending
