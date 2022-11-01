@@ -51,6 +51,10 @@ public class GameState{
     }
 
     public void set(State astate){
+        //horrible horrible horrible
+        if(astate == State.paused && net.server() && !headless) serverPaused = true;
+        if(astate != State.paused && net.server() && !headless) serverPaused = false;
+
         //cannot pause when in multiplayer
         if(astate == State.paused && net.active()) return;
 
@@ -71,9 +75,12 @@ public class GameState{
         return rules.sector != null;
     }
 
-    @Nullable
-    public Sector getSector(){
+    public @Nullable Sector getSector(){
         return rules.sector;
+    }
+
+    public @Nullable Planet getPlanet(){
+        return rules.sector != null ? rules.sector.planet : null;
     }
 
     public boolean isEditor(){
