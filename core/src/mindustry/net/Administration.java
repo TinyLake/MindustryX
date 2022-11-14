@@ -38,7 +38,7 @@ public class Administration{
                 if(resetTime > 0 && Time.timeSinceMillis(player.getInfo().lastMessageTime) < resetTime){
                     //supress message
                     player.sendMessage("[scarlet]You may only send messages every " + Config.messageRateLimit.num() + " seconds.");
-                    player.getInfo().messageInfractions++;
+                    player.getInfo().messageInfractions ++;
                     //kick player for spamming and prevent connection if they've done this several times
                     if(player.getInfo().messageInfractions >= Config.messageSpamKick.num() && Config.messageSpamKick.num() != 0){
                         player.con.kick("You have been kicked for spamming.", 1000 * 60 * 2);
@@ -64,8 +64,9 @@ public class Administration{
         //block interaction rate limit
         addActionFilter(action -> {
             if(action.type != ActionType.breakBlock &&
-            action.type != ActionType.placeBlock &&
-            Config.antiSpam.bool()){
+                action.type != ActionType.placeBlock &&
+                action.type != ActionType.commandUnits &&
+                Config.antiSpam.bool()){
 
                 Ratekeeper rate = action.player.getInfo().rate;
                 if(rate.allow(Config.interactRateWindow.num() * 1000L, Config.interactRateLimit.num())){
@@ -124,11 +125,9 @@ public class Administration{
         return subnetBans.contains(ip::startsWith);
     }
 
-    /**
-     * Adds a chat filter. This will transform the chat messages of every player.
+    /** Adds a chat filter. This will transform the chat messages of every player.
      * This functionality can be used to implement things like swear filters and special commands.
-     * Note that commands (starting with /) are not filtered.
-     */
+     * Note that commands (starting with /) are not filtered.*/
     public void addChatFilter(ChatFilter filter){
         chatFilters.add(filter);
     }
@@ -467,7 +466,7 @@ public class Administration{
     /**
      * Server configuration definition. Each config value can be a string, boolean or number.
      * Creating a new Config instance implicitly adds it to the list of server configs. This can be used for custom plugin configuration.
-     */
+     * */
     public static class Config{
         public static final Seq<Config> all = new Seq<>();
 
@@ -490,6 +489,7 @@ public class Administration{
         messageRateLimit = new Config("messageRateLimit", "Message rate limit in seconds. 0 to disable.", 0),
         messageSpamKick = new Config("messageSpamKick", "How many times a player must send a message before the cooldown to get kicked. 0 to disable.", 3),
         packetSpamLimit = new Config("packetSpamLimit", "Limit for packet count sent within 3sec that will lead to a blacklist + kick.", 300),
+        chatSpamLimit = new Config("packetSpamLimit", "Limit for chat packet count sent within 2sec that will lead to a blacklist + kick. Not the same as a rate limit.", 20),
         socketInput = new Config("socketInput", "Allows a local application to control this server through a local TCP socket.", false, "socket", () -> Events.fire(Trigger.socketConfigChanged)),
         socketInputPort = new Config("socketInputPort", "The port for socket input.", 6859, () -> Events.fire(Trigger.socketConfigChanged)),
         socketInputAddress = new Config("socketInputAddress", "The bind address for socket input.", "localhost", () -> Events.fire(Trigger.socketConfigChanged)),
@@ -525,8 +525,7 @@ public class Administration{
             this.description = description;
             this.key = key == null ? name : key;
             this.defaultValue = def;
-            this.changed = changed == null ? () -> {
-            } : changed;
+            this.changed = changed == null ? () -> {} : changed;
 
             all.add(this);
         }
@@ -601,8 +600,7 @@ public class Administration{
     /** Handles chat messages from players and changes their contents. */
     public interface ChatFilter{
         /** @return the filtered message; a null string signals that the message should not be sent. */
-        @Nullable
-        String filter(Player player, String message);
+        @Nullable String filter(Player player, String message);
     }
 
     /** Allows or disallows player actions. */
@@ -626,10 +624,8 @@ public class Administration{
         }
     }
 
-    /**
-     * Defines a (potentially dangerous) action that a player has done in the world.
-     * These objects are pooled; do not cache them!
-     */
+    /** Defines a (potentially dangerous) action that a player has done in the world.
+     * These objects are pooled; do not cache them! */
     public static class PlayerAction implements Poolable{
         public Player player;
         public ActionType type;
@@ -654,6 +650,9 @@ public class Administration{
 
         /** valid only for command unit events */
         public @Nullable int[] unitIDs;
+
+        /** valid only for command building events */
+        public @Nullable int[] buildingPositions;
 
         public PlayerAction set(Player player, ActionType type, Tile tile){
             this.player = player;
