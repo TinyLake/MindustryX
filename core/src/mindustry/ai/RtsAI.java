@@ -23,6 +23,8 @@ import mindustry.world.blocks.storage.*;
 import mindustry.world.blocks.storage.CoreBlock.*;
 import mindustry.world.meta.*;
 
+import static mindustry.Vars.world;
+
 public class RtsAI{
     static final Seq<Building> targets = new Seq<>();
     static final Seq<Unit> squad = new Seq<>(false);
@@ -249,7 +251,7 @@ public class RtsAI{
         if(build != null || anyDefend){
             for(var unit : units){
                 if(unit.isCommandable() && !unit.command().hasCommand()){
-                    if(defendPos != null && !unit.isPathImpassable(World.toTile(defendPos.x), World.toTile(defendPos.y))){
+                    if(defendPos != null && world.tileWorld(defendPos.x, defendPos.y) != null && !unit.isPathImpassable(World.toTile(defendPos.x), World.toTile(defendPos.y))){
                         unit.command().commandPosition(defendPos, true);
                     }else{
                         //TODO stopAtTarget parameter could be false, could be tweaked
