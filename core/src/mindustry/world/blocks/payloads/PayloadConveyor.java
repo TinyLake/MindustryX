@@ -11,6 +11,7 @@ import mindustry.entities.*;
 import mindustry.gen.*;
 import mindustry.graphics.*;
 import mindustry.world.*;
+import mindustry.world.blocks.payloads.PayloadRouter.*;
 import mindustry.world.meta.*;
 
 import static mindustry.Vars.*;
@@ -153,7 +154,10 @@ public class PayloadConveyor extends Block{
                 if(valid && stepAccepted != curStep && item != null){
                     if(next != null){
                         //trigger update forward
-                        next.updateTile();
+                        //MDTX: fix NPE bug, copy from PayloadRouter.PayloadRouterBuild.pickNext
+                        if(next instanceof PayloadConveyorBuild){
+                            next.updateTile();//Update for progress??
+                        }
 
                         //TODO add self to queue of next conveyor, then check if this conveyor was selected next frame - selection happens deterministically
                         if(next != null && next.acceptPayload(this, item)){
@@ -260,6 +264,7 @@ public class PayloadConveyor extends Block{
 
         @Override
         public boolean acceptPayload(Building source, Payload payload){
+            //Note: using progress there seems very bad thing.(for E/S and low TPS)
             return this.item == null
                 && payload.fits(payloadLimit)
                 && (source == this || this.enabled && progress <= 5f);
