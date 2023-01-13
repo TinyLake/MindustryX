@@ -70,6 +70,9 @@ public class Logic implements ApplicationListener{
             if(state.isCampaign()){
                 state.rules.coreIncinerates = true;
 
+                //TODO why is this even a thing?
+                state.rules.canGameOver = true;
+
                 //fresh map has no sector info
                 if(!e.isMap){
                     SectorInfo info = state.rules.sector.info;
@@ -379,19 +382,6 @@ public class Logic implements ApplicationListener{
     @Remote
     public static void researched(Content content){
         if(!(content instanceof UnlockableContent u)) return;
-
-        //TODO node is wrong for shared tech nodes
-        var node = u.techNode;
-
-        //unlock all direct dependencies on client, permanently
-        while(node != null){
-            node.content.unlock();
-            node = node.parent;
-
-            if((node.content instanceof Item item && state.rules.hiddenBuildItems.contains(item))){
-                break;
-            }
-        }
 
         state.rules.researched.add(u.name);
     }

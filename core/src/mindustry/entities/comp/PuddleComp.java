@@ -20,7 +20,7 @@ import static mindustry.entities.Puddles.*;
 
 @EntityDef(value = {Puddlec.class}, pooled = true)
 @Component(base = true)
-abstract class PuddleComp implements Posc, Puddlec, Drawc{
+abstract class PuddleComp implements Posc, Puddlec, Drawc, Syncc{
     private static final Rect rect = new Rect(), rect2 = new Rect();
 
     private static Puddle paramPuddle;
@@ -57,6 +57,11 @@ abstract class PuddleComp implements Posc, Puddlec, Drawc{
 
     @Override
     public void update(){
+        if(liquid == null || tile == null){
+            remove();
+            return;
+        }
+
         float addSpeed = accepting > 0 ? 3f : 0f;
 
         amount -= Time.delta * (1f - liquid.viscosity) / (5f + addSpeed);
@@ -140,5 +145,12 @@ abstract class PuddleComp implements Posc, Puddlec, Drawc{
     @Override
     public void afterRead(){
         Puddles.register(self());
+    }
+
+    @Override
+    public void afterSync(){
+        if(liquid != null){
+            Puddles.register(self());
+        }
     }
 }
