@@ -19,7 +19,7 @@ import mindustry.world.meta.*;
 import static mindustry.Vars.*;
 
 public class ItemTurret extends Turret{
-    public ObjectMap<Item, BulletType> ammoTypes = new ObjectMap<>();
+    public ObjectMap<Item, BulletType> ammoTypes = new OrderedMap<>();
 
     public ItemTurret(String name){
         super(name);
@@ -88,8 +88,8 @@ public class ItemTurret extends Turret{
             super.onProximityAdded();
 
             //add first ammo item to cheaty blocks so they can shoot properly
-            if(cheating() && ammoTypes.size > 0){
-                handleItem(this, ammoTypes.entries().next().key);
+            if(!hasAmmo() && cheating() && ammoTypes.size > 0){
+                handleItem(this, ammoTypes.keys().next());
             }
         }
 
