@@ -247,7 +247,8 @@ public class Damage{
             seg2.set(seg1).add(vec);
             World.raycastEachWorld(x, y, seg2.x, seg2.y, (cx, cy) -> {
                 Building tile = world.build(cx, cy);
-                boolean collide = tile != null && hitter.checkUnderBuild(tile, cx * tilesize, cy * tilesize) && collidedBlocks.add(tile.pos());
+                boolean collide = tile != null && hitter.checkUnderBuild(tile, cx * tilesize, cy * tilesize)
+                    && ((tile.team != team && tile.collide(hitter)) || hitter.type.testCollision(hitter, tile)) && collidedBlocks.add(tile.pos());
                 if(collide){
                     collided.add(collidePool.obtain().set(cx * tilesize, cy * tilesize, tile));
 
@@ -285,17 +286,19 @@ public class Damage{
         int[] collideCount = {0};
         collided.sort(c -> hitter.dst2(c.x, c.y));
         collided.each(c -> {
-            if(hitter.damage > 0 && (pierceCap <= 0 || collideCount[0]++ < pierceCap)){
+            if(hitter.damage > 0 && (pierceCap <= 0 || collideCount[0] < pierceCap)){
                 if(c.target instanceof Unit u){
                     effect.at(c.x, c.y);
                     u.collision(hitter, c.x, c.y);
                     hitter.collision(u, c.x, c.y);
+                    collideCount[0]++;
                 }else if(c.target instanceof Building tile){
                     float health = tile.health;
 
                     if(tile.team != team && tile.collide(hitter)){
                         tile.collision(hitter);
                         hitter.type.hit(hitter, c.x, c.y);
+                        collideCount[0]++;
                     }
 
                     //try to heal the tile
