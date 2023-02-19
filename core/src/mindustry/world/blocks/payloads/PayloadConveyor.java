@@ -154,8 +154,8 @@ public class PayloadConveyor extends Block{
                     if(next != null){
                         //trigger update forward
                         //MDTX: fix NPE bug, copy from PayloadRouter.PayloadRouterBuild.pickNext
-                        if(next instanceof PayloadConveyorBuild && !(next instanceof PayloadRouterBuild)){
-                            next.updateTile();
+                        if(next instanceof PayloadConveyorBuild){
+                            next.updateTile();//Update for progress??
                         }
 
                         //TODO add self to queue of next conveyor, then check if this conveyor was selected next frame - selection happens deterministically
@@ -261,6 +261,7 @@ public class PayloadConveyor extends Block{
 
         @Override
         public boolean acceptPayload(Building source, Payload payload){
+            //Note: using progress there seems very bad thing.(for E/S and low TPS)
             return this.item == null
                 && payload.fits(payloadLimit)
                 && (source == this || this.enabled && progress <= 5f);
