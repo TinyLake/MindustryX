@@ -3404,6 +3404,7 @@ public class Blocks{
             reload = 30f;
             inaccuracy = 10f;
             range = 240f;
+            consumeAmmoOnce = false;
             size = 2;
             scaledHealth = 300;
             shootSound = Sounds.missile;
@@ -3466,6 +3467,7 @@ public class Blocks{
             size = 2;
             range = 190f;
             reload = 31f;
+            consumeAmmoOnce = false;
             ammoEjectBack = 3f;
             recoil = 3f;
             shake = 1f;
@@ -4081,6 +4083,7 @@ public class Blocks{
 
             liquidConsumed = 10f / 60f;
             targetInterval = 5f;
+            targetUnderBlocks = false;
 
             float r = range = 130f;
 

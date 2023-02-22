@@ -51,6 +51,8 @@ public class Block extends UnlockableContent implements Senseable{
     public boolean consumesPower = true;
     /** If true, this block is a generator that can produce power. */
     public boolean outputsPower = false;
+    /** If false, power nodes cannot connect to this block. */
+    public boolean connectedPower = true;
     /** If true, this block can conduct power like a cable. */
     public boolean conductivePower = false;
     /** If true, this block can output payloads; affects blending. */
@@ -413,7 +415,7 @@ public class Block extends UnlockableContent implements Senseable{
     }
 
     public void drawPotentialLinks(int x, int y){
-        if((consumesPower || outputsPower) && hasPower){
+        if((consumesPower || outputsPower) && hasPower && connectedPower){
             Tile tile = world.tile(x, y);
             if(tile != null){
                 PowerNode.getNodeLinks(tile, this, player.team(), other -> {
@@ -1324,6 +1326,7 @@ public class Block extends UnlockableContent implements Senseable{
 
             editorBase = new PixmapRegion(base);
         }else{
+            if(gen[0] != null) packer.add(PageType.main, "block-" + name + "-full", Core.atlas.getPixmap(gen[0]));
             editorBase = gen[0] == null ? Core.atlas.getPixmap(fullIcon) : Core.atlas.getPixmap(gen[0]);
         }
 

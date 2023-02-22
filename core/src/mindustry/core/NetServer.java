@@ -874,7 +874,7 @@ public class NetServer implements ApplicationListener{
         }
 
         if(state.isGame() && net.server()){
-            if(state.rules.pvp){
+            if(state.rules.pvp && state.rules.pvpAutoPause){
                 boolean waiting = isWaitingForPlayers(), paused = state.isPaused();
                 if(waiting != paused){
                     if(waiting){
@@ -1008,7 +1008,7 @@ public class NetServer implements ApplicationListener{
         player.con.snapshotsSent++;
     }
 
-    String fixName(String name){
+    public String fixName(String name){
         name = name.trim().replace("\n", "").replace("\t", "");
         if(name.equals("[") || name.equals("]")){
             return "";
@@ -1032,7 +1032,7 @@ public class NetServer implements ApplicationListener{
         return result.toString();
     }
 
-    static String checkColor(String str){
+    public String checkColor(String str){
         for(int i = 1; i < str.length(); i++){
             if(str.charAt(i) == ']'){
                 String color = str.substring(1, i);

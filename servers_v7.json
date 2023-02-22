@@ -1,8 +1,4 @@
 [
- {
-    "name": "Explosive corp",
-    "address": ["94.103.91.96:4545", "94.103.91.96:4848", "94.103.91.96:4949", "94.103.91.96:5050", "94.103.91.96:5151"]
-  },
   {
     "name": "RCM",
     "address": ["rcrms.ru:6567"]
@@ -37,7 +33,7 @@
   },
   {
     "name": "Voiddustry",
-    "address": ["45.144.66.250:6566", "45.144.66.250:6565"]
+    "address": ["45.144.66.250:6566", "45.144.66.250:6565", "45.144.66.250:6561"]
   },
   {
     "name": "C.A.M.S.",
@@ -53,19 +49,19 @@
   },
   {
     "name": "Omega Hub",
-    "address": ["n1.mindustry.me:6608", "n7.mindustry.me:6567", "n7.mindustry.me:6570", "n1.mindustry.me:6568", "n1.mindustry.me:6671", "n1.mindustry.me:6570", "n1.mindustry.me:6573", "n1.mindustry.me:6610", "n1.mindustry.me:6567", "n1.mindustry.me:6599", "n1.mindustry.me:6774", "n1.mindustry.me:6571"]
+    "address": ["n1.mindustry.me:6608", "n7.mindustry.me:6567", "n7.mindustry.me:6570", "n1.mindustry.me:6568", "n1.mindustry.me:6671", "n1.mindustry.me:6570", "n1.mindustry.me:6573", "n1.mindustry.me:6610", "n1.mindustry.me:6567", "n1.mindustry.me:6599", "n1.mindustry.me:6774", "n1.mindustry.me:6571", "n1.mindustry.me:6589"]
   },
   {
     "name": "KMWStudios",
-    "address": ["meowland.ru"]
+    "address": ["46.151.26.232:1024", "46.151.26.232:2000", "46.151.26.232:3000", "46.151.26.232:4000", "46.151.26.232:6000", "46.151.26.232:7000", "46.151.26.232:8000"]
   },
   {
     "name": "XCore",
-    "address": ["185.13.47.146:19000", "185.13.47.146:19001"]
+    "address": ["130.61.52.25", "130.61.52.25:6568", "130.61.52.25:6569", "130.61.52.25:6570"]
   },
   {
     "name": "Darkdustry",
-    "address": ["darkdustry.net", "darkdustry.net:1500", "darkdustry.net:2000", "darkdustry.net:3000", "darkdustry.net:4000", "darkdustry.net:5000", "darkdustry.net:6000", "darkdustry.net:7000", "darkdustry.net:8000", "darkdustry.net:9000", "darkdustry.net:10000"] 
+    "address": ["45.82.176.157", "45.82.176.157:1500", "45.82.176.157:2000", "45.82.176.157:3000", "45.82.176.157:4000", "45.82.176.157:5000", "45.82.176.157:6000", "45.82.176.157:7000", "45.82.176.157:8000", "45.82.176.157:9000", "45.82.176.157:10000"] 
   },
   {
     "name": "Chaotic Neutral",
@@ -89,11 +85,15 @@
   },
   {
     "name": "LatamDustry",
-    "address": ["n1.xpdustry.fr:7003", "n1.xpdustry.fr:7004", "n1.xpdustry.fr:7005", "n1.xpdustry.fr:7006", "n1.xpdustry.fr:7007"]
+    "address": ["n1.xpdustry.fr:7003", "n1.xpdustry.fr:7004", "n1.xpdustry.fr:7005", "n1.xpdustry.fr:7006", "n1.xpdustry.fr:7007", "uk-prem-01.optik.host:5894"]
   },
   {
     "name": "Pandorum",
     "address": ["pandorum.su:5018", "pandorum.su:5019", "pandorum.su:5020"]
+  },
+  {
+    "name": "Tinylake",
+    "address": ["mindustry.top", "cn.mindustry.top", "g.mindustry.top"]
   },
   {
     "name": "Fish",
@@ -101,7 +101,7 @@
   },
   {
     "name": "OMNIDUSTRY",
-    "address": ["109.94.209.233","109.94.209.233:6568","109.94.209.233:6569","109.94.209.233:6570","109.94.209.233:6571","109.94.209.233:6572","109.94.209.233:6573","109.94.209.233:6574"]
+    "address": ["185.178.46.229", "185.178.46.229:6568", "185.178.46.229:6569", "185.178.46.229:6570", "185.178.46.229:6571", "185.178.46.229:6572", "185.178.46.229:6573", "185.178.46.229:6574"]
   },
   {
     "name": "The Devil",
@@ -109,11 +109,11 @@
   },
   {
     "name": "Eradicationdustry",
-    "address": ["eradicationmindustry.mindustry.me:6569", "eradicationmindustry.mindustry.me:9547", "eradicationmindustry.mindustry.me:6572", "eradicationmindustry.yeet.ml:6570", "eradicationmindustry.mindustry.me:6571", "eradicationmindustry.mindustry.me:6574", "eradicationmindustry.mindustry.me:6573", "eradicationmindustry2.mindustry.me:6567"]
+    "address": ["eradicationmindustry.mindustry.me:6569", "eradicationmindustry.mindustry.me:9547", "eradicationmindustry.mindustry.me:6572", "eradicationmindustry.yeet.ml:6570", "eradicationmindustry.mindustry.me:6571", "eradicationmindustry.mindustry.me:6574", "eradicationmindustry.mindustry.me:6573", "eradicationmindustry2.mindustry.me:6567", "eradicationmindustry.mindustry.me:6568"]
   },
   {
     "name": "Conservatory",
-    "address": ["165.232.137.170:6567","165.232.137.170:6568"]
+    "address": ["165.232.137.170:6567", "165.232.137.170:6568"]
   },
   {
     "name": "mindustry.ddns.net",
@@ -133,11 +133,11 @@
   },
   {
     "name": "Sakura", 
-    "address": ["160.16.207.141:22527", "160.16.207.141:23527", "160.16.207.141:24527", "160.16.207.141:25527", "160.16.207.141:26527"]
+    "address": ["160.16.207.141:22527", "160.16.207.141:23527", "160.16.207.141:24527", "160.16.207.141:25527", "160.16.207.141:26527", "160.16.207.141:27527", "160.16.207.141:28527"]
   },
   {
     "name": "|RussianServers|[]",
-    "address": ["2p2g.ml:6568","2p2g.ml:6569","2p2g.ml:6570","2p2g.ml:6571","2p2g.ml:6572","2p2g.ml:6573"]
+    "address": ["2p2g.ml:6568", "2p2g.ml:6569", "2p2g.ml:6570", "2p2g.ml:6571", "2p2g.ml:6572", "2p2g.ml:6573"]
   },
   {
     "name": "Hungarian",
@@ -153,6 +153,18 @@
   },
   {
     "name": "Vndustry",
-    "address": ["vndustry.ddns.net","vndustry.ddns.net:6568"]
+    "address": ["vndustry.ddns.net", "vndustry.ddns.net:6568"]
+  },
+  {
+     "name": "Anana&ShenYv",
+     "address": ["mdtleague.top"]
+  },
+  {
+    "name": "Vortex",
+    "address": ["vortex.org.ru", "vortex.org.ru:6568", "vortex.org.ru:6569", "vortex.org.ru:6570", "vortex.org.ru:6571"]
+  },
+  {
+    "name": "Botipont",
+    "address": ["217.144.54.208:6567", "217.144.54.208:6568", "217.144.54.208:6569"]
   }
 ]
