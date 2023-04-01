@@ -32,7 +32,7 @@ import static mindustry.Vars.*;
 
 public class Mods implements Loadable{
     private static final String[] metaFiles = {"mod.json", "mod.hjson", "plugin.json", "plugin.hjson"};
-    private static final ObjectSet<String> blacklistedMods = ObjectSet.with("ui-lib");
+    private static final ObjectSet<String> blacklistedMods = ObjectSet.with("ui-lib", "braindustry");
 
     private Json json = new Json();
     private @Nullable Scripts scripts;
@@ -428,7 +428,7 @@ public class Mods implements Loadable{
 
         // Add local mods
         Seq.with(modDirectory.list())
-        .filter(f -> f.extEquals("jar") || f.extEquals("zip") || (f.isDirectory() && (f.child("mod.json").exists() || f.child("mod.hjson").exists())))
+        .filter(f -> f.extEquals("jar") || f.extEquals("zip") || (f.isDirectory() && Structs.contains(metaFiles, meta -> f.child(meta).exists())))
         .each(candidates::add);
 
         // Add Steam workshop mods
@@ -1075,6 +1075,9 @@ public class Mods implements Loadable{
 
         /** @return whether this mod is supported by the game version */
         public boolean isSupported(){
+            //no unsupported mods on servers
+            if(headless) return true;
+
             if(isOutdated() || isBlacklisted()) return false;
 
             return Version.isAtLeast(meta.minGameVersion);

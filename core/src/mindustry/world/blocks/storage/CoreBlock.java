@@ -66,27 +66,27 @@ public class CoreBlock extends StorageBlock{
 
     @Remote(called = Loc.server)
     public static void playerSpawn(Tile tile, Player player){
-        if(player == null || tile == null || !(tile.build instanceof CoreBuild entity)) return;
+        if(player == null || tile == null || !(tile.build instanceof CoreBuild core)) return;
 
-        CoreBlock block = (CoreBlock)tile.block();
-        if(entity.wasVisible){
-            Fx.spawn.at(entity);
+        UnitType spawnType = ((CoreBlock)core.block).unitType;
+        if(core.wasVisible){
+            Fx.spawn.at(core);
         }
 
-        player.set(entity);
+        player.set(core);
 
         if(!net.client()){
-            Unit unit = block.unitType.create(tile.team());
-            unit.set(entity);
+            Unit unit = spawnType.create(tile.team());
+            unit.set(core);
             unit.rotation(90f);
             unit.impulse(0f, 3f);
-            unit.controller(player);
             unit.spawnedByCore(true);
+            unit.controller(player);
             unit.add();
         }
 
         if(state.isCampaign() && player == Vars.player){
-            block.unitType.unlock();
+            spawnType.unlock();
         }
     }
 
@@ -395,7 +395,7 @@ public class CoreBlock extends StorageBlock{
             if(renderer.getLandTime() >= 1f){
                 tile.getLinkedTiles(t -> {
                     if(Mathf.chance(0.4f)){
-                        Fx.coreLandDust.at(t.worldx(), t.worldy(), angleTo(t) + Mathf.range(30f), Tmp.c1.set(t.floor().mapColor).mul(1.5f + Mathf.range(0.15f)));
+                        Fx.coreLandDust.at(t.worldx(), t.worldy(), angleTo(t.worldx(), t.worldy()) + Mathf.range(30f), Tmp.c1.set(t.floor().mapColor).mul(1.5f + Mathf.range(0.15f)));
                     }
                 });
 
