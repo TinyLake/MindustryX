@@ -30,6 +30,7 @@ import java.util.zip.*;
 import static mindustry.Vars.*;
 
 public class LogicBlock extends Block{
+    public static boolean running = false;
     private static final int maxByteLen = 1024 * 500;
 
     public int maxInstructionScale = 5;
@@ -507,10 +508,12 @@ public class LogicBlock extends Block{
 
                 if(accumulator > maxInstructionScale * ipt) accumulator = maxInstructionScale * ipt;
 
+                running = true;
                 for(int i = 0; i < (int)accumulator; i++){
                     executor.runOnce();
                     accumulator --;
                 }
+                running = false;
             }
         }
 
