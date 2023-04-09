@@ -23,6 +23,7 @@ import mindustry.ui.*;
 import mindustry.world.*;
 import mindustry.world.blocks.ConstructBlock.*;
 import mindustry.world.meta.*;
+import mindustryX.*;
 
 import java.io.*;
 import java.util.zip.*;
@@ -30,6 +31,8 @@ import java.util.zip.*;
 import static mindustry.Vars.*;
 
 public class LogicBlock extends Block{
+    @MindustryXApi
+    public static boolean running = false;
     private static final int maxByteLen = 1024 * 100;
 
     public int maxInstructionScale = 5;
@@ -511,6 +514,7 @@ public class LogicBlock extends Block{
 
                 if(accumulator > maxInstructionScale * ipt) accumulator = maxInstructionScale * ipt;
 
+                running = true;
                 for(int i = 0; i < (int)accumulator; i++){
                     executor.runOnce();
                     accumulator --;
@@ -519,6 +523,7 @@ public class LogicBlock extends Block{
                         break;
                     }
                 }
+                running = false;
             }
         }
 
