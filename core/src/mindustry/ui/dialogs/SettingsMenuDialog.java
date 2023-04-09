@@ -259,7 +259,7 @@ public class SettingsMenuDialog extends BaseDialog{
     public void addCategory(String name, Cons<SettingsTable> builder){
         addCategory(name, (Drawable)null, builder);
     }
-    
+
     public Seq<SettingsCategory> getCategories(){
         return categories;
     }
@@ -343,7 +343,7 @@ public class SettingsMenuDialog extends BaseDialog{
 
         game.checkPref("doubletapmine", false);
         game.checkPref("commandmodehold", true);
-      
+
         if(!ios){
             game.checkPref("modcrashdisable", true);
         }
@@ -367,7 +367,7 @@ public class SettingsMenuDialog extends BaseDialog{
 
         int[] lastUiScale = {settings.getInt("uiscale", 100)};
 
-        graphics.sliderPref("uiscale", 100, 5, 300, 5, s -> {
+        graphics.sliderPref("uiscale", 100, 25, 300, 5, s -> {
             //if the user changed their UI scale, but then put it back, don't consider it 'changed'
             Core.settings.put("uiscalechanged", s != lastUiScale[0]);
             return s + "%";
@@ -776,7 +776,7 @@ public class SettingsMenuDialog extends BaseDialog{
                 table.row();
             }
         }
-        
+
         public static class TextSetting extends Setting{
             String def;
             Cons<String> changed;
