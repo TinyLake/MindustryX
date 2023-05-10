@@ -226,6 +226,7 @@ public class Net{
         if(SendPacketEvent.emit(null, null, object)) return;
         if(server){
             for(NetConnection con : provider.getConnections()){
+                if(!con.hasBegunConnecting) continue;
                 con.send(object, reliable);
             }
         }else{
@@ -237,7 +238,7 @@ public class Net{
     public void sendExcept(NetConnection except, Object object, boolean reliable){
         if(SendPacketEvent.emit(null, except, object)) return;
         for(NetConnection con : getConnections()){
-            if(con != except){
+            if(con != except && con.hasBegunConnecting){
                 con.send(object, reliable);
             }
         }
