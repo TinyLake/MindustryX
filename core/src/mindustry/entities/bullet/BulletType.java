@@ -224,6 +224,8 @@ public class BulletType extends Content implements Cloneable{
 
     /** Use a negative value to disable splash damage. */
     public float splashDamageRadius = -1f;
+    /** If true, splash damage pierces through tiles. */
+    public boolean splashDamagePierce = false;
 
     /** Amount of fires attempted around bullet. */
     public int incendAmount = 0;
@@ -394,9 +396,9 @@ public class BulletType extends Content implements Cloneable{
     }
 
     public void handlePierce(Bullet b, float initialHealth, float x, float y){
-        float sub = Math.max(initialHealth*pierceDamageFactor, 0);
+        float sub = Mathf.zero(pierceDamageFactor) ? 0f : Math.max(initialHealth * pierceDamageFactor, 0);
         //subtract health from each consecutive pierce
-        b.damage -= Math.min(b.damage, sub);
+        b.damage -= Float.isNaN(sub) ? b.damage : Math.min(b.damage, sub);
 
         if(removeAfterPierce && b.damage <= 0){
             b.hit = true;
@@ -457,7 +459,7 @@ public class BulletType extends Content implements Cloneable{
 
     public void createSplashDamage(Bullet b, float x, float y){
         if(splashDamageRadius > 0 && !b.absorbed){
-            Damage.damage(b.team, x, y, splashDamageRadius, splashDamage * b.damageMultiplier(), false, collidesAir, collidesGround, scaledSplashDamage, b);
+            Damage.damage(b.team, x, y, splashDamageRadius, splashDamage * b.damageMultiplier(), splashDamagePierce, collidesAir, collidesGround, scaledSplashDamage, b);
 
             if(status != StatusEffects.none){
                 Damage.status(b.team, x, y, splashDamageRadius, status, statusDuration, collidesAir, collidesGround);
@@ -552,7 +554,7 @@ public class BulletType extends Content implements Cloneable{
 
     public void init(Bullet b){
 
-        if(killShooter && b.owner() instanceof Healthc h){
+        if(killShooter && b.owner() instanceof Healthc h && !h.dead()){
             h.kill();
         }
 
@@ -698,7 +700,6 @@ public class BulletType extends Content implements Cloneable{
         return create(owner, team, x, y, angle, -1, velocityScl, lifetimeScl, null);
     }
 
-
     public @Nullable Bullet create(Entityc owner, Team team, float x, float y, float angle, float velocityScl, float lifetimeScl, Mover mover){
         return create(owner, team, x, y, angle, -1, velocityScl, lifetimeScl, null, mover);
     }
@@ -730,23 +731,26 @@ public class BulletType extends Content implements Cloneable{
                 Unit spawned = spawnUnit.create(team);
                 spawned.set(x, y);
                 spawned.rotation = angle;
+
                 //immediately spawn at top speed, since it was launched
                 if(spawnUnit.missileAccelTime <= 0f){
                     spawned.vel.trns(angle, spawnUnit.speed);
                 }
+                
                 //assign unit owner
                 if(spawned.controller() instanceof MissileAI ai){
                     if(owner instanceof Unit unit){
                         ai.shooter = unit;
                     }
-
                     if(owner instanceof ControlBlock control){
                         ai.shooter = control.unit();
                     }
-
                 }
                 spawned.add();
             }
+
+            //Since bullet init is never called, handle killing shooter here
+            if(killShooter && owner instanceof Healthc h && !h.dead()) h.kill();
 
             //no bullet returned
             return null;

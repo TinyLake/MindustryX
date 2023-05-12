@@ -34,6 +34,7 @@ public class PayloadConveyor extends Block{
         priority = TargetPriority.transport;
         envEnabled |= Env.space | Env.underwater;
         sync = true;
+        underBullets = true;
     }
 
     @Override
