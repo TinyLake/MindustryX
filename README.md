@@ -15,8 +15,7 @@ Core api will be available in Jitpack.
 If you'd rather compile on your own, `gradlew server:dist`.
 
 ### Version rule
-Like `v144.x0p`, `x` is the MDTX patch version, `p` is the upstream mdt patch version  
-Before `v144`, the rule is `v143.p0x`
+`v144.102` match the upstream version `v144.1`, `02` is the MDTX patch version(begin with 1, reset each large version)
 
 ### Commit Tag
 * S: server only change.
