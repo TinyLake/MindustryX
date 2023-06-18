@@ -407,7 +407,6 @@ configure([":core", ":server"].collect{project(it)}){
                 from components.java
                 if(project.name == "core"){
                     artifact(tasks.named("assetsJar"))
-//                    artifact(tasks.named("musicJar"))
                 }
             }
         }

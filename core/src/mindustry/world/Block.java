@@ -108,6 +108,8 @@ public class Block extends UnlockableContent implements Senseable{
     public boolean rotate;
     /** if rotate is true and this is false, the region won't rotate when drawing */
     public boolean rotateDraw = true;
+    /** if rotate = false and this is true, rotation will be locked at 0 when placing (default); advanced use only */
+    public boolean lockRotation = true;
     /** if true, schematic flips with this block are inverted. */
     public boolean invertFlip = false;
     /** number of different variant regions to use */
@@ -888,6 +890,11 @@ public class Block extends UnlockableContent implements Senseable{
 
     }
 
+    /** Called when building of this block begins. */
+    public void placeBegan(Tile tile, Block previous, @Nullable Unit builder){
+        placeBegan(tile, previous);
+    }
+
     /** Called right before building of this block begins. */
     public void beforePlaceBegan(Tile tile, Block previous){
 
@@ -1341,9 +1348,13 @@ public class Block extends UnlockableContent implements Senseable{
         packer.add(PageType.editor, name + "-icon-editor", editorBase);
     }
 
+    public int planRotation(int rot){
+        return !rotate && lockRotation ? 0 : rot;
+    }
+
     public void flipRotation(BuildPlan req, boolean x){
         if((x == (req.rotation % 2 == 0)) != invertFlip){
-            req.rotation = Mathf.mod(req.rotation + 2, 4);
+            req.rotation = planRotation(Mathf.mod(req.rotation + 2, 4));
         }
     }
 

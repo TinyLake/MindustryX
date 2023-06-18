@@ -33,8 +33,8 @@ task debug(dependsOn: classes, type: JavaExec){
 task dist(type: Jar, dependsOn: configurations.runtimeClasspath){
     from files(sourceSets.main.output.classesDirs)
     from files(sourceSets.main.output.resourcesDir)
-    from{ configurations.runtimeClasspath.collect{ it.isDirectory() ? it : zipTree(it) } }
-    from(files(project.assetsDir)){
+    from {configurations.runtimeClasspath.collect{ it.isDirectory() ? it : zipTree(it) }}
+    from (files(project.assetsDir)){
         include "baseparts/**"
         include "bundles/**"
         include "icons/icons.properties"

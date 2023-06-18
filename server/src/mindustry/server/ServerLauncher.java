@@ -46,12 +46,15 @@ public class ServerLauncher implements ApplicationListener{
 
         Vars.loadSettings();
         Vars.init();
+
         UI.loadColors();
+        Fonts.loadContentIconsHeadless();
+
         content.createBaseContent();
         mods.loadScripts();
         content.createModContent();
         content.init();
-        Fonts.loadContentIconsHeadless();
+
         if(mods.hasContentErrors()){
             err("Error occurred loading mod content:");
             for(LoadedMod mod : mods.list()){

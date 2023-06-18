@@ -156,12 +156,9 @@ public class Fonts{
         });
 
         for(Team team : Team.baseTeams){
-            if(Core.atlas.has("team-" + team.name)){
-                team.emoji = stringIcons.get(team.name, "");
-            }
+            team.emoji = stringIcons.get(team.name, "");
         }
     }
-
 
     public static void loadContentIconsHeadless(){
         try(Scanner scan = new Scanner(Core.files.internal("icons/icons.properties").read(512))){
@@ -176,6 +173,8 @@ public class Fonts{
                 stringIcons.put(nametex[0], ((char)ch) + "");
             }
         }
+
+        stringIcons.put("alphachan", stringIcons.get("alphaaaa"));
 
         for(Team team : Team.baseTeams){
             team.emoji = stringIcons.get(team.name, "");
