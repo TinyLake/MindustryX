@@ -58,7 +58,7 @@ allprojects{
             }else{
                 //skip to last submodule
                 if(name.contains(':')) name = name.split(':').last()
-                return "com.github.Anuken.Arc:$name:${getArcHash()}"
+                return "com.github.anuken.Arc:$name:${getArcHash()}"
             }
         }
 
@@ -236,6 +236,7 @@ configure(subprojects - project(":annotations")){
     }
 }
 
+if(findProject("desktop")!=null)
 project(":desktop"){
     apply plugin: "java"
 
@@ -341,10 +342,7 @@ project(":core"){
 
     afterEvaluate{
         task mergedJavadoc(type: Javadoc){
-            def blacklist = [project(":ios"), project(":desktop"), project(":server"), project(":annotations")]
-            if(findProject(":android") != null){
-                blacklist += project(":android")
-            }
+            def blacklist = [project(":server"), project(":annotations"), findProject(":ios"), findProject(":desktop"), findProject(":android")]
 
             source rootProject.subprojects.collect{ project ->
                 if(!blacklist.contains(project) && project.hasProperty("sourceSets")){
