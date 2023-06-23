@@ -1,0 +1,8 @@
+displayName: MindustryX Loader
+name: MindustryX
+author: WayZer
+main: mindustryX.loader.Main
+version: "1.0-dev"
+minGameVersion: "146"
+hidden: true
+dependencies: []

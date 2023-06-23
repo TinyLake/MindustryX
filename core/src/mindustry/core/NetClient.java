@@ -92,7 +92,7 @@ public class NetClient implements ApplicationListener{
             c.locale = locale;
             c.mods = mods.getModStrings();
             c.mobile = mobile;
-            c.versionType = Version.type;
+            c.versionType = "official";
             c.color = player.color.rgba();
             c.usid = getUsid(packet.addressTCP);
             c.uuid = platform.getUUID();
@@ -105,6 +105,8 @@ public class NetClient implements ApplicationListener{
             }
 
             net.send(c, true);
+            Call.serverPacketReliable("ARC", Version.mdtXBuild);
+            Call.serverPacketReliable("ARC-build", Version.mdtXBuild);
         });
 
         net.handleClient(Disconnect.class, packet -> {

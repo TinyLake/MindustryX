@@ -76,7 +76,7 @@ public class Vars implements Loadable{
     //TODO merge with v6 list upon release
     public static final String serverJsonURL = "https://raw.githubusercontent.com/Anuken/Mindustry/master/servers_v7.json";
     /** URL of the github issue report template.*/
-    public static final String reportIssueURL = "https://github.com/Anuken/Mindustry/issues/new?labels=bug&template=bug_report.md";
+    public static final String reportIssueURL = "https://github.com/TinyLake/MindustryX/issues/new?labels=bug&template=bug_report.md";
     /** list of built-in servers.*/
     public static final Seq<ServerGroup> defaultServers = Seq.with();
     /** maximum size of any block, do not change unless you know what you're doing */
@@ -481,6 +481,22 @@ public class Vars implements Loadable{
             if(locale.toString().equals("router")){
                 bundle.debug("router");
             }
+        }
+
+        //MDTX: bundle overwrite
+        try{
+            I18NBundle originBundle = bundle;
+            Fi handle = Core.files.internal("bundles/bundle-mdtx");
+            Core.bundle = I18NBundle.createBundle(handle, Locale.getDefault());
+            Reflect.set(bundle, "locale", originBundle.getLocale());
+            Log.info("MDTX: bundle has been loaded.");
+            var rootBundle = bundle;
+            while(rootBundle.getParent()!=null){
+                rootBundle = rootBundle.getParent();
+            }
+            Reflect.set(rootBundle, "parent", originBundle);
+        }catch(Throwable e){
+            e.printStackTrace();
         }
     }
 }

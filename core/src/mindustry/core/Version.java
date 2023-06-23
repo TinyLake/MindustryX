@@ -6,6 +6,8 @@ import arc.files.*;
 import arc.struct.*;
 import arc.util.*;
 import arc.util.io.*;
+import arc.util.serialization.*;
+import mindustryX.*;
 
 public class Version{
     /** Build type. 'official' for official releases; 'custom' or 'bleeding edge' are also used. */
@@ -20,6 +22,8 @@ public class Version{
     public static int revision = 0;
     /** Whether version loading is enabled. */
     public static boolean enabled = true;
+    @MindustryXApi
+    public static String mdtXBuild;
 
     public static void init(){
         if(!enabled) return;
@@ -43,6 +47,15 @@ public class Version{
             }
         }else{
             build = Strings.canParseInt(map.get("build")) ? Integer.parseInt(map.get("build")) : -1;
+        }
+        //MDTX: mdtXBuild
+        if(Core.files == null) return;
+        try{
+            Jval meta = Jval.read(Core.files.internal("MindustryX.hjson").readString());
+            mdtXBuild = meta.getString("version");
+        }catch(Throwable e){
+            e.printStackTrace();
+            mdtXBuild = "custom build";
         }
     }
 
@@ -73,6 +86,7 @@ public class Version{
         if(build == -1){
             return "custom build";
         }
-        return (type.equals("official") ? modifier : type) + " build " + build + (revision == 0 ? "" : "." + revision);
+        return (type.equals("official") ? modifier : type) + " build " + build + (revision == 0 ? "" : "." + revision) +
+        "\nMindustryX " + mdtXBuild;
     }
 }
