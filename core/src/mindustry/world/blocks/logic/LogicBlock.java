@@ -1,5 +1,6 @@
 package mindustry.world.blocks.logic;
 
+import arc.*;
 import arc.Graphics.*;
 import arc.Graphics.Cursor.*;
 import arc.func.*;
@@ -24,6 +25,7 @@ import mindustry.world.*;
 import mindustry.world.blocks.ConstructBlock.*;
 import mindustry.world.meta.*;
 import mindustryX.*;
+import mindustryX.events.*;
 
 import java.io.*;
 import java.util.zip.*;
@@ -384,6 +386,8 @@ public class LogicBlock extends Block{
                     asm.putConst("@thisx", World.conv(x));
                     asm.putConst("@thisy", World.conv(y));
 
+                    //MDTX: LogicAssembledEvent
+                    Events.fire(new LogicAssembledEvent(this, asm));
                     executor.load(asm);
                 }catch(Exception e){
                     //handle malformed code and replace it with nothing

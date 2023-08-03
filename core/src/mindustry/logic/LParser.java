@@ -5,6 +5,8 @@ import arc.util.*;
 import mindustry.gen.*;
 import mindustry.logic.LStatements.*;
 
+import java.util.*;
+
 public class LParser{
     private static final String[] tokens = new String[16];
     private static final int maxJumps = 500;
@@ -155,7 +157,7 @@ public class LParser{
                         statements.add(LAssembler.customParsers.get(tokens[0]).get(tokens));
                     }else{
                         //unparseable statement
-                        statements.add(new InvalidStatement());
+                        statements.add(new InvalidStatement(Arrays.copyOf(tokens, tok)));
                     }
                 }
                 line ++;

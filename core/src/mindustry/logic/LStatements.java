@@ -18,6 +18,7 @@ import mindustry.logic.LogicFx.*;
 import mindustry.type.*;
 import mindustry.ui.*;
 import mindustry.world.meta.*;
+import mindustryX.*;
 
 import static mindustry.Vars.*;
 import static mindustry.logic.LCanvas.*;
@@ -43,6 +44,16 @@ public class LStatements{
 
     @RegisterStatement("noop")
     public static class InvalidStatement extends LStatement{
+        @MindustryXApi
+        public transient String[] tokens = {};
+
+        public InvalidStatement(){
+        }
+
+        @MindustryXApi
+        public InvalidStatement(String[] tokens){
+            this.tokens = tokens;
+        }
 
         @Override
         public void build(Table table){
