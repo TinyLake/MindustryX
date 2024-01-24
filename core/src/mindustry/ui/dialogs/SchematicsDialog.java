@@ -15,6 +15,14 @@ import arc.scene.ui.layout.*;
 import arc.scene.utils.*;
 import arc.struct.*;
 import arc.util.*;
+import mindustry.Vars;
+import mindustry.arcModule.ARCVars;
+import mindustry.arcModule.RFuncs;
+import mindustry.arcModule.toolpack.picToMindustry;
+import mindustry.arcModule.ui.dialogs.MessageDialog;
+import mindustry.content.Blocks;
+import mindustry.content.Planets;
+import mindustry.content.UnitTypes;
 import mindustry.ctype.*;
 import mindustry.game.*;
 import mindustry.gen.*;
@@ -22,10 +30,16 @@ import mindustry.graphics.*;
 import mindustry.input.*;
 import mindustry.type.*;
 import mindustry.ui.*;
+import mindustry.world.Block;
+import mindustry.world.blocks.production.GenericCrafter;
+import mindustry.world.meta.StatUnit;
 
 import java.util.regex.*;
 
 import static mindustry.Vars.*;
+import static mindustry.arcModule.ARCVars.arcui;
+import static mindustry.arcModule.RFuncs.getPrefix;
+import static mindustry.content.Items.*;
 
 public class SchematicsDialog extends BaseDialog{
     private static final float tagh = 42f;
@@ -37,9 +51,37 @@ public class SchematicsDialog extends BaseDialog{
     private Pattern ignoreSymbols = Pattern.compile("[`~!@#$%^&*()\\-_=+{}|;:'\",<.>/?]");
     private Seq<String> tags, selectedTags = new Seq<>();
     private boolean checkedTags;
+    private String blueprintlink = "https://docs.qq.com/sheet/DVHNoS3lIcm1NbFFS";
+
+    private String surpuloTags = UnitTypes.gamma.emoji(), erekirTags = UnitTypes.emanate.emoji();
+    private  Seq<String> planetTags = new Seq<String>().add(surpuloTags,erekirTags);
+    public static final String ShareType = "[blue]<Schem>";
+
+    private boolean clipbroad = true;
+    private boolean fromShare = false;
 
     public SchematicsDialog(){
         super("@schematics");
+
+        Vars.netClient.addPacketHandler("arcNetSchematic", url -> Http.get(url, r -> readShare(r.getResultAsString().replace(" ", "+"), null)));
+
+        Events.on(EventType.WorldLoadEvent.class, event -> {
+            if(state.rules.env == Planets.serpulo.defaultEnv){
+                if (state.rules.hiddenBuildItems.equals(Planets.erekir.hiddenItems)){
+                    if (selectedTags.contains(erekirTags)) selectedTags.remove(erekirTags);
+                    if (!selectedTags.contains(surpuloTags)) selectedTags.add(surpuloTags);
+                }else{
+                    if (selectedTags.contains(erekirTags)) selectedTags.remove(erekirTags);
+                    if (selectedTags.contains(surpuloTags)) selectedTags.remove(surpuloTags);
+                }
+
+            }
+            else if(state.rules.env == Planets.erekir.defaultEnv){
+                if (selectedTags.contains(surpuloTags)) selectedTags.remove(surpuloTags);
+                if (!selectedTags.contains(erekirTags)) selectedTags.add(erekirTags);
+            }
+        });
+
         Core.assets.load("sprites/schematic-background.png", Texture.class).loaded = t -> t.setWrap(TextureWrap.repeat);
 
         tags = Core.settings.getJson("schematic-tags", Seq.class, String.class, Seq::new);
@@ -47,6 +89,14 @@ public class SchematicsDialog extends BaseDialog{
         shouldPause = true;
         addCloseButton();
         buttons.button("@schematic.import", Icon.download, this::showImport);
+        if (mobile) buttons.row();
+        buttons.button("[cyan]蓝图档案馆", Icon.link, () -> {
+            if(!Core.app.openURI(blueprintlink)){
+                ui.showErrorMessage("@linkfail");
+                Core.app.setClipboardText(blueprintlink);
+            }
+        });
+        buttons.button("[violet]转换器[white] " + Blocks.canvas.emoji() + Blocks.logicDisplay.emoji() + Blocks.sorter.emoji(), Icon.image, picToMindustry::show);
         makeButtonOverlay();
         shown(this::setup);
         onResize(this::setup);
@@ -105,6 +155,48 @@ public class SchematicsDialog extends BaseDialog{
 
         cont.row();
 
+        cont.table(in -> {
+            in.left();
+            in.add("科技树：").padRight(4);
+
+            //tags (no scroll pane visible)
+            in.pane(Styles.noBarPane, t -> {
+                rebuildTags = () -> {
+                    t.clearChildren();
+                    t.left();
+
+                    t.defaults().pad(2).height(tagh);
+                    for(var tag : planetTags){
+                        t.button(tag, Styles.togglet, () -> {
+                            if(selectedTags.contains(tag)){
+                                selectedTags.remove(tag);
+                            }else{
+                                selectedTags.add(tag);
+                            }
+                            rebuildPane.run();
+                        }).checked(selectedTags.contains(tag)).with(c -> c.getLabel().setWrap(false));
+                    }
+                };
+                rebuildTags.run();
+            }).fillX().height(tagh).scrollY(false);
+
+            in.button(Icon.refreshSmall, this::syncPlanetTags).size(tagh).pad(2).tooltip("刷新");
+            in.add("辅助筛选：").padLeft(20f).padRight(4);
+            in.button(copper.emoji(), Styles.togglet, () -> {
+                        Core.settings.put("arcSchematicCanBuild", !Core.settings.getBool("arcSchematicCanBuild"));
+                        rebuildPane.run();
+                    }).size(tagh).pad(2).tooltip("可建造(核心有此类资源+地图未禁用)").checked(t->Core.settings.getBool("arcSchematicCanBuild"));
+            if (Core.settings.getBool("autoSelSchematic")) {
+                in.add("蓝图包含：").padLeft(20f).padRight(4);
+                in.button(control.input.block == null ? "[red]\uE815" : control.input.block.emoji(), Styles.togglet, () -> {
+                    control.input.block = null;
+                    rebuildPane.run();
+                }).size(tagh).pad(2).tooltip("蓝图需包含此建筑").checked(t -> control.input.block != null);
+            }
+        }).height(tagh).fillX();
+
+        cont.row();
+
         cont.pane(t -> {
             t.top();
 
@@ -133,6 +225,9 @@ public class SchematicsDialog extends BaseDialog{
                     if(selectedTags.any() && !s.labels.containsAll(selectedTags)) continue;
                     //make sure search fits
                     if(!search.isEmpty() && !ignoreSymbols.matcher(s.name().toLowerCase()).replaceAll("").contains(searchString)) continue;
+
+                    if(Core.settings.getBool("autoSelSchematic") && control.input.block!=null && !s.containsBlock(control.input.block)) continue;
+                    if (Core.settings.getBool("arcSchematicCanBuild") && !arcSchematicCanBuild(s)) continue;
                     if(firstSchematic == null) firstSchematic = s;
 
                     Button[] sel = {null};
@@ -205,6 +300,10 @@ public class SchematicsDialog extends BaseDialog{
 
             rebuildPane.run();
         }).grow().scrollX(false);
+
+        if(Core.settings.getBool("autoSelSchematic") && control.input.block!=null){
+            arcui.arcInfo("[orange]蓝图筛选模式[white]:蓝图必须包含 "+control.input.block.emoji(),5f);
+        }
     }
 
     public void showInfo(Schematic schematic){
@@ -275,22 +374,135 @@ public class SchematicsDialog extends BaseDialog{
                     t.row();
                     dialog.hide();
                 }
-                t.button("@schematic.copy", Icon.copy, style, () -> {
-                    dialog.hide();
-                    ui.showInfoFade("@copied");
-                    Core.app.setClipboardText(schematics.writeBase64(s));
-                }).marginLeft(12f);
-                t.row();
                 t.button("@schematic.exportfile", Icon.export, style, () -> {
                     dialog.hide();
                     platform.export(s.name(), schematicExtension, file -> Schematics.write(s, file));
                 }).marginLeft(12f);
+                t.row();
+                t.button("[cyan]剪贴板[white]/[gray]消息框", Icon.copy, style, () -> {
+                    clipbroad = !clipbroad;
+                }).marginLeft(12f).update(button -> button.setText(clipbroad? "[cyan]剪贴板[white]/[gray]消息框" : "[gray]剪贴板[white]/[cyan]消息框"));
+                t.row();
+
+                t.button("蓝图代码", Icon.copy, style, () -> {
+                    dialog.hide();
+                    arcSendBlueprintMsg(schematics.writeBase64(s));
+                }).marginLeft(12f);
+                t.row();
+                t.button("记录蓝图[cyan][简]", Icon.export, style, () -> {
+                    dialog.hide();
+                    arcSendBlueprintMsg(arcSchematicsInfo(s,false));
+                }).marginLeft(12f);
+                t.row();
+                t.button("记录蓝图[cyan][详]", Icon.export, style, () -> {
+                    dialog.hide();
+                    arcSendBlueprintMsg(arcSchematicsInfo(s,true));
+                }).marginLeft(12f);
+                t.row();
+                t.button("分享蓝图", Icon.export, style, () -> {
+                    try {
+                        Http.HttpRequest req = Http.post("https://pastebin.com/api/api_post.php", "api_dev_key=sdBDjI5mWBnHl9vBEDMNiYQ3IZe0LFEk&api_option=paste&api_paste_expire_date=10M&api_paste_code=" + schematics.writeBase64(s));
+                        req.submit(r -> {
+                            String code = r.getResultAsString();
+                            if (clipbroad) arcSendClipBroadMsg(s, code);
+                            else RFuncs.sendChatMsg(getPrefix("blue", "Schem") + " " + code.substring(code.lastIndexOf('/') + 1));
+                        });
+                        req.error(e -> Core.app.post(() -> {ui.showException("分享失败", e);if (clipbroad) arcSendClipBroadMsg(s, "x");}));
+                    } catch (Exception e) {
+                        ui.showException("分享失败", e);
+                    }
+                    dialog.hide();
+                }).marginLeft(12f);
             });
         });
-
         dialog.addCloseButton();
         dialog.show();
     }
+
+    private void arcSendBlueprintMsg(String msg) {
+        if (clipbroad) Core.app.setClipboardText(msg);
+        else RFuncs.sendChatMsg(msg);
+        arcui.arcInfo(clipbroad ? "已保存至剪贴板" : "已发送到聊天框");
+    }
+
+    private void arcSendClipBroadMsg(Schematic schem, String msg){
+        StringBuilder s = new StringBuilder();
+        s.append("这是一条来自").append(ARCVars.arcVersionPrefix).append("的分享记录\n");
+        s.append("分享者：").append(player.name).append("\n");
+        s.append("蓝图代码链接：").append(msg).append("\n");
+        s.append("蓝图名：").append(schem.name()).append("\n");
+        s.append("蓝图造价：");
+        ItemSeq arr = schem.requirements();
+        for(ItemStack stack : arr){
+            s.append(stack.item.localizedName).append(stack.amount).append("|");
+        }
+        s.append("\n").append("电力：");
+        float cons = schem.powerConsumption() * 60, prod = schem.powerProduction() * 60;
+        if(!Mathf.zero(prod)){
+            s.append("+").append(Strings.autoFixed(prod, 2));
+            if(!Mathf.zero(cons)){
+                s.append("|");
+            }
+        }
+        if(!Mathf.zero(cons)){
+            s.append("-").append(Strings.autoFixed(cons, 2));
+        }
+        if (schematics.writeBase64(schem).length() > 3500) s.append("\n").append("蓝图代码过长，请点击链接查看");
+        else s.append("\n").append("蓝图代码：\n").append(schematics.writeBase64(schem));
+        Core.app.setClipboardText(Strings.stripColors(s.toString()));
+        arcui.arcInfo("已保存至剪贴板");
+    }
+
+    public boolean resolveSchematic(String msg, @Nullable Player sender) {
+        if ((!msg.contains(ShareType)) || (!MessageDialog.arcMsgType.schematic.show)) {
+            return false;
+        }
+        int start = msg.indexOf(' ', msg.indexOf(ShareType) + ShareType.length());
+        Http.get("https://pastebin.com/raw/" + msg.substring(start + 1), r -> readShare(r.getResultAsString().replace(" ", "+"), sender));
+        return true;
+    }
+
+    private void readShare(String base64, @Nullable Player sender) {
+        Core.app.post(() -> {
+            try {
+                Schematic s = Schematics.readBase64(base64);
+                s.removeSteamID();
+                s.tags.put("name", sender == null ? "来自服务器的蓝图" : "来自" + sender.plainName() + "的蓝图");
+                fromShare = true;
+                SchematicsDialog.this.showInfo(s);
+            } catch(Throwable e) {
+                ui.showException(e);
+            }
+        });
+    }
+
+    private String arcSchematicsInfo(Schematic schem, boolean description){
+        String builder = ARCVars.arcVersionPrefix;
+        builder+="标记了蓝图["+schem.name()+"]";
+        builder+="。属性："+schem.width+"x"+schem.height+"，"+schem.tiles.size+"个建筑。";
+        if(description){
+            builder+="耗材：";
+            ItemSeq arr = schem.requirements();
+            for(ItemStack s : arr){
+                builder+=s.item.emoji()+ s.amount+"|";
+            }
+
+            builder+="。电力：";
+            cont.row();
+            float cons = schem.powerConsumption() * 60, prod = schem.powerProduction() * 60;
+            if(!Mathf.zero(prod)){
+                builder+="+"+ Strings.autoFixed(prod, 2);
+                if(!Mathf.zero(cons)){
+                    builder+="|";
+                }
+            }
+            if(!Mathf.zero(cons)){
+                builder+="-"+ Strings.autoFixed(cons, 2);
+            }
+        }
+        return builder;
+    }
+
 
     public void showEdit(Schematic s){
         new BaseDialog("@schematic.edit"){{
@@ -464,9 +676,11 @@ public class SchematicsDialog extends BaseDialog{
 
                 for(var tag : tags){
 
-                    var next = new Table(n -> {
-                        n.table(Tex.pane, move -> {
-                            move.margin(2);
+                    var next = new Table(Tex.whiteui, n -> {
+                        n.setColor(Pal.gray);
+                        n.margin(5f);
+
+                        n.table(move -> {
 
                             //move up
                             move.button(Icon.upOpen, Styles.emptyi, () -> {
@@ -486,10 +700,9 @@ public class SchematicsDialog extends BaseDialog{
                                     rebuild[0].run();
                                 }
                             }).tooltip("@editor.movedown");
-                        }).fillY().margin(6f);
+                        }).fillY();
 
-                        n.table(Tex.whiteui, t -> {
-                            t.setColor(Pal.gray);
+                        n.table(t -> {
                             t.add(tag).left().row();
                             t.add(Core.bundle.format("schematic.tagged", schematics.all().count(s -> s.labels.contains(tag)))).left()
                             .update(b -> b.setColor(b.hasMouse() ? Pal.accent : Color.lightGray)).get().clicked(() -> {
@@ -498,9 +711,9 @@ public class SchematicsDialog extends BaseDialog{
                                 rebuildTags.run();
                                 rebuildPane.run();
                             });
-                        }).growX().fillY().margin(8f);
+                        }).growX().fillY();
 
-                        n.table(Tex.pane, b -> {
+                        n.table(b -> {
                             b.margin(2);
 
                             //rename tag
@@ -541,13 +754,13 @@ public class SchematicsDialog extends BaseDialog{
                                     rebuild[0].run();
                                 });
                             }).tooltip("@save.delete");
-                        }).fillY().margin(6f);
+                        }).fillY();
                     });
 
                     next.pack();
-                    float w = next.getPrefWidth() + Scl.scl(6f);
+                    float w = next.getWidth() + Scl.scl(6f);
 
-                    if(w + sum >= Core.graphics.getWidth() * (Core.graphics.isPortrait() ? 1f : 0.8f)){
+                    if(w*2f + sum >= Core.graphics.getWidth() * 0.8f){
                         p.add(current).row();
                         current = new Table();
                         current.left();
@@ -570,12 +783,146 @@ public class SchematicsDialog extends BaseDialog{
                     t.button("@schematic.texttag", Icon.add, () -> showNewTag(res -> rebuild[0].run())).wrapLabel(false).get().getLabelCell().padLeft(5);
                     t.button("@schematic.icontag", Icon.add, () -> showNewIconTag(res -> rebuild[0].run())).wrapLabel(false).get().getLabelCell().padLeft(5);
                 });
+                p.row();
+                p.table(t ->{
+                    t.left().defaults().fillX().height(tagh).pad(2);
+                    t.button("自动标签", Icon.add, () -> arcAutoTags(res -> rebuild[0].run())).wrapLabel(false).get().getLabelCell().padLeft(5);
+                });
 
             };
 
             resized(true, rebuild[0]);
         }).scrollX(false);
         dialog.show();
+    }
+
+    void arcAutoTags(Cons<String> cons){
+        new Dialog(){{
+            closeOnBack();
+            setFillParent(true);
+
+            cont.pane(t -> {
+                resized(true, () -> {
+                    t.clearChildren();
+                    t.marginRight(19f);
+                    t.defaults().size(48f);
+
+                    int cols = (int)Math.min(20, Core.graphics.getWidth() / Scl.scl(52f));
+
+                    for(ContentType ctype : defaultContentIcons){
+                        t.row();
+                        t.image().colspan(cols).growX().width(Float.NEGATIVE_INFINITY).height(3f).color(Pal.accent);
+                        t.row();
+
+                        int i = 0;
+                        for(UnlockableContent u : content.getBy(ctype).<UnlockableContent>as()){
+                            if(!u.isHidden() && u.unlockedNow() && u.hasEmoji() && !tags.contains(u.emoji())){
+                                t.button(new TextureRegionDrawable(u.uiIcon), Styles.flati, iconMed, () -> {
+                                    String out = u.emoji() + "";
+
+                                    tags.add(out);
+                                    tagsChanged();
+
+                                    if(u instanceof Block block){
+                                        for(Schematic s : schematics.all()){
+                                            s.tiles.each(sBlock -> {
+                                                if(sBlock.block == block){
+                                                    addTag(s,out);
+                                                    cons.get(out);
+                                                    hide();
+                                                }
+                                            });
+                                        }
+                                    }
+                                    else if(u instanceof Item item){
+                                        Seq<Block> blocklist = new Seq<>();
+                                        for (Block factory : content.blocks()) {
+                                            if(factory instanceof GenericCrafter crafter){
+                                                if(crafter.outputItems == null) continue;
+                                                for(ItemStack stack:crafter.outputItems){
+                                                if (stack.item == item) blocklist.add(factory);
+                                                }
+                                            }
+                                        }
+                                        for(Schematic s : schematics.all()){
+                                            s.tiles.each(sBlock -> {
+                                                if(blocklist.contains(sBlock.block)){
+                                                    addTag(s,out);
+                                                    cons.get(out);
+                                                    hide();
+                                                }
+                                            });
+                                        }
+                                    }
+                                    else if(u instanceof Liquid liquid){
+                                        Seq<Block> blocklist = new Seq<>();
+                                        for (Block factory : content.blocks()) {
+                                            if(factory instanceof GenericCrafter crafter){
+                                                if(crafter.outputLiquids==null) continue;
+                                                for(LiquidStack stack: crafter.outputLiquids){
+                                                    if (stack.liquid == liquid) blocklist.add(factory);
+                                                }
+                                            }
+                                        }
+                                        for(Schematic s : schematics.all()){
+                                            s.tiles.each(sBlock -> {
+                                                if(blocklist.contains(sBlock.block)){
+                                                    addTag(s,out);
+                                                    cons.get(out);
+                                                    hide();
+                                                }
+                                            });
+                                        }
+                                    }
+
+
+                                    cons.get(out);
+
+                                    hide();
+                                });
+
+                                if(++i % cols == 0) t.row();
+                            }
+                        }
+                    }
+                });
+            });
+            buttons.button("@back", Icon.left, this::hide).size(210f, 64f);
+        }}.show();
+    }
+
+    void syncPlanetTags(){
+        arcui.arcInfo("标签自动分类中...请稍后");
+        for(Schematic s : schematics.all()){
+            Boolean surpulo = true;
+            Boolean erekir = true;
+            for (Item item:erekirOnlyItems){
+                if(s.requirements().has(item)) {
+                    surpulo = false;
+                    break;
+                }
+            }
+            for(Item item : serpuloItems.copy().removeAll(erekirItems::contains)){
+                if(s.requirements().has(item)) {
+                    erekir = false;
+                    break;
+                }
+            }
+
+            if(surpulo && !s.labels.contains(surpuloTags)) addTag(s,surpuloTags);
+            if(erekir && !s.labels.contains(erekirTags)) addTag(s,erekirTags);
+        }
+        arcui.arcInfo("标签分类完成");
+    }
+
+    boolean arcSchematicCanBuild(Schematic s){
+        for (ItemStack item : s.requirements()){
+            if (!ui.hudfrag.coreItems.hadItem(item.item)) return false;
+        }
+        for (Block block: state.rules.bannedBlocks){
+            if (s.containsBlock(block)) return false;
+        }
+        return true;
     }
 
     void buildTags(Schematic schem, Table t){
@@ -788,13 +1135,44 @@ public class SchematicsDialog extends BaseDialog{
                     }
                 });
             }
+            cont.row();
 
+            schem.calProduction();
+            cont.table(r -> {
+                int i = 0;
+                for(Item item : schem.items.keys()){
+                    r.image(item.uiIcon).left().size(iconMed);
+                    r.label(
+                            () -> (schem.items.get(item, 0) > 0 ? "+" : "") + Strings.autoFixed(schem.items.get(item, 0), 2) + StatUnit.perSecond.localized()
+                    ).padLeft(2).left().padRight(5).color(Color.lightGray);
+                    if(++i % 4 == 0){
+                        r.row();
+                    }
+                }
+                for (Liquid liquid : schem.liquids.keys()) {
+                    r.image(liquid.uiIcon).left().size(iconMed);
+                    r.label(
+                            () -> (schem.liquids.get(liquid, 0) > 0 ? "+" : "") + Strings.autoFixed(schem.liquids.get(liquid, 0), 2) + StatUnit.perSecond.localized()
+                    ).padLeft(2).left().padRight(5).color(Color.lightGray);
+                    if(++i % 4 == 0){
+                        r.row();
+                    }
+                }
+            });
             buttons.clearChildren();
             buttons.defaults().size(Core.graphics.isPortrait() ? 150f : 210f, 64f);
             buttons.button("@back", Icon.left, this::hide);
             buttons.button("@editor.export", Icon.upload, () -> showExport(schem));
             buttons.button("@edit", Icon.edit, () -> showEdit(schem));
-
+            if (fromShare) {
+                fromShare = false;
+                buttons.button("@save", Icon.save, () -> {
+                    schematics.add(schem);
+                    setup();
+                    ui.showInfoFade("@schematic.saved");
+                    checkTags(schem);
+                });
+            }
             show();
         }
     }

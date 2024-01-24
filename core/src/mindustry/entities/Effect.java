@@ -114,6 +114,10 @@ public class Effect{
         create(pos.getX(), pos.getY(), rotation, Color.white, null);
     }
 
+    public void at(Position pos, float rotation,Color color){
+        create(pos.getX(), pos.getY(), rotation, color, null);
+    }
+
     public void at(float x, float y){
         create(x, y, 0, Color.white, null);
     }
@@ -156,6 +160,21 @@ public class Effect{
             }else{
                 Time.run(startDelay, () -> add(x, y, rotation, color, data));
             }
+        }
+    }
+
+    public void arcCreate(float x, float y, float rotation, Color color, Object data){
+        //无视屏幕限制创建标记特效
+
+        if(!initialized){
+            initialized = true;
+            init();
+        }
+
+        if(startDelay <= 0f){
+            add(x, y, rotation, color, data);
+        }else{
+            Time.run(startDelay, () -> add(x, y, rotation, color, data));
         }
     }
 

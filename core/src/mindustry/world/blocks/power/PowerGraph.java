@@ -5,6 +5,7 @@ import arc.struct.*;
 import arc.util.*;
 import mindustry.gen.*;
 import mindustry.world.consumers.*;
+import mindustry.game.Team;
 
 public class PowerGraph{
     private static final Queue<Building> queue = new Queue<>();
@@ -22,6 +23,7 @@ public class PowerGraph{
     private final WindowedMean powerBalance = new WindowedMean(60);
     private float lastPowerProduced, lastPowerNeeded, lastPowerStored;
     private float lastScaledPowerIn, lastScaledPowerOut, lastCapacity;
+    public Team team;
     //diodes workaround for correct energy production info
     private float energyDelta = 0f;
 
@@ -215,6 +217,7 @@ public class PowerGraph{
     }
 
     public void update(){
+        team = all.size == 0 ? null : all.first().team;
         if(!consumers.isEmpty() && consumers.first().cheating()){
             //when cheating, just set status to 1
             for(Building tile : consumers){

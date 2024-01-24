@@ -76,6 +76,7 @@ public class CoreBlock extends StorageBlock{
         player.set(core);
 
         if(!net.client()){
+            player.team(tile.team());
             Unit unit = spawnType.create(tile.team());
             unit.set(core);
             unit.rotation(90f);
@@ -566,6 +567,14 @@ public class CoreBlock extends StorageBlock{
                 outline.get(core);
                 core.proximity.each(storage -> storage.items == items, outline);
             });
+            if(state.isCampaign()){
+                Draw.z(Layer.blockOver);
+                float t = turnDuration - Universe.turnCounter;
+                String min = Strings.fixed(Mathf.floor(t / 60f / 60f), 0);
+                float s = Mathf.floor(t / 60f % 60f);
+                String sec = (s < 10f ? "0" : "") + Strings.fixed(s, 0);
+                drawPlaceText(("资源接收  "+ min+":"+sec), tileX(), tileY(), true);
+            }
             Draw.reset();
         }
 

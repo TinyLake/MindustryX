@@ -143,7 +143,7 @@ public class KeybindDialog extends Dialog{
                         rebindAxis = true;
                         rebindMin = true;
                         openDialog(section, keybind);
-                    }).width(130f);
+                    }).width(100f);
                 }else{
                     table.add(bundle.get("keybind." + keybind.name() + ".name", Strings.capitalize(keybind.name())), Color.white).left().padRight(40).padLeft(8);
                     table.label(() -> keybinds.get(section, keybind).key.toString()).color(Pal.accent).left().minWidth(90).padRight(20);
@@ -152,9 +152,12 @@ public class KeybindDialog extends Dialog{
                         rebindAxis = false;
                         rebindMin = false;
                         openDialog(section, keybind);
-                    }).width(130f);
+                    }).width(100f);
                 }
-                table.button("@settings.resetKey", tstyle, () -> keybinds.resetToDefault(section, keybind)).width(130f).pad(2f).padLeft(4f);
+                table.button("取消绑定", tstyle, () -> {
+                    section.binds.get(section.device.type(), OrderedMap::new).put(keybind, new Axis(KeyCode.unknown));
+                }).width(100f).pad(2f).padLeft(4f);
+                table.button("@settings.resetKey", tstyle, () -> keybinds.resetToDefault(section, keybind)).width(100f).pad(2f).padLeft(4f);
                 table.row();
             }
 

@@ -12,6 +12,7 @@ import arc.util.*;
 import arc.util.Timer.*;
 import arc.util.serialization.*;
 import mindustry.*;
+import mindustry.arcModule.ui.dialogs.USIDDialog;
 import mindustry.core.*;
 import mindustry.game.EventType.*;
 import mindustry.gen.*;
@@ -143,6 +144,10 @@ public class JoinDialog extends BaseDialog{
         remote.clear();
 
         for(Server server : servers){
+            if(server.lastHost != null){
+                int ServerVersion = server.lastHost.version;
+                if(Core.settings.getBool("showAccessibleServer") && (ServerVersion != Version.build && Version.build != -1 && ServerVersion != -1)) continue;
+            }
             //why are java lambdas this bad
             Button[] buttons = {null};
 
@@ -328,6 +333,14 @@ public class JoinDialog extends BaseDialog{
         hosts.marginBottom(70f);
 
         section(steam ? "@servers.local.steam" : "@servers.local", local, false);
+        section("学术功能", new Table(t -> {
+            t.button("", Styles.flatBordert, () -> {
+                Core.settings.put("showAccessibleServer", !Core.settings.getBool("showAccessibleServer"));
+                setupRemote();
+            }).growX().height(48).update(b -> b.setText((Core.settings.getBool("showAccessibleServer") ? "显示" : "隐藏") + "版本不对的服务器"));
+            t.button("usid管理器", Styles.flatBordert, () -> new USIDDialog().show()).growX().height(48);
+            USIDDialog.chooseUSID = Core.settings.getBool("arc-chooseUSID", false);
+        }), false);
         section("@servers.remote", remote, false);
         section("@servers.global", global, true);
 
@@ -550,6 +563,8 @@ public class JoinDialog extends BaseDialog{
             ui.loadfrag.hide();
             netClient.disconnectQuietly();
         });
+
+        if (net.client()) netClient.disconnectQuietly();
 
         Time.runTask(2f, () -> {
             logic.reset();

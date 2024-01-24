@@ -1,5 +1,6 @@
 package mindustry.entities.comp;
 
+import arc.math.WindowedMean;
 import arc.util.*;
 import mindustry.*;
 import mindustry.annotations.Annotations.*;
@@ -22,6 +23,8 @@ abstract class ShieldComp implements Healthc, Posc{
     transient float armor;
     /** Shield opacity. */
     transient float shieldAlpha = 0f;
+    transient float lastHealth = 0f, lastShield = 0f;
+    transient WindowedMean healthBalance = new WindowedMean(120);
 
     @Replace
     @Override
@@ -70,5 +73,8 @@ abstract class ShieldComp implements Healthc, Posc{
     public void update(){
         shieldAlpha -= Time.delta / 15f;
         if(shieldAlpha < 0) shieldAlpha = 0f;
+        healthBalance.add(((health - lastHealth) + (shield - lastShield)) / Time.delta);
+        lastHealth = health;
+        lastShield = shield;
     }
 }

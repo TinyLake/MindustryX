@@ -30,8 +30,10 @@ import mindustry.world.*;
 import mindustry.world.blocks.environment.*;
 import mindustry.world.blocks.storage.*;
 import mindustry.world.meta.*;
+import mindustryX.features.*;
 
 import static mindustry.Vars.*;
+import static mindustry.ui.Styles.flatToggleMenut;
 
 public class MapEditorDialog extends Dialog implements Disposable{
     private MapView view;
@@ -48,6 +50,8 @@ public class MapEditorDialog extends Dialog implements Disposable{
     private boolean saved = false; //currently never read
     private boolean shownWithMap = false;
     private Seq<Block> blocksOut = new Seq<>();
+
+    private TextField brushField;
 
     public MapEditorDialog(){
         super("");
@@ -600,30 +604,48 @@ public class MapEditorDialog extends Dialog implements Disposable{
 
                 tools.row();
 
-                ButtonGroup<ImageButton> teamgroup = new ButtonGroup<>();
-
-                int i = 0;
-
-                for(Team team : Team.baseTeams){
-                    ImageButton button = new ImageButton(Tex.whiteui, Styles.clearNoneTogglei);
-                    button.margin(4f);
-                    button.getImageCell().grow();
-                    button.getStyle().imageUpColor = team.color;
-                    button.clicked(() -> editor.drawTeam = team);
-                    button.update(() -> button.setChecked(editor.drawTeam == team));
-                    teamgroup.add(button);
-                    tools.add(button);
-
-                    if(i++ % 3 == 2) tools.row();
-                }
-
                 mid.add(tools).top().padBottom(-6);
+                mid.row();
+
+                mid.table(to->{
+                    to.table(t->{
+                        for(Team team : Team.baseTeams){
+                            ImageButton button = new ImageButton(Tex.whiteui, Styles.clearTogglei);
+                            button.getStyle().imageUpColor = team.color;
+                            button.margin(3f);
+                            button.resizeImage(20f);
+                            button.clicked(() -> editor.drawTeam = team);
+                            button.update(() -> button.setChecked(editor.drawTeam == team));
+                            t.add(button);
+                        }
+                        t.button("[violet]+", flatToggleMenut, () -> UIExt.teamSelect.pickOne(team -> editor.drawTeam = team, editor.drawTeam)).checked(b -> !Seq.with(Team.baseTeams).contains(editor.drawTeam)).tooltip("[acid]更多队伍选择").size(30f, 30f);
+                    });
+                    to.row();
+
+                    to.table(t-> {
+                        t.add("辅助线：");
+                        t.field(Integer.toString(editor.interval), TextField.TextFieldFilter.digitsOnly, value -> {
+                            editor.interval = Integer.parseInt(value);
+                        }).valid(value -> Strings.canParsePositiveInt(value)).maxTextLength(4).width(100f);
+                    });
+
+                    to.row();
+
+                    to.table(t-> {
+                        t.add("笔刷：");
+                        brushField = t.field(Float.toString(editor.brushSize), value -> {
+                            editor.brushSize = Float.parseFloat(value);
+                        }).valid(value -> Strings.canParsePositiveFloat(value)).maxTextLength(4).width(100f).get();
+                    });
+
+                });
+
 
                 mid.row();
 
                 mid.table(Tex.underline, t -> {
                     Slider slider = new Slider(0, MapEditor.brushSizes.length - 1, 1, false);
-                    slider.moved(f -> editor.brushSize = MapEditor.brushSizes[(int)f]);
+                    slider.moved(f -> {editor.brushSize = MapEditor.brushSizes[(int)f];brushField.setText(Float.toString(editor.brushSize));});
                     for(int j = 0; j < MapEditor.brushSizes.length; j++){
                         if(MapEditor.brushSizes[j] == editor.brushSize){
                             slider.setValue(j);
@@ -797,7 +819,7 @@ public class MapEditorDialog extends Dialog implements Disposable{
 
             if(i == 0) editor.drawBlock = block;
 
-            if(++i % 4 == 0){
+            if(++i % Math.max(Core.settings.getInt("editorBrush"),3) == 0){
                 blockSelection.row();
             }
         }

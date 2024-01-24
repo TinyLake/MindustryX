@@ -14,7 +14,10 @@ import mindustry.game.Teams.*;
 import mindustry.gen.*;
 import mindustry.world.blocks.*;
 import mindustry.world.blocks.ConstructBlock.*;
+import mindustry.world.blocks.environment.Floor;
+import mindustry.world.blocks.environment.OverlayFloor;
 import mindustry.world.blocks.storage.CoreBlock.*;
+import mindustryX.features.ui.*;
 
 import static mindustry.Vars.*;
 
@@ -67,6 +70,36 @@ public class Build{
     public static void beginPlace(@Nullable Unit unit, Block result, Team team, int x, int y, int rotation){
         if(!validPlace(result, team, x, y, rotation)){
             return;
+        }
+
+        if(AdvanceToolTable.worldCreator){
+            Tile tile = world.tile(x, y);
+            if(tile == null) return;
+            if(result == Blocks.cliff) {
+                int rotationb = 0;
+                for(int i = 0; i < 8; i++){
+                    Tile other = world.tiles.get(tile.x + Geometry.d8[i].x, tile.y + Geometry.d8[i].y);
+                    if(other != null && !other.floor().hasSurface()){
+                        rotationb |= (1 << i);
+                    }
+                }
+
+                if(rotationb != 0){
+                    tile.setBlock(Blocks.cliff);
+                }
+
+                tile.data = (byte)rotationb;
+                return;
+            };
+            if(result instanceof OverlayFloor){
+                tile.setOverlay(result);
+                return;
+            }
+            if(result instanceof Floor floor){
+                tile.setFloor(floor);
+                pathfinder.updateTile(tile);
+                return;
+            }
         }
 
         Tile tile = world.tile(x, y);
@@ -128,6 +161,22 @@ public class Build{
     /** Returns whether a tile can be placed at this location by this team. */
     public static boolean validPlace(Block type, Team team, int x, int y, int rotation, boolean checkVisible){
         //the wave team can build whatever they want as long as it's visible - banned blocks are not applicable
+
+        if(AdvanceToolTable.forcePlacement){
+            Tile tile = world.tile(x, y);
+            return tile != null;
+        }
+
+        if (AdvanceToolTable.worldCreator) {
+            Tile tile = world.tile(x, y);
+            if (tile == null) return false;
+            if (type instanceof OverlayFloor of) {
+                return !(tile.overlay == of);
+            }
+            if (type instanceof Floor f) {
+                return !(tile.floor == f);
+            }
+        }
         if(type == null || (checkVisible && (!type.environmentBuildable() || (!type.isPlaceable() && !(state.rules.waves && team == state.rules.waveTeam && type.isVisible()))))){
             return false;
         }
@@ -256,6 +305,7 @@ public class Build{
     /** Returns whether the tile at this position is breakable by this team */
     public static boolean validBreak(Team team, int x, int y){
         Tile tile = world.tile(x, y);
+        if(AdvanceToolTable.worldCreator && tile.block() != Blocks.air) return true;
         return tile != null && tile.block().canBreak(tile) && tile.breakable() && tile.interactable(team);
     }
 }

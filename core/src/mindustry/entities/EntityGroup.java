@@ -5,6 +5,7 @@ import arc.func.*;
 import arc.math.geom.*;
 import arc.struct.*;
 import arc.util.*;
+import mindustry.arcModule.ARCVars;
 import mindustry.gen.*;
 
 import java.util.*;
@@ -79,8 +80,22 @@ public class EntityGroup<T extends Entityc> implements Iterable<T>{
     }
 
     public void update(){
-        for(index = 0; index < array.size; index++){
-            array.items[index].update();
+        if (!ARCVars.limitUpdate) {
+            for (index = 0; index < array.size; index++) {
+                array.items[index].update();
+            }
+            return;
+        }
+        float x = Core.camera.position.x - Core.camera.width / 2 - ARCVars.limitDst, y = Core.camera.position.y - Core.camera.height / 2 - ARCVars.limitDst;
+        float dx = x + Core.camera.width + ARCVars.limitDst * 2, dy = y + Core.camera.height + ARCVars.limitDst * 2;
+        for (index = 0; index < array.size; index++) {
+            Entityc e = array.items[index];
+            if (e instanceof Posc p) {
+                float ex = p.x(), ey = p.y();
+                if (x < ex && ex < dx && y < ey && ey < dy) e.update();
+                continue;
+            }
+            e.update();
         }
     }
 

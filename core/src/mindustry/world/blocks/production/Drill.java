@@ -18,7 +18,6 @@ import mindustry.logic.*;
 import mindustry.type.*;
 import mindustry.ui.*;
 import mindustry.world.*;
-import mindustry.world.blocks.environment.*;
 import mindustry.world.consumers.*;
 import mindustry.world.meta.*;
 
@@ -145,12 +144,22 @@ public class Drill extends Block{
         countOre(tile);
 
         if(returnItem != null){
-            float width = drawPlaceText(Core.bundle.formatFloat("bar.drillspeed", 60f / getDrillTime(returnItem) * returnCount, 2), x, y, valid);
+            float speed = 60f / getDrillTime(returnItem) * returnCount;
+            float width;
+            if (liquidBoostIntensity > 1) {
+                width = drawPurePlaceText(Iconc.production + " []" + returnItem.emoji()+ returnItem.localizedName + " [stat]" +
+                                        Strings.autoFixed(speed, 2) + "[white]([cyan]" +
+                                        Strings.autoFixed(speed * liquidBoostIntensity * liquidBoostIntensity, 2) + "[white])", x, y, valid);
+            }
+            else {
+                width = drawPurePlaceText(Iconc.production + " " + returnItem.emoji() + "[stat]"+ returnItem.localizedName + " " + Strings.autoFixed(speed, 2), x, y, valid);
+            }
             float dx = x * tilesize + offset - width/2f - 4f, dy = y * tilesize + offset + size * tilesize / 2f + 5, s = iconSmall / 4f;
+            /*
             Draw.mixcol(Color.darkGray, 1f);
             Draw.rect(returnItem.fullIcon, dx, dy - 1, s, s);
             Draw.reset();
-            Draw.rect(returnItem.fullIcon, dx, dy, s, s);
+            Draw.rect(returnItem.fullIcon, dx, dy, s, s);*/
 
             if(drawMineItem){
                 Draw.color(returnItem.color);
@@ -161,7 +170,10 @@ public class Drill extends Block{
             Tile to = tile.getLinkedTilesAs(this, tempTiles).find(t -> t.drop() != null && (t.drop().hardness > tier || t.drop() == blockedItem));
             Item item = to == null ? null : to.drop();
             if(item != null){
-                drawPlaceText(Core.bundle.get("bar.drilltierreq"), x, y, valid);
+                if (item == blockedItem) {
+                    drawPlaceText(Core.bundle.format("bar.drillcantmine"), x, y, valid);
+                }
+                else drawPlaceText(Core.bundle.format("bar.drilltierreq", item.hardness, tier), x, y, valid);
             }
         }
     }
@@ -189,6 +201,11 @@ public class Drill extends Block{
     @Override
     public TextureRegion[] icons(){
         return new TextureRegion[]{region, rotatorRegion, topRegion};
+    }
+
+    public int countOreArc(Tile tile){
+        countOre(tile);
+        return returnCount;
     }
 
     protected void countOre(Tile tile){
@@ -256,7 +273,7 @@ public class Drill extends Block{
 
         @Override
         public void drawSelect(){
-            if(dominantItem != null){
+            if(!Core.settings.getBool("arcdrillmode") && dominantItem != null){
                 float dx = x - size * tilesize/2f, dy = y + size * tilesize/2f, s = iconSmall / 4f;
                 Draw.mixcol(Color.darkGray, 1f);
                 Draw.rect(dominantItem.fullIcon, dx, dy - 1, s, s);
@@ -306,7 +323,7 @@ public class Drill extends Block{
                 warmup = Mathf.approachDelta(warmup, speed, warmupSpeed);
                 progress += delta() * dominantItems * speed * warmup;
 
-                if(Mathf.chanceDelta(updateEffectChance * warmup))
+                if(Core.settings.getInt("blockRenderLevel") > 1 && Mathf.chanceDelta(updateEffectChance * warmup))
                     updateEffect.at(x + Mathf.range(size * 2f), y + Mathf.range(size * 2f));
             }else{
                 lastDrillSpeed = 0f;
@@ -319,7 +336,7 @@ public class Drill extends Block{
 
                 progress %= delay;
 
-                if(wasVisible && Mathf.chanceDelta(updateEffectChance * warmup)) drillEffect.at(x + Mathf.range(drillEffectRnd), y + Mathf.range(drillEffectRnd), dominantItem.color);
+                if(Core.settings.getInt("blockRenderLevel")>1 && wasVisible && Mathf.chanceDelta(updateEffectChance * warmup)) drillEffect.at(x + Mathf.range(drillEffectRnd), y + Mathf.range(drillEffectRnd), dominantItem.color);
             }
         }
 
@@ -372,6 +389,21 @@ public class Drill extends Block{
                 Draw.color(dominantItem.color);
                 Draw.rect(itemRegion, x, y);
                 Draw.color();
+            }
+            if(Core.settings.getBool("arcdrillmode") && dominantItem != null){
+                float dx = x - size * tilesize/2f + 5, dy = y - size * tilesize/2f + 5;
+                float iconSize = 5f;
+                Draw.rect(dominantItem.fullIcon, dx, dy, iconSize, iconSize);
+                Draw.reset();
+
+                float eff = Mathf.lerp(0,1,Math.min(1f, (float)dominantItems/(size * size)));
+                if (eff<0.9f){
+                    Draw.alpha(0.5f);
+                    Draw.color(dominantItem.color);
+                    Lines.stroke(1f);
+                    Lines.arc(dx, dy, iconSize * 0.75f, eff);
+                }
+
             }
         }
 

@@ -323,7 +323,7 @@ public class MobileInput extends InputHandler implements GestureListener{
                     //why the heck doesn't setOrigin work for scaling
                     img.setTranslation(img.getWidth(), 0f);
                 });
-
+                b.button(Icon.info, style, this::showSchematicPreview).disabled(f -> lastSchematic == null || lastSchematic.file != null);
             }).margin(4f);
         });
     }
@@ -1008,18 +1008,23 @@ public class MobileInput extends InputHandler implements GestureListener{
             payloadTarget = null;
         }
 
-        movement.set(targetPos).sub(player).limit(speed);
-        movement.setAngle(Mathf.slerp(movement.angle(), unit.vel.angle(), 0.05f));
+        if (!Core.settings.getBool("viewMode")) {
+            movement.set(targetPos).sub(player).limit(speed);
+            movement.setAngle(Mathf.slerp(movement.angle(), unit.vel.angle(), 0.05f));
 
-        if(player.within(targetPos, attractDst)){
+            if(player.within(targetPos, attractDst)){
+                movement.setZero();
+                unit.vel.approachDelta(Vec2.ZERO, unit.speed() * type.accel / 2f);
+            }
+        }
+        else {
             movement.setZero();
-            unit.vel.approachDelta(Vec2.ZERO, unit.speed() * type.accel / 2f);
         }
 
         unit.hitbox(rect);
         rect.grow(4f);
 
-        player.boosting = collisions.overlapsTile(rect, EntityCollisions::solid) || !unit.within(targetPos, 85f);
+        player.boosting = collisions.overlapsTile(rect, EntityCollisions::solid) || !unit.within(targetPos, 85f) || Core.settings.getBool("forceBoost");
 
         unit.movePref(movement);
 

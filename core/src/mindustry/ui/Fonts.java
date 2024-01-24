@@ -30,7 +30,7 @@ public class Fonts{
     private static final String mainFont = "fonts/font.woff";
     private static final ObjectSet<String> unscaled = ObjectSet.with("iconLarge");
     private static ObjectIntMap<String> unicodeIcons = new ObjectIntMap<>();
-    private static ObjectMap<String, String> stringIcons = new ObjectMap<>();
+    public static ObjectMap<String, String> stringIcons = new ObjectMap<>();
     private static ObjectMap<String, TextureRegion> largeIcons = new ObjectMap<>();
     private static TextureRegion[] iconTable;
     private static int lastCid;
@@ -212,13 +212,13 @@ public class Fonts{
         FreeTypeFontParameter param = new FreeTypeFontParameter(){{
             borderColor = Color.darkGray;
             incremental = true;
-            size = 18;
+            size = getFontSize();
         }};
 
         Core.assets.load("outline", Font.class, new FreeTypeFontLoaderParameter(mainFont, param)).loaded = t -> Fonts.outline = t;
 
         Core.assets.load("tech", Font.class, new FreeTypeFontLoaderParameter("fonts/tech.ttf", new FreeTypeFontParameter(){{
-            size = 18;
+            size = getFontSize();
         }})).loaded = f -> {
             Fonts.tech = f;
             Fonts.tech.getData().down *= 1.5f;
@@ -302,9 +302,15 @@ public class Fonts{
         return draw;
     }
 
+    static int getFontSize(){
+        if (Core.settings.getInt("fontSize") < 5) Core.settings.put("fontSize",10);
+        float multiplier = Core.settings.getInt("fontSize") / 10f;
+        return (int) (18 * multiplier);
+    }
+
     static FreeTypeFontParameter fontParameter(){
         return new FreeTypeFontParameter(){{
-            size = 18;
+            size = getFontSize();
             shadowColor = Color.darkGray;
             shadowOffsetY = 2;
             incremental = true;

@@ -20,6 +20,8 @@ import arc.scene.ui.Tooltip.*;
 import arc.scene.ui.layout.*;
 import arc.struct.*;
 import arc.util.*;
+import mindustry.arcModule.ARCVars;
+import mindustry.arcModule.ui.*;
 import mindustry.editor.*;
 import mindustry.game.EventType.*;
 import mindustry.gen.*;
@@ -28,6 +30,7 @@ import mindustry.logic.*;
 import mindustry.ui.*;
 import mindustry.ui.dialogs.*;
 import mindustry.ui.fragments.*;
+import mindustryX.features.ui.*;
 
 import static arc.scene.actions.Actions.*;
 import static mindustry.Vars.*;
@@ -120,6 +123,8 @@ public class UI implements ApplicationListener, Loadable{
         Tex.load();
         Icon.load();
         Styles.load();
+        RStyles.load();
+
         Tex.loadStyles();
         Fonts.loadContentIcons();
 
@@ -216,6 +221,8 @@ public class UI implements ApplicationListener, Loadable{
         followUpMenus = new IntMap<>();
 
         Group group = Core.scene.root;
+
+        ARCVars.arcui.init();
 
         menuGroup.setFillParent(true);
         menuGroup.touchable = Touchable.childrenOnly;
@@ -365,6 +372,7 @@ public class UI implements ApplicationListener, Loadable{
 
     /** Shows a fading label at the top of the screen. */
     public void showInfoToast(String info, float duration){
+        if (!info.contains("建筑过多单位") && !info.contains("可能造成服务器卡顿"))  ui.chatfrag.addMessage("[acid][公屏][white]"+info);
         var cinfo = Core.scene.find("coreinfo");
         Table table = new Table();
         table.touchable = Touchable.disabled;
@@ -381,6 +389,7 @@ public class UI implements ApplicationListener, Loadable{
 
     /** Shows a label at some position on the screen. Does not fade. */
     public void showInfoPopup(String info, float duration, int align, int top, int left, int bottom, int right){
+        if (!Core.settings.getBool("ShowInfoPopup")) return;
         Table table = new Table();
         table.setFillParent(true);
         table.touchable = Touchable.disabled;
@@ -586,7 +595,7 @@ public class UI implements ApplicationListener, Loadable{
         t.touchable = Touchable.disabled;
         t.margin(8f).add(text).style(Styles.outlineLabel).labelAlign(Align.center);
         t.update(() -> t.setPosition(Core.graphics.getWidth()/2f, Core.graphics.getHeight()/2f, Align.center));
-        t.actions(Actions.fadeOut(duration, Interp.pow4In), Actions.remove());
+        t.actions(Actions.fadeOut(Math.min(duration,30f), Interp.pow4In), Actions.remove());
         t.pack();
         t.act(0.1f);
         Core.scene.add(t);
@@ -690,23 +699,7 @@ public class UI implements ApplicationListener, Loadable{
     }
 
     public static String formatAmount(long number){
-        //prevent things like bars displaying erroneous representations of casted infinities
-        if(number == Long.MAX_VALUE) return "∞";
-        if(number == Long.MIN_VALUE) return "-∞";
-
-        long mag = Math.abs(number);
-        String sign = number < 0 ? "-" : "";
-        if(mag >= 1_000_000_000){
-            return sign + Strings.fixed(mag / 1_000_000_000f, 1) + "[gray]" + billions + "[]";
-        }else if(mag >= 1_000_000){
-            return sign + Strings.fixed(mag / 1_000_000f, 1) + "[gray]" + millions + "[]";
-        }else if(mag >= 10_000){
-            return number / 1000 + "[gray]" + thousands + "[]";
-        }else if(mag >= 1000){
-            return sign + Strings.fixed(mag / 1000f, 1) + "[gray]" + thousands + "[]";
-        }else{
-            return number + "";
-        }
+        return FormatDefault.format(number);
     }
 
     public static int roundAmount(int number){

@@ -1,6 +1,8 @@
 package mindustry.world.blocks.distribution;
 
+import arc.*;
 import arc.audio.*;
+import arc.graphics.*;
 import arc.graphics.g2d.*;
 import arc.math.*;
 import arc.math.geom.*;
@@ -225,6 +227,35 @@ public class MassDriver extends Block{
             Draw.rect(region,
             x + Angles.trnsx(rotation + 180f, reloadCounter * knockback),
             y + Angles.trnsy(rotation + 180f, reloadCounter * knockback), rotation - 90);
+
+            float sin = Mathf.absin(Time.time, 6f, 1f);
+            Draw.z(Layer.effect);
+            if (Core.settings.getInt("mass_driver_line_alpha")>=2f){
+                for(var shooter : waitingShooters){
+                    Lines.stroke(2f, Pal.placing);
+
+                    float alpha = Core.settings.getInt("mass_driver_line_alpha") / 100f;
+                    Draw.alpha(alpha);
+                    Drawf.dashLine(getmass_driver_line_color(),shooter.x, shooter.y, x, y);
+                    Draw.alpha(alpha);
+                    Drawf.arrow(shooter.x, shooter.y, x, y, size * tilesize + sin, 4f + sin, Pal.place);
+                    float shooter_length = Mathf.dst(shooter.x, shooter.y, x, y);
+                    float shooter_angle = (float) Math.acos((x-shooter.x)/shooter_length);
+                    float reverty = 1f;
+                    if (y<shooter.y) {reverty=-1;}
+                    float mass_driver_line_interval = (float)Core.settings.getInt("mass_driver_line_interval");
+                    float slice = shooter_length / mass_driver_line_interval -1f;
+                    if (slice>1){
+                        for (int slicer = 1; slicer < slice; slicer++) {
+                            Draw.alpha(alpha);
+                            Drawf.arrow(shooter.x + mass_driver_line_interval*Mathf.cos(shooter_angle)*slicer, shooter.y + mass_driver_line_interval*Mathf.sin(shooter_angle)*slicer*reverty, x, y, size * tilesize + sin, 4f + sin, Pal.place);
+                          }
+                    }
+
+            }
+
+            }
+
         }
 
         @Override
@@ -329,6 +360,10 @@ public class MassDriver extends Block{
             return other instanceof MassDriverBuild entity && other.isValid() && other.efficiency > 0 && entity.block == block && entity.link == pos() && within(other, range);
         }
 
+        public boolean arcLinkValid(){
+            return linkValid();
+        }
+
         protected boolean linkValid(){
             if(link == -1) return false;
             return world.build(this.link) instanceof MassDriverBuild other && other.block == block && other.team == team && within(other, range);
@@ -364,4 +399,18 @@ public class MassDriver extends Block{
 
         public static final DriverState[] all = values();
     }
+
+    public static Color getmass_driver_line_color(){
+        String color = Core.settings.getString("mass_driver_line_color");
+        if(color != null && color.length() == 6){
+            for (char c : color.toCharArray()) {
+                if (!Character.isDigit(c) && (!Character.isLetter(c) || (Character.toLowerCase(c) - 'a' > 'f' - 'a'))) {
+                    return Color.valueOf("ff8c66");
+                }
+            }
+            return Color.valueOf(color);
+        }
+        return Color.valueOf("ff8c66");
+    }
+
 }

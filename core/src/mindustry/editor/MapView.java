@@ -268,6 +268,39 @@ public class MapView extends Element implements GestureListener{
             Lines.line(centerx - sclwidth/2f, centery, centerx + sclwidth/2f, centery);
             Lines.line(centerx, centery - sclheight/2f, centerx, centery + sclheight/2f);
 
+            Draw.color(Color.orange);
+            Draw.alpha(0.5f);
+
+            float diagonal = Math.max(sclwidth/2f,sclheight/2f);
+
+            Lines.line(centerx - diagonal, centery - diagonal, centerx + diagonal, centery + diagonal);
+            Lines.line(centerx - diagonal, centery + diagonal, centerx + diagonal, centery - diagonal);
+
+            float tileCorr = 5.051f;//LC: anuke这什么几把画图算法，为了对齐只能做这种小数
+
+            if (width>20f && editor.interval>1){
+                for(int count = 1; count < width / editor.interval / tilesize ; count += 1){
+                    float dx = tileCorr * zoom * editor.interval * count;
+                    Draw.color(Color.cyan);
+                    Draw.alpha(0.5f);
+
+                    Lines.line(centerx + dx, centery - sclheight/2f, centerx + dx, centery + sclheight/2f);
+                    Lines.line(centerx - dx, centery - sclheight/2f, centerx - dx, centery + sclheight/2f);
+                }
+            }
+
+            if (height>20f && editor.interval>1){
+                for(int count = 1; count < height / editor.interval / tilesize ; count += 1){
+
+                    float dy = tileCorr * zoom * editor.interval * count;
+                    Draw.color(Color.acid);
+                    Draw.alpha(0.5f);
+
+                    Lines.line(centerx - sclwidth/2f,centery + dy , centerx + sclwidth/2f, centery + dy);
+                    Lines.line(centerx - sclwidth/2f, centery - dy, centerx + sclwidth/2f, centery - dy);
+                }
+            }
+
             Draw.reset();
         }
 
@@ -284,14 +317,16 @@ public class MapView extends Element implements GestureListener{
         Draw.color(Pal.accent);
         Lines.stroke(Scl.scl(2f));
 
+        Vec2[] arcBrushPolygons = Geometry.pixelCircle(editor.brushSize, (arcIndex, x, y) -> Mathf.dst(x, y, arcIndex - editor.brushSize % 1f, arcIndex - editor.brushSize % 1f) <= editor.brushSize - 0.5f);
+
         if((!editor.drawBlock.isMultiblock() || tool == EditorTool.eraser) && tool != EditorTool.fill){
             if(tool == EditorTool.line && drawing){
                 Vec2 v1 = unproject(startx, starty).add(x, y);
                 float sx = v1.x, sy = v1.y;
                 Vec2 v2 = unproject(lastx, lasty).add(x, y);
 
-                Lines.poly(brushPolygons[index], sx, sy, scaling);
-                Lines.poly(brushPolygons[index], v2.x, v2.y, scaling);
+                Lines.poly(arcBrushPolygons, sx, sy, scaling);
+                Lines.poly(arcBrushPolygons, v2.x, v2.y, scaling);
             }
 
             if((tool.edit || (tool == EditorTool.line && !drawing)) && (!mobile || drawing)){
@@ -300,9 +335,10 @@ public class MapView extends Element implements GestureListener{
 
                 //pencil square outline
                 if(tool == EditorTool.pencil && tool.mode == 1){
-                    Lines.square(v.x + scaling/2f, v.y + scaling/2f, scaling * ((editor.brushSize == 1.5f ? 1f : editor.brushSize) + 0.5f));
+                    float xCorr = ((int)editor.brushSize + 1) % 2 * tilesize * zoom / 4;
+                    Lines.square(v.x + xCorr + scaling/2f, v.y + xCorr + scaling/2f, scaling * (editor.brushSize/2));
                 }else{
-                    Lines.poly(brushPolygons[index], v.x, v.y, scaling);
+                    Lines.poly(arcBrushPolygons, v.x, v.y, scaling);
                 }
             }
         }else{

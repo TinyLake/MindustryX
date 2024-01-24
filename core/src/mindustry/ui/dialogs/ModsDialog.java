@@ -49,6 +49,10 @@ public class ModsDialog extends BaseDialog{
     public ModsDialog(){
         super("@mods");
         addCloseButton();
+        buttons.addChild(new Table(t->{
+            t.setFillParent(true);
+            t.right().button("?", () -> ui.showInfo("@mods.info")).size(60f, 64f);
+        }));
 
         browser = new BaseDialog("@mods.browser");
 

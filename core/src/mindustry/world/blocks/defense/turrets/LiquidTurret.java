@@ -1,6 +1,10 @@
 package mindustry.world.blocks.defense.turrets;
 
+import arc.Core;
+import arc.graphics.g2d.Draw;
+import arc.math.Mathf;
 import arc.struct.*;
+import arc.util.Time;
 import mindustry.content.*;
 import mindustry.core.*;
 import mindustry.entities.*;
@@ -56,6 +60,30 @@ public class LiquidTurret extends Turret{
         ammoTypes.each((item, type) -> placeOverlapRange = Math.max(placeOverlapRange, range + type.rangeChange + placeOverlapMargin));
 
         super.init();
+    }
+
+
+    @Override
+    public void drawPlace(int x, int y, int rotation, boolean valid){
+        super.drawPlace(x, y, rotation, valid);
+
+
+        if(Core.settings.getBool("arcTurretPlacementItem") && ammoTypes.size>=2) {
+            int sectors = ammoTypes.size;
+            drawIndex = 0;
+            float iconSize = 6f + 2f * size;
+            ammoTypes.each((Liquid, BulletType) -> {
+                drawIndex += 1;
+                if (!Liquid.unlockedNow()) return;
+                for (int i = 0; i < 4; i++) {
+                    float rot = (i + ((float)drawIndex) / sectors) / 4 * 360f + Time.time * 0.5f;
+                    Draw.rect(Liquid.uiIcon,
+                            x * tilesize + offset + (Mathf.sin((float) Math.toRadians(rot)) * (range + BulletType.rangeChange + iconSize + 1f)),
+                            y * tilesize + offset + (Mathf.cos((float) Math.toRadians(rot)) * (range + BulletType.rangeChange + iconSize + 1f)),
+                            iconSize, iconSize, -rot);
+                }
+            });
+        }
     }
 
     public class LiquidTurretBuild extends TurretBuild{

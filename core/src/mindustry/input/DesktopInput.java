@@ -13,17 +13,26 @@ import arc.scene.ui.layout.*;
 import arc.struct.*;
 import arc.util.*;
 import mindustry.*;
+import mindustry.arcModule.ARCVars;
+import mindustry.arcModule.Marker;
+import mindustry.content.Items;
+import mindustry.content.UnitTypes;
 import mindustry.core.*;
+import mindustry.entities.Predict;
+import mindustry.entities.Units;
 import mindustry.entities.units.*;
 import mindustry.game.EventType.*;
 import mindustry.game.*;
 import mindustry.gen.*;
 import mindustry.graphics.*;
+import mindustry.type.UnitType;
 import mindustry.ui.*;
 import mindustry.world.*;
+import mindustry.world.blocks.ControlBlock;
 
 import static arc.Core.camera;
 import static arc.Core.*;
+import static mindustry.Vars.net;
 import static mindustry.Vars.*;
 import static mindustry.input.PlaceMode.*;
 
@@ -54,6 +63,10 @@ public class DesktopInput extends InputHandler{
     public int lastCtrlGroup;
     /** Time of most recent control group selection */
     public long lastCtrlGroupSelectMillis;
+
+    public boolean autoAim = false;
+    /** Current thing being shot at. */
+    public @Nullable Teamc target;
 
     boolean showHint(){
         return ui.hudfrag.shown && Core.settings.getBool("hints") && selectPlans.isEmpty() &&
@@ -100,6 +113,10 @@ public class DesktopInput extends InputHandler{
                 b.row();
                 b.table(a -> {
                     a.button("@schematic.add", Icon.save, this::showSchematicSave).colspan(2).size(250f, 50f).disabled(f -> lastSchematic == null || lastSchematic.file != null);
+                });
+                b.row();
+                b.table(a -> {
+                    a.button("@schematic.preview", Icon.info, this::showSchematicPreview).colspan(2).size(250f, 50f).disabled(f -> lastSchematic == null || lastSchematic.file != null);
                 });
             }).margin(6f);
         });
@@ -228,7 +245,8 @@ public class DesktopInput extends InputHandler{
         }
 
         if((Math.abs(Core.input.axis(Binding.move_x)) > 0 || Math.abs(Core.input.axis(Binding.move_y)) > 0 || input.keyDown(Binding.mouse_move)) && (!scene.hasField())){
-            panning = false;
+            if(!Core.settings.getBool("removePan")) panning = false;
+            follow = null;
         }
 
         if(!locked){
@@ -264,6 +282,8 @@ public class DesktopInput extends InputHandler{
         }else{
             commandMode = false;
         }
+
+        if(input.keyTap(Binding.arcScanMode)) arcScanMode = !arcScanMode;
 
         //validate commanding units
         selectedUnits.removeAll(u -> !u.isCommandable() || !u.isValid());
@@ -356,7 +376,7 @@ public class DesktopInput extends InputHandler{
             if(Core.input.keyDown(Binding.control) && Core.input.keyTap(Binding.select)){
                 Unit on = selectedUnit();
                 var build = selectedControlBuild();
-                if(on != null){
+                if(!ARCVars.unitHide && on != null){
                     Call.unitControl(player, on);
                     shouldShoot = false;
                     recentRespawnTimer = 1f;
@@ -403,7 +423,8 @@ public class DesktopInput extends InputHandler{
             }
         }
 
-        if(player.dead() || locked){
+        //if(player.dead() || locked){
+        if(locked){
             cursorType = SystemCursor.arrow;
             if(!Core.scene.hasMouse()){
                 Core.graphics.cursor(cursorType);
@@ -477,7 +498,7 @@ public class DesktopInput extends InputHandler{
                 cursorType = SystemCursor.hand;
             }
 
-            if(canTapPlayer(Core.input.mouseWorld().x, Core.input.mouseWorld().y)){
+            if(canTapPlayer(Core.input.mouseWorld().x, Core.input.mouseWorld().y) && !settings.getBool("blockDrop", false)){
                 cursorType = ui.unloadCursor;
             }
 
@@ -633,6 +654,14 @@ public class DesktopInput extends InputHandler{
             }
         }
 
+        if(Core.input.keyTap(Binding.lockonLastMark)){
+            Marker.lockonLastMark();
+        }
+
+        if(Core.input.keyTap(Binding.showRTSAi)){
+            settings.put("alwaysShowUnitRTSAi",!settings.getBool("alwaysShowUnitRTSAi"));
+        }
+
         if((cursorX != lastLineX || cursorY != lastLineY) && isPlacing() && mode == placing){
             updateLine(selectX, selectY);
             lastLineX = cursorX;
@@ -763,6 +792,27 @@ public class DesktopInput extends InputHandler{
                 Core.settings.put("lasersopacity", 0);
             }
         }
+        if (input.keyTap(Binding.toggle_block_render)) {
+            settings.put("blockRenderLevel", (settings.getInt("blockRenderLevel") + 1) % 3);
+        }
+
+        if (input.keyTap(Binding.toggle_unit)) {
+            ARCVars.unitHide = !ARCVars.unitHide;
+        }
+
+        if (input.keyTap(Binding.superUnitEffect)) {
+            int level = settings.getInt("superUnitEffect");
+            settings.put("superUnitEffect", (level + 1) % 3);
+        }
+
+        if (input.keyDown(Binding.oreAdsorption) && player.unit().tileOn() != null) {
+            player.unit().tileOn().circle(Mathf.ceil(player.unit().type.mineRange / 8f), tile -> {
+                Tile ptile = player.unit().mineTile;
+                if ((ptile == null || player.dst(ptile) > player.dst(tile) || ptile.drop() == Items.sand) && canMine(tile) && tile.drop() != Items.sand) {
+                    player.unit().mineTile = tile;
+                }
+            });
+        }
     }
 
     @Override
@@ -833,7 +883,7 @@ public class DesktopInput extends InputHandler{
     }
 
     protected void updateMovement(Unit unit){
-        boolean omni = unit.type.omniMovement;
+        UnitType type = unit.type;
 
         float speed = unit.speed();
         float xa = Core.input.axis(Binding.move_x);
@@ -845,23 +895,69 @@ public class DesktopInput extends InputHandler{
             movement.add(input.mouseWorld().sub(player).scl(1f / 25f * speed)).limit(speed);
         }
 
-        float mouseAngle = Angles.mouseAngle(unit.x, unit.y);
-        boolean aimCursor = omni && player.shooting && unit.type.hasWeapons() && unit.type.faceTarget && !boosted;
+        boolean busy = unit.mining() || unit.activelyBuilding();
 
-        if(aimCursor){
-            unit.lookAt(mouseAngle);
-        }else{
+        if (Core.settings.getBool("playerNeedShooting")){
+            busy = false;
+        }
+
+        boolean manualShoot = Core.input.keyDown(Binding.select) && shouldShoot && !busy && (type.hasWeapons() || UnitTypes.block.equals(type)) && !boosted;
+
+        float mouseX = unit.aimX(), mouseY = unit.aimY();
+        Vec2 aimPos = Core.input.mouseWorld();
+
+        float lookAtAngle = Angles.mouseAngle(unit.x, unit.y);
+
+        if(target != null) {
+            boolean validHealTarget = type.canHeal && target instanceof Building b && b.isValid() && target.team() == unit.team && b.damaged() && target.within(unit, type.range);
+            if ((Units.invalidateTarget(target, unit, type.range) && !validHealTarget) || state.isEditor()) {
+                target = null;
+            }
+        }
+
+        if (!manualShoot && Core.settings.getBool("autotarget") && !busy) {
+            if (target == null) {
+                float range = unit.hasWeapons() ? unit.range() : 0f;
+                player.shooting = false;
+                if(!(player.unit() instanceof BlockUnitUnit u && u.tile() instanceof ControlBlock c && !c.shouldAutoTarget())){
+                    target = Units.closestTarget(unit.team, unit.x, unit.y, range, u -> u.checkTarget(type.targetAir, type.targetGround), u -> type.targetGround);
+
+                    if(type.canHeal && target == null){
+                        target = Geometry.findClosest(unit.x, unit.y, indexer.getDamaged(Team.sharded));
+                        if(target != null && !unit.within(target, range)){
+                            target = null;
+                        }
+                    }
+                }
+            }
+            else {
+                Vec2 intercept = Predict.intercept(unit, target, unit.hasWeapons() ? type.weapons.first().bullet.speed : 0f);
+
+                mouseX = intercept.x;
+                mouseY = intercept.y;
+                player.shooting = !boosted;
+
+                aimPos = intercept;
+                lookAtAngle = unit.angleTo(intercept);
+            }
+        }
+        else {
+            target = null;
+        }
+        if (type.omniMovement && type.faceTarget && unit.isShooting) {
+            unit.lookAt(lookAtAngle);
+        }
+        else {
             unit.lookAt(unit.prefRotation());
         }
 
         unit.movePref(movement);
-
-        unit.aim(Core.input.mouseWorld());
+        if (!autoAim) unit.aim(aimPos);
         unit.controlWeapons(true, player.shooting && !boosted);
 
-        player.boosting = Core.input.keyDown(Binding.boost);
-        player.mouseX = unit.aimX();
-        player.mouseY = unit.aimY();
+        player.boosting = Core.input.keyDown(Binding.boost) || Core.settings.getBool("forceBoost");
+        player.mouseX = mouseX;
+        player.mouseY = mouseY;
 
         //update payload input
         if(unit instanceof Payloadc){

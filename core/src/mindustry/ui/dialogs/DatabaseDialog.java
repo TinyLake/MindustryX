@@ -16,9 +16,10 @@ import mindustry.graphics.*;
 import mindustry.type.*;
 import mindustry.ui.*;
 import mindustry.world.*;
+import mindustryX.features.ui.*;
 
-import static arc.Core.*;
 import static mindustry.Vars.*;
+import static mindustry.arcModule.RFuncs.colorizeContent;
 
 public class DatabaseDialog extends BaseDialog{
     private TextField search;
@@ -41,6 +42,7 @@ public class DatabaseDialog extends BaseDialog{
         }).fillX().padBottom(4).row();
 
         cont.pane(all).scrollX(false);
+        colorizeContent();
     }
 
     void rebuild(){
@@ -53,8 +55,11 @@ public class DatabaseDialog extends BaseDialog{
             ContentType type = ContentType.all[j];
 
             Seq<UnlockableContent> array = allContent[j]
-                .select(c -> c instanceof UnlockableContent u && !u.isHidden()  &&
-                    (text.isEmpty() || u.localizedName.toLowerCase().contains(text.toLowerCase()))).as();
+                .select(c -> c instanceof UnlockableContent u &&
+                    (AdvanceToolTable.allBlocksReveal || !u.isHidden()) &&
+                    (text.isEmpty() || u.localizedName.toLowerCase().contains(text.toLowerCase()))
+                ).as();
+
             if(array.size == 0) continue;
 
             all.add("@content." + type.name() + ".name").growX().left().color(Pal.accent);
@@ -98,7 +103,7 @@ public class DatabaseDialog extends BaseDialog{
                                 ui.content.show(unlock);
                             }
                         });
-                        image.addListener(new Tooltip(t -> t.background(Tex.button).add(unlock.localizedName + (settings.getBool("console") ? "\n[gray]" + unlock.name : ""))));
+                        image.addListener(new Tooltip(t -> t.background(Tex.button).add(unlock.localizedName + "\n[gray]" + unlock.name + (logicVars.lookupLogicId(unlock) != -1 ? " <#" + logicVars.lookupLogicId(unlock) +">": ""))));
                     }
 
                     if((++count) % cols == 0){
@@ -115,6 +120,7 @@ public class DatabaseDialog extends BaseDialog{
     }
 
     boolean unlocked(UnlockableContent content){
-        return (!Vars.state.isCampaign() && !Vars.state.isMenu()) || content.unlocked();
+        //return (!Vars.state.isCampaign() && !Vars.state.isMenu()) || content.unlocked();
+        return true;
     }
 }

@@ -16,6 +16,7 @@ import arc.util.*;
 import arc.util.io.*;
 import mindustry.*;
 import mindustry.annotations.Annotations.*;
+import mindustry.arcModule.ARCVars;
 import mindustry.audio.*;
 import mindustry.content.*;
 import mindustry.core.*;
@@ -76,6 +77,7 @@ abstract class BuildingComp implements Posc, Teamc, Healthc, Buildingc, Timerc, 
 
     transient boolean enabled = true;
     transient @Nullable Building lastDisabler;
+    transient @Nullable Building lastLogicController;
 
     @Nullable PowerModule power;
     @Nullable ItemModule items;
@@ -1159,6 +1161,20 @@ abstract class BuildingComp implements Posc, Teamc, Healthc, Buildingc, Timerc, 
         }
     }
 
+    public void drawBars(){
+        Draw.z(Layer.turret + 4f);
+        if(maxHealth < Core.settings.getInt("blockbarminhealth") || (health / maxHealth > 0.9f )) return;
+        Draw.color(team.color, 0.3f);
+        Lines.stroke(4f);
+        Lines.line(x - block.size * tilesize / 2f * 0.6f, y + block.size * tilesize / 2.5f,
+            x + block.size * tilesize / 2f * 0.6f, y + block.size * tilesize / 2.5f);
+        Draw.color(Pal.health ,0.6f);
+        Lines.stroke(2f);
+        Lines.line(x - block.size * tilesize / 2f * 0.6f, y + block.size * tilesize / 2.5f,
+            x + 0.6f * (Mathf.clamp(health / maxHealth, 0f, 1f) - 0.5f) * block.size * tilesize, y + block.size * tilesize / 2.5f);
+        Draw.color();
+    }
+
     public void drawCracks(){
         if(!block.drawCracks || !damaged() || block.size > BlockRenderer.maxCrackSize) return;
         int id = pos();
@@ -1385,7 +1401,8 @@ abstract class BuildingComp implements Posc, Teamc, Healthc, Buildingc, Timerc, 
         //derelict team icon currently doesn't display
         return team == Team.derelict ?
             block.localizedName + "\n" + Core.bundle.get("block.derelict") :
-            block.localizedName + (team == player.team() || team.emoji.isEmpty() ? "" : " " + team.emoji);
+                "[#" + team.color + "]" + (Core.settings.getBool("colorizedContent") && block.localizedName.length() > 11 ? block.localizedName.substring(11) : block.localizedName) + (team == player.team() || team.emoji.isEmpty() ? "" : " " + team.emoji
+                + (team.id > 5 ? "[" + team.id + "]" : ""));
     }
 
     public TextureRegion getDisplayIcon(){
@@ -1408,8 +1425,8 @@ abstract class BuildingComp implements Posc, Teamc, Healthc, Buildingc, Timerc, 
 
         table.row();
 
-        //only display everything else if the team is the same
-        if(team == player.team()){
+        //only display everything else if the team is the same LC modified
+        if(ARCVars.arcInfoControl(team)){
             table.table(bars -> {
                 bars.defaults().growX().height(18f).pad(4);
 
@@ -1510,6 +1527,15 @@ abstract class BuildingComp implements Posc, Teamc, Healthc, Buildingc, Timerc, 
             table.add(result).growX();
             table.row();
         }
+        if (lastLogicController != null) {
+            table.add(lastLogicController.block.emoji() + " [lightgray](" + lastLogicController.tileX() + ", " + lastLogicController.tileY() + ")").growX().left().row();
+        }
+        if (Time.time < healSuppressionTime){
+            table.add("\uF89B[red]\uE815").update(label -> {
+                if (healSuppressionTime > 0) label.setText("\uF89B[red]\uE815 [white]~ " + UI.formatTime(healSuppressionTime - Time.time));
+                else label.visible = false;
+            }).row();
+        }
     }
 
      /** Called when this block is tapped to build a UI on the table.
@@ -1525,7 +1551,12 @@ abstract class BuildingComp implements Posc, Teamc, Healthc, Buildingc, Timerc, 
 
     /** Returns whether a hand cursor should be shown over this block. */
     public Cursor getCursor(){
-        return block.configurable && interactable(player.team()) ? SystemCursor.hand : SystemCursor.arrow;
+        if (Core.settings.getBool("showOtherTeamState")){
+            return block.configurable  ? SystemCursor.hand : SystemCursor.arrow;
+        }
+        else{
+            return block.configurable && interactable(player.team()) ? SystemCursor.hand : SystemCursor.arrow;
+        }
     }
 
     /**

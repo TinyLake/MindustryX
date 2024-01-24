@@ -21,6 +21,8 @@ import mindustry.net.Administration.*;
 import mindustry.net.*;
 import mindustry.net.Packets.*;
 import mindustry.ui.*;
+import mindustry.world.blocks.defense.turrets.BaseTurret;
+import mindustry.world.blocks.production.GenericCrafter;
 import mindustry.world.blocks.storage.*;
 import mindustry.world.blocks.storage.CoreBlock.*;
 
@@ -291,7 +293,7 @@ abstract class PlayerComp implements UnitController, Entityc, Syncc, Timerc, Dra
         font.getData().setScale(0.25f / Scl.scl(1f));
         layout.setText(font, name);
 
-        if(!isLocal()){
+        if(Core.settings.getBool("arcSelfName") || !isLocal()){
             Draw.color(0f, 0f, 0f, 0.3f);
             Fill.rect(unit.x, unit.y + nameHeight - layout.height / 2, layout.width + 2, layout.height + 3);
             Draw.color();
@@ -356,6 +358,28 @@ abstract class PlayerComp implements UnitController, Entityc, Syncc, Timerc, Dra
         }
     }
 
+    public void buildDestroyedBlocks() {
+        if (unit.canBuild()) {
+            int count = 0;
+            for (Teams.BlockPlan plan : player.team().data().plans) {
+                if (within(plan.x * tilesize, plan.y * tilesize, buildingRange)) {
+                    unit.addBuild(new BuildPlan(plan.x, plan.y, plan.rotation, content.block(plan.block), plan.config));
+                    if (++count >= 255) break;
+                }
+            }
+        }
+    }
+
+    public void dropItems() {
+        if (state.rules.mode() == Gamemode.pvp || player.unit() == null || player.unit().stack.amount <= 0) {
+            return;
+        }
+        indexer.eachBlock(player.team(), player.x, player.y, itemTransferRange,
+                build -> build.acceptStack(player.unit().item(), player.unit().stack.amount, player.unit()) > 0 && (
+                        build.block instanceof BaseTurret || build.block instanceof GenericCrafter)
+                , build -> Call.transferInventory(player, build)
+        );
+    }
     void sendUnformatted(String unformatted){
         sendUnformatted(null, unformatted);
     }

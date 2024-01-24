@@ -163,4 +163,16 @@ abstract class StatusComp implements Posc, Flyingc{
     boolean hasEffect(StatusEffect effect){
         return applied.get(effect.id);
     }
+    void addEntry(StatusEffect effect, float duration) {
+        if (effect.reactive) apply(effect);
+        else {
+            StatusEntry entry = Pools.obtain(StatusEntry.class, StatusEntry::new);
+            entry.set(effect, duration);
+            statuses.add(entry);
+            effect.applied(self(), duration, false);
+        }
+    }
+    Seq<StatusEntry> statuses(){
+        return statuses;
+    }
 }

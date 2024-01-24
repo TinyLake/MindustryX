@@ -60,7 +60,8 @@ public class LogicDisplay extends Block{
 
         @Override
         public void draw(){
-            super.draw();
+            boolean noBorder = !Core.settings.getBool("arclogicbordershow");
+            if(!noBorder)super.draw();
 
             //don't even bother processing anything when displays are off.
             if(!Vars.renderer.drawDisplays) return;
@@ -118,7 +119,11 @@ public class LogicDisplay extends Block{
             Draw.blend(Blending.disabled);
             Draw.draw(Draw.z(), () -> {
                 if(buffer != null){
-                    Draw.rect(Draw.wrap(buffer.getTexture()), x, y, buffer.getWidth() * scaleFactor * Draw.scl, -buffer.getHeight() * scaleFactor * Draw.scl);
+                    if(noBorder){
+                        Draw.rect(Draw.wrap(buffer.getTexture()), x, y, (buffer.getWidth() + 16) * Draw.scl, -(buffer.getHeight() + 16) * Draw.scl);
+                    }else{
+                        Draw.rect(Draw.wrap(buffer.getTexture()), x, y, buffer.getWidth() * scaleFactor * Draw.scl, -buffer.getHeight() * scaleFactor * Draw.scl);
+                    }
                 }
             });
             Draw.blend();

@@ -12,6 +12,7 @@ import arc.scene.ui.TextField.*;
 import arc.scene.ui.layout.*;
 import arc.struct.*;
 import arc.util.*;
+import mindustry.arcModule.ui.dialogs.MessageDialog;
 import mindustry.game.EventType.*;
 import mindustry.input.*;
 import mindustry.ui.*;
@@ -163,6 +164,7 @@ public class ConsoleFragment extends Table{
         clearChatInput();
 
         if(message.replace(" ", "").isEmpty()) return;
+        MessageDialog.addMsg(new MessageDialog.advanceMsg(MessageDialog.arcMsgType.console,message));
 
         //special case for 'clear' command
         if(message.equals("clear")){

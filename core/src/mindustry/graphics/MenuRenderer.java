@@ -10,6 +10,7 @@ import arc.scene.ui.layout.*;
 import arc.struct.*;
 import arc.util.*;
 import arc.util.noise.*;
+import mindustry.arcModule.ARCVars;
 import mindustry.content.*;
 import mindustry.type.*;
 import mindustry.world.*;
@@ -27,9 +28,10 @@ public class MenuRenderer implements Disposable{
     private CacheBatch batch;
     private float time = 0f;
     private float flyerRot = 45f;
-    private int flyers = Mathf.chance(0.2) ? Mathf.random(35) : Mathf.random(15);
-    //no longer random or "dynamic", mod units in the menu look jarring, and it's not worth the configuration effort
-    private UnitType flyerType = Seq.with(UnitTypes.flare, UnitTypes.horizon, UnitTypes.zenith, UnitTypes.mono, UnitTypes.poly, UnitTypes.mega, UnitTypes.alpha, UnitTypes.beta, UnitTypes.gamma).random();
+    private int flyers = Mathf.chance(0.2) ? Mathf.random(45)  : Mathf.random(25) ;
+    //private UnitType flyerType = content.units().select(u -> !u.isHidden() && u.hitSize <= 20f && u.flying && u.onTitleScreen && u.region.found()).random();
+    private UnitType flyerType = content.units().select(u -> !u.isHidden() && u.hitSize >= 10f && u.onTitleScreen && u.region.found()).random();
+    private UnitType followType = content.units().select(u -> !u.isHidden() && u.hitSize < flyerType.hitSize*0.8f && u.onTitleScreen && u.region.found()).random();
 
     public MenuRenderer(){
         Time.mark();
@@ -230,12 +232,88 @@ public class MenuRenderer implements Disposable{
         batch.drawCache(cacheWall);
         batch.endDraw();
 
-        drawFlyers();
+        if (Core.settings.getBool("menuFlyersFollower")){
+            drawFollowFlyers();
+        }
+        else{
+            drawFlyers();
+        }
 
         Draw.proj(mat);
         Draw.color(0f, 0f, 0f, darkness);
         Fill.crect(0, 0, Core.graphics.getWidth(), Core.graphics.getHeight());
         Draw.color();
+    }
+
+    private void drawFollowFlyers(){
+        Draw.color(0f, 0f, 0f, 0.4f);
+
+        TextureRegion icon = flyerType.fullIcon;
+
+        float size = Math.max(icon.width, icon.height) * Draw.scl * 1.6f;
+
+        float sizebehind = Math.max(icon.width, icon.height) * Draw.scl * 1.6f;
+
+        TextureRegion followcion = followType.fullIcon;
+        float followsize = Math.max(icon.width, icon.height) * Draw.scl * 1.6f;
+
+        flyers((x, y) -> {
+            Draw.rect(icon, x - 12f, y - 13f, flyerRot - 90);
+            Draw.rect(followcion, x - 12f - sizebehind/2, y - 13f - sizebehind/3, flyerRot - 90);
+            Draw.rect(followcion, x - 12f - sizebehind/3, y - 13f - sizebehind/2, flyerRot - 90);
+        });
+
+        flyers((x, y) -> {
+            Draw.rect("circle-shadow", x, y, size, size);
+            Draw.rect("circle-shadow", x - sizebehind/3, y - sizebehind/2, followsize, followsize);
+            Draw.rect("circle-shadow", x - sizebehind/2, y - sizebehind/3, followsize, followsize);
+        });
+        Draw.color();
+
+
+        flyers((x, y) -> {
+            float engineOffset = flyerType.engineOffset, engineSize = flyerType.engineSize, rotation = flyerRot;
+
+            Draw.color(Pal.engine);
+            Fill.circle(x + Angles.trnsx(rotation + 180, engineOffset), y + Angles.trnsy(rotation + 180, engineOffset),
+            engineSize + Mathf.absin(Time.time, 2f, engineSize / 4f));
+
+            Draw.color(Color.white);
+            Fill.circle(x + Angles.trnsx(rotation + 180, engineOffset - 1f), y + Angles.trnsy(rotation + 180, engineOffset - 1f),
+            (engineSize + Mathf.absin(Time.time, 2f, engineSize / 4f)) / 2f);
+            Draw.color();
+
+            Draw.rect(icon, x, y, flyerRot - 90);
+            //follower1
+            Draw.rect(followcion, x - sizebehind/3, y - sizebehind/2, flyerRot - 90);
+
+            //follower2
+            Draw.rect(followcion, x - sizebehind/2, y - sizebehind/3, flyerRot - 90);
+
+            if(Core.settings.getBool("menuFlyersRange")){
+                float curStroke = (float)Core.settings.getInt("playerEffectCurStroke")/10f;
+                Color effectcolor = ARCVars.getThemeColor();
+
+                float sectorRad = 0.14f, rotateSpeed = 0.5f;
+                int sectors = 5;
+
+                Lines.stroke(Lines.getStroke() * curStroke);
+
+                Draw.z(Layer.shields + 6.5f);
+                Draw.color(effectcolor);
+
+                //Tmp.v1.trns(flyerType.rotation - 90, x, y).add(x, y);
+                float rx = Tmp.v1.x, ry = Tmp.v1.y;
+
+                if(curStroke > 0){
+                    for(int i = 0; i < sectors; i++){
+                        float rot = i * 360f/sectors + Time.time * rotateSpeed;
+                        Lines.arc(x, y, flyerType.maxRange, sectorRad, rot);
+                    }
+                }
+                Draw.reset();
+            }
+        });
     }
 
     private void drawFlyers(){
@@ -267,6 +345,32 @@ public class MenuRenderer implements Disposable{
             Draw.color();
 
             Draw.rect(icon, x, y, flyerRot - 90);
+
+
+
+            if(Core.settings.getBool("menuFlyersRange")){
+                float curStroke = (float)Core.settings.getInt("playerEffectCurStroke")/10f;
+                Color effectcolor = ARCVars.getThemeColor();
+
+                float sectorRad = 0.14f, rotateSpeed = 0.5f;
+                int sectors = 5;
+
+                Lines.stroke(Lines.getStroke() * curStroke);
+
+                Draw.z(Layer.shields + 6.5f);
+                Draw.color(effectcolor);
+
+                //Tmp.v1.trns(flyerType.rotation - 90, x, y).add(x, y);
+                float rx = Tmp.v1.x, ry = Tmp.v1.y;
+
+                if(curStroke > 0){
+                    for(int i = 0; i < sectors; i++){
+                        float rot = i * 360f/sectors + Time.time * rotateSpeed;
+                        Lines.arc(x, y, flyerType.maxRange, sectorRad, rot);
+                    }
+                }
+                Draw.reset();
+            }
         });
     }
 
@@ -275,8 +379,9 @@ public class MenuRenderer implements Disposable{
         float th = height * tilesize * 1f + tilesize;
         float range = 500f;
         float offset = -100f;
+        int flyersCount = flyers + Core.settings.getInt("menuFlyersCount");
 
-        for(int i = 0; i < flyers; i++){
+        for(int i = 0; i < flyersCount; i++){
             Tmp.v1.trns(flyerRot, time * (flyerType.speed));
 
             cons.get(

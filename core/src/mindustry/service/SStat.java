@@ -24,6 +24,14 @@ public enum SStat{
     schematicsCreated,
     bouldersDeconstructed, //TODO
     totalCampaignItems, //TODO
+
+    arcUnitsBuilt,
+    arcUnitsDestroyed,
+    arcBlocksBuilt,
+    arcBlocksDestroyed,
+    arcPlayTime,
+    arcMapsPlayed,
+    arcReactorsOverheated
     ;
 
     public int get(){

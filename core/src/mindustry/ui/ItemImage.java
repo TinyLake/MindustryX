@@ -47,6 +47,19 @@ public class ItemImage extends Stack{
         }));
     }
 
+    public ItemImage(TextureRegion region, String text){
+        add(new Table(o -> {
+            o.left();
+            o.add(new Image(region)).size(26f).scaling(Scaling.fit);
+        }));
+
+        add(new Table(t -> {
+            t.left().bottom();
+            t.add(text).get().setFontScale(1f);
+            t.pack();
+        }));
+    }
+
     public ItemImage(ItemStack stack){
         this(stack.item.uiIcon, stack.amount);
     }

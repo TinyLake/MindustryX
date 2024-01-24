@@ -1,6 +1,7 @@
 package mindustry.ui.fragments;
 
 import arc.*;
+import arc.files.*;
 import arc.graphics.*;
 import arc.graphics.g2d.*;
 import arc.math.*;
@@ -10,7 +11,6 @@ import arc.scene.event.*;
 import arc.scene.style.*;
 import arc.scene.ui.*;
 import arc.scene.ui.ImageButton.*;
-import arc.scene.ui.TextButton.*;
 import arc.scene.ui.layout.*;
 import arc.struct.*;
 import arc.util.*;
@@ -18,12 +18,15 @@ import mindustry.core.*;
 import mindustry.game.EventType.*;
 import mindustry.gen.*;
 import mindustry.graphics.*;
+import mindustry.service.*;
 import mindustry.ui.*;
 import mindustryX.features.*;
 import mindustryX.features.ui.*;
 
 import static mindustry.Vars.*;
+import static mindustry.arcModule.ARCVars.arcui;
 import static mindustry.gen.Tex.*;
+import static mindustry.ui.Styles.cleart;
 
 public class MenuFragment{
     private Table container, submenu;
@@ -33,8 +36,17 @@ public class MenuFragment{
 
     MenuFloatLabel floatLabel;
 
+    Fi arcBackground;
+    String arcBackgroundPath = Core.settings.getString("arcBackgroundPath");
+    Seq<Fi> arcBGList;
+
+    Image img = new Image();
+
+    int arcBackgroundIndex = 0;
+
     public void build(Group parent){
         renderer = new MenuRenderer();
+        initAchievement();
 
         Group group = new WidgetGroup();
         group.setFillParent(true);
@@ -44,7 +56,18 @@ public class MenuFragment{
         parent.addChild(floatLabel = new MenuFloatLabel());
         parent = group;
 
-        parent.fill((x, y, w, h) -> renderer.render());
+        if(arcBackgroundPath != null && Core.files.absolute(arcBackgroundPath).exists() && Core.files.absolute(arcBackgroundPath).list().length >= 1){
+            arcBackgroundIndex = (int)(Math.random() * Core.files.absolute(arcBackgroundPath).list().length);
+            nextBackGroundImg();
+            if(arcBGList.size == 0){
+                parent.fill((x, y, w, h) -> renderer.render());
+            }else{
+                group.addChild(img);
+                img.setFillParent(true);
+            }
+        }else{
+            parent.fill((x, y, w, h) -> renderer.render());
+        }
 
         parent.fill(c -> {
             c.pane(Styles.noBarPane, cont -> {
@@ -78,32 +101,10 @@ public class MenuFragment{
         }
 
 
-        //info icon
-        if(mobile){
-            parent.fill(c -> c.bottom().left().button("", new TextButtonStyle(){{
-                font = Fonts.def;
-                fontColor = Color.white;
-                up = infoBanner;
-            }}, ui.about::show).size(84, 45).name("info"));
-
-            parent.fill((x, y, w, h) -> {
-                if(Core.scene.marginBottom > 0){
-                    Tex.paneTop.draw(0, 0, Core.graphics.getWidth(), Core.scene.marginBottom);
-                }
-            });
-        }else if(becontrol.active()){
-            parent.fill(c -> c.bottom().right().button("@be.check", Icon.refresh, () -> {
-                ui.loadfrag.show();
-                becontrol.checkUpdate(result -> {
-                    ui.loadfrag.hide();
-                    if(!result){
-                        ui.showInfo("@be.noupdates");
-                    }
-                });
-            }).size(200, 60).name("becheck").update(t -> {
-                t.getLabel().setColor(becontrol.isUpdateAvailable() ? Tmp.c1.set(Color.white).lerp(Pal.accent, Mathf.absin(5f, 1f)) : Color.white);
-            }));
-        }
+        parent.fill(c -> c.bottom().left().table(t -> {
+            t.background(Tex.buttonEdge3);
+            t.button("\uE83D", cleart, this::nextBackGroundImg).width(50f);
+        }).visible(() -> Core.settings.getString("arcBackgroundPath", "").length() != 0).left().width(100));
 
         String versionText = ((Version.build == -1) ? "[#fc8140aa]" : "[#ffffffba]") + Version.combined();
         parent.fill((x, y, w, h) -> {
@@ -130,6 +131,22 @@ public class MenuFragment{
         }).touchable = Touchable.disabled;
     }
 
+    private void nextBackGroundImg(){
+        arcBGList = Core.files.absolute(arcBackgroundPath).findAll(f -> !f.isDirectory() && (f.extEquals("png") || f.extEquals("jpg") || f.extEquals("jpeg")));
+        if(arcBGList.size == 0) return;
+        arcBackgroundPath = Core.settings.getString("arcBackgroundPath");
+        arcBackgroundIndex += 1;
+        arcBackgroundIndex = arcBackgroundIndex % arcBGList.size;
+        new Thread(() -> {
+            try{
+                arcBackground = arcBGList.get(arcBackgroundIndex);
+                Core.app.post(() -> img.setDrawable(new TextureRegion(new Texture(arcBackground))));
+            }catch(Exception e){
+                Core.app.post(() -> ui.showException("背景图片无效:" + arcBGList.get(arcBackgroundIndex).path(), e));
+            }
+        }).start();
+    }
+
     private void buildMobile(){
         container.clear();
         container.name = "buttons";
@@ -147,7 +164,9 @@ public class MenuFragment{
             tools = new MobileButton(Icon.settings, "@settings", ui.settings::show),
             mods = new MobileButton(Icon.book, "@mods", ui.mods::show),
             exit = new MobileButton(Icon.exit, "@quit", () -> Core.app.exit()),
-            about = new MobileButton(Icon.info, "@about.button", ui.about::show);
+            //mindustrywiki = new MobileButton(Icon.book, "@mindustrywiki.button", ui.mindustrywiki::show),
+            database = new MobileButton(Icon.book, "@database", ui.database::show),
+            achievements = new MobileButton(Icon.star, "@achievements", arcui.achievements::show);
 
         Seq<MobileButton> customs = customButtons.map(b -> new MobileButton(b.icon, b.text, b.runnable == null ? () -> {} : b.runnable));
 
@@ -166,11 +185,14 @@ public class MenuFragment{
             container.add(editor);
             container.add(tools);
             container.add(mods);
+            container.add(achievements);
             // add even custom buttons (before the exit button)
             for(int i = 0; i < customs.size; i += 2){
                 container.add(customs.get(i));
             }
-            container.add(ios ? about : exit);
+            container.row();
+            container.add(database);
+            if(!ios) container.add(exit);
         }else{
             container.marginTop(0f);
             container.add(play);
@@ -188,8 +210,46 @@ public class MenuFragment{
                 container.add(customs.get(i));
                 if(i % 2 == 0) container.row();
             }
-            container.add(ios ? about : exit);
+            if(!ios) container.add(exit);
+            container.row();
+            container.add(database);
+            container.row();
+            container.add(achievements);
         }
+    }
+
+    void initAchievement(){
+        if(service.enabled()) return;
+        service = new GameService(){
+            @Override
+            public boolean enabled(){
+                return true;
+            }
+
+            @Override
+            public void completeAchievement(String name){
+                Core.settings.put("achievement." + name, true);
+                //TODO draw the sprite of the achievement
+                ui.hudfrag.showToast(Core.atlas.getDrawable("error"), Core.bundle.get("achievement.unlocked") + "\n" + Core.bundle.get("achievement." + name + ".name"));
+            }
+
+            @Override
+            public boolean isAchieved(String name){
+                return Core.settings.getBool("achievement." + name, false);
+            }
+
+            @Override
+            public int getStat(String name, int def){
+                return Core.settings.getInt("achievementstat." + name, def);
+            }
+
+            @Override
+            public void setStat(String name, int amount){
+                Core.settings.put("achievementstat." + name, amount);
+            }
+        };
+
+        service.init();
     }
 
     private void buildDesktop(){
@@ -200,7 +260,7 @@ public class MenuFragment{
         Drawable background = Styles.black6;
 
         container.left();
-        container.add().width(Core.graphics.getWidth()/10f);
+        container.add().width(Core.graphics.getWidth() / 10f);
         container.table(background, t -> {
             t.defaults().width(width).height(70f);
             t.name = "buttons";
@@ -210,14 +270,16 @@ public class MenuFragment{
                     new MenuButton("@campaign", Icon.play, () -> checkPlay(ui.planet::show)),
                     new MenuButton("@joingame", Icon.add, () -> checkPlay(ui.join::show)),
                     new MenuButton("@customgame", Icon.terrain, () -> checkPlay(ui.custom::show)),
-                    new MenuButton("@loadgame", Icon.download, () -> checkPlay(ui.load::show))
-                ),
+                    new MenuButton("@loadgame", Icon.download, () -> checkPlay(ui.load::show)),
+                    new MenuButton("@editor", Icon.terrain, () -> checkPlay(ui.maps::show)),
+                     steam ? new MenuButton("@workshop", Icon.steam, platform::openWorkshop) : null
+            ),
                 new MenuButton("@database.button", Icon.menu,
                     new MenuButton("@schematics", Icon.paste, ui.schematics::show),
                     new MenuButton("@database", Icon.book, ui.database::show),
                     new MenuButton("@about.button", Icon.info, ui.about::show)
                 ),
-                new MenuButton("@editor", Icon.terrain, () -> checkPlay(ui.maps::show)), steam ? new MenuButton("@workshop", Icon.steam, platform::openWorkshop) : null,
+                new MenuButton("@achievements", Icon.star, arcui.achievements::show),
                 new MenuButton("@mods", Icon.book, ui.mods::show),
                 new MenuButton("@settings", Icon.settings, ui.settings::show)
             );

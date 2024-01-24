@@ -214,5 +214,27 @@ public class DirectionBridge extends Block{
             }
             return null;
         }
+
+        public boolean arcLinkValid(){
+            if (findLink() == null) return false;
+            int x1 = findLink().tileX();
+            int y1 = findLink().tileY();
+            if(x1 == x){
+                return Math.abs(y1 - y) <= range;
+            }else if(y1 == y){
+                return Math.abs(x1 - x) <= range;
+            }else{
+                return false;
+            }
+        }
+
+        public boolean arcCheckAccept(Building source) {
+            //only accept if there's an output point.
+            if(findLink() == null) return false;
+
+            int rel = this.relativeToEdge(source.tile);
+            return rel != rotation && occupied[(rel + 2) % 4] == null;
+        }
+
     }
 }

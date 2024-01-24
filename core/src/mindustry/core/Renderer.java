@@ -28,6 +28,7 @@ import static arc.Core.*;
 import static mindustry.Vars.*;
 
 public class Renderer implements ApplicationListener{
+    public boolean fogEnabled = true;
     /** These are global variables, for headless access. Cached. */
     public static float laserOpacity = 0.5f, bridgeOpacity = 0.75f;
 
@@ -47,10 +48,11 @@ public class Renderer implements ApplicationListener{
     public @Nullable Bloom bloom;
     public @Nullable FrameBuffer backgroundBuffer;
     public FrameBuffer effectBuffer = new FrameBuffer();
+    public boolean drawBars = true;
     public boolean animateShields, drawWeather = true, drawStatus, enableEffects, drawDisplays = true, drawLight = true;
     public float weatherAlpha;
     /** minZoom = zooming out, maxZoom = zooming in */
-    public float minZoom = 1.5f, maxZoom = 6f;
+    public float minZoom = 0.25f, maxZoom = 20f;
     public Seq<EnvRenderer> envRenderers = new Seq<>();
     public ObjectMap<String, Runnable> customBackgrounds = new ObjectMap<>();
     public TextureRegion[] bubbles = new TextureRegion[16], splashes = new TextureRegion[12];
@@ -172,7 +174,7 @@ public class Renderer implements ApplicationListener{
             baseTarget = Mathf.lerp(minZoom, maxZoom, control.input.logicCutsceneZoom);
         }
 
-        float dest = Mathf.clamp(Mathf.round(baseTarget, 0.5f), minScale(), maxScale());
+        float dest = Mathf.clamp(Mathf.round(baseTarget, 0.1f), minScale(), maxScale());
         camerascale = Mathf.lerpDelta(camerascale, dest, 0.1f);
         if(Mathf.equal(camerascale, dest, 0.001f)) camerascale = dest;
         laserOpacity = settings.getInt("lasersopacity") / 100f;
@@ -181,6 +183,7 @@ public class Renderer implements ApplicationListener{
         drawStatus = settings.getBool("blockstatus");
         enableEffects = settings.getBool("effects");
         drawDisplays = !settings.getBool("hidedisplays");
+        drawBars = Core.settings.getBool("blockBars");
         drawLight = settings.getBool("drawlight", true);
 
         if(landTime > 0){
@@ -343,7 +346,7 @@ public class Renderer implements ApplicationListener{
             Draw.draw(Layer.light, lights::draw);
         }
 
-        if(enableDarkness){
+        if(Core.settings.getBool("forceEnableDarkness")&&enableDarkness){
             Draw.draw(Layer.darkness, blocks::drawDarkness);
         }
 
@@ -376,7 +379,7 @@ public class Renderer implements ApplicationListener{
         }
 
         Draw.draw(Layer.overlayUI, overlays::drawTop);
-        if(state.rules.fog) Draw.draw(Layer.fogOfWar, fog::drawFog);
+        if(state.rules.fog && (fogEnabled || state.rules.pvp && player.team().id != 255)) Draw.draw(Layer.fogOfWar, fog::drawFog);
         Draw.draw(Layer.space, this::drawLanding);
 
         Events.fire(Trigger.drawOver);
@@ -523,7 +526,7 @@ public class Renderer implements ApplicationListener{
     }
 
     public void scaleCamera(float amount){
-        targetscale *= (amount / 4) + 1;
+        targetscale *= (amount / 6) + 1;
         clampScale();
     }
 

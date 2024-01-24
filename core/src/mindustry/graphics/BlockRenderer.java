@@ -10,6 +10,7 @@ import arc.math.geom.*;
 import arc.struct.*;
 import arc.util.*;
 import mindustry.*;
+import mindustry.arcModule.ARCVars;
 import mindustry.content.*;
 import mindustry.game.EventType.*;
 import mindustry.game.*;
@@ -286,6 +287,7 @@ public class BlockRenderer{
     }
 
     public void drawShadows(){
+        if (Core.settings.getInt("blockRenderLevel") == 0) return;
         if(!shadowEvents.isEmpty()){
             Draw.flush();
 
@@ -401,6 +403,7 @@ public class BlockRenderer{
     }
 
     public void drawBlocks(){
+        if (Core.settings.getInt("blockRenderLevel") == 0) return;
         Team pteam = player.team();
 
         drawDestroyed();
@@ -417,7 +420,7 @@ public class BlockRenderer{
 
             //comment wasVisible part for hiding?
             if(block != Blocks.air && (visible || build.wasVisible)){
-                block.drawBase(tile);
+                if (settings.getInt("blockRenderLevel") > 1) block.drawBase(tile);
                 Draw.reset();
                 Draw.z(Layer.block);
 
@@ -443,14 +446,25 @@ public class BlockRenderer{
                         Draw.z(Layer.block);
                     }
 
+                    if(renderer.drawBars){
+                        build.drawBars();
+                        Draw.z(Layer.block);
+                    }
+
                     if(build.team != pteam){
                         if(build.block.drawTeamOverlay){
                             build.drawTeam();
                             Draw.z(Layer.block);
                         }
-                    }else if(renderer.drawStatus && block.hasConsumers){
+                    }
+                    if(renderer.drawStatus && block.hasConsumers && ARCVars.arcInfoControl(build.team)){
                         build.drawStatus();
                     }
+
+                    if(Core.settings.getBool("blockdisabled") && ARCVars.arcInfoControl(build.team) && !build.enabled()){
+                        build.drawDisabled();
+                    }
+
                 }
                 Draw.reset();
             }else if(!visible){

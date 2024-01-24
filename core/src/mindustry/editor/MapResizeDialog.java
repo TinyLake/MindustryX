@@ -9,7 +9,7 @@ import mindustry.ui.dialogs.*;
 import static mindustry.Vars.*;
 
 public class MapResizeDialog extends BaseDialog{
-    public static int minSize = 50, maxSize = 600, increment = 50;
+    public static int minSize = 10, maxSize = 9999, increment = 50;
 
     int width, height, shiftX, shiftY;
 
@@ -31,7 +31,7 @@ public class MapResizeDialog extends BaseDialog{
                 table.field((w ? width : height) + "", TextFieldFilter.digitsOnly, value -> {
                     int val = Integer.parseInt(value);
                     if(w) width = val; else height = val;
-                }).valid(value -> Strings.canParsePositiveInt(value) && Integer.parseInt(value) <= maxSize && Integer.parseInt(value) >= minSize).maxTextLength(3);
+                }).valid(value -> Strings.canParsePositiveInt(value) && Integer.parseInt(value) <= maxSize && Integer.parseInt(value) >= minSize).maxTextLength(4);
 
                 table.row();
             }

@@ -5,12 +5,15 @@ import arc.Graphics.*;
 import arc.Graphics.Cursor.*;
 import arc.graphics.g2d.*;
 import arc.math.*;
+import arc.scene.ui.layout.*;
 import arc.struct.*;
 import arc.util.*;
 import arc.util.io.*;
 import mindustry.*;
 import mindustry.annotations.Annotations.*;
+import mindustry.arcModule.*;
 import mindustry.content.*;
+import mindustry.core.*;
 import mindustry.entities.*;
 import mindustry.entities.units.*;
 import mindustry.game.EventType.*;
@@ -127,7 +130,7 @@ public class ConstructBlock extends Block{
     static float calcPitch(boolean up){
         if(Time.timeSinceMillis(lastTime) < 16 * 30){
             lastTime = Time.millis();
-            pitchSeq ++;
+            pitchSeq++;
             if(pitchSeq > 30){
                 pitchSeq = 0;
             }
@@ -168,6 +171,43 @@ public class ConstructBlock extends Block{
 
         private float[] accumulator;
         private float[] totalAccumulator;
+
+        @Override
+        public void drawSelect(){
+            if(team.core() == null){
+                return;
+            }
+
+            // BlockUnit之上
+            Draw.z(Layer.flyingUnit + 0.1f);
+
+            float scl = block.size / 8f / 2f / Scl.scl(1f);
+            float buildHitSize = hitSize();
+
+            // 显示建造进度
+            DrawUtilities.drawText(String.format("%.2f", progress * 100) + "%", scl, x, y + buildHitSize / 2f, Pal.accent, Align.bottom);
+
+            // 显示物品需求
+            float textOffset = 0f;
+            for(int i = 0; i < current.requirements.length; i++){
+                ItemStack stack = current.requirements[i];
+
+                float dx = x - buildHitSize / 2f, dy = y - buildHitSize / 2f + textOffset;
+
+                float consumeAmount = state.rules.buildCostMultiplier * stack.amount;
+                int coreAmount = team.core().items.get(stack.item);
+
+                int investItem = (int)(progress * consumeAmount);
+                int needItem = (int)(consumeAmount) - investItem;
+                boolean hasItem = coreAmount >= needItem;
+
+                textOffset += DrawUtilities.drawText(
+                stack.item.emoji() + (hasItem ? "[#ffd37f]" : "[#e55454]") + investItem + "/" +
+                needItem + "/" +
+                UI.formatAmount(coreAmount),
+                scl, dx, dy, Align.bottomLeft) + 1;
+            }
+        }
 
         @Override
         public String getDisplayName(){
@@ -247,7 +287,7 @@ public class ConstructBlock extends Block{
 
                     Draw.rect(region, x, y, current.rotate && (noOverrides || current.regionRotated2 == i || current.regionRotated1 == i) ? rotdeg() : 0);
                     Draw.flush();
-                    i ++;
+                    i++;
                 }
 
                 Draw.color();

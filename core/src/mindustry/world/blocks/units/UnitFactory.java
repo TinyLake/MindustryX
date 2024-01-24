@@ -249,7 +249,7 @@ public class UnitFactory extends UnitBlock{
                     i.setScaling(Scaling.fit);
                     i.setColor(currentPlan == -1 ? Color.lightGray : Color.white);
                 }).size(32).padBottom(-4).padRight(2);
-                t.label(() -> currentPlan == -1 ? "@none" : plans.get(currentPlan).unit.localizedName).wrap().width(230f).color(Color.lightGray);
+                t.label(() -> currentPlan == -1 ? (Iconc.cancel + "") : plans.get(currentPlan).unit.localizedName).wrap().width(230f).color(Color.lightGray);
             }).left();
         }
 
@@ -257,6 +257,22 @@ public class UnitFactory extends UnitBlock{
         public Object config(){
             return currentPlan;
         }
+
+        @Override
+        public void drawBars(){
+            super.drawBars();
+            Draw.color(Color.black, 0.3f);
+            Lines.stroke(4f);
+            Lines.line(x - block.size * tilesize / 2f * 0.6f, y + block.size * tilesize / 2.5f,
+                x + block.size * tilesize / 2f * 0.6f, y + block.size * tilesize / 2.5f);
+            Draw.color(Pal.accent, 1f);
+            Lines.stroke(2f);
+            Lines.line(x - block.size * tilesize / 2f * 0.6f, y + block.size * tilesize / 2.5f,
+                x + 0.6f * (Mathf.clamp(fraction(), 0f, 1f) - 0.5f) * block.size * tilesize, y + block.size * tilesize / 2.5f);
+            Draw.color();
+            block.drawText((int)(Mathf.clamp(fraction(), 0f, 1f) * 100) + "% | " + (currentPlan == -1 ? Iconc.cancel : Strings.fixed((plans.get(currentPlan).time - progress) / (60f * Vars.state.rules.unitBuildSpeed(team) * timeScale), 0)), x, y + block.size * tilesize / 2.5f - 5f, true, 0.9f);
+        }
+
 
         @Override
         public void draw(){

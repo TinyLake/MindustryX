@@ -12,6 +12,7 @@ import arc.util.io.*;
 import arc.util.serialization.*;
 import mindustry.*;
 import mindustry.annotations.Annotations.*;
+import mindustry.arcModule.ui.dialogs.*;
 import mindustry.core.GameState.*;
 import mindustry.entities.*;
 import mindustry.game.EventType.*;
@@ -62,7 +63,19 @@ public class NetClient implements ApplicationListener{
     public NetClient(){
 
         net.handleClient(Connect.class, packet -> {
+            player.name = Core.settings.getString("name");
+            player.color.set(Core.settings.getInt("color-0"));
+
             Log.info("Connecting to server: @", packet.addressTCP);
+            String ip = packet.addressTCP;
+            if (ip.contains("/")) {
+                ip = ip.substring(ip.indexOf("/") + 1);
+            }
+            if (USIDDialog.chooseUSID && Core.settings.getString("usid-" + ip, null) == null) {
+                disconnectQuietly();
+                USIDDialog.showSet(ip);
+                return;
+            }
 
             player.admin = false;
 

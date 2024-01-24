@@ -20,7 +20,7 @@ public class Universe{
     private int netSeconds;
     private float secondCounter;
     private int turn;
-    private float turnCounter;
+    public static float turnCounter;
 
     private @Nullable Schematic lastLoadout;
     private ItemSeq lastLaunchResources = new ItemSeq();

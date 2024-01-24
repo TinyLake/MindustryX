@@ -8,7 +8,15 @@ import mindustry.mod.Mods.*;
 import mindustry.type.*;
 import mindustry.world.*;
 import mindustry.world.blocks.power.*;
+import mindustry.world.blocks.production.Fracker;
+import mindustry.world.blocks.production.GenericCrafter;
+import mindustry.world.blocks.production.Separator;
 import mindustry.world.blocks.storage.*;
+import mindustry.world.consumers.ConsumeItems;
+import mindustry.world.consumers.ConsumeLiquid;
+import mindustry.world.consumers.ConsumeLiquids;
+
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import static mindustry.Vars.*;
 
@@ -23,11 +31,23 @@ public class Schematic implements Publishable, Comparable<Schematic>{
     /** Associated mod. If null, no mod is associated with this schematic. */
     public @Nullable LoadedMod mod;
 
+    public ObjectFloatMap<Item> items;
+    public ObjectFloatMap<Liquid> liquids;
+
     public Schematic(Seq<Stile> tiles, StringMap tags, int width, int height){
         this.tiles = tiles;
         this.tags = tags;
         this.width = width;
         this.height = height;
+    }
+
+    public boolean containsBlock(Block block){
+        AtomicBoolean contains = new AtomicBoolean(false);
+        tiles.each(t -> {
+            if(t.block == block) contains.set(true);
+        });
+        return contains.get();
+
     }
 
     public float powerProduction(){
@@ -36,6 +56,143 @@ public class Schematic implements Publishable, Comparable<Schematic>{
 
     public float powerConsumption(){
         return tiles.sumf(s -> s.block.consPower != null ? s.block.consPower.usage : 0f);
+    }
+
+    public void calProduction() {
+        items = new ObjectFloatMap<>(content.items().copy().size << 1);
+        liquids = new ObjectFloatMap<>(content.liquids().copy().size << 1);
+        tiles.each(t -> {
+            if(t.block== null)
+                return;
+
+            if (t.block instanceof GenericCrafter gc) {
+                for(var c:gc.consumeBuilder){
+                    if(c.optional) continue;
+                    else if(c instanceof ConsumeItems consumeItems){
+                        for (ItemStack stack : consumeItems.items) {
+                            Item item = stack.item;
+                            items.put(item, items.get(item, 0) - stack.amount * 60f / gc.craftTime);
+                        }
+                    }
+                    else if(c instanceof ConsumeLiquid consumeLiquid){
+                        Liquid liquid = consumeLiquid.liquid;
+                        liquids.put(liquid, liquids.get(liquid, 0) - consumeLiquid.amount * 60f);
+                    }
+                    else if(c instanceof ConsumeLiquids consumeLiquids){
+                        for (LiquidStack stack : consumeLiquids.liquids) {
+                            Liquid liquid = stack.liquid;
+                            liquids.put(liquid, liquids.get(liquid, 0) - stack.amount * 60f);
+                        }
+                    }
+                }
+                if(gc.outputsItems()){
+                    for (ItemStack stack : gc.outputItems) {
+                        Item item = stack.item;
+                        items.put(item, items.get(item, 0) + stack.amount * 60f / gc.craftTime);
+                    }
+                }/*
+                if(gc.outputLiquid != null){
+                    liquids.put(gc.outputLiquid.liquid, liquids.get(gc.outputLiquid.liquid, 0) + gc.outputLiquid.amount * 60f);
+                }*/
+                if(gc.outputLiquids !=null) {
+                    for (LiquidStack stack : gc.outputLiquids) {
+                        Liquid liquid = stack.liquid;
+                        liquids.put(liquid, liquids.get(liquid, 0) + stack.amount * 60f);
+                    }
+                }
+            }
+            else if (t.block instanceof Separator s) {
+                for(var c:s.consumeBuilder){
+                    if(c.optional) continue;
+                    else if(c instanceof ConsumeItems consumeItems){
+                        for (ItemStack stack : consumeItems.items) {
+                            Item item = stack.item;
+                            items.put(item, items.get(item, 0) - stack.amount * 60f / s.craftTime);
+                        }
+                    }
+                    else if (c instanceof ConsumeLiquid consumeLiquid) {
+                        Liquid liquid = consumeLiquid.liquid;
+                        liquids.put(liquid, liquids.get(liquid, 0) - consumeLiquid.amount * 60f);
+                    }
+                }
+            }
+            else if (t.block instanceof Fracker f) {
+                for(var c:f.consumeBuilder) {
+                    if (c.optional) continue;
+                    else if (c instanceof ConsumeItems consumeItems) {
+                        for (ItemStack stack : consumeItems.items) {
+                            Item item = stack.item;
+                            items.put(item, items.get(item, 0) - stack.amount * f.itemUseTime / 60f);
+                        }
+                    }
+                }
+            }
+            else if (t.block instanceof PowerGenerator) {
+                if (t.block instanceof  ConsumeGenerator cg) {
+                    for(var c:cg.consumeBuilder){
+                        if(c.optional) continue;
+                        else if(c instanceof ConsumeItems consumeItems){
+                            for (ItemStack stack : consumeItems.items) {
+                                Item item = stack.item;
+                                items.put(item, items.get(item, 0) - stack.amount * 60f / cg.itemDuration);
+                            }
+                        }
+                        else if(c instanceof ConsumeLiquid consumeLiquid){
+                            Liquid liquid = consumeLiquid.liquid;
+                            liquids.put(liquid, liquids.get(liquid, 0) - consumeLiquid.amount * 60f);
+                        }
+                        else if(c instanceof ConsumeLiquids consumeLiquids){
+                            for (LiquidStack stack : consumeLiquids.liquids) {
+                                Liquid liquid = stack.liquid;
+                                liquids.put(liquid, liquids.get(liquid, 0) - stack.amount * 60f);
+                            }
+                        }
+                    }
+                }
+                else if (t.block instanceof NuclearReactor nr) {
+                    for(var c:nr.consumeBuilder){
+                        if(c.optional) continue;
+                        else if(c instanceof ConsumeItems consumeItems){
+                            for (ItemStack stack : consumeItems.items) {
+                                Item item = stack.item;
+                                items.put(item, items.get(item, 0) - stack.amount * 60f / nr.itemDuration);
+                            }
+                        }
+                        else if(c instanceof ConsumeLiquid consumeLiquid){
+                            Liquid liquid = consumeLiquid.liquid;
+                            liquids.put(liquid, liquids.get(liquid, 0) - consumeLiquid.amount * 60f);
+                        }
+                        else if(c instanceof ConsumeLiquids consumeLiquids){
+                            for (LiquidStack stack : consumeLiquids.liquids) {
+                                Liquid liquid = stack.liquid;
+                                liquids.put(liquid, liquids.get(liquid, 0) - stack.amount * 60f);
+                            }
+                        }
+                    }
+                }
+                else if (t.block instanceof ImpactReactor ir) {
+                    for(var c:ir.consumeBuilder){
+                        if(c.optional) continue;
+                        else if(c instanceof ConsumeItems consumeItems){
+                            for (ItemStack stack : consumeItems.items) {
+                                Item item = stack.item;
+                                items.put(item, items.get(item, 0) - stack.amount * 60f / ir.itemDuration);
+                            }
+                        }
+                        else if(c instanceof ConsumeLiquid consumeLiquid){
+                            Liquid liquid = consumeLiquid.liquid;
+                            liquids.put(liquid, liquids.get(liquid, 0) - consumeLiquid.amount * 60f);
+                        }
+                        else if(c instanceof ConsumeLiquids consumeLiquids){
+                            for (LiquidStack stack : consumeLiquids.liquids) {
+                                Liquid liquid = stack.liquid;
+                                liquids.put(liquid, liquids.get(liquid, 0) - stack.amount * 60f);
+                            }
+                        }
+                    }
+                }
+            }
+        });
     }
 
     public ItemSeq requirements(){
@@ -140,6 +297,12 @@ public class Schematic implements Publishable, Comparable<Schematic>{
         //pooling only
         public Stile(){
             block = Blocks.air;
+        }
+
+        public Stile(Block block, int x, int y){
+            this.block = block;
+            this.x = (short)x;
+            this.y = (short)y;
         }
 
         public Stile set(Stile other){

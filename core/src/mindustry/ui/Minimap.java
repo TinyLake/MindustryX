@@ -3,10 +3,14 @@ package mindustry.ui;
 import arc.*;
 import arc.graphics.g2d.*;
 import arc.input.*;
+import arc.math.*;
+import arc.math.geom.*;
 import arc.scene.*;
 import arc.scene.event.*;
 import arc.scene.ui.layout.*;
+import arc.util.*;
 import mindustry.gen.*;
+import mindustry.input.*;
 
 import static mindustry.Vars.*;
 
@@ -93,7 +97,18 @@ public class Minimap extends Table{
 
             @Override
             public void clicked(InputEvent event, float x, float y){
-                ui.minimapfrag.toggle();
+                float sz = 16 * renderer.minimap.getZoom();
+                float dx = Mathf.clamp(Core.camera.position.x / 8, sz, world.width() - sz);
+                float dy = Mathf.clamp(Core.camera.position.y / 8, sz, world.height() - sz);
+
+                float ptilex = sz * 2 / width, ptiley = sz * 2 / height;
+                Vec2 pos = Tmp.v1.set(dx, dy).sub(sz, sz).add(x * ptilex, y * ptiley).scl(8);
+
+                if(control.input instanceof DesktopInput input){
+                    input.panning = true;
+                }
+
+                Core.camera.position.set(pos);
             }
         });
 

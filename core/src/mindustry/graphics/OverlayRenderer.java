@@ -9,16 +9,20 @@ import arc.struct.*;
 import arc.util.*;
 import mindustry.*;
 import mindustry.ai.types.*;
+import mindustry.arcModule.ARCVars;
 import mindustry.entities.*;
 import mindustry.game.EventType.*;
 import mindustry.game.*;
 import mindustry.game.Teams.*;
 import mindustry.gen.*;
 import mindustry.input.*;
-import mindustry.world.*;
 import mindustry.world.blocks.storage.CoreBlock.*;
 
 import static mindustry.Vars.*;
+import static mindustry.arcModule.Marker.drawMarker;
+import static mindustry.arcModule.toolpack.arcScanMode.arcScan;
+import static mindustry.arcModule.toolpack.arcScanner.drawScanner;
+import static mindustry.arcModule.toolpack.arcWaveSpawner.drawSpawner;
 
 public class OverlayRenderer{
     private static final float indicatorLength = 14f;
@@ -122,7 +126,7 @@ public class OverlayRenderer{
 
         InputHandler input = control.input;
 
-        Sized select = input.selectedUnit();
+        Sized select = ARCVars.unitHide ? null : input.selectedUnit();
         if(select == null) select = input.selectedControlBuild();
         if(!Core.input.keyDown(Binding.control) || !state.rules.possessionAllowed) select = null;
 
@@ -182,39 +186,83 @@ public class OverlayRenderer{
                     //it must be clear that there is a core here.
                     if(/*core.wasVisible && */Core.camera.bounds(Tmp.r1).overlaps(Tmp.r2.setCentered(core.x, core.y, state.rules.enemyCoreBuildRadius * 2f))){
                         Draw.color(Color.darkGray);
+                        Draw.alpha(0.7f);
                         Lines.circle(core.x, core.y - 2, state.rules.enemyCoreBuildRadius);
                         Draw.color(Pal.accent, core.team.color, 0.5f + Mathf.absin(Time.time, 10f, 0.5f));
+                        Draw.alpha(0.7f);
                         Lines.circle(core.x, core.y, state.rules.enemyCoreBuildRadius);
                     }
                 });
+                player.team().cores().each(core ->{
+                    if(state.rules.pvp && Core.camera.bounds(Tmp.r1).overlaps(Tmp.r2.setCentered(core.x, core.y, state.rules.enemyCoreBuildRadius * 2f))){
+
+                        Draw.color(Color.darkGray);
+                        Draw.alpha(0.4f);
+                        Lines.circle(core.x, core.y - 2, state.rules.enemyCoreBuildRadius);
+                        Draw.color(Pal.accent, core.team.color, 0.5f + Mathf.absin(Time.time, 10f, 0.5f));
+                        Draw.alpha(0.4f);
+                        Lines.circle(core.x, core.y, state.rules.enemyCoreBuildRadius);
+                    }
+
+                });
             }
         }
-
-        Lines.stroke(2f);
-        Draw.color(Color.gray, Color.lightGray, Mathf.absin(Time.time, 8f, 1f));
-
+        /*
         if(state.hasSpawns()){
-            for(Tile tile : spawner.getSpawns()){
-                if(tile.within(player.x, player.y, state.rules.dropZoneRadius + spawnerMargin)){
-                    Draw.alpha(Mathf.clamp(1f - (player.dst(tile) - state.rules.dropZoneRadius) / spawnerMargin));
+            Lines.stroke(2f);
+            Draw.color(Color.gray, Color.lightGray, Mathf.absin(Time.time, 8f, 1f));
+
+            if (Core.settings.getBool("alwaysshowdropzone")) {
+                Draw.alpha(0.8f);
+                for(Tile tile : spawner.getSpawns()) {
                     Lines.dashCircle(tile.worldx(), tile.worldy(), state.rules.dropZoneRadius);
                 }
             }
-        }
+            else {
+                for(Tile tile : spawner.getSpawns()) {
+                    if (tile.within(player.x, player.y, state.rules.dropZoneRadius + spawnerMargin)) {
+                        Draw.alpha(Mathf.clamp(1f - (player.dst(tile) - state.rules.dropZoneRadius) / spawnerMargin));
+                        Lines.dashCircle(tile.worldx(), tile.worldy(), state.rules.dropZoneRadius);
+                    }
+                }
+            }
+            if (Core.settings.getBool("showFlyerSpawn") && spawner.countSpawns() < 20) {
+                for(Tile tile : spawner.getSpawns()) {
+                    float angle = Angles.angle(world.width() / 2f, world.height() / 2f, tile.x, tile.y);
+                    float trns = Math.max(world.width(), world.height()) * Mathf.sqrt2 * tilesize;
+                    float spawnX = Mathf.clamp(world.width() * tilesize / 2f + Angles.trnsx(angle, trns), 0, world.width() * tilesize);
+                    float spawnY = Mathf.clamp(world.height() * tilesize / 2f + Angles.trnsy(angle, trns), 0, world.height() * tilesize);
+                    if (Core.settings.getBool("showFlyerSpawnLine")) {
+                        Draw.color(Color.red, 0.5f);
+                        Lines.line(tile.worldx(), tile.worldy(), spawnX, spawnY);
+                    }
+                    Draw.color(Color.gray, Color.lightGray, Mathf.absin(Time.time, 8f, 1f));
+                    Draw.alpha(0.8f);
+                    Lines.dashCircle(spawnX, spawnY, 5f * tilesize);
 
-        Draw.reset();
+                    Draw.color();
+                    Draw.alpha(0.5f);
+                    Draw.rect(UnitTypes.zenith.fullIcon, spawnX, spawnY);
+                }
+            }
+            Draw.reset();
+        }
+        */
+        drawSpawner();
 
         //draw selected block
         if(input.block == null && !Core.scene.hasMouse()){
             Vec2 vec = Core.input.mouseWorld(input.getMouseX(), input.getMouseY());
             Building build = world.buildWorld(vec.x, vec.y);
 
-            if(build != null && build.team == player.team()){
+            //if(build != null && build.team == player.team()){
+            if(build != null){
                 build.drawSelect();
                 if(!build.enabled && build.block.drawDisabled){
                    build.drawDisabled();
                 }
-
+            }
+            if(build != null && build.team == player.team()){
                 if(Core.input.keyDown(Binding.rotateplaced) && build.block.rotate && build.block.quickRotate && build.interactable(player.team())){
                     control.input.drawArrow(build.block, build.tileX(), build.tileY(), build.rotation, true);
                     Draw.color(Pal.accent, 0.3f + Mathf.absin(4f, 0.2f));
@@ -226,12 +274,22 @@ public class OverlayRenderer{
 
         input.drawOverSelect();
 
+        //单位射程
+        if(ui.hudfrag.blockfrag.hover() instanceof Unit unit){
+            Draw.reset();
+            Draw.color(unit.team.color);
+            Lines.dashCircle(unit.x, unit.y, unit.type.range);
+        }
+
         if(ui.hudfrag.blockfrag.hover() instanceof Unit unit && unit.controller() instanceof LogicAI ai && ai.controller != null && ai.controller.isValid()){
             var build = ai.controller;
             Drawf.square(build.x, build.y, build.block.size * tilesize/2f + 2f);
             if(!unit.within(build, unit.hitSize * 2f)){
                 Drawf.arrow(unit.x, unit.y, build.x, build.y, unit.hitSize *2f, 4f);
             }
+			Draw.color(Pal.accent);
+            Lines.line(unit.x, unit.y, build.x, build.y);
+            Draw.color();
         }
 
         //draw selection overlay when dropping item
@@ -258,6 +316,10 @@ public class OverlayRenderer{
                 }
             }
         }
+
+        drawScanner();
+        drawMarker();
+        arcScan();
     }
 
     private static class CoreEdge{

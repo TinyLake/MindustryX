@@ -1,6 +1,7 @@
 package mindustry.world.blocks.units;
 
 import arc.*;
+import arc.graphics.*;
 import arc.Graphics.*;
 import arc.Graphics.Cursor.*;
 import arc.graphics.g2d.*;
@@ -290,6 +291,21 @@ public class Reconstructor extends UnitBlock{
         public Object senseObject(LAccess sensor){
             if(sensor == LAccess.config) return unit();
             return super.senseObject(sensor);
+        }
+
+        @Override
+        public void drawBars(){
+            super.drawBars();
+            Draw.color(Color.black, 0.3f);
+            Lines.stroke(4f);
+            Lines.line(x - block.size * tilesize / 2f * 0.6f, y + block.size * tilesize / 2.5f,
+                x + block.size * tilesize / 2f * 0.6f, y + block.size * tilesize / 2.5f);
+            Draw.color(Pal.accent, 1f);
+            Lines.stroke(2f);
+            Lines.line(x - block.size * tilesize / 2f * 0.6f, y + block.size * tilesize / 2.5f,
+                x + 0.6f * (Mathf.clamp(fraction(), 0f, 1f) - 0.5f) * block.size * tilesize, y + block.size * tilesize / 2.5f);
+            Draw.color();
+            block.drawText((int)(Mathf.clamp(fraction(), 0f, 1f) * 100) + "% | " + Strings.fixed((constructTime - progress) / (60f * Vars.state.rules.unitBuildSpeed(team) * timeScale), 0), x, y + block.size * tilesize / 2.5f - 5f, true, 0.9f);
         }
 
         @Override

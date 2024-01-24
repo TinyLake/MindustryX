@@ -148,6 +148,13 @@ public class Drawf{
         Drawf.line(Pal.accent, start.getX() + Tmp.v1.x, start.getY() + Tmp.v1.y, dest.getX() + Tmp.v2.x, dest.getY() + Tmp.v2.y);
     }
 
+    public static void limitLineColor(Position start, Position dest, float len1, float len2,Color color){
+        Tmp.v1.set(dest).sub(start).setLength(len1);
+        Tmp.v2.set(Tmp.v1).scl(-1f).setLength(len2);
+
+        Drawf.line(color, start.getX() + Tmp.v1.x, start.getY() + Tmp.v1.y, dest.getX() + Tmp.v2.x, dest.getY() + Tmp.v2.y);
+    }
+
     public static void dashLineDst(Color color, float x, float y, float x2, float y2){
         dashLine(color, x, y, x2, y2, (int)(Mathf.dst(x, y, x2, y2) / tilesize * 1.6f));
     }
@@ -216,6 +223,32 @@ public class Drawf{
         Lines.stroke(1f);
         Draw.color(color, alpha);
         Lines.poly(x, y, 4, rad, Time.time * 1.5f);
+        Lines.spikes(x, y, 3f/7f * rad, 6f/7f * rad, 4, Time.time * 1.5f);
+        Draw.reset();
+    }
+
+    public static void target2(float x, float y, float rad, float alpha, Color color){
+        // target but no border
+        Lines.stroke(1f);
+        Draw.color(color, alpha);
+        Lines.poly(x, y, 4, rad, Time.time * 1.5f);
+        Lines.spikes(x, y, 3f/7f * rad, 6f/7f * rad, 4, Time.time * 1.5f);
+        Draw.reset();
+    }
+
+    public static void targetc(float x, float y, float rad, float alpha, Color color){
+        // target but no border
+        Lines.stroke(1f);
+        Draw.color(color, alpha);
+        Lines.circle(x, y, rad);
+        Lines.spikes(x, y, 3f/7f * rad, 6f/7f * rad, 4, Time.time * 1.5f);
+        Draw.reset();
+    }
+
+    public static void targetd(float x, float y, float rad, float alpha, Color color){
+        // target but no border
+        Lines.stroke(1f);
+        Draw.color(color, alpha);
         Lines.spikes(x, y, 3f/7f * rad, 6f/7f * rad, 4, Time.time * 1.5f);
         Draw.reset();
     }
@@ -386,6 +419,27 @@ public class Drawf{
         Draw.color(Pal.gray);
         Fill.poly(vx, vy, 3, radius + space, angle);
         Draw.color(color);
+        Fill.poly(vx, vy, 3, radius, angle);
+        Draw.color();
+    }
+
+    public static void simpleArrow(float x, float y, float x2, float y2, float length, float radius){
+        float angle = Angles.angle(x, y, x2, y2);
+        Tmp.v1.set(x2, y2).sub(x, y).limit(length);
+        float vx = Tmp.v1.x + x, vy = Tmp.v1.y + y;
+        Fill.poly(vx, vy, 3, radius, angle);
+    }
+
+    public static void simpleArrow(float x, float y, float x2, float y2, float length, float radius, Color color){
+        simpleArrow(x, y, x2, y2, length, radius, color,1f);
+    }
+
+    public static void simpleArrow(float x, float y, float x2, float y2, float length, float radius, Color color,float alpha){
+        float angle = Angles.angle(x, y, x2, y2);
+        Tmp.v1.set(x2, y2).sub(x, y).limit(length);
+        float vx = Tmp.v1.x + x, vy = Tmp.v1.y + y;
+
+        Draw.color(color,alpha);
         Fill.poly(vx, vy, 3, radius, angle);
         Draw.color();
     }

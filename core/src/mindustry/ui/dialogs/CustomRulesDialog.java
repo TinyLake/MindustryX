@@ -3,6 +3,7 @@ package mindustry.ui.dialogs;
 import arc.*;
 import arc.func.*;
 import arc.graphics.*;
+import arc.math.geom.*;
 import arc.scene.style.*;
 import arc.scene.ui.*;
 import arc.scene.ui.ImageButton.*;
@@ -16,13 +17,15 @@ import mindustry.game.*;
 import mindustry.game.Rules.*;
 import mindustry.gen.*;
 import mindustry.graphics.*;
+import mindustry.graphics.g3d.*;
 import mindustry.io.*;
 import mindustry.type.*;
 import mindustry.type.Weather.*;
 import mindustry.ui.*;
 import mindustry.world.*;
+import mindustryX.features.*;
 
-import static arc.util.Time.*;
+import static arc.util.Time.toMinutes;
 import static mindustry.Vars.*;
 
 public class CustomRulesDialog extends BaseDialog{
@@ -30,6 +33,8 @@ public class CustomRulesDialog extends BaseDialog{
     private Table main;
     private Prov<Rules> resetter;
     private LoadoutDialog loadoutDialog;
+
+    private Seq<Team> teams;
 
     public CustomRulesDialog(){
         super("@mode.custom");
@@ -39,6 +44,8 @@ public class CustomRulesDialog extends BaseDialog{
         setFillParent(true);
         shown(this::setup);
         addCloseButton();
+
+        teams = Seq.with(Team.baseTeams);
 
         buttons.button("@edit", Icon.pencil, () -> {
             BaseDialog dialog = new BaseDialog("@waves.edit");
@@ -187,12 +194,10 @@ public class CustomRulesDialog extends BaseDialog{
         check("@rules.wavesending", b -> rules.waveSending = b, () -> rules.waveSending, () -> rules.waves);
         check("@rules.wavetimer", b -> rules.waveTimer = b, () -> rules.waveTimer, () -> rules.waves);
         check("@rules.waitForWaveToEnd", b -> rules.waitEnemies = b, () -> rules.waitEnemies, () -> rules.waves && rules.waveTimer);
+        number("@rules.winWave", b -> rules.winWave = (int)b, () -> (int)rules.winWave);
         numberi("@rules.wavelimit", f -> rules.winWave = f, () -> rules.winWave, () -> rules.waves, 0, Integer.MAX_VALUE);
         number("@rules.wavespacing", false, f -> rules.waveSpacing = f * 60f, () -> rules.waveSpacing / 60f, () -> rules.waves && rules.waveTimer, 1, Float.MAX_VALUE);
-        //this is experimental, because it's not clear that 0 makes it default.
-        if(experimental){
-            number("@rules.initialwavespacing", false, f -> rules.initialWaveSpacing = f * 60f, () -> rules.initialWaveSpacing / 60f, () -> rules.waves && rules.waveTimer, 0, Float.MAX_VALUE);
-        }
+        number("@rules.initialwavespacing", false, f -> rules.initialWaveSpacing = f * 60f, () -> rules.initialWaveSpacing / 60f, () -> rules.waves && rules.waveTimer, 0, Float.MAX_VALUE);
         number("@rules.dropzoneradius", false, f -> rules.dropZoneRadius = f * tilesize, () -> rules.dropZoneRadius / tilesize, () -> rules.waves);
 
         title("@rules.title.resourcesbuilding");
@@ -211,7 +216,7 @@ public class CustomRulesDialog extends BaseDialog{
         check("@rules.reactorexplosions", b -> rules.reactorExplosions = b, () -> rules.reactorExplosions);
         check("@rules.schematic", b -> rules.schematicsAllowed = b, () -> rules.schematicsAllowed);
         check("@rules.coreincinerates", b -> rules.coreIncinerates = b, () -> rules.coreIncinerates);
-        check("@rules.cleanupdeadteams", b -> rules.cleanupDeadTeams = b, () -> rules.cleanupDeadTeams, () -> rules.pvp);
+        check("@rules.cleanupdeadteams", b -> rules.cleanupDeadTeams = b, () -> rules.cleanupDeadTeams);
         check("@rules.disableworldprocessors", b -> rules.disableWorldProcessors = b, () -> rules.disableWorldProcessors);
         number("@rules.buildcostmultiplier", false, f -> rules.buildCostMultiplier = f, () -> rules.buildCostMultiplier, () -> !rules.infiniteResources);
         number("@rules.buildspeedmultiplier", f -> rules.buildSpeedMultiplier = f, () -> rules.buildSpeedMultiplier, 0.001f, 50f);
@@ -227,6 +232,7 @@ public class CustomRulesDialog extends BaseDialog{
         )).left().width(300f).row();
 
         main.button("@bannedblocks", () -> showBanned("@bannedblocks", ContentType.block, rules.bannedBlocks, Block::canBeBuilt)).left().width(300f).row();
+        main.button("@revealedblocks", () -> showBanned("@revealedblocks", ContentType.block, rules.revealedBlocks, b -> b.showUnlock() && (!b.isVanilla() || b.hasEmoji()))).left().width(300f).row();
         check("@rules.hidebannedblocks", b -> rules.hideBannedBlocks = b, () -> rules.hideBannedBlocks);
         check("@bannedblocks.whitelist", b -> rules.blockWhitelist = b, () -> rules.blockWhitelist);
 
@@ -253,6 +259,7 @@ public class CustomRulesDialog extends BaseDialog{
         check("@rules.explosions", b -> rules.damageExplosions = b, () -> rules.damageExplosions);
         check("@rules.fire", b -> rules.fire = b, () -> rules.fire);
         check("@rules.fog", b -> rules.fog = b, () -> rules.fog);
+        check("@rules.staticFog", b -> rules.staticFog = b, () -> rules.staticFog);
         check("@rules.lighting", b -> rules.lighting = b, () -> rules.lighting);
 
         if(experimental){
@@ -274,8 +281,42 @@ public class CustomRulesDialog extends BaseDialog{
             }).margin(4).size(50f).padRight(10);
             b.add("@rules.ambientlight");
         }, () -> ui.picker.show(rules.ambientLight, rules.ambientLight::set)).left().width(250f).row();
+        main.button(b -> {
+            b.left();
+            b.table(Tex.pane, in -> {
+                in.stack(new Image(Tex.alphaBg), new Image(Tex.whiteui){{
+                    update(() -> setColor(rules.staticColor));
+                }}).grow();
+            }).margin(4).size(50f).padRight(10);
+            b.add("@rules.staticColor");
+        }, () -> ui.picker.show(rules.staticColor, rules.staticColor::set)).left().width(250f).row();
+        main.button(b -> {
+            b.left();
+            b.table(Tex.pane, in -> {
+                in.stack(new Image(Tex.alphaBg), new Image(Tex.whiteui){{
+                    update(() -> setColor(rules.dynamicColor));
+                }}).grow();
+            }).margin(4).size(50f).padRight(10);
+            b.add("@rules.dynamicColor");
+        }, () -> ui.picker.show(rules.dynamicColor, rules.dynamicColor::set)).left().width(250f).row();
 
         main.button("@rules.weather", this::weatherDialog).width(250f).left().row();
+
+        title("@rules.title.arcExperimental");
+        check("@rules.logicUnitBuild", b -> rules.logicUnitBuild = b, () -> rules.logicUnitBuild);
+        check("@rules.coreDestroyClear",b->rules.coreDestroyClear = b,()->rules.coreDestroyClear);
+        check("@rules.unitPayloadUpdate",b->rules.unitPayloadUpdate = b,()->rules.unitPayloadUpdate);
+        check("@rules.showSpawns",b->rules.showSpawns = b,()->rules.showSpawns);
+        check("允许控制单位", b -> rules.possessionAllowed = b, () -> rules.possessionAllowed);
+        check("禁用重建", b -> rules.ghostBlocks = b, () -> !rules.ghostBlocks);
+        main.button("@hiddenBuildItems", () -> showBanned("@hiddenBuildItems", ContentType.item, rules.hiddenBuildItems, Item::showUnlock)).left().width(300f).row();
+
+        check("@rules.limitarea", b -> rules.limitMapArea = b, () -> rules.limitMapArea);
+        numberi("x", x -> state.rules.limitX = x, () -> state.rules.limitX, () -> state.rules.limitMapArea, 0, 10000);
+        numberi("y", y -> state.rules.limitY = y, () -> state.rules.limitY, () -> state.rules.limitMapArea, 0, 10000);
+        numberi("w", w -> state.rules.limitWidth = w, () -> state.rules.limitWidth, () -> state.rules.limitMapArea, 0, 10000);
+        numberi("h", h -> state.rules.limitHeight = h, () -> state.rules.limitHeight, () -> state.rules.limitMapArea, 0, 10000);
+        check("@rules.disableOutsideArea",b -> rules.disableOutsideArea = b, () -> rules.disableOutsideArea);
 
         title("@rules.title.planet");
 
@@ -286,7 +327,7 @@ public class CustomRulesDialog extends BaseDialog{
 
             t.defaults().size(140f, 50f);
 
-            for(Planet planet : content.planets().select(p -> p.accessible && p.visible && p.isLandable())){
+            for(Planet planet : content.planets()){
                 t.button(planet.localizedName, style, () -> {
                     planet.applyRules(rules);
                 }).group(group).checked(b -> rules.planet == planet);
@@ -305,10 +346,29 @@ public class CustomRulesDialog extends BaseDialog{
 
         title("@rules.title.teams");
 
+        main.button("所有队伍开启无限火力", () -> {
+            for(Team team : Team.all){
+                team.rules().cheat = true;
+            }
+            setup();
+        }).width(256f).height(32f).row();
+        main.button("所有队伍关闭无限火力", () -> {
+            for(Team team : Team.all){
+                team.rules().cheat = false;
+            }
+            setup();
+        }).width(256f).height(32f).row();
+
         team("@rules.playerteam", t -> rules.defaultTeam = t, () -> rules.defaultTeam);
         team("@rules.enemyteam", t -> rules.waveTeam = t, () -> rules.waveTeam);
 
-        for(Team team : Team.baseTeams){
+        main.button("更多队伍设置", Styles.flatBordert, () -> UIExt.teamSelect.select(team -> teams.contains(team), team -> {
+            if(teams.contains(team)) teams.remove(team);
+            else teams.add(team);
+            setup();
+        })).marginLeft(14f).fillX().height(55f).row();
+
+        for(Team team : teams){
             boolean[] shown = {false};
             Table wasMain = main;
 
@@ -323,6 +383,10 @@ public class CustomRulesDialog extends BaseDialog{
                 t.left().defaults().fillX().left().pad(5);
                 main = t;
                 TeamRule teams = rules.teams.get(team);
+
+                check("@rules.cheat", b -> teams.cheat = b, () -> teams.cheat);
+                check("@rules.infiniteAmmo",b -> teams.infiniteAmmo = b, () -> teams.infiniteAmmo);
+                check("@rules.aiCoreSpawn", b -> teams.aiCoreSpawn = b, () -> teams.aiCoreSpawn);
 
                 number("@rules.blockhealthmultiplier", f -> teams.blockHealthMultiplier = f, () -> teams.blockHealthMultiplier);
                 number("@rules.blockdamagemultiplier", f -> teams.blockDamageMultiplier = f, () -> teams.blockDamageMultiplier);
@@ -348,6 +412,33 @@ public class CustomRulesDialog extends BaseDialog{
                 main = wasMain;
             }, () -> shown[0]).growX().row();
         }
+
+        title("地图背景[lightgray]需要设置空地板");
+        check("自定义背景", t -> {
+            rules.planetBackground = t ? new PlanetParams(){{planet = Planets.sun;zoom=1f;camPos = new Vec3(1.2388899f, 1.6047299f, 2.4758825f);}} : null;
+            setup();
+        }, () -> rules.planetBackground != null);
+        if (rules.planetBackground != null){
+            main.table(Tex.button, t -> {
+                t.margin(10f);
+                var group = new ButtonGroup<>();
+                var style = Styles.flatTogglet;
+
+                t.defaults().size(140f, 50f);
+
+                for(Planet planet : content.planets()){
+                    t.button(planet.localizedName, style, () -> rules.planetBackground.planet = planet).group(group).checked(b -> rules.planetBackground.planet == planet);
+                    if(t.getChildren().size % 3 == 0){
+                        t.row();
+                    }
+                }
+            }).left().fill(false).expand(false, false).row();
+            number("放缩", f -> rules.planetBackground.zoom = f, () -> rules.planetBackground.zoom, 0.0001f, 999);
+            number("位置x", f -> rules.planetBackground.camPos.x = f, () -> rules.planetBackground.camPos.x);
+            number("位置y", f -> rules.planetBackground.camPos.y = f, () -> rules.planetBackground.camPos.y);
+            number("位置z", f -> rules.planetBackground.camPos.z = f, () -> rules.planetBackground.camPos.z);
+        }
+
     }
 
     void team(String text, Cons<Team> cons, Prov<Team> prov){
@@ -360,6 +451,7 @@ public class CustomRulesDialog extends BaseDialog{
                     cons.get(team);
                 }).pad(1f).checked(b -> prov.get() == team).size(60f).tooltip(team.coloredName()).with(i -> i.getStyle().imageUpColor = team.color);
             }
+            t.button(Icon.add, Styles.squareTogglei, 38f, () -> UIExt.teamSelect.pickOne(cons, prov.get())).pad(1f).checked(b -> !Seq.with(Team.baseTeams).contains(prov.get())).size(60f).tooltip("[acid]更多队伍选择");
         }).padTop(0).row();
     }
 
@@ -391,7 +483,7 @@ public class CustomRulesDialog extends BaseDialog{
             t.field((prov.get()) + "", s -> cons.get(Strings.parseInt(s)))
                 .update(a -> a.setDisabled(!condition.get()))
                 .padRight(100f)
-                .valid(f -> Strings.parseInt(f) >= min && Strings.parseInt(f) <= max).width(120f).left();
+                .valid(f -> Strings.parseInt(f) >= -999999 && Strings.parseInt(f) <= 999999999).width(120f).left();
         }).padTop(0).row();
     }
 
@@ -403,7 +495,8 @@ public class CustomRulesDialog extends BaseDialog{
             t.field((integer ? (int)prov.get() : prov.get()) + "", s -> cons.get(Strings.parseFloat(s)))
             .padRight(100f)
             .update(a -> a.setDisabled(!condition.get()))
-            .valid(f -> Strings.canParsePositiveFloat(f) && Strings.parseFloat(f) >= min && Strings.parseFloat(f) <= max).width(120f).left();
+            //.valid(f -> Strings.canParsePositiveFloat(f) && Strings.parseFloat(f) >= min && Strings.parseFloat(f) <= max).width(120f).left();
+            .valid(f ->  Strings.canParsePositiveFloat(f)).width(120f).left();
         }).padTop(0);
         main.row();
     }
@@ -418,7 +511,7 @@ public class CustomRulesDialog extends BaseDialog{
     }
 
     void title(String text){
-        main.add(text).color(Pal.accent).padTop(20).padRight(100f).padBottom(-3);
+        main.add(text).color(Pal.accent).padTop(20).center().padBottom(-3);
         main.row();
         main.image().color(Pal.accent).height(3f).padRight(100f).padBottom(20);
         main.row();
