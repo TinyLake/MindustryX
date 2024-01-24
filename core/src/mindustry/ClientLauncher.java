@@ -232,6 +232,8 @@ public abstract class ClientLauncher extends ApplicationCore implements Platform
                 }))));
             }
         }else{
+            updateTitle();
+
             asyncCore.begin();
 
             super.update();
@@ -245,6 +247,18 @@ public abstract class ClientLauncher extends ApplicationCore implements Platform
                 long toSleep = nextFrame - current;
                 Threads.sleep(toSleep / 1000000, (int)(toSleep % 1000000));
             }
+        }
+    }
+
+    private String lastTitle = "";
+    private void updateTitle(){
+        var mod = mods.orderedMods();
+        var title = "MindustryX | 版本号 " + Version.mdtXBuild +
+        " | mod启用" + mod.count(Mods.LoadedMod::enabled) + "/" + mod.size +
+        " | " + (Core.graphics != null ? Core.graphics.getWidth() + "x" + Core.graphics.getHeight() : "");
+        if(!title.equals(lastTitle)){
+            lastTitle = title;
+            graphics.setTitle(title);
         }
     }
 
