@@ -4,6 +4,9 @@ import javassist.bytecode.Bytecode
 import javassist.bytecode.Descriptor
 import org.gradle.jvm.tasks.Jar
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
+import java.util.zip.ZipEntry
+import java.util.zip.ZipFile
+import java.util.zip.ZipOutputStream
 
 buildscript {
     dependencies {
@@ -12,6 +15,7 @@ buildscript {
 }
 plugins {
     java
+    id("de.undercouch.download") version "5.6.0"
 //    kotlin()
 }
 
@@ -102,4 +106,53 @@ val writeVersion = tasks.create("writeVersion") {
 
 tasks.processResources {
     dependsOn(patchArc, writeVersion)
+}
+
+val downloadOriginJar = tasks.create<de.undercouch.gradle.tasks.download.Download>("downloadOriginJar") {
+    val upstreamBuild = project.properties["upstreamBuild"] as String?
+    val output = temporaryDir.resolve("v$upstreamBuild.jar")
+    inputs.property("upstreamBuild", upstreamBuild)
+
+    src("https://github.com/Anuken/Mindustry/releases/download/v$upstreamBuild/Mindustry.jar")
+    dest(output)
+    overwrite(false)
+}
+val genLoaderMod = tasks.create("genLoaderMod") {
+    val distTask = tasks.getByPath("::desktop:dist")
+    dependsOn(downloadOriginJar, distTask)
+    val inputF = distTask.outputs.files.singleFile
+    val baseF = downloadOriginJar.outputFiles.single()
+    val outputF = layout.buildDirectory.file("libs/Mindustry.loader.jar")
+    inputs.files(inputF, baseF)
+    outputs.file(outputF)
+    doLast {
+        val input = ZipFile(inputF)
+        val base = ZipFile(baseF)
+        val output = ZipOutputStream(outputF.get().asFile.outputStream())
+        val baseMap = base.entries().asSequence().associateBy { it.name }
+
+        for (entry in input.entries()) {
+            if (entry.name.startsWith("sprites") || entry.name == "version.properties") continue
+            val baseEntry = baseMap[entry.name]
+            if (baseEntry != null) {
+                val a = input.getInputStream(entry).use { it.readAllBytes() }
+                val b = base.getInputStream(baseEntry).use { it.readAllBytes() }
+                val ext = entry.name.substringAfterLast('.', "")
+                val eq = when (ext) {
+                    "", "frag", "vert", "js", "properties" -> a.filter { it != 10.toByte() && it != 13.toByte() } == b.filter { it != 10.toByte() && it != 13.toByte() }
+                    else -> a.contentEquals(b)
+                }
+                if (eq) continue
+            }
+            var outputEntry = entry
+            //rename to mod.hjson
+            if (entry.name == "MindustryX.hjson") {
+                outputEntry = ZipEntry("mod.hjson")
+            }
+            output.putNextEntry(outputEntry)
+            output.write(input.getInputStream(entry).use { it.readAllBytes() })
+            output.closeEntry()
+        }
+        output.close()
+    }
 }
