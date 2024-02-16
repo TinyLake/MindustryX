@@ -169,6 +169,7 @@ public abstract class ClientLauncher extends ApplicationCore implements Platform
         add(ui = new UI());
         add(netServer = new NetServer());
         add(netClient = new NetClient());
+        add(new mindustryX.Hooks());
 
         assets.load(schematics);
 
