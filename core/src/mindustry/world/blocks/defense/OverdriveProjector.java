@@ -15,6 +15,7 @@ import mindustry.ui.*;
 import mindustry.world.*;
 import mindustry.world.consumers.*;
 import mindustry.world.meta.*;
+import mindustryX.features.*;
 
 import static mindustry.Vars.*;
 
@@ -137,6 +138,24 @@ public class OverdriveProjector extends Block{
         @Override
         public void draw(){
             super.draw();
+
+            float realRange = range + phaseHeat * phaseRangeBoost;
+            float pro_Transparency = RenderExt.overdriveZoneTransparency;
+            if(realBoost() > 1 && pro_Transparency > 0){
+                if(renderer.animateShields){
+                    Draw.z(Layer.overdrive);
+                    Draw.color(Color.valueOf("#ff8920"), phaseColor, 1 - pro_Transparency * realBoost() * realBoost() / 4.25f);
+                    Fill.poly(x, y,50, realRange);
+                    Draw.reset();
+                    Draw.z(Layer.overdrive-0.3f);
+                } else{
+                    Draw.color(phaseHeat>0.2?Color.valueOf("FFA500"):Color.valueOf("FF8C00"), pro_Transparency);
+                    Lines.stroke(1f);
+                    Lines.circle(x, y, realRange);
+                    Draw.alpha(pro_Transparency * 0.1f);
+                    Fill.circle(x, y, realRange);
+                }
+            }
 
             float f = 1f - (Time.time / 100f) % 1f;
 

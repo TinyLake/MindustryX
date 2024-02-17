@@ -364,6 +364,11 @@ public class Renderer implements ApplicationListener{
                 effectBuffer.blit(Shaders.shield);
             });
 
+            Draw.drawRange(Layer.overdrive, 1f, () -> effectBuffer.begin(Color.clear), () -> {
+                effectBuffer.end();
+                effectBuffer.blit(Shaders.shield);
+            });
+
             Draw.drawRange(Layer.buildBeam, 1f, () -> effectBuffer.begin(Color.clear), () -> {
                 effectBuffer.end();
                 effectBuffer.blit(Shaders.buildBeam);

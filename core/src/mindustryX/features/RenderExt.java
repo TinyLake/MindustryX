@@ -12,6 +12,7 @@ public class RenderExt{
     public static boolean arcChoiceUiIcon;
     public static boolean researchViewer;
     public static int hiddenItemTransparency;
+    public static float overdriveZoneTransparency;
 
     public static void init(){
         Events.run(Trigger.update, () -> {
@@ -21,6 +22,7 @@ public class RenderExt{
             arcChoiceUiIcon = Core.settings.getBool("arcchoiceuiIcon");
             researchViewer = Core.settings.getBool("researchViewer");
             hiddenItemTransparency = Core.settings.getInt("HiddleItemTransparency");
+            overdriveZoneTransparency = Core.settings.getInt("overdrive_zone") / 100f;
         });
         Events.run(Trigger.draw, RenderExt::draw);
     }

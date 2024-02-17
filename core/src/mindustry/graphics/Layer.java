@@ -86,6 +86,9 @@ public class Layer{
     //shield effects
     shields = 125,
 
+    //shield effects
+    overdrive = 127,
+
     //weather effects, e.g. rain and snow
     weather = 130,
 
