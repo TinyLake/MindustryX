@@ -17,6 +17,8 @@ import mindustry.world.meta.*;
 
 import java.util.*;
 
+import mindustryX.features.*;
+
 import static mindustry.Vars.*;
 
 public class Unloader extends Block{
@@ -217,6 +219,10 @@ public class Unloader extends Block{
         public void draw(){
             super.draw();
 
+            if(RenderExt.arcChoiceUiIcon && sortItem != null){
+                Draw.rect(sortItem.uiIcon, x, y,4f,4f);
+                return;
+            }
             Draw.color(sortItem == null ? Color.clear : sortItem.color);
             Draw.rect(centerRegion, x, y);
             Draw.color();

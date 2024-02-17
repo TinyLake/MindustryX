@@ -12,6 +12,7 @@ import mindustry.type.*;
 import mindustry.world.*;
 import mindustry.world.blocks.*;
 import mindustry.world.meta.*;
+import mindustryX.features.*;
 
 import static mindustry.Vars.*;
 
@@ -47,6 +48,7 @@ public class UnitCargoUnloadPoint extends Block{
                 Draw.color(item.color);
                 Draw.rect(topRegion, x, y);
                 Draw.color();
+                if(RenderExt.arcChoiceUiIcon) Draw.rect(item.uiIcon, x, y,4f,4f);
             }
         }
 

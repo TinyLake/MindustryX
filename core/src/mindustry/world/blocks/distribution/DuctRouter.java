@@ -12,6 +12,7 @@ import mindustry.type.*;
 import mindustry.world.*;
 import mindustry.world.blocks.*;
 import mindustry.world.meta.*;
+import mindustryX.features.*;
 
 import static mindustry.Vars.*;
 
@@ -84,6 +85,7 @@ public class DuctRouter extends Block{
                 Draw.color(sortItem.color);
                 Draw.rect("center", x, y);
                 Draw.color();
+                if(RenderExt.arcChoiceUiIcon) Draw.rect(sortItem.uiIcon, x, y,4f,4f);
             }else{
                 Draw.rect(topRegion, x, y, rotdeg());
             }

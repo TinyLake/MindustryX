@@ -9,12 +9,14 @@ import mindustry.world.blocks.logic.MessageBlock.*;
 
 public class RenderExt{
     public static boolean bulletShow, showMineBeam, displayAllMessage;
+    public static boolean arcChoiceUiIcon;
 
     public static void init(){
         Events.run(Trigger.update, () -> {
             bulletShow = Core.settings.getBool("bulletShow");
             showMineBeam = Core.settings.getBool("showminebeam");
             displayAllMessage = Core.settings.getBool("displayallmessage");
+            arcChoiceUiIcon = Core.settings.getBool("arcchoiceuiIcon");
         });
         Events.run(Trigger.draw, RenderExt::draw);
     }

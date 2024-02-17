@@ -11,6 +11,7 @@ import mindustry.type.*;
 import mindustry.world.*;
 import mindustry.world.blocks.*;
 import mindustry.world.meta.*;
+import mindustryX.features.*;
 
 import static mindustry.Vars.*;
 
@@ -73,6 +74,7 @@ public class ItemSource extends Block{
                 Draw.color(outputItem.color);
                 Fill.square(x, y, tilesize/2f - 0.00001f);
                 Draw.color();
+                if(RenderExt.arcChoiceUiIcon) Draw.rect(outputItem.uiIcon, x, y,4f,4f);
             }
 
             super.draw();
