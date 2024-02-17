@@ -12,6 +12,7 @@ import mindustry.world.*;
 import mindustry.world.consumers.*;
 import mindustry.world.draw.*;
 import mindustry.world.meta.*;
+import mindustryX.features.*;
 
 /**
  * Extracts a random list of items from an input item and an input liquid.
@@ -38,7 +39,7 @@ public class Separator extends Block{
         stats.timePeriod = craftTime;
         super.setStats();
 
-        stats.add(Stat.output, StatValues.items(item -> Structs.contains(results, i -> i.item == item)));
+        stats.add(StatExt.sepOutput,StatValues.items(results));
         stats.add(Stat.productionTime, craftTime / 60f, StatUnit.seconds);
     }
 

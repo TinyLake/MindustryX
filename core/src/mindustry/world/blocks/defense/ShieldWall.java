@@ -8,6 +8,7 @@ import arc.util.io.*;
 import mindustry.annotations.Annotations.*;
 import mindustry.graphics.*;
 import mindustry.world.meta.*;
+import mindustryX.features.*;
 
 import static mindustry.Vars.*;
 
@@ -32,6 +33,9 @@ public class ShieldWall extends Wall{
         super.setStats();
 
         stats.add(Stat.shieldHealth, shieldHealth);
+        stats.add(Stat.cooldownTime, breakCooldown / Time.toSeconds, StatUnit.seconds);
+        stats.add(StatExt.regenSpeed, regenSpeed * Time.toSeconds, StatUnit.perSecond);
+
     }
 
     public class ShieldWallBuild extends WallBuild{

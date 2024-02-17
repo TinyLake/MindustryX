@@ -32,6 +32,7 @@ import mindustry.world.blocks.environment.*;
 import mindustry.world.blocks.power.*;
 import mindustry.world.consumers.*;
 import mindustry.world.meta.*;
+import mindustryX.features.*;
 
 import java.lang.reflect.*;
 import java.util.*;
@@ -528,7 +529,7 @@ public class Block extends UnlockableContent implements Senseable{
             }
         }
 
-        if(canBeBuilt() && requirements.length > 0){
+        if(requirements.length > 0){
             stats.add(Stat.buildTime, buildCost / 60, StatUnit.seconds);
             stats.add(Stat.buildCost, StatValues.items(false, requirements));
         }
@@ -540,6 +541,7 @@ public class Block extends UnlockableContent implements Senseable{
         for(var c : consumers){
             c.display(stats);
         }
+        stats.add(StatExt.canOverdrive, canOverdrive);
 
         //Note: Power stats are added by the consumers.
         if(hasLiquids) stats.add(Stat.liquidCapacity, liquidCapacity, StatUnit.liquidUnits);

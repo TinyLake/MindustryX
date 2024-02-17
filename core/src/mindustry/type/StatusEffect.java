@@ -13,6 +13,7 @@ import mindustry.gen.*;
 import mindustry.graphics.*;
 import mindustry.graphics.MultiPacker.*;
 import mindustry.world.meta.*;
+import mindustryX.features.*;
 
 public class StatusEffect extends UnlockableContent{
     /** Damage dealt by the unit with the effect. */
@@ -91,6 +92,7 @@ public class StatusEffect extends UnlockableContent{
         if(speedMultiplier != 1) stats.addPercent(Stat.speedMultiplier, speedMultiplier);
         if(reloadMultiplier != 1) stats.addPercent(Stat.reloadMultiplier, reloadMultiplier);
         if(buildSpeedMultiplier != 1) stats.addPercent(Stat.buildSpeedMultiplier, buildSpeedMultiplier);
+        if(dragMultiplier != 1) stats.addPercent(StatExt.dragMultiplier, dragMultiplier);
         if(damage > 0) stats.add(Stat.damage, damage * 60f, StatUnit.perSecond);
         if(damage < 0) stats.add(Stat.healing, -damage * 60f, StatUnit.perSecond);
 

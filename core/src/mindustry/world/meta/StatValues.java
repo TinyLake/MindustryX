@@ -12,7 +12,7 @@ import arc.util.*;
 import mindustry.*;
 import mindustry.content.*;
 import mindustry.ctype.*;
-import mindustry.entities.abilities.*;
+import mindustry.entities.abilities.Ability;
 import mindustry.entities.bullet.*;
 import mindustry.gen.*;
 import mindustry.maps.*;
@@ -21,6 +21,8 @@ import mindustry.ui.*;
 import mindustry.world.*;
 import mindustry.world.blocks.defense.turrets.*;
 import mindustry.world.blocks.environment.*;
+import mindustry.world.blocks.production.Drill;
+import mindustryX.features.*;
 
 import static mindustry.Vars.*;
 
@@ -164,7 +166,7 @@ public class StatValues{
 
                 if(state.isGame()){
                     var blocks = Vars.content.blocks()
-                    .select(block -> (!checkFloors || block instanceof Floor) && indexer.isBlockPresent(block) && block.attributes.get(attr) != 0 && !((block instanceof Floor f && f.isDeep()) && !floating))
+                    .select(block -> (!checkFloors || block instanceof Floor) && block.attributes.get(attr) != 0 && !((block instanceof Floor f && f.isDeep()) && !floating))
                     .with(s -> s.sort(f -> f.attributes.get(attr)));
 
                     if(blocks.any()){
@@ -237,6 +239,38 @@ public class StatValues{
         return content(list.as());
     }
 
+    public static StatValue drillBlock(Drill drill){
+        Seq<Block> list = content.blocks().select(b -> b instanceof Floor f && !f.wallOre && f.itemDrop != null && f.itemDrop.hardness <= drill.tier && f.itemDrop != drill.blockedItem);
+        list.sort(t -> drill.getDrillTime(t.itemDrop));
+        return table -> {
+            table.row();
+            table.table(at -> {
+                at.background(Styles.grayPanel);
+                at.add("[stat]" + drill.tier + "[lightgray]级[accent] ~ [stat]" +
+                Strings.autoFixed(60f / drill.drillTime * drill.size * drill.size, 2) + "[lightgray]物品/s");
+                at.row();
+                if(list.size == 0) return;
+                at.table(t -> {
+                    float[] eff = new float[list.size];
+                    for(int i = 0; i < list.size; i++){
+                        eff[i] = 60f / drill.getDrillTime(list.get(i).itemDrop) * drill.size * drill.size;
+                    }
+                    StringBuilder oreList = new StringBuilder();
+                    for(int i = 0; i < list.size; i++){
+                        Block block = list.get(i);
+                        oreList.append(block.emoji()).append(" ").append(block.localizedName);
+                        if(i == list.size - 1 || eff[i] != eff[i + 1]){
+                            t.labelWrap(oreList.toString()).width(250f).padLeft(20f).padTop(5f);
+                            t.add("[stat]" + Strings.fixed(eff[i], 2)).padLeft(20f);
+                            t.add("[cyan]" + Strings.fixed(eff[i] * drill.liquidBoostIntensity * drill.liquidBoostIntensity, 2)).padLeft(20f).padRight(20f);
+                            t.row();
+                            oreList = new StringBuilder();
+                        }else oreList.append("  ");
+                    }
+                });
+            });
+        };
+    }
     public static StatValue drillables(float drillTime, float drillMultiplier, float size, ObjectFloatMap<Item> multipliers, Boolf<Block> filter){
         return table -> {
             table.row();
@@ -293,6 +327,10 @@ public class StatValues{
     }
 
     public static StatValue speedBoosters(String unit, float amount, float speed, boolean strength, Boolf<Liquid> filter){
+        return speedBoosters(unit, amount, speed, strength, filter, false);
+    }
+
+    public static StatValue speedBoosters(String unit, float amount, float speed, boolean strength, Boolf<Liquid> filter, Boolean isForce){
         return table -> {
             table.row();
             table.table(c -> {
@@ -308,7 +346,8 @@ public class StatValues{
 
                         b.table(bt -> {
                             bt.right().defaults().padRight(3).left();
-                            if(speed != Float.MAX_VALUE) bt.add(unit.replace("{0}", "[stat]" + Strings.autoFixed(speed * (strength ? liquid.heatCapacity : 1f) + (strength ? 1f : 0f), 2) + "[lightgray]")).pad(5);
+                            if(isForce) bt.add(unit.replace("{0}", "[stat]" + Strings.autoFixed(speed * ((liquid.heatCapacity - 0.4f) * 0.9f + 1), 2) + "[lightgray]")).pad(5);
+                            else if(speed != Float.MAX_VALUE) bt.add(unit.replace("{0}", "[stat]" + Strings.autoFixed(speed * (strength ? liquid.heatCapacity : 1f) + (strength ? 1f : 0f), 2) + "[lightgray]")).pad(5);
                         }).right().grow().pad(10f).padRight(15f);
                     }).growX().pad(5).row();
                 }
@@ -371,20 +410,49 @@ public class StatValues{
         };
     }
 
-    public static StatValue abilities(Seq<Ability> abilities){
+    public static StatValue abilities(UnitType unit, Seq<Ability> abilities){
         return table -> {
             table.row();
-            table.table(t -> abilities.each(ability -> {
-                if(ability.display){
+            table.table(t -> {
+                t.background(Styles.grayPanel);
+                for(Ability a : abilities){
+                    if(!a.display) continue;
+                    String description = StatExt.description(a, unit);
+                    if(description != null){
+                        t.table(tt -> {
+                            tt.add(a.localized()).width(100f);
+                            tt.add(description).minWidth(350f).padRight(12f).padBottom(5f);
+                        });
+                    }else{
+                        t.add(a.localized()).minWidth(350f).padRight(12f).padBottom(5f);
+                    }
                     t.row();
-                    t.table(Styles.grayPanel, a -> {
-                        a.add("[accent]" + ability.localized()).padBottom(4);
-                        a.row();
-                        a.left().top().defaults().left();
-                        ability.addStats(a);
-                    }).pad(5).margin(10).growX();
                 }
-            }));
+            }).padLeft(12f);
+        };
+    }
+
+    public static StatValue targets(UnitType unit, BlockFlag[] targetFlags){
+        return table -> {
+            table.row();
+            table.table(t -> {
+                t.background(Styles.grayPanel);
+                for(BlockFlag flag : targetFlags){
+                    if(flag == null) continue;
+                    t.add(flag.name()).width(150f).padBottom(5f);
+                    int count = 0;
+                    for(Block block : content.blocks()){
+                        if(block.flags.contains(flag)){
+                            if(count >= 3){
+                                t.add("\uE813").width(30f);
+                                break;
+                            }else t.add(block.emoji()).width(30f);
+                            count += 1;
+                        }
+                    }
+                    t.row();
+                }
+            }).padLeft(12f);
         };
     }
 
@@ -425,7 +493,9 @@ public class StatValues{
                         bt.row();
                     }
 
-                    if(type.damage > 0 && (type.collides || type.splashDamage <= 0)){
+                    if(type instanceof LightningBulletType lb){
+                        lightning(0, lb.damage, lb.lightningLength, lb.lightningLengthRand).display(bt);
+                    }else if(type.damage > 0 && (type.collides || type.splashDamage <= 0)){
                         if(type.continuousDamage() > 0){
                             bt.add(Core.bundle.format("bullet.damage", type.continuousDamage()) + StatUnit.perSecond.localized());
                         }else{
@@ -434,12 +504,11 @@ public class StatValues{
                     }
 
                     if(type.buildingDamageMultiplier != 1){
-                        int val = (int)(type.buildingDamageMultiplier * 100 - 100);
-                        sep(bt, Core.bundle.format("bullet.buildingdamage", ammoStat(val)));
+                        sep(bt, colorize(type.buildingDamageMultiplier) + "[lightgray]x建筑伤害");
                     }
 
                     if(type.rangeChange != 0 && !compact){
-                        sep(bt, Core.bundle.format("bullet.range", ammoStat(type.rangeChange / tilesize)));
+                        sep(bt, "[lightgray]射程 + " + colorize(type.rangeChange / tilesize > 0) + Strings.autoFixed(type.rangeChange / tilesize, 1) + " [lightgray]格");
                     }
 
                     if(type.splashDamage > 0){
@@ -451,8 +520,7 @@ public class StatValues{
                     }
 
                     if(!compact && !Mathf.equal(type.reloadMultiplier, 1f)){
-                        int val = (int)(type.reloadMultiplier * 100 - 100);
-                        sep(bt, Core.bundle.format("bullet.reload", ammoStat(val)));
+                        sep(bt, colorize(type.reloadMultiplier) + "[lightgray]x射速");
                     }
 
                     if(type.knockback > 0){
@@ -467,8 +535,24 @@ public class StatValues{
                         sep(bt, Core.bundle.format("bullet.healamount", Strings.autoFixed(type.healAmount, 2)));
                     }
 
-                    if(type.pierce || type.pierceCap != -1){
-                        sep(bt, type.pierceCap == -1 ? "@bullet.infinitepierce" : Core.bundle.format("bullet.pierce", type.pierceCap));
+                    if((type.pierce || type.pierceCap != -1) && !(type instanceof PointLaserBulletType)){
+                        boolean laserPierce = type instanceof LaserBulletType || type instanceof ContinuousLaserBulletType || type instanceof ShrapnelBulletType;
+                        boolean pierceBuilding = laserPierce || type instanceof ContinuousFlameBulletType || type instanceof RailBulletType || type.pierceBuilding;
+                        boolean pierceUnit = type.pierce;
+                        StringBuilder str = new StringBuilder("[stat]");
+                        if(type instanceof RailBulletType rail){
+                            str.append(Strings.autoFixed(rail.pierceDamageFactor * 100f, 1) + "%衰减");
+                        }else{
+                            str.append(type.pierceCap == -1 ? "无限" : type.pierceCap + "x");
+                        }
+                        str.append("穿透[lightgray]");
+                        if(pierceBuilding && pierceUnit){
+                            str.append("建筑与单位");
+                        }else{
+                            str.append(pierceBuilding ? "建筑" : "单位");
+                        }
+                        if(laserPierce) str.append("[stat](电性)");
+                        sep(bt, str.toString());
                     }
 
                     if(type.incendAmount > 0){
@@ -476,59 +560,71 @@ public class StatValues{
                     }
 
                     if(type.homingPower > 0.01f){
-                        sep(bt, "@bullet.homing");
+                        sep(bt, "[stat]追踪[lightgray]~[]" + Strings.autoFixed(type.homingPower * 50 * Time.toSeconds, 1) + "°/s[lightgray]~[]" + Strings.fixed(type.homingRange / tilesize, 1) + "[lightgray]格");
                     }
 
-                    if(type.lightning > 0){
-                        sep(bt, Core.bundle.format("bullet.lightning", type.lightning, type.lightningDamage < 0 ? type.damage : type.lightningDamage));
+                    if(!(type instanceof LightningBulletType) && type.lightning > 0){
+                        lightning(type.lightning, type.lightningDamage < 0 ? type.damage : type.lightningDamage, type.lightningLength, type.lightningLengthRand).display(bt);
                     }
 
                     if(type.pierceArmor){
                         sep(bt, "@bullet.armorpierce");
                     }
 
+                    if(type.status != StatusEffects.none){
+                        sep(bt, (type.status.minfo.mod == null ? type.status.emoji() : "") + "[stat]" + type.status.localizedName + (type.status.reactive ? "" : "[lightgray]~[]" + Strings.autoFixed(type.statusDuration / 60f, 2) + "[lightgray]s"));
+                    }
+
                     if(type.suppressionRange > 0){
                         sep(bt, Core.bundle.format("bullet.suppression", Strings.autoFixed(type.suppressionDuration / 60f, 2), Strings.fixed(type.suppressionRange / tilesize, 1)));
                     }
 
-                    if(type.status != StatusEffects.none){
-                        sep(bt, (type.status.minfo.mod == null ? type.status.emoji() : "") + "[stat]" + type.status.localizedName + (type.status.reactive ? "" : "[lightgray] ~ [stat]" + ((int)(type.statusDuration / 60f)) + "[lightgray] " + Core.bundle.get("unit.seconds")));
-                    }
-
-                    if(type.intervalBullet != null){
-                        bt.row();
-
-                        Table ic = new Table();
-                        ammo(ObjectMap.of(t, type.intervalBullet), indent + 1, false).display(ic);
-                        Collapser coll = new Collapser(ic, true);
-                        coll.setDuration(0.1f);
-
-                        bt.table(it -> {
-                            it.left().defaults().left();
-
-                            it.add(Core.bundle.format("bullet.interval", Strings.autoFixed(type.intervalBullets / type.bulletInterval * 60, 2)));
-                            it.button(Icon.downOpen, Styles.emptyi, () -> coll.toggle(false)).update(i -> i.getStyle().imageUp = (!coll.isCollapsed() ? Icon.upOpen : Icon.downOpen)).size(8).padLeft(16f).expandX();
+                    if(type instanceof EmpBulletType eb){
+                        collapse(bt, Strings.format("[stat]EMP~@[lightgray]格[]~[white]\uE810[]@%/[white]\uE86D[]@%~[white]\uF899[][green]@%[]/[negstat]@%[]",
+                        Strings.autoFixed(eb.radius / tilesize, 0),
+                        Strings.autoFixed(eb.powerDamageScl * 100, 0),
+                        Strings.autoFixed(eb.unitDamageScl * 100, 0),
+                        Strings.autoFixed(eb.timeIncrease * 100, 0),
+                        Strings.autoFixed(eb.powerSclDecrease * 100, 0)
+                        ), ec -> {
+                            ec.defaults().padLeft(5f);
+                            sep(ec, Strings.format("[stat]对敌方电网建筑造成@%子弹伤害", Strings.autoFixed(eb.powerDamageScl * 100, 0)));
+                            sep(ec, Strings.format("[stat]对敌方单位造成@%子弹伤害", Strings.autoFixed(eb.unitDamageScl * 100, 0)));
+                            sep(ec, Strings.format("[stat]对我方耗电建筑超速至@%", Strings.autoFixed(eb.timeIncrease * 100, 0)));
+                            sep(ec, Strings.format("[stat]对敌方电网建筑减速至@%", Strings.autoFixed(eb.powerSclDecrease * 100, 0)));
                         });
-                        bt.row();
-                        bt.add(coll);
                     }
 
                     if(type.fragBullet != null){
-                        bt.row();
-
-                        Table fc = new Table();
-                        ammo(ObjectMap.of(t, type.fragBullet), indent + 1, false).display(fc);
-                        Collapser coll = new Collapser(fc, true);
-                        coll.setDuration(0.1f);
-
-                        bt.table(ft -> {
-                            ft.left().defaults().left();
-
-                            ft.add(Core.bundle.format("bullet.frags", type.fragBullets));
-                            ft.button(Icon.downOpen, Styles.emptyi, () -> coll.toggle(false)).update(i -> i.getStyle().imageUp = (!coll.isCollapsed() ? Icon.upOpen : Icon.downOpen)).size(8).padLeft(16f).expandX();
+                        collapse(bt, Core.bundle.format("bullet.frags", type.fragBullets), fc -> {
+                            ammo(ObjectMap.of(t, type.fragBullet), indent + 1, false).display(fc);
                         });
-                        bt.row();
-                        bt.add(coll);
+                    }
+
+                    if(type.intervalBullet != null){
+                        collapse(bt, Core.bundle.format("bullet.interval", Strings.autoFixed(type.intervalBullets / type.bulletInterval * 60, 2)), ic -> {
+                            ammo(ObjectMap.of(t, type.intervalBullet), indent + 1, false).display(ic);
+                        });
+                    }
+
+                    Seq<BulletType> spawn = type.spawnBullets.copy();
+                    if(spawn.any()){
+                        collapse(bt, Strings.format("[stat]@x[lightgray]生成子弹：", spawn.size), sc -> {
+                            while(spawn.any()){
+                                BulletType bullet = spawn.first();
+                                Boolf<BulletType> pred = b -> bullet.damage == b.damage && bullet.splashDamage == b.splashDamage;
+                                //通过pred的的子弹被认为和当前子弹是一样的，合并显示
+                                int count = spawn.count(pred);
+                                if(count == type.spawnBullets.size){
+                                    ammo(ObjectMap.of(t, bullet), indent + 1, false).display(sc);
+                                }else{
+                                    sep(sc, Strings.format(" [stat]@x[lightgray]子弹：", count)).padLeft(0f);//不知道为什么padLeft0刚刚好，就这样了
+                                    ammo(ObjectMap.of(t, bullet), indent + 2, false).display(sc);
+                                }
+                                bt.row();
+                                spawn.removeAll(pred);
+                            }
+                        });
                     }
                 }).padLeft(indent * 5).padTop(5).padBottom(compact ? 0 : 5).growX().margin(compact ? 0 : 10);
                 table.row();
@@ -536,15 +632,59 @@ public class StatValues{
         };
     }
 
+    public static StatValue lightning(int shots, float damage, int length, int lengthRand){
+        return table -> {
+            String str = "[lightgray]";
+            if(shots > 0){
+                str += String.format("[stat]%d[]x", shots);
+            }
+            str += String.format("闪电~[stat]%s[]伤害~", Strings.autoFixed(damage, 1));
+            if(lengthRand > 0){
+                str += String.format("[stat]%d~%d[]长度", length, length + lengthRand);
+            }else{
+                str += String.format("[stat]%d[]长度", length);
+            }
+            sep(table, str);
+        };
+    }
+
     //for AmmoListValue
-    private static void sep(Table table, String text){
+    private static Cell<Label> sep(Table table, String text){
         table.row();
-        table.add(text);
+        return table.add(text);
+    }
+
+    private static void collapse(Table table, String text, Cons<Table> cons){
+        table.row();
+
+        Table collt = new Table();
+        collt.left().defaults().left();
+        cons.get(collt);
+
+        Collapser coll = new Collapser(collt, true);
+        coll.setDuration(0.1f);
+
+        table.table(tt -> {
+            tt.add(text);
+            tt.button(Icon.downOpen, Styles.emptyi, () -> coll.toggle(false))
+            .update(i -> i.getStyle().imageUp = (!coll.isCollapsed() ? Icon.upOpen : Icon.downOpen))
+            .size(8).padLeft(16f).expandX();
+        });
+        table.row();
+        table.add(coll);
     }
 
     //for AmmoListValue
     private static String ammoStat(float val){
         return (val > 0 ? "[stat]+" : "[negstat]") + Strings.autoFixed(val, 1);
+    }
+
+    private static String colorize(float val){
+        return (val > 1 ? "[stat]" : "[negstat]") + Strings.autoFixed(val, 2);
+    }
+
+    private static String colorize(boolean val){
+        return val ? "[stat]" : "[negstat]";
     }
 
     private static TextureRegion icon(UnlockableContent t){

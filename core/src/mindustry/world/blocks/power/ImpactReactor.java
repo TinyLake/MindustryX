@@ -13,6 +13,7 @@ import mindustry.logic.*;
 import mindustry.ui.*;
 import mindustry.world.draw.*;
 import mindustry.world.meta.*;
+import mindustryX.features.*;
 
 public class ImpactReactor extends PowerGenerator{
     public final int timerUse = timers++;
@@ -41,6 +42,14 @@ public class ImpactReactor extends PowerGenerator{
         explodeSound = Sounds.explosionbig;
     }
 
+    private float warmupToTime(float warmup, float timeScale) {
+        return Mathf.log(1f - warmupSpeed * timeScale, 1f - warmup);
+    }
+
+    private float timeToWarmup(float time, float timeScale) {
+        return 1f - Mathf.pow(1 - warmupSpeed * timeScale, time);
+    }
+
     @Override
     public void setBars(){
         super.setBars();
@@ -59,6 +68,14 @@ public class ImpactReactor extends PowerGenerator{
         if(hasItems){
             stats.add(Stat.productionTime, itemDuration / 60f, StatUnit.seconds);
         }
+        float startTime = warmupToTime(Mathf.pow(consPower.usage / powerProduction, 1f / 5f), 1f);
+        stats.add(StatExt.warmupPartial, startTime / 60f, StatUnit.seconds);
+        stats.add(StatExt.warmupTime, warmupToTime(0.999f, 1f) / 60f, StatUnit.seconds);
+        float startConsPower = 0;
+        for (int tick = 1;tick < startTime;tick++) {
+            startConsPower += consPower.usage - Mathf.pow(timeToWarmup(tick, 1f), 5f) * powerProduction;
+        }
+        stats.add(StatExt.warmupPower, Mathf.ceil(startConsPower / 50f) * 50f, StatUnit.none);
     }
 
     public class ImpactReactorBuild extends GeneratorBuild{

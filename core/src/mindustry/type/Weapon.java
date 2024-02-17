@@ -22,6 +22,7 @@ import mindustry.entities.units.*;
 import mindustry.gen.*;
 import mindustry.graphics.*;
 import mindustry.world.meta.*;
+import mindustryX.features.*;
 
 import static mindustry.Vars.*;
 
@@ -162,13 +163,26 @@ public class Weapon implements Cloneable{
     }
 
     public void addStats(UnitType u, Table t){
+        if(reload > 0) {
+            t.row();
+            int shoots = StatExt.totalShots(shoot);
+            t.add("[lightgray]" + Stat.reload.localized() + ": " + (mirror ? "[stat]2 [lightgray]x " : "") + (shoots == 1 ? "" : "[stat]" + shoots + " [lightgray]x ") + "[stat]" +  Strings.autoFixed(60f / reload, 2) + " []" + StatUnit.perSecond.localized());
+        }
+        t.row();
+        t.add("[lightgray]武器范围: [stat]" + String.format("%.1f", bullet.range/8f) + " []格");
+
+        if (rotate) {
+            t.row();
+            t.add("[lightgray]旋转速度: [stat]" + String.format("%.0f", rotateSpeed * 60f) + " []°/s");
+            if (rotationLimit < 361f) {
+                t.row();
+                t.add("[lightgray]旋转范围: [stat]" + String.format("%.0f", rotationLimit) + " []" + StatUnit.degrees.localized());
+            }
+        }
+
         if(inaccuracy > 0){
             t.row();
-            t.add("[lightgray]" + Stat.inaccuracy.localized() + ": [white]" + (int)inaccuracy + " " + StatUnit.degrees.localized());
-        }
-        if(!alwaysContinuous && reload > 0){
-            t.row();
-            t.add("[lightgray]" + Stat.reload.localized() + ": " + (mirror ? "2x " : "") + "[white]" + Strings.autoFixed(60f / reload * shoot.shots, 2) + " " + StatUnit.perSecond.localized());
+            t.add("[lightgray]" + Stat.inaccuracy.localized() + ": [stat]" + (int)inaccuracy + " []" + StatUnit.degrees.localized());
         }
 
         StatValues.ammo(ObjectMap.of(u, bullet)).display(t);

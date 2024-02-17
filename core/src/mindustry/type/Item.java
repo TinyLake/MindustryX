@@ -12,6 +12,7 @@ import mindustry.graphics.MultiPacker.*;
 import mindustry.logic.*;
 import mindustry.world.blocks.environment.*;
 import mindustry.world.meta.*;
+import mindustryX.features.*;
 
 import static mindustry.Vars.*;
 
@@ -115,6 +116,10 @@ public class Item extends UnlockableContent implements Senseable{
         stats.addPercent(Stat.flammability, flammability);
         stats.addPercent(Stat.radioactivity, radioactivity);
         stats.addPercent(Stat.charge, charge);
+        stats.add(StatExt.cost, cost);
+        stats.add(StatExt.hardness, hardness);
+        stats.add(StatExt.healthScaling,healthScaling);
+        stats.add(StatExt.buildable,buildable);
     }
 
     @Override

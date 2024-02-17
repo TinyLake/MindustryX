@@ -8,6 +8,7 @@ import arc.util.io.*;
 import mindustry.gen.*;
 import mindustry.type.*;
 import mindustry.world.*;
+import mindustry.world.meta.*;
 import mindustryX.features.*;
 
 import static mindustry.Vars.*;
@@ -23,6 +24,14 @@ public class BufferedItemBridge extends ItemBridge{
         hasPower = false;
         hasItems = true;
         canOverdrive = true;
+    }
+
+    @Override
+    public void setStats(){
+        super.setStats();
+
+        stats.add(StatExt.bufferCapacity, bufferCapacity);
+        stats.add(Stat.itemsMoved, Strings.autoFixed(bufferCapacity * 60f / speed ,2) , StatUnit.itemsSecond);
     }
 
     public class BufferedItemBridgeBuild extends ItemBridgeBuild{

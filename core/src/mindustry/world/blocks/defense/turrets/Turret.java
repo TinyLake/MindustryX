@@ -26,6 +26,7 @@ import mindustry.ui.*;
 import mindustry.world.blocks.*;
 import mindustry.world.draw.*;
 import mindustry.world.meta.*;
+import mindustryX.features.*;
 
 import static mindustry.Vars.*;
 
@@ -149,7 +150,8 @@ public class Turret extends ReloadTurret{
         super.setStats();
 
         stats.add(Stat.inaccuracy, (int)inaccuracy, StatUnit.degrees);
-        stats.add(Stat.reload, 60f / (reload) * shoot.shots, StatUnit.perSecond);
+        int shoots = StatExt.totalShots(shoot);
+        stats.add(Stat.reload, "@@/s", shoots == 1 ? "" : shoots + " x ", Strings.autoFixed(60f / reload, 2) + "/s");
         stats.add(Stat.targetsAir, targetAir);
         stats.add(Stat.targetsGround, targetGround);
         if(ammoPerShot != 1) stats.add(Stat.ammoUse, ammoPerShot, StatUnit.perShot);

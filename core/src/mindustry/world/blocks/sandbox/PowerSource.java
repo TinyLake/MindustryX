@@ -15,6 +15,12 @@ public class PowerSource extends PowerNode{
         envEnabled = Env.any;
     }
 
+    @Override
+    public void setStats() {
+        super.setStats();
+        stats.add(Stat.basePowerGeneration, powerProduction * 60f, StatUnit.powerSecond);
+    }
+
     public class PowerSourceBuild extends PowerNodeBuild{
         @Override
         public float getPowerProduction(){

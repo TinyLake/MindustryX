@@ -32,6 +32,16 @@ public class Junction extends Block{
     }
 
     @Override
+    public void setStats(){
+        super.setStats();
+
+        //have to add a custom calculated speed, since the actual movement speed is apparently not linear
+        stats.add(Stat.itemCapacity, capacity);
+        stats.add(Stat.itemsMoved,Strings.autoFixed(60f / speed * capacity ,2) , StatUnit.itemsSecond);
+    }
+
+
+    @Override
     public boolean outputsItems(){
         return true;
     }

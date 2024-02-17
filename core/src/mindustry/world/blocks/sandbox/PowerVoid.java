@@ -15,6 +15,5 @@ public class PowerVoid extends PowerBlock{
     @Override
     public void setStats(){
         super.setStats();
-        stats.remove(Stat.powerUse);
     }
 }

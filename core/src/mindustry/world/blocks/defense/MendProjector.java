@@ -13,6 +13,7 @@ import mindustry.logic.*;
 import mindustry.world.*;
 import mindustry.world.consumers.*;
 import mindustry.world.meta.*;
+import mindustryX.features.*;
 
 import static mindustry.Vars.*;
 
@@ -51,13 +52,15 @@ public class MendProjector extends Block{
         stats.timePeriod = useTime;
         super.setStats();
 
-        stats.add(Stat.repairTime, (int)(100f / healPercent * reload / 60f), StatUnit.seconds);
         stats.add(Stat.range, range / tilesize, StatUnit.blocks);
+        stats.add(StatExt.mend, healPercent, StatUnit.percent);
+        stats.add(StatExt.mendReload, reload / 60f, StatUnit.seconds);
+        stats.add(StatExt.mendSpeed, "@%/s", Strings.autoFixed(healPercent / (reload / 60f), 1));
 
         if(findConsumer(c -> c instanceof ConsumeItems) instanceof ConsumeItems cons){
             stats.remove(Stat.booster);
             stats.add(Stat.booster, StatValues.itemBoosters(
-                "{0}" + StatUnit.timesSpeed.localized(),
+                "{0}x修复量",
                 stats.timePeriod, (phaseBoost + healPercent) / healPercent, phaseRangeBoost,
                 cons.items, this::consumesItem)
             );

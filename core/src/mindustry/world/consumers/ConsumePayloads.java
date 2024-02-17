@@ -51,7 +51,7 @@ public class ConsumePayloads extends Consume{
         table.table(c -> {
             int i = 0;
             for(var stack : payloads){
-                c.add(new ReqImage(new ItemImage(stack.item.uiIcon, Math.round(stack.amount * multiplier.get(build))),
+                c.add(new ReqImage(new ItemImage(stack.item.uiIcon, Math.round(stack.amount * multiplier.get(build)), () -> build.items.get((Item) stack.item)),
                 () -> inv.contains(stack.item, Math.round(stack.amount * multiplier.get(build))))).padRight(8);
                 if(++i % 4 == 0) c.row();
             }
