@@ -4,6 +4,7 @@ import arc.*;
 import arc.scene.ui.layout.*;
 import mindustry.ctype.*;
 import mindustry.type.*;
+import mindustryX.features.*;
 
 /** Holds objective classes. */
 public class Objectives{
@@ -26,6 +27,7 @@ public class Objectives{
         public String display(){
             return Core.bundle.format("requirement.research",
                 //TODO broken for multi tech nodes.
+            RenderExt.researchViewer ||
                 (content.techNode == null || content.techNode.parent == null || content.techNode.parent.content.unlocked()) ?
                     (content.emoji() + " " + content.localizedName) : "???");
         }
@@ -48,7 +50,7 @@ public class Objectives{
         @Override
         public String display(){
             return Core.bundle.format("requirement.produce",
-                content.unlocked() ? (content.emoji() + " " + content.localizedName) : "???");
+                RenderExt.researchViewer || content.unlocked() ? (content.emoji() + " " + content.localizedName) : "???");
         }
     }
 
