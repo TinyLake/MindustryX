@@ -573,7 +573,7 @@ public class Control implements ApplicationListener, Loadable{
                 BaseDialog dialog = new BaseDialog("@confirm");
                 dialog.setFillParent(true);
 
-                float[] countdown = {60 * 11};
+                float[] countdown = {60 * 31};
                 Runnable exit = () -> {
                     Core.settings.put("uiscale", 100);
                     Core.settings.put("uiscalechanged", false);

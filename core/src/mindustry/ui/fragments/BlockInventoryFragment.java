@@ -138,7 +138,7 @@ public class BlockInventoryFragment{
             }
         });
 
-        int cols = 3;
+        int cols = Core.settings.getInt("blockInventoryWidth", 3);
         int row = 0;
 
         table.margin(4f);
