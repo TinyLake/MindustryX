@@ -16,6 +16,15 @@ public class ItemBuffer{
         this.buffer = new long[capacity];
     }
 
+    public Item getItem(int i){
+        if(i < 0 || i >= index) return null;
+        return content.item(TimeItem.item(buffer[i]));
+    }
+    public float getTime(int i){
+        if(i < 0 || i >= index) return Float.MAX_VALUE;
+        return  TimeItem.time(buffer[i]);
+    }
+
     public boolean accepts(){
         return index < buffer.length;
     }

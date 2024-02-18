@@ -11,6 +11,7 @@ public class RenderExt{
     public static boolean bulletShow, showMineBeam, displayAllMessage;
     public static boolean arcChoiceUiIcon;
     public static boolean researchViewer;
+    public static int hiddenItemTransparency;
 
     public static void init(){
         Events.run(Trigger.update, () -> {
@@ -19,6 +20,7 @@ public class RenderExt{
             displayAllMessage = Core.settings.getBool("displayallmessage");
             arcChoiceUiIcon = Core.settings.getBool("arcchoiceuiIcon");
             researchViewer = Core.settings.getBool("researchViewer");
+            hiddenItemTransparency = Core.settings.getInt("HiddleItemTransparency");
         });
         Events.run(Trigger.draw, RenderExt::draw);
     }

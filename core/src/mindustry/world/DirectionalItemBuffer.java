@@ -21,6 +21,17 @@ public class DirectionalItemBuffer{
         return indexes[buffer] < buffers[buffer].length;
     }
 
+    public Item getItem(int dir, int i){
+        if(i >= indexes[dir]) return null;
+        return content.item(BufferItem.item(buffers[dir][i]));
+    }
+
+    public float getTime(int dir, int i){
+        if(i >= indexes[dir]) return Float.MAX_VALUE;
+        return BufferItem.time(buffers[dir][i]);
+    }
+
+
     public void accept(int buffer, Item item){
         if(!accepts(buffer)) return;
         buffers[buffer][indexes[buffer]++] = BufferItem.get((byte)item.id, Time.time);
