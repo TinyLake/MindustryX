@@ -422,7 +422,7 @@ public class Mods implements Loadable{
     /** Loads all mods from the folder, but does not call any methods on them.*/
     public void load(){
         var candidates = new Seq<Fi>();
-
+        mods.addAll(mindustryX.features.InternalMods.load());
         // Add local mods
         Seq.with(modDirectory.list())
         .retainAll(f -> f.extEquals("jar") || f.extEquals("zip") || (f.isDirectory() && Structs.contains(metaFiles, meta -> f.child(meta).exists())))
