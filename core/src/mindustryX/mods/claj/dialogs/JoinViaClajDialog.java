@@ -1,6 +1,10 @@
 package mindustryX.mods.claj.dialogs;
 
+import arc.Core;
+import arc.scene.ui.TextField;
 import mindustry.Vars;
+import mindustry.gen.Icon;
+import mindustry.ui.Styles;
 import mindustry.ui.dialogs.BaseDialog;
 import mindustryX.mods.claj.*;
 
@@ -17,7 +21,16 @@ public class JoinViaClajDialog extends BaseDialog{
         super("通过claj加入游戏");
         cont.table(table -> {
             table.add("房间代码：").padRight(5f).left();
-            table.field(lastLink, this::setLink).size(550f, 54f).maxTextLength(100).valid(this::setLink);
+            TextField tf = table.field(lastLink, this::setLink).size(550f, 54f).maxTextLength(100).valid(this::setLink).get();
+
+            table.defaults().size(48f).padLeft(8f);
+            table.button(Icon.copy, Styles.clearNonei, () -> {
+                lastLink = Core.app.getClipboardText();
+                tf.setText("");
+                tf.paste(lastLink, true);
+                setLink(lastLink);
+            });
+
         }).row();
 
         cont.label(() -> output).width(550f).left();
