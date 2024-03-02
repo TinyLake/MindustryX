@@ -8,12 +8,14 @@ import mindustry.mod.Mods.*;
 import mindustryX.mods.claj.*;
 
 import static arc.Core.files;
-import static mindustry.Vars.*;
+import static mindustry.Vars.modDirectory;
 
 public class InternalMods{
     public static Seq<LoadedMod> load(){
         return Seq.with(
-        internalMod(meta("claj", "Claj联机", "1.1", "[#0096FF]xzxADIxzx cong重写 WayZer合并进MDTX"), new Claj())
+        internalMod(meta("claj", "Claj联机", "1.1", "[#0096FF]xzxADIxzx cong重写 WayZer合并进MDTX"), new Claj()),
+        internalMod(meta("Kotlin", "Kotlin语言标准库", "1.9.20", "Jetbrains"), new Mod(){
+        })
         );
     }
 

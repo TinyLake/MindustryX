@@ -3,6 +3,7 @@ import javassist.CtClass
 import javassist.bytecode.Bytecode
 import javassist.bytecode.Descriptor
 import org.gradle.jvm.tasks.Jar
+import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 buildscript {
     dependencies {
@@ -12,6 +13,12 @@ buildscript {
 plugins {
     java
 //    kotlin()
+}
+
+project.tasks.withType<KotlinCompile>().configureEach {
+    kotlinOptions {
+        jvmTarget = "1.8"
+    }
 }
 
 sourceSets {
