@@ -137,6 +137,7 @@ public class NetClient implements ApplicationListener{
             Log.info("Received world data: @ bytes.", data.stream.available());
             NetworkIO.loadWorld(new InflaterInputStream(data.stream));
 
+            Call.serverPacketReliable("MDTX", Version.mdtXBuild);
             finishConnecting();
         });
     }

@@ -4,6 +4,7 @@ logs/
 /core/assets/mindustry-maps/
 /core/assets/bundles/output/
 /core/assets/.gifimages/
+/core/assets/MindustryX.hjson
 /deploy/
 /out/
 /desktop/packr-out/

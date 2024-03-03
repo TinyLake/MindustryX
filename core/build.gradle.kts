@@ -20,7 +20,7 @@ sourceSets {
     }
 }
 
-task<Jar>("patchArc") {
+val patchArc = task<Jar>("patchArc") {
     group = "build"
     destinationDirectory.set(temporaryDir)
     archiveBaseName.set("patched")
@@ -36,9 +36,6 @@ task<Jar>("patchArc") {
     }
     inputs.files(patchSrc)
     dependencies.api(files(this))
-    tasks.named("processResources") {
-        dependsOn(this@task)
-    }
 
     val transform = mutableMapOf<String, CtClass.() -> Unit>()
     transform["arc.util.Http\$HttpRequest"] = clz@{
@@ -72,4 +69,30 @@ task<Jar>("patchArc") {
                     .writeFile(genDir.get().asFile.path)
         }
     }
+}
+
+val writeVersion = tasks.create("writeVersion") {
+    val version = (project.properties["buildversion"] ?: "1.0-dev") as String
+    val upstreamBuild = (project.properties["upstreamBuild"] ?: "custom") as String
+    inputs.property("buildversion", version)
+    inputs.property("upstreamBuild", upstreamBuild)
+    val file = projectDir.resolve("assets/MindustryX.hjson")
+    outputs.file(file)
+
+    doLast {
+        file.writeText("""
+            displayName: MindustryX Loader
+            name: MindustryX
+            author: WayZer
+            main: mindustryX.loader.Main
+            version: "$version"
+            minGameVersion: "$upstreamBuild"
+            hidden: true
+            dependencies: []
+        """.trimIndent())
+    }
+}
+
+tasks.processResources {
+    dependsOn(patchArc, writeVersion)
 }
