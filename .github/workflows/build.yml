@@ -1,0 +1,62 @@
+name: Build Artifacts
+
+on:
+  push:
+    branches:
+      - '*'
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v2
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: 17
+      - name: Setup Gradle
+        uses: gradle/actions/setup-gradle@v3
+        with:
+          gradle-version: 8.6
+          cache-read-only: false
+          gradle-home-cache-cleanup: true
+          build-scan-publish: true
+          build-scan-terms-of-service-url: "https://gradle.com/terms-of-service"
+          build-scan-terms-of-service-agree: "yes"
+      - name: Set env
+        run: |
+          echo "RELEASE_TAG=${GITHUB_REF_NAME}-build" >> $GITHUB_ENV
+          echo "RELEASE_TAG=${GITHUB_REF_NAME}-build"
+          echo "RELEASE_VERSION=$(date +'%Y.%m.%d').${GITHUB_RUN_NUMBER}-${GITHUB_REF_NAME}" >> $GITHUB_ENV
+          
+          echo "${{ secrets.KEYSTORE_BASE64 }}" > keystore.txt
+          openssl enc -d -base64 -in keystore.txt -out ../bekeystore.jks
+      - name: Create artifacts
+        env:
+          keystore_password: ${{ secrets.KEYSTORE_PASSWORD_SECRET }}
+          keystore_alias_password: ${{ secrets.KEYSTORE_PASSWORD_SECRET }}
+          keystore_alias: MindustryX
+        run: |
+          gradle desktop:dist core:genLoaderModAll android:assembleRelease -Pbuildversion=${RELEASE_VERSION}
+      - name: Move artifacts
+        run: |
+          mkdir artifacts
+          mv desktop/build/libs/Mindustry.jar artifacts/MindustryX-${{env.RELEASE_VERSION}}-Desktop.jar
+          mv core/build/distributions/MindustryX.loader.dex.jar artifacts/MindustryX-${{env.RELEASE_VERSION}}.loader.dex.jar
+          mv android/build/outputs/apk/release/android-release.apk artifacts/MindustryX-${{env.RELEASE_VERSION}}-Android.apk
+      - name: Update Tag
+        uses: rickstaa/action-create-tag@v1
+        with:
+          tag: ${{ env.RELEASE_TAG }}
+          force_push_tag: true
+      - name: Release
+        uses: softprops/action-gh-release@v2.0.2
+        with:
+          tag_name: ${{ env.RELEASE_TAG }}
+          name: ${{ env.RELEASE_VERSION }}
+          target_commitish: ${{github.sha}}
+          files: artifacts/*
+          prerelease: true
