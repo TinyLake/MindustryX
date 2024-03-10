@@ -218,6 +218,11 @@ public class ArcOld{
             c.checkPref("selectTeam", false);
             c.checkPref("playerNeedShooting", false);
             c.checkPref("otherCheat", false);
+
+            c.addCategory("newUI");
+            c.checkPref("enableBlur", true);
+            c.sliderPref("blurLevel", 1, 1, 8, 1, i -> i + "");
+            c.sliderPref("backBlurLen", 120, 50, 800, 25, i -> Strings.fixed(i * 0.01f, 1));
         });
         setting.addCategory("@settings.specmode", Icon.info, (c) -> {
             c.addCategory("moreContent");
