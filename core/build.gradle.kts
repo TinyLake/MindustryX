@@ -1,3 +1,9 @@
+import com.android.tools.smali.dexlib2.DexFileFactory
+import com.android.tools.smali.dexlib2.Opcodes
+import com.android.tools.smali.dexlib2.rewriter.DexRewriter
+import com.android.tools.smali.dexlib2.rewriter.Rewriter
+import com.android.tools.smali.dexlib2.rewriter.RewriterModule
+import com.android.tools.smali.dexlib2.rewriter.Rewriters
 import javassist.ClassPool
 import javassist.CtClass
 import javassist.bytecode.Bytecode
@@ -9,8 +15,12 @@ import java.util.zip.ZipFile
 import java.util.zip.ZipOutputStream
 
 buildscript {
+    repositories {
+        google()
+    }
     dependencies {
         classpath("org.javassist:javassist:3.30.2-GA")
+        classpath("com.android.tools.smali:smali-dexlib2:3.0.5")
     }
 }
 plugins {
@@ -117,9 +127,12 @@ val downloadOriginJar = tasks.create<de.undercouch.gradle.tasks.download.Downloa
     dest(output)
     overwrite(false)
 }
+val distTask = tasks.getByPath("::desktop:dist")
 val genLoaderMod = tasks.create("genLoaderMod") {
-    val distTask = tasks.getByPath("::desktop:dist")
+    val androidTask = tasks.findByPath("::android:compileReleaseJavaWithJavac")
     dependsOn(downloadOriginJar, distTask)
+    if (androidTask != null)
+        dependsOn(androidTask)
     val inputF = distTask.outputs.files.singleFile
     val baseF = downloadOriginJar.outputFiles.single()
     val outputF = layout.buildDirectory.file("libs/Mindustry.loader.jar")
@@ -153,6 +166,73 @@ val genLoaderMod = tasks.create("genLoaderMod") {
             output.write(input.getInputStream(entry).use { it.readAllBytes() })
             output.closeEntry()
         }
+        if (androidTask != null) {
+            val root = androidTask.outputs.files.first()
+            root.resolve("mindustryX").walkTopDown().forEach {
+                if (it.isDirectory) return@forEach
+                val path = it.toRelativeString(root)
+                output.putNextEntry(ZipEntry(path))
+                output.write(it.readBytes())
+                output.closeEntry()
+            }
+        }
         output.close()
     }
+}
+
+val genLoaderModDex = tasks.create("genLoaderModDex") {
+    dependsOn(genLoaderMod, distTask)
+    val library = distTask.outputs.files.singleFile
+    val inFile = genLoaderMod.outputs.files.singleFile
+    val outFile = temporaryDir.resolve("classes.dex")
+//    val outFile = layout.buildDirectory.file("libs").get()
+    inputs.file(inFile)
+    outputs.file(outFile)
+    doLast {
+        val sdkRoot = System.getenv("ANDROID_HOME") ?: System.getenv("ANDROID_SDK_ROOT")
+        if (sdkRoot == null || !File(sdkRoot).exists()) throw GradleException("No valid Android SDK found. Ensure that ANDROID_HOME is set to your Android SDK directory.")
+
+        val d8Tool = File("$sdkRoot/build-tools/").listFiles()?.sortedDescending()
+                ?.flatMap { dir -> (dir.listFiles().orEmpty()).filter { it.name.startsWith("d8") } }?.firstOrNull()
+                ?: throw GradleException("No d8 found. Ensure that you have an Android platform installed.")
+        val platformRoot = File("$sdkRoot/platforms/").listFiles()?.sortedDescending()?.firstOrNull { it.resolve("android.jar").exists() }
+                ?: throw GradleException("No android.jar found. Ensure that you have an Android platform installed.")
+
+        exec {
+            commandLine("$d8Tool --lib ${platformRoot.resolve("android.jar")} --classpath $library --min-api 14 --output $temporaryDir $inFile".split(" "))
+            workingDir(inFile.parentFile)
+            standardOutput = System.out
+            errorOutput = System.err
+        }.assertNormalExitValue()
+    }
+}
+
+val patchDex = tasks.create("patchDex") {
+    dependsOn(genLoaderModDex)
+    val inFile = genLoaderModDex.outputs.files.singleFile
+    val outFile = temporaryDir.resolve("classes.dex")
+    inputs.file(inFile)
+    outputs.file(outFile)
+
+    doLast {
+        val file = DexFileFactory.loadDexFile(inFile, Opcodes.forApi(14))
+        val rewriter = DexRewriter(object : RewriterModule() {
+            override fun getTypeRewriter(rewriters: Rewriters): Rewriter<String> = Rewriter {
+                if (it.length > 20 && it.contains("ExternalSyntheticLambda")) {
+                    return@Rewriter it.replace("ExternalSyntheticLambda", "Lambda")
+                }
+                it
+            }
+        })
+        rewriter.dexFileRewriter.rewrite(file).let {
+            DexFileFactory.writeDexFile(outFile.path, it)
+        }
+    }
+}
+
+val genLoaderModAll = tasks.create<Zip>("genLoaderModAll") {
+    dependsOn(genLoaderMod, patchDex)
+    archiveFileName.set("MindustryX.loader.dex.jar")
+    from(zipTree(genLoaderMod.outputs.files.singleFile))
+    from(patchDex.outputs.files.singleFile)
 }
