@@ -421,7 +421,7 @@ public class Generators{
                 }
             }
 
-            save(colors, "../../../assets/sprites/block_colors");
+            save(colors, "../../packed/block_colors");
         });
 
         generate("shallows", () -> {

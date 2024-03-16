@@ -44,7 +44,7 @@ task dist(type: Jar, dependsOn: configurations.runtimeClasspath){
     from files(sourceSets.main.output.classesDirs)
     from files(sourceSets.main.output.resourcesDir)
     from {configurations.runtimeClasspath.collect{ it.isDirectory() ? it : zipTree(it) }}
-    from files(project.assetsDir)
+    from(files(tasks.getByPath(":core:allAssets")))
     duplicatesStrategy = DuplicatesStrategy.EXCLUDE
 
     //don't include steam shared libraries unless necessary
@@ -57,12 +57,6 @@ task dist(type: Jar, dependsOn: configurations.runtimeClasspath){
     manifest{
         attributes 'Main-Class': project.mainClassName
     }
-}
-
-if(!project.ext.hasSprites() && System.getenv("JITPACK") != "true"){
-    println "Scheduling sprite packing."
-    run.dependsOn ":tools:pack"
-    dist.dependsOn ":tools:pack"
 }
 
 //this is only for local testing

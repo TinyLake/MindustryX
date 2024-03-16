@@ -1,17 +1,6 @@
-buildscript{
-    repositories{
-        mavenLocal()
-        mavenCentral()
-        google()
-        maven{ url "https://oss.sonatype.org/content/repositories/snapshots/" }
-    }
-
-    dependencies{
-        classpath 'com.android.tools.build:gradle:7.2.1'
-    }
+plugins{
+    id("com.android.application") version "8.3.1"
 }
-
-apply plugin: "com.android.application"
 
 configurations{ natives }
 
@@ -29,8 +18,9 @@ task deploy(type: Copy){
 }
 
 android{
-    buildToolsVersion '33.0.2'
-    compileSdkVersion 33
+    namespace = "com.github.tinylake.mindustryX"
+    buildToolsVersion = '33.0.2'
+    compileSdk = 33
     sourceSets{
         main{
             manifest.srcFile 'AndroidManifest.xml'
@@ -63,8 +53,8 @@ android{
 
         if(project.hasProperty("release")){
             props['androidBuildCode'] = (vcode + 1).toString()
+            props.store(file('../core/assets/version.properties').newWriter(), null)
         }
-        props.store(file('../core/assets/version.properties').newWriter(), null)
     }
 
     compileOptions{
@@ -72,7 +62,7 @@ android{
         targetCompatibility JavaVersion.VERSION_1_8
     }
 
-    flavorDimensions "google"
+    flavorDimensions = ["google"]
 
     signingConfigs{
         release{
@@ -119,8 +109,8 @@ dependencies{
     implementation arcModule("backends:backend-android")
     implementation 'com.jakewharton.android.repackaged:dalvik-dx:9.0.0_r3'
 
-    natives "com.github.Anuken.Arc:natives-android:${getArcHash()}"
-    natives "com.github.Anuken.Arc:natives-freetype-android:${getArcHash()}"
+    natives arcModule("natives-android")
+    natives arcModule("natives-freetype-android")
 
     def version;
     def highestVersion;
@@ -133,24 +123,25 @@ dependencies{
     if(sdkFile.exists()) compileOnly files(sdkFile.absolutePath)
 }
 
-task copyAndroidNatives(){
-    configurations.natives.files.each{ jar ->
-        copy{
-            from zipTree(jar)
-            into file("libs/")
-            include "**"
-        }
+tasks.register('copyAndroidNatives', Copy){
+    from(configurations.natives.collect{ zipTree(it) }){
+        exclude("META-INF/**")
     }
+    into file("libs/")
 }
 
-task run(type: Exec){
+tasks.register('run', Exec){
     commandLine "${findSdkDir()}/platform-tools/adb", 'shell', 'am', 'start', '-n', 'io.anuke.mindustry/mindustry.android.AndroidLauncher'
 }
 
-if(!project.ext.hasSprites()){
-    tasks.whenTaskAdded{ task ->
-        if(task.name == 'assembleDebug' || task.name == 'assembleRelease'){
-            task.dependsOn ":tools:pack"
-        }
+tasks.configureEach{ task ->
+    if(task.name == 'mergeDebugAssets' || task.name == 'mergeReleaseAssets' || task.name == 'lintVitalAnalyzeRelease' || task.name == 'generateReleaseLintVitalReportModel'){
+        task.dependsOn ":core:allAssets"
+    }
+    if(task.name == 'mergeDebugJniLibFolders' || task.name == 'mergeReleaseJniLibFolders'){
+        task.dependsOn "copyAndroidNatives"
+    }
+    if(task.name == 'mergeReleaseAssets' || task.name == 'compressReleaseAssets'){
+        task.outputs.doNotCacheIf("Not worth caching"){ true }
     }
 }
