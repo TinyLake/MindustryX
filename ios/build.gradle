@@ -18,14 +18,14 @@ task incrementConfig{
     if(vfile.exists()){
         props.load(new FileInputStream(vfile))
     }else{
-        props['app.id'] = 'io.anuke.mindustry'
+        props['app.id'] = 'com.github.tinylake.mindustryX'
         props['app.version'] = '7.0'
         props['app.mainclass'] = 'mindustry.IOSLauncher'
         props['app.executable'] = 'IOSLauncher'
-        props['app.name'] = 'Mindustry'
+        props['app.name'] = 'MindustryX'
     }
 
-    props['app.build'] = (!props.containsKey("app.build") ? 40 : props['app.build'].toInteger() + 1) + ""
+    props['app.build'] = (!props.containsKey("app.build") ? 146 : props['app.build'].toInteger() + 1) + ""
     if(bversion != "custom build"){
         props['app.version'] = versionNumber + "." + bversion + (bversion.contains(".") ? "" : ".0")
     }
@@ -90,7 +90,7 @@ robovm{
     if(project.hasProperty("signIdentity")) println "iOS Sign Identity: " + project.property("signIdentity")
     if(project.hasProperty("provisioningProfile")) println "iOS Provisioning Profile: " + project.property("provisioningProfile")
 
-    iosSignIdentity = project.properties["signIdentity"]
-    iosProvisioningProfile = project.properties["provisioningProfile"]
-    iosSkipSigning = false
+    //iosSignIdentity = project.properties["signIdentity"]
+    //iosProvisioningProfile = project.properties["provisioningProfile"]
+    iosSkipSigning = true
 }
