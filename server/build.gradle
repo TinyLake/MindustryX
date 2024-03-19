@@ -3,10 +3,6 @@ sourceSets.main.java.srcDirs = ["src/"]
 project.ext.mainClassName = "mindustry.server.ServerLauncher"
 project.ext.assetsDir = new File("../core/assets")
 
-ext.getServerFolder = {
-    return "../deploy/${appName}-server-${getVersionString()}"
-}
-
 task run(dependsOn: classes, type: JavaExec){
     mainClass = project.mainClassName
     classpath = sourceSets.main.runtimeClasspath
@@ -31,6 +27,7 @@ task debug(dependsOn: classes, type: JavaExec){
 }
 
 task dist(type: Jar, dependsOn: configurations.runtimeClasspath){
+    dependsOn classes
     from files(sourceSets.main.output.classesDirs)
     from files(sourceSets.main.output.resourcesDir)
     from {configurations.runtimeClasspath.collect{ it.isDirectory() ? it : zipTree(it) }}
@@ -51,40 +48,3 @@ task dist(type: Jar, dependsOn: configurations.runtimeClasspath){
         attributes 'Main-Class': project.mainClassName
     }
 }
-
-task dzip(type: Zip){
-    from getServerFolder()
-    archiveFileName = "${generateDeployName('server')}.zip"
-    destinationDirectory = file("../deploy/")
-
-    finalizedBy 'cleanup'
-}
-
-task cleanup{
-    doLast{
-        delete{
-            delete getServerFolder()
-        }
-    }
-}
-
-task deploy{
-    dependsOn "dist"
-
-    finalizedBy 'dzip'
-
-    doLast{
-        copy{
-            from "build/libs/server-release.jar"
-            into getServerFolder()
-            rename("server-release.jar", "server.jar")
-        }
-
-        copy{
-            from "server_template"
-            into getServerFolder()
-        }
-    }
-}
-
-dist.dependsOn classes

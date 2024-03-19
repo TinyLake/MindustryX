@@ -56,55 +56,9 @@ allprojects{
             return new File(projectDir.parent, '../Mindustry-Debug').exists() && !project.hasProperty("release") && project.hasProperty("args")
         }
 
-        generateDeployName = { String platform ->
-            if(platform == "windows"){
-                platform += "64"
-            }
-            platform = platform.capitalize()
-
-            if(platform.endsWith("64") || platform.endsWith("32")){
-                platform = "${platform.substring(0, platform.length() - 2)}-${platform.substring(platform.length() - 2)}bit"
-            }
-
-            return "[${platform}]${getModifierString()}[${getNeatVersionString()}]${appName}"
-        }
-
-        getVersionString = {
-            String buildVersion = getBuildVersion()
-            return "$versionNumber-$versionModifier-$buildVersion"
-        }
-
-        getNeatVersionString = {
-            String buildVersion = getBuildVersion()
-            return "v$buildVersion"
-        }
-
-        hasSprites = {
-            return new File(rootDir, "core/assets/sprites/sprites.aatls").exists()
-        }
-
-        getModifierString = {
-            if(versionModifier != "release") return "[${versionModifier.toUpperCase()}]"
-            return ""
-        }
-
         getBuildVersion = {
             if(!project.hasProperty("buildversion")) return "custom build"
             return project.getProperties()["buildversion"]
-        }
-
-        getPackage = {
-            return project.ext.mainClassName.substring(0, project.ext.mainClassName.indexOf("desktop") - 1)
-        }
-
-        findSdkDir = {
-            //null because IntelliJ doesn't get env variables
-            def v = System.getenv("ANDROID_HOME")
-            if(v != null) return v
-            //rootDir is null here, amazing. brilliant.
-            def file = new File(rootDir, "local.properties")
-            def props = new Properties().with{p -> p.load(file.newReader()); return p }
-            return props.get("sdk.dir")
         }
     }
 
@@ -333,29 +287,6 @@ configure([":core", ":server"].collect{project(it)}){
                 from components.java
             }
         }
-    }
-}
-
-task deployAll{
-    task cleanDeployOutput{
-        doFirst{
-            if(getBuildVersion() == "custom build" || getBuildVersion() == "") throw new IllegalArgumentException("----\n\nSET A BUILD NUMBER FIRST!\n\n----")
-            if(!project.hasProperty("release")) throw new IllegalArgumentException("----\n\nSET THE RELEASE PROJECT PROPERTY FIRST!\n\n----")
-
-            delete{
-                delete "deploy/"
-            }
-        }
-    }
-
-    dependsOn cleanDeployOutput
-    dependsOn "desktop:packrLinux64"
-    dependsOn "desktop:packrWindows64"
-    dependsOn "desktop:packrWindows32"
-    dependsOn "desktop:packrMacOS"
-    if(versionModifier != "steam"){
-        dependsOn "server:deploy"
-        dependsOn "android:deploy"
     }
 }
 

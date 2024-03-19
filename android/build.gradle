@@ -2,19 +2,23 @@ plugins{
     id("com.android.application") version "8.3.1"
 }
 
+ext{
+    findSdkDir = {
+        //null because IntelliJ doesn't get env variables
+        def v = System.getenv("ANDROID_HOME")
+        if(v != null) return v
+        //rootDir is null here, amazing. brilliant.
+        def file = new File(rootDir, "local.properties")
+        def props = new Properties().with{ p -> p.load(file.newReader()); return p }
+        return props.get("sdk.dir")
+    }
+}
+
 configurations{ natives }
 
 repositories{
     mavenCentral()
     maven{ url "https://dl.google.com/dl/android/maven2/" }
-}
-
-task deploy(type: Copy){
-    dependsOn "assembleRelease"
-
-    from "build/outputs/apk/release/android-release.apk"
-    into "../deploy/"
-    rename("android-release.apk", "${generateDeployName('android')}.apk")
 }
 
 android{
