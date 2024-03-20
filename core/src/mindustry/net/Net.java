@@ -10,6 +10,7 @@ import mindustry.gen.*;
 import mindustry.net.Packets.*;
 import mindustry.net.Streamable.*;
 import mindustryX.events.*;
+import mindustryX.features.*;
 import net.jpountz.lz4.*;
 
 import java.io.*;
@@ -267,6 +268,7 @@ public class Net{
      */
     public void handleClientReceived(Packet object){
         object.handled();
+        ReplayController.onClientPacket(object);
 
         if(object instanceof StreamBegin b){
             streams.put(b.id, currentStream = new StreamBuilder(b));

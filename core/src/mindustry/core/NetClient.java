@@ -24,6 +24,7 @@ import mindustry.net.*;
 import mindustry.net.Packets.*;
 import mindustry.world.*;
 import mindustry.world.modules.*;
+import mindustryX.features.*;
 
 import java.io.*;
 import java.util.*;
@@ -104,6 +105,7 @@ public class NetClient implements ApplicationListener{
                 return;
             }
 
+            ReplayController.onConnect(packet.addressTCP);
             net.send(c, true);
             Call.serverPacketReliable("ARC", Version.mdtXBuild);
             Call.serverPacketReliable("ARC-build", Version.mdtXBuild);
@@ -112,6 +114,7 @@ public class NetClient implements ApplicationListener{
         net.handleClient(Disconnect.class, packet -> {
             if(quietReset) return;
 
+            ReplayController.stop();
             connecting = false;
             logic.reset();
             platform.updateRPC();
