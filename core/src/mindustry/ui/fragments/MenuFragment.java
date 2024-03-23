@@ -19,6 +19,7 @@ import mindustry.game.EventType.*;
 import mindustry.gen.*;
 import mindustry.graphics.*;
 import mindustry.ui.*;
+import mindustryX.features.ui.*;
 
 import static mindustry.Vars.*;
 import static mindustry.gen.Tex.*;
@@ -29,6 +30,8 @@ public class MenuFragment{
     private MenuRenderer renderer;
     private Seq<MenuButton> customButtons = new Seq<>();
 
+    MenuFloatLabel floatLabel;
+
     public void build(Group parent){
         renderer = new MenuRenderer();
 
@@ -37,6 +40,7 @@ public class MenuFragment{
         group.visible(() -> !ui.editor.isShown());
         parent.addChild(group);
 
+        parent.addChild(floatLabel = new MenuFloatLabel());
         parent = group;
 
         parent.fill((x, y, w, h) -> renderer.render());
@@ -103,6 +107,9 @@ public class MenuFragment{
             if(Core.settings.getBool("macnotch") ){
                 fy -= Scl.scl(macNotchHeight);
             }
+
+            floatLabel.setPosition(width / 2f + logow * 0.35f, fy - logoh / 2f - Scl.scl(2f) + logoh * 0.15f);
+            floatLabel.baseScale = logoh * 0.03f;
 
             Draw.color();
             Draw.rect(logo, fx, fy, logow, logoh);
