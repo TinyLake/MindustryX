@@ -6,6 +6,7 @@ import mindustry.graphics.*;
 import mindustry.ui.*;
 import mindustry.world.blocks.heat.*;
 import mindustry.world.meta.*;
+import mindustryX.features.ui.*;
 
 /** A crafter that requires contact from heater blocks to craft. */
 public class HeatCrafter extends GenericCrafter{
@@ -25,8 +26,8 @@ public class HeatCrafter extends GenericCrafter{
         super.setBars();
 
         addBar("heat", (HeatCrafterBuild entity) ->
-            new Bar(() ->
-            Core.bundle.format("bar.heatpercent", (int)(entity.heat + 0.01f), (int)(entity.efficiencyScale() * 100 + 0.01f)),
+            new Bar(
+            () -> Core.bundle.get("bar.heat") + " " + FormatDefault.percent(entity.heat, heatRequirement, entity.efficiencyScale() * 100),
             () -> Pal.lightOrange,
             () -> entity.heat / heatRequirement));
     }

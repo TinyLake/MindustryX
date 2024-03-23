@@ -10,6 +10,7 @@ import mindustry.content.*;
 import mindustry.gen.*;
 import mindustry.graphics.*;
 import mindustry.logic.*;
+import mindustry.ui.*;
 import mindustry.world.*;
 import mindustry.world.consumers.*;
 import mindustry.world.meta.*;
@@ -65,6 +66,12 @@ public class MendProjector extends Block{
                 cons.items, this::consumesItem)
             );
         }
+    }
+
+    @Override
+    public void setBars(){
+        super.setBars();
+        addBar("charge", (MendBuild entity) -> new Bar(() -> ("充能: " + (int)entity.charge + " / " + reload), () -> Pal.items, () -> (entity.charge / reload)));
     }
 
     @Override

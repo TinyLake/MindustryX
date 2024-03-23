@@ -21,6 +21,7 @@ import mindustry.world.*;
 import mindustry.world.consumers.*;
 import mindustry.world.meta.*;
 import mindustryX.features.*;
+import mindustryX.features.ui.*;
 
 import static mindustry.Vars.*;
 
@@ -83,7 +84,11 @@ public class ForceProjector extends Block{
     @Override
     public void setBars(){
         super.setBars();
-        addBar("shield", (ForceBuild entity) -> new Bar("stat.shieldhealth", Pal.accent, () -> entity.broken ? 0f : 1f - entity.buildup / (shieldHealth + phaseShieldBoost * entity.phaseHeat)).blink(Color.white));
+        addBar("shield",
+        (ForceBuild entity) -> new Bar(() -> "\uE84D " + FormatDefault.percent(shieldHealth + phaseShieldBoost * entity.phaseHeat - entity.buildup, shieldHealth + phaseShieldBoost * entity.phaseHeat),
+        () -> Pal.accent,
+        () -> entity.broken ? 0f : 1f - entity.buildup / (shieldHealth + phaseShieldBoost * entity.phaseHeat))
+        .blink(Color.white));
     }
 
     @Override

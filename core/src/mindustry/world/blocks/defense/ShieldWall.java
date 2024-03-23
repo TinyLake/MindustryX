@@ -7,8 +7,10 @@ import arc.util.*;
 import arc.util.io.*;
 import mindustry.annotations.Annotations.*;
 import mindustry.graphics.*;
+import mindustry.ui.*;
 import mindustry.world.meta.*;
 import mindustryX.features.*;
+import mindustryX.features.ui.*;
 
 import static mindustry.Vars.*;
 
@@ -36,6 +38,15 @@ public class ShieldWall extends Wall{
         stats.add(Stat.cooldownTime, breakCooldown / Time.toSeconds, StatUnit.seconds);
         stats.add(StatExt.regenSpeed, regenSpeed * Time.toSeconds, StatUnit.perSecond);
 
+    }
+
+    @Override
+    public void setBars(){
+        super.setBars();
+        addBar("charge", (ShieldWallBuild entity) -> new Bar(
+        () -> "\uE84D " + FormatDefault.percent(entity.shield, shieldHealth),
+        () -> Pal.shield,
+        () -> (entity.shield / shieldHealth)));
     }
 
     public class ShieldWallBuild extends WallBuild{

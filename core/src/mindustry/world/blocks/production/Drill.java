@@ -111,7 +111,10 @@ public class Drill extends Block{
         super.setBars();
 
         addBar("drillspeed", (DrillBuild e) ->
-             new Bar(() -> Core.bundle.format("bar.drillspeed", Strings.fixed(e.lastDrillSpeed * 60 * e.timeScale(), 2)), () -> Pal.ammo, () -> e.warmup));
+             new Bar(() -> (e.dominantItem == null ? "挖掘速度：" : e.dominantItem.emoji()) +" "+ Strings.fixed(e.lastDrillSpeed * 60 * e.timeScale() , 2) + "/s", () -> Pal.ammo, () -> e.warmup));
+        if(!(this instanceof BurstDrill) && Core.settings.getBool("arcDrillProgress"))
+            addBar("progress", (DrillBuild e) ->
+                new Bar(() -> e.dominantItem == null ? "":Iconc.production + " " + Math.round(e.progress / (drillTime + hardnessDrillMultiplier * e.dominantItem.hardness) * 100) + " %", () -> e.dominantItem == null ? Pal.ammo : e.dominantItem.color, () -> e.dominantItem == null ? 0 : e.progress / (drillTime + hardnessDrillMultiplier * e.dominantItem.hardness)));
     }
 
     public Item getDrop(Tile tile){

@@ -66,7 +66,10 @@ public abstract class BlockProducer extends PayloadBlock{
     public void setBars(){
         super.setBars();
 
-        addBar("progress", (BlockProducerBuild entity) -> new Bar("bar.progress", Pal.ammo, () -> entity.recipe() == null ? 0f : (entity.progress / entity.recipe().buildCost)));
+        addBar("progress", (BlockProducerBuild entity) ->
+                new Bar(() -> entity.recipe() == null ? (Iconc.crafting + "") : (Iconc.crafting + " " + Strings.fixed((entity.progress / entity.recipe().buildCost) * 100f, 0)  + " %"),
+                        () -> Pal.ammo, () -> entity.recipe() == null ? 0f : (entity.progress / entity.recipe().buildCost))
+            );
     }
     
     public abstract class BlockProducerBuild extends PayloadBlockBuild<BuildPayload>{

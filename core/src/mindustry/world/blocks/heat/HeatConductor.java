@@ -11,6 +11,7 @@ import mindustry.graphics.*;
 import mindustry.ui.*;
 import mindustry.world.*;
 import mindustry.world.draw.*;
+import mindustryX.features.ui.*;
 
 public class HeatConductor extends Block{
     public float visualMaxHeat = 15f;
@@ -28,8 +29,7 @@ public class HeatConductor extends Block{
     public void setBars(){
         super.setBars();
 
-        //TODO show number
-        addBar("heat", (HeatConductorBuild entity) -> new Bar(() -> Core.bundle.format("bar.heatamount", (int)(entity.heat + 0.001f)), () -> Pal.lightOrange, () -> entity.heat / visualMaxHeat));
+        addBar("heat", (HeatConductorBuild entity) -> new Bar(() -> Core.bundle.get("bar.heat") + " " + FormatDefault.percent(entity.heat, visualMaxHeat), () -> Pal.lightOrange, () -> entity.heat / visualMaxHeat));
     }
 
     @Override

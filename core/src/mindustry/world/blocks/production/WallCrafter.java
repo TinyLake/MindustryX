@@ -57,7 +57,7 @@ public class WallCrafter extends Block{
         super.setBars();
 
         addBar("drillspeed", (WallCrafterBuild e) ->
-            new Bar(() -> Core.bundle.format("bar.drillspeed", Strings.fixed(e.lastEfficiency * 60 / drillTime, 2)), () -> Pal.ammo, () -> e.warmup));
+            new Bar(() -> (output == null ? "挖掘速度：" : output.emoji()) +" "+ Strings.fixed(e.lastEfficiency * 60 / drillTime, 2) + "/s", () -> Pal.ammo, () -> e.warmup));
     }
 
     @Override

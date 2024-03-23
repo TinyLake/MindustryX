@@ -39,13 +39,6 @@ public class LiquidSource extends Block{
     }
 
     @Override
-    public void setBars(){
-        super.setBars();
-
-        removeBar("liquid");
-    }
-
-    @Override
     public void drawPlanConfig(BuildPlan plan, Eachable<BuildPlan> list){
         drawPlanConfigCenter(plan, plan.config, "center", true);
     }

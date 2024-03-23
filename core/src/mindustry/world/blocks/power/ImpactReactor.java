@@ -54,11 +54,20 @@ public class ImpactReactor extends PowerGenerator{
     public void setBars(){
         super.setBars();
 
-        addBar("power", (GeneratorBuild entity) -> new Bar(() ->
-        Core.bundle.format("bar.poweroutput",
-        Strings.fixed(Math.max(entity.getPowerProduction() - consPower.usage, 0) * 60 * entity.timeScale(), 1)),
-        () -> Pal.powerBar,
-        () -> entity.productionEfficiency));
+        addBar("power", (GeneratorBuild entity) -> new Bar(
+                () -> entity.warmup() > 0.999f
+                        ? Strings.format(Iconc.power+"@[lightgray](@%)[]",
+                                Strings.autoFixed((entity.getPowerProduction() - consPower.usage) * 60 * entity.timeScale(), 1),
+                                Strings.autoFixed(entity.productionEfficiency * 100, 1)
+                        )
+                        : Strings.format(Iconc.power+"@[lightgray](@%)[]|@s",
+                                Strings.autoFixed((entity.getPowerProduction() - consPower.usage) * 60 * entity.timeScale(), 1),
+                                Strings.autoFixed(entity.productionEfficiency * 100, 1),
+                                Strings.autoFixed((warmupToTime(0.999f, entity.timeScale()) - warmupToTime(entity.warmup(), entity.timeScale())) / 60f, 1)
+                        ),
+                () -> Pal.powerBar,
+                () -> entity.productionEfficiency)
+        );
     }
 
     @Override

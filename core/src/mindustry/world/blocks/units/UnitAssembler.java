@@ -9,6 +9,7 @@ import arc.scene.ui.layout.*;
 import arc.struct.*;
 import arc.util.*;
 import arc.util.io.*;
+import mindustry.*;
 import mindustry.ai.types.*;
 import mindustry.annotations.Annotations.*;
 import mindustry.content.*;
@@ -92,7 +93,10 @@ public class UnitAssembler extends PayloadBlock{
     public void setBars(){
         super.setBars();
 
-        addBar("progress", (UnitAssemblerBuild e) -> new Bar("bar.progress", Pal.ammo, () -> e.progress));
+        addBar("progress", (UnitAssembler.UnitAssemblerBuild e) -> new Bar(() ->
+                Iconc.units + " " + (int)(e.progress * 100) + "%" + " | " +Strings.fixed((e.plan().time * (1-e.progress))/(60f * Vars.state.rules.unitBuildSpeed(e.team) * e.timeScale()),0) +  " s",
+                () -> Pal.ammo, () -> e.progress
+        ));
 
         addBar("units", (UnitAssemblerBuild e) ->
             new Bar(() ->

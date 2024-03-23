@@ -15,6 +15,7 @@ import mindustry.type.*;
 import mindustry.ui.*;
 import mindustry.world.consumers.*;
 import mindustry.world.meta.*;
+import mindustryX.features.ui.*;
 
 import static mindustry.Vars.*;
 
@@ -56,10 +57,9 @@ public class ItemTurret extends Turret{
         super.setBars();
 
         addBar("ammo", (ItemTurretBuild entity) ->
-            new Bar(
-                "stat.ammo",
-                Pal.ammo,
-                () -> (float)entity.totalAmmo / maxAmmo
+        new Bar(() -> Core.bundle.get("stat.ammo") + " " + (entity.totalAmmo > 0 ? ((ItemTurret.ItemEntry)entity.ammo.peek()).item.emoji() : "") + " " + FormatDefault.percent(entity.totalAmmo, maxAmmo),
+            ()->Pal.ammo,
+                () -> (float) entity.totalAmmo / maxAmmo
             )
         );
     }

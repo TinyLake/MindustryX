@@ -43,7 +43,9 @@ public class PayloadDeconstructor extends PayloadBlock{
     public void setBars(){
         super.setBars();
 
-        addBar("progress", (PayloadDeconstructorBuild e) -> new Bar("bar.progress", Pal.ammo, () -> e.progress));
+        addBar("progress", (PayloadDeconstructorBuild e) ->
+                new Bar(() -> Iconc.crafting + " " + Strings.fixed(e.progress * 100f, 0)  + " %",
+                        () -> Pal.ammo, () -> e.progress));
     }
 
     public class PayloadDeconstructorBuild extends PayloadBlockBuild<Payload>{
