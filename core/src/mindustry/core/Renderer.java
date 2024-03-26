@@ -22,6 +22,7 @@ import mindustry.maps.*;
 import mindustry.type.*;
 import mindustry.world.blocks.storage.*;
 import mindustry.world.blocks.storage.CoreBlock.*;
+import mindustryX.features.*;
 
 import static arc.Core.*;
 import static mindustry.Vars.*;
@@ -376,7 +377,7 @@ public class Renderer implements ApplicationListener{
         Events.fire(Trigger.drawOver);
         blocks.drawBlocks();
 
-        Groups.draw.draw(Drawc::draw);
+        Groups.draw.draw(RenderExt::onGroupDraw);
 
         Draw.reset();
         Draw.flush();
