@@ -19,6 +19,7 @@ import mindustry.game.EventType.*;
 import mindustry.gen.*;
 import mindustry.graphics.*;
 import mindustry.ui.*;
+import mindustryX.features.*;
 import mindustryX.features.ui.*;
 
 import static mindustry.Vars.*;
@@ -63,9 +64,19 @@ public class MenuFragment{
             }).grow();
         });
 
-        parent.fill(c -> c.bottom().right().button(Icon.discord, new ImageButtonStyle(){{
-            up = discordBanner;
-        }}, ui.discord::show).marginTop(9f).marginLeft(10f).tooltip("@discord").size(84, 45).name("discord"));
+//        parent.fill(c -> c.bottom().right().button(Icon.discord, new ImageButtonStyle(){{
+//            up = discordBanner;
+//        }}, ui.discord::show).marginTop(9f).marginLeft(10f).tooltip("@discord").size(84, 45).name("discord"));
+
+
+        if(AutoUpdate.INSTANCE.getActive()){
+            parent.fill(c -> c.bottom().right().button("更新", Icon.refresh, () -> {
+                AutoUpdate.INSTANCE.showDialog();
+            }).size(200, 60).name("更新").update(t -> {
+                t.getLabel().setColor(AutoUpdate.INSTANCE.getNewVersion() != null ? Tmp.c1.set(Color.white).lerp(Pal.accent, Mathf.absin(5f, 1f)) : Color.white);
+            }));
+        }
+
 
         //info icon
         if(mobile){

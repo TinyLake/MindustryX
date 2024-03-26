@@ -14,6 +14,8 @@ public class Hooks implements ApplicationListener{
         Log.infoTag("MindustryX", "Hooks.init");
         RenderExt.init();
         ArcOld.addSettings();
+        if(AutoUpdate.INSTANCE.getActive())
+            AutoUpdate.INSTANCE.checkUpdate();
         if(!Vars.headless){
             TimeControl.init();
             UIExt.init();
