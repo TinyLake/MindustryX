@@ -120,6 +120,7 @@ public class Main extends Mod{
         Log.logger = new NoopLogHandler();
         try{
             Thread.currentThread().setContextClassLoader(classLoader);
+            Reflect.set(classLoader.loadClass("mindustryX.VarsX"), "isLoader", true);
             impl.launch(classLoader);
             Thread.currentThread().interrupt();
         }catch(Exception e){
