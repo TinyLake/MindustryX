@@ -5,6 +5,7 @@ import arc.Input.*;
 import arc.func.*;
 import arc.graphics.*;
 import arc.graphics.g2d.*;
+import arc.input.*;
 import arc.math.*;
 import arc.scene.*;
 import arc.scene.ui.*;
@@ -73,6 +74,8 @@ public class ChatFragment extends Table{
                     historyPos--;
                     updateChat();
                 }
+                //MDTX: disable FocusTraversal when tab is used as chat_mode
+                chatfield.setFocusTraversal(keybinds.get(Binding.chat_mode).key != KeyCode.tab);
                 if(input.keyTap(Binding.chat_mode)){
                     nextMode();
                 }
