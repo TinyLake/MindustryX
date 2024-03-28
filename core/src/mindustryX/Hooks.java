@@ -5,6 +5,7 @@ import arc.util.*;
 import mindustry.*;
 import mindustry.gen.*;
 import mindustryX.features.*;
+import mindustryX.features.Settings;
 
 import java.net.*;
 
@@ -12,6 +13,7 @@ public class Hooks implements ApplicationListener{
     /** invoke before `Vars.init`. Note that may be executed from `Vars.loadAsync` */
     public static void beforeInit(){
         Log.infoTag("MindustryX", "Hooks.beforeInit");
+        Settings.baseSettings();
     }
 
     /** invoke after loading, just before `Mod::init` */
@@ -20,6 +22,7 @@ public class Hooks implements ApplicationListener{
         Log.infoTag("MindustryX", "Hooks.init");
         RenderExt.init();
         ArcOld.addSettings();
+        Settings.addSettings();
         if(AutoUpdate.INSTANCE.getActive())
             AutoUpdate.INSTANCE.checkUpdate();
         if(!Vars.headless){
