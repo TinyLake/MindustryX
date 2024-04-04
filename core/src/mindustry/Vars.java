@@ -377,6 +377,10 @@ public class Vars implements Loadable{
                 if(!headless && (ui == null || ui.consolefrag == null)){
                     logBuffer.add(result);
                 }else if(!headless){
+                    if(!logBuffer.isEmpty()){
+                        logBuffer.each(ui.consolefrag::addMessage);
+                        logBuffer.clear();
+                    }
                     if(!OS.isWindows){
                         for(String code : ColorCodes.values){
                             result = result.replace(code, "");
