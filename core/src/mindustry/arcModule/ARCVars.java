@@ -11,7 +11,6 @@ import static arc.Core.settings;
 
 public class ARCVars{
     public static ARCUI arcui = new ARCUI();
-    public static boolean unitHide = false;
     public static boolean limitUpdate = false;
     public static int limitDst = 0;
     public static final int maxBuildPlans = 100;

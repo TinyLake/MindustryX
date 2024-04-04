@@ -13,7 +13,6 @@ import arc.scene.ui.layout.*;
 import arc.struct.*;
 import arc.util.*;
 import mindustry.*;
-import mindustry.arcModule.ARCVars;
 import mindustry.arcModule.Marker;
 import mindustry.content.Items;
 import mindustry.content.UnitTypes;
@@ -29,6 +28,7 @@ import mindustry.type.UnitType;
 import mindustry.ui.*;
 import mindustry.world.*;
 import mindustry.world.blocks.ControlBlock;
+import mindustryX.features.*;
 
 import static arc.Core.camera;
 import static arc.Core.*;
@@ -376,7 +376,7 @@ public class DesktopInput extends InputHandler{
             if(Core.input.keyDown(Binding.control) && Core.input.keyTap(Binding.select)){
                 Unit on = selectedUnit();
                 var build = selectedControlBuild();
-                if(!ARCVars.unitHide && on != null){
+                if(on != null){
                     Call.unitControl(player, on);
                     shouldShoot = false;
                     recentRespawnTimer = 1f;
@@ -797,7 +797,7 @@ public class DesktopInput extends InputHandler{
         }
 
         if (input.keyTap(Binding.toggle_unit)) {
-            ARCVars.unitHide = !ARCVars.unitHide;
+            RenderExt.unitHide = !RenderExt.unitHide;
         }
 
         if (input.keyTap(Binding.superUnitEffect)) {

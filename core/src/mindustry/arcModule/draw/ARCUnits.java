@@ -13,6 +13,7 @@ import mindustry.game.*;
 import mindustry.gen.*;
 import mindustry.graphics.*;
 import mindustry.world.blocks.payloads.*;
+import mindustryX.features.*;
 
 import static mindustry.Vars.*;
 import static mindustry.arcModule.ARCVars.maxBuildPlans;
@@ -39,7 +40,7 @@ public class ARCUnits{
             unithitbox = Core.settings.getBool("unithitbox");
             unitBuildPlan = Core.settings.getBool("unitbuildplan");
 
-            defaultUnitTrans = ARCVars.unitHide ? 0 : Core.settings.getInt("unitTransparency") / 100f;
+            defaultUnitTrans = RenderExt.unitHide ? 0 : Core.settings.getInt("unitTransparency") / 100f;
             unitDrawMinHealth = Core.settings.getInt("unitDrawMinHealth");
             unitBarDrawMinHealth = Core.settings.getInt("unitBarDrawMinHealth");
 

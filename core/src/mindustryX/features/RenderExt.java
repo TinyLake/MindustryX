@@ -23,6 +23,9 @@ public class RenderExt{
     public static int hiddenItemTransparency;
     public static int blockBarMinHealth;
     public static float overdriveZoneTransparency;
+
+    public static boolean unitHide = false;
+
     private static Effect placementEffect;
 
     public static void init(){
@@ -57,6 +60,7 @@ public class RenderExt{
     }
 
     public static void onGroupDraw(Drawc t){
+        if(unitHide && t instanceof Minerc) return;
         if(!bulletShow && t instanceof Bulletc) return;
         if(!showMineBeam && t instanceof Minerc) return;
         t.draw();

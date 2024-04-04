@@ -9,7 +9,6 @@ import arc.struct.*;
 import arc.util.*;
 import mindustry.*;
 import mindustry.ai.types.*;
-import mindustry.arcModule.ARCVars;
 import mindustry.entities.*;
 import mindustry.game.EventType.*;
 import mindustry.game.*;
@@ -126,7 +125,7 @@ public class OverlayRenderer{
 
         InputHandler input = control.input;
 
-        Sized select = ARCVars.unitHide ? null : input.selectedUnit();
+        Sized select = input.selectedUnit();
         if(select == null) select = input.selectedControlBuild();
         if(!Core.input.keyDown(Binding.control) || !state.rules.possessionAllowed) select = null;
 

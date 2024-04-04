@@ -13,6 +13,7 @@ import mindustry.game.*;
 import mindustry.gen.*;
 import mindustry.ui.*;
 import mindustry.ui.dialogs.*;
+import mindustryX.features.*;
 
 import static arc.Core.*;
 import static mindustry.Vars.*;
@@ -109,7 +110,7 @@ public class HudSettingsTable extends ElementUtils.ToolTable{
                     int blockRenderLevel = Core.settings.getInt("blockRenderLevel");
                     Core.settings.put("blockRenderLevel", (blockRenderLevel + 1) % 3);
                 }).size(30, 30).tooltip("建筑显示");
-                t.button("[cyan]兵", textStyle, () -> ARCVars.unitHide = !ARCVars.unitHide).checked(a -> !ARCVars.unitHide).size(30, 30).tooltip("兵种显示");
+                t.button("[cyan]兵", textStyle, () -> RenderExt.unitHide = !RenderExt.unitHide).checked(a -> !RenderExt.unitHide).size(30, 30).tooltip("兵种显示");
                 t.button("[cyan]箱", textStyle, () -> Core.settings.put("unithitbox", !Core.settings.getBool("unithitbox"))).checked(a -> Core.settings.getBool("unithitbox")).size(30, 30).tooltip("碰撞箱显示");
                 t.button("[cyan]弹", textStyle, () -> Core.settings.put("bulletShow", !Core.settings.getBool("bulletShow"))).checked(a -> Core.settings.getBool("bulletShow")).size(30, 30).tooltip("子弹显示");
                 t.button("[violet]锁", textStyle, () -> {
