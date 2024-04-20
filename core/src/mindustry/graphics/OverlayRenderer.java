@@ -16,10 +16,10 @@ import mindustry.game.Teams.*;
 import mindustry.gen.*;
 import mindustry.input.*;
 import mindustry.world.blocks.storage.CoreBlock.*;
+import mindustryX.features.MapAnalyzer;
 
 import static mindustry.Vars.*;
 import static mindustry.arcModule.Marker.drawMarker;
-import static mindustry.arcModule.toolpack.arcScanMode.arcScan;
 import static mindustry.arcModule.toolpack.arcScanner.drawScanner;
 import static mindustry.arcModule.toolpack.arcWaveSpawner.drawSpawner;
 
@@ -318,7 +318,7 @@ public class OverlayRenderer{
 
         drawScanner();
         drawMarker();
-        arcScan();
+        new MapAnalyzer().mapAnalyzer();
     }
 
     private static class CoreEdge{

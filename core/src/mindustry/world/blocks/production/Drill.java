@@ -41,8 +41,8 @@ public class Drill extends Block{
     public @Nullable Item blockedItem;
 
     //return variables for countOre
-    protected @Nullable Item returnItem;
-    protected int returnCount;
+    public @Nullable Item returnItem;
+    public int returnCount;
 
     /** Whether to draw the item this drill is mining. */
     public boolean drawMineItem = true;

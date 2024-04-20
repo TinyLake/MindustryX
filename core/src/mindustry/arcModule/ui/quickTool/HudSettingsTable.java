@@ -140,7 +140,6 @@ public class HudSettingsTable extends ElementUtils.ToolTable{
                 if(settings.getBool("developMode"))
                     t.button(StatusEffects.burning.emoji(), textStyle, () -> state.rules.fire = !state.rules.fire).checked(a -> state.rules.fire).size(30, 30).tooltip("太燃了");
                 t.button("[cyan]扫", textStyle, () -> control.input.arcScanMode = !control.input.arcScanMode).checked(a -> control.input.arcScanMode).size(30, 30).tooltip("扫描模式");
-
             }).left();
             sp.row();
             sp.add(sets);
