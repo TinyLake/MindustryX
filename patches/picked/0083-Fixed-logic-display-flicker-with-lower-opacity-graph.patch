@@ -1,0 +1,35 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Anuken <arnukren@gmail.com>
+Date: Sun, 24 Dec 2023 21:05:14 -0500
+Subject: [PATCH] Fixed logic display flicker with lower opacity graphics
+
+(cherry picked from commit 93d4eaa970a16de4b40c09462092d1ae358d8b2f)
+---
+ core/src/mindustry/world/blocks/logic/LogicDisplay.java | 8 ++++++--
+ 1 file changed, 6 insertions(+), 2 deletions(-)
+
+diff --git a/core/src/mindustry/world/blocks/logic/LogicDisplay.java b/core/src/mindustry/world/blocks/logic/LogicDisplay.java
+index 453a3391bda3a93071d260f837171d2e8e6cdbb9..96b504d3b549dfbae79d4e649f4313393cec807f 100644
+--- a/core/src/mindustry/world/blocks/logic/LogicDisplay.java
++++ b/core/src/mindustry/world/blocks/logic/LogicDisplay.java
+@@ -1,6 +1,5 @@
+ package mindustry.world.blocks.logic;
+ 
+-import arc.*;
+ import arc.graphics.*;
+ import arc.graphics.g2d.*;
+ import arc.graphics.gl.*;
+@@ -90,7 +89,12 @@ public class LogicDisplay extends Block{
+                         p1 = unpackSign(DisplayCmd.p1(c)), p2 = unpackSign(DisplayCmd.p2(c)), p3 = unpackSign(DisplayCmd.p3(c)), p4 = unpackSign(DisplayCmd.p4(c));
+ 
+                         switch(type){
+-                            case commandClear -> Core.graphics.clear(x / 255f, y / 255f, p1 / 255f, 1f);
++                            case commandClear -> {
++                                //calling glClear appears to be unreliable and leads to flickering
++                                Draw.color(x / 255f, y / 255f, p1 / 255f, 1f);
++                                Fill.crect(0f, 0f, displaySize, displaySize);
++                                Draw.color(color);
++                            }
+                             case commandLine -> Lines.line(x, y, p1, p2);
+                             case commandRect -> Fill.crect(x, y, p1, p2);
+                             case commandLineRect -> Lines.rect(x, y, p1, p2);

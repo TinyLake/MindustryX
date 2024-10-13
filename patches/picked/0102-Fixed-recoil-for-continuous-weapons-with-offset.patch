@@ -1,0 +1,23 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Anuken <arnukren@gmail.com>
+Date: Wed, 17 Jan 2024 12:47:19 -0500
+Subject: [PATCH] Fixed recoil for continuous weapons with offset
+
+(cherry picked from commit 0c233319d9f073ed97f14dce53d1fd3102448832)
+---
+ core/src/mindustry/type/Weapon.java | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/core/src/mindustry/type/Weapon.java b/core/src/mindustry/type/Weapon.java
+index 97ac3b45daf598caaa695c373bfbdbfa190d6e86..55554c5400641cb87cb4dd1eac4ce4cd45511727 100644
+--- a/core/src/mindustry/type/Weapon.java
++++ b/core/src/mindustry/type/Weapon.java
+@@ -364,7 +364,7 @@ public class Weapon implements Cloneable{
+                 mount.bullet.set(bulletX, bulletY);
+                 mount.reload = reload;
+                 mount.recoil = 1f;
+-                unit.vel.add(Tmp.v1.trns(unit.rotation + 180f, mount.bullet.type.recoil * Time.delta));
++                unit.vel.add(Tmp.v1.trns(mount.bullet.rotation() + 180f, mount.bullet.type.recoil * Time.delta));
+                 if(shootSound != Sounds.none && !headless){
+                     if(mount.sound == null) mount.sound = new SoundLoop(shootSound, 1f);
+                     mount.sound.update(bulletX, bulletY, true);

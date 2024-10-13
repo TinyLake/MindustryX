@@ -1,0 +1,65 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Anuken <arnukren@gmail.com>
+Date: Tue, 31 Oct 2023 12:20:18 -0400
+Subject: [PATCH] Add setProp of speed/armor
+
+(cherry picked from commit 1d051b5c16447c60fea71664c2817b7d668fd85c)
+---
+ core/src/mindustry/entities/comp/UnitComp.java | 7 +++++--
+ core/src/mindustry/logic/LAccess.java          | 3 ++-
+ 2 files changed, 7 insertions(+), 3 deletions(-)
+
+diff --git a/core/src/mindustry/entities/comp/UnitComp.java b/core/src/mindustry/entities/comp/UnitComp.java
+index a8bb8cf439c93d76c2a03151989aa7de768f806e..4ff6b3168f0482156672725d3bbcfab040af3158 100644
+--- a/core/src/mindustry/entities/comp/UnitComp.java
++++ b/core/src/mindustry/entities/comp/UnitComp.java
+@@ -35,7 +35,7 @@ import static mindustry.logic.GlobalVars.*;
+ abstract class UnitComp implements Healthc, Physicsc, Hitboxc, Statusc, Teamc, Itemsc, Rotc, Unitc, Weaponsc, Drawc, Boundedc, Syncc, Shieldc, Displayable, Ranged, Minerc, Builderc, Senseable, Settable{
+ 
+     @Import boolean hovering, dead, disarmed;
+-    @Import float x, y, rotation, elevation, maxHealth, drag, armor, hitSize, health, shield, ammo, dragMultiplier;
++    @Import float x, y, rotation, elevation, maxHealth, drag, armor, hitSize, health, shield, ammo, dragMultiplier, armorOverride, speedMultiplier;
+     @Import Team team;
+     @Import int id;
+     @Import @Nullable Tile mineTile;
+@@ -229,8 +229,9 @@ abstract class UnitComp implements Healthc, Physicsc, Hitboxc, Statusc, Teamc, I
+             case mining -> mining() ? 1 : 0;
+             case mineX -> mining() ? mineTile.x : -1;
+             case mineY -> mining() ? mineTile.y : -1;
++            case armor -> armorOverride >= 0f ? armorOverride : armor;
+             case flag -> flag;
+-            case speed -> type.speed * 60f / tilesize;
++            case speed -> type.speed * 60f / tilesize * speedMultiplier;
+             case controlled -> !isValid() ? 0 :
+                     controller instanceof LogicAI ? ctrlProcessor :
+                     controller instanceof Player ? ctrlPlayer :
+@@ -293,6 +294,8 @@ abstract class UnitComp implements Healthc, Physicsc, Hitboxc, Statusc, Teamc, I
+                 }
+             }
+             case flag -> flag = value;
++            case speed -> statusSpeed(Math.max((float)value, 0f));
++            case armor -> statusArmor(Math.max((float)value, 0f));
+         }
+     }
+ 
+diff --git a/core/src/mindustry/logic/LAccess.java b/core/src/mindustry/logic/LAccess.java
+index 52df816ecb8bd0954397b7a7dbd07f0209d8bcdd..0724018f593041ca7de2b46a6b79cda76ca0eb4a 100644
+--- a/core/src/mindustry/logic/LAccess.java
++++ b/core/src/mindustry/logic/LAccess.java
+@@ -21,6 +21,7 @@ public enum LAccess{
+     maxHealth,
+     heat,
+     shield,
++    armor,
+     efficiency,
+     progress,
+     timescale,
+@@ -66,7 +67,7 @@ public enum LAccess{
+         all = values(),
+         senseable = Seq.select(all, t -> t.params.length <= 1).toArray(LAccess.class),
+         controls = Seq.select(all, t -> t.params.length > 0).toArray(LAccess.class),
+-        settable = {x, y, rotation, team, flag, health, totalPower, payloadType};
++        settable = {x, y, rotation, speed, armor, health, team, flag, totalPower, payloadType};
+ 
+     LAccess(String... params){
+         this.params = params;

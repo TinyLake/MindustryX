@@ -1,0 +1,265 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Anuken <arnukren@gmail.com>
+Date: Tue, 31 Oct 2023 11:24:03 -0400
+Subject: [PATCH] Added dynamic status for custom speed/health/etc
+
+(cherry picked from commit e5047d752d62a0353f1ead4619ee5d4653fe9517)
+---
+ core/src/mindustry/content/StatusEffects.java |  8 +-
+ .../mindustry/entities/comp/ShieldComp.java   |  4 +-
+ .../mindustry/entities/comp/StatusComp.java   | 85 +++++++++++++++++--
+ .../mindustry/entities/units/StatusEntry.java |  3 +
+ core/src/mindustry/io/TypeIO.java             | 42 ++++++++-
+ core/src/mindustry/type/StatusEffect.java     |  2 +
+ 6 files changed, 133 insertions(+), 11 deletions(-)
+
+diff --git a/core/src/mindustry/content/StatusEffects.java b/core/src/mindustry/content/StatusEffects.java
+index b9f25c2cbbfd4bb79a38b7295daa8aabd54e6d86..8daf52a5bbdaaed7f4336a4af05b836e63b65323 100644
+--- a/core/src/mindustry/content/StatusEffects.java
++++ b/core/src/mindustry/content/StatusEffects.java
+@@ -11,7 +11,7 @@ import mindustry.type.*;
+ import static mindustry.Vars.*;
+ 
+ public class StatusEffects{
+-    public static StatusEffect none, burning, freezing, unmoving, slow, fast, wet, muddy, melting, sapped, tarred, overdrive, overclock, shielded, shocked, blasted, corroded, boss, sporeSlowed, disarmed, electrified, invincible;
++    public static StatusEffect none, burning, freezing, unmoving, slow, fast, wet, muddy, melting, sapped, tarred, overdrive, overclock, shielded, shocked, blasted, corroded, boss, sporeSlowed, disarmed, electrified, invincible, dynamic;
+ 
+     public static void load(){
+ 
+@@ -205,5 +205,11 @@ public class StatusEffects{
+         invincible = new StatusEffect("invincible"){{
+             healthMultiplier = Float.POSITIVE_INFINITY;
+         }};
++
++        dynamic = new StatusEffect("dynamic"){{
++            show = false;
++            dynamic = true;
++            permanent = true;
++        }};
+     }
+ }
+diff --git a/core/src/mindustry/entities/comp/ShieldComp.java b/core/src/mindustry/entities/comp/ShieldComp.java
+index ca70594caf12ea870044f453a2900d342010f076..87519fd742fbdc0df9b1573cc1d816386f57a5d4 100644
+--- a/core/src/mindustry/entities/comp/ShieldComp.java
++++ b/core/src/mindustry/entities/comp/ShieldComp.java
+@@ -11,7 +11,7 @@ import mindustry.type.*;
+ 
+ @Component
+ abstract class ShieldComp implements Healthc, Posc{
+-    @Import float health, hitTime, x, y, healthMultiplier;
++    @Import float health, hitTime, x, y, healthMultiplier, armorOverride;
+     @Import boolean dead;
+     @Import Team team;
+     @Import UnitType type;
+@@ -27,7 +27,7 @@ abstract class ShieldComp implements Healthc, Posc{
+     @Override
+     public void damage(float amount){
+         //apply armor and scaling effects
+-        rawDamage(Damage.applyArmor(amount, armor) / healthMultiplier / Vars.state.rules.unitHealth(team));
++        rawDamage(Damage.applyArmor(amount, armorOverride >= 0f ? armorOverride : armor) / healthMultiplier / Vars.state.rules.unitHealth(team));
+     }
+ 
+     @Replace
+diff --git a/core/src/mindustry/entities/comp/StatusComp.java b/core/src/mindustry/entities/comp/StatusComp.java
+index 0f956377076bf87615678ea8a8c3b9bccb73f5f6..0d70aff00012a17cd4aaab4859f4943ca67f45d9 100644
+--- a/core/src/mindustry/entities/comp/StatusComp.java
++++ b/core/src/mindustry/entities/comp/StatusComp.java
+@@ -20,10 +20,12 @@ abstract class StatusComp implements Posc, Flyingc{
+     private transient Bits applied = new Bits(content.getBy(ContentType.status).size);
+ 
+     //these are considered read-only
+-    transient float speedMultiplier = 1, damageMultiplier = 1, healthMultiplier = 1, reloadMultiplier = 1, buildSpeedMultiplier = 1, dragMultiplier = 1;
++    //note: armor is a special case; it is an override when >= 0, otherwise ignored
++    transient float speedMultiplier = 1, damageMultiplier = 1, healthMultiplier = 1, reloadMultiplier = 1, buildSpeedMultiplier = 1, dragMultiplier = 1, armorOverride = -1f;
+     transient boolean disarmed = false;
+ 
+     @Import UnitType type;
++    @Import float maxHealth;
+ 
+     /** Apply a status effect for 1 tick (for permanent effects) **/
+     void apply(StatusEffect effect){
+@@ -108,6 +110,62 @@ abstract class StatusComp implements Posc, Flyingc{
+         return Tmp.c1.set(r / count, g / count, b / count, 1f);
+     }
+ 
++    /**
++     * Applies a dynamic status effect, with stat multipliers that can be customized.
++     * @return the entry to write multipliers to. If the dynamic status was already applied, returns the previous entry.
++     * */
++    public StatusEntry applyDynamicStatus(){
++        if(hasEffect(StatusEffects.dynamic)){
++            StatusEntry entry = statuses.find(s -> s.effect.dynamic);
++            if(entry != null) return entry;
++        }
++
++        StatusEntry entry = Pools.obtain(StatusEntry.class, StatusEntry::new);
++        entry.set(StatusEffects.dynamic, Float.POSITIVE_INFINITY);
++        statuses.add(entry);
++        entry.effect.applied(self(), entry.time, false);
++        return entry;
++    }
++
++    /** Uses a dynamic status effect to override speed. */
++    public void statusSpeed(float speed){
++        //type.speed should never be 0
++        applyDynamicStatus().speedMultiplier = speed / type.speed;
++    }
++
++    /** Uses a dynamic status effect to change damage. */
++    public void statusDamageMultiplier(float damageMultiplier){
++        applyDynamicStatus().damageMultiplier = damageMultiplier;
++    }
++
++    /** Uses a dynamic status effect to change reload. */
++    public void statusReloadMultiplier(float reloadMultiplier){
++        applyDynamicStatus().reloadMultiplier = reloadMultiplier;
++    }
++
++    /** Uses a dynamic status effect to override max health. */
++    public void statusMaxHealth(float health){
++        //maxHealth should never be zero
++        applyDynamicStatus().healthMultiplier = health / maxHealth;
++    }
++
++    /** Uses a dynamic status effect to override build speed. */
++    public void statusBuildSpeed(float buildSpeed){
++        //build speed should never be zero
++        applyDynamicStatus().buildSpeedMultiplier = buildSpeed / type.buildSpeed;
++    }
++
++    /** Uses a dynamic status effect to override drag. */
++    public void statusDrag(float drag){
++        //prevent divide by 0 (drag can be zero, if someone makes a broken unit)
++        applyDynamicStatus().dragMultiplier = type.drag == 0f ? 0f : drag / type.drag;
++    }
++
++    /** Uses a dynamic status effect to override armor. */
++    public void statusArmor(float armor){
++        applyDynamicStatus().armorOverride = armor;
++    }
++
+     @Override
+     public void update(){
+         Floor floor = floorOn();
+@@ -117,6 +175,7 @@ abstract class StatusComp implements Posc, Flyingc{
+         }
+ 
+         applied.clear();
++        armorOverride = -1f;
+         speedMultiplier = damageMultiplier = healthMultiplier = reloadMultiplier = buildSpeedMultiplier = dragMultiplier = 1f;
+         disarmed = false;
+ 
+@@ -136,12 +195,24 @@ abstract class StatusComp implements Posc, Flyingc{
+             }else{
+                 applied.set(entry.effect.id);
+ 
+-                speedMultiplier *= entry.effect.speedMultiplier;
+-                healthMultiplier *= entry.effect.healthMultiplier;
+-                damageMultiplier *= entry.effect.damageMultiplier;
+-                reloadMultiplier *= entry.effect.reloadMultiplier;
+-                buildSpeedMultiplier *= entry.effect.buildSpeedMultiplier;
+-                dragMultiplier *= entry.effect.dragMultiplier;
++                //TODO this is very ugly...
++                if(entry.effect.dynamic){
++                    speedMultiplier *= entry.speedMultiplier;
++                    healthMultiplier *= entry.healthMultiplier;
++                    damageMultiplier *= entry.damageMultiplier;
++                    reloadMultiplier *= entry.reloadMultiplier;
++                    buildSpeedMultiplier *= entry.buildSpeedMultiplier;
++                    dragMultiplier *= entry.dragMultiplier;
++                    //armor is a special case; many units have it set it to 0, so an override at values >= 0 is used
++                    if(entry.armorOverride >= 0f) armorOverride = entry.armorOverride;
++                }else{
++                    speedMultiplier *= entry.effect.speedMultiplier;
++                    healthMultiplier *= entry.effect.healthMultiplier;
++                    damageMultiplier *= entry.effect.damageMultiplier;
++                    reloadMultiplier *= entry.effect.reloadMultiplier;
++                    buildSpeedMultiplier *= entry.effect.buildSpeedMultiplier;
++                    dragMultiplier *= entry.effect.dragMultiplier;
++                }
+ 
+                 disarmed |= entry.effect.disarm;
+ 
+diff --git a/core/src/mindustry/entities/units/StatusEntry.java b/core/src/mindustry/entities/units/StatusEntry.java
+index b7334577720624c419e75105390625be802c6c95..4d405a40b66b9afda6f7d086a2de50640f5dcd45 100644
+--- a/core/src/mindustry/entities/units/StatusEntry.java
++++ b/core/src/mindustry/entities/units/StatusEntry.java
+@@ -6,6 +6,9 @@ public class StatusEntry{
+     public StatusEffect effect;
+     public float time;
+ 
++    //all of these are for the dynamic effect only!
++    public float damageMultiplier = 1f, healthMultiplier = 1f, speedMultiplier = 1f, reloadMultiplier = 1f, buildSpeedMultiplier = 1f, dragMultiplier = 1f, armorOverride = -1f;
++
+     public StatusEntry set(StatusEffect effect, float time){
+         this.effect = effect;
+         this.time = time;
+diff --git a/core/src/mindustry/io/TypeIO.java b/core/src/mindustry/io/TypeIO.java
+index 285ef94a9cb81e7412b08a50e9d2d186d38e49e4..f41df9973ef1f4641307ff5a89379e90c3908502 100644
+--- a/core/src/mindustry/io/TypeIO.java
++++ b/core/src/mindustry/io/TypeIO.java
+@@ -634,10 +634,50 @@ public class TypeIO{
+     public static void writeStatus(Writes write, StatusEntry entry){
+         write.s(entry.effect.id);
+         write.f(entry.time);
++
++        //write dynamic fields
++        if(entry.effect.dynamic){
++            //write a byte with bits set based on which field is actually used
++            write.b(
++            (entry.damageMultiplier != 1f ?     (1 << 0) : 0) |
++            (entry.healthMultiplier != 1f ?     (1 << 1) : 0) |
++            (entry.speedMultiplier != 1f ?      (1 << 2) : 0) |
++            (entry.reloadMultiplier != 1f ?     (1 << 3) : 0) |
++            (entry.buildSpeedMultiplier != 1f ? (1 << 4) : 0) |
++            (entry.dragMultiplier != 1f ?       (1 << 5) : 0) |
++            (entry.armorOverride >= 0f ?        (1 << 6) : 0)
++            );
++
++            if(entry.damageMultiplier != 1f) write.f(entry.damageMultiplier);
++            if(entry.healthMultiplier != 1f) write.f(entry.healthMultiplier);
++            if(entry.speedMultiplier != 1f) write.f(entry.speedMultiplier);
++            if(entry.reloadMultiplier != 1f) write.f(entry.reloadMultiplier);
++            if(entry.buildSpeedMultiplier != 1f) write.f(entry.buildSpeedMultiplier);
++            if(entry.dragMultiplier != 1f) write.f(entry.dragMultiplier);
++            if(entry.armorOverride >= 0f) write.f(entry.armorOverride);
++        }
+     }
+ 
+     public static StatusEntry readStatus(Reads read){
+-        return new StatusEntry().set(content.getByID(ContentType.status, read.s()), read.f());
++        short id = read.s();
++        float time = read.f();
++
++        StatusEntry result = new StatusEntry().set(content.getByID(ContentType.status, id), time);
++
++        if(result.effect.dynamic){
++            //read flags that store which fields are set
++            int flags = read.ub();
++
++            if((flags & (1 << 0)) != 0) result.damageMultiplier = read.f();
++            if((flags & (1 << 1)) != 0) result.healthMultiplier = read.f();
++            if((flags & (1 << 2)) != 0) result.speedMultiplier = read.f();
++            if((flags & (1 << 3)) != 0) result.reloadMultiplier = read.f();
++            if((flags & (1 << 4)) != 0) result.buildSpeedMultiplier = read.f();
++            if((flags & (1 << 5)) != 0) result.dragMultiplier = read.f();
++            if((flags & (1 << 6)) != 0) result.armorOverride = read.f();
++        }
++
++        return result;
+     }
+ 
+     public static void writeItems(Writes write, ItemStack stack){
+diff --git a/core/src/mindustry/type/StatusEffect.java b/core/src/mindustry/type/StatusEffect.java
+index d9aad9d90af798cce078192597ef7c91e381b89f..4ffb7a61831a323b64200da77bf2c6da6d142cbf 100644
+--- a/core/src/mindustry/type/StatusEffect.java
++++ b/core/src/mindustry/type/StatusEffect.java
+@@ -41,6 +41,8 @@ public class StatusEffect extends UnlockableContent{
+     public boolean permanent;
+     /** If true, this effect will only react with other effects and cannot be applied. */
+     public boolean reactive;
++    /** Special flag for the dynamic effect type with custom stats - do not use. */
++    public boolean dynamic = false;
+     /** Whether to show this effect in the database. */
+     public boolean show = true;
+     /** Tint color of effect. */

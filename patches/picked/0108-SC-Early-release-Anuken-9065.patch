@@ -1,0 +1,22 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: way-zer <himc.wicp@gmail.com>
+Date: Sun, 17 Sep 2023 11:55:29 +0800
+Subject: [PATCH] SC: Early release #Anuken:9065
+
+---
+ core/src/mindustry/game/SpawnGroup.java | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/core/src/mindustry/game/SpawnGroup.java b/core/src/mindustry/game/SpawnGroup.java
+index 0b2aea3bc4ad1d33154f13020ded47d97687c85c..aa2657fc9c7ead7ed176491cfcf5aaf71bc155cd 100644
+--- a/core/src/mindustry/game/SpawnGroup.java
++++ b/core/src/mindustry/game/SpawnGroup.java
+@@ -128,7 +128,7 @@ public class SpawnGroup implements JsonSerializable, Cloneable{
+         String tname = data.getString("type", "dagger");
+ 
+         type = content.unit(LegacyIO.unitMap.get(tname, tname));
+-        if(type == null) type = UnitTypes.dagger;
++        if(type == null || type.internal) type = UnitTypes.dagger;
+         begin = data.getInt("begin", 0);
+         end = data.getInt("end", never);
+         spacing = data.getInt("spacing", 1);

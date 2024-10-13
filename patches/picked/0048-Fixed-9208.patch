@@ -1,0 +1,25 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Anuken <arnukren@gmail.com>
+Date: Sat, 28 Oct 2023 09:29:28 -0400
+Subject: [PATCH] Fixed #9208
+
+(cherry picked from commit a0a0b5942e58ef315a12c680c4bcd8b2a47bd101)
+---
+ core/src/mindustry/core/Renderer.java | 4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
+
+diff --git a/core/src/mindustry/core/Renderer.java b/core/src/mindustry/core/Renderer.java
+index 8b3614436d4d67c66871d3ae3e2ef190084d4542..f78a9da907f8541197493260563a17aceedae704 100644
+--- a/core/src/mindustry/core/Renderer.java
++++ b/core/src/mindustry/core/Renderer.java
+@@ -185,7 +185,9 @@ public class Renderer implements ApplicationListener{
+         if(landTime > 0){
+             if(!state.isPaused()){
+                 CoreBuild build = landCore == null ? player.bestCore() : landCore;
+-                build.updateLandParticles();
++                if(build != null){
++                    build.updateLandParticles();
++                }
+             }
+ 
+             if(!state.isPaused()){

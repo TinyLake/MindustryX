@@ -1,0 +1,46 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Anuken <arnukren@gmail.com>
+Date: Tue, 5 Dec 2023 15:17:55 -0500
+Subject: [PATCH] Fixed banned Steam users loading indefinitely
+
+(cherry picked from commit 351c2c84f2ea78c1902796ed3cf5cffecc251d60)
+---
+ core/assets/bundles/bundle.properties         | 2 +-
+ desktop/src/mindustry/desktop/steam/SNet.java | 4 ++--
+ 2 files changed, 3 insertions(+), 3 deletions(-)
+
+diff --git a/core/assets/bundles/bundle.properties b/core/assets/bundles/bundle.properties
+index 235043e6c5a5f08d4ad71e154a3f1213431b8180..da603b4b0e7e521908ffe98150b502832f6259d0 100644
+--- a/core/assets/bundles/bundle.properties
++++ b/core/assets/bundles/bundle.properties
+@@ -1122,7 +1122,7 @@ setting.sfxvol.name = SFX Volume
+ setting.mutesound.name = Mute Sound
+ setting.crashreport.name = Send Anonymous Crash Reports
+ setting.savecreate.name = Auto-Create Saves
+-setting.publichost.name = Public Game Visibility
++setting.steampublichost.name = Public Game Visibility
+ setting.playerlimit.name = Player Limit
+ setting.chatopacity.name = Chat Opacity
+ setting.lasersopacity.name = Power Laser Opacity
+diff --git a/desktop/src/mindustry/desktop/steam/SNet.java b/desktop/src/mindustry/desktop/steam/SNet.java
+index e648af88b902ccf1d19515397e0a55caa83712a7..446a8653f38a09d28159b26b1890d087122ac3df 100644
+--- a/desktop/src/mindustry/desktop/steam/SNet.java
++++ b/desktop/src/mindustry/desktop/steam/SNet.java
+@@ -405,7 +405,7 @@ public class SNet implements SteamNetworkingCallback, SteamMatchmakingCallback,
+         final SteamID sid;
+ 
+         public SteamConnection(SteamID sid){
+-            super(sid.getAccountID() + "");
++            super("steam:" + sid.getAccountID());
+             this.sid = sid;
+             Log.info("Created STEAM connection: @", sid.getAccountID());
+         }
+@@ -440,7 +440,7 @@ public class SNet implements SteamNetworkingCallback, SteamMatchmakingCallback,
+         @Override
+         protected void kickDisconnect(){
+             //delay the close so the kick packet can be sent on steam
+-            Core.app.post(() -> Core.app.post(this::close));
++            Time.runTask(10f, this::close);
+         }
+ 
+         @Override

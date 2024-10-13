@@ -1,0 +1,50 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Anuken <arnukren@gmail.com>
+Date: Fri, 5 Jan 2024 21:22:12 +0800
+Subject: [PATCH] Clearer sector capture notification
+
+(cherry picked from commit 61945e5ce79633b168313a03813c762905fb5c58)
+---
+ core/assets/bundles/bundle.properties            | 4 ++--
+ core/src/mindustry/ui/fragments/HudFragment.java | 6 +++++-
+ 2 files changed, 7 insertions(+), 3 deletions(-)
+
+diff --git a/core/assets/bundles/bundle.properties b/core/assets/bundles/bundle.properties
+index 4257887d631466ce601fadfa53da32710eabc555..91d67674213b1cc77ee2b3cfe4481004c18a76ab 100644
+--- a/core/assets/bundles/bundle.properties
++++ b/core/assets/bundles/bundle.properties
+@@ -741,7 +741,7 @@ sector.missingresources = [scarlet]Insufficient Core Resources
+ sector.attacked = Sector [accent]{0}[white] under attack!
+ sector.lost = Sector [accent]{0}[white] lost!
+ #note: the missing space in the line below is intentional
+-sector.captured = Sector [accent]{0}[white]captured!
++sector.captured = Sector [accent]{0}[white]Captured!
+ sector.changeicon = Change Icon
+ sector.noswitch.title = Unable to Switch Sectors
+ sector.noswitch = You may not switch sectors while an existing sector is under attack.\n\nSector: [accent]{0}[] on [accent]{1}[]
+@@ -1823,7 +1823,7 @@ hint.unitControl = Hold [accent][[L-ctrl][] and [accent]click[] to manually cont
+ hint.unitControl.mobile = [accent][[Double-tap][] to manually control friendly units or turrets.
+ hint.unitSelectControl = To control units, enter [accent]command mode[] by holding [accent]L-shift.[]\nWhile in command mode, click and drag to select units. [accent]Right-click[] a location or target to command units there.
+ hint.unitSelectControl.mobile = To control units, enter [accent]command mode[] by pressing the [accent]command[] button in the bottom left.\nWhile in command mode, long-press and drag to select units. Tap a location or target to command units there.
+-hint.launch = Once enough resources are collected, you can [accent]Launch[] to the next sector by opening the \uE827 [accent]Map[] in the bottom right.
++hint.launch = Once enough resources are collected, you can [accent]Launch[] to the next sector by opening the \uE827 [accent]Map[] in the bottom right, and panning over to the new location.
+ hint.launch.mobile = Once enough resources are collected, you can [accent]Launch[] by selecting nearby sectors from the \uE827 [accent]Map[] in the \uE88C [accent]Menu[].
+ hint.schematicSelect = Hold [accent][[F][] and drag to select blocks to copy and paste.\n\n[accent][[Middle Click][] to copy a single block type.
+ hint.rebuildSelect = Hold [accent][[B][] and drag to select destroyed block plans.\nThis will rebuild them automatically.
+diff --git a/core/src/mindustry/ui/fragments/HudFragment.java b/core/src/mindustry/ui/fragments/HudFragment.java
+index b97b59f1b179833947a7a3ba485a4a2f8a902873..e964aa5fdf02e5a606a6b3ca51babc5c03790799 100644
+--- a/core/src/mindustry/ui/fragments/HudFragment.java
++++ b/core/src/mindustry/ui/fragments/HudFragment.java
+@@ -71,7 +71,11 @@ public class HudFragment{
+         });
+ 
+         Events.on(SectorCaptureEvent.class, e -> {
+-            showToast(Core.bundle.format("sector.captured", e.sector.isBeingPlayed() ? "" : e.sector.name() + " "));
++            if(e.sector.isBeingPlayed()){
++                ui.announce(Core.bundle.format("sector.capture", ""), 5f);
++            }else{
++                showToast(Core.bundle.format("sector.capture", e.sector.name() + " "));
++            }
+         });
+ 
+         Events.on(SectorLoseEvent.class, e -> {

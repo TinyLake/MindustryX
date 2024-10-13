@@ -1,0 +1,39 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Anuken <arnukren@gmail.com>
+Date: Fri, 1 Dec 2023 13:34:17 -0500
+Subject: [PATCH] Fixed #9336
+
+(cherry picked from commit 88b10f4cf81dacfa2216c58aa5a5860b6da642c0)
+---
+ core/src/mindustry/input/InputHandler.java | 10 ++++++++++
+ 1 file changed, 10 insertions(+)
+
+diff --git a/core/src/mindustry/input/InputHandler.java b/core/src/mindustry/input/InputHandler.java
+index 5ce52db529ea949688fdb4c9060c9b01299e9ffd..9848af871dc6ecca7b94ca001af27e00e55739d5 100644
+--- a/core/src/mindustry/input/InputHandler.java
++++ b/core/src/mindustry/input/InputHandler.java
+@@ -547,7 +547,13 @@ public abstract class InputHandler implements InputProcessor, GestureListener{
+         }
+ 
+         if(player.team() == build.team && build.canControlSelect(player.unit())){
++            var before = player.unit();
++
+             build.onControlSelect(player.unit());
++
++            if(!before.dead && before.spawnedByCore && !before.isPlayer()){
++                Call.unitDespawn(before);
++            }
+         }
+     }
+ 
+@@ -592,6 +598,10 @@ public abstract class InputHandler implements InputProcessor, GestureListener{
+                     //direct dock transfer???
+                     unit.dockedType = before.dockedType;
+                 }
++
++                if(before.spawnedByCore && !before.isPlayer()){
++                    Call.unitDespawn(before);
++                }
+             }
+ 
+             Time.run(Fx.unitSpirit.lifetime, () -> Fx.unitControl.at(unit.x, unit.y, 0f, unit));

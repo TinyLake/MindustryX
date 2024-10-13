@@ -1,0 +1,327 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: way-zer <himc.wicp@gmail.com>
+Date: Tue, 4 Jun 2024 22:22:25 +0800
+Subject: [PATCH] PICK: GlobalVarsDialog
+
+---
+ core/src/mindustry/logic/GlobalVars.java      | 126 ++++++++++++++----
+ .../src/mindustry/logic/GlobalVarsDialog.java |  61 +++++++++
+ core/src/mindustry/logic/LogicDialog.java     |   3 +
+ .../world/blocks/logic/LogicBlock.java        |   2 -
+ 4 files changed, 163 insertions(+), 29 deletions(-)
+ create mode 100644 core/src/mindustry/logic/GlobalVarsDialog.java
+
+diff --git a/core/src/mindustry/logic/GlobalVars.java b/core/src/mindustry/logic/GlobalVars.java
+index 7805db3e5f246d5bc02fcd7eac8dbbe7743bd8e8..fa07475c7fd9fa6db8b97013016672aa75473403 100644
+--- a/core/src/mindustry/logic/GlobalVars.java
++++ b/core/src/mindustry/logic/GlobalVars.java
+@@ -27,44 +27,63 @@ public class GlobalVars{
+     public static final Rand rand = new Rand();
+ 
+     //non-constants that depend on state
+-    private static int varTime, varTick, varSecond, varMinute, varWave, varWaveTime, varServer, varClient, varClientLocale, varClientUnit, varClientName, varClientTeam;
++    private static int varTime, varTick, varSecond, varMinute, varWave, varWaveTime, varMapW, varMapH, varServer, varClient, varClientLocale, varClientUnit, varClientName, varClientTeam, varClientMobile;
+ 
+     private ObjectIntMap<String> namesToIds = new ObjectIntMap<>();
+     private Seq<Var> vars = new Seq<>(Var.class);
++    private Seq<VarEntry> varEntries = new Seq<>();
+     private IntSet privilegedIds = new IntSet();
+     private UnlockableContent[][] logicIdToContent;
+     private int[][] contentIdToLogicId;
+ 
+     public void init(){
+-        put("the end", null);
++        putEntryOnly("sectionProcessor");
++
++        putEntryOnly("@this");
++        putEntryOnly("@thisx");
++        putEntryOnly("@thisy");
++        putEntryOnly("@links");
++        putEntryOnly("@ipt");
++
++        putEntryOnly("sectionGeneral");
++
++        put("the end", null, false, true);
+         //add default constants
+-        put("false", 0);
+-        put("true", 1);
+-        put("null", null);
++        putEntry("false", 0);
++        putEntry("true", 1);
++        put("null", null, false, true);
+ 
+         //math
+-        put("@pi", Mathf.PI);
+-        put("π", Mathf.PI); //for the "cool" kids
+-        put("@e", Mathf.E);
+-        put("@degToRad", Mathf.degRad);
+-        put("@radToDeg", Mathf.radDeg);
++        putEntry("@pi", Mathf.PI);
++        put("π", Mathf.PI, false, true); //for the "cool" kids
++        putEntry("@e", Mathf.E);
++        putEntry("@degToRad", Mathf.degRad);
++        putEntry("@radToDeg", Mathf.radDeg);
++
++        putEntryOnly("sectionMap");
+ 
+         //time
+-        varTime = put("@time", 0);
+-        varTick = put("@tick", 0);
+-        varSecond = put("@second", 0);
+-        varMinute = put("@minute", 0);
+-        varWave = put("@waveNumber", 0);
+-        varWaveTime = put("@waveTime", 0);
++        varTime = putEntry("@time", 0);
++        varTick = putEntry("@tick", 0);
++        varSecond = putEntry("@second", 0);
++        varMinute = putEntry("@minute", 0);
++        varWave = putEntry("@waveNumber", 0);
++        varWaveTime = putEntry("@waveTime", 0);
+ 
+-        varServer = put("@server", 0, true);
+-        varClient = put("@client", 0, true);
++        varMapW = putEntry("@mapw", 0);
++        varMapH = putEntry("@maph", 0);
++
++        putEntryOnly("sectionNetwork");
++
++        varServer = putEntry("@server", 0, true);
++        varClient = putEntry("@client", 0, true);
+ 
+         //privileged desynced client variables
+-        varClientLocale = put("@clientLocale", null, true);
+-        varClientUnit = put("@clientUnit", null, true);
+-        varClientName = put("@clientName", null, true);
+-        varClientTeam = put("@clientTeam", 0, true);
++        varClientLocale = putEntry("@clientLocale", null, true);
++        varClientUnit = putEntry("@clientUnit", null, true);
++        varClientName = putEntry("@clientName", null, true);
++        varClientTeam = putEntry("@clientTeam", 0, true);
++        varClientMobile = putEntry("@clientMobile", 0, true);
+ 
+         //special enums
+         put("@ctrlProcessor", ctrlProcessor);
+@@ -114,6 +133,8 @@ public class GlobalVars{
+         logicIdToContent = new UnlockableContent[ContentType.all.length][];
+         contentIdToLogicId = new int[ContentType.all.length][];
+ 
++        putEntryOnly("sectionLookup");
++
+         Fi ids = Core.files.internal("logicids.dat");
+         if(ids.exists()){
+             //read logic ID mapping data (generated in ImagePacker)
+@@ -124,7 +145,7 @@ public class GlobalVars{
+                     contentIdToLogicId[ctype.ordinal()] = new int[Vars.content.getBy(ctype).size];
+ 
+                     //store count constants
+-                    put("@" + ctype.name() + "Count", amount);
++                    putEntry("@" + ctype.name() + "Count", amount);
+ 
+                     for(int i = 0; i < amount; i++){
+                         String name = in.readUTF();
+@@ -158,6 +179,9 @@ public class GlobalVars{
+         vars.items[varWave].numval = state.wave;
+         vars.items[varWaveTime].numval = state.wavetime / 60f;
+ 
++        vars.items[varMapW].numval = world.width();
++        vars.items[varMapH].numval = world.height();
++
+         //network
+         vars.items[varServer].numval = (net.server() || !net.active()) ? 1 : 0;
+         vars.items[varClient].numval = net.client() ? 1 : 0;
+@@ -168,9 +192,14 @@ public class GlobalVars{
+             vars.items[varClientUnit].objval = player.unit();
+             vars.items[varClientName].objval = player.name();
+             vars.items[varClientTeam].numval = player.team().id;
++            vars.items[varClientMobile].numval = mobile ? 1 : 0;
+         }
+     }
+ 
++    public Seq<VarEntry> getEntries(){
++        return varEntries;
++    }
++
+     /** @return a piece of content based on its logic ID. This is not equivalent to content ID. */
+     public @Nullable Content lookupContent(ContentType type, int id){
+         var arr = logicIdToContent[type.ordinal()];
+@@ -183,14 +212,18 @@ public class GlobalVars{
+         return arr != null && content.id >= 0 && content.id < arr.length ? arr[content.id] : -1;
+     }
+ 
+-    /** @return a constant ID > 0 if there is a constant with this name, otherwise -1.
+-     * Attempt to get privileged variable id from non-privileged logic executor returns null constant id. */
++    /**
++     * @return a constant ID > 0 if there is a constant with this name, otherwise -1.
++     * Attempt to get privileged variable id from non-privileged logic executor returns null constant id.
++     */
+     public int get(String name){
+         return namesToIds.get(name, -1);
+     }
+ 
+-    /** @return a constant variable by ID. ID is not bound checked and must be positive.
+-     * Attempt to get privileged variable from non-privileged logic executor returns null constant */
++    /**
++     * @return a constant variable by ID. ID is not bound checked and must be positive.
++     * Attempt to get privileged variable from non-privileged logic executor returns null constant
++     */
+     public Var get(int id, boolean privileged){
+         if(!privileged && privilegedIds.contains(id)) return vars.get(namesToIds.get("null"));
+         return vars.items[id];
+@@ -203,6 +236,11 @@ public class GlobalVars{
+ 
+     /** Adds a constant value by name. */
+     public int put(String name, Object value, boolean privileged){
++        return put(name, value, privileged, true);
++    }
++
++    /** Adds a constant value by name. */
++    public int put(String name, Object value, boolean privileged, boolean hidden){
+         int existingIdx = namesToIds.get(name, -1);
+         if(existingIdx != -1){ //don't overwrite existing vars (see #6910)
+             Log.debug("Failed to add global logic variable '@', as it already exists.", name);
+@@ -222,10 +260,44 @@ public class GlobalVars{
+         namesToIds.put(name, index);
+         if(privileged) privilegedIds.add(index);
+         vars.add(var);
++
++        if(!hidden){
++            varEntries.add(new VarEntry(index, name, "", "", privileged));
++        }
+         return index;
+     }
+ 
+     public int put(String name, Object value){
+         return put(name, value, false);
+     }
++
++    public int putEntry(String name, Object value){
++        return put(name, value, false, false);
++    }
++
++    public int putEntry(String name, Object value, boolean privileged){
++        return put(name, value, privileged, false);
++    }
++
++    public void putEntryOnly(String name){
++        varEntries.add(new VarEntry(0, name, "", "", false));
++    }
++
++    /** An entry that describes a variable for documentation purposes. This is *only* used inside UI for global variables. */
++    public static class VarEntry{
++        public int id;
++        public String name, description, icon;
++        public boolean privileged;
++
++        public VarEntry(int id, String name, String description, String icon, boolean privileged){
++            this.id = id;
++            this.name = name;
++            this.description = description;
++            this.icon = icon;
++            this.privileged = privileged;
++        }
++
++        public VarEntry(){
++        }
++    }
+ }
+diff --git a/core/src/mindustry/logic/GlobalVarsDialog.java b/core/src/mindustry/logic/GlobalVarsDialog.java
+new file mode 100644
+index 0000000000000000000000000000000000000000..755c4a988699193a1ddef3d8e23348a962b2eadf
+--- /dev/null
++++ b/core/src/mindustry/logic/GlobalVarsDialog.java
+@@ -0,0 +1,61 @@
++package mindustry.logic;
++
++import arc.*;
++import arc.graphics.*;
++import arc.scene.ui.*;
++import arc.scene.ui.layout.*;
++import arc.util.*;
++import mindustry.*;
++import mindustry.gen.*;
++import mindustry.graphics.*;
++import mindustry.ui.*;
++import mindustry.ui.dialogs.*;
++
++public class GlobalVarsDialog extends BaseDialog{
++
++    public GlobalVarsDialog(){
++        super("@logic.globals");
++
++        addCloseButton();
++        shown(this::setup);
++        onResize(this::setup);
++    }
++
++    void setup(){
++        float prefWidth = Math.min(Core.graphics.getWidth() * 0.9f / Scl.scl(1f) - 240f, 600f);
++        cont.clearChildren();
++
++        cont.pane(t -> {
++            t.margin(10f).marginRight(16f);
++            t.defaults().fillX().fillY();
++            for(var entry : Vars.logicVars.getEntries()){
++
++                if(entry.name.startsWith("section")){
++                    Color color = Pal.accent;
++                    t.add("@lglobal." + entry.name).fillX().center().labelAlign(Align.center).colspan(4).color(color).padTop(4f).padBottom(2f).row();
++                    t.image(Tex.whiteui).height(4f).color(color).colspan(4).padBottom(8f).row();
++                }else{
++                    Color varColor = Pal.gray;
++                    float stub = 8f, mul = 0.5f, pad = 4;
++
++                    String desc = entry.description;
++                    if(desc == null || desc.isEmpty()){
++                        desc = Core.bundle.get("lglobal." + entry.name, "");
++                    }
++
++                    String fdesc = desc;
++
++                    t.add(new Image(Tex.whiteui, varColor.cpy().mul(mul))).width(stub);
++                    t.stack(new Image(Tex.whiteui, varColor), new Label(" " + entry.name + " ", Styles.outlineLabel)).padRight(pad);
++
++                    t.add(new Image(Tex.whiteui, Pal.gray.cpy().mul(mul))).width(stub);
++                    t.table(Tex.pane, out -> out.add(fdesc).style(Styles.outlineLabel).width(prefWidth).padLeft(2).padRight(2).wrap()).padRight(pad);
++
++                    t.row();
++
++                    t.add().fillX().colspan(4).height(4).row();
++                }
++            }
++        }).grow();
++    }
++}
+diff --git a/core/src/mindustry/logic/LogicDialog.java b/core/src/mindustry/logic/LogicDialog.java
+index ac2fd249a8a3a7032c358ec3c7a9ea4366012e86..6555bcf52df4407d81f3bc52d32f1c2d5c7fa4f6 100644
+--- a/core/src/mindustry/logic/LogicDialog.java
++++ b/core/src/mindustry/logic/LogicDialog.java
+@@ -24,6 +24,7 @@ import static mindustry.logic.LCanvas.*;
+ public class LogicDialog extends BaseDialog{
+     public LCanvas canvas;
+     Cons<String> consumer = s -> {};
++    GlobalVarsDialog globalsDialog = new GlobalVarsDialog();
+     boolean privileged;
+     @Nullable LExecutor executor;
+ 
+@@ -178,6 +179,8 @@ public class LogicDialog extends BaseDialog{
+             });
+ 
+             dialog.addCloseButton();
++            dialog.buttons.button("@logic.globals", Icon.list, () -> globalsDialog.show()).size(210f, 64f);
++
+             dialog.show();
+         }).name("variables").disabled(b -> executor == null || executor.vars.length == 0);
+ 
+diff --git a/core/src/mindustry/world/blocks/logic/LogicBlock.java b/core/src/mindustry/world/blocks/logic/LogicBlock.java
+index 18093949ab0b76ed3415a8f338bf90497628a82e..765186cce1c4aef68cf12a6a0e8b4a6ba3fadd7b 100644
+--- a/core/src/mindustry/world/blocks/logic/LogicBlock.java
++++ b/core/src/mindustry/world/blocks/logic/LogicBlock.java
+@@ -354,8 +354,6 @@ public class LogicBlock extends Block{
+                         }
+                     }
+ 
+-                    asm.putConst("@mapw", world.width());
+-                    asm.putConst("@maph", world.height());
+                     asm.putConst("@links", executor.links.length);
+                     asm.putConst("@ipt", instructionsPerTick);
+ 

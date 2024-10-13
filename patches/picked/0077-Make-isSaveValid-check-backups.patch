@@ -1,0 +1,29 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Anuken <arnukren@gmail.com>
+Date: Sun, 10 Dec 2023 15:48:35 -0500
+Subject: [PATCH] Make isSaveValid check backups
+
+(cherry picked from commit a0f235b4309790d2d9c6dfac4e83dbbdbe4dd47e)
+---
+ core/src/mindustry/io/SaveIO.java | 7 ++++++-
+ 1 file changed, 6 insertions(+), 1 deletion(-)
+
+diff --git a/core/src/mindustry/io/SaveIO.java b/core/src/mindustry/io/SaveIO.java
+index 41888cbb414ef803b89d120f6686656e79d9fdaa..1fc643a164de2b2affadf8eca501812f5d613284 100644
+--- a/core/src/mindustry/io/SaveIO.java
++++ b/core/src/mindustry/io/SaveIO.java
+@@ -56,8 +56,13 @@ public class SaveIO{
+     }
+ 
+     public static boolean isSaveValid(Fi file){
++        return isSaveFileValid(file) || isSaveFileValid(backupFileFor(file));
++    }
++
++    private static boolean isSaveFileValid(Fi file){
+         try(DataInputStream stream = new DataInputStream(new InflaterInputStream(file.read(bufferSize)))){
+-            return isSaveValid(stream);
++            getMeta(stream);
++            return true;
+         }catch(Throwable e){
+             return false;
+         }

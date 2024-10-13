@@ -1,0 +1,28 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Anuken <arnukren@gmail.com>
+Date: Tue, 14 Nov 2023 20:08:13 -0500
+Subject: [PATCH] Beam nodes now display graph status
+
+(cherry picked from commit 1a763a5db3185d0a7c578902060f432280ea4eac)
+---
+ core/src/mindustry/world/blocks/power/BeamNode.java | 7 ++++---
+ 1 file changed, 4 insertions(+), 3 deletions(-)
+
+diff --git a/core/src/mindustry/world/blocks/power/BeamNode.java b/core/src/mindustry/world/blocks/power/BeamNode.java
+index e9c9fad6db4774db8a4dff5ad299bc65a85426ea..b99590d2bec18f4c393e75e6289bc93498833a0c 100644
+--- a/core/src/mindustry/world/blocks/power/BeamNode.java
++++ b/core/src/mindustry/world/blocks/power/BeamNode.java
+@@ -122,9 +122,10 @@ public class BeamNode extends PowerBlock{
+ 
+         @Override
+         public BlockStatus status(){
+-            if(Mathf.equal(power.status, 0f, 0.001f)) return BlockStatus.noInput;
+-            if(Mathf.equal(power.status, 1f, 0.001f)) return BlockStatus.active;
+-            return BlockStatus.noOutput;
++            float balance = power.graph.getPowerBalance();
++            if(balance > 0f) return BlockStatus.active;
++            if(balance < 0f && power.graph.getLastPowerStored() > 0) return BlockStatus.noOutput;
++            return BlockStatus.noInput;
+         }
+ 
+         @Override

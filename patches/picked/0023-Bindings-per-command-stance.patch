@@ -1,0 +1,202 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Anuken <arnukren@gmail.com>
+Date: Sun, 24 Sep 2023 00:02:06 +0800
+Subject: [PATCH] Bindings per command/stance
+
+(cherry picked from commit d63133c7205cc56b4b91e1527487cf1591d5c193)
+---
+ core/assets/bundles/bundle.properties         | 11 +++++++
+ core/src/mindustry/ai/UnitCommand.java        | 23 +++++++++----
+ core/src/mindustry/input/Binding.java         | 32 ++++++++++---------
+ .../ui/fragments/PlacementFragment.java       | 19 ++---------
+ 4 files changed, 47 insertions(+), 38 deletions(-)
+
+diff --git a/core/assets/bundles/bundle.properties b/core/assets/bundles/bundle.properties
+index c2bf1fe1006f200e8576320c865f9a0660f9e50d..235043e6c5a5f08d4ad71e154a3f1213431b8180 100644
+--- a/core/assets/bundles/bundle.properties
++++ b/core/assets/bundles/bundle.properties
+@@ -1161,6 +1161,17 @@ keybind.boost.name = Boost
+ keybind.command_mode.name = Command Mode
+ keybind.command_queue.name = Queue Unit Command
+ keybind.create_control_group.name = Create Control Group
++
++keybind.unit_command_move = Unit Command: Move
++keybind.unit_command_repair = Unit Command: Repair
++keybind.unit_command_rebuild = Unit Command: Rebuild
++keybind.unit_command_assist = Unit Command: Assist
++keybind.unit_command_mine = Unit Command: Mine
++keybind.unit_command_boost = Unit Command: Boost
++keybind.unit_command_load_units = Unit Command: Load Units
++keybind.unit_command_load_blocks = Unit Command: Load Blocks
++keybind.unit_command_unload_payload = Unit Command: Unload Payload
++
+ keybind.rebuild_select.name = Rebuild Region
+ keybind.schematic_select.name = Select Region
+ keybind.schematic_menu.name = Schematic Menu
+diff --git a/core/src/mindustry/ai/UnitCommand.java b/core/src/mindustry/ai/UnitCommand.java
+index 20cec778bd909183c92e81789395619c25398fae..3b6f6cdd7e2b5900b4485482d8b45c8d29495a04 100644
+--- a/core/src/mindustry/ai/UnitCommand.java
++++ b/core/src/mindustry/ai/UnitCommand.java
+@@ -4,9 +4,11 @@ import arc.*;
+ import arc.func.*;
+ import arc.scene.style.*;
+ import arc.struct.*;
++import arc.util.*;
+ import mindustry.ai.types.*;
+ import mindustry.entities.units.*;
+ import mindustry.gen.*;
++import mindustry.input.*;
+ 
+ /** Defines a pattern of behavior that an RTS-controlled unit should follow. Shows up in the command UI. */
+ public class UnitCommand{
+@@ -15,19 +17,19 @@ public class UnitCommand{
+ 
+     public static final UnitCommand
+ 
+-    moveCommand = new UnitCommand("move", "right", u -> null){{
++    moveCommand = new UnitCommand("move", "right", Binding.unit_command_move, null){{
+         drawTarget = true;
+         resetTarget = false;
+     }},
+-    repairCommand = new UnitCommand("repair", "modeSurvival", u -> new RepairAI()),
+-    rebuildCommand = new UnitCommand("rebuild", "hammer", u -> new BuilderAI()),
+-    assistCommand = new UnitCommand("assist", "players", u -> {
++    repairCommand = new UnitCommand("repair", "modeSurvival", Binding.unit_command_repair, u -> new RepairAI()),
++    rebuildCommand = new UnitCommand("rebuild", "hammer", Binding.unit_command_rebuild, u -> new BuilderAI()),
++    assistCommand = new UnitCommand("assist", "players", Binding.unit_command_assist, u -> {
+         var ai = new BuilderAI();
+         ai.onlyAssist = true;
+         return ai;
+     }),
+-    mineCommand = new UnitCommand("mine", "production", u -> new MinerAI()),
+-    boostCommand = new UnitCommand("boost", "up", u -> new BoostAI()){{
++    mineCommand = new UnitCommand("mine", "production", Binding.unit_command_mine, u -> new MinerAI()),
++    boostCommand = new UnitCommand("boost", "up", Binding.unit_command_boost, u -> new BoostAI()){{
+         switchToMove = false;
+         drawTarget = true;
+         resetTarget = false;
+@@ -47,16 +49,23 @@ public class UnitCommand{
+     public boolean drawTarget = false;
+     /** Whether to reset targets when switching to or from this command. */
+     public boolean resetTarget = true;
++    /** Key to press for this command. */
++    public @Nullable Binding keybind = null;
+ 
+     public UnitCommand(String name, String icon, Func<Unit, AIController> controller){
+         this.name = name;
+         this.icon = icon;
+-        this.controller = controller;
++        this.controller = controller == null ? u -> null : controller;
+ 
+         id = all.size;
+         all.add(this);
+     }
+ 
++    public UnitCommand(String name, String icon, Binding keybind, Func<Unit, AIController> controller){
++        this(name, icon, controller);
++        this.keybind = keybind;
++    }
++
+     public String localized(){
+         return Core.bundle.get("command." + name);
+     }
+diff --git a/core/src/mindustry/input/Binding.java b/core/src/mindustry/input/Binding.java
+index 00aeb78ba97ac73f816d2b2b5158d995e88f2092..1fda09418648235069cf62003004fc8356250921 100644
+--- a/core/src/mindustry/input/Binding.java
++++ b/core/src/mindustry/input/Binding.java
+@@ -12,17 +12,12 @@ public enum Binding implements KeyBind{
+     pan(KeyCode.mouseForward),
+ 
+     boost(KeyCode.shiftLeft),
+-    command_mode(KeyCode.shiftLeft),
+-    create_control_group(KeyCode.controlLeft),
+-    control(KeyCode.controlLeft),
+     respawn(KeyCode.v),
++    control(KeyCode.controlLeft),
+     select(KeyCode.mouseLeft),
+     deselect(KeyCode.mouseRight),
+     break_block(KeyCode.mouseRight),
+ 
+-    select_all_units(KeyCode.g),
+-    select_all_unit_factories(KeyCode.h),
+-
+     pickupCargo(KeyCode.leftBracket),
+     dropCargo(KeyCode.rightBracket),
+ 
+@@ -39,15 +34,22 @@ public enum Binding implements KeyBind{
+     schematic_flip_y(KeyCode.x),
+     schematic_menu(KeyCode.t),
+ 
+-    unit_command_1(KeyCode.unset),
+-    unit_command_2(KeyCode.unset),
+-    unit_command_3(KeyCode.unset),
+-    unit_command_4(KeyCode.unset),
+-    unit_command_5(KeyCode.unset),
+-    unit_command_6(KeyCode.unset),
+-    unit_command_7(KeyCode.unset),
+-    unit_command_8(KeyCode.unset),
+-    unit_command_9(KeyCode.unset),
++
++    command_mode(KeyCode.shiftLeft, "command"),
++    create_control_group(KeyCode.controlLeft),
++
++    select_all_units(KeyCode.g),
++    select_all_unit_factories(KeyCode.h),
++
++    unit_command_move(KeyCode.unset),
++    unit_command_repair(KeyCode.unset),
++    unit_command_rebuild(KeyCode.unset),
++    unit_command_assist(KeyCode.unset),
++    unit_command_mine(KeyCode.unset),
++    unit_command_boost(KeyCode.unset),
++    unit_command_load_units(KeyCode.unset),
++    unit_command_load_blocks(KeyCode.unset),
++    unit_command_unload_payload(KeyCode.unset),
+ 
+     category_prev(KeyCode.comma, "blocks"),
+     category_next(KeyCode.period),
+diff --git a/core/src/mindustry/ui/fragments/PlacementFragment.java b/core/src/mindustry/ui/fragments/PlacementFragment.java
+index 419bc9b766605f0ddeed9ed43e7f9fb8d1304a5f..d73e49f34404e34c5b3268939ad97b058349d758 100644
+--- a/core/src/mindustry/ui/fragments/PlacementFragment.java
++++ b/core/src/mindustry/ui/fragments/PlacementFragment.java
+@@ -11,7 +11,6 @@ import arc.scene.ui.*;
+ import arc.scene.ui.layout.*;
+ import arc.struct.*;
+ import arc.util.*;
+-import mindustry.*;
+ import mindustry.ai.*;
+ import mindustry.content.*;
+ import mindustry.core.*;
+@@ -69,18 +68,6 @@ public class PlacementFragment{
+         Binding.block_select_down
+     };
+ 
+-    Binding[] commandBindings = {
+-        Binding.unit_command_1,
+-        Binding.unit_command_2,
+-        Binding.unit_command_3,
+-        Binding.unit_command_4,
+-        Binding.unit_command_5,
+-        Binding.unit_command_6,
+-        Binding.unit_command_7,
+-        Binding.unit_command_8,
+-        Binding.unit_command_9,
+-    };
+-
+     public PlacementFragment(){
+         Events.on(WorldLoadEvent.class, event -> {
+             Core.app.post(() -> {
+@@ -553,10 +540,10 @@ public class PlacementFragment{
+                                 rebuildCommand.run();
+                             }
+ 
+-                            for(int i = 0; i < Math.min(commandBindings.length, commands.size); i++){
++                            for(UnitCommand command : commands){
+                                 //first stance must always be the stop stance
+-                                if(Core.input.keyTap(commandBindings[i])){
+-                                    Call.setUnitCommand(player, control.input.selectedUnits.mapInt(un -> un.id).toArray(), commands.get(i));
++                                if(command.keybind != null && Core.input.keyTap(command.keybind)){
++                                    Call.setUnitCommand(player, control.input.selectedUnits.mapInt(un -> un.id).toArray(), command);
+                                 }
+                             }
+                         });

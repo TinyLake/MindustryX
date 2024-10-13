@@ -1,0 +1,23 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Anuken <arnukren@gmail.com>
+Date: Tue, 5 Sep 2023 09:41:04 -0400
+Subject: [PATCH] Support for JSON planets without a parent
+
+(cherry picked from commit 7fa002c626b1f6ac9b683935a24ee2237f137cef)
+---
+ core/src/mindustry/mod/ContentParser.java | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/core/src/mindustry/mod/ContentParser.java b/core/src/mindustry/mod/ContentParser.java
+index 2a7012f2b38511f61f7388059e8fd7954affe8f9..8bb9efb643152604434bbc570903bcfec9acb61c 100644
+--- a/core/src/mindustry/mod/ContentParser.java
++++ b/core/src/mindustry/mod/ContentParser.java
+@@ -596,7 +596,7 @@ public class ContentParser{
+         ContentType.planet, (TypeParser<Planet>)(mod, name, value) -> {
+             if(value.isString()) return locate(ContentType.planet, name);
+ 
+-            Planet parent = locate(ContentType.planet, value.getString("parent"));
++            Planet parent = locate(ContentType.planet, value.getString("parent", ""));
+             Planet planet = new Planet(mod + "-" + name, parent, value.getFloat("radius", 1f), value.getInt("sectorSize", 0));
+ 
+             if(value.has("mesh")){

@@ -1,0 +1,22 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: way-zer <himc.wicp@gmail.com>
+Date: Thu, 28 Mar 2024 19:18:10 +0800
+Subject: [PATCH] PICK allow set `@shield`
+
+7fa002c626b1f6ac9b683935a24ee2237f137cef
+---
+ core/src/mindustry/entities/comp/UnitComp.java | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/core/src/mindustry/entities/comp/UnitComp.java b/core/src/mindustry/entities/comp/UnitComp.java
+index 2209e0fee396b2df2ac24bfd5807c61b4ab41821..662da29f4a92dad61dbec035619639cef69760fe 100644
+--- a/core/src/mindustry/entities/comp/UnitComp.java
++++ b/core/src/mindustry/entities/comp/UnitComp.java
+@@ -268,6 +268,7 @@ abstract class UnitComp implements Healthc, Physicsc, Hitboxc, Statusc, Teamc, I
+                     kill();
+                 }
+             }
++            case shield -> shield = Math.max((float)value, 0f);
+             case x -> x = World.unconv((float)value);
+             case y -> y = World.unconv((float)value);
+             case rotation -> rotation = (float)value;

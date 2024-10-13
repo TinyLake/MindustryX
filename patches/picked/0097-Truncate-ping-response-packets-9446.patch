@@ -1,0 +1,27 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Tom <25043847+Douile@users.noreply.github.com>
+Date: Fri, 12 Jan 2024 19:21:13 +0000
+Subject: [PATCH] Truncate ping response packets (#9446)
+
+Previously all ping response packets were 0-padded to 500 bytes. By
+truncating we only send the bytes that are actually needed.
+
+(cherry picked from commit e8db6d4837983a7c6493cad5371015560f17f228)
+---
+ core/src/mindustry/net/ArcNetProvider.java | 2 ++
+ 1 file changed, 2 insertions(+)
+
+diff --git a/core/src/mindustry/net/ArcNetProvider.java b/core/src/mindustry/net/ArcNetProvider.java
+index 4131891c779b19c289a42fb5b2e0e9124563ad28..3eaeacd1f3ea9436ba8b67b9a04b1a40cad02a5c 100644
+--- a/core/src/mindustry/net/ArcNetProvider.java
++++ b/core/src/mindustry/net/ArcNetProvider.java
+@@ -93,7 +93,9 @@ public class ArcNetProvider implements NetProvider{
+         server.setMulticast(multicastGroup, multicastPort);
+         server.setDiscoveryHandler((address, handler) -> {
+             ByteBuffer buffer = NetworkIO.writeServerData();
++            int length = buffer.position();
+             buffer.position(0);
++            buffer.limit(length);
+             handler.respond(buffer);
+         });
+ 

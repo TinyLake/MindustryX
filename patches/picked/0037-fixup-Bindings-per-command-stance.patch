@@ -1,0 +1,22 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: way-zer <himc.wicp@gmail.com>
+Date: Sat, 6 Apr 2024 16:08:55 +0800
+Subject: [PATCH] fixup! Bindings per command/stance
+
+---
+ core/src/mindustry/ui/fragments/PlacementFragment.java | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/core/src/mindustry/ui/fragments/PlacementFragment.java b/core/src/mindustry/ui/fragments/PlacementFragment.java
+index d73e49f34404e34c5b3268939ad97b058349d758..df9dec8133a10da577c7ddffd3c5271518f8a0ac 100644
+--- a/core/src/mindustry/ui/fragments/PlacementFragment.java
++++ b/core/src/mindustry/ui/fragments/PlacementFragment.java
+@@ -502,7 +502,7 @@ public class PlacementFragment{
+                                                     ids.add(unit.id);
+                                                 }
+ 
+-                                                Call.setUnitCommand(Vars.player, ids.toArray(), command);
++                                                Call.setUnitCommand(player, ids.toArray(), command);
+                                             }).checked(i -> currentCommand[0] == command).size(50f).tooltip(command.localized());
+                                         }
+                                     }).fillX().padTop(4f).left();

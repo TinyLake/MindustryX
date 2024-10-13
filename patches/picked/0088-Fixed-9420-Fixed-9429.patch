@@ -1,0 +1,285 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Anuken <arnukren@gmail.com>
+Date: Wed, 3 Jan 2024 16:33:42 -0500
+Subject: [PATCH] Fixed #9420 / Fixed #9429
+
+(cherry picked from commit 7d1bbb61f0c78be993001408960d92c391093b74)
+---
+ core/src/mindustry/core/Control.java          |  8 +-
+ core/src/mindustry/input/Placement.java       | 75 ++++++++++++-------
+ .../ui/dialogs/SchematicsDialog.java          | 23 +++---
+ .../world/blocks/distribution/Conveyor.java   |  2 +-
+ .../world/blocks/liquid/Conduit.java          |  2 +-
+ 5 files changed, 70 insertions(+), 40 deletions(-)
+
+diff --git a/core/src/mindustry/core/Control.java b/core/src/mindustry/core/Control.java
+index 9d6a699bded059f6b1b81a84f634262f6d6a0eac..21047767677f54172ec1806ded2a925c438b2b86 100644
+--- a/core/src/mindustry/core/Control.java
++++ b/core/src/mindustry/core/Control.java
+@@ -53,7 +53,7 @@ public class Control implements ApplicationListener, Loadable{
+ 
+     private Interval timer = new Interval(2);
+     private boolean hiscore = false;
+-    private boolean wasPaused = false;
++    private boolean wasPaused = false, backgroundPaused = false;
+     private Seq<Building> toBePlaced = new Seq<>(false);
+ 
+     public Control(){
+@@ -551,6 +551,7 @@ public class Control implements ApplicationListener, Loadable{
+     @Override
+     public void pause(){
+         if(settings.getBool("backgroundpause", true) && !net.active()){
++            backgroundPaused = true;
+             wasPaused = state.is(State.paused);
+             if(state.is(State.playing)) state.set(State.paused);
+         }
+@@ -561,6 +562,7 @@ public class Control implements ApplicationListener, Loadable{
+         if(state.is(State.paused) && !wasPaused && settings.getBool("backgroundpause", true) && !net.active()){
+             state.set(State.playing);
+         }
++        backgroundPaused = false;
+     }
+ 
+     @Override
+@@ -652,6 +654,10 @@ public class Control implements ApplicationListener, Loadable{
+                 core.items.each((i, a) -> i.unlock());
+             }
+ 
++            if(backgroundPaused && settings.getBool("backgroundpause") && !net.active()){
++                state.set(State.paused);
++            }
++
+             //cannot launch while paused
+             if(state.isPaused() && renderer.isCutscene()){
+                 state.set(State.playing);
+diff --git a/core/src/mindustry/input/Placement.java b/core/src/mindustry/input/Placement.java
+index 279bcfb62816d1411e5fe198a2c0212ee9a27e74..09935e4e5ccbfa0d67c102b2e62de5c385f37b79 100644
+--- a/core/src/mindustry/input/Placement.java
++++ b/core/src/mindustry/input/Placement.java
+@@ -113,6 +113,10 @@ public class Placement{
+     }
+ 
+     public static void calculateBridges(Seq<BuildPlan> plans, ItemBridge bridge){
++        calculateBridges(plans, bridge, t -> false);
++    }
++
++    public static void calculateBridges(Seq<BuildPlan> plans, ItemBridge bridge, Boolf<Block> avoid){
+         if(isSidePlace(plans) || plans.size == 0) return;
+ 
+         //check for orthogonal placement + unlocked state
+@@ -120,11 +124,11 @@ public class Placement{
+             return;
+         }
+ 
+-        Boolf<BuildPlan> placeable = plan -> (plan.placeable(player.team())) ||
+-            (plan.tile() != null && plan.tile().block() == plan.block); //don't count the same block as inaccessible
++        Boolf<BuildPlan> placeable = plan ->
++            (plan.placeable(player.team()) || (plan.tile() != null && plan.tile().block() == plan.block)) &&  //don't count the same block as inaccessible
++           !(plan.build() != null && plan.build().rotation != plan.rotation && avoid.get(plan.tile().block()));
+ 
+         var result = plans1.clear();
+-        var team = player.team();
+         var rotated = plans.first().tile() != null && plans.first().tile().absoluteRelativeTo(plans.peek().x, plans.peek().y) == Mathf.mod(plans.first().rotation + 2, 4);
+ 
+         outer:
+@@ -134,6 +138,7 @@ public class Placement{
+ 
+             //gap found
+             if(i < plans.size - 1 && placeable.get(cur) && !placeable.get(plans.get(i + 1))){
++                boolean wereSame = true;
+ 
+                 //find the closest valid position within range
+                 for(int j = i + 1; j < plans.size; j++){
+@@ -147,18 +152,29 @@ public class Placement{
+                         }
+                         i = j;
+                         continue outer;
+-                    }else if(other.placeable(team)){
+-                        //found a link, assign bridges
+-                        cur.block = bridge;
+-                        other.block = bridge;
+-                        if(rotated){
+-                            other.config = new Point2(cur.x - other.x,  cur.y - other.y);
++                    }else if(placeable.get(other)){
++
++                        if(wereSame){
++                            //the gap is fake, it's just conveyors that can be replaced with junctions
++                            i ++;
++                            continue outer;
+                         }else{
+-                            cur.config = new Point2(other.x - cur.x, other.y - cur.y);
++                            //found a link, assign bridges
++                            cur.block = bridge;
++                            other.block = bridge;
++                            if(rotated){
++                                other.config = new Point2(cur.x - other.x,  cur.y - other.y);
++                            }else{
++                                cur.config = new Point2(other.x - cur.x, other.y - cur.y);
++                            }
++
++                            i = j;
++                            continue outer;
+                         }
++                    }
+ 
+-                        i = j;
+-                        continue outer;
++                    if(other.tile() != null && !avoid.get(other.tile().block())){
++                        wereSame = false;
+                     }
+                 }
+ 
+@@ -175,7 +191,7 @@ public class Placement{
+         plans.set(result);
+     }
+ 
+-    public static void calculateBridges(Seq<BuildPlan> plans, DirectionBridge bridge, boolean hasJunction, Boolf<Block> same){
++    public static void calculateBridges(Seq<BuildPlan> plans, DirectionBridge bridge, boolean hasJunction, Boolf<Block> avoid){
+         if(isSidePlace(plans) || plans.size == 0) return;
+ 
+         //check for orthogonal placement + unlocked state
+@@ -183,13 +199,9 @@ public class Placement{
+             return;
+         }
+ 
+-        Boolf<BuildPlan> rotated = plan -> plan.build() != null && same.get(plan.build().block) && plan.rotation != plan.build().rotation;
+-
+-        //TODO for chains of ducts, do not count consecutives in a different rotation as 'placeable'
+         Boolf<BuildPlan> placeable = plan ->
+-            !(!hasJunction && rotated.get(plan)) &&
+-            (plan.placeable(player.team()) ||
+-            (plan.tile() != null && same.get(plan.tile().block()))); //don't count the same block as inaccessible
++            (plan.placeable(player.team()) || (plan.tile() != null && plan.tile().block() == plan.block)) &&  //don't count the same block as inaccessible
++            !(plan.build() != null && plan.build().rotation != plan.rotation && avoid.get(plan.tile().block()));
+ 
+         var result = plans1.clear();
+ 
+@@ -199,10 +211,11 @@ public class Placement{
+             result.add(cur);
+ 
+             //gap found
+-            if(i < plans.size - 1 && placeable.get(cur) && (!placeable.get(plans.get(i + 1)) || (hasJunction && rotated.get(plans.get(i + 1)) && i < plans.size - 2 && !placeable.get(plans.get(i + 2))))){
++            if(i < plans.size - 1 && placeable.get(cur) && !placeable.get(plans.get(i + 1))){
++                boolean wereSame = true;
+ 
+                 //find the closest valid position within range
+-                for(int j = i + 2; j < plans.size; j++){
++                for(int j = i + 1; j < plans.size; j++){
+                     var other = plans.get(j);
+ 
+                     //out of range now, set to current position and keep scanning forward for next occurrence
+@@ -214,12 +227,22 @@ public class Placement{
+                         i = j;
+                         continue outer;
+                     }else if(placeable.get(other)){
+-                        //found a link, assign bridges
+-                        cur.block = bridge;
+-                        other.block = bridge;
+ 
+-                        i = j;
+-                        continue outer;
++                        if(wereSame && hasJunction){
++                            //the gap is fake, it's just conveyors that can be replaced with junctions
++                            i ++;
++                            continue outer;
++                        }else{
++                            //found a link, assign bridges
++                            cur.block = bridge;
++                            other.block = bridge;
++                            i = j;
++                            continue outer;
++                        }
++                    }
++
++                    if(other.tile() != null && !avoid.get(other.tile().block())){
++                        wereSame = false;
+                     }
+                 }
+ 
+diff --git a/core/src/mindustry/ui/dialogs/SchematicsDialog.java b/core/src/mindustry/ui/dialogs/SchematicsDialog.java
+index 51b4e294ec2ec99bdd92fe4d1f2f4862edc9e931..dea4ee0d8bb29600163cdc503b69aff14cbfb106 100644
+--- a/core/src/mindustry/ui/dialogs/SchematicsDialog.java
++++ b/core/src/mindustry/ui/dialogs/SchematicsDialog.java
+@@ -464,9 +464,11 @@ public class SchematicsDialog extends BaseDialog{
+ 
+                 for(var tag : tags){
+ 
+-                    var next = new Table(n -> {
+-                        n.table(Tex.pane, move -> {
+-                            move.margin(2);
++                    var next = new Table(Tex.whiteui, n -> {
++                        n.setColor(Pal.gray);
++                        n.margin(5f);
++
++                        n.table(move -> {
+ 
+                             //move up
+                             move.button(Icon.upOpen, Styles.emptyi, () -> {
+@@ -486,10 +488,9 @@ public class SchematicsDialog extends BaseDialog{
+                                     rebuild[0].run();
+                                 }
+                             }).tooltip("@editor.movedown");
+-                        }).fillY().margin(6f);
++                        }).fillY();
+ 
+-                        n.table(Tex.whiteui, t -> {
+-                            t.setColor(Pal.gray);
++                        n.table(t -> {
+                             t.add(tag).left().row();
+                             t.add(Core.bundle.format("schematic.tagged", schematics.all().count(s -> s.labels.contains(tag)))).left()
+                             .update(b -> b.setColor(b.hasMouse() ? Pal.accent : Color.lightGray)).get().clicked(() -> {
+@@ -498,9 +499,9 @@ public class SchematicsDialog extends BaseDialog{
+                                 rebuildTags.run();
+                                 rebuildPane.run();
+                             });
+-                        }).growX().fillY().margin(8f);
++                        }).growX().fillY();
+ 
+-                        n.table(Tex.pane, b -> {
++                        n.table(b -> {
+                             b.margin(2);
+ 
+                             //rename tag
+@@ -541,13 +542,13 @@ public class SchematicsDialog extends BaseDialog{
+                                     rebuild[0].run();
+                                 });
+                             }).tooltip("@save.delete");
+-                        }).fillY().margin(6f);
++                        }).fillY();
+                     });
+ 
+                     next.pack();
+-                    float w = next.getPrefWidth() + Scl.scl(6f);
++                    float w = next.getWidth() + Scl.scl(6f);
+ 
+-                    if(w + sum >= Core.graphics.getWidth() * (Core.graphics.isPortrait() ? 1f : 0.8f)){
++                    if(w*2f + sum >= Core.graphics.getWidth() * 0.8f){
+                         p.add(current).row();
+                         current = new Table();
+                         current.left();
+diff --git a/core/src/mindustry/world/blocks/distribution/Conveyor.java b/core/src/mindustry/world/blocks/distribution/Conveyor.java
+index bcbecc3f921245e1418caddabd66af699b10043e..ede7e1f2691bb508d9da8220fde42e0ff73eb9f3 100644
+--- a/core/src/mindustry/world/blocks/distribution/Conveyor.java
++++ b/core/src/mindustry/world/blocks/distribution/Conveyor.java
+@@ -92,7 +92,7 @@ public class Conveyor extends Block implements Autotiler{
+     public void handlePlacementLine(Seq<BuildPlan> plans){
+         if(bridgeReplacement == null) return;
+ 
+-        Placement.calculateBridges(plans, (ItemBridge)bridgeReplacement);
++        Placement.calculateBridges(plans, (ItemBridge)bridgeReplacement, b -> b instanceof Conveyor);
+     }
+ 
+     @Override
+diff --git a/core/src/mindustry/world/blocks/liquid/Conduit.java b/core/src/mindustry/world/blocks/liquid/Conduit.java
+index 06b44c3ae41071195d9eb8404161ff55e31de1f9..64f1b02ac4e91f50ecb3e9a9219c5d9b35fcae87 100644
+--- a/core/src/mindustry/world/blocks/liquid/Conduit.java
++++ b/core/src/mindustry/world/blocks/liquid/Conduit.java
+@@ -140,7 +140,7 @@ public class Conduit extends LiquidBlock implements Autotiler{
+         if(rotBridgeReplacement instanceof DirectionBridge duct){
+             Placement.calculateBridges(plans, duct, true, b -> b instanceof Conduit);
+         }else{
+-            Placement.calculateBridges(plans, (ItemBridge)bridgeReplacement);
++            Placement.calculateBridges(plans, (ItemBridge)bridgeReplacement, b -> b instanceof Conduit);
+         }
+     }
+ 

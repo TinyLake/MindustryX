@@ -1,0 +1,71 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Anuken <arnukren@gmail.com>
+Date: Tue, 5 Dec 2023 13:54:47 -0500
+Subject: [PATCH] Fixed Steam kicking
+
+(cherry picked from commit b3c26fac0527c1781bf28e28364d19635dfd3ef8)
+---
+ core/src/mindustry/net/NetConnection.java     | 12 +++++-------
+ desktop/src/mindustry/desktop/steam/SNet.java |  8 +++++++-
+ 2 files changed, 12 insertions(+), 8 deletions(-)
+
+diff --git a/core/src/mindustry/net/NetConnection.java b/core/src/mindustry/net/NetConnection.java
+index a8d27786edfb7bb7f501cc8955ed318bac764f19..7c9e51890fec7a2dedec3ae2b6c07964195abe7d 100644
+--- a/core/src/mindustry/net/NetConnection.java
++++ b/core/src/mindustry/net/NetConnection.java
+@@ -1,6 +1,5 @@
+ package mindustry.net;
+ 
+-import arc.*;
+ import arc.struct.*;
+ import arc.util.*;
+ import mindustry.entities.units.*;
+@@ -82,17 +81,16 @@ public abstract class NetConnection{
+             Call.kick(this, reason);
+         }
+ 
+-        if(uuid.startsWith("steam:")){
+-            //run with a 2-frame delay so there is time to send the kick packet, steam handles this weirdly
+-            Core.app.post(() -> Core.app.post(this::close));
+-        }else{
+-            close();
+-        }
++        kickDisconnect();
+ 
+         netServer.admins.save();
+         kicked = true;
+     }
+ 
++    protected void kickDisconnect(){
++        close();
++    }
++
+     public boolean isConnected(){
+         return true;
+     }
+diff --git a/desktop/src/mindustry/desktop/steam/SNet.java b/desktop/src/mindustry/desktop/steam/SNet.java
+index 0d6a760dc343206e8c11157d4aa967d4cdf489b9..e648af88b902ccf1d19515397e0a55caa83712a7 100644
+--- a/desktop/src/mindustry/desktop/steam/SNet.java
++++ b/desktop/src/mindustry/desktop/steam/SNet.java
+@@ -263,7 +263,7 @@ public class SNet implements SteamNetworkingCallback, SteamMatchmakingCallback,
+         //check version
+         if(version != Version.build){
+             ui.loadfrag.hide();
+-            ui.showInfo("[scarlet]" + (version > Version.build ? KickReason.clientOutdated : KickReason.serverOutdated).toString() + "\n[]" +
++            ui.showInfo("[scarlet]" + (version > Version.build ? KickReason.clientOutdated : KickReason.serverOutdated) + "\n[]" +
+                 Core.bundle.format("server.versions", Version.build, version));
+             smat.leaveLobby(steamIDLobby);
+             return;
+@@ -437,6 +437,12 @@ public class SNet implements SteamNetworkingCallback, SteamMatchmakingCallback,
+             return true;//state.isConnectionActive();
+         }
+ 
++        @Override
++        protected void kickDisconnect(){
++            //delay the close so the kick packet can be sent on steam
++            Core.app.post(() -> Core.app.post(this::close));
++        }
++
+         @Override
+         public void close(){
+             disconnectSteamUser(sid);

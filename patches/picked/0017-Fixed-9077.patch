@@ -1,0 +1,27 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Anuken <arnukren@gmail.com>
+Date: Wed, 20 Sep 2023 10:59:55 -0400
+Subject: [PATCH] Fixed #9077
+
+(cherry picked from commit cc4efdd4281960b99c8388987f0b5ed338a18731)
+---
+ core/src/mindustry/logic/LExecutor.java | 6 ++++--
+ 1 file changed, 4 insertions(+), 2 deletions(-)
+
+diff --git a/core/src/mindustry/logic/LExecutor.java b/core/src/mindustry/logic/LExecutor.java
+index e13f2f437cc5b9f4c7d673d75ad67177b32192c1..3a1c0cc1fe4b73700812aee0159ca3625a925778 100644
+--- a/core/src/mindustry/logic/LExecutor.java
++++ b/core/src/mindustry/logic/LExecutor.java
+@@ -858,8 +858,10 @@ public class LExecutor{
+ 
+             if(!v.constant){
+                 if(f.isobj){
+-                    v.objval = f.objval;
+-                    v.isobj = true;
++                    if(to != varCounter){
++                        v.objval = f.objval;
++                        v.isobj = true;
++                    }
+                 }else{
+                     v.numval = invalid(f.numval) ? 0 : f.numval;
+                     v.isobj = false;

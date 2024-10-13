@@ -1,0 +1,78 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Mythril382 <77225817+Mythril382@users.noreply.github.com>
+Date: Wed, 13 Sep 2023 01:56:16 +0800
+Subject: [PATCH] Ban/Unban Blocks & Units with World Processors (#9052)
+
+* uh
+
+* mmmmmm
+
+* hhhhhh
+
+* i
+
+* indicate
+
+(cherry picked from commit be525df065b0dea93c57b0a4020eb1835fa023d9)
+---
+ core/src/mindustry/logic/LExecutor.java   | 16 ++++++++++++++++
+ core/src/mindustry/logic/LStatements.java |  5 +++++
+ core/src/mindustry/logic/LogicRule.java   |  2 ++
+ 3 files changed, 23 insertions(+)
+
+diff --git a/core/src/mindustry/logic/LExecutor.java b/core/src/mindustry/logic/LExecutor.java
+index a779f99086d72168334fed19a0eb32c056452114..e13f2f437cc5b9f4c7d673d75ad67177b32192c1 100644
+--- a/core/src/mindustry/logic/LExecutor.java
++++ b/core/src/mindustry/logic/LExecutor.java
+@@ -1450,6 +1450,22 @@ public class LExecutor{
+                 }
+                 case ambientLight -> state.rules.ambientLight.fromDouble(exec.num(value));
+                 case solarMultiplier -> state.rules.solarMultiplier = Math.max(exec.numf(value), 0f);
++                case ban -> {
++                    Object cont = exec.obj(value);
++                    if(cont instanceof Block b){
++                        state.rules.bannedBlocks.add(b);
++                    }else if(cont instanceof UnitType u){
++                        state.rules.bannedUnits.add(u);
++                    }
++                }
++                case unban -> {
++                    Object cont = exec.obj(value);
++                    if(cont instanceof Block b){
++                        state.rules.bannedBlocks.remove(b);
++                    }else if(cont instanceof UnitType u){
++                        state.rules.bannedUnits.remove(u);
++                    }
++                }
+                 case unitHealth, unitBuildSpeed, unitCost, unitDamage, blockHealth, blockDamage, buildSpeed, rtsMinSquad, rtsMinWeight -> {
+                     Team team = exec.team(p1);
+                     if(team != null){
+diff --git a/core/src/mindustry/logic/LStatements.java b/core/src/mindustry/logic/LStatements.java
+index 3c57c9a254b1016fe97ebea04b9c01dc1094daa0..5a57d5dc05b62f7a5dcfcd2b614d1424e3982506 100644
+--- a/core/src/mindustry/logic/LStatements.java
++++ b/core/src/mindustry/logic/LStatements.java
+@@ -1392,6 +1392,11 @@ public class LStatements{
+                     row(table);
+                     field(table, value, s -> value = s);
+                 }
++                case ban, unban -> {
++                    table.add(" block/unit ");
++                    
++                    field(table, value, s -> value = s);
++                }
+                 default -> {
+                     table.add(" = ");
+ 
+diff --git a/core/src/mindustry/logic/LogicRule.java b/core/src/mindustry/logic/LogicRule.java
+index f7143e1976dbda1b8db3534373ec9fe5362b225f..0c05fcd0336395cd813aba5b96b0fe794bfed88b 100644
+--- a/core/src/mindustry/logic/LogicRule.java
++++ b/core/src/mindustry/logic/LogicRule.java
+@@ -15,6 +15,8 @@ public enum LogicRule{
+     lighting,
+     ambientLight,
+     solarMultiplier,
++    ban,
++    unban,
+ 
+     //team specific
+     buildSpeed,

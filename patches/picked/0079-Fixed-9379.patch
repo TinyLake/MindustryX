@@ -1,0 +1,54 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Anuken <arnukren@gmail.com>
+Date: Wed, 13 Dec 2023 22:37:31 -0500
+Subject: [PATCH] Fixed #9379
+
+(cherry picked from commit 3a485eb338df9a01087d0a1fab768a73138916ff)
+---
+ core/src/mindustry/content/UnitTypes.java | 5 +++++
+ 1 file changed, 5 insertions(+)
+
+diff --git a/core/src/mindustry/content/UnitTypes.java b/core/src/mindustry/content/UnitTypes.java
+index e5145be5b859680785fbb3b386f28a3e44d0f5fe..646fccf04cee014e25d841279855a4fb9a50894a 100644
+--- a/core/src/mindustry/content/UnitTypes.java
++++ b/core/src/mindustry/content/UnitTypes.java
+@@ -1844,6 +1844,7 @@ public class UnitTypes{
+             armor = 3f;
+ 
+             buildSpeed = 1.5f;
++            rotateToBuilding = false;
+ 
+             weapons.add(new RepairBeamWeapon("repair-beam-weapon-center"){{
+                 x = 0f;
+@@ -1934,6 +1935,7 @@ public class UnitTypes{
+             abilities.add(new StatusFieldAbility(StatusEffects.overclock, 60f * 6, 60f * 6f, 60f));
+ 
+             buildSpeed = 2f;
++            rotateToBuilding = false;
+ 
+             weapons.add(new Weapon("plasma-mount-weapon"){{
+ 
+@@ -2008,6 +2010,7 @@ public class UnitTypes{
+             trailScl = 2f;
+ 
+             buildSpeed = 2f;
++            rotateToBuilding = false;
+ 
+             weapons.add(new RepairBeamWeapon("repair-beam-weapon-center"){{
+                 x = 11f;
+@@ -2149,6 +2152,7 @@ public class UnitTypes{
+             trailScl = 3.2f;
+ 
+             buildSpeed = 3f;
++            rotateToBuilding = false;
+ 
+             abilities.add(new EnergyFieldAbility(40f, 65f, 180f){{
+                 statusDuration = 60f * 6f;
+@@ -2192,6 +2196,7 @@ public class UnitTypes{
+             trailScl = 3.5f;
+ 
+             buildSpeed = 3.5f;
++            rotateToBuilding = false;
+ 
+             for(float mountY : new float[]{-117/4f, 50/4f}){
+                 for(float sign : Mathf.signs){

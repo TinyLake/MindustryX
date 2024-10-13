@@ -1,0 +1,66 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: way-zer <himc.wicp@gmail.com>
+Date: Sun, 28 Apr 2024 20:44:46 +0800
+Subject: [PATCH] PICK: UnitComp.collisionLayer
+
+---
+ core/src/mindustry/async/PhysicsProcess.java   | 14 ++++++--------
+ core/src/mindustry/entities/comp/UnitComp.java |  6 ++++++
+ 2 files changed, 12 insertions(+), 8 deletions(-)
+
+diff --git a/core/src/mindustry/async/PhysicsProcess.java b/core/src/mindustry/async/PhysicsProcess.java
+index f9d0ab94057de3906fcb158fe578896196e2b084..183d1262177761cb378642575c9c35851d84eef4 100644
+--- a/core/src/mindustry/async/PhysicsProcess.java
++++ b/core/src/mindustry/async/PhysicsProcess.java
+@@ -10,11 +10,11 @@ import mindustry.entities.*;
+ import mindustry.gen.*;
+ 
+ public class PhysicsProcess implements AsyncProcess{
+-    private static final int
+-        layers = 3,
+-        layerGround = 0,
+-        layerLegs = 1,
+-        layerFlying = 2;
++    public static final int
++    layers = 3,
++    layerGround = 0,
++    layerLegs = 1,
++    layerFlying = 2;
+ 
+     private PhysicsWorld physics;
+     private Seq<PhysicRef> refs = new Seq<>(false);
+@@ -58,9 +58,7 @@ public class PhysicsProcess implements AsyncProcess{
+             //save last position
+             PhysicRef ref = entity.physref;
+ 
+-            ref.body.layer =
+-                entity.type.allowLegStep && entity.type.legPhysicsLayer ? layerLegs :
+-                entity.isGrounded() ? layerGround : layerFlying;
++            ref.body.layer = entity.collisionLayer();
+             ref.x = entity.x;
+             ref.y = entity.y;
+             ref.body.local = local || entity.isLocal();
+diff --git a/core/src/mindustry/entities/comp/UnitComp.java b/core/src/mindustry/entities/comp/UnitComp.java
+index 7595a3709f1d84bc37f5c0a26b6c28f73766de1a..6ba6e11520dda469666fd124f7beb3b8d8a47516 100644
+--- a/core/src/mindustry/entities/comp/UnitComp.java
++++ b/core/src/mindustry/entities/comp/UnitComp.java
+@@ -10,6 +10,7 @@ import arc.util.*;
+ import mindustry.ai.*;
+ import mindustry.ai.types.*;
+ import mindustry.annotations.Annotations.*;
++import mindustry.async.*;
+ import mindustry.content.*;
+ import mindustry.core.*;
+ import mindustry.ctype.*;
+@@ -390,6 +391,11 @@ abstract class UnitComp implements Healthc, Physicsc, Hitboxc, Statusc, Teamc, I
+         controller(controller);
+     }
+ 
++    /** @return the collision layer to use for unit physics. Returning anything outside of PhysicsProcess contents will crash the game. */
++    public int collisionLayer(){
++        return type.allowLegStep && type.legPhysicsLayer ? PhysicsProcess.layerLegs : isGrounded() ? PhysicsProcess.layerGround : PhysicsProcess.layerFlying;
++    }
++
+     /** @return pathfinder path type for calculating costs */
+     public int pathType(){
+         return Pathfinder.costGround;

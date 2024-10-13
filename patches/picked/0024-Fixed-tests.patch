@@ -1,0 +1,34 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Anuken <arnukren@gmail.com>
+Date: Sat, 23 Sep 2023 15:12:31 -0400
+Subject: [PATCH] Fixed tests
+
+(cherry picked from commit 9cb64d987d1bf88adcc86b6bb1acefb7d554f4c8)
+---
+ core/src/mindustry/input/Binding.java | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/core/src/mindustry/input/Binding.java b/core/src/mindustry/input/Binding.java
+index 1fda09418648235069cf62003004fc8356250921..7c1c17300aa5088e1c9f4dc8078f33aadcd634f0 100644
+--- a/core/src/mindustry/input/Binding.java
++++ b/core/src/mindustry/input/Binding.java
+@@ -1,9 +1,9 @@
+ package mindustry.input;
+ 
+-import arc.*;
+ import arc.KeyBinds.*;
+ import arc.input.InputDevice.*;
+ import arc.input.*;
++import mindustry.*;
+ 
+ public enum Binding implements KeyBind{
+     move_x(new Axis(KeyCode.a, KeyCode.d), "general"),
+@@ -70,7 +70,7 @@ public enum Binding implements KeyBind{
+     block_select_10(KeyCode.num0),
+ 
+     zoom(new Axis(KeyCode.scroll), "view"),
+-    menu(Core.app.isAndroid() ? KeyCode.back : KeyCode.escape),
++    menu(Vars.android ? KeyCode.back : KeyCode.escape),
+     fullscreen(KeyCode.f11),
+     pause(KeyCode.space),
+     minimap(KeyCode.m),

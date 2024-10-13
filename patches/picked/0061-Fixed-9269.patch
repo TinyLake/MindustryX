@@ -1,0 +1,33 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Anuken <arnukren@gmail.com>
+Date: Sun, 12 Nov 2023 09:49:07 -0500
+Subject: [PATCH] Fixed #9269
+
+(cherry picked from commit 8282a1e1bb0783ee222089bae7279d4030298991)
+---
+ core/src/mindustry/service/GameService.java | 5 ++---
+ 1 file changed, 2 insertions(+), 3 deletions(-)
+
+diff --git a/core/src/mindustry/service/GameService.java b/core/src/mindustry/service/GameService.java
+index 87e2e2ee1bcc3900d336b3fb429d48f5cbe99cea..7b31d1071193b7143200770c1a0659b857fea236 100644
+--- a/core/src/mindustry/service/GameService.java
++++ b/core/src/mindustry/service/GameService.java
+@@ -10,7 +10,6 @@ import mindustry.game.SectorInfo.*;
+ import mindustry.gen.*;
+ import mindustry.type.*;
+ import mindustry.world.*;
+-import mindustry.world.blocks.defense.*;
+ import mindustry.world.blocks.defense.Wall.*;
+ import mindustry.world.blocks.defense.turrets.Turret.*;
+ import mindustry.world.blocks.distribution.*;
+@@ -225,8 +224,8 @@ public class GameService{
+                     }
+                 }
+ 
+-                if(e.tile.block() instanceof MendProjector || e.tile.block() instanceof RegenProjector) buildMendProjector.complete();
+-                if(e.tile.block() instanceof OverdriveProjector) buildOverdriveProjector.complete();
++                if(e.tile.block() == Blocks.mendProjector) buildMendProjector.complete();
++                if(e.tile.block() == Blocks.overdriveProjector) buildOverdriveProjector.complete();
+ 
+                 if(e.tile.block() == Blocks.waterExtractor){
+                     if(e.tile.getLinkedTiles(tmpTiles).contains(t -> t.floor().liquidDrop == Liquids.water)){

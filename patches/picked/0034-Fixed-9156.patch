@@ -1,0 +1,25 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Anuken <arnukren@gmail.com>
+Date: Fri, 13 Oct 2023 02:15:05 -0400
+Subject: [PATCH] Fixed #9156
+
+(cherry picked from commit 74844a6fa9ae70260bfa6214106defdd3e801eb7)
+---
+ core/src/mindustry/world/blocks/logic/MessageBlock.java | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
+
+diff --git a/core/src/mindustry/world/blocks/logic/MessageBlock.java b/core/src/mindustry/world/blocks/logic/MessageBlock.java
+index e0f30aa4a427794a69862682927fe6f495db0d1d..ecf043b3dc68fe077bd42b5f08fb1b1166dce459 100644
+--- a/core/src/mindustry/world/blocks/logic/MessageBlock.java
++++ b/core/src/mindustry/world/blocks/logic/MessageBlock.java
+@@ -105,8 +105,9 @@ public class MessageBlock extends Block{
+         public void buildConfiguration(Table table){
+             table.button(Icon.pencil, Styles.cleari, () -> {
+                 if(mobile){
++                    var contents = this.message.toString();
+                     Core.input.getTextInput(new TextInput(){{
+-                        text = message.toString();
++                        text = contents;
+                         multiline = true;
+                         maxLength = maxTextLength;
+                         accepted = str -> {

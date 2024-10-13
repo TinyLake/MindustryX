@@ -1,0 +1,27 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Anuken <arnukren@gmail.com>
+Date: Mon, 4 Sep 2023 17:56:10 -0400
+Subject: [PATCH] Crash fix
+
+(cherry picked from commit ee5fc8a3329409eb26906aabef91469ac53943a6)
+---
+ core/src/mindustry/entities/comp/UnitComp.java | 6 ++++--
+ 1 file changed, 4 insertions(+), 2 deletions(-)
+
+diff --git a/core/src/mindustry/entities/comp/UnitComp.java b/core/src/mindustry/entities/comp/UnitComp.java
+index 35335e45fda63743a2fa26035659aa94b09e1244..2209e0fee396b2df2ac24bfd5807c61b4ab41821 100644
+--- a/core/src/mindustry/entities/comp/UnitComp.java
++++ b/core/src/mindustry/entities/comp/UnitComp.java
+@@ -297,8 +297,10 @@ abstract class UnitComp implements Healthc, Physicsc, Hitboxc, Statusc, Teamc, I
+                 //only serverside
+                 if(((Object)this) instanceof Payloadc pay && !net.client()){
+                     if(value instanceof Block b){
+-                        Building build = b.newBuilding().create(b, team());
+-                        if(pay.canPickup(build)) pay.addPayload(new BuildPayload(build));
++                        if(b.synthetic()){
++                            Building build = b.newBuilding().create(b, team());
++                            if(pay.canPickup(build)) pay.addPayload(new BuildPayload(build));
++                        }
+                     }else if(value instanceof UnitType ut){
+                         Unit unit = ut.create(team());
+                         if(pay.canPickup(unit)) pay.addPayload(new UnitPayload(unit));

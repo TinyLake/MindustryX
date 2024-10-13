@@ -1,0 +1,56 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: BalaM314 <71201189+BalaM314@users.noreply.github.com>
+Date: Tue, 12 Dec 2023 19:17:40 +0530
+Subject: [PATCH] Allow fetching unitCount by type, and buildCount without type
+ (#9374)
+
+* Allow fetching unitCount by type, and buildCount without type
+
+* show in processor ui
+
+(cherry picked from commit 68b06fdea695603b759c255759af684f6bee42c1)
+---
+ core/src/mindustry/logic/LExecutor.java   | 11 +++++++++--
+ core/src/mindustry/logic/LStatements.java |  2 +-
+ 2 files changed, 10 insertions(+), 3 deletions(-)
+
+diff --git a/core/src/mindustry/logic/LExecutor.java b/core/src/mindustry/logic/LExecutor.java
+index e628584dfd7c93b5b7de8a812b04f2953045f684..51383d05925587e4cc5daff77deba2ac8c4cb53d 100644
+--- a/core/src/mindustry/logic/LExecutor.java
++++ b/core/src/mindustry/logic/LExecutor.java
+@@ -1259,13 +1259,20 @@ public class LExecutor{
+                         exec.setobj(result, i < 0 || i >= builds.size ? null : builds.get(i));
+                     }
+                 }
+-                case unitCount -> exec.setnum(result, data.units.size);
++                case unitCount -> {
++                    UnitType type = exec.obj(extra) instanceof UnitType u ? u : null;
++                    if(type == null){
++                        exec.setnum(result, data.units.size);
++                    }else{
++                        exec.setnum(result, data.unitsByType[type.id].size);
++                    }
++                }
+                 case coreCount -> exec.setnum(result, data.cores.size);
+                 case playerCount -> exec.setnum(result, data.players.size);
+                 case buildCount -> {
+                     Block block = exec.obj(extra) instanceof Block b ? b : null;
+                     if(block == null){
+-                        exec.setobj(result, null);
++                        exec.setnum(result, data.buildings.size);
+                     }else{
+                         exec.setnum(result, data.getBuildings(block).size);
+                     }
+diff --git a/core/src/mindustry/logic/LStatements.java b/core/src/mindustry/logic/LStatements.java
+index 42075a3ed8b04a7436601d8e52dc04811a7cdd76..73ce558eb343b812561f76a65efc795008533a9e 100644
+--- a/core/src/mindustry/logic/LStatements.java
++++ b/core/src/mindustry/logic/LStatements.java
+@@ -1696,7 +1696,7 @@ public class LStatements{
+                 fields(table, index, i -> index = i);
+             }
+ 
+-            if(type == FetchType.buildCount || type == FetchType.build){
++            if(type == FetchType.buildCount || type == FetchType.build || type == FetchType.unitCount){
+                 row(table);
+ 
+                 fields(table, "block", extra, i -> extra = i);

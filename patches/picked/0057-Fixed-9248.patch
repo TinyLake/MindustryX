@@ -1,0 +1,25 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Anuken <arnukren@gmail.com>
+Date: Mon, 6 Nov 2023 13:29:40 -0500
+Subject: [PATCH] Fixed #9248
+
+(cherry picked from commit 884482e9b645917ba6d31c6b90884415571e245f)
+---
+ core/src/mindustry/ai/types/CommandAI.java | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/core/src/mindustry/ai/types/CommandAI.java b/core/src/mindustry/ai/types/CommandAI.java
+index fc4b455c149c8178cce3802bdf17e919f29fbc5a..f968071caef4e6e04145054731a74d67ec2dfe6c 100644
+--- a/core/src/mindustry/ai/types/CommandAI.java
++++ b/core/src/mindustry/ai/types/CommandAI.java
+@@ -266,8 +266,8 @@ public class CommandAI extends AIController{
+     }
+ 
+     public void commandPosition(Vec2 pos, boolean stopWhenInRange){
+-        targetPos = pos;
+-        lastTargetPos = pos;
++        //this is an allocation, but it's relatively rarely called anyway, and outside mutations must be prevented
++        targetPos = lastTargetPos = pos.cpy();
+         attackTarget = null;
+         pathId = Vars.controlPath.nextTargetId();
+         this.stopWhenInRange = stopWhenInRange;

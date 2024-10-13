@@ -1,0 +1,23 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Anuken <arnukren@gmail.com>
+Date: Wed, 13 Sep 2023 23:43:16 -0400
+Subject: [PATCH] Clamp mobile view
+
+(cherry picked from commit f698d4dd37c797e397f6848c38bb9b1711d73b12)
+---
+ core/src/mindustry/input/MobileInput.java | 2 ++
+ 1 file changed, 2 insertions(+)
+
+diff --git a/core/src/mindustry/input/MobileInput.java b/core/src/mindustry/input/MobileInput.java
+index a720406c44e0e7a0682de8d5302b877716feb40c..dfac50b02c171c61b02f4e7da4d20ce7e5e00c1a 100644
+--- a/core/src/mindustry/input/MobileInput.java
++++ b/core/src/mindustry/input/MobileInput.java
+@@ -923,6 +923,8 @@ public class MobileInput extends InputHandler implements GestureListener{
+             Core.camera.position.y -= deltaY;
+         }
+ 
++        camera.position.clamp(-camera.width/4f, -camera.height/4f, world.unitWidth() + camera.width/4f, world.unitHeight() + camera.height/4f);
++
+         return false;
+     }
+ 

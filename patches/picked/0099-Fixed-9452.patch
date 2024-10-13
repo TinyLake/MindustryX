@@ -1,0 +1,23 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Anuken <arnukren@gmail.com>
+Date: Sat, 13 Jan 2024 12:20:14 -0500
+Subject: [PATCH] Fixed #9452
+
+(cherry picked from commit a4c137b6b8cd3a98d73b1fa0e73fe566dbfa071c)
+---
+ core/assets/bundles/bundle.properties | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/core/assets/bundles/bundle.properties b/core/assets/bundles/bundle.properties
+index 91d67674213b1cc77ee2b3cfe4481004c18a76ab..bdbb380763ca7521e68a4323ab567896782164ca 100644
+--- a/core/assets/bundles/bundle.properties
++++ b/core/assets/bundles/bundle.properties
+@@ -741,7 +741,7 @@ sector.missingresources = [scarlet]Insufficient Core Resources
+ sector.attacked = Sector [accent]{0}[white] under attack!
+ sector.lost = Sector [accent]{0}[white] lost!
+ #note: the missing space in the line below is intentional
+-sector.captured = Sector [accent]{0}[white]Captured!
++sector.capture = Sector [accent]{0}[white]Captured!
+ sector.changeicon = Change Icon
+ sector.noswitch.title = Unable to Switch Sectors
+ sector.noswitch = You may not switch sectors while an existing sector is under attack.\n\nSector: [accent]{0}[] on [accent]{1}[]

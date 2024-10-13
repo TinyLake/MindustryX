@@ -1,0 +1,109 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Anuken <arnukren@gmail.com>
+Date: Thu, 14 Sep 2023 01:53:09 -0400
+Subject: [PATCH] Implements Anuken/Mindustry-Suggestions/issues/4665
+
+(cherry picked from commit 73e9ed4919046e6f8f261dc77358d4a3fc2cd52a)
+---
+ core/assets/bundles/bundle.properties         |  3 +-
+ .../ui/dialogs/CustomRulesDialog.java         | 52 ++++++++++++++++---
+ 2 files changed, 48 insertions(+), 7 deletions(-)
+
+diff --git a/core/assets/bundles/bundle.properties b/core/assets/bundles/bundle.properties
+index 0eda6f78f249cc5542d4a72039be08a0efdc2013..c136d247455cd7469ccf9ab454f0041843e9aaad 100644
+--- a/core/assets/bundles/bundle.properties
++++ b/core/assets/bundles/bundle.properties
+@@ -681,7 +681,6 @@ resources.max = Max
+ bannedblocks = Banned Blocks
+ objectives = Objectives
+ bannedunits = Banned Units
+-rules.hidebannedblocks = Hide Banned Blocks
+ bannedunits.whitelist = Banned Units As Whitelist
+ bannedblocks.whitelist = Banned Blocks As Whitelist
+ addall = Add All
+@@ -1223,6 +1222,8 @@ mode.attack.name = Attack
+ mode.attack.description = Destroy the enemy's base. \n[gray]Requires a red core in the map to play.
+ mode.custom = Custom Rules
+ 
++rules.invaliddata = Invalid clipboard data.
++rules.hidebannedblocks = Hide Banned Blocks
+ rules.infiniteresources = Infinite Resources
+ rules.onlydepositcore = Only Allow Core Depositing
+ rules.reactorexplosions = Reactor Explosions
+diff --git a/core/src/mindustry/ui/dialogs/CustomRulesDialog.java b/core/src/mindustry/ui/dialogs/CustomRulesDialog.java
+index 8f2a88dd1f4dc81288537801e60ec4d994f9b5bc..f9559e184fb3de9324bd6d6fa81c433ae7eb86ec 100644
+--- a/core/src/mindustry/ui/dialogs/CustomRulesDialog.java
++++ b/core/src/mindustry/ui/dialogs/CustomRulesDialog.java
+@@ -16,6 +16,7 @@ import mindustry.game.*;
+ import mindustry.game.Rules.*;
+ import mindustry.gen.*;
+ import mindustry.graphics.*;
++import mindustry.io.*;
+ import mindustry.type.*;
+ import mindustry.type.Weather.*;
+ import mindustry.ui.*;
+@@ -38,6 +39,51 @@ public class CustomRulesDialog extends BaseDialog{
+         setFillParent(true);
+         shown(this::setup);
+         addCloseButton();
++
++        buttons.button("@edit", Icon.pencil, () -> {
++            BaseDialog dialog = new BaseDialog("@waves.edit");
++            dialog.addCloseButton();
++            dialog.setFillParent(false);
++
++            dialog.cont.table(Tex.button, t -> {
++                var style = Styles.cleart;
++                t.defaults().size(280f, 64f).pad(2f);
++
++                t.button("@waves.copy", Icon.copy, style, () -> {
++                    ui.showInfoFade("@waves.copied");
++                    Core.app.setClipboardText(JsonIO.write(rules));
++                    dialog.hide();
++                }).marginLeft(12f).row();
++
++                t.button("@waves.load", Icon.download, style, () -> {
++                    try{
++                        Rules newRules = JsonIO.read(Rules.class, Core.app.getClipboardText());
++                        //objectives and spawns are considered to be map-specific; don't use them
++                        newRules.spawns = rules.spawns;
++                        newRules.objectives = rules.objectives;
++                        rules = newRules;
++                        refresh();
++                    }catch(Throwable e){
++                        Log.err(e);
++                        ui.showErrorMessage("@rules.invaliddata");
++                    }
++                    dialog.hide();
++                }).disabled(Core.app.getClipboardText() == null || !Core.app.getClipboardText().startsWith("{")).marginLeft(12f).row();
++
++                t.button("@settings.reset", Icon.refresh, style, () -> {
++                    rules = resetter.get();
++                    refresh();
++                }).marginLeft(12f);
++            });
++
++            dialog.show();
++        });
++    }
++
++    void refresh(){
++        setup();
++        requestKeyboard();
++        requestScroll();
+     }
+ 
+     private <T extends UnlockableContent> void showBanned(String title, ContentType type, ObjectSet<T> set, Boolf<T> pred){
+@@ -128,12 +174,6 @@ public class CustomRulesDialog extends BaseDialog{
+         cont.clear();
+         cont.pane(m -> main = m).scrollX(false);
+         main.margin(10f);
+-        main.button("@settings.reset", () -> {
+-            rules = resetter.get();
+-            setup();
+-            requestKeyboard();
+-            requestScroll();
+-        }).size(300f, 50f);
+         main.left().defaults().fillX().left().pad(5);
+         main.row();
+ 

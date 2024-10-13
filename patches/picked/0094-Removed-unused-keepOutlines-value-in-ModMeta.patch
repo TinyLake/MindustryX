@@ -1,0 +1,31 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Anuken <arnukren@gmail.com>
+Date: Wed, 10 Jan 2024 23:39:09 -0500
+Subject: [PATCH] Removed unused keepOutlines value in ModMeta
+
+(cherry picked from commit b94de4e9b9b8976a6e9491ce46ac636e16288e86)
+---
+ core/src/mindustry/mod/Mods.java | 3 ---
+ 1 file changed, 3 deletions(-)
+
+diff --git a/core/src/mindustry/mod/Mods.java b/core/src/mindustry/mod/Mods.java
+index 37b1dead723467a6bf109ec37a50f16c878176b2..34bbd1afaff81717f3baf8afdc7835d42ac89c75 100644
+--- a/core/src/mindustry/mod/Mods.java
++++ b/core/src/mindustry/mod/Mods.java
+@@ -1180,8 +1180,6 @@ public class Mods implements Loadable{
+         public boolean hidden;
+         /** If true, this mod should be loaded as a Java class mod. This is technically optional, but highly recommended. */
+         public boolean java;
+-        /** If true, -outline regions for units are kept when packing. Only use if you know exactly what you are doing. */
+-        public boolean keepOutlines;
+         /** To rescale textures with a different size. Represents the size in pixels of the sprite of a 1x1 block. */
+         public float texturescale = 1.0f;
+         /** If true, bleeding is skipped and no content icons are generated. */
+@@ -1229,7 +1227,6 @@ public class Mods implements Loadable{
+             ", softDependencies=" + softDependencies +
+             ", hidden=" + hidden +
+             ", java=" + java +
+-            ", keepOutlines=" + keepOutlines +
+             ", texturescale=" + texturescale +
+             ", pregenerated=" + pregenerated +
+             '}';

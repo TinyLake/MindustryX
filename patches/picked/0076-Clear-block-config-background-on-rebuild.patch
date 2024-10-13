@@ -1,0 +1,22 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Anuken <arnukren@gmail.com>
+Date: Sun, 10 Dec 2023 09:29:02 -0500
+Subject: [PATCH] Clear block config background on rebuild
+
+(cherry picked from commit 3e4b86d095db7c90cc967d006a13465d0fdb012b)
+---
+ core/src/mindustry/ui/fragments/BlockConfigFragment.java | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/core/src/mindustry/ui/fragments/BlockConfigFragment.java b/core/src/mindustry/ui/fragments/BlockConfigFragment.java
+index 144bfeb8d648777338ac53e63d17406098fd5824..356c63fca4d39e640a21f84cfa4d756c40b79f54 100644
+--- a/core/src/mindustry/ui/fragments/BlockConfigFragment.java
++++ b/core/src/mindustry/ui/fragments/BlockConfigFragment.java
+@@ -43,6 +43,7 @@ public class BlockConfigFragment{
+ 
+             table.visible = true;
+             table.clear();
++            table.background(null);
+             tile.buildConfiguration(table);
+             table.pack();
+             table.setTransform(true);

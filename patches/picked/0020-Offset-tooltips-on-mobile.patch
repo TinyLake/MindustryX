@@ -1,0 +1,24 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Anuken <arnukren@gmail.com>
+Date: Fri, 22 Sep 2023 22:19:13 -0400
+Subject: [PATCH] Offset tooltips on mobile
+
+(cherry picked from commit c59866a65cf98bac157142963919c15349bc82b4)
+---
+ core/src/mindustry/core/UI.java | 3 +++
+ 1 file changed, 3 insertions(+)
+
+diff --git a/core/src/mindustry/core/UI.java b/core/src/mindustry/core/UI.java
+index 92d855261864dce08192fb9ca140a0e30c761287..c5b749e3802b85e30de6eb10dc470455700aa5ba 100644
+--- a/core/src/mindustry/core/UI.java
++++ b/core/src/mindustry/core/UI.java
+@@ -128,6 +128,9 @@ public class UI implements ApplicationListener, Loadable{
+ 
+         Tooltips.getInstance().animations = false;
+         Tooltips.getInstance().textProvider = text -> new Tooltip(t -> t.background(Styles.black6).margin(4f).add(text));
++        if(mobile){
++            Tooltips.getInstance().offsetY += Scl.scl(60f);
++        }
+ 
+         Core.settings.setErrorHandler(e -> {
+             Log.err(e);

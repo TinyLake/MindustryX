@@ -1,0 +1,30 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: way-zer <himc.wicp@gmail.com>
+Date: Wed, 22 May 2024 00:02:06 +0800
+Subject: [PATCH] fixup! Added dynamic status for custom speed/health/etc not
+ sync for mod multiplayer
+
+---
+ core/src/mindustry/content/StatusEffects.java | 10 +++++-----
+ 1 file changed, 5 insertions(+), 5 deletions(-)
+
+diff --git a/core/src/mindustry/content/StatusEffects.java b/core/src/mindustry/content/StatusEffects.java
+index 8daf52a5bbdaaed7f4336a4af05b836e63b65323..a8206160e418dae59adb7aaeed67661640be24d3 100644
+--- a/core/src/mindustry/content/StatusEffects.java
++++ b/core/src/mindustry/content/StatusEffects.java
+@@ -206,10 +206,10 @@ public class StatusEffects{
+             healthMultiplier = Float.POSITIVE_INFINITY;
+         }};
+ 
+-        dynamic = new StatusEffect("dynamic"){{
+-            show = false;
+-            dynamic = true;
+-            permanent = true;
+-        }};
++//        dynamic = new StatusEffect("dynamic"){{
++//            show = false;
++//            dynamic = true;
++//            permanent = true;
++//        }};
+     }
+ }

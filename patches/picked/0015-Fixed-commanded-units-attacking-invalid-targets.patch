@@ -1,0 +1,102 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Anuken <arnukren@gmail.com>
+Date: Mon, 18 Sep 2023 23:18:55 -0400
+Subject: [PATCH] Fixed commanded units attacking invalid targets
+
+(cherry picked from commit 66ad4e17987e44564009e66c43ea6c8fe88579f6)
+---
+ core/src/mindustry/entities/comp/UnitComp.java |  4 ++++
+ core/src/mindustry/input/DesktopInput.java     | 15 +++++++++++++--
+ core/src/mindustry/input/InputHandler.java     |  9 ++++++---
+ core/src/mindustry/type/UnitType.java          |  2 ++
+ 4 files changed, 25 insertions(+), 5 deletions(-)
+
+diff --git a/core/src/mindustry/entities/comp/UnitComp.java b/core/src/mindustry/entities/comp/UnitComp.java
+index 662da29f4a92dad61dbec035619639cef69760fe..70e2a0ade1609a166d3343b5b0f86ba57604a854 100644
+--- a/core/src/mindustry/entities/comp/UnitComp.java
++++ b/core/src/mindustry/entities/comp/UnitComp.java
+@@ -409,6 +409,10 @@ abstract class UnitComp implements Healthc, Physicsc, Hitboxc, Statusc, Teamc, I
+         return controller instanceof CommandAI;
+     }
+ 
++    public boolean canTarget(Unit other){
++        return other != null && other.checkTarget(type.targetAir, type.targetGround);
++    }
++
+     public CommandAI command(){
+         if(controller instanceof CommandAI ai){
+             return ai;
+diff --git a/core/src/mindustry/input/DesktopInput.java b/core/src/mindustry/input/DesktopInput.java
+index 0e192125c66a50fad84c6ee5d55d78423103fa77..4ff1c27b24210514837b861779aafe05739d581b 100644
+--- a/core/src/mindustry/input/DesktopInput.java
++++ b/core/src/mindustry/input/DesktopInput.java
+@@ -387,8 +387,19 @@ public class DesktopInput extends InputHandler{
+                 cursorType = ui.drillCursor;
+             }
+ 
+-            if(commandMode && selectedUnits.any() && ((cursor.build != null && !cursor.build.inFogTo(player.team()) && cursor.build.team != player.team()) || (selectedEnemyUnit(input.mouseWorldX(), input.mouseWorldY()) != null))){
+-                cursorType = ui.targetCursor;
++            if(commandMode && selectedUnits.any()){
++                boolean canAttack = (cursor.build != null && !cursor.build.inFogTo(player.team()) && cursor.build.team != player.team());
++
++                if(!canAttack){
++                    var unit = selectedEnemyUnit(input.mouseWorldX(), input.mouseWorldY());
++                    if(unit != null){
++                        canAttack = selectedUnits.contains(u -> u.canTarget(unit));
++                    }
++                }
++
++                if(canAttack){
++                    cursorType = ui.targetCursor;
++                }
+             }
+ 
+             if(getPlan(cursor.x, cursor.y) != null && mode == none){
+diff --git a/core/src/mindustry/input/InputHandler.java b/core/src/mindustry/input/InputHandler.java
+index 1be41c4877b8e23938a57524489cd447e6c7fe12..5ee28a1cc15d4f600ed75ca019f45217646cdae2 100644
+--- a/core/src/mindustry/input/InputHandler.java
++++ b/core/src/mindustry/input/InputHandler.java
+@@ -225,6 +225,7 @@ public abstract class InputHandler implements InputProcessor, GestureListener{
+         }
+ 
+         Teamc teamTarget = buildTarget == null ? unitTarget : buildTarget;
++        boolean anyCommandedTarget = false;
+ 
+         for(int id : unitIds){
+             Unit unit = Groups.unit.getByID(id);
+@@ -235,9 +236,11 @@ public abstract class InputHandler implements InputProcessor, GestureListener{
+                     ai.command(UnitCommand.moveCommand);
+                 }
+ 
+-                if(teamTarget != null && teamTarget.team() != player.team()){
+-                    ai.commandTarget(teamTarget);
++                if(teamTarget != null && teamTarget.team() != player.team() &&
++                    !(teamTarget instanceof Unit u && !unit.canTarget(u)) && !(teamTarget instanceof Building && !unit.type.targetGround)){
+ 
++                    anyCommandedTarget = true;
++                    ai.commandTarget(teamTarget);
+                 }else if(posTarget != null){
+                     ai.commandPosition(posTarget);
+                 }
+@@ -251,7 +254,7 @@ public abstract class InputHandler implements InputProcessor, GestureListener{
+         }
+ 
+         if(unitIds.length > 0 && player == Vars.player && !state.isPaused()){
+-            if(teamTarget != null){
++            if(anyCommandedTarget){
+                 Fx.attackCommand.at(teamTarget);
+             }else{
+                 Fx.moveCommand.at(posTarget);
+diff --git a/core/src/mindustry/type/UnitType.java b/core/src/mindustry/type/UnitType.java
+index aba1ab89d59aa4c983df1cb892a56938a404090a..c44769f4d5a4fd8f7feb6d53fe41d9eb856e708d 100644
+--- a/core/src/mindustry/type/UnitType.java
++++ b/core/src/mindustry/type/UnitType.java
+@@ -601,6 +601,8 @@ public class UnitType extends UnlockableContent implements Senseable{
+         stats.add(Stat.size, StatValues.squared(hitSize / tilesize, StatUnit.blocks));
+         stats.add(Stat.itemCapacity, itemCapacity);
+         stats.add(Stat.range, (int)(maxRange / tilesize), StatUnit.blocks);
++        stats.add(Stat.targetsAir, targetAir);
++        stats.add(Stat.targetsGround, targetGround);
+ 
+         if(abilities.any()){
+             stats.add(Stat.abilities, StatValues.abilities(abilities));

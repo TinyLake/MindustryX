@@ -1,0 +1,22 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Anuken <arnukren@gmail.com>
+Date: Sat, 4 Nov 2023 17:38:50 -0400
+Subject: [PATCH] Fixed #9239
+
+(cherry picked from commit 6b2229ffb9d7f68d9a229252fdd8cfa08f34b166)
+---
+ core/src/mindustry/entities/EntityGroup.java | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/core/src/mindustry/entities/EntityGroup.java b/core/src/mindustry/entities/EntityGroup.java
+index 48be2883457e5afad30946e1acdaf972ebce5658..9fdfda3d08ba6497d424fd19af7068f1f10622af 100644
+--- a/core/src/mindustry/entities/EntityGroup.java
++++ b/core/src/mindustry/entities/EntityGroup.java
+@@ -28,6 +28,7 @@ public class EntityGroup<T extends Entityc> implements Iterable<T>{
+     private int index;
+ 
+     public static int nextId(){
++        if(lastId >= Integer.MAX_VALUE - 2) lastId = 0;
+         return lastId++;
+     }
+ 

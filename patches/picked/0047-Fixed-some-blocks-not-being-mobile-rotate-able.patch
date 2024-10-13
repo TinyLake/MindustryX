@@ -1,0 +1,23 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Anuken <arnukren@gmail.com>
+Date: Fri, 27 Oct 2023 18:42:25 -0400
+Subject: [PATCH] Fixed some blocks not being mobile rotate-able
+
+(cherry picked from commit 212adddd5300caac8d50722ee08c13c2e0de2bd0)
+---
+ core/src/mindustry/world/Block.java | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/core/src/mindustry/world/Block.java b/core/src/mindustry/world/Block.java
+index c1a87f510c523ff133ae06ddff8482ce5cdbcad8..d145709c4463bf2ab3975646917ee83d265e01ce 100644
+--- a/core/src/mindustry/world/Block.java
++++ b/core/src/mindustry/world/Block.java
+@@ -646,7 +646,7 @@ public class Block extends UnlockableContent implements Senseable{
+     public boolean canReplace(Block other){
+         if(other.alwaysReplace) return true;
+         if(other.privileged) return false;
+-        return other.replaceable && (other != this || (rotate && quickRotate)) && this.group != BlockGroup.none && other.group == this.group &&
++        return other.replaceable && (other != this || (rotate && quickRotate)) && ((this.group != BlockGroup.none && other.group == this.group) || other == this) &&
+             (size == other.size || (size >= other.size && ((subclass != null && subclass == other.subclass) || group.anyReplace)));
+     }
+ 

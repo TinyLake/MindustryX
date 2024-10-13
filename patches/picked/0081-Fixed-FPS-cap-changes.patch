@@ -1,0 +1,36 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Anuken <arnukren@gmail.com>
+Date: Sat, 16 Dec 2023 13:10:04 -0500
+Subject: [PATCH] Fixed FPS cap changes
+
+(cherry picked from commit 2a6dc573acd8afdb56a0f26605050b1018fd2803)
+---
+ core/src/mindustry/ClientLauncher.java | 6 +++++-
+ 1 file changed, 5 insertions(+), 1 deletion(-)
+
+diff --git a/core/src/mindustry/ClientLauncher.java b/core/src/mindustry/ClientLauncher.java
+index ad77dd6bcc0f3695743eeb0b71658e67973dfa71..7e0757047006ed5d6e8b1165124b7de90a8e037d 100644
+--- a/core/src/mindustry/ClientLauncher.java
++++ b/core/src/mindustry/ClientLauncher.java
+@@ -29,6 +29,7 @@ public abstract class ClientLauncher extends ApplicationCore implements Platform
+ 
+     private long nextFrame;
+     private long beginTime;
++    private long lastTargetFps = -1;
+     private boolean finished = false;
+     private LoadRenderer loader;
+ 
+@@ -200,9 +201,12 @@ public abstract class ClientLauncher extends ApplicationCore implements Platform
+     @Override
+     public void update(){
+         int targetfps = Core.settings.getInt("fpscap", 120);
++        boolean changed = lastTargetFps != targetfps && lastTargetFps != -1;
+         boolean limitFps = targetfps > 0 && targetfps <= 240;
+ 
+-        if(limitFps){
++        lastTargetFps = targetfps;
++
++        if(limitFps && !changed){
+             nextFrame += (1000 * 1000000) / targetfps;
+         }else{
+             nextFrame = Time.nanos();

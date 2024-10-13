@@ -1,0 +1,34 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Anuken <arnukren@gmail.com>
+Date: Sat, 2 Dec 2023 20:04:34 -0500
+Subject: [PATCH] Fixed #9342
+
+(cherry picked from commit c353163c34706ce154d9254a756de91dd7ee30f0)
+---
+ core/src/mindustry/entities/comp/BuilderComp.java | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
+
+diff --git a/core/src/mindustry/entities/comp/BuilderComp.java b/core/src/mindustry/entities/comp/BuilderComp.java
+index 5b7ea1678a6a06e2c64245c363919fd32f1485d2..d08bb6af7b3ab1d0bb722ddf816583a726a2b7eb 100644
+--- a/core/src/mindustry/entities/comp/BuilderComp.java
++++ b/core/src/mindustry/entities/comp/BuilderComp.java
+@@ -105,8 +105,8 @@ abstract class BuilderComp implements Posc, Statusc, Teamc, Rotc{
+ 
+             var core = core();
+ 
+-            //nothing to build.
+-            if(buildPlan() == null) return;
++            //nothing to build, or core doesn't exist
++            if(buildPlan() == null || (core == null && !infinite)) return;
+ 
+             //find the next build plan
+             if(plans.size > 1){
+@@ -159,7 +159,7 @@ abstract class BuilderComp implements Posc, Statusc, Teamc, Rotc{
+             }
+ 
+             //if there is no core to build with or no build entity, stop building!
+-            if((core == null && !infinite) || !(tile.build instanceof ConstructBuild entity)){
++            if(!(tile.build instanceof ConstructBuild entity)){
+                 continue;
+             }
+ 

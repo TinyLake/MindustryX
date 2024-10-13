@@ -1,0 +1,108 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Darkness <79508138+Darkness6030@users.noreply.github.com>
+Date: Sat, 9 Sep 2023 22:53:24 +0300
+Subject: [PATCH] More ServerControl improvements (#9038)
+
+* More ServerControl improvements
+
+* Update server/src/mindustry/server/ServerControl.java
+
+---------
+
+Co-authored-by: Anuken <arnukren@gmail.com>
+(cherry picked from commit b0cbe06e087a0045bdd2f77fca51c7285185ea21)
+---
+ .../src/mindustry/server/ServerControl.java   | 51 +++++++++----------
+ 1 file changed, 25 insertions(+), 26 deletions(-)
+
+diff --git a/server/src/mindustry/server/ServerControl.java b/server/src/mindustry/server/ServerControl.java
+index 31e9868084756d17e31d8fcd9a3d38f730a9d79d..e3204187decb90d0c1a1f02fda1115809c3c6d17 100644
+--- a/server/src/mindustry/server/ServerControl.java
++++ b/server/src/mindustry/server/ServerControl.java
+@@ -343,7 +343,7 @@ public class ServerControl implements ApplicationListener{
+ 
+         handler.register("stop", "Stop hosting the server.", arg -> {
+             net.closeServer();
+-            if(lastTask != null) lastTask.cancel();
++            cancelPlayTask();
+             state.set(State.menu);
+             info("Stopped server.");
+         });
+@@ -354,7 +354,7 @@ public class ServerControl implements ApplicationListener{
+                 return;
+             }
+ 
+-            if(lastTask != null) lastTask.cancel();
++            cancelPlayTask();
+ 
+             Gamemode preset = Gamemode.survival;
+ 
+@@ -1063,6 +1063,13 @@ public class ServerControl implements ApplicationListener{
+         maps.setNextMapOverride(map);
+     }
+ 
++    /**
++     * Cancels the world load timer task, if it is scheduled. Can be useful for stopping a server or hosting a new game.
++     */
++    public void cancelPlayTask(){
++        if(lastTask != null) lastTask.cancel();
++    }
++
+     /**
+      * Resets the world state, starts a new game.
+      * @param run What task to run to load a new world.
+@@ -1078,38 +1085,30 @@ public class ServerControl implements ApplicationListener{
+      */
+     public void play(boolean wait, Runnable run){
+         inGameOverWait = true;
+-        if(lastTask != null) lastTask.cancel();
++        cancelPlayTask();
+         
+-        Runnable r = () -> {
+-            WorldReloader reloader = new WorldReloader();
+-
+-            reloader.begin();
++        Runnable reload = () -> {
++            try{
++                WorldReloader reloader = new WorldReloader();
++                reloader.begin();
+ 
+-            run.run();
++                run.run();
+ 
+-            state.rules = state.map.applyRules(lastMode);
+-            logic.play();
++                state.rules = state.map.applyRules(lastMode);
++                logic.play();
+ 
+-            reloader.end();
+-            inGameOverWait = false;
++                reloader.end();
++                inGameOverWait = false;
++            }catch(MapException e){
++                err("@: @", e.map.plainName(), e.getMessage());
++                net.closeServer();
++            }
+         };
+ 
+         if(wait){
+-            lastTask = new Task(){
+-                @Override
+-                public void run(){
+-                    try{
+-                        r.run();
+-                    }catch(MapException e){
+-                        err("@: @", e.map.plainName(), e.getMessage());
+-                        net.closeServer();
+-                    }
+-                }
+-            };
+-
+-            Timer.schedule(lastTask, Config.roundExtraTime.num());
++            lastTask = Timer.schedule(reload, Config.roundExtraTime.num());
+         }else{
+-            r.run();
++            reload.run();
+         }
+     }
+ 

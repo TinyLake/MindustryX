@@ -1,0 +1,22 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: way-zer <himc.wicp@gmail.com>
+Date: Thu, 28 Mar 2024 20:00:54 +0800
+Subject: [PATCH] PICK 2286b54011d1cf1bc80f104154e778d2b1581e13
+
+---
+ core/src/mindustry/ui/dialogs/PlanetDialog.java | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/core/src/mindustry/ui/dialogs/PlanetDialog.java b/core/src/mindustry/ui/dialogs/PlanetDialog.java
+index 37fce56880008df7cc68136e14ed8f2798ba9fb9..02dbfa99bc73ebf437a6ccdbb870b1fa0631f913 100644
+--- a/core/src/mindustry/ui/dialogs/PlanetDialog.java
++++ b/core/src/mindustry/ui/dialogs/PlanetDialog.java
+@@ -509,7 +509,7 @@ public class PlanetDialog extends BaseDialog implements PlanetInterfaceRenderer{
+                     sec.isAttacked() ? Fonts.getLargeIcon("warning") :
+                     !sec.hasBase() && sec.preset != null && sec.preset.unlocked() && preficon == null ?
+                     Fonts.getLargeIcon("terrain") :
+-                    sec.preset != null && sec.preset.locked() && sec.preset.techNode != null && !sec.preset.techNode.parent.content.locked() ? Fonts.getLargeIcon("lock") :
++                    sec.preset != null && sec.preset.locked() && sec.preset.techNode != null && (sec.preset.techNode.parent == null || !sec.preset.techNode.parent.content.locked()) ? Fonts.getLargeIcon("lock") :
+                     preficon;
+                 var color = sec.preset != null && !sec.hasBase() ? Team.derelict.color : Team.sharded.color;
+ 

@@ -1,0 +1,35 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Anuken <arnukren@gmail.com>
+Date: Fri, 19 Jan 2024 19:57:15 -0500
+Subject: [PATCH] Disallow diagonal placement for bridges
+
+(cherry picked from commit 367a20c8911161ac46490276dc57b38b7715b299)
+---
+ .../src/mindustry/world/blocks/distribution/DirectionBridge.java | 1 +
+ core/src/mindustry/world/blocks/distribution/ItemBridge.java     | 1 +
+ 2 files changed, 2 insertions(+)
+
+diff --git a/core/src/mindustry/world/blocks/distribution/DirectionBridge.java b/core/src/mindustry/world/blocks/distribution/DirectionBridge.java
+index 97e38584f76623663502861f13cc151c068a87e4..2c0077cc99557c80f49d0cf496c92309b31e482e 100644
+--- a/core/src/mindustry/world/blocks/distribution/DirectionBridge.java
++++ b/core/src/mindustry/world/blocks/distribution/DirectionBridge.java
+@@ -40,6 +40,7 @@ public class DirectionBridge extends Block{
+         priority = TargetPriority.transport;
+         envEnabled = Env.space | Env.terrestrial | Env.underwater;
+         drawArrow = false;
++        allowDiagonal = false;
+         regionRotated1 = 1;
+     }
+ 
+diff --git a/core/src/mindustry/world/blocks/distribution/ItemBridge.java b/core/src/mindustry/world/blocks/distribution/ItemBridge.java
+index beb3e79d02f5a271b5e4a3c9c2b70edef5d224aa..4577524eff635398f18be119caa89a63079a2f64 100644
+--- a/core/src/mindustry/world/blocks/distribution/ItemBridge.java
++++ b/core/src/mindustry/world/blocks/distribution/ItemBridge.java
+@@ -53,6 +53,7 @@ public class ItemBridge extends Block{
+         unloadable = false;
+         group = BlockGroup.transportation;
+         noUpdateDisabled = true;
++        allowDiagonal = false;
+         copyConfig = false;
+         //disabled as to not be annoying
+         allowConfigInventory = false;

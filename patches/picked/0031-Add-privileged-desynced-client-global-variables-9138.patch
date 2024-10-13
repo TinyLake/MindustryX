@@ -1,0 +1,162 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: ApsZoldat <128713348+ApsZoldat@users.noreply.github.com>
+Date: Thu, 5 Oct 2023 17:56:53 +0300
+Subject: [PATCH] Add privileged desynced client global variables (#9138)
+
+* Fix text setting in marker control
+
+* Fix marker and bridge calculation game crashes, minor marker instruction code fixes
+
+* Add privileged desynced client constant global variables
+
+* Remove broken attempt to not initialize client vars on server
+
+* Make @clientLocale variable non-constant, make @server and @client privileged
+
+(cherry picked from commit 91d87e1dba861f54fbd9715da2c6ba0dc7c61290)
+---
+ core/src/mindustry/logic/GlobalVars.java      | 39 +++++++++++++++----
+ core/src/mindustry/logic/LAssembler.java      |  2 +
+ core/src/mindustry/logic/LExecutor.java       |  2 +-
+ .../mindustry/ui/dialogs/LanguageDialog.java  |  1 +
+ 4 files changed, 35 insertions(+), 9 deletions(-)
+
+diff --git a/core/src/mindustry/logic/GlobalVars.java b/core/src/mindustry/logic/GlobalVars.java
+index a4e7d6a79a2de35715a3e0ed2dbc7da14309127d..7805db3e5f246d5bc02fcd7eac8dbbe7743bd8e8 100644
+--- a/core/src/mindustry/logic/GlobalVars.java
++++ b/core/src/mindustry/logic/GlobalVars.java
+@@ -27,10 +27,11 @@ public class GlobalVars{
+     public static final Rand rand = new Rand();
+ 
+     //non-constants that depend on state
+-    private static int varTime, varTick, varSecond, varMinute, varWave, varWaveTime, varServer, varClient;
++    private static int varTime, varTick, varSecond, varMinute, varWave, varWaveTime, varServer, varClient, varClientLocale, varClientUnit, varClientName, varClientTeam;
+ 
+     private ObjectIntMap<String> namesToIds = new ObjectIntMap<>();
+     private Seq<Var> vars = new Seq<>(Var.class);
++    private IntSet privilegedIds = new IntSet();
+     private UnlockableContent[][] logicIdToContent;
+     private int[][] contentIdToLogicId;
+ 
+@@ -56,8 +57,14 @@ public class GlobalVars{
+         varWave = put("@waveNumber", 0);
+         varWaveTime = put("@waveTime", 0);
+ 
+-        varServer = put("@server", 0);
+-        varClient = put("@client", 0);
++        varServer = put("@server", 0, true);
++        varClient = put("@client", 0, true);
++
++        //privileged desynced client variables
++        varClientLocale = put("@clientLocale", null, true);
++        varClientUnit = put("@clientUnit", null, true);
++        varClientName = put("@clientName", null, true);
++        varClientTeam = put("@clientTeam", 0, true);
+ 
+         //special enums
+         put("@ctrlProcessor", ctrlProcessor);
+@@ -154,6 +161,14 @@ public class GlobalVars{
+         //network
+         vars.items[varServer].numval = (net.server() || !net.active()) ? 1 : 0;
+         vars.items[varClient].numval = net.client() ? 1 : 0;
++
++        //client
++        if(!net.server() && player != null){
++            vars.items[varClientLocale].objval = player.locale();
++            vars.items[varClientUnit].objval = player.unit();
++            vars.items[varClientName].objval = player.name();
++            vars.items[varClientTeam].numval = player.team().id;
++        }
+     }
+ 
+     /** @return a piece of content based on its logic ID. This is not equivalent to content ID. */
+@@ -168,23 +183,26 @@ public class GlobalVars{
+         return arr != null && content.id >= 0 && content.id < arr.length ? arr[content.id] : -1;
+     }
+ 
+-    /** @return a constant ID > 0 if there is a constant with this name, otherwise -1. */
++    /** @return a constant ID > 0 if there is a constant with this name, otherwise -1.
++     * Attempt to get privileged variable id from non-privileged logic executor returns null constant id. */
+     public int get(String name){
+         return namesToIds.get(name, -1);
+     }
+ 
+-    /** @return a constant variable by ID. ID is not bound checked and must be positive. */
+-    public Var get(int id){
++    /** @return a constant variable by ID. ID is not bound checked and must be positive.
++     * Attempt to get privileged variable from non-privileged logic executor returns null constant */
++    public Var get(int id, boolean privileged){
++        if(!privileged && privilegedIds.contains(id)) return vars.get(namesToIds.get("null"));
+         return vars.items[id];
+     }
+ 
+     /** Sets a global variable by an ID returned from put(). */
+     public void set(int id, double value){
+-        get(id).numval = value;
++        get(id, true).numval = value;
+     }
+ 
+     /** Adds a constant value by name. */
+-    public int put(String name, Object value){
++    public int put(String name, Object value, boolean privileged){
+         int existingIdx = namesToIds.get(name, -1);
+         if(existingIdx != -1){ //don't overwrite existing vars (see #6910)
+             Log.debug("Failed to add global logic variable '@', as it already exists.", name);
+@@ -202,7 +220,12 @@ public class GlobalVars{
+ 
+         int index = vars.size;
+         namesToIds.put(name, index);
++        if(privileged) privilegedIds.add(index);
+         vars.add(var);
+         return index;
+     }
++
++    public int put(String name, Object value){
++        return put(name, value, false);
++    }
+ }
+diff --git a/core/src/mindustry/logic/LAssembler.java b/core/src/mindustry/logic/LAssembler.java
+index 17d0d69bb2a05c140071e3033caae5aa0a43c836..5a3bfa4aa13794d3b9c148da46351102524024a9 100644
+--- a/core/src/mindustry/logic/LAssembler.java
++++ b/core/src/mindustry/logic/LAssembler.java
+@@ -15,6 +15,7 @@ public class LAssembler{
+     private static final int invalidNum = Integer.MIN_VALUE;
+ 
+     private int lastVar;
++    private boolean privileged;
+     /** Maps names to variable IDs. */
+     public ObjectMap<String, BVar> vars = new ObjectMap<>();
+     /** All instructions to be executed. */
+@@ -35,6 +36,7 @@ public class LAssembler{
+         Seq<LStatement> st = read(data, privileged);
+ 
+         asm.instructions = st.map(l -> l.build(asm)).retainAll(l -> l != null).toArray(LInstruction.class);
++        asm.privileged = privileged;
+         return asm;
+     }
+ 
+diff --git a/core/src/mindustry/logic/LExecutor.java b/core/src/mindustry/logic/LExecutor.java
+index 3a1c0cc1fe4b73700812aee0159ca3625a925778..58a4821a19616961934d89d66d62eba7a8d63fd7 100644
+--- a/core/src/mindustry/logic/LExecutor.java
++++ b/core/src/mindustry/logic/LExecutor.java
+@@ -120,7 +120,7 @@ public class LExecutor{
+ 
+     public Var var(int index){
+         //global constants have variable IDs < 0, and they are fetched from the global constants object after being negated
+-        return index < 0 ? logicVars.get(-index) : vars[index];
++        return index < 0 ? logicVars.get(-index, privileged) : vars[index];
+     }
+ 
+     /** @return a Var from this processor, never a global constant. May be null if out of bounds. */
+diff --git a/core/src/mindustry/ui/dialogs/LanguageDialog.java b/core/src/mindustry/ui/dialogs/LanguageDialog.java
+index e4deb649d6dcb6ef44d5a0537b0e5404a5578a86..495ae5e2ce0a43505882a6c418fc4ca851152f16 100644
+--- a/core/src/mindustry/ui/dialogs/LanguageDialog.java
++++ b/core/src/mindustry/ui/dialogs/LanguageDialog.java
+@@ -78,6 +78,7 @@ public class LanguageDialog extends BaseDialog{
+                 if(getLocale().equals(loc)) return;
+                 Core.settings.put("locale", loc.toString());
+                 Log.info("Setting locale: @", loc.toString());
++                player.locale = loc.toString();
+                 ui.showInfo("@language.restart");
+             });
+             langs.add(button).group(group).update(t -> t.setChecked(loc.equals(getLocale()))).size(400f, 50f).row();

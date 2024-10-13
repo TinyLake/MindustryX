@@ -1,0 +1,34 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: way-zer <himc.wicp@gmail.com>
+Date: Thu, 4 Apr 2024 18:15:11 +0800
+Subject: [PATCH] =?UTF-8?q?fixup!=20Commands=20are=20now=20content=20?=
+ =?UTF-8?q?=E5=AF=BC=E5=87=BA=E5=9C=B0=E5=9B=BE=E4=B8=8E146=E4=B8=8D?=
+ =?UTF-8?q?=E5=85=BC=E5=AE=B9=E9=97=AE=E9=A2=98?=
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+---
+ core/src/mindustry/io/SaveVersion.java | 2 ++
+ 1 file changed, 2 insertions(+)
+
+diff --git a/core/src/mindustry/io/SaveVersion.java b/core/src/mindustry/io/SaveVersion.java
+index 3b1fcb199610736f83ae0b9afc7ab6520737c471..3c407d7998280079b6e7f86208df53330233a635 100644
+--- a/core/src/mindustry/io/SaveVersion.java
++++ b/core/src/mindustry/io/SaveVersion.java
+@@ -488,6 +488,7 @@ public abstract class SaveVersion extends SaveFileReader{
+         int mappable = 0;
+         for(Seq<Content> arr : map){
+             if(arr.size > 0 && arr.first() instanceof MappableContent){
++                if(arr.first().getContentType() == ContentType.unitCommand) continue;
+                 mappable++;
+             }
+         }
+@@ -495,6 +496,7 @@ public abstract class SaveVersion extends SaveFileReader{
+         stream.writeByte(mappable);
+         for(Seq<Content> arr : map){
+             if(arr.size > 0 && arr.first() instanceof MappableContent){
++                if(arr.first().getContentType() == ContentType.unitCommand) continue;
+                 stream.writeByte(arr.first().getContentType().ordinal());
+                 stream.writeShort(arr.size);
+                 for(Content c : arr){

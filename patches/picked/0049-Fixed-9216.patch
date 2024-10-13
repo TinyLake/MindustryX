@@ -1,0 +1,38 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Anuken <arnukren@gmail.com>
+Date: Mon, 30 Oct 2023 09:45:48 -0400
+Subject: [PATCH] Fixed #9216
+
+(cherry picked from commit db60fcd64dc9f6a7864be2cd66937aa2ae16b579)
+---
+ core/src/mindustry/ui/fragments/PlacementFragment.java | 8 ++++++--
+ 1 file changed, 6 insertions(+), 2 deletions(-)
+
+diff --git a/core/src/mindustry/ui/fragments/PlacementFragment.java b/core/src/mindustry/ui/fragments/PlacementFragment.java
+index df9dec8133a10da577c7ddffd3c5271518f8a0ac..fe1c6af61c4fbad098927b7755255498d1090ca1 100644
+--- a/core/src/mindustry/ui/fragments/PlacementFragment.java
++++ b/core/src/mindustry/ui/fragments/PlacementFragment.java
+@@ -209,17 +209,21 @@ public class PlacementFragment{
+         }
+ 
+         if(Core.input.keyTap(Binding.category_prev)){
++            int i = 0;
+             do{
+                 currentCategory = currentCategory.prev();
+-            }while(categoryEmpty[currentCategory.ordinal()]);
++                i ++;
++            }while(categoryEmpty[currentCategory.ordinal()] && i < categoryEmpty.length);
+             input.block = getSelectedBlock(currentCategory);
+             return true;
+         }
+ 
+         if(Core.input.keyTap(Binding.category_next)){
++            int i = 0;
+             do{
+                 currentCategory = currentCategory.next();
+-            }while(categoryEmpty[currentCategory.ordinal()]);
++                i ++;
++            }while(categoryEmpty[currentCategory.ordinal()] && i < categoryEmpty.length);
+             input.block = getSelectedBlock(currentCategory);
+             return true;
+         }

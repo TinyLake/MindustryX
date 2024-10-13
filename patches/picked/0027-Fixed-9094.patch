@@ -1,0 +1,23 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Anuken <arnukren@gmail.com>
+Date: Tue, 26 Sep 2023 08:30:17 -0400
+Subject: [PATCH] Fixed #9094
+
+(cherry picked from commit 0a7690a43b05fd9898b7889f81c0f8b268c0f56a)
+---
+ core/src/mindustry/ui/dialogs/PlanetDialog.java | 2 ++
+ 1 file changed, 2 insertions(+)
+
+diff --git a/core/src/mindustry/ui/dialogs/PlanetDialog.java b/core/src/mindustry/ui/dialogs/PlanetDialog.java
+index 02dbfa99bc73ebf437a6ccdbb870b1fa0631f913..16d5d9e304dacd2ae477e26d5094e6cdfc87e605 100644
+--- a/core/src/mindustry/ui/dialogs/PlanetDialog.java
++++ b/core/src/mindustry/ui/dialogs/PlanetDialog.java
+@@ -634,6 +634,8 @@ public class PlanetDialog extends BaseDialog implements PlanetInterfaceRenderer{
+                                 newPresets.clear();
+                                 state.planet = planet;
+ 
++                                selected = null;
++                                updateSelected();
+                                 rebuildExpand();
+                             }
+                             settings.put("lastplanet", planet.name);

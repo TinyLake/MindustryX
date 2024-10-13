@@ -1,0 +1,37 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Anuken <arnukren@gmail.com>
+Date: Mon, 6 Nov 2023 08:59:33 -0500
+Subject: [PATCH] Fixed #9247
+
+(cherry picked from commit c0ed5b48f7ba2c45c16c8014ffa612aca29e290e)
+---
+ core/src/mindustry/content/Blocks.java                 | 2 +-
+ core/src/mindustry/maps/generators/BasicGenerator.java | 2 +-
+ 2 files changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/core/src/mindustry/content/Blocks.java b/core/src/mindustry/content/Blocks.java
+index 2f3e16659208b65cb59289d8f5b38d8e4576fe7e..43a83c80413138caf4f07ac0fbad41878f834f8c 100644
+--- a/core/src/mindustry/content/Blocks.java
++++ b/core/src/mindustry/content/Blocks.java
+@@ -570,7 +570,7 @@ public class Blocks{
+         snowWall = new StaticWall("snow-wall");
+ 
+         duneWall = new StaticWall("dune-wall"){{
+-            basalt.asFloor().wall = darksandWater.asFloor().wall = darksandTaintedWater.asFloor().wall = this;
++            hotrock.asFloor().wall = magmarock.asFloor().wall = basalt.asFloor().wall = darksandWater.asFloor().wall = darksandTaintedWater.asFloor().wall = this;
+             attributes.set(Attribute.sand, 2f);
+         }};
+ 
+diff --git a/core/src/mindustry/maps/generators/BasicGenerator.java b/core/src/mindustry/maps/generators/BasicGenerator.java
+index e77cdde3e0e36e39a1dbd38eb8233d09a5c8cfaa..0305b1d3b0fb376a388e0177a7ead666e742986c 100644
+--- a/core/src/mindustry/maps/generators/BasicGenerator.java
++++ b/core/src/mindustry/maps/generators/BasicGenerator.java
+@@ -335,7 +335,7 @@ public abstract class BasicGenerator implements WorldGenerator{
+             ore = tile.overlay();
+             r.get(tile.x, tile.y);
+             tile.setFloor(floor.asFloor());
+-            tile.setBlock(block);
++            if(block != tile.block()) tile.setBlock(block);
+             tile.setOverlay(ore);
+         }
+     }

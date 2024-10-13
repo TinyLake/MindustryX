@@ -1,0 +1,54 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: way-zer <himc.wicp@gmail.com>
+Date: Sun, 28 Apr 2024 20:45:08 +0800
+Subject: [PATCH] PICK: Fx.arcShieldBreak
+
+---
+ core/src/mindustry/content/Fx.java            | 22 ++++++++++++++++++-
+ .../entities/abilities/ShieldArcAbility.java  |  2 +-
+ 2 files changed, 22 insertions(+), 2 deletions(-)
+
+diff --git a/core/src/mindustry/content/Fx.java b/core/src/mindustry/content/Fx.java
+index 1d1301abaf98cd4f4ca9ba60374977870ae72871..56aa57bd07ad20e0e31496056232e4474a2b1ab0 100644
+--- a/core/src/mindustry/content/Fx.java
++++ b/core/src/mindustry/content/Fx.java
+@@ -2558,5 +2558,25 @@ public class Fx{
+ 
+         stroke(data.region.height * scl);
+         line(data.region, data.a.x + ox, data.a.y + oy, data.b.x + ox, data.b.y + oy, false);
+-    }).layer(Layer.groundUnit + 5f);
++    }).layer(Layer.groundUnit + 5f),
++
++    arcShieldBreak = new Effect(40, e -> {
++        Lines.stroke(3 * e.fout(), e.color);
++        if(e.data instanceof Unit u){
++            ShieldArcAbility ab = (ShieldArcAbility)Structs.find(u.abilities, a -> a instanceof ShieldArcAbility);
++            if(ab != null){
++                Vec2 pos = Tmp.v1.set(ab.x, ab.y).rotate(u.rotation - 90f).add(u);
++                Lines.arc(pos.x, pos.y, ab.radius + ab.width / 2, ab.angle / 360f, u.rotation + ab.angleOffset - ab.angle / 2f);
++                Lines.arc(pos.x, pos.y, ab.radius - ab.width / 2, ab.angle / 360f, u.rotation + ab.angleOffset - ab.angle / 2f);
++                for(int i : Mathf.signs){
++                    float
++                    px = pos.x + Angles.trnsx(u.rotation + ab.angleOffset - ab.angle / 2f * i, ab.radius + ab.width / 2),
++                    py = pos.y + Angles.trnsy(u.rotation + ab.angleOffset - ab.angle / 2f * i, ab.radius + ab.width / 2),
++                    px1 = pos.x + Angles.trnsx(u.rotation + ab.angleOffset - ab.angle / 2f * i, ab.radius - ab.width / 2),
++                    py1 = pos.y + Angles.trnsy(u.rotation + ab.angleOffset - ab.angle / 2f * i, ab.radius - ab.width / 2);
++                    Lines.line(px, py, px1, py1);
++                }
++            }
++        }
++    }).followParent(true);
+ }
+diff --git a/core/src/mindustry/entities/abilities/ShieldArcAbility.java b/core/src/mindustry/entities/abilities/ShieldArcAbility.java
+index 2d006d3ca21259fb41af32ffa2438f10ceac7712..0d8882ab0fe92d096b719421a6e7f9b1a3753176 100644
+--- a/core/src/mindustry/entities/abilities/ShieldArcAbility.java
++++ b/core/src/mindustry/entities/abilities/ShieldArcAbility.java
+@@ -32,7 +32,7 @@ public class ShieldArcAbility extends Ability{
+             if(paramField.data <= b.damage()){
+                 paramField.data -= paramField.cooldown * paramField.regen;
+ 
+-                //TODO fx
++                Fx.arcShieldBreak.at(paramPos.x, paramPos.y, 0, paramUnit.team.color, paramUnit);
+             }
+ 
+             paramField.data -= b.damage();

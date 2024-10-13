@@ -1,0 +1,30 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Anuken <arnukren@gmail.com>
+Date: Wed, 3 Jan 2024 14:26:10 -0500
+Subject: [PATCH] Fixed #9422
+
+(cherry picked from commit 288c969f5124f5e09d2d0a4ea21456eadefa3e64)
+---
+ server/src/mindustry/server/ServerControl.java | 9 +++++++++
+ 1 file changed, 9 insertions(+)
+
+diff --git a/server/src/mindustry/server/ServerControl.java b/server/src/mindustry/server/ServerControl.java
+index e3204187decb90d0c1a1f02fda1115809c3c6d17..92f24c5b0d9608c922e51c47a09151736dae8a01 100644
+--- a/server/src/mindustry/server/ServerControl.java
++++ b/server/src/mindustry/server/ServerControl.java
+@@ -295,6 +295,15 @@ public class ServerControl implements ApplicationListener{
+             info("Server loaded. Type @ for help.", "'help'");
+         });
+ 
++        Events.on(SaveLoadEvent.class, e -> {
++            Core.app.post(() -> {
++                if(Config.autoPause.bool() && Groups.player.size() == 0){
++                    state.set(State.paused);
++                    autoPaused = true;
++                }
++            });
++        });
++
+         Events.on(PlayerJoin.class, e -> {
+             if(state.isPaused() && autoPaused && Config.autoPause.bool()){
+                 state.set(State.playing);

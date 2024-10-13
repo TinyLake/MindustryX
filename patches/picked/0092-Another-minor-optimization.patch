@@ -1,0 +1,119 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Anuken <arnukren@gmail.com>
+Date: Sat, 6 Jan 2024 12:55:59 -0500
+Subject: [PATCH] Another minor optimization
+
+(cherry picked from commit 981796a5b2e8830e2c3721990fac450b1bb009f3)
+---
+ core/src/mindustry/core/Renderer.java                   | 7 ++++---
+ core/src/mindustry/graphics/Drawf.java                  | 2 +-
+ core/src/mindustry/graphics/Pixelator.java              | 2 +-
+ core/src/mindustry/type/UnitType.java                   | 2 +-
+ core/src/mindustry/world/Block.java                     | 2 +-
+ core/src/mindustry/world/blocks/logic/MessageBlock.java | 2 +-
+ 6 files changed, 9 insertions(+), 8 deletions(-)
+
+diff --git a/core/src/mindustry/core/Renderer.java b/core/src/mindustry/core/Renderer.java
+index f78a9da907f8541197493260563a17aceedae704..7769d3be7687ac8db960bef392a144410a1cc124 100644
+--- a/core/src/mindustry/core/Renderer.java
++++ b/core/src/mindustry/core/Renderer.java
+@@ -46,7 +46,7 @@ public class Renderer implements ApplicationListener{
+     public @Nullable Bloom bloom;
+     public @Nullable FrameBuffer backgroundBuffer;
+     public FrameBuffer effectBuffer = new FrameBuffer();
+-    public boolean animateShields, drawWeather = true, drawStatus, enableEffects, drawDisplays = true, drawLight = true;
++    public boolean animateShields, drawWeather = true, drawStatus, enableEffects, drawDisplays = true, drawLight = true, pixelate = false;
+     public float weatherAlpha;
+     /** minZoom = zooming out, maxZoom = zooming in */
+     public float minZoom = 1.5f, maxZoom = 6f;
+@@ -181,6 +181,7 @@ public class Renderer implements ApplicationListener{
+         enableEffects = settings.getBool("effects");
+         drawDisplays = !settings.getBool("hidedisplays");
+         drawLight = settings.getBool("drawlight", true);
++        pixelate = Core.settings.getBool("pixelate");
+ 
+         if(landTime > 0){
+             if(!state.isPaused()){
+@@ -227,7 +228,7 @@ public class Renderer implements ApplicationListener{
+                 shakeIntensity = 0f;
+             }
+ 
+-            if(pixelator.enabled()){
++            if(renderer.pixelate){
+                 pixelator.drawPixelate();
+             }else{
+                 draw();
+@@ -318,7 +319,7 @@ public class Renderer implements ApplicationListener{
+         Events.fire(Trigger.draw);
+         MapPreviewLoader.checkPreviews();
+ 
+-        if(pixelator.enabled()){
++        if(renderer.pixelate){
+             pixelator.register();
+         }
+ 
+diff --git a/core/src/mindustry/graphics/Drawf.java b/core/src/mindustry/graphics/Drawf.java
+index 0dbf5a5b3379652bab93f58034674db49d9b2121..44cbc6b38ede0697af8af3321c342c7f117bdcbd 100644
+--- a/core/src/mindustry/graphics/Drawf.java
++++ b/core/src/mindustry/graphics/Drawf.java
+@@ -223,7 +223,7 @@ public class Drawf{
+     /** Sets Draw.z to the text layer, and returns the previous layer. */
+     public static float text(){
+         float z = Draw.z();
+-        if(renderer.pixelator.enabled()){
++        if(renderer.pixelate){
+             Draw.z(Layer.endPixeled);
+         }
+ 
+diff --git a/core/src/mindustry/graphics/Pixelator.java b/core/src/mindustry/graphics/Pixelator.java
+index 12eed4e255a7b59ee0eddc98745616f921b1a919..2c7141d0bf49604befab073b04b36a7dff7cfb23 100644
+--- a/core/src/mindustry/graphics/Pixelator.java
++++ b/core/src/mindustry/graphics/Pixelator.java
+@@ -58,7 +58,7 @@ public class Pixelator implements Disposable{
+     }
+ 
+     public boolean enabled(){
+-        return Core.settings.getBool("pixelate");
++        return renderer.pixelate;
+     }
+ 
+     @Override
+diff --git a/core/src/mindustry/type/UnitType.java b/core/src/mindustry/type/UnitType.java
+index c557afb5886396e72fa26a176e64d70c40f57d62..a96bdfec868be2fea8c1f76beeab78c8a717b9ce 100644
+--- a/core/src/mindustry/type/UnitType.java
++++ b/core/src/mindustry/type/UnitType.java
+@@ -1342,7 +1342,7 @@ public class UnitType extends UnlockableContent implements Senseable{
+             unit.y + Angles.trnsy(unit.rotation + 180f, itemOffsetY),
+             size, size);
+ 
+-            if(unit.isLocal() && !renderer.pixelator.enabled()){
++            if(unit.isLocal() && !renderer.pixelate){
+                 Fonts.outline.draw(unit.stack.amount + "",
+                 unit.x + Angles.trnsx(unit.rotation + 180f, itemOffsetY),
+                 unit.y + Angles.trnsy(unit.rotation + 180f, itemOffsetY) - 3,
+diff --git a/core/src/mindustry/world/Block.java b/core/src/mindustry/world/Block.java
+index d145709c4463bf2ab3975646917ee83d265e01ce..325f37c7b184445dfc4d75ac5e82581894dd34d9 100644
+--- a/core/src/mindustry/world/Block.java
++++ b/core/src/mindustry/world/Block.java
+@@ -434,7 +434,7 @@ public class Block extends UnlockableContent implements Senseable{
+     }
+ 
+     public float drawPlaceText(String text, int x, int y, boolean valid){
+-        if(renderer.pixelator.enabled()) return 0;
++        if(renderer.pixelate) return 0;
+ 
+         Color color = valid ? Pal.accent : Pal.remove;
+         Font font = Fonts.outline;
+diff --git a/core/src/mindustry/world/blocks/logic/MessageBlock.java b/core/src/mindustry/world/blocks/logic/MessageBlock.java
+index ecf043b3dc68fe077bd42b5f08fb1b1166dce459..f81e7d467282a416fb157ba0a6913f52b13c61db 100644
+--- a/core/src/mindustry/world/blocks/logic/MessageBlock.java
++++ b/core/src/mindustry/world/blocks/logic/MessageBlock.java
+@@ -71,7 +71,7 @@ public class MessageBlock extends Block{
+ 
+         @Override
+         public void drawSelect(){
+-            if(renderer.pixelator.enabled()) return;
++            if(renderer.pixelate) return;
+ 
+             Font font = Fonts.outline;
+             GlyphLayout l = Pools.obtain(GlyphLayout.class, GlyphLayout::new);

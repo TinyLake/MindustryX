@@ -1,0 +1,22 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Anuken <arnukren@gmail.com>
+Date: Sun, 10 Sep 2023 17:19:33 -0400
+Subject: [PATCH] Removed pointless statement
+
+(cherry picked from commit 4b6152ffe9827760b3113aab6f64e1b25f184792)
+---
+ core/src/mindustry/logic/LExecutor.java | 1 -
+ 1 file changed, 1 deletion(-)
+
+diff --git a/core/src/mindustry/logic/LExecutor.java b/core/src/mindustry/logic/LExecutor.java
+index 2e87d6c84bf85b4fb696aa2d162f5d55288c6655..a779f99086d72168334fed19a0eb32c056452114 100644
+--- a/core/src/mindustry/logic/LExecutor.java
++++ b/core/src/mindustry/logic/LExecutor.java
+@@ -427,7 +427,6 @@ public class LExecutor{
+                     case unbind -> {
+                         //TODO is this a good idea? will allocate
+                         unit.resetController();
+-                        exec.setobj(varUnit, null);
+                     }
+                     case within -> {
+                         exec.setnum(p4, unit.within(x1, y1, d1) ? 1 : 0);

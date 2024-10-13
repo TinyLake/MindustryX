@@ -1,0 +1,37 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Anuken <arnukren@gmail.com>
+Date: Fri, 29 Dec 2023 09:48:05 -0500
+Subject: [PATCH] Added launch hint for Erekir
+
+(cherry picked from commit 33178c16357ec74094c018ea43fd7e24598419e5)
+---
+ core/assets/bundles/bundle.properties              | 2 +-
+ core/src/mindustry/ui/fragments/HintsFragment.java | 2 +-
+ 2 files changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/core/assets/bundles/bundle.properties b/core/assets/bundles/bundle.properties
+index da603b4b0e7e521908ffe98150b502832f6259d0..4257887d631466ce601fadfa53da32710eabc555 100644
+--- a/core/assets/bundles/bundle.properties
++++ b/core/assets/bundles/bundle.properties
+@@ -1823,7 +1823,7 @@ hint.unitControl = Hold [accent][[L-ctrl][] and [accent]click[] to manually cont
+ hint.unitControl.mobile = [accent][[Double-tap][] to manually control friendly units or turrets.
+ hint.unitSelectControl = To control units, enter [accent]command mode[] by holding [accent]L-shift.[]\nWhile in command mode, click and drag to select units. [accent]Right-click[] a location or target to command units there.
+ hint.unitSelectControl.mobile = To control units, enter [accent]command mode[] by pressing the [accent]command[] button in the bottom left.\nWhile in command mode, long-press and drag to select units. Tap a location or target to command units there.
+-hint.launch = Once enough resources are collected, you can [accent]Launch[] by selecting nearby sectors from the \uE827 [accent]Map[] in the bottom right.
++hint.launch = Once enough resources are collected, you can [accent]Launch[] to the next sector by opening the \uE827 [accent]Map[] in the bottom right.
+ hint.launch.mobile = Once enough resources are collected, you can [accent]Launch[] by selecting nearby sectors from the \uE827 [accent]Map[] in the \uE88C [accent]Menu[].
+ hint.schematicSelect = Hold [accent][[F][] and drag to select blocks to copy and paste.\n\n[accent][[Middle Click][] to copy a single block type.
+ hint.rebuildSelect = Hold [accent][[B][] and drag to select destroyed block plans.\nThis will rebuild them automatically.
+diff --git a/core/src/mindustry/ui/fragments/HintsFragment.java b/core/src/mindustry/ui/fragments/HintsFragment.java
+index 8abd723d78a059297c3ba92b8173e4fee385258b..2595fbb0416ed145778b771b33f167b765add005 100644
+--- a/core/src/mindustry/ui/fragments/HintsFragment.java
++++ b/core/src/mindustry/ui/fragments/HintsFragment.java
+@@ -171,7 +171,7 @@ public class HintsFragment{
+         unitControl(() -> isSerpulo() && state.rules.defaultTeam.data().units.size > 2 && !net.active() && !player.dead(), () -> !player.dead() && !player.unit().spawnedByCore),
+         unitSelectControl(() -> isSerpulo() && state.rules.defaultTeam.data().units.size > 3 && !net.active() && !player.dead(), () -> control.input.commandMode && control.input.selectedUnits.size > 0),
+         respawn(visibleMobile, () -> !player.dead() && !player.unit().spawnedByCore, () -> !player.dead() && player.unit().spawnedByCore),
+-        launch(() -> isTutorial.get() && state.rules.sector.isCaptured(), () -> ui.planet.isShown()),
++        launch(() -> (isTutorial.get() || Vars.state.rules.sector == SectorPresets.onset.sector) && state.rules.sector.isCaptured(), () -> ui.planet.isShown()),
+         schematicSelect(visibleDesktop, () -> ui.hints.placedBlocks.contains(Blocks.router) || ui.hints.placedBlocks.contains(Blocks.ductRouter), () -> Core.input.keyRelease(Binding.schematic_select) || Core.input.keyTap(Binding.pick)),
+         conveyorPathfind(() -> control.input.block == Blocks.titaniumConveyor, () -> Core.input.keyRelease(Binding.diagonal_placement) || (mobile && Core.settings.getBool("swapdiagonal"))),
+         boost(visibleDesktop, () -> !player.dead() && player.unit().type.canBoost, () -> Core.input.keyDown(Binding.boost)),

@@ -1,0 +1,23 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Anuken <arnukren@gmail.com>
+Date: Sun, 15 Oct 2023 09:52:02 -0400
+Subject: [PATCH] Fixed #9166
+
+(cherry picked from commit d01294d35ce649b4a8338c14ea0e7936ff8bb065)
+---
+ core/src/mindustry/ui/fragments/HudFragment.java | 2 ++
+ 1 file changed, 2 insertions(+)
+
+diff --git a/core/src/mindustry/ui/fragments/HudFragment.java b/core/src/mindustry/ui/fragments/HudFragment.java
+index b4568679dbc512db993b2384da329e2731230d69..b97b59f1b179833947a7a3ba485a4a2f8a902873 100644
+--- a/core/src/mindustry/ui/fragments/HudFragment.java
++++ b/core/src/mindustry/ui/fragments/HudFragment.java
+@@ -917,6 +917,8 @@ public class HudFragment{
+                     }
+ 
+                     statuses.set(applied);
++                }else{
++                    statuses.clear();
+                 }
+             }
+         }).left();

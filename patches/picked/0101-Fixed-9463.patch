@@ -1,0 +1,54 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Anuken <arnukren@gmail.com>
+Date: Wed, 17 Jan 2024 08:51:18 -0500
+Subject: [PATCH] Fixed #9463
+
+(cherry picked from commit 22b1639b6f9809bad740de026c6c05759dab623e)
+---
+ core/src/mindustry/audio/SoundControl.java | 10 ++++++++--
+ 1 file changed, 8 insertions(+), 2 deletions(-)
+
+diff --git a/core/src/mindustry/audio/SoundControl.java b/core/src/mindustry/audio/SoundControl.java
+index 93f8fda115db93c22b5f3963b2e8cea9b389016c..60ba6535564302dc9fb0b918b671d4385fd81e67 100644
+--- a/core/src/mindustry/audio/SoundControl.java
++++ b/core/src/mindustry/audio/SoundControl.java
+@@ -17,7 +17,7 @@ import static mindustry.Vars.*;
+ 
+ /** Controls playback of multiple audio tracks.*/
+ public class SoundControl{
+-    public float finTime = 120f, foutTime = 120f, musicInterval = 3f * Time.toMinutes, musicChance = 0.6f, musicWaveChance = 0.46f;
++    public float finTime = 120f, foutTime = 120f, musicInterval = 3f * Time.toMinutes, musicChance = 0.8f, musicWaveChance = 0.46f;
+ 
+     /** normal, ambient music, plays at any time */
+     public Seq<Music> ambientMusic = Seq.with();
+@@ -28,6 +28,7 @@ public class SoundControl{
+ 
+     protected Music lastRandomPlayed;
+     protected Interval timer = new Interval(4);
++    protected long lastPlayed;
+     protected @Nullable Music current;
+     protected float fade;
+     protected boolean silenced;
+@@ -55,6 +56,10 @@ public class SoundControl{
+         }));
+ 
+         setupFilters();
++
++        Events.on(ResetEvent.class, e -> {
++            lastPlayed = Time.millis();
++        });
+     }
+ 
+     protected void setupFilters(){
+@@ -160,9 +165,10 @@ public class SoundControl{
+             silence();
+ 
+             //play music at intervals
+-            if(timer.get(musicInterval)){
++            if(Time.timeSinceMillis(lastPlayed) > 1000 * musicInterval / 60f){
+                 //chance to play it per interval
+                 if(Mathf.chance(musicChance)){
++                    lastPlayed = Time.millis();
+                     playRandom();
+                 }
+             }

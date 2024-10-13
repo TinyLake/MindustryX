@@ -1,0 +1,42 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: way-zer <himc.wicp@gmail.com>
+Date: Sun, 31 Mar 2024 11:30:40 +0800
+Subject: [PATCH] =?UTF-8?q?fixup!=20Optimize=20`wait`/`message`=20(#9086)?=
+ =?UTF-8?q?=20=E4=B8=B4=E6=97=B6=E5=85=BC=E5=AE=B9146?=
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+---
+ core/src/mindustry/logic/LExecutor.java   | 4 ++++
+ core/src/mindustry/logic/LStatements.java | 2 +-
+ 2 files changed, 5 insertions(+), 1 deletion(-)
+
+diff --git a/core/src/mindustry/logic/LExecutor.java b/core/src/mindustry/logic/LExecutor.java
+index f4d08e44c7318fade4b299ba729df12d1af71d6b..697517800ce584175b9d4bbc4f1e229a776fc9c8 100644
+--- a/core/src/mindustry/logic/LExecutor.java
++++ b/core/src/mindustry/logic/LExecutor.java
+@@ -1568,6 +1568,10 @@ public class LExecutor{
+             ){
+                 //set outSuccess=false to let user retry.
+                 exec.setnum(outSuccess, 0);
++                if(exec.var(outSuccess).name.equals("@wait")){
++                    exec.var(varCounter).numval--;
++                    exec.yield = true;
++                }
+                 return;
+             }
+ 
+diff --git a/core/src/mindustry/logic/LStatements.java b/core/src/mindustry/logic/LStatements.java
+index 3cf94e7dcda505af2fa182a1dcbc96c118691ce1..42075a3ed8b04a7436601d8e52dc04811a7cdd76 100644
+--- a/core/src/mindustry/logic/LStatements.java
++++ b/core/src/mindustry/logic/LStatements.java
+@@ -1424,7 +1424,7 @@ public class LStatements{
+     @RegisterStatement("message")
+     public static class FlushMessageStatement extends LStatement{
+         public MessageType type = MessageType.announce;
+-        public String duration = "3", outSuccess = "success";
++        public String duration = "3", outSuccess = "@wait";
+ 
+         @Override
+         public void build(Table table){

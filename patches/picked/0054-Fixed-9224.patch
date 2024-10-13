@@ -1,0 +1,82 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Anuken <arnukren@gmail.com>
+Date: Fri, 3 Nov 2023 18:56:02 -0400
+Subject: [PATCH] Fixed #9224
+
+(cherry picked from commit 2aaa86175505814eb84006474bc6fa91328840f7)
+---
+ core/src/mindustry/input/DesktopInput.java |  2 +-
+ core/src/mindustry/input/InputHandler.java | 29 ++++++++++++++--------
+ 2 files changed, 19 insertions(+), 12 deletions(-)
+
+diff --git a/core/src/mindustry/input/DesktopInput.java b/core/src/mindustry/input/DesktopInput.java
+index 6d623a77a879ec2cbe74c79a3de31cd06f130416..2dfd03352c965a11af6c6f2bf451a72e4a1ffede 100644
+--- a/core/src/mindustry/input/DesktopInput.java
++++ b/core/src/mindustry/input/DesktopInput.java
+@@ -113,7 +113,7 @@ public class DesktopInput extends InputHandler{
+ 
+         //draw break selection
+         if(mode == breaking){
+-            drawBreakSelection(selectX, selectY, cursorX, cursorY, !Core.input.keyDown(Binding.schematic_select) ? maxLength : Vars.maxSchematicSize);
++            drawBreakSelection(selectX, selectY, cursorX, cursorY, !Core.input.keyDown(Binding.schematic_select) ? maxLength : Vars.maxSchematicSize, false);
+         }
+ 
+         if(!Core.scene.hasKeyboard() && mode != breaking){
+diff --git a/core/src/mindustry/input/InputHandler.java b/core/src/mindustry/input/InputHandler.java
+index 41fa291e9aaeecd87b5d2e9e610c561c88ff2acd..5239bfa91cba34580455ea2e1b6775212cdd9345 100644
+--- a/core/src/mindustry/input/InputHandler.java
++++ b/core/src/mindustry/input/InputHandler.java
+@@ -1167,6 +1167,10 @@ public abstract class InputHandler implements InputProcessor, GestureListener{
+     }
+ 
+     protected void drawBreakSelection(int x1, int y1, int x2, int y2, int maxLength){
++        drawBreakSelection(x1, y1, x2, y2, maxLength, true);
++    }
++
++    protected void drawBreakSelection(int x1, int y1, int x2, int y2, int maxLength, boolean useSelectPlans){
+         NormalizeDrawResult result = Placement.normalizeDrawArea(Blocks.air, x1, y1, x2, y2, false, maxLength, 1f);
+         NormalizeResult dresult = Placement.normalizeArea(x1, y1, x2, y2, rotation, false, maxLength);
+ 
+@@ -1185,16 +1189,16 @@ public abstract class InputHandler implements InputProcessor, GestureListener{
+         Lines.stroke(1f);
+ 
+         for(var plan : player.unit().plans()){
+-            if(plan.breaking) continue;
+-            if(plan.bounds(Tmp.r2).overlaps(Tmp.r1)){
++            if(!plan.breaking && plan.bounds(Tmp.r2).overlaps(Tmp.r1)){
+                 drawBreaking(plan);
+             }
+         }
+ 
+-        for(var plan : selectPlans){
+-            if(plan.breaking) continue;
+-            if(plan.bounds(Tmp.r2).overlaps(Tmp.r1)){
+-                drawBreaking(plan);
++        if(useSelectPlans){
++            for(var plan : selectPlans){
++                if(!plan.breaking && plan.bounds(Tmp.r2).overlaps(Tmp.r1)){
++                    drawBreaking(plan);
++                }
+             }
+         }
+ 
+@@ -1356,11 +1360,14 @@ public abstract class InputHandler implements InputProcessor, GestureListener{
+             }
+         }
+ 
+-        it = selectPlans.iterator();
+-        while(it.hasNext()){
+-            var plan = it.next();
+-            if(!plan.breaking && plan.bounds(Tmp.r2).overlaps(Tmp.r1)){
+-                it.remove();
++        //don't remove plans on desktop, where flushing is false
++        if(flush){
++            it = selectPlans.iterator();
++            while(it.hasNext()){
++                var plan = it.next();
++                if(!plan.breaking && plan.bounds(Tmp.r2).overlaps(Tmp.r1)){
++                    it.remove();
++                }
+             }
+         }
+ 

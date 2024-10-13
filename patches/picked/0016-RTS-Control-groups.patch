@@ -1,0 +1,292 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Anuken <arnukren@gmail.com>
+Date: Wed, 20 Sep 2023 11:48:40 +0800
+Subject: [PATCH] RTS Control groups
+
+(cherry picked from commit aecd220574089f02a57c3637c8ec5de40775d72a)
+---
+ core/assets/bundles/bundle.properties         |  3 +
+ core/src/mindustry/input/Binding.java         |  1 +
+ core/src/mindustry/input/DesktopInput.java    | 97 ++++++++++++++++---
+ core/src/mindustry/input/InputHandler.java    | 15 +++
+ core/src/mindustry/io/SaveVersion.java        | 13 ++-
+ .../ui/dialogs/SettingsMenuDialog.java        |  1 +
+ .../ui/fragments/PlacementFragment.java       |  4 +-
+ 7 files changed, 118 insertions(+), 16 deletions(-)
+
+diff --git a/core/assets/bundles/bundle.properties b/core/assets/bundles/bundle.properties
+index c136d247455cd7469ccf9ab454f0041843e9aaad..c2bf1fe1006f200e8576320c865f9a0660f9e50d 100644
+--- a/core/assets/bundles/bundle.properties
++++ b/core/assets/bundles/bundle.properties
+@@ -1068,6 +1068,7 @@ setting.backgroundpause.name = Pause In Background
+ setting.buildautopause.name = Auto-Pause Building
+ setting.doubletapmine.name = Double-Tap to Mine
+ setting.commandmodehold.name = Hold For Command Mode
++setting.distinctcontrolgroups.name = Limit One Control Group Per Unit 
+ setting.modcrashdisable.name = Disable Mods On Startup Crash
+ setting.animatedwater.name = Animated Surfaces
+ setting.animatedshields.name = Animated Shields
+@@ -1158,6 +1159,8 @@ keybind.mouse_move.name = Follow Mouse
+ keybind.pan.name = Pan View
+ keybind.boost.name = Boost
+ keybind.command_mode.name = Command Mode
++keybind.command_queue.name = Queue Unit Command
++keybind.create_control_group.name = Create Control Group
+ keybind.rebuild_select.name = Rebuild Region
+ keybind.schematic_select.name = Select Region
+ keybind.schematic_menu.name = Schematic Menu
+diff --git a/core/src/mindustry/input/Binding.java b/core/src/mindustry/input/Binding.java
+index 89d8fde1b780f925de8e02401a82ffa4ae88e867..eaa2b95c35950f3b0fde623a5e1b0cef93b9da93 100644
+--- a/core/src/mindustry/input/Binding.java
++++ b/core/src/mindustry/input/Binding.java
+@@ -13,6 +13,7 @@ public enum Binding implements KeyBind{
+ 
+     boost(KeyCode.shiftLeft),
+     command_mode(KeyCode.shiftLeft),
++    create_control_group(KeyCode.controlLeft),
+     control(KeyCode.controlLeft),
+     respawn(KeyCode.v),
+     select(KeyCode.mouseLeft),
+diff --git a/core/src/mindustry/input/DesktopInput.java b/core/src/mindustry/input/DesktopInput.java
+index 4ff1c27b24210514837b861779aafe05739d581b..6d623a77a879ec2cbe74c79a3de31cd06f130416 100644
+--- a/core/src/mindustry/input/DesktopInput.java
++++ b/core/src/mindustry/input/DesktopInput.java
+@@ -10,6 +10,7 @@ import arc.math.*;
+ import arc.math.geom.*;
+ import arc.scene.*;
+ import arc.scene.ui.layout.*;
++import arc.struct.*;
+ import arc.util.*;
+ import mindustry.*;
+ import mindustry.core.*;
+@@ -21,6 +22,7 @@ import mindustry.graphics.*;
+ import mindustry.ui.*;
+ import mindustry.world.*;
+ 
++import static arc.Core.camera;
+ import static arc.Core.*;
+ import static mindustry.Vars.*;
+ import static mindustry.input.PlaceMode.*;
+@@ -48,6 +50,11 @@ public class DesktopInput extends InputHandler{
+     /** Previously selected tile. */
+     public Tile prevSelected;
+ 
++    /** Most recently selected control group by index */
++    public int lastCtrlGroup;
++    /** Time of most recent control group selection */
++    public long lastCtrlGroupSelectMillis;
++
+     boolean showHint(){
+         return ui.hudfrag.shown && Core.settings.getBool("hints") && selectPlans.isEmpty() &&
+             (!isBuilding && !Core.settings.getBool("buildautopause") || player.unit().isBuilding() || !player.dead() && !player.unit().spawnedByCore());
+@@ -261,22 +268,86 @@ public class DesktopInput extends InputHandler{
+         //validate commanding units
+         selectedUnits.removeAll(u -> !u.isCommandable() || !u.isValid());
+ 
+-        if(commandMode && input.keyTap(Binding.select_all_units) && !scene.hasField() && !scene.hasDialog()){
+-            selectedUnits.clear();
+-            commandBuildings.clear();
+-            for(var unit : player.team().data().units){
+-                if(unit.isCommandable()){
+-                    selectedUnits.add(unit);
++        if(commandMode && !scene.hasField() && !scene.hasDialog()){
++            if(input.keyTap(Binding.select_all_units)){
++                selectedUnits.clear();
++                commandBuildings.clear();
++                for(var unit : player.team().data().units){
++                    if(unit.isCommandable()){
++                        selectedUnits.add(unit);
++                    }
+                 }
+             }
+-        }
+ 
+-        if(commandMode && input.keyTap(Binding.select_all_unit_factories) && !scene.hasField() && !scene.hasDialog()){
+-            selectedUnits.clear();
+-            commandBuildings.clear();
+-            for(var build : player.team().data().buildings){
+-                if(build.block.commandable){
+-                    commandBuildings.add(build);
++            if(input.keyTap(Binding.select_all_unit_factories)){
++                selectedUnits.clear();
++                commandBuildings.clear();
++                for(var build : player.team().data().buildings){
++                    if(build.block.commandable){
++                        commandBuildings.add(build);
++                    }
++                }
++            }
++
++            for(int i = 0; i < controlGroupBindings.length; i++){
++                if(input.keyTap(controlGroupBindings[i])){
++
++                    //create control group if it doesn't exist yet
++                    if(controlGroups[i] == null) controlGroups[i] = new IntSeq();
++
++                    IntSeq group = controlGroups[i];
++                    boolean creating = input.keyDown(Binding.create_control_group);
++
++                    //clear existing if making a new control group
++                    //if any of the control group edit buttons are pressed take the current selection
++                    if(creating){
++                        group.clear();
++
++                        IntSeq selectedUnitIds = selectedUnits.mapInt(u -> u.id);
++                        if(Core.settings.getBool("distinctcontrolgroups", true)){
++                            for(IntSeq cg : controlGroups){
++                                if(cg != null){
++                                    cg.removeAll(selectedUnitIds);
++                                }
++                            }
++                        }
++                        group.addAll(selectedUnitIds);
++                    }
++
++                    //remove invalid units
++                    for(int j = 0; j < group.size; j++){
++                        Unit u = Groups.unit.getByID(group.get(j));
++                        if(u == null || !u.isCommandable() || !u.isValid()){
++                            group.removeIndex(j);
++                            j --;
++                        }
++                    }
++
++                    //replace the selected units with the current control group
++                    if(!group.isEmpty() && !creating){
++                        selectedUnits.clear();
++                        commandBuildings.clear();
++
++                        group.each(id -> {
++                            var unit = Groups.unit.getByID(id);
++                            if(unit != null){
++                                selectedUnits.addAll(unit);
++                            }
++                        });
++
++                        //double tap to center camera
++                        if(lastCtrlGroup == i && Time.timeSinceMillis(lastCtrlGroupSelectMillis) < 400){
++                            float totalX = 0, totalY = 0;
++                            for(Unit unit : selectedUnits){
++                                totalX += unit.x;
++                                totalY += unit.y;
++                            }
++                            panning = true;
++                            Core.camera.position.set(totalX / selectedUnits.size, totalY / selectedUnits.size);
++                        }
++                        lastCtrlGroup = i;
++                        lastCtrlGroupSelectMillis = Time.millis();
++                    }
+                 }
+             }
+         }
+diff --git a/core/src/mindustry/input/InputHandler.java b/core/src/mindustry/input/InputHandler.java
+index 5ee28a1cc15d4f600ed75ca019f45217646cdae2..41fa291e9aaeecd87b5d2e9e610c561c88ff2acd 100644
+--- a/core/src/mindustry/input/InputHandler.java
++++ b/core/src/mindustry/input/InputHandler.java
+@@ -53,6 +53,18 @@ public abstract class InputHandler implements InputProcessor, GestureListener{
+     final static int maxLength = 100;
+     final static Rect r1 = new Rect(), r2 = new Rect();
+     final static Seq<Unit> tmpUnits = new Seq<>(false);
++    final static Binding[] controlGroupBindings = {
++    Binding.block_select_01,
++    Binding.block_select_02,
++    Binding.block_select_03,
++    Binding.block_select_04,
++    Binding.block_select_05,
++    Binding.block_select_06,
++    Binding.block_select_07,
++    Binding.block_select_08,
++    Binding.block_select_09,
++    Binding.block_select_10
++    };
+ 
+     /** If true, there is a cutscene currently occurring in logic. */
+     public boolean logicCutscene;
+@@ -87,6 +99,8 @@ public abstract class InputHandler implements InputProcessor, GestureListener{
+     public boolean commandRect = false;
+     public boolean tappedOne = false;
+     public float commandRectX, commandRectY;
++    /** Groups of units saved to different hotkeys */
++    public IntSeq[] controlGroups = new IntSeq[controlGroupBindings.length];
+ 
+     private Seq<BuildPlan> plansOut = new Seq<>(BuildPlan.class);
+     private QuadTree<BuildPlan> playerPlanTree = new QuadTree<>(new Rect());
+@@ -124,6 +138,7 @@ public abstract class InputHandler implements InputProcessor, GestureListener{
+ 
+         Events.on(ResetEvent.class, e -> {
+             logicCutscene = false;
++            Arrays.fill(controlGroups, null);
+         });
+     }
+ 
+diff --git a/core/src/mindustry/io/SaveVersion.java b/core/src/mindustry/io/SaveVersion.java
+index a07fdf6579fba4011e85297b4f75d8c5f4853b5a..3b1fcb199610736f83ae0b9afc7ab6520737c471 100644
+--- a/core/src/mindustry/io/SaveVersion.java
++++ b/core/src/mindustry/io/SaveVersion.java
+@@ -124,7 +124,10 @@ public abstract class SaveVersion extends SaveFileReader{
+             node.save();
+         }
+ 
+-        writeStringMap(stream, StringMap.of(
++        StringMap result = new StringMap();
++        result.putAll(tags);
++
++        writeStringMap(stream, result.merge(StringMap.of(
+             "saved", Time.millis(),
+             "playtime", headless ? 0 : control.saves.getTotalPlaytime(),
+             "build", Version.build,
+@@ -135,13 +138,14 @@ public abstract class SaveVersion extends SaveFileReader{
+             "stats", JsonIO.write(state.stats),
+             "rules", JsonIO.write(state.rules),
+             "mods", JsonIO.write(mods.getModStrings().toArray(String.class)),
++            "controlGroups", headless || control == null ? "null" : JsonIO.write(control.input.controlGroups),
+             "width", world.width(),
+             "height", world.height(),
+             "viewpos", Tmp.v1.set(player == null ? Vec2.ZERO : player).toString(),
+             "controlledType", headless || control.input.controlledType == null ? "null" : control.input.controlledType.name,
+             "nocores", state.rules.defaultTeam.cores().isEmpty(),
+             "playerteam", player == null ? state.rules.defaultTeam.id : player.team().id
+-        ).merge(tags));
++        )));
+     }
+ 
+     public void readMeta(DataInput stream, WorldContext context) throws IOException{
+@@ -177,6 +181,11 @@ public abstract class SaveVersion extends SaveFileReader{
+             if(!net.client() && team != Team.derelict){
+                 player.team(team);
+             }
++
++            var groups = JsonIO.read(IntSeq[].class, map.get("controlGroups", "null"));
++            if(groups != null && groups.length == control.input.controlGroups.length){
++                control.input.controlGroups = groups;
++            }
+         }
+ 
+         Map worldmap = maps.byName(map.get("mapname", "\\\\\\"));
+diff --git a/core/src/mindustry/ui/dialogs/SettingsMenuDialog.java b/core/src/mindustry/ui/dialogs/SettingsMenuDialog.java
+index 2a0cc3ededee50ebe4067e128e9585b78233b21d..8450dfc699ee79aa25f8e96119da50fcea1b90f9 100644
+--- a/core/src/mindustry/ui/dialogs/SettingsMenuDialog.java
++++ b/core/src/mindustry/ui/dialogs/SettingsMenuDialog.java
+@@ -341,6 +341,7 @@ public class SettingsMenuDialog extends BaseDialog{
+         if(!mobile){
+             game.checkPref("backgroundpause", true);
+             game.checkPref("buildautopause", false);
++            game.checkPref("distinctcontrolgroups", true);
+         }
+ 
+         game.checkPref("doubletapmine", false);
+diff --git a/core/src/mindustry/ui/fragments/PlacementFragment.java b/core/src/mindustry/ui/fragments/PlacementFragment.java
+index 87b7d61cf08d3f484eebbc64efc11d5b2436667d..7c0ed867b6e9afddb039fb0c0affc81683ca0e24 100644
+--- a/core/src/mindustry/ui/fragments/PlacementFragment.java
++++ b/core/src/mindustry/ui/fragments/PlacementFragment.java
+@@ -611,7 +611,9 @@ public class PlacementFragment{
+ 
+                 rebuildCategory.run();
+                 frame.update(() -> {
+-                    if(gridUpdate(control.input)) rebuildCategory.run();
++                    if(!control.input.commandMode && gridUpdate(control.input)){
++                        rebuildCategory.run();
++                    }
+                 });
+             });
+         });

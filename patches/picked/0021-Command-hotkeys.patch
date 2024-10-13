@@ -1,0 +1,69 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Anuken <arnukren@gmail.com>
+Date: Sat, 23 Sep 2023 23:03:15 +0800
+Subject: [PATCH] Command hotkeys
+
+(cherry picked from commit 2286b54011d1cf1bc80f104154e778d2b1581e13)
+---
+ core/src/mindustry/input/Binding.java         | 10 ++++++++++
+ .../ui/fragments/PlacementFragment.java       | 19 +++++++++++++++++++
+ 2 files changed, 29 insertions(+)
+
+diff --git a/core/src/mindustry/input/Binding.java b/core/src/mindustry/input/Binding.java
+index eaa2b95c35950f3b0fde623a5e1b0cef93b9da93..00aeb78ba97ac73f816d2b2b5158d995e88f2092 100644
+--- a/core/src/mindustry/input/Binding.java
++++ b/core/src/mindustry/input/Binding.java
+@@ -39,6 +39,16 @@ public enum Binding implements KeyBind{
+     schematic_flip_y(KeyCode.x),
+     schematic_menu(KeyCode.t),
+ 
++    unit_command_1(KeyCode.unset),
++    unit_command_2(KeyCode.unset),
++    unit_command_3(KeyCode.unset),
++    unit_command_4(KeyCode.unset),
++    unit_command_5(KeyCode.unset),
++    unit_command_6(KeyCode.unset),
++    unit_command_7(KeyCode.unset),
++    unit_command_8(KeyCode.unset),
++    unit_command_9(KeyCode.unset),
++
+     category_prev(KeyCode.comma, "blocks"),
+     category_next(KeyCode.period),
+ 
+diff --git a/core/src/mindustry/ui/fragments/PlacementFragment.java b/core/src/mindustry/ui/fragments/PlacementFragment.java
+index 7c0ed867b6e9afddb039fb0c0affc81683ca0e24..419bc9b766605f0ddeed9ed43e7f9fb8d1304a5f 100644
+--- a/core/src/mindustry/ui/fragments/PlacementFragment.java
++++ b/core/src/mindustry/ui/fragments/PlacementFragment.java
+@@ -69,6 +69,18 @@ public class PlacementFragment{
+         Binding.block_select_down
+     };
+ 
++    Binding[] commandBindings = {
++        Binding.unit_command_1,
++        Binding.unit_command_2,
++        Binding.unit_command_3,
++        Binding.unit_command_4,
++        Binding.unit_command_5,
++        Binding.unit_command_6,
++        Binding.unit_command_7,
++        Binding.unit_command_8,
++        Binding.unit_command_9,
++    };
++
+     public PlacementFragment(){
+         Events.on(WorldLoadEvent.class, event -> {
+             Core.app.post(() -> {
+@@ -540,6 +552,13 @@ public class PlacementFragment{
+                                 curCount[0] = size;
+                                 rebuildCommand.run();
+                             }
++
++                            for(int i = 0; i < Math.min(commandBindings.length, commands.size); i++){
++                                //first stance must always be the stop stance
++                                if(Core.input.keyTap(commandBindings[i])){
++                                    Call.setUnitCommand(player, control.input.selectedUnits.mapInt(un -> un.id).toArray(), commands.get(i));
++                                }
++                            }
+                         });
+                         rebuildCommand.run();
+                     }).grow();

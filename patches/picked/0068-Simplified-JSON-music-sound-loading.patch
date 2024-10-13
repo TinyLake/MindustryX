@@ -1,0 +1,49 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Anuken <arnukren@gmail.com>
+Date: Fri, 1 Dec 2023 03:19:30 +0800
+Subject: [PATCH] Simplified JSON music/sound loading
+
+(cherry picked from commit ed96b2eec8d52f5d3851cd8561df11ea013542c0)
+---
+ core/src/mindustry/mod/ContentParser.java | 21 ++++++++-------------
+ 1 file changed, 8 insertions(+), 13 deletions(-)
+
+diff --git a/core/src/mindustry/mod/ContentParser.java b/core/src/mindustry/mod/ContentParser.java
+index da07917aed24feafeb2c020361e55c54f9b4dd2d..34b29b1c4143e1a66157ac3d359e62c3f65744ac 100644
+--- a/core/src/mindustry/mod/ContentParser.java
++++ b/core/src/mindustry/mod/ContentParser.java
+@@ -58,7 +58,6 @@ public class ContentParser{
+     private static final boolean ignoreUnknownFields = true;
+     ObjectMap<Class<?>, ContentType> contentTypes = new ObjectMap<>();
+     ObjectSet<Class<?>> implicitNullable = ObjectSet.with(TextureRegion.class, TextureRegion[].class, TextureRegion[][].class, TextureRegion[][][].class);
+-    ObjectMap<String, AssetDescriptor<?>> sounds = new ObjectMap<>();
+     Seq<ParseListener> listeners = new Seq<>();
+ 
+     ObjectMap<Class<?>, FieldParser> classParsers = new ObjectMap<>(){{
+@@ -257,18 +256,14 @@ public class ContentParser{
+             return new Vec3(data.getFloat("x", 0f), data.getFloat("y", 0f), data.getFloat("z", 0f));
+         });
+         put(Sound.class, (type, data) -> {
+-            if(fieldOpt(Sounds.class, data) != null) return fieldOpt(Sounds.class, data);
+-            if(Vars.headless) return new Sound();
+-
+-            String name = "sounds/" + data.asString();
+-            String path = Vars.tree.get(name + ".ogg").exists() ? name + ".ogg" : name + ".mp3";
+-
+-            if(sounds.containsKey(path)) return ((SoundParameter)sounds.get(path).params).sound;
+-            var sound = new Sound();
+-            AssetDescriptor<?> desc = Core.assets.load(path, Sound.class, new SoundParameter(sound));
+-            desc.errored = Throwable::printStackTrace;
+-            sounds.put(path, desc);
+-            return sound;
++            var field = fieldOpt(Sounds.class, data);
++
++            return field != null ? field : Vars.tree.loadSound(data.asString());
++        });
++        put(Music.class, (type, data) -> {
++            var field = fieldOpt(Musics.class, data);
++
++            return field != null ? field : Vars.tree.loadMusic(data.asString());
+         });
+         put(Objectives.Objective.class, (type, data) -> {
+             if(data.isString()){

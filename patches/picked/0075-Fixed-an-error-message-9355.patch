@@ -1,0 +1,23 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: CamoGekko <142858559+CamoGekko@users.noreply.github.com>
+Date: Thu, 7 Dec 2023 11:38:12 -0600
+Subject: [PATCH] Fixed an error message (#9355)
+
+(cherry picked from commit dd5dfa6a9734bb459a59e1022fc3ace93685a424)
+---
+ core/src/mindustry/type/UnitType.java | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/core/src/mindustry/type/UnitType.java b/core/src/mindustry/type/UnitType.java
+index c44769f4d5a4fd8f7feb6d53fe41d9eb856e708d..d3a0b9d0de1b175863023486f26233b82c6d3f8a 100644
+--- a/core/src/mindustry/type/UnitType.java
++++ b/core/src/mindustry/type/UnitType.java
+@@ -933,7 +933,7 @@ public class UnitType extends UnlockableContent implements Senseable{
+     public void createIcons(MultiPacker packer){
+         super.createIcons(packer);
+ 
+-        if(constructor == null) throw new IllegalArgumentException("No constructor set up for unit '" + name + "'. Make sure you assign a valid value to `constructor`, e.g. `constructor = UnitEntity::new`");
++        if(constructor == null) throw new IllegalArgumentException("No constructor set up for unit '" + name + "', add this argument to your units field: `constructor = UnitEntity::create`");
+ 
+         sample = constructor.get();
+ 

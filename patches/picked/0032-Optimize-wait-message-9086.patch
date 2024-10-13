@@ -1,0 +1,143 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: WayZer <himc.wicp@gmail.com>
+Date: Sat, 7 Oct 2023 01:20:53 +0800
+Subject: [PATCH] Optimize `wait`/`message` (#9086)
+
+* add `IExecutor.yield` to optimize `wait`
+
+* add MessageType.label. and add outSuccess
+
+* remove `MessageType.label` in support `marks`
+
+* amend
+
+* amend
+
+(cherry picked from commit 84dc5550ab647bba578ee70ef111182c11ea7047)
+---
+ core/src/mindustry/logic/LExecutor.java       | 20 +++++++++++++------
+ core/src/mindustry/logic/LStatements.java     |  8 +++++---
+ .../world/blocks/logic/LogicBlock.java        |  4 ++++
+ 3 files changed, 23 insertions(+), 9 deletions(-)
+
+diff --git a/core/src/mindustry/logic/LExecutor.java b/core/src/mindustry/logic/LExecutor.java
+index 58a4821a19616961934d89d66d62eba7a8d63fd7..f4d08e44c7318fade4b299ba729df12d1af71d6b 100644
+--- a/core/src/mindustry/logic/LExecutor.java
++++ b/core/src/mindustry/logic/LExecutor.java
+@@ -48,6 +48,7 @@ public class LExecutor{
+     public Var[] vars = {};
+     public Var counter;
+     public int[] binds;
++    public boolean yield;
+ 
+     public int iptIndex = -1;
+     public LongSeq graphicsBuffer = new LongSeq();
+@@ -1127,6 +1128,7 @@ public class LExecutor{
+             }else{
+                 //skip back to self.
+                 exec.var(varCounter).numval --;
++                exec.yield = true;
+             }
+ 
+             if(state.updateId != frameId){
+@@ -1142,6 +1144,7 @@ public class LExecutor{
+         public void run(LExecutor exec){
+             //skip back to self.
+             exec.var(varCounter).numval --;
++            exec.yield = true;
+         }
+     }
+ 
+@@ -1538,11 +1541,12 @@ public class LExecutor{
+ 
+     public static class FlushMessageI implements LInstruction{
+         public MessageType type = MessageType.announce;
+-        public int duration;
++        public int duration, outSuccess;
+ 
+-        public FlushMessageI(MessageType type, int duration){
++        public FlushMessageI(MessageType type, int duration, int outSuccess){
+             this.type = type;
+             this.duration = duration;
++            this.outSuccess = outSuccess;
+         }
+ 
+         public FlushMessageI(){
+@@ -1550,16 +1554,20 @@ public class LExecutor{
+ 
+         @Override
+         public void run(LExecutor exec){
+-            if(headless && type != MessageType.mission) return;
++            //set default to succes
++            exec.setnum(outSuccess, 1);
++            if(headless && type != MessageType.mission) {
++                exec.textBuffer.setLength(0);
++                return;
++            }
+ 
+-            //skip back to self until possible
+-            //TODO this is guaranteed desync on servers - I don't see a good solution
+             if(
+                 type == MessageType.announce && ui.hasAnnouncement() ||
+                 type == MessageType.notify && ui.hudfrag.hasToast() ||
+                 type == MessageType.toast && ui.hasAnnouncement()
+             ){
+-                exec.var(varCounter).numval --;
++                //set outSuccess=false to let user retry.
++                exec.setnum(outSuccess, 0);
+                 return;
+             }
+ 
+diff --git a/core/src/mindustry/logic/LStatements.java b/core/src/mindustry/logic/LStatements.java
+index 5a57d5dc05b62f7a5dcfcd2b614d1424e3982506..3cf94e7dcda505af2fa182a1dcbc96c118691ce1 100644
+--- a/core/src/mindustry/logic/LStatements.java
++++ b/core/src/mindustry/logic/LStatements.java
+@@ -1424,7 +1424,7 @@ public class LStatements{
+     @RegisterStatement("message")
+     public static class FlushMessageStatement extends LStatement{
+         public MessageType type = MessageType.announce;
+-        public String duration = "3";
++        public String duration = "3", outSuccess = "success";
+ 
+         @Override
+         public void build(Table table){
+@@ -1443,12 +1443,14 @@ public class LStatements{
+             }, Styles.logict, () -> {}).size(160f, 40f).padLeft(2).color(table.color);
+ 
+             switch(type){
+-                case announce, toast -> {
++                case announce, toast  -> {
+                     table.add(" for ");
+                     fields(table, duration, str -> duration = str);
+                     table.add(" secs ");
+                 }
+             }
++            table.add(" success ");
++            fields(table, outSuccess, str -> outSuccess = str);
+         }
+ 
+         @Override
+@@ -1458,7 +1460,7 @@ public class LStatements{
+ 
+         @Override
+         public LInstruction build(LAssembler builder){
+-            return new FlushMessageI(type, builder.var(duration));
++            return new FlushMessageI(type, builder.var(duration), builder.var(outSuccess));
+         }
+ 
+         @Override
+diff --git a/core/src/mindustry/world/blocks/logic/LogicBlock.java b/core/src/mindustry/world/blocks/logic/LogicBlock.java
+index 7805e6830b13f5b0b02304d771896b4869591f70..18093949ab0b76ed3415a8f338bf90497628a82e 100644
+--- a/core/src/mindustry/world/blocks/logic/LogicBlock.java
++++ b/core/src/mindustry/world/blocks/logic/LogicBlock.java
+@@ -514,6 +514,10 @@ public class LogicBlock extends Block{
+                 for(int i = 0; i < (int)accumulator; i++){
+                     executor.runOnce();
+                     accumulator --;
++                    if(executor.yield){
++                        executor.yield = false;
++                        break;
++                    }
+                 }
+             }
+         }

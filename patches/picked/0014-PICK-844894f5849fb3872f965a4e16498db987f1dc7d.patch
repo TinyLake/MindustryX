@@ -1,0 +1,26 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: way-zer <himc.wicp@gmail.com>
+Date: Thu, 28 Mar 2024 19:30:17 +0800
+Subject: [PATCH] PICK 844894f5849fb3872f965a4e16498db987f1dc7d
+
+---
+ core/src/mindustry/ui/dialogs/CustomRulesDialog.java | 5 +++++
+ 1 file changed, 5 insertions(+)
+
+diff --git a/core/src/mindustry/ui/dialogs/CustomRulesDialog.java b/core/src/mindustry/ui/dialogs/CustomRulesDialog.java
+index f9559e184fb3de9324bd6d6fa81c433ae7eb86ec..4efed965d12b7e407b408a677fd8f0ac63d3c168 100644
+--- a/core/src/mindustry/ui/dialogs/CustomRulesDialog.java
++++ b/core/src/mindustry/ui/dialogs/CustomRulesDialog.java
+@@ -51,7 +51,12 @@ public class CustomRulesDialog extends BaseDialog{
+ 
+                 t.button("@waves.copy", Icon.copy, style, () -> {
+                     ui.showInfoFade("@waves.copied");
++
++                    //hack: don't write the spawns, they just waste space
++                    var spawns = rules.spawns;
++                    rules.spawns = new Seq<>();
+                     Core.app.setClipboardText(JsonIO.write(rules));
++                    rules.spawns = spawns;
+                     dialog.hide();
+                 }).marginLeft(12f).row();
+ 

@@ -1,0 +1,23 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Anuken <arnukren@gmail.com>
+Date: Fri, 29 Dec 2023 21:14:39 -0500
+Subject: [PATCH] Bigger stream packet size
+
+(cherry picked from commit 9b6d95c507ce1dbd2c9a368040a2fe5aede08c31)
+---
+ core/src/mindustry/net/ArcNetProvider.java | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/core/src/mindustry/net/ArcNetProvider.java b/core/src/mindustry/net/ArcNetProvider.java
+index 87a16f6a52b12ebe06c0a39c96fbba2773066636..4131891c779b19c289a42fb5b2e0e9124563ad28 100644
+--- a/core/src/mindustry/net/ArcNetProvider.java
++++ b/core/src/mindustry/net/ArcNetProvider.java
+@@ -327,7 +327,7 @@ public class ArcNetProvider implements NetProvider{
+ 
+         @Override
+         public void sendStream(Streamable stream){
+-            connection.addListener(new InputStreamSender(stream.stream, 512){
++            connection.addListener(new InputStreamSender(stream.stream, 1024){
+                 int id;
+ 
+                 @Override

@@ -1,0 +1,58 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Redstonneur1256 <29004178+Redstonneur1256@users.noreply.github.com>
+Date: Thu, 28 Sep 2023 07:48:38 +0200
+Subject: [PATCH] Add sensor for player camera (#9103)
+
+* Add sensor for player camera
+
+* Fix sensor for player camera
+
+(cherry picked from commit 4ddd1f7ca066ccf15c3880f00dfde275b0928bcb)
+---
+ core/src/mindustry/entities/comp/BuildingComp.java | 1 +
+ core/src/mindustry/entities/comp/UnitComp.java     | 4 ++++
+ core/src/mindustry/logic/LAccess.java              | 4 ++++
+ 3 files changed, 9 insertions(+)
+
+diff --git a/core/src/mindustry/entities/comp/BuildingComp.java b/core/src/mindustry/entities/comp/BuildingComp.java
+index 8602e87f1a074d4d0a3770acbca28022e55b27f9..e8d9359299f372aef176a328860ab64a9b2ce4cb 100644
+--- a/core/src/mindustry/entities/comp/BuildingComp.java
++++ b/core/src/mindustry/entities/comp/BuildingComp.java
+@@ -1913,6 +1913,7 @@ abstract class BuildingComp implements Posc, Teamc, Healthc, Buildingc, Timerc,
+             case controlled -> this instanceof ControlBlock c && c.isControlled() ? GlobalVars.ctrlPlayer : 0;
+             case payloadCount -> getPayload() != null ? 1 : 0;
+             case size -> block.size;
++            case cameraX, cameraY, cameraWidth, cameraHeight -> this instanceof ControlBlock c ? c.unit().sense(sensor) : 0;
+             default -> Float.NaN; //gets converted to null in logic
+         };
+     }
+diff --git a/core/src/mindustry/entities/comp/UnitComp.java b/core/src/mindustry/entities/comp/UnitComp.java
+index 6ba6e11520dda469666fd124f7beb3b8d8a47516..a8bb8cf439c93d76c2a03151989aa7de768f806e 100644
+--- a/core/src/mindustry/entities/comp/UnitComp.java
++++ b/core/src/mindustry/entities/comp/UnitComp.java
+@@ -222,6 +222,10 @@ abstract class UnitComp implements Healthc, Physicsc, Hitboxc, Statusc, Teamc, I
+             case range -> range() / tilesize;
+             case shootX -> World.conv(aimX());
+             case shootY -> World.conv(aimY());
++            case cameraX -> controller instanceof Player player ? World.conv(player.con == null ? Core.camera.position.x : player.con.viewX) : 0;
++            case cameraY -> controller instanceof Player player ? World.conv(player.con == null ? Core.camera.position.y : player.con.viewY) : 0;
++            case cameraWidth -> controller instanceof Player player ? World.conv(player.con == null ? Core.camera.width : player.con.viewWidth) : 0;
++            case cameraHeight -> controller instanceof Player player ? World.conv(player.con == null ? Core.camera.height : player.con.viewHeight) : 0;
+             case mining -> mining() ? 1 : 0;
+             case mineX -> mining() ? mineTile.x : -1;
+             case mineY -> mining() ? mineTile.y : -1;
+diff --git a/core/src/mindustry/logic/LAccess.java b/core/src/mindustry/logic/LAccess.java
+index c5aa8478a9839075af3ed15e91bd8a39daeb9732..52df816ecb8bd0954397b7a7dbd07f0209d8bcdd 100644
+--- a/core/src/mindustry/logic/LAccess.java
++++ b/core/src/mindustry/logic/LAccess.java
+@@ -29,6 +29,10 @@ public enum LAccess{
+     y,
+     shootX,
+     shootY,
++    cameraX,
++    cameraY,
++    cameraWidth,
++    cameraHeight,
+     size,
+     dead,
+     range, 

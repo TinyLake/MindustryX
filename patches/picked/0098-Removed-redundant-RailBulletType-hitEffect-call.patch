@@ -1,0 +1,23 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Anuken <arnukren@gmail.com>
+Date: Fri, 12 Jan 2024 22:26:08 -0500
+Subject: [PATCH] Removed redundant RailBulletType hitEffect call
+
+(cherry picked from commit 797ef6400cff94018305b2667d4de4f6cf0da99b)
+---
+ core/src/mindustry/entities/bullet/RailBulletType.java | 2 --
+ 1 file changed, 2 deletions(-)
+
+diff --git a/core/src/mindustry/entities/bullet/RailBulletType.java b/core/src/mindustry/entities/bullet/RailBulletType.java
+index fb5c1814a19ed7b2f24544441cb6992b8c578111..ac68526f34ba9af80d867c945373fe01dc048ec5 100644
+--- a/core/src/mindustry/entities/bullet/RailBulletType.java
++++ b/core/src/mindustry/entities/bullet/RailBulletType.java
+@@ -42,8 +42,6 @@ public class RailBulletType extends BulletType{
+ 
+         if(b.damage > 0){
+             pierceEffect.at(x, y, b.rotation());
+-
+-            hitEffect.at(x, y);
+         }
+ 
+         //subtract health from each consecutive pierce

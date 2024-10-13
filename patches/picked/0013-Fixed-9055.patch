@@ -1,0 +1,45 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Anuken <arnukren@gmail.com>
+Date: Thu, 14 Sep 2023 14:34:00 -0400
+Subject: [PATCH] Fixed #9055
+
+(cherry picked from commit de773ce406ba305d54d490f9d763ca9d9c34c35c)
+---
+ .../world/blocks/defense/turrets/ContinuousLiquidTurret.java   | 2 +-
+ .../world/blocks/defense/turrets/ContinuousTurret.java         | 3 +--
+ 2 files changed, 2 insertions(+), 3 deletions(-)
+
+diff --git a/core/src/mindustry/world/blocks/defense/turrets/ContinuousLiquidTurret.java b/core/src/mindustry/world/blocks/defense/turrets/ContinuousLiquidTurret.java
+index 7c83fc10d6085d7b894e364eed4236c7c46cf86d..a843a3e98514c9b14d34cdfc72232b84c8b37d45 100644
+--- a/core/src/mindustry/world/blocks/defense/turrets/ContinuousLiquidTurret.java
++++ b/core/src/mindustry/world/blocks/defense/turrets/ContinuousLiquidTurret.java
+@@ -95,7 +95,7 @@ public class ContinuousLiquidTurret extends ContinuousTurret{
+ 
+         @Override
+         public boolean hasAmmo(){
+-            return hasCorrectAmmo() && ammoTypes.get(liquids.current()) != null && liquids.currentAmount() >= 1f / ammoTypes.get(liquids.current()).ammoMultiplier;
++            return hasCorrectAmmo() && ammoTypes.get(liquids.current()) != null && liquids.currentAmount() > 0f;
+         }
+ 
+         public boolean hasCorrectAmmo(){
+diff --git a/core/src/mindustry/world/blocks/defense/turrets/ContinuousTurret.java b/core/src/mindustry/world/blocks/defense/turrets/ContinuousTurret.java
+index 60632a27ac76f3c19e0736b3579a02a8875deaa6..e2cbcadffc037cddd582add7c34b7fdbcae5ca06 100644
+--- a/core/src/mindustry/world/blocks/defense/turrets/ContinuousTurret.java
++++ b/core/src/mindustry/world/blocks/defense/turrets/ContinuousTurret.java
+@@ -51,7 +51,6 @@ public class ContinuousTurret extends Turret{
+ 
+         @Override
+         public boolean hasAmmo(){
+-            //TODO update ammo in unit so it corresponds to liquids
+             return canConsume();
+         }
+ 
+@@ -112,7 +111,7 @@ public class ContinuousTurret extends Turret{
+             entry.bullet.aimY = Tmp.v1.y;
+ 
+             if(isShooting() && hasAmmo()){
+-                entry.bullet.time = entry.bullet.lifetime * entry.bullet.type.optimalLifeFract * shootWarmup;
++                entry.bullet.time = entry.bullet.lifetime * entry.bullet.type.optimalLifeFract * Math.min(shootWarmup, efficiency);
+                 entry.bullet.keepAlive = true;
+             }
+         }

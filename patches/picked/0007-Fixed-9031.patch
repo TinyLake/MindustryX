@@ -1,0 +1,23 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Anuken <arnukren@gmail.com>
+Date: Thu, 7 Sep 2023 09:23:17 -0400
+Subject: [PATCH] Fixed #9031
+
+(cherry picked from commit a47e4518fedac30c6801ec0c17e7020336d52685)
+---
+ core/src/mindustry/entities/Units.java | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/core/src/mindustry/entities/Units.java b/core/src/mindustry/entities/Units.java
+index 184203a9b7586335452a6f345f3fd60670ecc599..e8194828463a91542bd9b1120df142bf959904cd 100644
+--- a/core/src/mindustry/entities/Units.java
++++ b/core/src/mindustry/entities/Units.java
+@@ -112,7 +112,7 @@ public class Units{
+ 
+     /** @return whether this player can interact with a specific tile. if either of these are null, returns true.*/
+     public static boolean canInteract(Player player, Building tile){
+-        return player == null || tile == null || tile.interactable(player.team());
++        return player == null || tile == null || tile.interactable(player.team()) || state.rules.editor;
+     }
+ 
+     /**

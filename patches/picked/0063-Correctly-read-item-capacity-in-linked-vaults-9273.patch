@@ -1,0 +1,35 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: BalaM314 <71201189+BalaM314@users.noreply.github.com>
+Date: Mon, 13 Nov 2023 12:40:45 +0530
+Subject: [PATCH] Correctly read item capacity in linked vaults (#9273)
+
+(cherry picked from commit dd9927d72dc4bdce34b637339176b6040d29846c)
+---
+ core/src/mindustry/world/blocks/storage/StorageBlock.java | 7 +++++++
+ 1 file changed, 7 insertions(+)
+
+diff --git a/core/src/mindustry/world/blocks/storage/StorageBlock.java b/core/src/mindustry/world/blocks/storage/StorageBlock.java
+index d681389ca5f61c2cc42c99cd7ec0066f61163558..31d0666b1438ab2d27e70542d50e190190c0c213 100644
+--- a/core/src/mindustry/world/blocks/storage/StorageBlock.java
++++ b/core/src/mindustry/world/blocks/storage/StorageBlock.java
+@@ -5,6 +5,7 @@ import arc.struct.*;
+ import arc.util.*;
+ import mindustry.content.*;
+ import mindustry.gen.*;
++import mindustry.logic.*;
+ import mindustry.type.*;
+ import mindustry.world.*;
+ import mindustry.world.blocks.storage.CoreBlock.*;
+@@ -100,6 +101,12 @@ public class StorageBlock extends Block{
+             }
+         }
+ 
++        @Override
++        public double sense(LAccess sensor){
++            if(sensor == LAccess.itemCapacity && linkedCore != null) return linkedCore.sense(sensor);
++            return super.sense(sensor);
++        }
++
+         @Override
+         public void overwrote(Seq<Building> previous){
+             //only add prev items when core is not linked

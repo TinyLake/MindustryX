@@ -1,0 +1,230 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Anuken <arnukren@gmail.com>
+Date: Sun, 24 Sep 2023 05:10:19 +0800
+Subject: [PATCH] Commands are now content
+
+(cherry picked from commit 276245bf3ce7f39b1a8bcef5f5f7ff591b211654)
+---
+ .../annotations/entity/EntityIO.java          |  2 +-
+ core/src/mindustry/ai/UnitCommand.java        | 60 ++++++++++---------
+ core/src/mindustry/core/ContentLoader.java    | 14 +++++
+ core/src/mindustry/ctype/ContentType.java     |  4 +-
+ core/src/mindustry/io/TypeIO.java             |  7 ++-
+ core/src/mindustry/mod/ContentParser.java     |  2 +-
+ 6 files changed, 56 insertions(+), 33 deletions(-)
+
+diff --git a/annotations/src/main/java/mindustry/annotations/entity/EntityIO.java b/annotations/src/main/java/mindustry/annotations/entity/EntityIO.java
+index a21717e227176d6ca80f43faf22c31e6998ae69c..4d9ce948692c77a40c0532498a7fed6305ba46a1 100644
+--- a/annotations/src/main/java/mindustry/annotations/entity/EntityIO.java
++++ b/annotations/src/main/java/mindustry/annotations/entity/EntityIO.java
+@@ -227,7 +227,7 @@ public class EntityIO{
+ 
+         if(BaseProcessor.isPrimitive(type)){
+             s(type.equals("boolean") ? "bool" : type.charAt(0) + "", field);
+-        }else if(instanceOf(type, "mindustry.ctype.Content")){
++        }else if(instanceOf(type, "mindustry.ctype.Content") && !type.equals("mindustry.ai.UnitStance") && !type.equals("mindustry.ai.UnitCommand")){
+             if(write){
+                 s("s", field + ".id");
+             }else{
+diff --git a/core/src/mindustry/ai/UnitCommand.java b/core/src/mindustry/ai/UnitCommand.java
+index 3b6f6cdd7e2b5900b4485482d8b45c8d29495a04..fad76f45c3bc1d72137c496a3dbc33759923e1d8 100644
+--- a/core/src/mindustry/ai/UnitCommand.java
++++ b/core/src/mindustry/ai/UnitCommand.java
+@@ -6,39 +6,19 @@ import arc.scene.style.*;
+ import arc.struct.*;
+ import arc.util.*;
+ import mindustry.ai.types.*;
++import mindustry.ctype.*;
+ import mindustry.entities.units.*;
+ import mindustry.gen.*;
+ import mindustry.input.*;
+ 
+ /** Defines a pattern of behavior that an RTS-controlled unit should follow. Shows up in the command UI. */
+-public class UnitCommand{
+-    /** List of all commands by ID. */
++public class UnitCommand extends MappableContent{
++    /** @deprecated now a content type, use the methods in Vars.content instead */
++    @Deprecated
+     public static final Seq<UnitCommand> all = new Seq<>();
+ 
+-    public static final UnitCommand
++    public static UnitCommand moveCommand, repairCommand, rebuildCommand, assistCommand, mineCommand, boostCommand;
+ 
+-    moveCommand = new UnitCommand("move", "right", Binding.unit_command_move, null){{
+-        drawTarget = true;
+-        resetTarget = false;
+-    }},
+-    repairCommand = new UnitCommand("repair", "modeSurvival", Binding.unit_command_repair, u -> new RepairAI()),
+-    rebuildCommand = new UnitCommand("rebuild", "hammer", Binding.unit_command_rebuild, u -> new BuilderAI()),
+-    assistCommand = new UnitCommand("assist", "players", Binding.unit_command_assist, u -> {
+-        var ai = new BuilderAI();
+-        ai.onlyAssist = true;
+-        return ai;
+-    }),
+-    mineCommand = new UnitCommand("mine", "production", Binding.unit_command_mine, u -> new MinerAI()),
+-    boostCommand = new UnitCommand("boost", "up", Binding.unit_command_boost, u -> new BoostAI()){{
+-        switchToMove = false;
+-        drawTarget = true;
+-        resetTarget = false;
+-    }};
+-
+-    /** Unique ID number. */
+-    public final int id;
+-    /** Named used for tooltip/description. */
+-    public final String name;
+     /** Name of UI icon (from Icon class). */
+     public final String icon;
+     /** Controller that this unit will use when this command is used. Return null for "default" behavior. */
+@@ -53,11 +33,11 @@ public class UnitCommand{
+     public @Nullable Binding keybind = null;
+ 
+     public UnitCommand(String name, String icon, Func<Unit, AIController> controller){
+-        this.name = name;
++        super(name);
++
+         this.icon = icon;
+         this.controller = controller == null ? u -> null : controller;
+ 
+-        id = all.size;
+         all.add(this);
+     }
+ 
+@@ -78,8 +58,34 @@ public class UnitCommand{
+         return (char) Iconc.codes.get(icon, Iconc.cancel);
+     }
+ 
++    @Override
++    public ContentType getContentType(){
++        return ContentType.unitCommand;
++    }
++
+     @Override
+     public String toString(){
+         return "UnitCommand:" + name;
+     }
++
++    public static void loadAll(){
++
++        moveCommand = new UnitCommand("move", "right", Binding.unit_command_move, null){{
++            drawTarget = true;
++            resetTarget = false;
++        }};
++        repairCommand = new UnitCommand("repair", "modeSurvival", Binding.unit_command_repair, u -> new RepairAI());
++        rebuildCommand = new UnitCommand("rebuild", "hammer", Binding.unit_command_rebuild, u -> new BuilderAI());
++        assistCommand = new UnitCommand("assist", "players", Binding.unit_command_assist, u -> {
++            var ai = new BuilderAI();
++            ai.onlyAssist = true;
++            return ai;
++        });
++        mineCommand = new UnitCommand("mine", "production", Binding.unit_command_mine, u -> new MinerAI());
++        boostCommand = new UnitCommand("boost", "up", Binding.unit_command_boost, u -> new BoostAI()){{
++            switchToMove = false;
++            drawTarget = true;
++            resetTarget = false;
++        }};
++    }
+ }
+diff --git a/core/src/mindustry/core/ContentLoader.java b/core/src/mindustry/core/ContentLoader.java
+index 0fabcc5ce82e415ac26ab1dbbc7328a72d6cbed6..352a2a3e91ccc8abf4d50749140613a743dff6fe 100644
+--- a/core/src/mindustry/core/ContentLoader.java
++++ b/core/src/mindustry/core/ContentLoader.java
+@@ -6,6 +6,7 @@ import arc.func.*;
+ import arc.graphics.*;
+ import arc.struct.*;
+ import arc.util.*;
++import mindustry.ai.*;
+ import mindustry.content.*;
+ import mindustry.ctype.*;
+ import mindustry.entities.bullet.*;
+@@ -40,6 +41,7 @@ public class ContentLoader{
+ 
+     /** Creates all base types. */
+     public void createBaseContent(){
++        UnitCommand.loadAll();
+         TeamEntries.load();
+         Items.load();
+         StatusEffects.load();
+@@ -310,4 +312,16 @@ public class ContentLoader{
+     public Planet planet(String name){
+         return getByName(ContentType.planet, name);
+     }
++
++    public Seq<UnitCommand> unitCommands(){
++        return getBy(ContentType.unitCommand);
++    }
++
++    public UnitCommand unitCommand(int id){
++        return getByID(ContentType.unitCommand, id);
++    }
++
++    public UnitCommand unitCommand(String name){
++        return getByName(ContentType.unitCommand, name);
++    }
+ }
+diff --git a/core/src/mindustry/ctype/ContentType.java b/core/src/mindustry/ctype/ContentType.java
+index eb67a5200391ddc5416a64fca996c23c8b678259..992176cd6c912aeb715c3b711900f376ee17c6e4 100644
+--- a/core/src/mindustry/ctype/ContentType.java
++++ b/core/src/mindustry/ctype/ContentType.java
+@@ -1,6 +1,7 @@
+ package mindustry.ctype;
+ 
+ import arc.util.*;
++import mindustry.ai.*;
+ import mindustry.entities.bullet.*;
+ import mindustry.type.*;
+ import mindustry.world.*;
+@@ -22,7 +23,8 @@ public enum ContentType{
+     error(null),
+     planet(Planet.class),
+     ammo_UNUSED(null),
+-    team(TeamEntry.class);
++    team(TeamEntry.class),
++    unitCommand(UnitCommand.class);
+ 
+     public static final ContentType[] all = values();
+ 
+diff --git a/core/src/mindustry/io/TypeIO.java b/core/src/mindustry/io/TypeIO.java
+index 21ad470fd74bf322e35b33aecf0bf90a5ca73d8c..285ef94a9cb81e7412b08a50e9d2d186d38e49e4 100644
+--- a/core/src/mindustry/io/TypeIO.java
++++ b/core/src/mindustry/io/TypeIO.java
+@@ -203,7 +203,7 @@ public class TypeIO{
+                 for(int i = 0; i < objlen; i++) objs[i] = readObjectBoxed(read, box);
+                 yield objs;
+             }
+-            case 23 -> UnitCommand.all.get(read.us());
++            case 23 -> content.unitCommand(read.us());
+             default -> throw new IllegalArgumentException("Unknown object type: " + type);
+         };
+     }
+@@ -311,7 +311,7 @@ public class TypeIO{
+ 
+     public static @Nullable UnitCommand readCommand(Reads read){
+         int val = read.ub();
+-        return val == 255 ? null : UnitCommand.all.get(val);
++        return val == 255 ? null : content.unitCommand(val);
+     }
+ 
+     public static void writeEntity(Writes write, Entityc entity){
+@@ -546,7 +546,8 @@ public class TypeIO{
+ 
+             if(type == 6){
+                 byte id = read.b();
+-                ai.command = id < 0 ? null : UnitCommand.all.get(id);
++                ai.command = id < 0 ? null : content.unitCommand(id);
++                if(ai.command == null) ai.command = UnitCommand.moveCommand;
+             }
+ 
+             return ai;
+diff --git a/core/src/mindustry/mod/ContentParser.java b/core/src/mindustry/mod/ContentParser.java
+index 8bb9efb643152604434bbc570903bcfec9acb61c..da07917aed24feafeb2c020361e55c54f9b4dd2d 100644
+--- a/core/src/mindustry/mod/ContentParser.java
++++ b/core/src/mindustry/mod/ContentParser.java
+@@ -112,7 +112,7 @@ public class ContentParser{
+         });
+         put(UnitCommand.class, (type, data) -> {
+             if(data.isString()){
+-               var cmd = UnitCommand.all.find(u -> u.name.equals(data.asString()));
++               var cmd = content.unitCommand(data.asString());
+                if(cmd != null){
+                    return cmd;
+                }else{

@@ -1,0 +1,27 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: way-zer <himc.wicp@gmail.com>
+Date: Mon, 22 Apr 2024 21:41:55 +0800
+Subject: [PATCH] =?UTF-8?q?fixup!=20Commands=20are=20now=20content=20TypeI?=
+ =?UTF-8?q?O=E4=B8=8E146=E6=9C=8D=E5=8A=A1=E5=99=A8=E4=B8=8D=E4=B8=80?=
+ =?UTF-8?q?=E8=87=B4?=
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+---
+ core/src/mindustry/io/TypeIO.java | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/core/src/mindustry/io/TypeIO.java b/core/src/mindustry/io/TypeIO.java
+index f41df9973ef1f4641307ff5a89379e90c3908502..ca9a6bc239f65b3f229f974dc504dabb306a2727 100644
+--- a/core/src/mindustry/io/TypeIO.java
++++ b/core/src/mindustry/io/TypeIO.java
+@@ -50,7 +50,7 @@ public class TypeIO{
+         }else if(object instanceof String s){
+             write.b((byte)4);
+             writeString(write, s);
+-        }else if(object instanceof Content map){
++        }else if(object instanceof Content map&&!(object instanceof UnitCommand command)){
+             write.b((byte)5);
+             write.b((byte)map.getContentType().ordinal());
+             write.s(map.id);

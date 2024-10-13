@@ -1,0 +1,56 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Anuken <arnukren@gmail.com>
+Date: Fri, 12 Jan 2024 15:13:11 -0500
+Subject: [PATCH] Fixed #9445
+
+(cherry picked from commit b0cc7d2e85b622cf277cf5997df2e88a3052abf5)
+---
+ core/src/mindustry/entities/Fires.java   | 4 ++--
+ core/src/mindustry/entities/Puddles.java | 2 +-
+ core/src/mindustry/world/Tiles.java      | 2 +-
+ 3 files changed, 4 insertions(+), 4 deletions(-)
+
+diff --git a/core/src/mindustry/entities/Fires.java b/core/src/mindustry/entities/Fires.java
+index 0deafd3618026d483e54d82441ce6c15be9990f5..e3601e3e31c9f2d42ce21e0003ad3d7d0c7df710 100644
+--- a/core/src/mindustry/entities/Fires.java
++++ b/core/src/mindustry/entities/Fires.java
+@@ -33,11 +33,11 @@ public class Fires{
+     }
+ 
+     public static @Nullable Fire get(Tile tile){
+-        return world.tiles.getFire(tile.array());
++        return tile == null ? null : world.tiles.getFire(tile.array());
+     }
+ 
+     public static @Nullable Fire get(int x, int y){
+-        return world.tiles.getFire(world.packArray(x, y));
++        return Structs.inBounds(x, y, world.width(), world.height()) ? world.tiles.getFire(world.packArray(x, y)) : null;
+     }
+ 
+     private static void set(Tile tile, Fire fire){
+diff --git a/core/src/mindustry/entities/Puddles.java b/core/src/mindustry/entities/Puddles.java
+index be7b1bba1bab27acc6523e6f098b773b864463a2..ec546882b48b8bf23a3afeadc0d4783474fe833a 100644
+--- a/core/src/mindustry/entities/Puddles.java
++++ b/core/src/mindustry/entities/Puddles.java
+@@ -27,7 +27,7 @@ public class Puddles{
+ 
+     /** Returns the Puddle on the specified tile. May return null. */
+     public static @Nullable Puddle get(Tile tile){
+-        return world.tiles.getPuddle(tile.array());
++        return tile == null ? null : world.tiles.getPuddle(tile.array());
+     }
+ 
+     public static void deposit(Tile tile, Tile source, Liquid liquid, float amount, boolean initial){
+diff --git a/core/src/mindustry/world/Tiles.java b/core/src/mindustry/world/Tiles.java
+index 85a2f54c4c9bd44088eb245777dcfd53ccd0aa82..51bc22568b97bfd4f71e3b44e4a2f51857a3a949 100644
+--- a/core/src/mindustry/world/Tiles.java
++++ b/core/src/mindustry/world/Tiles.java
+@@ -32,7 +32,7 @@ public class Tiles implements Iterable<Tile>{
+         puddles[pos] = p;
+     }
+ 
+-    public Fire getFire(int pos){
++    public @Nullable Fire getFire(int pos){
+         return fires[pos];
+     }
+ 

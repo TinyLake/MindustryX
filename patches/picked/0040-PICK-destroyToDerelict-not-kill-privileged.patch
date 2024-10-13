@@ -1,0 +1,31 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: way-zer <himc.wicp@gmail.com>
+Date: Sun, 28 Apr 2024 20:35:14 +0800
+Subject: [PATCH] PICK: destroyToDerelict not kill privileged
+
+---
+ core/src/mindustry/game/Teams.java | 4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
+
+diff --git a/core/src/mindustry/game/Teams.java b/core/src/mindustry/game/Teams.java
+index e47b5bfb13ee2d24501c30d1687f2c2b92b13adf..9abcf0b4e51915331c0a9eff607bc5f6548608db 100644
+--- a/core/src/mindustry/game/Teams.java
++++ b/core/src/mindustry/game/Teams.java
+@@ -307,6 +307,8 @@ public class Teams{
+ 
+             //convert all team tiles to neutral, randomly killing them
+             for(var b : builds){
++                if(b.block.privileged) continue;
++
+                 if(b instanceof CoreBuild){
+                     b.kill();
+                 }else{
+@@ -331,7 +333,7 @@ public class Teams{
+             }
+ 
+             for(var build : builds){
+-                if(build.within(x, y, range)){
++                if(build.within(x, y, range) && !build.block.privileged){
+                     scheduleDerelict(build);
+                 }
+             }

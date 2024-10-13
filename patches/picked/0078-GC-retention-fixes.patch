@@ -1,0 +1,199 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Anuken <arnukren@gmail.com>
+Date: Sun, 10 Dec 2023 20:01:40 -0500
+Subject: [PATCH] GC retention fixes
+
+(cherry picked from commit 1eb70404d7e92bbfdd9ba329cb5f69a510fcd687)
+---
+ core/src/mindustry/entities/Fires.java        | 43 +++++++++++--------
+ core/src/mindustry/entities/Puddles.java      |  4 +-
+ core/src/mindustry/entities/Units.java        |  5 ++-
+ .../mindustry/entities/comp/PlayerComp.java   |  3 ++
+ core/src/mindustry/world/Tiles.java           | 13 +++++-
+ 5 files changed, 46 insertions(+), 22 deletions(-)
+
+diff --git a/core/src/mindustry/entities/Fires.java b/core/src/mindustry/entities/Fires.java
+index b22e39eb4f2b9ffb2e5dfe338026851f5a7c936b..0deafd3618026d483e54d82441ce6c15be9990f5 100644
+--- a/core/src/mindustry/entities/Fires.java
++++ b/core/src/mindustry/entities/Fires.java
+@@ -1,8 +1,6 @@
+ package mindustry.entities;
+ 
+ import arc.*;
+-import arc.math.geom.*;
+-import arc.struct.*;
+ import arc.util.*;
+ import mindustry.content.*;
+ import mindustry.game.EventType.*;
+@@ -14,13 +12,12 @@ import static mindustry.Vars.*;
+ 
+ public class Fires{
+     private static final float baseLifetime = 1000f;
+-    private static final IntMap<Fire> map = new IntMap<>();
+ 
+     /** Start a fire on the tile. If there already is a fire there, refreshes its lifetime. */
+     public static void create(Tile tile){
+         if(net.client() || tile == null || !state.rules.fire || !state.rules.hasEnv(Env.oxygen)) return; //not clientside.
+ 
+-        Fire fire = map.get(tile.pos());
++        Fire fire = get(tile);
+ 
+         if(fire == null){
+             fire = Fire.create();
+@@ -28,48 +25,58 @@ public class Fires{
+             fire.lifetime = baseLifetime;
+             fire.set(tile.worldx(), tile.worldy());
+             fire.add();
+-            map.put(tile.pos(), fire);
++            set(tile, fire);
+         }else{
+             fire.lifetime = baseLifetime;
+             fire.time = 0f;
+         }
+     }
+ 
+-    public static Fire get(int x, int y){
+-        return map.get(Point2.pack(x, y));
++    public static @Nullable Fire get(Tile tile){
++        return world.tiles.getFire(tile.array());
++    }
++
++    public static @Nullable Fire get(int x, int y){
++        return world.tiles.getFire(world.packArray(x, y));
++    }
++
++    private static void set(Tile tile, Fire fire){
++        world.tiles.setFire(tile.array(), fire);
+     }
+ 
+     public static boolean has(int x, int y){
+-        if(!Structs.inBounds(x, y, world.width(), world.height()) || !map.containsKey(Point2.pack(x, y))){
++        if(!Structs.inBounds(x, y, world.width(), world.height())){
+             return false;
+         }
+-        Fire fire = map.get(Point2.pack(x, y));
+-        return fire.isAdded() && fire.fin() < 1f && fire.tile() != null && fire.tile().x == x && fire.tile().y == y;
++        Fire fire = get(x, y);
++        return fire != null && fire.isAdded() && fire.fin() < 1f && fire.tile != null && fire.tile.x == x && fire.tile.y == y;
+     }
+ 
+     /**
+      * Attempts to extinguish a fire by shortening its life. If there is no fire here, does nothing.
+      */
+     public static void extinguish(Tile tile, float intensity){
+-        if(tile != null && map.containsKey(tile.pos())){
+-            Fire fire = map.get(tile.pos());
+-            fire.time(fire.time + intensity * Time.delta);
+-            Fx.steam.at(fire);
+-            if(fire.time >= fire.lifetime){
+-                Events.fire(Trigger.fireExtinguish);
++        if(tile != null){
++            Fire fire = get(tile);
++            if(fire != null){
++                fire.time(fire.time + intensity * Time.delta);
++                Fx.steam.at(fire);
++                if(fire.time >= fire.lifetime){
++                    Events.fire(Trigger.fireExtinguish);
++                }
+             }
+         }
+     }
+ 
+     public static void remove(Tile tile){
+         if(tile != null){
+-            map.remove(tile.pos());
++            set(tile, null);
+         }
+     }
+ 
+     public static void register(Fire fire){
+         if(fire.tile != null){
+-            map.put(fire.tile.pos(), fire);
++            set(fire.tile, fire);
+         }
+     }
+ }
+diff --git a/core/src/mindustry/entities/Puddles.java b/core/src/mindustry/entities/Puddles.java
+index aa7e5bde8d0aa41b5b9659f9a3f5f4e8fef6a309..be7b1bba1bab27acc6523e6f098b773b864463a2 100644
+--- a/core/src/mindustry/entities/Puddles.java
++++ b/core/src/mindustry/entities/Puddles.java
+@@ -26,8 +26,8 @@ public class Puddles{
+     }
+ 
+     /** Returns the Puddle on the specified tile. May return null. */
+-    public static Puddle get(Tile tile){
+-        return world.tiles.puddle(tile.array());
++    public static @Nullable Puddle get(Tile tile){
++        return world.tiles.getPuddle(tile.array());
+     }
+ 
+     public static void deposit(Tile tile, Tile source, Liquid liquid, float amount, boolean initial){
+diff --git a/core/src/mindustry/entities/Units.java b/core/src/mindustry/entities/Units.java
+index e8194828463a91542bd9b1120df142bf959904cd..a6287621c5668318d09d50bd1db4932762bfda07 100644
+--- a/core/src/mindustry/entities/Units.java
++++ b/core/src/mindustry/entities/Units.java
+@@ -223,7 +223,10 @@ public class Units{
+             }
+         });
+ 
+-        return buildResult;
++        var result = buildResult;
++        buildResult = null;
++
++        return result;
+     }
+ 
+     /** Iterates through all buildings in a range. */
+diff --git a/core/src/mindustry/entities/comp/PlayerComp.java b/core/src/mindustry/entities/comp/PlayerComp.java
+index c995d3d9f0cfb8b0bda22026fa1d6dc9bc6a6cfa..fe787a8336d78710c6d4b9cfbdcf8dd45bc83c2c 100644
+--- a/core/src/mindustry/entities/comp/PlayerComp.java
++++ b/core/src/mindustry/entities/comp/PlayerComp.java
+@@ -183,6 +183,9 @@ abstract class PlayerComp implements UnitController, Entityc, Syncc, Timerc, Dra
+         if(!unit.isNull()){
+             clearUnit();
+         }
++
++        lastReadUnit = Nulls.unit;
++        justSwitchTo = justSwitchFrom = null;
+     }
+ 
+     public void team(Team team){
+diff --git a/core/src/mindustry/world/Tiles.java b/core/src/mindustry/world/Tiles.java
+index 37d8bd41d21c90a7818e276ce89801efb7862ea2..85a2f54c4c9bd44088eb245777dcfd53ccd0aa82 100644
+--- a/core/src/mindustry/world/Tiles.java
++++ b/core/src/mindustry/world/Tiles.java
+@@ -14,15 +14,17 @@ public class Tiles implements Iterable<Tile>{
+ 
+     final Tile[] array;
+     final Puddle[] puddles;
++    final Fire[] fires;
+ 
+     public Tiles(int width, int height){
+         this.array = new Tile[width * height];
+         this.width = width;
+         this.height = height;
+         this.puddles = new Puddle[width * height];
++        this.fires = new Fire[width * height];
+     }
+ 
+-    public Puddle puddle(int pos){
++    public Puddle getPuddle(int pos){
+         return puddles[pos];
+     }
+ 
+@@ -30,6 +32,15 @@ public class Tiles implements Iterable<Tile>{
+         puddles[pos] = p;
+     }
+ 
++    public Fire getFire(int pos){
++        return fires[pos];
++    }
++
++    public void setFire(int pos, Fire f){
++        fires[pos] = f;
++    }
++
++
+     public void each(Intc2 cons){
+         for(int x = 0; x < width; x++){
+             for(int y = 0; y < height; y++){

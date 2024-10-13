@@ -1,0 +1,34 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Anuken <arnukren@gmail.com>
+Date: Tue, 31 Oct 2023 23:59:34 -0400
+Subject: [PATCH] Fixed #8917
+
+(cherry picked from commit 67e35af7181548c7210e4fbbe154d4877f24454f)
+---
+ core/src/mindustry/ai/BlockIndexer.java | 13 +++++++------
+ 1 file changed, 7 insertions(+), 6 deletions(-)
+
+diff --git a/core/src/mindustry/ai/BlockIndexer.java b/core/src/mindustry/ai/BlockIndexer.java
+index 0cae6ca7900a2a6961fd659fa28b3eea50ce50d0..60bcca661ec27bbd5dc718ab9b4d7e1fc69d40dc 100644
+--- a/core/src/mindustry/ai/BlockIndexer.java
++++ b/core/src/mindustry/ai/BlockIndexer.java
+@@ -158,12 +158,13 @@ public class BlockIndexer{
+             int pos = tile.pos();
+             var seq = ores[drop.id][qx][qy];
+ 
+-            //when the drop can be mined, record the ore position
+-            if(tile.block() == Blocks.air && !seq.contains(pos)){
+-                seq.add(pos);
+-                allOres.increment(drop);
+-            }else{
+-                //otherwise, it likely became blocked, remove it (even if it wasn't there)
++            if(tile.block() == Blocks.air){
++                //add the index if it is a valid new spot to mine at
++                if(!seq.contains(pos)){
++                    seq.add(pos);
++                    allOres.increment(drop);
++                }
++            }else if(seq.contains(pos)){ //otherwise, it likely became blocked, remove it
+                 seq.removeValue(pos);
+                 allOres.increment(drop, -1);
+             }

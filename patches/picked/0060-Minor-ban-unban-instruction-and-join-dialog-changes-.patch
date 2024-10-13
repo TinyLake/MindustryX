@@ -1,0 +1,192 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: ApsZoldat <128713348+ApsZoldat@users.noreply.github.com>
+Date: Sat, 11 Nov 2023 17:55:01 +0300
+Subject: [PATCH] Minor ban/unban instruction and join dialog changes (#9249)
+
+* Make PlacementFragment update after world processor's ban/unban instructions, add buttons in community server list to add server as remote
+
+* Small world processor ban/unban optimization
+
+(cherry picked from commit c4dc095adb062d117db40041c2e33c10072366d6)
+---
+ core/src/mindustry/logic/LExecutor.java       |  5 +-
+ core/src/mindustry/ui/dialogs/JoinDialog.java | 86 +++++++++++++------
+ .../ui/fragments/PlacementFragment.java       |  2 +-
+ 3 files changed, 62 insertions(+), 31 deletions(-)
+
+diff --git a/core/src/mindustry/logic/LExecutor.java b/core/src/mindustry/logic/LExecutor.java
+index 697517800ce584175b9d4bbc4f1e229a776fc9c8..e628584dfd7c93b5b7de8a812b04f2953045f684 100644
+--- a/core/src/mindustry/logic/LExecutor.java
++++ b/core/src/mindustry/logic/LExecutor.java
+@@ -1458,7 +1458,8 @@ public class LExecutor{
+                 case ban -> {
+                     Object cont = exec.obj(value);
+                     if(cont instanceof Block b){
+-                        state.rules.bannedBlocks.add(b);
++                        // Rebuild PlacementFragment if anything has changed
++                        if(state.rules.bannedBlocks.add(b) && !headless) ui.hudfrag.blockfrag.rebuild();
+                     }else if(cont instanceof UnitType u){
+                         state.rules.bannedUnits.add(u);
+                     }
+@@ -1466,7 +1467,7 @@ public class LExecutor{
+                 case unban -> {
+                     Object cont = exec.obj(value);
+                     if(cont instanceof Block b){
+-                        state.rules.bannedBlocks.remove(b);
++                        if(state.rules.bannedBlocks.remove(b) && !headless) ui.hudfrag.blockfrag.rebuild();
+                     }else if(cont instanceof UnitType u){
+                         state.rules.bannedUnits.remove(u);
+                     }
+diff --git a/core/src/mindustry/ui/dialogs/JoinDialog.java b/core/src/mindustry/ui/dialogs/JoinDialog.java
+index b6b2476761f45f88824645cd9870b543d217a530..3092db179f559a712c55b75919483bdef8e50a26 100644
+--- a/core/src/mindustry/ui/dialogs/JoinDialog.java
++++ b/core/src/mindustry/ui/dialogs/JoinDialog.java
+@@ -247,29 +247,12 @@ public class JoinDialog extends BaseDialog{
+     void setupServer(Server server, Host host){
+         server.lastHost = host;
+         server.content.clear();
+-        buildServer(host, server.content);
++        buildServer(host, server.content, false);
+     }
+ 
+-    void buildServer(Host host, Table content){
++    void buildServer(Host host, Table content, boolean inner){
+         content.top().left();
+-        String versionString;
+-
+-        if(host.version == -1){
+-            versionString = Core.bundle.format("server.version", Core.bundle.get("server.custombuild"), "");
+-        }else if(host.version == 0){
+-            versionString = Core.bundle.get("server.outdated");
+-        }else if(host.version < Version.build && Version.build != -1){
+-            versionString = Core.bundle.get("server.outdated") + "\n" +
+-            Core.bundle.format("server.version", host.version, "");
+-        }else if(host.version > Version.build && Version.build != -1){
+-            versionString = Core.bundle.get("server.outdated.client") + "\n" +
+-            Core.bundle.format("server.version", host.version, "");
+-        }else if(host.version == Version.build && Version.type.equals(host.versionType)){
+-            //not important
+-            versionString = "";
+-        }else{
+-            versionString = Core.bundle.format("server.version", host.version, host.versionType);
+-        }
++        String versionString = getVersionString(host);
+ 
+         float twidth = targetWidth() - 40f;
+ 
+@@ -277,12 +260,14 @@ public class JoinDialog extends BaseDialog{
+ 
+         Color color = Pal.gray;
+ 
+-        content.table(Tex.whiteui, t -> {
+-            t.left();
+-            t.setColor(color);
++        if(inner){
++            content.table(Tex.whiteui, t -> {
++                t.left();
++                t.setColor(color);
+ 
+-            t.add(host.name + "   " + versionString).style(Styles.outlineLabel).padLeft(10f).width(twidth).left().ellipsis(true);
+-        }).growX().height(36f).row();
++                t.add(host.name + "   " + versionString).style(Styles.outlineLabel).padLeft(10f).width(twidth).left().ellipsis(true);
++            }).growX().height(36f).row();
++        }
+ 
+         content.table(Tex.whitePane, t -> {
+             t.top().left();
+@@ -485,11 +470,16 @@ public class JoinDialog extends BaseDialog{
+ 
+     void addCommunityHost(Host host, Table container){
+         global.background(null);
++        String versionString = getVersionString(host);
+         float w = targetWidth();
+ 
+         container.left().top();
+ 
+-        container.button(b -> buildServer(host, b), style, () -> {
++        Button[] button = {null};
++
++        button[0] = container.button(b -> {}, style, () -> {
++            if(button[0].childrenPressed()) return;
++
+             Events.fire(new ClientPreConnectEvent(host));
+             if(!Core.settings.getBool("server-disclaimer", false)){
+                 ui.showCustomConfirm("@warning", "@servers.disclaimer", "@ok", "@back", () -> {
+@@ -501,7 +491,28 @@ public class JoinDialog extends BaseDialog{
+             }else{
+                 safeConnect(host.address, host.port, host.version);
+             }
+-        }).width(w).padBottom(7).padRight(4f).top().left().growY().uniformY();
++        }).width(w).padBottom(7).padRight(4f).top().left().growY().uniformY().get();
++
++        Table inner = new Table(Tex.whiteui);
++        inner.setColor(Pal.gray);
++
++        button[0].clearChildren();
++        button[0].add(inner).growX();
++
++        inner.add(host.name + "   " + versionString).left().padLeft(10f).wrap().style(Styles.outlineLabel).growX();
++
++        inner.button(Icon.add, Styles.emptyi, () -> {
++            Server server = new Server();
++            server.setIP(host.address + ":" + host.port);
++            servers.add(server);
++            saveServers();
++            setupRemote();
++            refreshRemote();
++        }).margin(3f).pad(8f).padRight(4f).top().right();
++
++        button[0].row();
++
++        buildServer(host, button[0].table(t -> {}).grow().get(), false);
+ 
+         if((container.getChildren().size) % columns() == 0){
+             container.row();
+@@ -532,7 +543,7 @@ public class JoinDialog extends BaseDialog{
+             local.row();
+         }
+ 
+-        local.button(b -> buildServer(host, b), style, () -> {
++        local.button(b -> buildServer(host, b, true), style, () -> {
+             Events.fire(new ClientPreConnectEvent(host));
+             safeConnect(host.address, host.port, host.version);
+         }).width(w).top().left().growY();
+@@ -641,6 +652,25 @@ public class JoinDialog extends BaseDialog{
+         Core.settings.putJson("servers", Server.class, servers);
+     }
+ 
++    private String getVersionString(Host host){
++        if(host.version == -1){
++            return Core.bundle.format("server.version", Core.bundle.get("server.custombuild"), "");
++        }else if(host.version == 0){
++            return Core.bundle.get("server.outdated");
++        }else if(host.version < Version.build && Version.build != -1){
++            return Core.bundle.get("server.outdated") + "\n" +
++            Core.bundle.format("server.version", host.version, "");
++        }else if(host.version > Version.build && Version.build != -1){
++            return Core.bundle.get("server.outdated.client") + "\n" +
++            Core.bundle.format("server.version", host.version, "");
++        }else if(host.version == Version.build && Version.type.equals(host.versionType)){
++            //not important
++            return "";
++        }else{
++            return Core.bundle.format("server.version", host.version, host.versionType);
++        }
++    }
++
+     public static class Server{
+         public String ip;
+         public int port;
+diff --git a/core/src/mindustry/ui/fragments/PlacementFragment.java b/core/src/mindustry/ui/fragments/PlacementFragment.java
+index fe1c6af61c4fbad098927b7755255498d1090ca1..966520f5c00e34e56f3f1cd8e315e338d4812a61 100644
+--- a/core/src/mindustry/ui/fragments/PlacementFragment.java
++++ b/core/src/mindustry/ui/fragments/PlacementFragment.java
+@@ -113,7 +113,7 @@ public class PlacementFragment{
+         return hover;
+     }
+ 
+-    void rebuild(){
++    public void rebuild(){
+         //category does not change on rebuild anymore, only on new world load
+         Group group = toggler.parent;
+         int index = toggler.getZIndex();

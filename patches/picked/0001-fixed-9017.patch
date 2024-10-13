@@ -1,0 +1,39 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Anuken <arnukren@gmail.com>
+Date: Mon, 4 Sep 2023 10:05:39 -0400
+Subject: [PATCH] fixed #9017
+
+(cherry picked from commit 424714972c1913dc101045b0d06703f3274a3515)
+---
+ core/src/mindustry/world/blocks/power/BeamNode.java   | 2 +-
+ core/src/mindustry/world/blocks/power/PowerGraph.java | 4 ++++
+ 2 files changed, 5 insertions(+), 1 deletion(-)
+
+diff --git a/core/src/mindustry/world/blocks/power/BeamNode.java b/core/src/mindustry/world/blocks/power/BeamNode.java
+index e34449d791ad0830cec57cb045d60b2b9e8e2b76..e9c9fad6db4774db8a4dff5ad299bc65a85426ea 100644
+--- a/core/src/mindustry/world/blocks/power/BeamNode.java
++++ b/core/src/mindustry/world/blocks/power/BeamNode.java
+@@ -190,7 +190,7 @@ public class BeamNode extends PowerBlock{
+ 
+                 if(next != prev){
+                     //unlinked, disconnect and reflow
+-                    if(prev != null){
++                    if(prev != null && prev.isAdded()){
+                         prev.power.links.removeValue(pos());
+                         power.links.removeValue(prev.pos());
+ 
+diff --git a/core/src/mindustry/world/blocks/power/PowerGraph.java b/core/src/mindustry/world/blocks/power/PowerGraph.java
+index 11710107ebb1ca9310d32200260b9c55931e7da1..563af123453c8f3c11a3aacabfe77a6460d14fbd 100644
+--- a/core/src/mindustry/world/blocks/power/PowerGraph.java
++++ b/core/src/mindustry/world/blocks/power/PowerGraph.java
+@@ -377,6 +377,10 @@ public class PowerGraph{
+         if(entity != null) entity.remove();
+     }
+ 
++    public int getId(){
++        return graphID;
++    }
++
+     @Deprecated
+     private boolean otherConsumersAreValid(Building build, Consume consumePower){
+         if(!build.enabled) return false;

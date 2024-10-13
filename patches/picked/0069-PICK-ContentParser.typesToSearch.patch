@@ -1,0 +1,40 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: way-zer <himc.wicp@gmail.com>
+Date: Sun, 28 Apr 2024 21:42:08 +0800
+Subject: [PATCH] PICK: ContentParser.typesToSearch
+
+---
+ core/src/mindustry/mod/ContentParser.java | 13 +++++++++++++
+ 1 file changed, 13 insertions(+)
+
+diff --git a/core/src/mindustry/mod/ContentParser.java b/core/src/mindustry/mod/ContentParser.java
+index 34b29b1c4143e1a66157ac3d359e62c3f65744ac..c8107a2d0dc068fa2186ba494894c83357e0955a 100644
+--- a/core/src/mindustry/mod/ContentParser.java
++++ b/core/src/mindustry/mod/ContentParser.java
+@@ -56,6 +56,8 @@ import static mindustry.Vars.*;
+ @SuppressWarnings("unchecked")
+ public class ContentParser{
+     private static final boolean ignoreUnknownFields = true;
++    private static final ContentType[] typesToSearch = {ContentType.block, ContentType.item, ContentType.unit, ContentType.liquid, ContentType.planet};
++
+     ObjectMap<Class<?>, ContentType> contentTypes = new ObjectMap<>();
+     ObjectSet<Class<?>> implicitNullable = ObjectSet.with(TextureRegion.class, TextureRegion[].class, TextureRegion[][].class, TextureRegion[][][].class);
+     Seq<ParseListener> listeners = new Seq<>();
+@@ -380,6 +382,17 @@ public class ContentParser{
+                     return (T)new Rect(jsonData.get(0).asFloat(), jsonData.get(1).asFloat(), jsonData.get(2).asFloat(), jsonData.get(3).asFloat());
+                 }
+ 
++                //search across different content types to find one by name
++                if(type == UnlockableContent.class){
++                    for(ContentType c : typesToSearch){
++                        T found = (T)locate(c, jsonData.asString());
++                        if(found != null){
++                            return found;
++                        }
++                    }
++                    throw new IllegalArgumentException("\"" + jsonData.name + "\": No content found with name '" + jsonData.asString() + "'.");
++                }
++
+                 if(Content.class.isAssignableFrom(type)){
+                     ContentType ctype = contentTypes.getThrow(type, () -> new IllegalArgumentException("No content type for class: " + type.getSimpleName()));
+                     String prefix = currentMod != null ? currentMod.name + "-" : "";

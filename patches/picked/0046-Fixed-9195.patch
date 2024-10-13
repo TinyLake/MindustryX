@@ -1,0 +1,26 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Anuken <arnukren@gmail.com>
+Date: Mon, 23 Oct 2023 11:34:54 -0400
+Subject: [PATCH] Fixed #9195
+
+(cherry picked from commit ef7ee5fdfe27957b7e8a07cc424af63e00412515)
+---
+ core/src/mindustry/entities/comp/BuildingComp.java | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/core/src/mindustry/entities/comp/BuildingComp.java b/core/src/mindustry/entities/comp/BuildingComp.java
+index bb5ef857572a263bf88b327fedb26b605d9de8e1..d2e23ec46c6b8eace08bf57eefee6996eaffc818 100644
+--- a/core/src/mindustry/entities/comp/BuildingComp.java
++++ b/core/src/mindustry/entities/comp/BuildingComp.java
+@@ -388,9 +388,9 @@ abstract class BuildingComp implements Posc, Teamc, Healthc, Buildingc, Timerc,
+                     //if there's a cycle, ignore its heat
+                     if(!(build instanceof HeatConductorBuild hc && hc.cameFrom.contains(id()))){
+                         //x/y coordinate difference across point of contact
+-                        int diff = Math.min(Math.abs(build.tileX() - tileX()), Math.abs(build.tileY() - tileY()));
++                        float diff = (Math.min(Math.abs(build.x - x), Math.abs(build.y - y)) / tilesize);
+                         //number of points that this block had contact with
+-                        int contactPoints = Math.min(Math.max(build.block.size, block.size) - diff, Math.min(build.block.size, block.size));
++                        int contactPoints = Math.min((int)(block.size/2f + build.block.size/2f - diff), Math.min(build.block.size, block.size));
+ 
+                         //heat is distributed across building size
+                         float add = heater.heat() / build.block.size * contactPoints;

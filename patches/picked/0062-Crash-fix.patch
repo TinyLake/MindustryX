@@ -1,0 +1,46 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Anuken <arnukren@gmail.com>
+Date: Sun, 12 Nov 2023 21:55:16 -0500
+Subject: [PATCH] Crash fix
+
+(cherry picked from commit 06bacab7102dc51bca2470cf98d75d4f943199ae)
+---
+ core/src/mindustry/ai/types/CommandAI.java               | 4 ++++
+ core/src/mindustry/world/blocks/units/UnitAssembler.java | 2 +-
+ 2 files changed, 5 insertions(+), 1 deletion(-)
+
+diff --git a/core/src/mindustry/ai/types/CommandAI.java b/core/src/mindustry/ai/types/CommandAI.java
+index f968071caef4e6e04145054731a74d67ec2dfe6c..8d843c5dd77931a51e9fb0bc0a448b22413bdf7e 100644
+--- a/core/src/mindustry/ai/types/CommandAI.java
++++ b/core/src/mindustry/ai/types/CommandAI.java
+@@ -259,6 +259,8 @@ public class CommandAI extends AIController{
+ 
+     @Override
+     public void commandPosition(Vec2 pos){
++        if(pos == null) return;
++
+         commandPosition(pos, false);
+         if(commandController != null){
+             commandController.commandPosition(pos);
+@@ -266,6 +268,8 @@ public class CommandAI extends AIController{
+     }
+ 
+     public void commandPosition(Vec2 pos, boolean stopWhenInRange){
++        if(pos == null) return;
++
+         //this is an allocation, but it's relatively rarely called anyway, and outside mutations must be prevented
+         targetPos = lastTargetPos = pos.cpy();
+         attackTarget = null;
+diff --git a/core/src/mindustry/world/blocks/units/UnitAssembler.java b/core/src/mindustry/world/blocks/units/UnitAssembler.java
+index 70034869a9487dd8b4451cc9354a83d5f0354eaa..72b86188915ff06bc2ec588c48e993aaf0e7186f 100644
+--- a/core/src/mindustry/world/blocks/units/UnitAssembler.java
++++ b/core/src/mindustry/world/blocks/units/UnitAssembler.java
+@@ -444,7 +444,7 @@ public class UnitAssembler extends PayloadBlock{
+ 
+             if(!net.client()){
+                 var unit = plan.unit.create(team);
+-                if(unit != null && unit.isCommandable()){
++                if(unit != null && unit.isCommandable() && commandPos != null){
+                     unit.command().commandPosition(commandPos);
+                 }
+                 unit.set(spawn.x + Mathf.range(0.001f), spawn.y + Mathf.range(0.001f));

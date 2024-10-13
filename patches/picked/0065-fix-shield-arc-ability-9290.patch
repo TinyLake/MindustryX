@@ -1,0 +1,28 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Ilya246 <57039557+Ilya246@users.noreply.github.com>
+Date: Sat, 18 Nov 2023 17:35:10 +0400
+Subject: [PATCH] fix shield arc ability (#9290)
+
+* fix shield arc ability
+
+* Update ShieldArcAbility.java
+
+(cherry picked from commit 533c5a8afbc9bffccc909f15544715b84d833f05)
+---
+ core/src/mindustry/entities/abilities/ShieldArcAbility.java | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
+
+diff --git a/core/src/mindustry/entities/abilities/ShieldArcAbility.java b/core/src/mindustry/entities/abilities/ShieldArcAbility.java
+index 0d8882ab0fe92d096b719421a6e7f9b1a3753176..12d631908b9e7a8bfda95bfcf3294afda87b54d0 100644
+--- a/core/src/mindustry/entities/abilities/ShieldArcAbility.java
++++ b/core/src/mindustry/entities/abilities/ShieldArcAbility.java
+@@ -92,7 +92,8 @@ public class ShieldArcAbility extends Ability{
+             paramField = this;
+             paramPos.set(x, y).rotate(unit.rotation - 90f).add(unit);
+ 
+-            Groups.bullet.intersect(unit.x - radius, unit.y - radius, radius * 2f, radius * 2f, shieldConsumer);
++            float reach = radius + width / 2f;
++            Groups.bullet.intersect(paramPos.x - reach, paramPos.y - reach, reach * 2f, reach * 2f, shieldConsumer);
+         }else{
+             widthScale = Mathf.lerpDelta(widthScale, 0f, 0.11f);
+         }

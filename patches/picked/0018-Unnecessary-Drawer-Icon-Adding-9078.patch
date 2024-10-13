@@ -1,0 +1,70 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: MEEPofFaith <54301439+MEEPofFaith@users.noreply.github.com>
+Date: Wed, 20 Sep 2023 18:20:22 -0700
+Subject: [PATCH] Unnecessary Drawer Icon Adding (#9078)
+
+* DrawBlock icons shouldn't have icons by default
+
+It doesn't make sense for drawers like DrawLiquidTile to return icons. Overriding in every such class doesn't make as much sense as simply changing the superclass.
+
+* Ensure that finalIcons is never empty
+
+(cherry picked from commit fa0ce204da1c3d9686107b64a70ad63df512524d)
+---
+ core/src/mindustry/world/draw/DrawBlock.java         | 5 +++--
+ core/src/mindustry/world/draw/DrawDefault.java       | 5 +++++
+ core/src/mindustry/world/draw/DrawLiquidOutputs.java | 6 ------
+ 3 files changed, 8 insertions(+), 8 deletions(-)
+
+diff --git a/core/src/mindustry/world/draw/DrawBlock.java b/core/src/mindustry/world/draw/DrawBlock.java
+index 380a61ca0065df1d9398de02ffe139b36a287eac..6c25c9774841ad0e72dff6d509071a66f851beb2 100644
+--- a/core/src/mindustry/world/draw/DrawBlock.java
++++ b/core/src/mindustry/world/draw/DrawBlock.java
+@@ -44,7 +44,7 @@ public abstract class DrawBlock{
+ 
+     /** @return the generated icons to be used for this block. */
+     public TextureRegion[] icons(Block block){
+-        return new TextureRegion[]{block.region};
++        return new TextureRegion[]{};
+     }
+ 
+     public final TextureRegion[] finalIcons(Block block){
+@@ -55,7 +55,8 @@ public abstract class DrawBlock{
+             }
+             return out;
+         }
+-        return icons(block);
++        TextureRegion[] icons = icons(block);
++        return icons.length == 0 ? new TextureRegion[]{Core.atlas.find("error")} : icons;
+     }
+ 
+     public GenericCrafter expectCrafter(Block block){
+diff --git a/core/src/mindustry/world/draw/DrawDefault.java b/core/src/mindustry/world/draw/DrawDefault.java
+index 8fa743324498f2ff4b7dbb11c6015a6783e42ea6..9cfcf72007888574336563958e95d34251fc2cda 100644
+--- a/core/src/mindustry/world/draw/DrawDefault.java
++++ b/core/src/mindustry/world/draw/DrawDefault.java
+@@ -17,4 +17,9 @@ public class DrawDefault extends DrawBlock{
+     public void drawPlan(Block block, BuildPlan plan, Eachable<BuildPlan> list){
+         block.drawDefaultPlanRegion(plan, list);
+     }
++
++    @Override
++    public TextureRegion[] icons(Block block){
++        return new TextureRegion[]{block.region};
++    }
+ }
+diff --git a/core/src/mindustry/world/draw/DrawLiquidOutputs.java b/core/src/mindustry/world/draw/DrawLiquidOutputs.java
+index e18e346277537d036a5b7e5f2786e1ce1fc9cef9..7793857570a08ef8b790a68b177705bf2e074890 100644
+--- a/core/src/mindustry/world/draw/DrawLiquidOutputs.java
++++ b/core/src/mindustry/world/draw/DrawLiquidOutputs.java
+@@ -53,10 +53,4 @@ public class DrawLiquidOutputs extends DrawBlock{
+             }
+         }
+     }
+-
+-    //can't display these properly
+-    @Override
+-    public TextureRegion[] icons(Block block){
+-        return new TextureRegion[]{};
+-    }
+ }

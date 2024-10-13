@@ -1,0 +1,26 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Anuken <arnukren@gmail.com>
+Date: Sat, 13 Jan 2024 03:20:28 +0800
+Subject: [PATCH] Fixed #9449
+
+(cherry picked from commit 1d3736cf8281859d8168c342d81aa2d7c918b360)
+---
+ .../src/mindustry/world/blocks/distribution/StackRouter.java | 5 +++++
+ 1 file changed, 5 insertions(+)
+
+diff --git a/core/src/mindustry/world/blocks/distribution/StackRouter.java b/core/src/mindustry/world/blocks/distribution/StackRouter.java
+index e763b2ece1b9933cd6182cfbf633decb528fa332..1186401c9c0dce716ac9100efa11799d5b8dfff0 100644
+--- a/core/src/mindustry/world/blocks/distribution/StackRouter.java
++++ b/core/src/mindustry/world/blocks/distribution/StackRouter.java
+@@ -61,6 +61,11 @@ public class StackRouter extends DuctRouter{
+             if((current == null || items.get(current) == 0) && items.total() > 0){
+                 current = items.first();
+             }
++
++            if(items.empty()){
++                unloading = false;
++                current = null;
++            }
+         }
+ 
+         @Override

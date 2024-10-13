@@ -1,0 +1,30 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: way-zer <himc.wicp@gmail.com>
+Date: Thu, 28 Mar 2024 19:55:54 +0800
+Subject: [PATCH] PICK Fixed setProp x/y not teleporting on strict servers
+
+---
+ core/src/mindustry/entities/comp/UnitComp.java | 10 ++++++++--
+ 1 file changed, 8 insertions(+), 2 deletions(-)
+
+diff --git a/core/src/mindustry/entities/comp/UnitComp.java b/core/src/mindustry/entities/comp/UnitComp.java
+index 70e2a0ade1609a166d3343b5b0f86ba57604a854..7595a3709f1d84bc37f5c0a26b6c28f73766de1a 100644
+--- a/core/src/mindustry/entities/comp/UnitComp.java
++++ b/core/src/mindustry/entities/comp/UnitComp.java
+@@ -269,8 +269,14 @@ abstract class UnitComp implements Healthc, Physicsc, Hitboxc, Statusc, Teamc, I
+                 }
+             }
+             case shield -> shield = Math.max((float)value, 0f);
+-            case x -> x = World.unconv((float)value);
+-            case y -> y = World.unconv((float)value);
++            case x -> {
++                x = World.unconv((float)value);
++                if(!isLocal()) snapInterpolation();
++            }
++            case y -> {
++                y = World.unconv((float)value);
++                if(!isLocal()) snapInterpolation();
++            }
+             case rotation -> rotation = (float)value;
+             case team -> {
+                 if(!net.client()){

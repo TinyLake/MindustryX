@@ -1,0 +1,42 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Anuken <arnukren@gmail.com>
+Date: Fri, 10 Nov 2023 02:00:15 -0500
+Subject: [PATCH] Fixed #9260
+
+(cherry picked from commit 9bf23bfcc85ecf350ec41c4f33c7cd837e4909d4)
+---
+ core/src/mindustry/service/GameService.java | 11 +++--------
+ 1 file changed, 3 insertions(+), 8 deletions(-)
+
+diff --git a/core/src/mindustry/service/GameService.java b/core/src/mindustry/service/GameService.java
+index 79d9aec34248b04e5a9686d902383ffe9ea1eb2e..87e2e2ee1bcc3900d336b3fb429d48f5cbe99cea 100644
+--- a/core/src/mindustry/service/GameService.java
++++ b/core/src/mindustry/service/GameService.java
+@@ -111,16 +111,10 @@ public class GameService{
+             completeSerpulo.complete();
+         }
+ 
+-        if(mods.list().size > 0){
++        if(mods != null && mods.list().size > 0){
+             installMod.complete();
+         }
+ 
+-        Events.on(ClientLoadEvent.class, e -> {
+-            if(mods.list().size > 0){
+-                installMod.complete();
+-            }
+-        });
+-
+         if(Core.bundle.get("yes").equals("router")){
+             routerLanguage.complete();
+         }
+@@ -459,7 +453,8 @@ public class GameService{
+         //check unlocked stuff on load as well
+         Events.on(ResearchEvent.class, e -> checkUnlocks.run());
+         Events.on(UnlockEvent.class, e -> checkUnlocks.run());
+-        Events.on(ClientLoadEvent.class, e -> checkUnlocks.run());
++
++        checkUnlocks.run();
+ 
+         Events.on(WinEvent.class, e -> {
+             if(state.rules.pvp){

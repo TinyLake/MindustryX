@@ -1,0 +1,28 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: way-zer <himc.wicp@gmail.com>
+Date: Sat, 4 May 2024 19:51:58 +0800
+Subject: [PATCH] =?UTF-8?q?fixup!=20Allow=20fetching=20unitCount=20by=20ty?=
+ =?UTF-8?q?pe,=20and=20buildCount=20without=20type=20(#9374)=20NPE?=
+ =?UTF-8?q?=E6=8A=A5=E9=94=99?=
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+---
+ core/src/mindustry/logic/LExecutor.java | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
+
+diff --git a/core/src/mindustry/logic/LExecutor.java b/core/src/mindustry/logic/LExecutor.java
+index 51383d05925587e4cc5daff77deba2ac8c4cb53d..dc6716375964ec579572888ff572f2803798e9d9 100644
+--- a/core/src/mindustry/logic/LExecutor.java
++++ b/core/src/mindustry/logic/LExecutor.java
+@@ -1264,7 +1264,8 @@ public class LExecutor{
+                     if(type == null){
+                         exec.setnum(result, data.units.size);
+                     }else{
+-                        exec.setnum(result, data.unitsByType[type.id].size);
++                        var units = data.getUnits(type);
++                        exec.setnum(result, units != null ? units.size : 0);
+                     }
+                 }
+                 case coreCount -> exec.setnum(result, data.cores.size);

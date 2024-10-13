@@ -1,0 +1,24 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Anuken <arnukren@gmail.com>
+Date: Thu, 23 Nov 2023 06:28:57 -0500
+Subject: [PATCH] Reject invalid tile configs
+
+(cherry picked from commit 4076a146b1dd7ab85d68b6c135e8e78e23e17108)
+---
+ core/src/mindustry/input/InputHandler.java | 2 ++
+ 1 file changed, 2 insertions(+)
+
+diff --git a/core/src/mindustry/input/InputHandler.java b/core/src/mindustry/input/InputHandler.java
+index 84a04de643d5d6b4cd5bd5bb8f3dc56d4f517346..5ce52db529ea949688fdb4c9060c9b01299e9ffd 100644
+--- a/core/src/mindustry/input/InputHandler.java
++++ b/core/src/mindustry/input/InputHandler.java
+@@ -508,7 +508,9 @@ public abstract class InputHandler implements InputProcessor, GestureListener{
+ 
+     @Remote(targets = Loc.both, called = Loc.both, forward = true)
+     public static void tileConfig(@Nullable Player player, Building build, @Nullable Object value){
++        if(build == null && net.server()) throw new ValidateException(player, "building is null");
+         if(build == null) return;
++
+         if(net.server() && (!Units.canInteract(player, build) ||
+             !netServer.admins.allowAction(player, ActionType.configure, build.tile, action -> action.config = value))){
+ 

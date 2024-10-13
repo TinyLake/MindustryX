@@ -1,0 +1,59 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: way-zer <himc.wicp@gmail.com>
+Date: Sun, 28 Apr 2024 20:43:57 +0800
+Subject: [PATCH] PICK: misc fix
+
+---
+ core/src/mindustry/entities/abilities/ShieldArcAbility.java | 2 +-
+ core/src/mindustry/input/Placement.java                     | 4 ++--
+ core/src/mindustry/logic/LStatement.java                    | 2 +-
+ 3 files changed, 4 insertions(+), 4 deletions(-)
+
+diff --git a/core/src/mindustry/entities/abilities/ShieldArcAbility.java b/core/src/mindustry/entities/abilities/ShieldArcAbility.java
+index 548a123899a8a86ba797f318f2b2bae8845293e7..2d006d3ca21259fb41af32ffa2438f10ceac7712 100644
+--- a/core/src/mindustry/entities/abilities/ShieldArcAbility.java
++++ b/core/src/mindustry/entities/abilities/ShieldArcAbility.java
+@@ -21,7 +21,7 @@ public class ShieldArcAbility extends Ability{
+     private static Vec2 paramPos = new Vec2();
+     private static final Cons<Bullet> shieldConsumer = b -> {
+         if(b.team != paramUnit.team && b.type.absorbable && paramField.data > 0 &&
+-            !paramPos.within(b, paramField.radius + paramField.width/2f) &&
++            !b.within(paramPos, paramField.radius - paramField.width/2f) &&
+             Tmp.v1.set(b).add(b.vel).within(paramPos, paramField.radius + paramField.width/2f) &&
+             Angles.within(paramPos.angleTo(b), paramUnit.rotation + paramField.angleOffset, paramField.angle / 2f)){
+ 
+diff --git a/core/src/mindustry/input/Placement.java b/core/src/mindustry/input/Placement.java
+index 351cf7320eeaee44de486458dd9b3e8e534b1ce8..279bcfb62816d1411e5fe198a2c0212ee9a27e74 100644
+--- a/core/src/mindustry/input/Placement.java
++++ b/core/src/mindustry/input/Placement.java
+@@ -113,7 +113,7 @@ public class Placement{
+     }
+ 
+     public static void calculateBridges(Seq<BuildPlan> plans, ItemBridge bridge){
+-        if(isSidePlace(plans)) return;
++        if(isSidePlace(plans) || plans.size == 0) return;
+ 
+         //check for orthogonal placement + unlocked state
+         if(!(plans.first().x == plans.peek().x || plans.first().y == plans.peek().y) || !bridge.unlockedNow()){
+@@ -176,7 +176,7 @@ public class Placement{
+     }
+ 
+     public static void calculateBridges(Seq<BuildPlan> plans, DirectionBridge bridge, boolean hasJunction, Boolf<Block> same){
+-        if(isSidePlace(plans)) return;
++        if(isSidePlace(plans) || plans.size == 0) return;
+ 
+         //check for orthogonal placement + unlocked state
+         if(!(plans.first().x == plans.peek().x || plans.first().y == plans.peek().y) || !bridge.unlockedNow()){
+diff --git a/core/src/mindustry/logic/LStatement.java b/core/src/mindustry/logic/LStatement.java
+index e16830677d8cb62c56e2fdf62ff6d2888cb82b36..f78b5e29bcd85abbe7aff038f5a165a6fe572431 100644
+--- a/core/src/mindustry/logic/LStatement.java
++++ b/core/src/mindustry/logic/LStatement.java
+@@ -132,7 +132,7 @@ public abstract class LStatement{
+                     if(p instanceof Enum e){
+                         tooltip(c, e);
+                     }
+-                }).checked(current == p).group(group));
++                }).checked(current.equals(p)).group(group));
+ 
+                 if(++i % cols == 0) t.row();
+             }
