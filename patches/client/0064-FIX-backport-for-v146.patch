@@ -12,6 +12,7 @@ Content-Transfer-Encoding: 8bit
 Rules界面合并be的搜索功能
 ---
  android/AndroidManifest.xml                   |  3 +-
+ .../mindustry/android/AndroidLauncher.java    |  3 ++
  build.gradle                                  |  5 ---
  .../mindustry/entities/comp/MinerComp.java    |  2 +
  .../mindustry/entities/comp/PlayerComp.java   |  4 +-
@@ -28,7 +29,7 @@ Rules界面合并be的搜索功能
  .../world/blocks/production/BeamDrill.java    |  7 +++-
  core/src/mindustry/world/meta/StatValues.java | 12 +++---
  .../mindustry/desktop/DesktopLauncher.java    |  4 ++
- 17 files changed, 70 insertions(+), 42 deletions(-)
+ 18 files changed, 73 insertions(+), 42 deletions(-)
 
 diff --git a/android/AndroidManifest.xml b/android/AndroidManifest.xml
 index 68a2db550a609be9366f5d093e0096ea504e5baa..9b0c06287bf52a48823eaa018e9b23c2d304a4c2 100644
@@ -42,6 +43,27 @@ index 68a2db550a609be9366f5d093e0096ea504e5baa..9b0c06287bf52a48823eaa018e9b23c2
  
      <uses-feature android:glEsVersion="0x00020000" android:required="true"/>
      <uses-feature android:name="android.hardware.type.pc" android:required="false" />
+diff --git a/android/src/mindustry/android/AndroidLauncher.java b/android/src/mindustry/android/AndroidLauncher.java
+index da3944fe06cc2d975f91915b173b687fc2bd3314..49a62c03087aad7b0da0df1f156ebaad158ef4be 100644
+--- a/android/src/mindustry/android/AndroidLauncher.java
++++ b/android/src/mindustry/android/AndroidLauncher.java
+@@ -72,6 +72,8 @@ public class AndroidLauncher extends AndroidApplication{
+ 
+             @Override
+             public ClassLoader loadJar(Fi jar, ClassLoader parent) throws Exception{
++                //Required to load jar files in Android 14: https://developer.android.com/about/versions/14/behavior-changes-14#safer-dynamic-code-loading
++                jar.file().setReadOnly();
+                 return new DexClassLoader(jar.file().getPath(), getFilesDir().getPath(), null, parent){
+                     @Override
+                     protected Class<?> loadClass(String name, boolean resolve) throws ClassNotFoundException{
+@@ -180,6 +182,7 @@ public class AndroidLauncher extends AndroidApplication{
+         }, new AndroidApplicationConfiguration(){{
+             useImmersiveMode = true;
+             hideStatusBar = true;
++            useGL30 = true;
+         }});
+         checkFiles(getIntent());
+ 
 diff --git a/build.gradle b/build.gradle
 index 273566d64e870371bb8d80d4569bce069316ce63..8372190ef1cae6d8aa4b1ba6dea4168d524338b8 100644
 --- a/build.gradle
