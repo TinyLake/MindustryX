@@ -1,0 +1,419 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: way-zer <himc.wicp@gmail.com>
+Date: Mon, 14 Oct 2024 00:42:52 +0800
+Subject: [PATCH] FIX: backport for v146
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+新的bp146。合并了更多BE新东西：
+直接使用最新版本的arc库
+默认使用GL3而不是GL2
+Rules界面合并be的搜索功能
+---
+ android/AndroidManifest.xml                   |  3 +-
+ build.gradle                                  |  5 ---
+ .../mindustry/entities/comp/MinerComp.java    |  2 +
+ .../mindustry/entities/comp/PlayerComp.java   |  4 +-
+ core/src/mindustry/logic/LCanvas.java         |  5 ---
+ core/src/mindustry/logic/LogicDialog.java     |  1 -
+ core/src/mindustry/type/Weapon.java           |  5 +++
+ .../ui/dialogs/CustomRulesDialog.java         | 12 +-----
+ .../mindustry/ui/dialogs/DatabaseDialog.java  |  3 +-
+ .../ui/dialogs/SchematicsDialog.java          |  5 ++-
+ .../mindustry/ui/fragments/HudFragment.java   |  1 +
+ .../ui/fragments/PlacementFragment.java       | 40 ++++++++++++++++---
+ .../blocks/distribution/StackConveyor.java    |  2 +
+ .../world/blocks/logic/LogicBlock.java        |  1 +
+ .../world/blocks/production/BeamDrill.java    |  7 +++-
+ core/src/mindustry/world/meta/StatValues.java | 12 +++---
+ .../mindustry/desktop/DesktopLauncher.java    |  4 ++
+ 17 files changed, 70 insertions(+), 42 deletions(-)
+
+diff --git a/android/AndroidManifest.xml b/android/AndroidManifest.xml
+index 68a2db550a609be9366f5d093e0096ea504e5baa..9b0c06287bf52a48823eaa018e9b23c2d304a4c2 100644
+--- a/android/AndroidManifest.xml
++++ b/android/AndroidManifest.xml
+@@ -1,6 +1,5 @@
+ <?xml version="1.0" encoding="utf-8"?>
+-<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+-          package="io.anuke.mindustry">
++<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+ 
+     <uses-feature android:glEsVersion="0x00020000" android:required="true"/>
+     <uses-feature android:name="android.hardware.type.pc" android:required="false" />
+diff --git a/build.gradle b/build.gradle
+index 273566d64e870371bb8d80d4569bce069316ce63..8372190ef1cae6d8aa4b1ba6dea4168d524338b8 100644
+--- a/build.gradle
++++ b/build.gradle
+@@ -193,7 +193,6 @@ project(":server"){
+     dependencies{
+         implementation project(":core")
+         implementation arcModule("backends:backend-headless")
+-        annotationProcessor 'com.github.Anuken:jabel:0.9.0'
+     }
+ }
+ 
+@@ -205,7 +204,6 @@ project(":tests"){
+         testImplementation "org.junit.jupiter:junit-jupiter-params:5.7.1"
+         testImplementation "org.junit.jupiter:junit-jupiter-api:5.7.1"
+         testImplementation arcModule("backends:backend-headless")
+-        testImplementation "org.json:json:20230618"
+         testRuntimeOnly "org.junit.jupiter:junit-jupiter-engine:5.7.1"
+     }
+ 
+@@ -230,9 +228,6 @@ project(":tools"){
+         implementation arcModule("natives:natives-desktop")
+         implementation arcModule("natives:natives-freetype-desktop")
+         implementation arcModule("backends:backend-headless")
+-
+-        implementation("com.google.guava:guava:33.3.1-jre")
+-        annotationProcessor 'com.github.Anuken:jabel:0.9.0'
+     }
+ }
+ 
+diff --git a/core/src/mindustry/entities/comp/MinerComp.java b/core/src/mindustry/entities/comp/MinerComp.java
+index 0e1caeb7283ae45f57c55825affe28a2b644bac0..65a55cc0a5c6601241d7bfc404bd0eaa259dc164 100644
+--- a/core/src/mindustry/entities/comp/MinerComp.java
++++ b/core/src/mindustry/entities/comp/MinerComp.java
+@@ -12,6 +12,7 @@ import mindustry.graphics.*;
+ import mindustry.input.*;
+ import mindustry.type.*;
+ import mindustry.world.*;
++import mindustryX.features.*;
+ 
+ import static mindustry.Vars.*;
+ 
+@@ -126,6 +127,7 @@ abstract class MinerComp implements Itemsc, Posc, Teamc, Rotc, Drawc{
+ 
+     @Override
+     public void draw(){
++        if(!RenderExt.showMineBeam) return;
+         if(!mining()) return;
+         float focusLen = hitSize / 2f + Mathf.absin(Time.time, 1.1f, 0.5f);
+         float swingScl = 12f, swingMag = tilesize / 8f;
+diff --git a/core/src/mindustry/entities/comp/PlayerComp.java b/core/src/mindustry/entities/comp/PlayerComp.java
+index 5e847e15f0128714ee2fc5dde3939a4805336f9a..04dee366a50fb6332dc4c9a2ee2e93f3373c36e8 100644
+--- a/core/src/mindustry/entities/comp/PlayerComp.java
++++ b/core/src/mindustry/entities/comp/PlayerComp.java
+@@ -192,9 +192,7 @@ abstract class PlayerComp implements UnitController, Entityc, Syncc, Timerc, Dra
+     public void team(Team team){
+         Team last = this.team;
+         this.team = team;
+-        if(unit != null){
+-            unit.team(team);
+-        }
++        unit.team(team);
+         //MDTX: PlayerTeamChangeEvent
+         Events.fire(new PlayerTeamChangedEvent(last, self()));
+     }
+diff --git a/core/src/mindustry/logic/LCanvas.java b/core/src/mindustry/logic/LCanvas.java
+index fbaa501bf38d85dbe718b27c43e753b3751c88ca..7f0f98fa8eca331b013a10dd26b71d2a96240913 100644
+--- a/core/src/mindustry/logic/LCanvas.java
++++ b/core/src/mindustry/logic/LCanvas.java
+@@ -165,11 +165,6 @@ public class LCanvas extends Table{
+         }
+     }
+ 
+-    public void clearStatements(){
+-        jumps.clear();
+-        statements.clearChildren();
+-    }
+-
+     StatementElem checkHovered(){
+         Element e = Core.scene.hit(Core.input.mouseX(), Core.input.mouseY(), true);
+         if(e != null){
+diff --git a/core/src/mindustry/logic/LogicDialog.java b/core/src/mindustry/logic/LogicDialog.java
+index d2514073bec9fb876ab68cb6654b8a692b9dc614..3f927767b2d36da305268bcb5113f65c72965590 100644
+--- a/core/src/mindustry/logic/LogicDialog.java
++++ b/core/src/mindustry/logic/LogicDialog.java
+@@ -18,7 +18,6 @@ import mindustry.logic.LExecutor.*;
+ import mindustry.logic.LStatements.*;
+ import mindustry.ui.*;
+ import mindustry.ui.dialogs.*;
+-import mindustry.world.blocks.logic.*;
+ import mindustryX.*;
+ import mindustryX.features.*;
+ import mindustryX.features.Settings;
+diff --git a/core/src/mindustry/type/Weapon.java b/core/src/mindustry/type/Weapon.java
+index 7261413c96c6a50bb553ff6f1a689ce89b563e64..91ead2fb3ad9a2b676666f4a69d13adb9be18d1f 100644
+--- a/core/src/mindustry/type/Weapon.java
++++ b/core/src/mindustry/type/Weapon.java
+@@ -164,6 +164,11 @@ public class Weapon implements Cloneable{
+     }
+ 
+     public void addStats(UnitType u, Table t){
++        if(reload > 0) {
++            t.row();
++            int shoots = StatExt.totalShots(shoot);
++            t.add("[lightgray]" + Stat.reload.localized() + ": " + (mirror ? "[stat]2 [lightgray]x " : "") + (shoots == 1 ? "" : "[stat]" + shoots + " [lightgray]x ") + "[stat]" +  Strings.autoFixed(60f / reload, 2) + " []" + StatUnit.perSecond.localized());
++        }
+         t.row();
+         t.add("[lightgray]武器范围: [stat]" + String.format("%.1f", bullet.range/8f) + " []格");
+ 
+diff --git a/core/src/mindustry/ui/dialogs/CustomRulesDialog.java b/core/src/mindustry/ui/dialogs/CustomRulesDialog.java
+index e3d86b9a466b0e433d1a7cb06e3748b98ea2f5ac..af65da5b5672b841724fbaf287b77d31ae4f5325 100644
+--- a/core/src/mindustry/ui/dialogs/CustomRulesDialog.java
++++ b/core/src/mindustry/ui/dialogs/CustomRulesDialog.java
+@@ -226,18 +226,14 @@ public class CustomRulesDialog extends BaseDialog{
+         check("@rules.wavetimer", b -> rules.waveTimer = b, () -> rules.waveTimer, () -> rules.waves);
+         check("@rules.waitForWaveToEnd", b -> rules.waitEnemies = b, () -> rules.waitEnemies, () -> rules.waves && rules.waveTimer);
+         number("@rules.winWave", b -> rules.winWave = (int)b, () -> (int)rules.winWave);
+-        check("@rules.randomwaveai", b -> rules.randomWaveAI = b, () -> rules.randomWaveAI, () -> rules.waves);
+-        check("@rules.airUseSpawns", b -> rules.airUseSpawns = b, () -> rules.airUseSpawns, () -> rules.waves);
+         numberi("@rules.wavelimit", f -> rules.winWave = f, () -> rules.winWave, () -> rules.waves, 0, Integer.MAX_VALUE);
+         number("@rules.wavespacing", false, f -> rules.waveSpacing = f * 60f, () -> rules.waveSpacing / 60f, () -> rules.waves && rules.waveTimer, 1, Float.MAX_VALUE);
+         number("@rules.initialwavespacing", false, f -> rules.initialWaveSpacing = f * 60f, () -> rules.initialWaveSpacing / 60f, () -> rules.waves && rules.waveTimer, 0, Float.MAX_VALUE);
+         number("@rules.dropzoneradius", false, f -> rules.dropZoneRadius = f * tilesize, () -> rules.dropZoneRadius / tilesize, () -> rules.waves);
+ 
+         category("resourcesbuilding");
+-        check("@rules.alloweditworldprocessors", b -> rules.allowEditWorldProcessors = b, () -> rules.allowEditWorldProcessors);
+         check("@rules.infiniteresources", b -> rules.infiniteResources = b, () -> rules.infiniteResources);
+         check("@rules.onlydepositcore", b -> rules.onlyDepositCore = b, () -> rules.onlyDepositCore);
+-        check("@rules.derelictrepair", b -> rules.derelictRepair = b, () -> rules.derelictRepair);
+         check("@rules.reactorexplosions", b -> rules.reactorExplosions = b, () -> rules.reactorExplosions);
+         check("@rules.schematic", b -> rules.schematicsAllowed = b, () -> rules.schematicsAllowed);
+         check("@rules.coreincinerates", b -> rules.coreIncinerates = b, () -> rules.coreIncinerates);
+@@ -270,7 +266,6 @@ public class CustomRulesDialog extends BaseDialog{
+ 
+         category("unit");
+         check("@rules.unitcapvariable", b -> rules.unitCapVariable = b, () -> rules.unitCapVariable);
+-        check("@rules.unitpayloadsexplode", b -> rules.unitPayloadsExplode = b, () -> rules.unitPayloadsExplode);
+         numberi("@rules.unitcap", f -> rules.unitCap = f, () -> rules.unitCap, -999, 999);
+         number("@rules.unitdamagemultiplier", f -> rules.unitDamageMultiplier = f, () -> rules.unitDamageMultiplier);
+         number("@rules.unitcrashdamagemultiplier", f -> rules.unitCrashDamageMultiplier = f, () -> rules.unitCrashDamageMultiplier);
+@@ -352,6 +347,7 @@ public class CustomRulesDialog extends BaseDialog{
+         check("@rules.showSpawns",b->rules.showSpawns = b,()->rules.showSpawns);
+         check("允许控制单位", b -> rules.possessionAllowed = b, () -> rules.possessionAllowed);
+         check("禁用重建", b -> rules.ghostBlocks = b, () -> !rules.ghostBlocks);
++        main.button("@hiddenBuildItems", () -> showBanned("@hiddenBuildItems", ContentType.item, rules.hiddenBuildItems, Item::showUnlock)).left().width(300f).row();
+ 
+         check("@rules.limitarea", b -> rules.limitMapArea = b, () -> rules.limitMapArea);
+         numberi("x", x -> state.rules.limitX = x, () -> state.rules.limitX, () -> state.rules.limitMapArea, 0, 10000);
+@@ -371,7 +367,7 @@ public class CustomRulesDialog extends BaseDialog{
+ 
+             for(Planet planet : content.planets()){
+                 t.button(planet.localizedName, style, () -> {
+-                    planet.applyRules(rules, true);
++                    planet.applyRules(rules);
+                 }).group(group).checked(b -> rules.planet == planet);
+ 
+                     if(t.getChildren().size % 3 == 0){
+@@ -388,10 +384,6 @@ public class CustomRulesDialog extends BaseDialog{
+ 
+ 
+         category("teams");
+-        //not sure where else to put this
+-        if(showRuleEditRule){
+-            check("@rules.allowedit", b -> rules.allowEditRules = b, () -> rules.allowEditRules);
+-        }
+         current.button("所有队伍开启无限火力", () -> {
+             for(Team team : Team.all){
+                 team.rules().cheat = true;
+diff --git a/core/src/mindustry/ui/dialogs/DatabaseDialog.java b/core/src/mindustry/ui/dialogs/DatabaseDialog.java
+index 0bd53c93425716c0dcfd0972f0a80fc12a145bec..7a942a20b2c6a604c021bcbce4b9bfea2e608b9d 100644
+--- a/core/src/mindustry/ui/dialogs/DatabaseDialog.java
++++ b/core/src/mindustry/ui/dialogs/DatabaseDialog.java
+@@ -54,8 +54,7 @@ public class DatabaseDialog extends BaseDialog{
+ 
+             Seq<UnlockableContent> array = allContent[j]
+                 .select(c -> c instanceof UnlockableContent u &&
+-                    (LogicExt.allUnlocked || !u.isHidden() ) &&
+-
++                    (LogicExt.allUnlocked || !u.isHidden()) &&
+                     (text.isEmpty() || u.localizedName.toLowerCase().contains(text.toLowerCase()))).as();
+             if(array.size == 0) continue;
+ 
+diff --git a/core/src/mindustry/ui/dialogs/SchematicsDialog.java b/core/src/mindustry/ui/dialogs/SchematicsDialog.java
+index 0d34cd1b583bc90c51f2f095f9b5a140050a120d..522aa7cfaeb8cae7f9c032efd5623939ee266cc1 100644
+--- a/core/src/mindustry/ui/dialogs/SchematicsDialog.java
++++ b/core/src/mindustry/ui/dialogs/SchematicsDialog.java
+@@ -180,7 +180,10 @@ public class SchematicsDialog extends BaseDialog{
+                     //make sure search fits
+                     if(!search.isEmpty() && !ignoreSymbols.matcher(s.name().toLowerCase()).replaceAll("").contains(searchString)) continue;
+ 
+-                    if(selectedPlanet != null && !s.tiles.allMatch((it) -> it.block.isOnPlanet(selectedPlanet))) continue;
++                    if(selectedPlanet != null){
++                        var req = s.requirements();
++                        if(selectedPlanet.hiddenItems.find(req::has) != null) continue;
++                    }
+                     if(Core.settings.getBool("autoSelSchematic") && control.input.block != null && !s.containsBlock(control.input.block)) continue;
+                     if(Core.settings.getBool("arcSchematicCanBuild") && !arcSchematicCanBuild(s)) continue;
+                     if(firstSchematic == null) firstSchematic = s;
+diff --git a/core/src/mindustry/ui/fragments/HudFragment.java b/core/src/mindustry/ui/fragments/HudFragment.java
+index e5f805ccc199b79130eb87c6e46907d17ea395ba..9216379416eff9f6490fc866d99302e2871c4de9 100644
+--- a/core/src/mindustry/ui/fragments/HudFragment.java
++++ b/core/src/mindustry/ui/fragments/HudFragment.java
+@@ -14,6 +14,7 @@ import arc.scene.ui.ImageButton.*;
+ import arc.scene.ui.layout.*;
+ import arc.struct.*;
+ import arc.util.*;
++import mindustry.*;
+ import mindustry.annotations.Annotations.*;
+ import mindustry.content.*;
+ import mindustry.core.GameState.*;
+diff --git a/core/src/mindustry/ui/fragments/PlacementFragment.java b/core/src/mindustry/ui/fragments/PlacementFragment.java
+index b6659961e84e14b5b012100a200fbe76db09c746..1692bfb997bbd802d9186d1365b841360c2c79c3 100644
+--- a/core/src/mindustry/ui/fragments/PlacementFragment.java
++++ b/core/src/mindustry/ui/fragments/PlacementFragment.java
+@@ -565,16 +565,46 @@ public class PlacementFragment{
+                                     u.row();
+ 
+                                     u.table(coms -> {
+-                                        coms.left();
+-                                        int scol = 0;
+                                         for(var command : commands){
+                                             coms.button(Icon.icons.get(command.icon, Icon.cancel), Styles.clearNoneTogglei, () -> {
+-                                                Call.setUnitCommand(player, units.mapInt(un -> un.id).toArray(), command);
+-                                            }).checked(i -> currentCommand[0] == command).size(50f).tooltip(command.localized(), true);
++                                                IntSeq ids = new IntSeq();
++                                                for(var unit : units){
++                                                    ids.add(unit.id);
++                                                }
+ 
+-                                            if(++scol % (rowWidth + 2) == 0) coms.row();
++                                                Call.setUnitCommand(player, ids.toArray(), command);
++                                            }).checked(i -> currentCommand[0] == command).size(50f).tooltip(command.localized());
++                                        }
++                                    }).fillX().padTop(4f).left();
++                                }
++                                if(arcExtra && units.size > 0){
++                                    u.row();
++                                    u.table(sp -> {
++                                        float wound = (float) Core.settings.getInt("rtsWoundUnit") / 100f;
++                                        if (units.contains(unit -> unit.health >= unit.maxHealth * wound) && units.contains(unit -> unit.health < unit.maxHealth * wound)){
++                                            sp.table(spp->{
++                                                arcSelectUnits(spp,"[green]\uE813","高血量单位", unit -> unit.health >= unit.maxHealth * wound);
++                                                arcSelectUnits(spp,"[red]\uE80F","低血量单位", unit -> unit.health < unit.maxHealth * wound);
++                                            });
+                                         }
+ 
++                                        if (units.contains(unit -> unit.type.commands.length > 1) && units.contains(unit -> unit.type.commands.length <= 1)){
++                                            sp.table(spp->{
++                                                arcSelectUnits(spp,"\uE86E","进攻性单位", unit -> unit.type.commands.length <= 1);
++                                                arcSelectUnits(spp,"\uE86B","辅助性单位", unit -> unit.type.commands.length > 1);
++                                            });
++                                        }
++
++                                        boolean hasFlyer = units.contains(Flyingc::isFlying),
++                                        hasLand = units.contains(unit -> !unit.isFlying() && !unit.type.naval),
++                                        hasNaval = units.contains(unit -> unit.type.naval);
++                                        if((hasFlyer ? 1 : 0) + (hasLand ? 1 : 0) + (hasNaval ? 1 : 0) >= 2){
++                                            sp.table(spp -> {
++                                                if(hasFlyer) arcSelectUnits(spp, UnitTypes.flare.emoji(), "飞行单位", Flyingc::isFlying);
++                                                if(hasLand) arcSelectUnits(spp, UnitTypes.crawler.emoji(), "陆军单位", unit -> !unit.isFlying() && !unit.type.naval);
++                                                if(hasNaval) arcSelectUnits(spp, UnitTypes.retusa.emoji(), "海军单位", unit -> unit.type.naval);
++                                            });
++                                        }
+                                     }).fillX().padTop(4f).left();
+                                 }
+                             }else{
+diff --git a/core/src/mindustry/world/blocks/distribution/StackConveyor.java b/core/src/mindustry/world/blocks/distribution/StackConveyor.java
+index 264db024d8cf4960166fe21f26d17420af8941cb..f1931f92c9031166e548f44ed670051b2aedd32b 100644
+--- a/core/src/mindustry/world/blocks/distribution/StackConveyor.java
++++ b/core/src/mindustry/world/blocks/distribution/StackConveyor.java
+@@ -280,6 +280,8 @@ public class StackConveyor extends Block implements Autotiler{
+                         poofOut();
+                         lastItem = null;
+                     }
++                    //MDTX: sometime get in dead loop
++                    if(lastItem != items.first()) break;
+                 }
+             }else{ //transfer
+                 if(state != stateLoad || (items.total() >= getMaximumAccepted(lastItem))){
+diff --git a/core/src/mindustry/world/blocks/logic/LogicBlock.java b/core/src/mindustry/world/blocks/logic/LogicBlock.java
+index 8edf4205fafc15b1026651ed03e71d88dab0b4b3..08d27dfbaa39dd7d356645aa6bdddb7858d2944c 100644
+--- a/core/src/mindustry/world/blocks/logic/LogicBlock.java
++++ b/core/src/mindustry/world/blocks/logic/LogicBlock.java
+@@ -4,6 +4,7 @@ import arc.*;
+ import arc.Graphics.*;
+ import arc.Graphics.Cursor.*;
+ import arc.func.*;
++import arc.graphics.*;
+ import arc.math.*;
+ import arc.math.geom.*;
+ import arc.scene.ui.layout.*;
+diff --git a/core/src/mindustry/world/blocks/production/BeamDrill.java b/core/src/mindustry/world/blocks/production/BeamDrill.java
+index 950e2ada32c9755caa56faed6ecea596f5170cb7..05f13e6c8ac4ffa84da4153a00d03f2cdd10343b 100644
+--- a/core/src/mindustry/world/blocks/production/BeamDrill.java
++++ b/core/src/mindustry/world/blocks/production/BeamDrill.java
+@@ -170,8 +170,11 @@ public class BeamDrill extends Block{
+             );
+         }
+ 
+-        if(item != null){
+-            //MDTX 增加加液速度显示
++        //MDTX: 显性多矿物报错; 增加冷却液显示
++        if(multiple){
++            //FIXME v146 bug
++            drawPlaceText("[yellow]v146中不能同时挖掘多种矿物(BE已修复)", x, y, false);
++        }else if(item != null){
+             float speed = 60f / getDrillTime(item) * count;
+             String msg = Strings.format("@ [white]@@[] @[white]([cyan]@[])", Iconc.production, item.emoji(), item.localizedName, Strings.autoFixed(speed, 2), Strings.autoFixed(speed * optionalBoostIntensity, 2));
+             drawPlaceText(msg, x, y, valid);
+diff --git a/core/src/mindustry/world/meta/StatValues.java b/core/src/mindustry/world/meta/StatValues.java
+index 6403ed0ba0f439600dd75452489bb2b39bb4ae6e..0bf9ce0d1e9c0c08d91b2d616923bc09b0d5ae2a 100644
+--- a/core/src/mindustry/world/meta/StatValues.java
++++ b/core/src/mindustry/world/meta/StatValues.java
+@@ -5,12 +5,16 @@ import arc.func.*;
+ import arc.graphics.*;
+ import arc.graphics.g2d.*;
+ import arc.math.*;
++import arc.scene.*;
++import arc.scene.event.*;
+ import arc.scene.ui.*;
++import arc.scene.ui.Tooltip.*;
+ import arc.scene.ui.layout.*;
+ import arc.struct.*;
+ import arc.util.*;
+ import mindustry.*;
+ import mindustry.content.*;
++import mindustry.core.*;
+ import mindustry.ctype.*;
+ import mindustry.entities.abilities.Ability;
+ import mindustry.entities.bullet.*;
+@@ -177,10 +181,6 @@ public class StatValues{
+         return element;
+     }
+ 
+-    public static <T extends Element> T withTooltip(T element, UnlockableContent content){
+-        return withTooltip(element, content, false);
+-    }
+-
+     /** Displays an item with a specified amount. */
+     private static Stack stack(TextureRegion region, int amount, @Nullable UnlockableContent content, boolean tooltip){
+         Stack stack = new Stack();
+@@ -801,9 +801,9 @@ public class StatValues{
+     }
+ 
+     //for AmmoListValue
+-    private static void sep(Table table, String text){
++    private static Cell<Label> sep(Table table, String text){
+         table.row();
+-        table.add(text);
++        return table.add(text);
+     }
+ 
+     private static void collapse(Table table, String text, Cons<Table> cons){
+diff --git a/desktop/src/mindustry/desktop/DesktopLauncher.java b/desktop/src/mindustry/desktop/DesktopLauncher.java
+index 5162d965a516daf7ccc364ef7575c5ac456e55af..e0067f2501da45a1a53bf42c8dd35df8db4c5b53 100644
+--- a/desktop/src/mindustry/desktop/DesktopLauncher.java
++++ b/desktop/src/mindustry/desktop/DesktopLauncher.java
+@@ -42,6 +42,9 @@ public class DesktopLauncher extends ClientLauncher{
+                 maximized = true;
+                 width = 900;
+                 height = 700;
++                //request 3.1, which has instancing
++                gl30Minor = 1;
++                gl30 = true;
+                 for(int i = 0; i < arg.length; i++){
+                     if(arg[i].charAt(0) == '-'){
+                         String name = arg[i].substring(1);
+@@ -50,6 +53,7 @@ public class DesktopLauncher extends ClientLauncher{
+                                 case "width": width = Integer.parseInt(arg[i + 1]); break;
+                                 case "height": height = Integer.parseInt(arg[i + 1]); break;
+                                 case "gl3": gl30 = true; break;
++                                case "gl2": gl30 = false; break;
+                                 case "antialias": samples = 16; break;
+                                 case "debug": Log.level = LogLevel.debug; break;
+                                 case "maximized": maximized = Boolean.parseBoolean(arg[i + 1]); break;

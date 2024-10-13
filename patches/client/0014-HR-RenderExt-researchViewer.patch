@@ -42,7 +42,7 @@ index f50c8c0ca180f07cc2ce13068540910c915189d5..fbb783f85810db49bd6a321d729f5214
      }
  
 diff --git a/core/src/mindustry/ui/dialogs/ResearchDialog.java b/core/src/mindustry/ui/dialogs/ResearchDialog.java
-index e601e02b5df2ea34d97a338b992ca30554a7e3fa..416587393a5e27822e95196cc964a902a632aca7 100644
+index a251419f31092b68aca9fd756f19e8c3602263d4..59e3d7507a1161e9120b71d9f11ba02a501a796b 100644
 --- a/core/src/mindustry/ui/dialogs/ResearchDialog.java
 +++ b/core/src/mindustry/ui/dialogs/ResearchDialog.java
 @@ -27,6 +27,7 @@ import mindustry.type.*;

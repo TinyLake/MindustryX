@@ -59,7 +59,7 @@ index 52d6972f5111e55502e3187e3c600e1843f2ec3f..6dfb14b6bb9401ec083a0f6994ed9bab
  sourceSets.main {
      java.setSrcDirs(listOf("src/", "../../src/", layout.buildDirectory.dir("/generated/sources/annotationProcessor/java/main")))
 diff --git a/gradle.properties b/gradle.properties
-index edfdba6f2f9cc42d04e3909af6869df177de8f8d..2c3108d722c7936e167f9c0d6afc192f47252b07 100644
+index 0ee7c648df1b9844d337d243efe441c0b598afaf..312dbd41088f0ce62ec516e7cbc4431fb9e2e1fb 100644
 --- a/gradle.properties
 +++ b/gradle.properties
 @@ -18,7 +18,7 @@ kapt.use.worker.api=true

@@ -8,10 +8,10 @@ Subject: [PATCH] F.API: Add `LogicBlock.running`
  1 file changed, 5 insertions(+)
 
 diff --git a/core/src/mindustry/world/blocks/logic/LogicBlock.java b/core/src/mindustry/world/blocks/logic/LogicBlock.java
-index b7baa0c587b1433bbfed051a02f1b65260b91035..b0af04af3eb5311bee7ef27fa0208f99d23d7894 100644
+index 765186cce1c4aef68cf12a6a0e8b4a6ba3fadd7b..e726a36e0129961c4f10664e0a2277d5b3c377be 100644
 --- a/core/src/mindustry/world/blocks/logic/LogicBlock.java
 +++ b/core/src/mindustry/world/blocks/logic/LogicBlock.java
-@@ -24,6 +24,7 @@ import mindustry.ui.*;
+@@ -23,6 +23,7 @@ import mindustry.ui.*;
  import mindustry.world.*;
  import mindustry.world.blocks.ConstructBlock.*;
  import mindustry.world.meta.*;
@@ -19,16 +19,16 @@ index b7baa0c587b1433bbfed051a02f1b65260b91035..b0af04af3eb5311bee7ef27fa0208f99
  
  import java.io.*;
  import java.util.zip.*;
-@@ -31,6 +32,8 @@ import java.util.zip.*;
+@@ -30,6 +31,8 @@ import java.util.zip.*;
  import static mindustry.Vars.*;
  
  public class LogicBlock extends Block{
 +    @MindustryXApi
 +    public static boolean running = false;
      private static final int maxByteLen = 1024 * 100;
-     public static final int maxNameLength = 32;
  
-@@ -531,6 +534,7 @@ public class LogicBlock extends Block{
+     public int maxInstructionScale = 5;
+@@ -509,6 +512,7 @@ public class LogicBlock extends Block{
  
                  if(accumulator > maxInstructionScale * ipt) accumulator = maxInstructionScale * ipt;
  
@@ -36,7 +36,7 @@ index b7baa0c587b1433bbfed051a02f1b65260b91035..b0af04af3eb5311bee7ef27fa0208f99
                  for(int i = 0; i < (int)accumulator; i++){
                      executor.runOnce();
                      accumulator --;
-@@ -539,6 +543,7 @@ public class LogicBlock extends Block{
+@@ -517,6 +521,7 @@ public class LogicBlock extends Block{
                          break;
                      }
                  }

@@ -49,20 +49,20 @@ index 0000000000000000000000000000000000000000..e2bdb30e190a210f25130c423c853892
 +    }
 +}
 diff --git a/core/src/mindustry/ClientLauncher.java b/core/src/mindustry/ClientLauncher.java
-index 4f88b9fd412f09073bdb1e9aff277650a4bbde09..f44dceb09dfef63bd11d3b54a75d0183976bb13c 100644
+index bb7e299b171161d1416d27e724a40968961725f9..227495e812499ffaae06c12f6fe235b68feab488 100644
 --- a/core/src/mindustry/ClientLauncher.java
 +++ b/core/src/mindustry/ClientLauncher.java
-@@ -76,7 +76,7 @@ public abstract class ClientLauncher extends ApplicationCore implements Platform
+@@ -73,7 +73,7 @@ public abstract class ClientLauncher extends ApplicationCore implements Platform
+             return (Float.isNaN(result) || Float.isInfinite(result)) ? 1f : Mathf.clamp(result, 0.0001f, 60f / 10f);
          });
  
-         UI.loadColors();
--        batch = new SpriteBatch();
+-        batch = new SortedSpriteBatch();
 +        batch = new MySpriteBatch();
          assets = new AssetManager();
          assets.setLoader(Texture.class, "." + mapExtension, new MapPreviewLoader());
  
 diff --git a/core/src/mindustry/core/Logic.java b/core/src/mindustry/core/Logic.java
-index bbf4d7f3edd86db0c42e821ee638453fe7c04bd4..c2473771010f62dabb6bd10d1da1b9381a7243c5 100644
+index e722afb8f1d368d3068d9d8510f9fdda2ac27844..489ff2990d9b6c2bac49b4eb574266e369caf027 100644
 --- a/core/src/mindustry/core/Logic.java
 +++ b/core/src/mindustry/core/Logic.java
 @@ -16,6 +16,7 @@ import mindustry.type.*;
@@ -73,7 +73,7 @@ index bbf4d7f3edd86db0c42e821ee638453fe7c04bd4..c2473771010f62dabb6bd10d1da1b938
  
  import java.util.*;
  
-@@ -411,6 +412,7 @@ public class Logic implements ApplicationListener{
+@@ -403,6 +404,7 @@ public class Logic implements ApplicationListener{
  
      @Override
      public void update(){
@@ -81,7 +81,7 @@ index bbf4d7f3edd86db0c42e821ee638453fe7c04bd4..c2473771010f62dabb6bd10d1da1b938
          Events.fire(Trigger.update);
          universe.updateGlobal();
  
-@@ -494,6 +496,7 @@ public class Logic implements ApplicationListener{
+@@ -489,6 +491,7 @@ public class Logic implements ApplicationListener{
          }else if(netServer.isWaitingForPlayers() && runStateCheck){
              checkGameState();
          }
@@ -90,18 +90,18 @@ index bbf4d7f3edd86db0c42e821ee638453fe7c04bd4..c2473771010f62dabb6bd10d1da1b938
  
      /** @return whether the wave timer is paused due to enemies */
 diff --git a/core/src/mindustry/ui/fragments/HudFragment.java b/core/src/mindustry/ui/fragments/HudFragment.java
-index 23c6d1a7424b4ee6efd220ed3f2fe14d0157e748..d1a1f52f79fd1a7ac09a12c4d606c82432c87e9f 100644
+index e964aa5fdf02e5a606a6b3ca51babc5c03790799..9e26012834bf8d958d0a436616fb653256858f66 100644
 --- a/core/src/mindustry/ui/fragments/HudFragment.java
 +++ b/core/src/mindustry/ui/fragments/HudFragment.java
-@@ -33,6 +33,7 @@ import mindustry.world.blocks.environment.*;
- import mindustry.world.blocks.storage.*;
- import mindustry.world.blocks.storage.CoreBlock.*;
- import mindustry.world.meta.*;
+@@ -27,6 +27,7 @@ import mindustry.input.*;
+ import mindustry.net.Packets.*;
+ import mindustry.type.*;
+ import mindustry.ui.*;
 +import mindustryX.features.*;
  
  import static mindustry.Vars.*;
  import static mindustry.gen.Tex.*;
-@@ -413,6 +414,12 @@ public class HudFragment{
+@@ -280,6 +281,12 @@ public class HudFragment{
  
                  info.label(() -> fps.get(Core.graphics.getFramesPerSecond())).left().style(Styles.outlineLabel).name("fps");
                  info.row();

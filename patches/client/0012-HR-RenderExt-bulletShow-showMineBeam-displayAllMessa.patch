@@ -5,12 +5,12 @@ Subject: [PATCH] HR(RenderExt) bulletShow showMineBeam displayAllMessage
  arcTurretPlaceCheck
 
 ---
- core/src/mindustry/type/UnitType.java                       | 3 ++-
+ core/src/mindustry/type/UnitType.java                       | 1 +
  .../mindustry/world/blocks/defense/turrets/BaseTurret.java  | 6 ++++++
- 2 files changed, 8 insertions(+), 1 deletion(-)
+ 2 files changed, 7 insertions(+)
 
 diff --git a/core/src/mindustry/type/UnitType.java b/core/src/mindustry/type/UnitType.java
-index 3819a23e3c53b1f3462bd63ddf6dc217656889c8..c2917941210017a7fd0a03b792ee4ebe835dea68 100644
+index a96bdfec868be2fea8c1f76beeab78c8a717b9ce..6a67babf903d3b6430d697f9866bc76cfeecbc22 100644
 --- a/core/src/mindustry/type/UnitType.java
 +++ b/core/src/mindustry/type/UnitType.java
 @@ -37,6 +37,7 @@ import mindustry.world.blocks.payloads.*;
@@ -21,17 +21,8 @@ index 3819a23e3c53b1f3462bd63ddf6dc217656889c8..c2917941210017a7fd0a03b792ee4ebe
  
  import static arc.graphics.g2d.Draw.*;
  import static mindustry.Vars.*;
-@@ -1212,7 +1213,7 @@ public class UnitType extends UnlockableContent implements Senseable{
- 
-         unit.drawBuilding();
- 
--        drawMining(unit);
-+        if(RenderExt.showMineBeam) drawMining(unit);
- 
-         boolean isPayload = !unit.isAdded();
- 
 diff --git a/core/src/mindustry/world/blocks/defense/turrets/BaseTurret.java b/core/src/mindustry/world/blocks/defense/turrets/BaseTurret.java
-index dbe779461193af3f8b882a2db305eedfd457bd82..eced3dc7581a4916970634e600d0f5cd86f6ee7e 100644
+index a959c00ba2d01957c499fe3b9447cb200e3bf8e1..60193cd29f30f90ebf58bbe93e621fa71db4fe53 100644
 --- a/core/src/mindustry/world/blocks/defense/turrets/BaseTurret.java
 +++ b/core/src/mindustry/world/blocks/defense/turrets/BaseTurret.java
 @@ -1,5 +1,7 @@
@@ -42,7 +33,7 @@ index dbe779461193af3f8b882a2db305eedfd457bd82..eced3dc7581a4916970634e600d0f5cd
  import arc.math.*;
  import arc.struct.*;
  import arc.util.*;
-@@ -68,6 +70,10 @@ public class BaseTurret extends Block{
+@@ -67,6 +69,10 @@ public class BaseTurret extends Block{
  
          Drawf.dashCircle(x * tilesize + offset, y * tilesize + offset, range, Pal.placing);
  

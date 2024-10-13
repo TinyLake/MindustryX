@@ -11,10 +11,10 @@ Subject: [PATCH] FR(RenderExt) blockRenderLevel
  4 files changed, 11 insertions(+), 6 deletions(-)
 
 diff --git a/core/src/mindustry/core/Renderer.java b/core/src/mindustry/core/Renderer.java
-index e987766b74de1fbb8d3d9e0a8f1863b0821a49db..18612bbf72c9879f0ffb6142f00b268d809491e2 100644
+index 6ed4bb3d08571aab42e7ed7059cf3b6ca43190e3..cabc19671d3393a933e64a5f451a0079beafa2b3 100644
 --- a/core/src/mindustry/core/Renderer.java
 +++ b/core/src/mindustry/core/Renderer.java
-@@ -308,7 +308,8 @@ public class Renderer implements ApplicationListener{
+@@ -326,7 +326,8 @@ public class Renderer implements ApplicationListener{
  
          Draw.draw(Layer.background, this::drawBackground);
          Draw.draw(Layer.floor, blocks.floor::drawFloor);
@@ -24,8 +24,8 @@ index e987766b74de1fbb8d3d9e0a8f1863b0821a49db..18612bbf72c9879f0ffb6142f00b268d
          Draw.draw(Layer.block - 0.09f, () -> {
              blocks.floor.beginDraw();
              blocks.floor.drawLayer(CacheLayer.walls);
-@@ -387,7 +388,8 @@ public class Renderer implements ApplicationListener{
-         });
+@@ -383,7 +384,8 @@ public class Renderer implements ApplicationListener{
+         Draw.draw(Layer.space, this::drawLanding);
  
          Events.fire(Trigger.drawOver);
 -        blocks.drawBlocks();
@@ -70,18 +70,18 @@ index 1c3ce617f2498facc3fe1a34c94dacbe71f8373c..a923b427a598215747366b4748c28c9c
          }
  
 diff --git a/core/src/mindustry/world/blocks/production/GenericCrafter.java b/core/src/mindustry/world/blocks/production/GenericCrafter.java
-index 03a7b867bc5af050d217fc8fb7ea9f31f9279b86..a55bc18a055c74d4e7de3332bd1315beb3c42a63 100644
+index 1a2843e8297dff49b8fb8bb87da27985690b5aec..7e3645814d96cd2497332bbfcb2c9d286bbed5b0 100644
 --- a/core/src/mindustry/world/blocks/production/GenericCrafter.java
 +++ b/core/src/mindustry/world/blocks/production/GenericCrafter.java
-@@ -16,6 +16,7 @@ import mindustry.world.*;
- import mindustry.world.blocks.liquid.Conduit.*;
+@@ -15,6 +15,7 @@ import mindustry.type.*;
+ import mindustry.world.*;
  import mindustry.world.draw.*;
  import mindustry.world.meta.*;
 +import mindustryX.features.*;
  
  import static mindustry.Vars.*;
  
-@@ -232,7 +233,7 @@ public class GenericCrafter extends Block{
+@@ -222,7 +223,7 @@ public class GenericCrafter extends Block{
                      }
                  }
  
@@ -90,7 +90,7 @@ index 03a7b867bc5af050d217fc8fb7ea9f31f9279b86..a55bc18a055c74d4e7de3332bd1315be
                      updateEffect.at(x + Mathf.range(size * 4f), y + Mathf.range(size * 4));
                  }
              }else{
-@@ -298,6 +299,8 @@ public class GenericCrafter extends Block{
+@@ -288,6 +289,8 @@ public class GenericCrafter extends Block{
              if(wasVisible){
                  craftEffect.at(x, y);
              }

@@ -4,11 +4,11 @@ Date: Sun, 3 Dec 2023 15:55:56 +0800
 Subject: [PATCH] API: add PlayerTeamChangedEvent
 
 ---
- core/src/mindustry/entities/comp/PlayerComp.java | 4 ++++
- 1 file changed, 4 insertions(+)
+ core/src/mindustry/entities/comp/PlayerComp.java | 8 +++++++-
+ 1 file changed, 7 insertions(+), 1 deletion(-)
 
 diff --git a/core/src/mindustry/entities/comp/PlayerComp.java b/core/src/mindustry/entities/comp/PlayerComp.java
-index 7f989fa8dfb2f6c9c2b1c0e7c88bf9030f882c21..ebce7f4db27f21927e615477e442e2e8461c1fbb 100644
+index fe787a8336d78710c6d4b9cfbdcf8dd45bc83c2c..5e847e15f0128714ee2fc5dde3939a4805336f9a 100644
 --- a/core/src/mindustry/entities/comp/PlayerComp.java
 +++ b/core/src/mindustry/entities/comp/PlayerComp.java
 @@ -23,6 +23,7 @@ import mindustry.net.Packets.*;
@@ -19,15 +19,16 @@ index 7f989fa8dfb2f6c9c2b1c0e7c88bf9030f882c21..ebce7f4db27f21927e615477e442e2e8
  
  import static mindustry.Vars.*;
  
-@@ -191,10 +192,13 @@ abstract class PlayerComp implements UnitController, Entityc, Syncc, Timerc, Dra
+@@ -189,8 +190,13 @@ abstract class PlayerComp implements UnitController, Entityc, Syncc, Timerc, Dra
      }
  
      public void team(Team team){
 +        Team last = this.team;
          this.team = team;
-         if(unit != null){
-             unit.team(team);
-         }
+-        unit.team(team);
++        if(unit != null){
++            unit.team(team);
++        }
 +        //MDTX: PlayerTeamChangeEvent
 +        Events.fire(new PlayerTeamChangedEvent(last, self()));
      }

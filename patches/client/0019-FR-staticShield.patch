@@ -31,10 +31,10 @@ index 098f62c7b1b44187862cc678b3a4b1c15e6e0405..37460c00ff4a251ac8f4099520cec644
      vec4 color = texture2D(u_texture, T);
      vec2 v = u_invsize;
 diff --git a/core/src/mindustry/graphics/Shaders.java b/core/src/mindustry/graphics/Shaders.java
-index 109b5388bae80211548263b0dc263e3ac3086765..f910a8cae173520af22250315d910e8a0c69ee18 100644
+index 263514a7060a21046519dc3b5ba2714fd7647ceb..85408b8cfa14f3a8e59493c6b7709df03f64abf2 100644
 --- a/core/src/mindustry/graphics/Shaders.java
 +++ b/core/src/mindustry/graphics/Shaders.java
-@@ -266,6 +266,7 @@ public class Shaders{
+@@ -259,6 +259,7 @@ public class Shaders{
          public void apply(){
              setUniformf("u_dp", Scl.scl(1f));
              setUniformf("u_time", Time.time / Scl.scl(1f));

@@ -4,12 +4,11 @@ Date: Fri, 14 Jun 2024 23:15:54 +0800
 Subject: [PATCH] OC: no bullet create when hidden
 
 ---
- core/src/mindustry/entities/bullet/BulletType.java | 2 ++
- core/src/mindustry/type/Weapon.java                | 2 +-
- 2 files changed, 3 insertions(+), 1 deletion(-)
+ core/src/mindustry/entities/bullet/BulletType.java | 8 +++++---
+ 1 file changed, 5 insertions(+), 3 deletions(-)
 
 diff --git a/core/src/mindustry/entities/bullet/BulletType.java b/core/src/mindustry/entities/bullet/BulletType.java
-index 6e0d5482b416709d1ae52b2efff61ddbd6e7ba1b..0fa5a69dab8157df057937292b4dccf2fca2dae2 100644
+index f8babc5f879c74f213b871a627031d52677d33e0..688b7629fd646188386c8836405a18c4fe7c3ca8 100644
 --- a/core/src/mindustry/entities/bullet/BulletType.java
 +++ b/core/src/mindustry/entities/bullet/BulletType.java
 @@ -22,6 +22,7 @@ import mindustry.graphics.*;
@@ -20,24 +19,38 @@ index 6e0d5482b416709d1ae52b2efff61ddbd6e7ba1b..0fa5a69dab8157df057937292b4dccf2
  
  import static mindustry.Vars.*;
  
-@@ -782,6 +783,7 @@ public class BulletType extends Content implements Cloneable{
-         @Nullable Entityc owner, @Nullable Entityc shooter, Team team, float x, float y, float angle, float damage, float velocityScl,
-         float lifetimeScl, Object data, @Nullable Mover mover, float aimX, float aimY, @Nullable Teamc target
-     ){
+@@ -517,7 +518,7 @@ public class BulletType extends Content implements Cloneable{
+         if(!fragOnHit){
+             createFrags(b, b.x, b.y);
+         }
+-        
++
+         despawnEffect.at(b.x, b.y, b.rotation(), hitColor);
+         despawnSound.at(b);
+ 
+@@ -646,7 +647,7 @@ public class BulletType extends Content implements Cloneable{
+             }
+         }
+     }
+-    
++
+     public void updateTrail(Bullet b){
+         if(!headless && trailLength > 0){
+             if(b.trail == null){
+@@ -687,7 +688,7 @@ public class BulletType extends Content implements Cloneable{
+         if(lightRadius <= -1){
+             lightRadius = Math.max(18, hitSize * 5f);
+         }
+-        
++
+         drawSize = Math.max(drawSize, trailLength * speed * 2f);
+         range = calculateRange();
+     }
+@@ -743,6 +744,7 @@ public class BulletType extends Content implements Cloneable{
+     }
+ 
+     public @Nullable Bullet create(@Nullable Entityc owner, @Nullable Entityc shooter, Team team, float x, float y, float angle, float damage, float velocityScl, float lifetimeScl, Object data, @Nullable Mover mover, float aimX, float aimY){
 +        if(!RenderExt.bulletShow && net.client()) return null;
          if(!Mathf.chance(createChance)) return null;
          if(ignoreSpawnAngle) angle = 0;
          if(spawnUnit != null){
-diff --git a/core/src/mindustry/type/Weapon.java b/core/src/mindustry/type/Weapon.java
-index 36ddd96f325b49b989b910ca80d0c9ee08744098..87d4b92337dd7e43fade327f20077ab947983157 100644
---- a/core/src/mindustry/type/Weapon.java
-+++ b/core/src/mindustry/type/Weapon.java
-@@ -523,7 +523,7 @@ public class Weapon implements Cloneable{
- 
-     //override to do special things to a bullet after spawning
-     protected void handleBullet(Unit unit, WeaponMount mount, Bullet bullet){
--        if(continuous){
-+        if(continuous && bullet != null){
-             float
-                 weaponRotation = unit.rotation - 90 + (rotate ? mount.rotation : baseRotation),
-                 mountX = unit.x + Angles.trnsx(unit.rotation - 90, x, y),

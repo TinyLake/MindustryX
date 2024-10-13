@@ -11,7 +11,7 @@ Subject: [PATCH] FS: Add icons.properties,bundles,block_colors.png to server
  3 files changed, 14 insertions(+), 13 deletions(-)
 
 diff --git a/core/src/mindustry/net/Administration.java b/core/src/mindustry/net/Administration.java
-index da453afaa53fd7cc72e073baedb29da31e705bb9..6e17790494961f306260d2b521ce2add39642d93 100644
+index d544531fac41023e5d71ddcbdabb493118dfb35e..1fb21851e5c95530cf549d9a24e3a353c2b1dd7a 100644
 --- a/core/src/mindustry/net/Administration.java
 +++ b/core/src/mindustry/net/Administration.java
 @@ -488,6 +488,7 @@ public class Administration{
@@ -23,7 +23,7 @@ index da453afaa53fd7cc72e073baedb29da31e705bb9..6e17790494961f306260d2b521ce2add
          showConnectMessages = new Config("showConnectMessages", "Whether to display connect/disconnect messages.", true),
          enableVotekick = new Config("enableVotekick", "Whether votekick is enabled.", true),
 diff --git a/server/build.gradle b/server/build.gradle
-index 079379178548b8c3fc9257668f85c3bf9935c9cc..d57060fff7ec12b93198dca4b447ca68f4c9c076 100644
+index badc019ded25d495a139efe134085184640eb500..f212b7bf9d8a3e46179ba62d8987fcb15efa5568 100644
 --- a/server/build.gradle
 +++ b/server/build.gradle
 @@ -31,18 +31,18 @@ task dist(type: Jar, dependsOn: configurations.runtimeClasspath){
@@ -55,10 +55,10 @@ index 079379178548b8c3fc9257668f85c3bf9935c9cc..d57060fff7ec12b93198dca4b447ca68
 +        include "*.*"
 +    }
  
-     duplicatesStrategy = 'exclude'
- 
+     manifest{
+         attributes 'Main-Class': project.mainClassName
 diff --git a/server/src/mindustry/server/ServerLauncher.java b/server/src/mindustry/server/ServerLauncher.java
-index 0f23c39ad937d6ead6e3657eb57a0c725ec84b56..c4a926ed2a8f6dacfc8f8787f75130247ef507dc 100644
+index 1799c999b2affdc0de392841212edc1f544e4751..81683e05cc3f38d943ae94f00621da01e09a1f31 100644
 --- a/server/src/mindustry/server/ServerLauncher.java
 +++ b/server/src/mindustry/server/ServerLauncher.java
 @@ -41,7 +41,7 @@ public class ServerLauncher implements ApplicationListener{

@@ -9,7 +9,7 @@ Subject: [PATCH] HC: AutoUpdate
  2 files changed, 10 insertions(+), 21 deletions(-)
 
 diff --git a/core/src/mindustry/net/BeControl.java b/core/src/mindustry/net/BeControl.java
-index 2b96a3f231a78f6edb51d9459a1cbbcdeaa6d68e..7172b63844e32b48537d1b53a4da7db633bb4998 100644
+index 668e687d7c8e9e8e9ae4b5dc31b3e49e41f40b40..77161ce4333e0e6e3f9ef06e43d0270a062c5a7d 100644
 --- a/core/src/mindustry/net/BeControl.java
 +++ b/core/src/mindustry/net/BeControl.java
 @@ -35,19 +35,11 @@ public class BeControl{

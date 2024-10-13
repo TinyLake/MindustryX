@@ -12,10 +12,10 @@ AuxiliaryTools, NewCoreItemsDisplay(新制核心资源显示), WaveInfoDisplay(�
  1 file changed, 18 insertions(+), 1 deletion(-)
 
 diff --git a/core/src/mindustry/ui/fragments/HudFragment.java b/core/src/mindustry/ui/fragments/HudFragment.java
-index d1a1f52f79fd1a7ac09a12c4d606c82432c87e9f..a3391efca9e25ee57be7efcbb8a69f54d94adbe7 100644
+index 9e26012834bf8d958d0a436616fb653256858f66..4cd802d1000f7e9498543f1c5f5161bd2fd03113 100644
 --- a/core/src/mindustry/ui/fragments/HudFragment.java
 +++ b/core/src/mindustry/ui/fragments/HudFragment.java
-@@ -203,6 +203,9 @@ public class HudFragment{
+@@ -123,6 +123,9 @@ public class HudFragment{
              .touchable(Touchable.disabled)
              .style(Styles.outlineLabel)
              .name("position");
@@ -25,7 +25,7 @@ index d1a1f52f79fd1a7ac09a12c4d606c82432c87e9f..a3391efca9e25ee57be7efcbb8a69f54
              t.top().right();
          });
  
-@@ -322,6 +325,10 @@ public class HudFragment{
+@@ -242,6 +245,10 @@ public class HudFragment{
  
              wavesMain.row();
  
@@ -36,8 +36,8 @@ index d1a1f52f79fd1a7ac09a12c4d606c82432c87e9f..a3391efca9e25ee57be7efcbb8a69f54
              addInfoTable(wavesMain.table().width(dsize * 5f + 4f).left().get());
  
              editorMain.name = "editor";
-@@ -401,6 +408,11 @@ public class HudFragment{
-             }
+@@ -268,6 +275,11 @@ public class HudFragment{
+             }).width(dsize * 5 + 4f);
              editorMain.visible(() -> shown && state.isEditor());
  
 +            //map info/nextwave display
@@ -48,7 +48,7 @@ index d1a1f52f79fd1a7ac09a12c4d606c82432c87e9f..a3391efca9e25ee57be7efcbb8a69f54
              //fps display
              cont.table(info -> {
                  info.name = "fps/ping";
-@@ -450,7 +462,12 @@ public class HudFragment{
+@@ -317,7 +329,12 @@ public class HudFragment{
  
              t.table(c -> {
                  //core items

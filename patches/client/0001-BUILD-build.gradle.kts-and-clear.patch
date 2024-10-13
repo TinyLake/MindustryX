@@ -7,33 +7,33 @@ clear and replce jabel(Support record)
 way-zer <himc.wicp@gmail.com> on 2024/6/9
 ---
  .gitignore                                    |   2 +-
- android/build.gradle                          |  80 +++--
- android/proguard-rules.pro                    |   4 +
+ android/build.gradle                          |  85 +++---
+ android/proguard-rules.pro                    |   9 +-
  .../com/github/bsideup/jabel/Desugar.java     |  13 +
  .../javax.annotation.processing.Processor     |   6 +
- build.gradle                                  | 241 ++-------------
+ build.gradle                                  | 283 +++---------------
  core/build.gradle                             |   2 -
  core/build.gradle.kts                         |  65 ++++
- desktop/build.gradle                          | 166 +----------
+ desktop/build.gradle                          | 164 +---------
  gradle/wrapper/gradle-wrapper.jar             | Bin 59203 -> 43462 bytes
- gradlew                                       | 282 +++++++++++-------
+ gradlew                                       | 282 ++++++++++-------
  gradlew.bat                                   |  35 ++-
  ios/build.gradle                              |   2 +-
  server/build.gradle                           |  44 +--
- settings.gradle                               |  10 +-
+ settings.gradle                               |  61 ++--
  tools/build.gradle                            |  44 ++-
  tools/src/mindustry/tools/Generators.java     |   2 +-
- 17 files changed, 385 insertions(+), 613 deletions(-)
+ 17 files changed, 421 insertions(+), 678 deletions(-)
  create mode 100644 annotations/src/main/java/com/github/bsideup/jabel/Desugar.java
  create mode 100644 annotations/src/main/resources/META-INF/services/javax.annotation.processing.Processor
  delete mode 100644 core/build.gradle
  create mode 100644 core/build.gradle.kts
 
 diff --git a/.gitignore b/.gitignore
-index dd3f2a0f065d3f774ea84fbc932e337160e4b307..7d91d3191096c431b739d2d5ecd951a764feead3 100644
+index d0a0666c264eb08f2bd38f128d9bd05261274bf4..5dce71d331fd8e76886739d80ba225c9a9ccdef2 100644
 --- a/.gitignore
 +++ b/.gitignore
-@@ -28,6 +28,7 @@ saves/
+@@ -27,6 +27,7 @@ saves/
  /core/assets-raw/fontgen/out/
  /core/assets-raw/fontgen/icons/
  /core/assets-raw/fontgen/icon_parts/
@@ -41,7 +41,7 @@ index dd3f2a0f065d3f774ea84fbc932e337160e4b307..7d91d3191096c431b739d2d5ecd951a7
  core/assets/saves/
  /core/assets/saves/
  steam_appid.txt
-@@ -35,7 +36,6 @@ steam_appid.txt
+@@ -34,7 +35,6 @@ steam_appid.txt
  /android/assets/mindustry-maps/
  /android/assets/mindustry-saves/
  /core/assets/gifexport/
@@ -50,7 +50,7 @@ index dd3f2a0f065d3f774ea84fbc932e337160e4b307..7d91d3191096c431b739d2d5ecd951a7
  /core/assets/locales
  /core/assets/cache/
 diff --git a/android/build.gradle b/android/build.gradle
-index f1dc45aa74b149babea9cce2535ed7dca8d49a1f..11f5fcf77dfc2e54ad1c18b183ad1957ff3dfe9a 100644
+index d84755b7180cd1951664392fe02112603a454729..11f5fcf77dfc2e54ad1c18b183ad1957ff3dfe9a 100644
 --- a/android/build.gradle
 +++ b/android/build.gradle
 @@ -1,18 +1,19 @@
@@ -66,7 +66,7 @@ index f1dc45aa74b149babea9cce2535ed7dca8d49a1f..11f5fcf77dfc2e54ad1c18b183ad1957
 +}
  
 -    dependencies{
--        classpath 'com.android.tools.build:gradle:8.2.2'
+-        classpath 'com.android.tools.build:gradle:7.2.1'
 +ext{
 +    findSdkDir = {
 +        //null because IntelliJ doesn't get env variables
@@ -84,7 +84,7 @@ index f1dc45aa74b149babea9cce2535ed7dca8d49a1f..11f5fcf77dfc2e54ad1c18b183ad1957
  configurations{ natives }
  
  repositories{
-@@ -20,16 +21,8 @@ repositories{
+@@ -20,17 +21,10 @@ repositories{
      maven{ url "https://maven.google.com" }
  }
  
@@ -97,12 +97,15 @@ index f1dc45aa74b149babea9cce2535ed7dca8d49a1f..11f5fcf77dfc2e54ad1c18b183ad1957
 -}
 -
  android{
--    namespace = "io.anuke.mindustry"
+-    buildToolsVersion '33.0.2'
+-    compileSdkVersion 33
 +    namespace = "com.github.tinylake.mindustryX"
-     buildToolsVersion = '34.0.0'
-     compileSdk = 34
++    buildToolsVersion = '34.0.0'
++    compileSdk = 34
      sourceSets{
-@@ -39,7 +32,7 @@ android{
+         main{
+             manifest.srcFile 'AndroidManifest.xml'
+@@ -38,7 +32,7 @@ android{
              aidl.srcDirs = ['src']
              renderscript.srcDirs = ['src']
              res.srcDirs = ['res']
@@ -111,7 +114,7 @@ index f1dc45aa74b149babea9cce2535ed7dca8d49a1f..11f5fcf77dfc2e54ad1c18b183ad1957
              jniLibs.srcDirs = ['libs']
          }
  
-@@ -51,8 +44,6 @@ android{
+@@ -50,21 +44,23 @@ android{
      }
  
      defaultConfig{
@@ -120,8 +123,9 @@ index f1dc45aa74b149babea9cce2535ed7dca8d49a1f..11f5fcf77dfc2e54ad1c18b183ad1957
          def versionNameResult = "$versionNumber-$versionType-${getBuildVersion().replace(" ", "-")}"
  
          applicationId "io.anuke.mindustry"
-@@ -60,14 +51,16 @@ android{
-         targetSdkVersion 34
+         minSdkVersion 14
+-        targetSdkVersion 33
++        targetSdkVersion 34
          
          versionName versionNameResult
 -        versionCode = vcode
@@ -136,23 +140,30 @@ index f1dc45aa74b149babea9cce2535ed7dca8d49a1f..11f5fcf77dfc2e54ad1c18b183ad1957
 +            props.store(file('../core/assets/version.properties').newWriter(), null)
          }
 -        props.store(file('../core/assets/version.properties').newWriter(), null)
--
--        multiDexEnabled true
      }
  
      compileOptions{
-@@ -122,8 +115,8 @@ dependencies{
+@@ -72,7 +68,7 @@ android{
+         targetCompatibility JavaVersion.VERSION_1_8
+     }
+ 
+-    flavorDimensions "google"
++    flavorDimensions = ["google"]
+ 
+     signingConfigs{
+         release{
+@@ -119,8 +115,8 @@ dependencies{
      implementation arcModule("backends:backend-android")
      implementation 'com.jakewharton.android.repackaged:dalvik-dx:9.0.0_r3'
  
--    natives "com.github.Anuken.Arc:natives-android:$arcHash"
--    natives "com.github.Anuken.Arc:natives-freetype-android:$arcHash"
+-    natives "com.github.Anuken.Arc:natives-android:${getArcHash()}"
+-    natives "com.github.Anuken.Arc:natives-freetype-android:${getArcHash()}"
 +    natives arcModule("natives-android")
 +    natives arcModule("natives-freetype-android")
  
      def version;
      def highestVersion;
-@@ -136,24 +129,25 @@ dependencies{
+@@ -133,24 +129,25 @@ dependencies{
      if(sdkFile.exists()) compileOnly files(sdkFile.absolutePath)
  }
  
@@ -194,10 +205,16 @@ index f1dc45aa74b149babea9cce2535ed7dca8d49a1f..11f5fcf77dfc2e54ad1c18b183ad1957
 +}
 \ No newline at end of file
 diff --git a/android/proguard-rules.pro b/android/proguard-rules.pro
-index ebda968ae6947db76031a6d37bc74f049e2e3db4..6f53c442978ee6a880dfd05a81a69fde596a783b 100644
+index 368b7f4e1e14f4f6cd83f3390fb33899552235fc..6f53c442978ee6a880dfd05a81a69fde596a783b 100644
 --- a/android/proguard-rules.pro
 +++ b/android/proguard-rules.pro
-@@ -5,6 +5,10 @@
+@@ -1,11 +1,16 @@
+ -dontobfuscate
+ 
+-#these are essential packages that should not be "optimized" in any way
+-#the main purpose of d8 here is to shrink the absurdly-large google play games libraries
+ -keep class mindustry.** { *; }
+ -keep class arc.** { *; }
  -keep class net.jpountz.** { *; }
  -keep class rhino.** { *; }
  -keep class com.android.dex.** { *; }
@@ -205,9 +222,12 @@ index ebda968ae6947db76031a6d37bc74f049e2e3db4..6f53c442978ee6a880dfd05a81a69fde
 +-keep class kotlin.** { *; }
 +-keep class org.jetbrains.annotations.** { *; }
 +-keep class org.intellij.lang.annotations.** { *; }
- -keepattributes Signature,*Annotation*,InnerClasses,EnclosingMethod
++-keepattributes Signature,*Annotation*,InnerClasses,EnclosingMethod
++
++-dontwarn javax.naming.**
  
- -dontwarn javax.naming.**
+ #-printusage out.txt
+\ No newline at end of file
 diff --git a/annotations/src/main/java/com/github/bsideup/jabel/Desugar.java b/annotations/src/main/java/com/github/bsideup/jabel/Desugar.java
 new file mode 100644
 index 0000000000000000000000000000000000000000..dcea5cdf03b366f9f59e20511dafee3601e15fb6
@@ -240,18 +260,20 @@ index 0000000000000000000000000000000000000000..181b87c1d5f3755f16a01c0528d0a89f
 +mindustry.annotations.misc.LogicStatementProcessor
 +mindustry.annotations.remote.RemoteProcess
 diff --git a/build.gradle b/build.gradle
-index a7d9988b58bc416642d5814e767754d90a0e3a8c..4599d8a8554059a9f7764d6b7f17daf85d1e0318 100644
+index 84cfbefca7ba0af2c492ff86aa0a312549b78e84..4599d8a8554059a9f7764d6b7f17daf85d1e0318 100644
 --- a/build.gradle
 +++ b/build.gradle
-@@ -7,22 +7,9 @@ buildscript{
-         arcModule = { String name ->
-             //skip to last submodule
-             name = name.substring(name.lastIndexOf(':') + 1)
--            return "com.github.Anuken${localArc ? "" : ".Arc"}:$name:$arcHash"
-+            return "com.github.anuken${localArc ? "" : ".Arc"}:$name:$arcHash"
-         }
-     }
--
+@@ -1,23 +1,14 @@
+ buildscript{
+     ext{
+-        getArcHash = {
+-            return new Properties().with{ p -> p.load(file('gradle.properties').newReader()); return p }["archash"]
+-        }
++        arcHash = property("archash")
+ 
+-        arcHash = getArcHash()
+-    }
+-    
 -    repositories{
 -        mavenLocal()
 -        mavenCentral()
@@ -259,20 +281,48 @@ index a7d9988b58bc416642d5814e767754d90a0e3a8c..4599d8a8554059a9f7764d6b7f17daf8
 -        maven{ url "https://oss.sonatype.org/content/repositories/snapshots/" }
 -        maven{ url 'https://jitpack.io' }
 -    }
--
++        localArc = !project.hasProperty("release") && new File(rootDir.parent, 'Arc').exists() && !project.hasProperty("noLocalArc")
+ 
 -    dependencies{
--        classpath arcModule(":extensions:packer")
--        classpath arcModule(":arc-core")
--    }
+-        classpath "com.github.Anuken.Arc:packer:$arcHash"
+-        classpath "com.github.Anuken.Arc:arc-core:$arcHash"
++        arcModule = { String name ->
++            //skip to last submodule
++            name = name.substring(name.lastIndexOf(':') + 1)
++            return "com.github.anuken${localArc ? "" : ".Arc"}:$name:$arcHash"
++        }
+     }
  }
  
- plugins{
-@@ -48,123 +35,10 @@ allprojects{
+@@ -28,7 +19,7 @@ plugins{
+ 
+ allprojects{
+     apply plugin: 'maven-publish'
+-    
++
+     version = project.hasProperty("packageVersion") ? project.getProperty("packageVersion") : 'release'
+     group = 'com.github.Anuken'
+ 
+@@ -44,137 +35,10 @@ allprojects{
              return new Properties().with{p -> p.load(file('../core/assets/version.properties').newReader()); return p }
          }
  
 -        debugged = {
 -            return new File(projectDir.parent, '../Mindustry-Debug').exists() && !project.hasProperty("release") && project.hasProperty("args")
+-        }
+-
+-        localArc = {
+-            return !project.hasProperty("release") && !project.hasProperty("noLocalArc") && new File(projectDir.parent, '../Arc').exists()
+-        }
+-
+-        arcModule = { String name ->
+-            if(localArc()){
+-                return project(":Arc:$name")
+-            }else{
+-                //skip to last submodule
+-                if(name.contains(':')) name = name.split(':').last()
+-                return "com.github.Anuken.Arc:$name:${getArcHash()}"
+-            }
 -        }
 -
 -        generateDeployName = { String platform ->
@@ -329,12 +379,12 @@ index a7d9988b58bc416642d5814e767754d90a0e3a8c..4599d8a8554059a9f7764d6b7f17daf8
 -        generateLocales = {
 -            def output = 'en\n'
 -            def bundles = new File(project(':core').projectDir, 'assets/bundles/')
--            bundles.list().sort().each{ name ->
--                if(name == "bundle.properties") return
--                output += name.substring("bundle".length() + 1, name.lastIndexOf('.')) + "\n"
+-            bundles.listFiles().each{ other ->
+-                if(other.name == "bundle.properties") return
+-                output += other.name.substring("bundle".length() + 1, other.name.lastIndexOf('.')) + "\n"
 -            }
 -            new File(project(':core').projectDir, 'assets/locales').text = output
--            new File(project(':core').projectDir, 'assets/basepartnames').text = new File(project(':core').projectDir, 'assets/baseparts/').list().sort().join("\n")
+-            new File(project(':core').projectDir, 'assets/basepartnames').text = new File(project(':core').projectDir, 'assets/baseparts/').list().join("\n")
 -        }
 -
 -        writeVersion = {
@@ -391,7 +441,7 @@ index a7d9988b58bc416642d5814e767754d90a0e3a8c..4599d8a8554059a9f7764d6b7f17daf8
      }
  
      repositories{
-@@ -175,48 +49,30 @@ allprojects{
+@@ -185,73 +49,54 @@ allprojects{
          maven{ url 'https://jitpack.io' }
      }
  
@@ -405,7 +455,7 @@ index a7d9988b58bc416642d5814e767754d90a0e3a8c..4599d8a8554059a9f7764d6b7f17daf8
 -
      tasks.withType(JavaCompile){
          targetCompatibility = 8
--        sourceCompatibility = JavaVersion.VERSION_17
+-        sourceCompatibility = JavaVersion.VERSION_16
 +        if(project.name == "annotations"){
 +            sourceCompatibility = 8
 +            options.setFork(true)
@@ -455,7 +505,10 @@ index a7d9988b58bc416642d5814e767754d90a0e3a8c..4599d8a8554059a9f7764d6b7f17daf8
      tasks.withType(Javadoc){
          options{
              addStringOption('Xdoclint:none', '-quiet')
-@@ -226,11 +82,10 @@ configure(subprojects - project(":annotations")){
+-            addStringOption('-release', '16')
++            addStringOption('-release', '17')
+             encoding('UTF-8')
+         }
      }
  }
  
@@ -468,7 +521,7 @@ index a7d9988b58bc416642d5814e767754d90a0e3a8c..4599d8a8554059a9f7764d6b7f17daf8
      dependencies{
          implementation project(":core")
          implementation arcModule("extensions:discord")
-@@ -238,8 +93,6 @@ project(":desktop"){
++        implementation arcModule("natives:natives-filedialogs")
          implementation arcModule("natives:natives-desktop")
          implementation arcModule("natives:natives-freetype-desktop")
  
@@ -477,7 +530,17 @@ index a7d9988b58bc416642d5814e767754d90a0e3a8c..4599d8a8554059a9f7764d6b7f17daf8
          implementation "com.github.Anuken:steamworks4j:$steamworksVersion"
  
          implementation arcModule("backends:backend-sdl")
-@@ -259,16 +112,6 @@ project(":core"){
++        annotationProcessor 'com.github.Anuken:jabel:0.9.0'
+     }
+ }
+ 
+@@ -262,21 +107,11 @@ project(":core"){
+ 
+     kapt{
+         javacOptions{
+-            option("-source", "16")
++            option("-source", "17")
+             option("-target", "1.8")
          }
      }
  
@@ -494,7 +557,7 @@ index a7d9988b58bc416642d5814e767754d90a0e3a8c..4599d8a8554059a9f7764d6b7f17daf8
      task copyChangelog{
          doLast{
              def props = loadVersionProps()
-@@ -293,18 +136,6 @@ project(":core"){
+@@ -301,18 +136,6 @@ project(":core"){
          }
      }
  
@@ -513,7 +576,7 @@ index a7d9988b58bc416642d5814e767754d90a0e3a8c..4599d8a8554059a9f7764d6b7f17daf8
      task musicJar(type: Jar){
          archiveClassifier = 'music'
          from files("assets"){
-@@ -313,8 +144,6 @@ project(":core"){
+@@ -321,8 +144,6 @@ project(":core"){
      }
  
      dependencies{
@@ -522,19 +585,23 @@ index a7d9988b58bc416642d5814e767754d90a0e3a8c..4599d8a8554059a9f7764d6b7f17daf8
          api "org.lz4:lz4-java:1.8.0"
          api arcModule("arc-core")
          api arcModule("extensions:flabel")
-@@ -324,20 +153,18 @@ project(":core"){
+@@ -330,21 +151,20 @@ project(":core"){
+         api arcModule("extensions:g3d")
+         api arcModule("extensions:fx")
          api arcModule("extensions:arcnet")
-         implementation arcModule("extensions:filedialogs")
++        implementation arcModule("extensions:filedialogs")
          api "com.github.Anuken:rhino:$rhinoVersion"
--        if(localArc && debugged()) api arcModule("extensions:recorder")
-         if(localArc) api arcModule(":extensions:packer")
+-        if(localArc() && debugged()) api arcModule("extensions:recorder")
+-        if(localArc()) api arcModule(":extensions:packer")
++        if(localArc) api arcModule(":extensions:packer")
  
 -        annotationProcessor 'com.github.Anuken:jabel:0.9.0'
 +//        compileOnly 'com.github.bsideup.jabel:jabel-javac-plugin:0.4.2'
 +        annotationProcessor 'com.github.bsideup.jabel:jabel-javac-plugin:0.4.2'
 +//        annotationProcessor 'com.github.Anuken:jabel:0.9.0'
          compileOnly project(":annotations")
-         if(!project.hasProperty("noKapt")) kapt project(":annotations")
+-        kapt project(":annotations")
++        if(!project.hasProperty("noKapt")) kapt project(":annotations")
      }
  
      afterEvaluate{
@@ -547,18 +614,53 @@ index a7d9988b58bc416642d5814e767754d90a0e3a8c..4599d8a8554059a9f7764d6b7f17daf8
  
              source rootProject.subprojects.collect{ project ->
                  if(!blacklist.contains(project) && project.hasProperty("sourceSets")){
-@@ -435,37 +262,11 @@ configure([":core", ":server"].collect{project(it)}){
+@@ -380,6 +200,7 @@ project(":server"){
+     dependencies{
+         implementation project(":core")
+         implementation arcModule("backends:backend-headless")
++        annotationProcessor 'com.github.Anuken:jabel:0.9.0'
+     }
+ }
+ 
+@@ -391,6 +212,7 @@ project(":tests"){
+         testImplementation "org.junit.jupiter:junit-jupiter-params:5.7.1"
+         testImplementation "org.junit.jupiter:junit-jupiter-api:5.7.1"
+         testImplementation arcModule("backends:backend-headless")
++        testImplementation "org.json:json:20230618"
+         testRuntimeOnly "org.junit.jupiter:junit-jupiter-engine:5.7.1"
+     }
+ 
+@@ -415,6 +237,9 @@ project(":tools"){
+         implementation arcModule("natives:natives-desktop")
+         implementation arcModule("natives:natives-freetype-desktop")
+         implementation arcModule("backends:backend-headless")
++
++        implementation("com.google.guava:guava:33.3.1-jre")
++        annotationProcessor 'com.github.Anuken:jabel:0.9.0'
+     }
+ }
+ 
+@@ -423,7 +248,7 @@ project(":annotations"){
+ 
+     dependencies{
+         implementation 'com.squareup:javapoet:1.12.1'
+-        implementation "com.github.Anuken.Arc:arc-core:$arcHash"
++        implementation arcModule("arc-core")
+     }
+ }
+ 
+@@ -437,35 +262,9 @@ configure([":core", ":server"].collect{project(it)}){
          publications{
              maven(MavenPublication){
                  from components.java
 -                if(project.name == "core"){
 -                    artifact(tasks.named("assetsJar"))
 -                }
-             }
-         }
-     }
- }
- 
+-            }
+-        }
+-    }
+-}
+-
 -task deployAll{
 -    task cleanDeployOutput{
 -        doFirst{
@@ -567,9 +669,9 @@ index a7d9988b58bc416642d5814e767754d90a0e3a8c..4599d8a8554059a9f7764d6b7f17daf8
 -
 -            delete{
 -                delete "deploy/"
--            }
--        }
--    }
+             }
+         }
+     }
 -
 -    dependsOn cleanDeployOutput
 -    dependsOn "desktop:packrLinux64"
@@ -580,11 +682,9 @@ index a7d9988b58bc416642d5814e767754d90a0e3a8c..4599d8a8554059a9f7764d6b7f17daf8
 -        dependsOn "server:deploy"
 -        dependsOn "android:deploy"
 -    }
--}
--
+ }
+ 
  task resolveDependencies{
-     doLast{
-         rootProject.allprojects{ project ->
 diff --git a/core/build.gradle b/core/build.gradle
 deleted file mode 100644
 index f7f291ef1ab71577313759a7e9fdfd3c1e0833dc..0000000000000000000000000000000000000000
@@ -667,7 +767,7 @@ index 0000000000000000000000000000000000000000..52d6972f5111e55502e3187e3c600e18
 +}
 \ No newline at end of file
 diff --git a/desktop/build.gradle b/desktop/build.gradle
-index b4d9955e70e7cfbf4792d5196bbe17e06c3762bd..0b9db141c3842afa73b8b1e14f31c5d244970ddb 100644
+index f5a9fca57fb59f568ad66b2888fcb8e3f9af654c..0b9db141c3842afa73b8b1e14f31c5d244970ddb 100644
 --- a/desktop/build.gradle
 +++ b/desktop/build.gradle
 @@ -3,14 +3,9 @@ sourceSets.main.java.srcDirs = ["src/"]
@@ -696,7 +796,7 @@ index b4d9955e70e7cfbf4792d5196bbe17e06c3762bd..0b9db141c3842afa73b8b1e14f31c5d2
      duplicatesStrategy = DuplicatesStrategy.EXCLUDE
  
      //don't include steam shared libraries unless necessary
-@@ -57,157 +52,4 @@ task dist(type: Jar, dependsOn: configurations.runtimeClasspath){
+@@ -57,155 +52,4 @@ task dist(type: Jar, dependsOn: configurations.runtimeClasspath){
      manifest{
          attributes 'Main-Class': project.mainClassName
      }
@@ -714,9 +814,7 @@ index b4d9955e70e7cfbf4792d5196bbe17e06c3762bd..0b9db141c3842afa73b8b1e14f31c5d2
 -    doLast{
 -        copy{
 -            from "build/libs/Mindustry.jar"
--            if(project.hasProperty("destination")){
--                into project.property("destination")
--            }else if(System.properties["os.name"].contains("Mac")){
+-            if(System.properties["os.name"].contains("Mac")){
 -                into "/Users/anuke/Library/Application Support/Steam/steamapps/common/Mindustry/Mindustry.app/Contents/Resources"
 -            }else{
 -                into "/home/anuke/.steam/steam/steamapps/common/Mindustry/jre"
@@ -761,20 +859,20 @@ index b4d9955e70e7cfbf4792d5196bbe17e06c3762bd..0b9db141c3842afa73b8b1e14f31c5d2
 -                }
 -            }else{
 -                def jarPath = JDK_DIR + "packr.jar"
--                def args = new String[]{"java", "-jar", jarPath}
+-                def args = ["java", "-jar", jarPath] as String[]
 -
--                args += new String[]{
--                        "--platform", platform == "MacOS" ? "Mac" : platform.toString(),
--                        "--jdk", JDK_DIR + "jre-${platform.toString().toLowerCase()}",
--                        "--executable", appName,
--                        "--classpath", "$rootDir/desktop/build/packr/desktop.jar".toString(),
--                        "--mainclass", project.ext.mainClassName,
--                        "--verbose",
--                        "--bundle", getPackage() + ".mac",
--                        "--icon", ICON_DIR,
--                        "--output", "$rootDir/desktop/build/packr/output".toString(),
--                        "--removelibs", "$rootDir/desktop/build/packr/desktop.jar".toString()
--                }
+-                args += [
+-                    "--platform", platform == "MacOS" ? "Mac" : platform.toString(),
+-                    "--jdk", JDK_DIR + "jre-${platform.toString().toLowerCase()}",
+-                    "--executable", appName,
+-                    "--classpath", "$rootDir/desktop/build/packr/desktop.jar".toString(),
+-                    "--mainclass", project.ext.mainClassName,
+-                    "--verbose",
+-                    "--bundle", getPackage() + ".mac",
+-                    "--icon", ICON_DIR,
+-                    "--output", "$rootDir/desktop/build/packr/output".toString(),
+-                    "--removelibs", "$rootDir/desktop/build/packr/desktop.jar".toString()
+-                ]
 -
 -                args += "--vmargs"
 -
@@ -3086,7 +3184,7 @@ index d0ec38f0a9c9f7d07c240a3d0c8c24bd0f6c1ebf..44d6d24b5b4d43514c8c5bf535bf7077
  launchIPhoneSimulator.dependsOn build
  launchIPadSimulator.dependsOn build
 diff --git a/server/build.gradle b/server/build.gradle
-index f348e41dbf38a2ad4c676ce243e1fe4389bfefaf..079379178548b8c3fc9257668f85c3bf9935c9cc 100644
+index 7359fdac3cb101aec25a7be9e8b9813ed1afd547..badc019ded25d495a139efe134085184640eb500 100644
 --- a/server/build.gradle
 +++ b/server/build.gradle
 @@ -3,10 +3,6 @@ sourceSets.main.java.srcDirs = ["src/"]
@@ -3113,7 +3211,7 @@ index f348e41dbf38a2ad4c676ce243e1fe4389bfefaf..079379178548b8c3fc9257668f85c3bf
      exclude("sprites/**")
      exclude("music/**")
      exclude("sounds/**")
-@@ -53,40 +50,3 @@ task dist(type: Jar, dependsOn: configurations.runtimeClasspath){
+@@ -51,40 +48,3 @@ task dist(type: Jar, dependsOn: configurations.runtimeClasspath){
          attributes 'Main-Class': project.mainClassName
      }
  }
@@ -3155,29 +3253,95 @@ index f348e41dbf38a2ad4c676ce243e1fe4389bfefaf..079379178548b8c3fc9257668f85c3bf
 -
 -dist.dependsOn classes
 diff --git a/settings.gradle b/settings.gradle
-index dafd6bdf99f48074cd7f2a1a819236433e3c6a55..304e893b1657dd6d23f87a0c6c2939ac7c1d5c84 100644
+index fed0fcf07666d4654905a50e341590dccfe9718e..304e893b1657dd6d23f87a0c6c2939ac7c1d5c84 100644
 --- a/settings.gradle
 +++ b/settings.gradle
-@@ -1,8 +1,16 @@
+@@ -1,16 +1,17 @@
+-if(JavaVersion.current().ordinal() < JavaVersion.VERSION_16.ordinal()){
+-    throw new Exception("!!! YOU MUST USE JAVA 16 OR ABOVE TO COMPILE AND RUN MINDUSTRY !!! Read the README. Your version: ${System.properties["java.version"]}")
 +pluginManagement {
 +    repositories {
 +        gradlePluginPortal()
 +        google()
 +    }
-+}
-+
- if(JavaVersion.current().ordinal() < JavaVersion.VERSION_17.ordinal()){
-     throw new Exception("!!! YOU MUST USE JAVA 17 OR ABOVE TO COMPILE AND RUN MINDUSTRY !!! Read the README. Your version: ${System.properties["java.version"]}")
  }
  
 -include 'desktop', 'core', 'server', 'ios', 'annotations', 'tools', 'tests'
+-
+-def use = { ... names ->
+-    for(String name : names){
+-        include(name)
+-        project(name).projectDir = new File(settingsDir, "../${name.substring(1).replace(":", "/")}")
+-    }
++if(JavaVersion.current().ordinal() < JavaVersion.VERSION_17.ordinal()){
++    throw new Exception("!!! YOU MUST USE JAVA 17 OR ABOVE TO COMPILE AND RUN MINDUSTRY !!! Read the README. Your version: ${System.properties["java.version"]}")
+ }
+ 
 +include 'core', 'server', 'annotations', 'tools', 'tests'
 +include 'desktop', 'ios'
- 
++
  def hasSdk = System.getenv("ANDROID_HOME") != null
  
+ if(new File(settingsDir, 'local.properties').exists()){
+@@ -26,47 +27,21 @@ if(hasSdk){
+     //why? because IntelliJ chokes on the new version of the Android plugin
+ 
+     //UPDATE: it no longer chokes on AGP with the latest version, but instead gives a completely different error. brilliant.
+-    if(!System.getProperty("jna.tmpdir")?.contains("JetBrains")){
+-        include 'android'
+-    }
++    include 'android'
+ }else{
+     println("No Android SDK found. Skipping Android module.")
+ }
+ 
+-if(!hasProperty("release")){
+-    if(new File(settingsDir, '../Arc').exists()){
+-        use(
+-        ':Arc',
+-        ':Arc:arc-core',
+-        ':Arc:extensions',
+-        ':Arc:extensions:freetype',
+-        ':Arc:extensions:recorder',
+-        ':Arc:extensions:arcnet',
+-        ':Arc:extensions:packer',
+-        ':Arc:extensions:g3d',
+-        ':Arc:extensions:fx',
+-        ':Arc:extensions:flabel',
+-        ':Arc:extensions:discord',
+-        ':Arc:extensions:profiling',
+-        ':Arc:natives',
+-        ':Arc:natives:natives-desktop',
+-        ':Arc:natives:natives-android',
+-        ':Arc:natives:natives-ios',
+-        ':Arc:natives:natives-freetype-desktop',
+-        ':Arc:natives:natives-freetype-android',
+-        ':Arc:natives:natives-freetype-ios',
+-        ':Arc:backends',
+-        ':Arc:backends:backend-sdl',
+-        ':Arc:backends:backend-android',
+-        ':Arc:backends:backend-robovm',
+-        ':Arc:backends:backend-headless'
+-        )
++if(!hasProperty("release") && !hasProperty("noLocalArc")){
++    if(new File(rootDir.parent, 'Arc').exists()){
++        println("Compiling with localArc")
++        includeBuild("../Arc")
+     }
+ 
+-    if(new File(settingsDir, '../Mindustry-Debug').exists()){
++    if(new File(rootDir.parent, 'Mindustry-Debug').exists()){
+         include(":debug")
+-        project(":debug").projectDir = new File(settingsDir, "../Mindustry-Debug")
++        project(":debug").projectDir = new File(rootDir.parent, "Mindustry-Debug")
+     }
+ }else{
+     println("Not including local repositories.")
+-}
++}
+\ No newline at end of file
 diff --git a/tools/build.gradle b/tools/build.gradle
-index b02926630256dec9f95c9e6eed2b35d0ea496db9..abe620bc87a2c455d6d170470111863d7c6b3395 100644
+index eecea7d265c5068fa0debbce867fbc7ee6cf2275..98e046c255244b5a82f0da377496e9fd03e1614d 100644
 --- a/tools/build.gradle
 +++ b/tools/build.gradle
 @@ -1,3 +1,13 @@
@@ -3256,10 +3420,10 @@ index b02926630256dec9f95c9e6eed2b35d0ea496db9..abe620bc87a2c455d6d170470111863d
  task genSprites(dependsOn: classes, type: JavaExec){
      finalizedBy 'antialiasGen'
 diff --git a/tools/src/mindustry/tools/Generators.java b/tools/src/mindustry/tools/Generators.java
-index 108784fe478d349ae944eef423b709c7978e55ea..7ef8ce8d9b61ca9bdb764281a6306391a1e79902 100644
+index fa954a41972ec3776958bbe289defe6ca35423a6..88a7feaa7058fb46755b8be4cd8d97a05b4ff6d4 100644
 --- a/tools/src/mindustry/tools/Generators.java
 +++ b/tools/src/mindustry/tools/Generators.java
-@@ -416,7 +416,7 @@ public class Generators{
+@@ -421,7 +421,7 @@ public class Generators{
                  }
              }
  

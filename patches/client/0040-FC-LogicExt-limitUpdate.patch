@@ -8,7 +8,7 @@ Subject: [PATCH] FC(LogicExt) limitUpdate
  1 file changed, 12 insertions(+)
 
 diff --git a/core/src/mindustry/entities/EntityGroup.java b/core/src/mindustry/entities/EntityGroup.java
-index ea8ef0cdb8a30b54bb304543ea92dc99da44acb6..9c17cf445d723093d45e8b4e5181f86829d1798a 100644
+index 9fdfda3d08ba6497d424fd19af7068f1f10622af..b93abc6277b89d4f8556c484d1e58dc388f3d390 100644
 --- a/core/src/mindustry/entities/EntityGroup.java
 +++ b/core/src/mindustry/entities/EntityGroup.java
 @@ -6,6 +6,7 @@ import arc.math.geom.*;

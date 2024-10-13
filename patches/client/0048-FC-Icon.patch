@@ -56,10 +56,10 @@ Subject: [PATCH] FC: Icon
  delete mode 100644 android/res/mipmap-xxxhdpi/ic_launcher_round.png
 
 diff --git a/android/AndroidManifest.xml b/android/AndroidManifest.xml
-index 25602c4ab4070b7db9b31803c88281c7e4aa449e..9b0c06287bf52a48823eaa018e9b23c2d304a4c2 100644
+index 8cae20eee7a480cef6a14576fc72b096d38271e1..68a2db550a609be9366f5d093e0096ea504e5baa 100644
 --- a/android/AndroidManifest.xml
 +++ b/android/AndroidManifest.xml
-@@ -10,8 +10,7 @@
+@@ -11,8 +11,7 @@
      <application
              android:resizeableActivity="true"
              android:allowBackup="true"

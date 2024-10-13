@@ -8,16 +8,16 @@ Content-Transfer-Encoding: 8bit
 
 更好的字体包支持
 ---
- core/src/mindustry/ClientLauncher.java |  6 ++----
+ core/src/mindustry/ClientLauncher.java |  6 ++---
  core/src/mindustry/core/UI.java        |  4 ----
- core/src/mindustry/ui/Fonts.java       | 30 ++++++++++++++------------
- 3 files changed, 18 insertions(+), 22 deletions(-)
+ core/src/mindustry/ui/Fonts.java       | 31 ++++++++++++++------------
+ 3 files changed, 19 insertions(+), 22 deletions(-)
 
 diff --git a/core/src/mindustry/ClientLauncher.java b/core/src/mindustry/ClientLauncher.java
-index 177d7e2513ffaedc2104a982c14d1d0d45ae7e9a..9034ad534556f44f6b4c12c0e236f159a560d68b 100644
+index a91ea8917a6c687d728e5d6fe1e39f2db53f2c87..06733410b5fb4a809c4d1043acee777443460979 100644
 --- a/core/src/mindustry/ClientLauncher.java
 +++ b/core/src/mindustry/ClientLauncher.java
-@@ -152,10 +152,8 @@ public abstract class ClientLauncher extends ApplicationCore implements Platform
+@@ -149,10 +149,8 @@ public abstract class ClientLauncher extends ApplicationCore implements Platform
  
          assets.load(new Vars());
  
@@ -29,7 +29,7 @@ index 177d7e2513ffaedc2104a982c14d1d0d45ae7e9a..9034ad534556f44f6b4c12c0e236f159
          assets.loadRun("maps", Map.class, () -> maps.loadPreviews());
  
          Musics.load();
-@@ -170,11 +168,11 @@ public abstract class ClientLauncher extends ApplicationCore implements Platform
+@@ -167,11 +165,11 @@ public abstract class ClientLauncher extends ApplicationCore implements Platform
          });
  
          assets.load(mods);
@@ -43,7 +43,7 @@ index 177d7e2513ffaedc2104a982c14d1d0d45ae7e9a..9034ad534556f44f6b4c12c0e236f159
          add(netServer = new NetServer());
          add(netClient = new NetClient());
 diff --git a/core/src/mindustry/core/UI.java b/core/src/mindustry/core/UI.java
-index f4d33d1e88e9cfc9477d8922b1d2d23dd60189d6..ba021c6f6e788c869e2f1c6678a0b95e3f73a744 100644
+index 182bbc6a26564ba516fe442889615ad1fc338482..190d52b2fdd8c651b6949bd8575f56d23d2371ed 100644
 --- a/core/src/mindustry/core/UI.java
 +++ b/core/src/mindustry/core/UI.java
 @@ -82,10 +82,6 @@ public class UI implements ApplicationListener, Loadable{
@@ -58,10 +58,10 @@ index f4d33d1e88e9cfc9477d8922b1d2d23dd60189d6..ba021c6f6e788c869e2f1c6678a0b95e
          Colors.put("accent", Pal.accent);
          Colors.put("unlaunched", Color.valueOf("8982ed"));
 diff --git a/core/src/mindustry/ui/Fonts.java b/core/src/mindustry/ui/Fonts.java
-index c02e09ff53a80aaf540223828208ad86b96d4bec..916b2ba5102ef670704e64a1f058c477c992d6dc 100644
+index b32847a353f8d9cda2424b17ecadd43be99afc5f..fe055ed5f0aa980f8177690bc14430bd6e920108 100644
 --- a/core/src/mindustry/ui/Fonts.java
 +++ b/core/src/mindustry/ui/Fonts.java
-@@ -61,11 +61,25 @@ public class Fonts{
+@@ -67,10 +67,25 @@ public class Fonts{
      }
  
      public static void loadFonts(){
@@ -70,7 +70,7 @@ index c02e09ff53a80aaf540223828208ad86b96d4bec..916b2ba5102ef670704e64a1f058c477
          FreeTypeFontParameter param = fontParameter();
  
          Core.assets.load("default", Font.class, new FreeTypeFontLoaderParameter(mainFont, param)).loaded = f -> Fonts.def = f;
- 
++
 +        Core.assets.load("outline", Font.class, new FreeTypeFontLoaderParameter(mainFont, new FreeTypeFontParameter(){{
 +            borderColor = Color.darkGray;
 +            incremental = true;
@@ -87,16 +87,16 @@ index c02e09ff53a80aaf540223828208ad86b96d4bec..916b2ba5102ef670704e64a1f058c477
          Core.assets.load("icon", Font.class, new FreeTypeFontLoaderParameter("fonts/icon.ttf", new FreeTypeFontParameter(){{
              size = 30;
              incremental = true;
-@@ -87,6 +101,8 @@ public class Fonts{
-             //ASCII only
-             characters = "\0ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz1234567890\"!`?'.,;:()[]{}<>|/@\\^$€-%+=#_&~*";
-         }})).loaded = f -> Fonts.logic = f;
+@@ -83,6 +98,8 @@ public class Fonts{
+             borderWidth = 5f;
+             borderColor = Color.darkGray;
+         }})).loaded = f -> Fonts.iconLarge = f;
 +
 +        Core.assets.loadRun("mergeUI", PixmapPacker.class, () -> {}, () -> Fonts.mergeFontAtlas(Core.atlas));
      }
  
-     public static @Nullable String unicodeToName(int unicode){
-@@ -209,20 +225,6 @@ public class Fonts{
+     public static TextureRegion getLargeIcon(String name){
+@@ -209,20 +226,6 @@ public class Fonts{
              }
          });
  

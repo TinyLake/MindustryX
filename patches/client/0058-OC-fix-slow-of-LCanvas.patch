@@ -4,11 +4,11 @@ Date: Tue, 6 Aug 2024 01:30:38 +0800
 Subject: [PATCH] OC: fix slow of LCanvas
 
 ---
- core/src/mindustry/logic/LCanvas.java | 113 ++++++++++++++------------
- 1 file changed, 59 insertions(+), 54 deletions(-)
+ core/src/mindustry/logic/LCanvas.java | 115 ++++++++++++++------------
+ 1 file changed, 63 insertions(+), 52 deletions(-)
 
 diff --git a/core/src/mindustry/logic/LCanvas.java b/core/src/mindustry/logic/LCanvas.java
-index e40b426a3c3ec656f9364c25ac762ed3b0121390..f92c4152ebaa794e33f1f4df864a4ea66bd8e7c5 100644
+index 2eee81193225c88dd7279163b67027f074e01225..fbaa501bf38d85dbe718b27c43e753b3751c88ca 100644
 --- a/core/src/mindustry/logic/LCanvas.java
 +++ b/core/src/mindustry/logic/LCanvas.java
 @@ -22,6 +22,7 @@ import mindustryX.*;
@@ -36,7 +36,7 @@ index e40b426a3c3ec656f9364c25ac762ed3b0121390..f92c4152ebaa794e33f1f4df864a4ea6
              jumps.cullable = false;
          }).grow().get();
          pane.setFlickScroll(false);
-@@ -127,7 +129,6 @@ public class LCanvas extends Table{
+@@ -134,7 +136,6 @@ public class LCanvas extends Table{
  
      @Override
      public void draw(){
@@ -44,22 +44,20 @@ index e40b426a3c3ec656f9364c25ac762ed3b0121390..f92c4152ebaa794e33f1f4df864a4ea6
          super.draw();
      }
  
-@@ -155,14 +156,11 @@ public class LCanvas extends Table{
+@@ -162,8 +163,11 @@ public class LCanvas extends Table{
          for(LStatement st : statements){
              st.setupUI();
          }
--
--        this.statements.layout();
-     }
++    }
  
-     public void clearStatements(){
-         jumps.clear();
-         statements.clearChildren();
--        statements.layout();
+-        this.statements.layout();
++    public void clearStatements(){
++        jumps.clear();
++        statements.clearChildren();
      }
  
      StatementElem checkHovered(){
-@@ -208,10 +206,12 @@ public class LCanvas extends Table{
+@@ -209,10 +213,12 @@ public class LCanvas extends Table{
              float cy = 0;
              seq.clear();
  
@@ -76,7 +74,7 @@ index e40b426a3c3ec656f9364c25ac762ed3b0121390..f92c4152ebaa794e33f1f4df864a4ea6
  
              //layout everything normally
              for(int i = 0; i < getChildren().size; i++){
-@@ -221,7 +221,7 @@ public class LCanvas extends Table{
+@@ -222,7 +228,7 @@ public class LCanvas extends Table{
                  if(dragging == e) continue;
  
                  e.setSize(width, e.getPrefHeight());
@@ -85,16 +83,16 @@ index e40b426a3c3ec656f9364c25ac762ed3b0121390..f92c4152ebaa794e33f1f4df864a4ea6
                  ((StatementElem)e).updateAddress(i);
  
                  cy += e.getPrefHeight() + space;
-@@ -252,8 +252,6 @@ public class LCanvas extends Table{
+@@ -253,8 +259,6 @@ public class LCanvas extends Table{
                  }
              }
  
--            if(parent != null) parent.invalidateHierarchy();
+-            invalidateHierarchy();
 -
              if(parent != null && parent instanceof Table){
                  setCullingArea(parent.getCullingArea());
              }
-@@ -314,9 +312,8 @@ public class LCanvas extends Table{
+@@ -315,9 +319,8 @@ public class LCanvas extends Table{
                  }
  
                  dragging = null;
@@ -105,7 +103,7 @@ index e40b426a3c3ec656f9364c25ac762ed3b0121390..f92c4152ebaa794e33f1f4df864a4ea6
          }
      }
  
-@@ -348,7 +345,6 @@ public class LCanvas extends Table{
+@@ -349,7 +352,6 @@ public class LCanvas extends Table{
  
                  t.button(Icon.add, Styles.logici, () -> LogicDialog.showAddStatement(privileged, (it) -> {
                      statements.addChildAfter(this, new StatementElem(it));
@@ -113,7 +111,7 @@ index e40b426a3c3ec656f9364c25ac762ed3b0121390..f92c4152ebaa794e33f1f4df864a4ea6
                  })).size(24f).padRight(6)
                  .get().tapped(()->{});//no drag
  
-@@ -361,7 +357,6 @@ public class LCanvas extends Table{
+@@ -362,7 +364,6 @@ public class LCanvas extends Table{
                  t.button(Icon.cancel, Styles.logici, () -> {
                      remove();
                      dragging = null;
@@ -121,7 +119,7 @@ index e40b426a3c3ec656f9364c25ac762ed3b0121390..f92c4152ebaa794e33f1f4df864a4ea6
                  }).size(24f).padLeft(Vars.mobile?48:0);
  
                  t.addListener(new InputListener(){
-@@ -380,7 +375,7 @@ public class LCanvas extends Table{
+@@ -381,7 +382,7 @@ public class LCanvas extends Table{
                          lasty = v.y;
                          dragging = StatementElem.this;
                          toFront();
@@ -130,7 +128,7 @@ index e40b426a3c3ec656f9364c25ac762ed3b0121390..f92c4152ebaa794e33f1f4df864a4ea6
                          return true;
                      }
  
-@@ -392,7 +387,7 @@ public class LCanvas extends Table{
+@@ -393,7 +394,7 @@ public class LCanvas extends Table{
                          lastx = v.x;
                          lasty = v.y;
  
@@ -139,7 +137,7 @@ index e40b426a3c3ec656f9364c25ac762ed3b0121390..f92c4152ebaa794e33f1f4df864a4ea6
                      }
  
                      @Override
-@@ -434,7 +429,6 @@ public class LCanvas extends Table{
+@@ -435,7 +436,6 @@ public class LCanvas extends Table{
                  StatementElem s = new StatementElem(copy);
  
                  statements.addChildAfter(StatementElem.this, s);
@@ -147,7 +145,7 @@ index e40b426a3c3ec656f9364c25ac762ed3b0121390..f92c4152ebaa794e33f1f4df864a4ea6
                  copy.elem = s;
                  copy.setupUI();
              }
-@@ -458,18 +452,24 @@ public class LCanvas extends Table{
+@@ -459,18 +459,24 @@ public class LCanvas extends Table{
                  StringBuilder thisText = new StringBuilder();
                  LogicIO.write(st, thisText);
                  var stNew = new PrintStatement();
@@ -175,7 +173,7 @@ index e40b426a3c3ec656f9364c25ac762ed3b0121390..f92c4152ebaa794e33f1f4df864a4ea6
          }
  
  
-@@ -560,15 +560,43 @@ public class LCanvas extends Table{
+@@ -561,15 +567,43 @@ public class LCanvas extends Table{
  
      public static class JumpCurve extends Element{
          public JumpButton button;
@@ -219,7 +217,7 @@ index e40b426a3c3ec656f9364c25ac762ed3b0121390..f92c4152ebaa794e33f1f4df864a4ea6
              if(button.listener.isOver()){
                  toFront();
              }
-@@ -576,42 +604,19 @@ public class LCanvas extends Table{
+@@ -577,42 +611,19 @@ public class LCanvas extends Table{
  
          @Override
          public void draw(){
@@ -243,8 +241,7 @@ index e40b426a3c3ec656f9364c25ac762ed3b0121390..f92c4152ebaa794e33f1f4df864a4ea6
 -
 -            if(hover != null){
 -                hover.localToAscendantCoordinates(desc, t.set(hover.getWidth(), hover.getHeight()/2f));
-+            drawCurve(r.x, r.y, t.x, t.y);
- 
+-
 -                draw = true;
 -            }else if(button.selecting){
 -                t.set(r).add(button.mx, button.my);
@@ -252,7 +249,8 @@ index e40b426a3c3ec656f9364c25ac762ed3b0121390..f92c4152ebaa794e33f1f4df864a4ea6
 -            }
 -
 -            float offset = canvas.pane.getVisualScrollY() - canvas.pane.getMaxY();
--
++            drawCurve(r.x, r.y, t.x, t.y);
+ 
 -            t.y += offset;
 -            r.y += offset;
 -

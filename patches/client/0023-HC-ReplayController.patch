@@ -17,7 +17,7 @@ way-zer <himc.wicp@gmail.com> on 2024/4/22 at 20:15
  2 files changed, 5 insertions(+)
 
 diff --git a/core/src/mindustry/core/NetClient.java b/core/src/mindustry/core/NetClient.java
-index e6b2f149d83cf4dcb449413b901b6a782ed6b2cb..0cf00afbd09a9bf38e6f2e947ada32b0792f9e3b 100644
+index de725eefa2243af7ac9c6fa78955a06b96737205..6f24e15192491a31258658dfa8ad843ac580e56b 100644
 --- a/core/src/mindustry/core/NetClient.java
 +++ b/core/src/mindustry/core/NetClient.java
 @@ -25,6 +25,7 @@ import mindustry.net.Packets.*;
@@ -44,10 +44,10 @@ index e6b2f149d83cf4dcb449413b901b6a782ed6b2cb..0cf00afbd09a9bf38e6f2e947ada32b0
              logic.reset();
              platform.updateRPC();
 diff --git a/core/src/mindustry/net/Net.java b/core/src/mindustry/net/Net.java
-index 7db098b1985ea7df7516f43ab4b0c49f05c723fa..638b11dc980ce4001faaaab28ec70c2b7f95a5ab 100644
+index 6f9b8f9b50079b42f7762c8ee2b1101394b54e33..22b66b83cde27a73415b9154ed813cdfeb3d3b36 100644
 --- a/core/src/mindustry/net/Net.java
 +++ b/core/src/mindustry/net/Net.java
-@@ -11,6 +11,7 @@ import mindustry.gen.*;
+@@ -10,6 +10,7 @@ import mindustry.gen.*;
  import mindustry.net.Packets.*;
  import mindustry.net.Streamable.*;
  import mindustryX.events.*;
@@ -55,7 +55,7 @@ index 7db098b1985ea7df7516f43ab4b0c49f05c723fa..638b11dc980ce4001faaaab28ec70c2b
  import net.jpountz.lz4.*;
  
  import java.io.*;
-@@ -268,6 +269,7 @@ public class Net{
+@@ -267,6 +268,7 @@ public class Net{
       */
      public void handleClientReceived(Packet object){
          object.handled();

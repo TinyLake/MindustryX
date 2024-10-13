@@ -9,10 +9,10 @@ Subject: [PATCH] H.API: add SendPacketEvent
  2 files changed, 8 insertions(+), 1 deletion(-)
 
 diff --git a/core/src/mindustry/net/ArcNetProvider.java b/core/src/mindustry/net/ArcNetProvider.java
-index e7a1a33dd6b4a523900d841d08246d0383ce2f30..23e8b294d646f2835750a1b085ae826032c3c627 100644
+index 3eaeacd1f3ea9436ba8b67b9a04b1a40cad02a5c..80e9b6b7317ac124d936bebce0e4481e2a31721c 100644
 --- a/core/src/mindustry/net/ArcNetProvider.java
 +++ b/core/src/mindustry/net/ArcNetProvider.java
-@@ -16,6 +16,7 @@ import mindustry.game.EventType.*;
+@@ -15,6 +15,7 @@ import mindustry.game.EventType.*;
  import mindustry.net.Administration.*;
  import mindustry.net.Net.*;
  import mindustry.net.Packets.*;
@@ -20,7 +20,7 @@ index e7a1a33dd6b4a523900d841d08246d0383ce2f30..23e8b294d646f2835750a1b085ae8260
  import net.jpountz.lz4.*;
  
  import java.io.*;
-@@ -335,6 +336,7 @@ public class ArcNetProvider implements NetProvider{
+@@ -329,6 +330,7 @@ public class ArcNetProvider implements NetProvider{
  
          @Override
          public void sendStream(Streamable stream){
@@ -28,7 +28,7 @@ index e7a1a33dd6b4a523900d841d08246d0383ce2f30..23e8b294d646f2835750a1b085ae8260
              connection.addListener(new InputStreamSender(stream.stream, 1024){
                  int id;
  
-@@ -360,6 +362,7 @@ public class ArcNetProvider implements NetProvider{
+@@ -354,6 +356,7 @@ public class ArcNetProvider implements NetProvider{
  
          @Override
          public void send(Object object, boolean reliable){
@@ -37,10 +37,10 @@ index e7a1a33dd6b4a523900d841d08246d0383ce2f30..23e8b294d646f2835750a1b085ae8260
                  if(reliable){
                      connection.sendTCP(object);
 diff --git a/core/src/mindustry/net/Net.java b/core/src/mindustry/net/Net.java
-index 145238bf8856c7b83da468b89362c3d1df5d5928..7db098b1985ea7df7516f43ab4b0c49f05c723fa 100644
+index ef69c392b08de46d8994610b3ffb5ebdd64ab41a..6f9b8f9b50079b42f7762c8ee2b1101394b54e33 100644
 --- a/core/src/mindustry/net/Net.java
 +++ b/core/src/mindustry/net/Net.java
-@@ -10,6 +10,7 @@ import mindustry.game.EventType.*;
+@@ -9,6 +9,7 @@ import mindustry.game.EventType.*;
  import mindustry.gen.*;
  import mindustry.net.Packets.*;
  import mindustry.net.Streamable.*;
@@ -48,7 +48,7 @@ index 145238bf8856c7b83da468b89362c3d1df5d5928..7db098b1985ea7df7516f43ab4b0c49f
  import net.jpountz.lz4.*;
  
  import java.io.*;
-@@ -223,8 +224,10 @@ public class Net{
+@@ -222,8 +223,10 @@ public class Net{
  
      /** Send an object to all connected clients, or to the server if this is a client.*/
      public void send(Object object, boolean reliable){
@@ -59,7 +59,7 @@ index 145238bf8856c7b83da468b89362c3d1df5d5928..7db098b1985ea7df7516f43ab4b0c49f
                  con.send(object, reliable);
              }
          }else{
-@@ -234,8 +237,9 @@ public class Net{
+@@ -233,8 +236,9 @@ public class Net{
  
      /** Send an object to everyone EXCEPT a certain client. Server-side only.*/
      public void sendExcept(NetConnection except, Object object, boolean reliable){

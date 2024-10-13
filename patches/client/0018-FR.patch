@@ -27,14 +27,14 @@ literal 0
 HcmV?d00001
 
 diff --git a/core/src/mindustry/content/StatusEffects.java b/core/src/mindustry/content/StatusEffects.java
-index 1ccaabc80faeabf0acaf38ae371fcc1f98bd9750..c58b4ec28d39f53104fc4555646e4284917364cb 100644
+index a8206160e418dae59adb7aaeed67661640be24d3..cdf55c6e3becbfb020cf2f99c7afea20768f4b1d 100644
 --- a/core/src/mindustry/content/StatusEffects.java
 +++ b/core/src/mindustry/content/StatusEffects.java
-@@ -202,6 +202,7 @@ public class StatusEffects{
+@@ -204,6 +204,7 @@ public class StatusEffects{
  
          invincible = new StatusEffect("invincible"){{
              healthMultiplier = Float.POSITIVE_INFINITY;
 +            color = Color.red;
          }};
  
-         dynamic = new StatusEffect("dynamic"){{
+ //        dynamic = new StatusEffect("dynamic"){{

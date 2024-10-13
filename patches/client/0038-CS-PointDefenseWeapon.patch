@@ -13,7 +13,7 @@ Content-Transfer-Encoding: 8bit
  2 files changed, 25 insertions(+), 2 deletions(-)
 
 diff --git a/core/src/mindustry/type/weapons/PointDefenseWeapon.java b/core/src/mindustry/type/weapons/PointDefenseWeapon.java
-index 86c1130dc184851ec4f62e975bc42b331c2d95a7..e00bdfaa62630f3d0ec3a6c8f70b42ea6337edc7 100644
+index 9063503a13bedc0c51e315f5afaf3a0c8702088d..0bdfef04d585197ef428671b7b67ccf017214bd3 100644
 --- a/core/src/mindustry/type/weapons/PointDefenseWeapon.java
 +++ b/core/src/mindustry/type/weapons/PointDefenseWeapon.java
 @@ -1,11 +1,13 @@
@@ -30,7 +30,7 @@ index 86c1130dc184851ec4f62e975bc42b331c2d95a7..e00bdfaa62630f3d0ec3a6c8f70b42ea
  import mindustry.gen.*;
  import mindustry.type.*;
  
-@@ -40,7 +42,27 @@ public class PointDefenseWeapon extends Weapon{
+@@ -39,7 +41,27 @@ public class PointDefenseWeapon extends Weapon{
  
      @Override
      protected Teamc findTarget(Unit unit, float x, float y, float range, boolean air, boolean ground){

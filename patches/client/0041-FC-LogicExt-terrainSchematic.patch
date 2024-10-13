@@ -9,8 +9,8 @@ Content-Transfer-Encoding: 8bit
 
 ---
  core/src/mindustry/game/Schematics.java       | 38 ++++++++++++++++---
- .../world/blocks/environment/Floor.java       |  1 +
- 2 files changed, 33 insertions(+), 6 deletions(-)
+ .../world/blocks/environment/Floor.java       | 37 ++++++++++++------
+ 2 files changed, 57 insertions(+), 18 deletions(-)
 
 diff --git a/core/src/mindustry/game/Schematics.java b/core/src/mindustry/game/Schematics.java
 index 0a7394838bbb36aa985383eae069f7bf6a1fb15d..35843db3e559cc691d987aab8bd345c52dc04538 100644
@@ -97,14 +97,101 @@ index 0a7394838bbb36aa985383eae069f7bf6a1fb15d..35843db3e559cc691d987aab8bd345c5
          return new Schematic(tiles, new StringMap(), width, height);
      }
 diff --git a/core/src/mindustry/world/blocks/environment/Floor.java b/core/src/mindustry/world/blocks/environment/Floor.java
-index 2ea499d015317d7d76b987274733b4557bfaffd0..7380b7c5f92bd971ca5af501c9b0b65b22bd0b21 100644
+index dc056da237eda03e3c04328cf648a1c29df55154..facd6d75710f4d3628cb9f058674feadc37ac732 100644
 --- a/core/src/mindustry/world/blocks/environment/Floor.java
 +++ b/core/src/mindustry/world/blocks/environment/Floor.java
-@@ -94,6 +94,7 @@ public class Floor extends Block{
-         instantBuild = true;
-         ignoreBuildDarkness = true;
-         placeEffect = Fx.rotateBlock;
+@@ -77,19 +77,21 @@ public class Floor extends Block{
+     public int blendId = -1;
+ 
+     protected TextureRegion[][] edges;
+-    protected Seq<Block> blenders = new Seq<>();
++    protected Seq<Floor> blenders = new Seq<>();
+     protected Bits blended = new Bits(256);
+     protected int[] dirs = new int[8];
+     protected TextureRegion edgeRegion;
+ 
+     public Floor(String name){
+-        super(name);
+-        variants = 3;
++        this(name, 3);
+     }
+ 
+     public Floor(String name, int variants){
+         super(name);
+         this.variants = variants;
++        placeableLiquid = true;
++        placeEffect = Fx.rotateBlock;
 +        schematicPriority = 100;
      }
  
      @Override
+@@ -174,18 +176,23 @@ public class Floor extends Block{
+         }
+ 
+         packer.add(PageType.environment, name + "-edge", result);
++        result.dispose();
+     }
+ 
+     @Override
+     public void drawBase(Tile tile){
+         Mathf.rand.setSeed(tile.pos());
+-        Draw.rect(variantRegions[Mathf.randomSeed(tile.pos(), 0, Math.max(0, variantRegions.length - 1))], tile.worldx(), tile.worldy());
++        Draw.rect(variantRegions[variant(tile.x, tile.y)], tile.worldx(), tile.worldy());
+ 
+         Draw.alpha(1f);
+         drawEdges(tile);
+         drawOverlay(tile);
+     }
+ 
++    public int variant(int x, int y){
++        return Mathf.randomSeed(Point2.pack(x, y), 0, Math.max(0, variantRegions.length - 1));
++    }
++
+     public void drawOverlay(Tile tile){
+         Floor floor = tile.overlay();
+         if(floor != Blocks.air && floor != this){
+@@ -270,12 +277,12 @@ public class Floor extends Block{
+     protected void drawBlended(Tile tile, boolean checkId){
+         blenders.sort(a -> a.id);
+ 
+-        for(Block block : blenders){
++        for(Floor block : blenders){
+             for(int i = 0; i < 8; i++){
+                 Point2 point = Geometry.d8[i];
+                 Tile other = tile.nearby(point);
+                 if(other != null && other.floor() == block && (!checkId || dirs[i] == block.id)){
+-                    TextureRegion region = edge((Floor)block, 1 - point.x, 1 - point.y);
++                    TextureRegion region = block.edge(tile.x, tile.y, 1 - point.x, 1 - point.y);
+                     Draw.rect(region, tile.worldx(), tile.worldy());
+                 }
+             }
+@@ -302,17 +309,23 @@ public class Floor extends Block{
+         return blendId;
+     }
+ 
++    /** Returns the edge array that should be used to draw at the specified tile position. */
++    protected TextureRegion[][] edges(int x, int y){
++        return blendGroup.asFloor().edges;
++    }
++
++    protected TextureRegion edge(int x, int y, int rx, int ry){
++        return edges(x, y)[rx][2 - ry];
++    }
++
++    @Deprecated
+     protected TextureRegion[][] edges(){
+-        return ((Floor)blendGroup).edges;
++        return edges(0, 0);
+     }
+ 
+     /** @return whether the edges from {@param other} should be drawn onto this tile **/
+     protected boolean doEdge(Tile tile, Tile otherTile, Floor other){
+-        return (other.realBlendId(otherTile) > realBlendId(tile) || edges() == null);
+-    }
+-
+-    TextureRegion edge(Floor block, int x, int y){
+-        return block.edges()[x][2 - y];
++        return (other.realBlendId(otherTile) > realBlendId(tile) || edges(tile.x, tile.y) == null);
+     }
+ 
+     public static class UpdateRenderState{

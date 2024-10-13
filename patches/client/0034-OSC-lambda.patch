@@ -10,14 +10,14 @@ Content-Transfer-Encoding: 8bit
 ---
  core/src/mindustry/entities/Units.java        |  25 +-
  .../mindustry/entities/bullet/BulletType.java |  11 +-
- .../src/mindustry/graphics/LightRenderer.java | 214 +++++++++++-------
- 3 files changed, 165 insertions(+), 85 deletions(-)
+ .../src/mindustry/graphics/LightRenderer.java | 216 +++++++++++-------
+ 3 files changed, 166 insertions(+), 86 deletions(-)
 
 diff --git a/core/src/mindustry/entities/Units.java b/core/src/mindustry/entities/Units.java
-index d3346510927f3b567c93f9998ec2ab18b3d6b344..219b36a19a6930cd82d78f5193121b9d62b90a1e 100644
+index a6287621c5668318d09d50bd1db4932762bfda07..95d1bb376f06f2326ed41e154a2176271b26bef5 100644
 --- a/core/src/mindustry/entities/Units.java
 +++ b/core/src/mindustry/entities/Units.java
-@@ -274,6 +274,10 @@ public class Units{
+@@ -268,6 +268,10 @@ public class Units{
          }
      }
  
@@ -28,7 +28,7 @@ index d3346510927f3b567c93f9998ec2ab18b3d6b344..219b36a19a6930cd82d78f5193121b9d
      /** Returns the closest enemy of this team. Filter by predicate. */
      public static Unit closestEnemy(Team team, float x, float y, float range, Boolf<Unit> predicate){
          if(team == Team.derelict) return null;
-@@ -282,11 +286,16 @@ public class Units{
+@@ -276,11 +280,16 @@ public class Units{
          cdist = 0f;
          cpriority = -99999f;
  
@@ -48,7 +48,7 @@ index d3346510927f3b567c93f9998ec2ab18b3d6b344..219b36a19a6930cd82d78f5193121b9d
                  result = e;
                  cdist = dst2;
                  cpriority = e.type.targetPriority;
-@@ -304,10 +313,16 @@ public class Units{
+@@ -298,10 +307,16 @@ public class Units{
          cdist = 0f;
          cpriority = -99999f;
  
@@ -68,10 +68,10 @@ index d3346510927f3b567c93f9998ec2ab18b3d6b344..219b36a19a6930cd82d78f5193121b9d
                  result = e;
                  cdist = cost;
 diff --git a/core/src/mindustry/entities/bullet/BulletType.java b/core/src/mindustry/entities/bullet/BulletType.java
-index 977f16c0e38237b775024ad2c71802bb85d51381..6e0d5482b416709d1ae52b2efff61ddbd6e7ba1b 100644
+index 780978e4082ca872bae6d93b6c2305a08ac0d2e9..f8babc5f879c74f213b871a627031d52677d33e0 100644
 --- a/core/src/mindustry/entities/bullet/BulletType.java
 +++ b/core/src/mindustry/entities/bullet/BulletType.java
-@@ -628,6 +628,7 @@ public class BulletType extends Content implements Cloneable{
+@@ -596,6 +596,7 @@ public class BulletType extends Content implements Cloneable{
          }
      }
  
@@ -79,7 +79,7 @@ index 977f16c0e38237b775024ad2c71802bb85d51381..6e0d5482b416709d1ae52b2efff61ddb
      public void updateHoming(Bullet b){
          if(homingPower > 0.0001f && b.time >= homingDelay){
              float realAimX = b.aimX < 0 ? b.x : b.aimX;
-@@ -635,20 +636,22 @@ public class BulletType extends Content implements Cloneable{
+@@ -603,20 +604,22 @@ public class BulletType extends Content implements Cloneable{
  
              Teamc target;
              //home in on allies if possible
@@ -107,7 +107,7 @@ index 977f16c0e38237b775024ad2c71802bb85d51381..6e0d5482b416709d1ae52b2efff61ddb
              if(target != null){
                  b.vel.setAngle(Angles.moveToward(b.rotation(), b.angleTo(target), homingPower * Time.delta * 50f));
 diff --git a/core/src/mindustry/graphics/LightRenderer.java b/core/src/mindustry/graphics/LightRenderer.java
-index 7c30b947965d0b29a2cabadf7d2ffa4ce03456f9..b3513f16a28ef923685974f78543973b95e33bac 100644
+index a0cab5c03ea751a90a4bedb198af313c8c8d61b1..b3513f16a28ef923685974f78543973b95e33bac 100644
 --- a/core/src/mindustry/graphics/LightRenderer.java
 +++ b/core/src/mindustry/graphics/LightRenderer.java
 @@ -8,6 +8,7 @@ import arc.math.*;
@@ -152,7 +152,7 @@ index 7c30b947965d0b29a2cabadf7d2ffa4ce03456f9..b3513f16a28ef923685974f78543973b
      public void add(float x, float y, TextureRegion region, Color color, float opacity){
          add(x, y, region, 0f, color, opacity);
      }
-@@ -52,24 +42,150 @@ public class LightRenderer{
+@@ -52,25 +42,151 @@ public class LightRenderer{
  
          float res = color.toFloatBits();
          float xscl = Draw.xscl, yscl = Draw.yscl;
@@ -307,9 +307,11 @@ index 7c30b947965d0b29a2cabadf7d2ffa4ce03456f9..b3513f16a28ef923685974f78543973b
              float rot = Mathf.angleExact(x2 - x, y2 - y);
 -            TextureRegion ledge = Core.atlas.find("circle-end"), lmid = Core.atlas.find("circle-mid");
 -
-             float color = Draw.getColorPacked();
+-            float color = Draw.getColor().toFloatBits();
++            float color = Draw.getColorPacked();
              float u = lmid.u;
              float v = lmid.v2;
+             float u2 = lmid.u2;
 @@ -178,60 +294,6 @@ public class LightRenderer{
              vertices[23] = 0;
  

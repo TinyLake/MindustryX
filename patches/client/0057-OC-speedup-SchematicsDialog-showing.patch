@@ -22,10 +22,10 @@ index 1a6cf5eb26635a2112d98ce2012cc666f3452a3f..273566d64e870371bb8d80d4569bce06
          api arcModule("extensions:fx")
          api arcModule("extensions:arcnet")
 diff --git a/core/src/mindustry/ui/dialogs/SchematicsDialog.java b/core/src/mindustry/ui/dialogs/SchematicsDialog.java
-index f64cf14ca2f0f06d90147364c9bfeded363ff95b..1819d3cabac2aeadbb57bf74cf6962f829c7dded 100644
+index ff444b8991e2aa4d892bee3ab75757a5b1420c10..1d34fa3202a2f09e5a0840d74ca986c6b9aa74f9 100644
 --- a/core/src/mindustry/ui/dialogs/SchematicsDialog.java
 +++ b/core/src/mindustry/ui/dialogs/SchematicsDialog.java
-@@ -683,6 +683,7 @@ public class SchematicsDialog extends BaseDialog{
+@@ -675,6 +675,7 @@ public class SchematicsDialog extends BaseDialog{
      }
  
      public static class SchematicImage extends Image{
@@ -33,7 +33,7 @@ index f64cf14ca2f0f06d90147364c9bfeded363ff95b..1819d3cabac2aeadbb57bf74cf6962f8
          public float scaling = 16f;
          public float thickness = 4f;
          public Color borderColor = Pal.gray;
-@@ -708,7 +709,8 @@ public class SchematicsDialog extends BaseDialog{
+@@ -700,7 +701,8 @@ public class SchematicsDialog extends BaseDialog{
                  && ((Button)parent.parent).isOver();
  
              boolean wasSet = set;
@@ -43,7 +43,7 @@ index f64cf14ca2f0f06d90147364c9bfeded363ff95b..1819d3cabac2aeadbb57bf74cf6962f8
                  Core.app.post(this::setPreview);
                  set = true;
              }else if(lastTexture != null && lastTexture.isDisposed()){
-@@ -739,6 +741,7 @@ public class SchematicsDialog extends BaseDialog{
+@@ -731,6 +733,7 @@ public class SchematicsDialog extends BaseDialog{
          }
  
          private void setPreview(){

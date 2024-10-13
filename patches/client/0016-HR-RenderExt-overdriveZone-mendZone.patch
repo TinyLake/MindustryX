@@ -11,10 +11,10 @@ Subject: [PATCH] HR(RenderExt) overdriveZone mendZone
  4 files changed, 35 insertions(+)
 
 diff --git a/core/src/mindustry/core/Renderer.java b/core/src/mindustry/core/Renderer.java
-index 01b2872b6ab744ad12f44049feb6146ce8ad84d5..e987766b74de1fbb8d3d9e0a8f1863b0821a49db 100644
+index bab0738bca0a8b40d556bc3bfe36e6794f67c748..6ed4bb3d08571aab42e7ed7059cf3b6ca43190e3 100644
 --- a/core/src/mindustry/core/Renderer.java
 +++ b/core/src/mindustry/core/Renderer.java
-@@ -349,6 +349,11 @@ public class Renderer implements ApplicationListener{
+@@ -367,6 +367,11 @@ public class Renderer implements ApplicationListener{
                  effectBuffer.blit(Shaders.shield);
              });
  
@@ -67,7 +67,7 @@ index 369d0eecea48320fb8559acdf6de9cf2c74447c9..edafc65164c72b570b779eaa6f65ab40
  
              Draw.color(baseColor, phaseColor, phaseHeat);
 diff --git a/core/src/mindustry/world/blocks/defense/OverdriveProjector.java b/core/src/mindustry/world/blocks/defense/OverdriveProjector.java
-index 423462318a31075f047a39d07caee50e031c1390..89b28401796d1d560330328e4bea54f258f3fdeb 100644
+index 14b553c6b43fd519290d9d64c049053b64b7fb40..aa1c2e89e6e16baaa78def3928451dc5820ab5a8 100644
 --- a/core/src/mindustry/world/blocks/defense/OverdriveProjector.java
 +++ b/core/src/mindustry/world/blocks/defense/OverdriveProjector.java
 @@ -15,6 +15,7 @@ import mindustry.ui.*;
@@ -78,7 +78,7 @@ index 423462318a31075f047a39d07caee50e031c1390..89b28401796d1d560330328e4bea54f2
  
  import static mindustry.Vars.*;
  
-@@ -138,6 +139,24 @@ public class OverdriveProjector extends Block{
+@@ -132,6 +133,24 @@ public class OverdriveProjector extends Block{
          public void draw(){
              super.draw();
  

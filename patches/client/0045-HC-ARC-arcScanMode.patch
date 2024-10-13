@@ -27,10 +27,10 @@ index 2c0077cc99557c80f49d0cf496c92309b31e482e..341b81c8ec8cae795b3e5c3872e253f9
      }
  }
 diff --git a/core/src/mindustry/world/blocks/distribution/ItemBridge.java b/core/src/mindustry/world/blocks/distribution/ItemBridge.java
-index fa11e9f00f1e62b7bfb78067d1da88e405f91ab3..0bb4a1343cd3d5a030fd1ced7217317234493c15 100644
+index 1b23be8356c7881fc5d0c38efdf245f6ee680c9c..0c31a143fd09888010517c31fea05f13c9b15c57 100644
 --- a/core/src/mindustry/world/blocks/distribution/ItemBridge.java
 +++ b/core/src/mindustry/world/blocks/distribution/ItemBridge.java
-@@ -532,5 +532,17 @@ public class ItemBridge extends Block{
+@@ -521,5 +521,17 @@ public class ItemBridge extends Block{
                  wasMoved = moved = read.bool();
              }
          }
@@ -49,10 +49,10 @@ index fa11e9f00f1e62b7bfb78067d1da88e405f91ab3..0bb4a1343cd3d5a030fd1ced72173172
      }
  }
 diff --git a/core/src/mindustry/world/blocks/distribution/MassDriver.java b/core/src/mindustry/world/blocks/distribution/MassDriver.java
-index 7fc0d5f0ec12e7d2aaa70d32beebed9027914449..f749a280f0307a1c44294b6ebcba25808f429ef0 100644
+index 636641924280a51603b22a7b5d777a3100d21b24..196b343e60cc046a270cc8f02c906d7276252fda 100644
 --- a/core/src/mindustry/world/blocks/distribution/MassDriver.java
 +++ b/core/src/mindustry/world/blocks/distribution/MassDriver.java
-@@ -335,6 +335,9 @@ public class MassDriver extends Block{
+@@ -329,6 +329,9 @@ public class MassDriver extends Block{
              return other instanceof MassDriverBuild entity && other.isValid() && other.efficiency > 0 && entity.block == block && entity.link == pos() && within(other, range);
          }
  

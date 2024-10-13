@@ -8,7 +8,7 @@ Subject: [PATCH] FR(RenderExt) deadOverlay
  1 file changed, 2 insertions(+), 2 deletions(-)
 
 diff --git a/core/src/mindustry/graphics/OverlayRenderer.java b/core/src/mindustry/graphics/OverlayRenderer.java
-index 8346eb94d62f3d9cb57e4f63ed39ac34cb07c84d..fe8d7dc18df91b5f8484e87f0d37ab8dce06b54f 100644
+index cd452ca24acfa985edb46f995f9a880da0bc3dbd..8e0e3e6c6b2eba997c09a65ecf2977a2d84db946 100644
 --- a/core/src/mindustry/graphics/OverlayRenderer.java
 +++ b/core/src/mindustry/graphics/OverlayRenderer.java
 @@ -71,7 +71,7 @@ public class OverlayRenderer{
@@ -20,9 +20,9 @@ index 8346eb94d62f3d9cb57e4f63ed39ac34cb07c84d..fe8d7dc18df91b5f8484e87f0d37ab8d
  
          if(player.isBuilder()){
              player.unit().drawBuildPlans();
-@@ -113,7 +113,7 @@ public class OverlayRenderer{
-             }
-         }
+@@ -118,7 +118,7 @@ public class OverlayRenderer{
+             for(var marker : obj.markers) marker.draw();
+         });
  
 -        if(player.dead()) return; //dead players don't draw
 +        if(player.dead() && !RenderExt.deadOverlay) return; //dead players don't draw

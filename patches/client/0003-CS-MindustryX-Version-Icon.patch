@@ -19,11 +19,11 @@ way-zer <himc.wicp@gmail.com> on 2024/9/8
  core/src/mindustry/core/Version.java               | 6 +++++-
  core/src/mindustry/net/NetworkIO.java              | 2 +-
  desktop/src/mindustry/desktop/DesktopLauncher.java | 2 +-
- gradle.properties                                  | 3 +++
- 11 files changed, 19 insertions(+), 9 deletions(-)
+ gradle.properties                                  | 5 ++++-
+ 11 files changed, 20 insertions(+), 10 deletions(-)
 
 diff --git a/.gitignore b/.gitignore
-index 7d91d3191096c431b739d2d5ecd951a764feead3..ba271e6bd0dd06971fff6fa2314254149cc90087 100644
+index 5dce71d331fd8e76886739d80ba225c9a9ccdef2..511d79c5ece85ef092b12b233450417eaf1e849a 100644
 --- a/.gitignore
 +++ b/.gitignore
 @@ -4,6 +4,7 @@ logs/
@@ -33,7 +33,7 @@ index 7d91d3191096c431b739d2d5ecd951a764feead3..ba271e6bd0dd06971fff6fa231425414
 +/core/assets/MindustryX.hjson
  /deploy/
  /out/
- ios/libs/
+ /desktop/packr-out/
 diff --git a/android/build.gradle b/android/build.gradle
 index 11f5fcf77dfc2e54ad1c18b183ad1957ff3dfe9a..23eb0e5b84894538ee19ee7fa437950622c56a2a 100644
 --- a/android/build.gradle
@@ -93,12 +93,12 @@ index 6dfb14b6bb9401ec083a0f6994ed9bab8b303c97..a68dd5cd58f7f012e3dd27750ae970b9
      processResources.configure {
          dependsOn(generateLocales, generateBasePartNames, writeVersion)
 diff --git a/core/src/mindustry/Vars.java b/core/src/mindustry/Vars.java
-index 2eb0e16ca5613ba96b0d8ac3cdf00f7ea1a9e1fb..ccc9c764d4a1fd163b01d000dc54de1ddd28050c 100644
+index 0dc1cf9e3fdb125b9d8c26c708960d69a4202b0a..ec34503e16c87ab34dcdba33e7e89d8f644048c6 100644
 --- a/core/src/mindustry/Vars.java
 +++ b/core/src/mindustry/Vars.java
 @@ -76,7 +76,7 @@ public class Vars implements Loadable{
-     /** URL to the JSON file containing all the stable servers.  */
-     public static final String serverJsonURL = "https://raw.githubusercontent.com/Anuken/MindustryServerList/master/servers_v8.json";
+     //TODO merge with v6 list upon release
+     public static final String serverJsonURL = "https://raw.githubusercontent.com/Anuken/Mindustry/master/servers_v7.json";
      /** URL of the github issue report template.*/
 -    public static final String reportIssueURL = "https://github.com/Anuken/Mindustry/issues/new?labels=bug&template=bug_report.md";
 +    public static final String reportIssueURL = "https://github.com/TinyLake/MindustryX/issues/new?labels=bug&template=bug_report.md";
@@ -106,7 +106,7 @@ index 2eb0e16ca5613ba96b0d8ac3cdf00f7ea1a9e1fb..ccc9c764d4a1fd163b01d000dc54de1d
      public static final Seq<ServerGroup> defaultServers = Seq.with();
      /** maximum size of any block, do not change unless you know what you're doing */
 diff --git a/core/src/mindustry/core/NetClient.java b/core/src/mindustry/core/NetClient.java
-index 8d3ac0bd19be8caca3aa95ab48adda63c3c317a1..a85c88738b520ed904f0f51bfc1417c57ae9fab4 100644
+index 9f6a8bf9227b9f389140236d7b5b20dcecf1a70b..a258e8c305b78ccb12f76b5f4757cf8b378f570b 100644
 --- a/core/src/mindustry/core/NetClient.java
 +++ b/core/src/mindustry/core/NetClient.java
 @@ -24,6 +24,7 @@ import mindustry.net.*;
@@ -156,10 +156,10 @@ index 73bbd59416cc8e1b64bcb5538fdd73886a455451..001e9281ca1b42b94fa1d51cd0f64445
      }
  }
 diff --git a/core/src/mindustry/net/NetworkIO.java b/core/src/mindustry/net/NetworkIO.java
-index 48599c6b96474117057e7ca2b87b545873a0ea31..4366eeef830845fb13132a0ae3534129b7a859dc 100644
+index c6b2ce1478a1e63ed0b43ba40f4a40b24a1b5433..fd3d71bf12e56e48ea0885d94a74571dc1ccddbc 100644
 --- a/core/src/mindustry/net/NetworkIO.java
 +++ b/core/src/mindustry/net/NetworkIO.java
-@@ -107,7 +107,7 @@ public class NetworkIO{
+@@ -102,7 +102,7 @@ public class NetworkIO{
          buffer.putInt(Core.settings.getInt("totalPlayers", Groups.player.size()));
          buffer.putInt(state.wave);
          buffer.putInt(Version.build);
@@ -169,10 +169,10 @@ index 48599c6b96474117057e7ca2b87b545873a0ea31..4366eeef830845fb13132a0ae3534129
          buffer.put((byte)state.rules.mode().ordinal());
          buffer.putInt(netServer.admins.getPlayerLimit());
 diff --git a/desktop/src/mindustry/desktop/DesktopLauncher.java b/desktop/src/mindustry/desktop/DesktopLauncher.java
-index 2500d18e59a325d6f1a6286d4f0d214d65a78402..eba453ade66d5e72f44726f64a28a0577ef6ef87 100644
+index 250d7e0a01e6d93bae5bbef412e1e8ae69154f2c..fd75f9dd7e3fc12e13f0a9ed86abd7639525afe6 100644
 --- a/desktop/src/mindustry/desktop/DesktopLauncher.java
 +++ b/desktop/src/mindustry/desktop/DesktopLauncher.java
-@@ -62,7 +62,7 @@ public class DesktopLauncher extends ClientLauncher{
+@@ -58,7 +58,7 @@ public class DesktopLauncher extends ClientLauncher{
                          }
                      }
                  }
@@ -182,14 +182,16 @@ index 2500d18e59a325d6f1a6286d4f0d214d65a78402..eba453ade66d5e72f44726f64a28a057
          }catch(Throwable e){
              handleCrash(e);
 diff --git a/gradle.properties b/gradle.properties
-index 2c3108d722c7936e167f9c0d6afc192f47252b07..6231b38f0a5bac9f02cd6589769700dc1c0c890d 100644
+index 312dbd41088f0ce62ec516e7cbc4431fb9e2e1fb..c42e4f71e9e6803e70e7405262018043e40f5794 100644
 --- a/gradle.properties
 +++ b/gradle.properties
-@@ -27,3 +27,6 @@ org.gradle.internal.http.socketTimeout=100000
+@@ -25,4 +25,7 @@ org.gradle.caching=true
+ #used for slow jitpack builds; TODO see if this actually works
+ org.gradle.internal.http.socketTimeout=100000
  org.gradle.internal.http.connectionTimeout=100000
- android.enableR8.fullMode=false
- archash=89c7f1aee6
+-archash=152e49944a
++android.enableR8.fullMode=false
++archash=89c7f1aee6
 +
-+upstreamBuild=25368
-+versionType=bleeding-edge
++upstreamBuild=146
 \ No newline at end of file

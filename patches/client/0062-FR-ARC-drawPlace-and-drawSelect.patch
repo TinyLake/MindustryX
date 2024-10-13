@@ -16,7 +16,7 @@ Subject: [PATCH] FR: ARC drawPlace and drawSelect
  9 files changed, 92 insertions(+), 14 deletions(-)
 
 diff --git a/core/src/mindustry/game/Universe.java b/core/src/mindustry/game/Universe.java
-index a22d073f9d3cebcfb22d1f7c22d47116a3dc3af6..41f2aabc05aa1fc55bf58b7191b5837c9fa1c8ba 100644
+index 4aa77d8be7d4876022746b93046e0e8587b9052b..849a46f6bae96b5a65e4874b2621acfcc7e4ded9 100644
 --- a/core/src/mindustry/game/Universe.java
 +++ b/core/src/mindustry/game/Universe.java
 @@ -20,7 +20,7 @@ public class Universe{
@@ -29,7 +29,7 @@ index a22d073f9d3cebcfb22d1f7c22d47116a3dc3af6..41f2aabc05aa1fc55bf58b7191b5837c
      private @Nullable Schematic lastLoadout;
      private ItemSeq lastLaunchResources = new ItemSeq();
 diff --git a/core/src/mindustry/world/blocks/ConstructBlock.java b/core/src/mindustry/world/blocks/ConstructBlock.java
-index 0a49f8212f38c18f3df2293e46ea55eb09b7eb53..c0afb43544a5933a91301ee3d1f9894eb9865a2c 100644
+index df459ae6d896889fc724b20288dde13bda8adf2f..3ec8d75439e842b1bf572db669d6a45aa3f7d5ec 100644
 --- a/core/src/mindustry/world/blocks/ConstructBlock.java
 +++ b/core/src/mindustry/world/blocks/ConstructBlock.java
 @@ -3,14 +3,17 @@ package mindustry.world.blocks;
@@ -67,9 +67,9 @@ index 0a49f8212f38c18f3df2293e46ea55eb09b7eb53..c0afb43544a5933a91301ee3d1f9894e
              if(pitchSeq > 30){
                  pitchSeq = 0;
              }
-@@ -170,6 +174,40 @@ public class ConstructBlock extends Block{
-         private @Nullable float[] totalAccumulator;
-         private @Nullable int[] itemsLeft;
+@@ -169,6 +173,40 @@ public class ConstructBlock extends Block{
+         private float[] accumulator;
+         private float[] totalAccumulator;
  
 +        @Override
 +        public void drawSelect(){
@@ -108,7 +108,7 @@ index 0a49f8212f38c18f3df2293e46ea55eb09b7eb53..c0afb43544a5933a91301ee3d1f9894e
          @Override
          public String getDisplayName(){
              return Core.bundle.format("block.constructing", current.localizedName);
-@@ -248,7 +286,7 @@ public class ConstructBlock extends Block{
+@@ -247,7 +285,7 @@ public class ConstructBlock extends Block{
  
                      Draw.rect(region, x, y, current.rotate && (noOverrides || current.regionRotated2 == i || current.regionRotated1 == i) ? rotdeg() : 0);
                      Draw.flush();
@@ -118,7 +118,7 @@ index 0a49f8212f38c18f3df2293e46ea55eb09b7eb53..c0afb43544a5933a91301ee3d1f9894e
  
                  Draw.color();
 diff --git a/core/src/mindustry/world/blocks/defense/ForceProjector.java b/core/src/mindustry/world/blocks/defense/ForceProjector.java
-index ca12743b5a353709be7519875ff83db23daa0462..e9c3e8faed71d9885ef598858f251dab4f76b5f7 100644
+index 5cc4088121fd85ccb4971465494b2f00ee59a878..5562ba66cfc257d53058e56bb3eff52302298b8e 100644
 --- a/core/src/mindustry/world/blocks/defense/ForceProjector.java
 +++ b/core/src/mindustry/world/blocks/defense/ForceProjector.java
 @@ -1,6 +1,7 @@
@@ -129,7 +129,7 @@ index ca12743b5a353709be7519875ff83db23daa0462..e9c3e8faed71d9885ef598858f251dab
  import arc.func.*;
  import arc.graphics.*;
  import arc.graphics.g2d.*;
-@@ -128,6 +129,7 @@ public class ForceProjector extends Block{
+@@ -124,6 +125,7 @@ public class ForceProjector extends Block{
          Draw.color(player.team().color);
          Lines.stroke(1f);
          Lines.poly(x * tilesize + offset, y * tilesize + offset, sides, radius, shieldRotation);
@@ -168,7 +168,7 @@ index 8ae4dec654dd860c1dd7de479521c9e163c106a2..253896adc8c4661564a81a988737bd93
      }
  
 diff --git a/core/src/mindustry/world/blocks/defense/OverdriveProjector.java b/core/src/mindustry/world/blocks/defense/OverdriveProjector.java
-index 11cd57fb65dcac2eb118cd7d584dd83be20b7c0f..236d6fa7f5e779f3d7a05d3b7862fa41df64edba 100644
+index 94d2d54c8b2a6cf97a26b0d295eb0c98a1ec2045..57944e356998db95309fbb5ed29b8024856c0617 100644
 --- a/core/src/mindustry/world/blocks/defense/OverdriveProjector.java
 +++ b/core/src/mindustry/world/blocks/defense/OverdriveProjector.java
 @@ -1,6 +1,5 @@
@@ -178,7 +178,7 @@ index 11cd57fb65dcac2eb118cd7d584dd83be20b7c0f..236d6fa7f5e779f3d7a05d3b7862fa41
  import arc.graphics.*;
  import arc.graphics.g2d.*;
  import arc.math.*;
-@@ -57,6 +56,11 @@ public class OverdriveProjector extends Block{
+@@ -56,6 +55,11 @@ public class OverdriveProjector extends Block{
          super.drawPlace(x, y, rotation, valid);
  
          Drawf.dashCircle(x * tilesize + offset, y * tilesize + offset, range, baseColor);
@@ -191,18 +191,18 @@ index 11cd57fb65dcac2eb118cd7d584dd83be20b7c0f..236d6fa7f5e779f3d7a05d3b7862fa41
          indexer.eachBlock(player.team(), x * tilesize + offset, y * tilesize + offset, range, other -> other.block.canOverdrive, other -> Drawf.selected(other, Tmp.c1.set(baseColor).a(Mathf.absin(4f, 1f))));
      }
 diff --git a/core/src/mindustry/world/blocks/defense/turrets/BaseTurret.java b/core/src/mindustry/world/blocks/defense/turrets/BaseTurret.java
-index eced3dc7581a4916970634e600d0f5cd86f6ee7e..58e315a6d9ec8c4c32df8a8220a9ccbb564e862d 100644
+index 60193cd29f30f90ebf58bbe93e621fa71db4fe53..1fa97cec28a78509d8c4946b2b7124dbe616cd77 100644
 --- a/core/src/mindustry/world/blocks/defense/turrets/BaseTurret.java
 +++ b/core/src/mindustry/world/blocks/defense/turrets/BaseTurret.java
-@@ -14,6 +14,7 @@ import mindustry.world.*;
- import mindustry.world.blocks.*;
+@@ -13,6 +13,7 @@ import mindustry.logic.*;
+ import mindustry.world.*;
  import mindustry.world.consumers.*;
  import mindustry.world.meta.*;
 +import mindustryX.features.*;
  
  import static mindustry.Vars.*;
  
-@@ -77,6 +78,8 @@ public class BaseTurret extends Block{
+@@ -76,6 +77,8 @@ public class BaseTurret extends Block{
          if(fogRadiusMultiplier < 0.99f && state.rules.fog){
              Drawf.dashCircle(x * tilesize + offset, y * tilesize + offset, range * fogRadiusMultiplier, Pal.lightishGray);
          }
@@ -211,7 +211,7 @@ index eced3dc7581a4916970634e600d0f5cd86f6ee7e..58e315a6d9ec8c4c32df8a8220a9ccbb
      }
  
      @Override
-@@ -101,7 +104,7 @@ public class BaseTurret extends Block{
+@@ -95,7 +98,7 @@ public class BaseTurret extends Block{
  
          @Override
          public void drawSelect(){
@@ -221,10 +221,10 @@ index eced3dc7581a4916970634e600d0f5cd86f6ee7e..58e315a6d9ec8c4c32df8a8220a9ccbb
  
          public float estimateDps(){
 diff --git a/core/src/mindustry/world/blocks/defense/turrets/Turret.java b/core/src/mindustry/world/blocks/defense/turrets/Turret.java
-index fc64bc181d9c1ef73d325de51f7d814206a77c47..9234713a0313b89d856db1cd70da9a8f752ebd58 100644
+index 1bfd90ecc8709c88582f453c6f69bfdd0f793945..5b4cbee330a37f64472f3f98390fc07188fae7ed 100644
 --- a/core/src/mindustry/world/blocks/defense/turrets/Turret.java
 +++ b/core/src/mindustry/world/blocks/defense/turrets/Turret.java
-@@ -367,6 +367,18 @@ public class Turret extends ReloadTurret{
+@@ -355,6 +355,18 @@ public class Turret extends ReloadTurret{
              drawer.draw(this);
          }
  
@@ -299,10 +299,10 @@ index f5c6656ea21eedfc2bcb65edcf271bfdc49469eb..97b8404dba179b441685c2361fd1c601
          returnItem = null;
          returnCount = 0;
 diff --git a/core/src/mindustry/world/blocks/storage/CoreBlock.java b/core/src/mindustry/world/blocks/storage/CoreBlock.java
-index 15a80f0c6e61210c702cf42d672ebc24a6cfc0f6..a3feeffe80258f74116ab767bf1b12b386226b0e 100644
+index a7199929351d4ec311ba34d81b3b0e2601ad04fe..22a95dcbb5642659b98096de45f33ac09067d16c 100644
 --- a/core/src/mindustry/world/blocks/storage/CoreBlock.java
 +++ b/core/src/mindustry/world/blocks/storage/CoreBlock.java
-@@ -90,6 +90,7 @@ public class CoreBlock extends StorageBlock{
+@@ -76,6 +76,7 @@ public class CoreBlock extends StorageBlock{
          player.set(core);
  
          if(!net.client()){
@@ -310,7 +310,7 @@ index 15a80f0c6e61210c702cf42d672ebc24a6cfc0f6..a3feeffe80258f74116ab767bf1b12b3
              Unit unit = spawnType.create(tile.team());
              unit.set(core);
              unit.rotation(90f);
-@@ -712,6 +713,14 @@ public class CoreBlock extends StorageBlock{
+@@ -566,6 +567,14 @@ public class CoreBlock extends StorageBlock{
                  outline.get(core);
                  core.proximity.each(storage -> storage.items == items, outline);
              });

@@ -14,7 +14,7 @@ Content-Transfer-Encoding: 8bit
  2 files changed, 19 insertions(+), 3 deletions(-)
 
 diff --git a/core/src/mindustry/net/Packets.java b/core/src/mindustry/net/Packets.java
-index c8b2ccfe4eaca33e06cce6d107a4f1da19ccacc8..2b1e1f96159da194b1ac521faee8103c6e30019a 100644
+index 041ddcdb0c84386ea75d8fc270a5d7b45b636dbf..a4f08666a453268e66331a2e54764ab8ef7c222d 100644
 --- a/core/src/mindustry/net/Packets.java
 +++ b/core/src/mindustry/net/Packets.java
 @@ -6,6 +6,7 @@ import arc.util.io.*;
@@ -25,7 +25,7 @@ index c8b2ccfe4eaca33e06cce6d107a4f1da19ccacc8..2b1e1f96159da194b1ac521faee8103c
  
  import java.util.zip.*;
  
-@@ -111,6 +112,8 @@ public class Packets{
+@@ -107,6 +108,8 @@ public class Packets{
      }
  
      public static class ConnectPacket extends Packet{
@@ -34,7 +34,7 @@ index c8b2ccfe4eaca33e06cce6d107a4f1da19ccacc8..2b1e1f96159da194b1ac521faee8103c
          public int version;
          public String versionType;
          public Seq<String> mods;
-@@ -120,7 +123,7 @@ public class Packets{
+@@ -116,7 +119,7 @@ public class Packets{
  
          @Override
          public void write(Writes buffer){
@@ -44,10 +44,10 @@ index c8b2ccfe4eaca33e06cce6d107a4f1da19ccacc8..2b1e1f96159da194b1ac521faee8103c
              TypeIO.writeString(buffer, name);
              TypeIO.writeString(buffer, locale);
 diff --git a/core/src/mindustry/ui/dialogs/JoinDialog.java b/core/src/mindustry/ui/dialogs/JoinDialog.java
-index b8a6e5f68f8bc42498a02c345d7cd0c8b27de6a0..b78ecec268901b14f53808d7765df20c9726b107 100644
+index 8e612c40aeec86cf4c1cbe271096d72615d2e6f8..cbedf8430377831580dda9659c24fdef7c6fd476 100644
 --- a/core/src/mindustry/ui/dialogs/JoinDialog.java
 +++ b/core/src/mindustry/ui/dialogs/JoinDialog.java
-@@ -612,9 +612,22 @@ public class JoinDialog extends BaseDialog{
+@@ -601,9 +601,22 @@ public class JoinDialog extends BaseDialog{
      }
  
      void safeConnect(String ip, int port, int version){

@@ -9,7 +9,7 @@ Subject: [PATCH] FC(LogicExt) invertMapClick
  2 files changed, 9 insertions(+), 4 deletions(-)
 
 diff --git a/core/src/mindustry/ui/Minimap.java b/core/src/mindustry/ui/Minimap.java
-index 037dea9ae4e54db3661071cb388d3850f6a156c0..ad214460bb8458b1eb323c2d10d314fd6fec3522 100644
+index adbc80fcd5cfb2b4e127603b1241b9c5b133e5e9..a5ac5e0375b524040d02c95c4a16f46ef0b2ac4d 100644
 --- a/core/src/mindustry/ui/Minimap.java
 +++ b/core/src/mindustry/ui/Minimap.java
 @@ -9,11 +9,13 @@ import arc.scene.event.*;

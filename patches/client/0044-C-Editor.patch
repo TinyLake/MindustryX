@@ -40,7 +40,7 @@ index 50c7a2aca929b532c1762a399ebc68f779ef0670..cc25012e08ceb60057fb8fedaec5fa50
  
          }
 diff --git a/core/src/mindustry/editor/MapEditor.java b/core/src/mindustry/editor/MapEditor.java
-index 38839e610819e60fe2d9780f730404979fb48976..1145b88cd87b1c860facda79cf8f05a10bf624a4 100644
+index 96418def2fc27327d1332598acb823f4b4875613..c54c7b868e8ebc678f86328914eb987c2628c81c 100644
 --- a/core/src/mindustry/editor/MapEditor.java
 +++ b/core/src/mindustry/editor/MapEditor.java
 @@ -29,7 +29,9 @@ public class MapEditor{
@@ -68,7 +68,7 @@ index 38839e610819e60fe2d9780f730404979fb48976..1145b88cd87b1c860facda79cf8f05a1
  
                  if(wx < 0 || wy < 0 || wx >= width() || wy >= height()){
 diff --git a/core/src/mindustry/editor/MapEditorDialog.java b/core/src/mindustry/editor/MapEditorDialog.java
-index ad35a4a45f633dd5aecd9d05fba9728ac80cdc41..f90a968fa4262828adc833c8bbc6b8fe1986529b 100644
+index 0010346f9a9680fc25609b3d75106be012e1c15f..b5abc47d55619e4f0d44c358b7da105593f0960b 100644
 --- a/core/src/mindustry/editor/MapEditorDialog.java
 +++ b/core/src/mindustry/editor/MapEditorDialog.java
 @@ -30,6 +30,7 @@ import mindustry.world.*;
@@ -79,7 +79,7 @@ index ad35a4a45f633dd5aecd9d05fba9728ac80cdc41..f90a968fa4262828adc833c8bbc6b8fe
  
  import static mindustry.Vars.*;
  
-@@ -593,11 +594,7 @@ public class MapEditorDialog extends Dialog implements Disposable{
+@@ -599,11 +600,7 @@ public class MapEditorDialog extends Dialog implements Disposable{
                  .colspan(3).height(40).width(size * 3f + 3f).padBottom(3);
  
                  tools.row();
@@ -91,7 +91,7 @@ index ad35a4a45f633dd5aecd9d05fba9728ac80cdc41..f90a968fa4262828adc833c8bbc6b8fe
                  for(Team team : Team.baseTeams){
                      ImageButton button = new ImageButton(Tex.whiteui, Styles.clearNoneTogglei);
                      button.margin(4f);
-@@ -605,19 +602,34 @@ public class MapEditorDialog extends Dialog implements Disposable{
+@@ -611,19 +608,34 @@ public class MapEditorDialog extends Dialog implements Disposable{
                      button.getStyle().imageUpColor = team.color;
                      button.clicked(() -> editor.drawTeam = team);
                      button.update(() -> button.setChecked(editor.drawTeam == team));
@@ -128,11 +128,11 @@ index ad35a4a45f633dd5aecd9d05fba9728ac80cdc41..f90a968fa4262828adc833c8bbc6b8fe
                      for(int j = 0; j < MapEditor.brushSizes.length; j++){
                          if(MapEditor.brushSizes[j] == editor.brushSize){
                              slider.setValue(j);
-@@ -769,7 +781,7 @@ public class MapEditorDialog extends Dialog implements Disposable{
+@@ -797,7 +809,7 @@ public class MapEditorDialog extends Dialog implements Disposable{
  
              if(i == 0) editor.drawBlock = block;
  
--            if(++i % 6 == 0){
+-            if(++i % 4 == 0){
 +            if(++i % Math.max(Core.settings.getInt("editorBrush"),3) == 0){
                  blockSelection.row();
              }
@@ -160,7 +160,7 @@ index 7a5c15ce71ac487492b0685e7cc99d061bae5b76..531e545323ec177de4a0ae29a2986dfa
                  table.row();
              }
 diff --git a/core/src/mindustry/editor/MapView.java b/core/src/mindustry/editor/MapView.java
-index 4131bc2bcd213e315fa6abeaf6ee94d6f30e7144..8423f67663e99616d2cfa431ba454519f1ef5f94 100644
+index dd1c447f6192caa90dfc39d3cdce89368e148f3c..98f3f31e284a04c5fd3ac35fd625cc52067b1042 100644
 --- a/core/src/mindustry/editor/MapView.java
 +++ b/core/src/mindustry/editor/MapView.java
 @@ -254,6 +254,11 @@ public class MapView extends Element implements GestureListener{

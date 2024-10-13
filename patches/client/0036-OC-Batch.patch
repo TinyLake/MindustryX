@@ -271,15 +271,15 @@ index e2bdb30e190a210f25130c423c853892798e4c28..f0c580f01f0a0014870d1f37b37cbf4e
 +    }
  }
 diff --git a/core/src/mindustry/graphics/MultiPacker.java b/core/src/mindustry/graphics/MultiPacker.java
-index 42bc8d00d7a66148b1c7ee63e5cb24c2d0d99ce3..bf50ab0e5db2dde9b3812bc80784c5c1eb4b8884 100644
+index 8d5fb2dd8d7148977ba2d98bb93658ec7a7ba44d..324bdce5bcc94d31e48a67eaddaf7bc7428478fe 100644
 --- a/core/src/mindustry/graphics/MultiPacker.java
 +++ b/core/src/mindustry/graphics/MultiPacker.java
-@@ -114,7 +114,7 @@ public class MultiPacker implements Disposable{
+@@ -110,7 +110,7 @@ public class MultiPacker implements Disposable{
      //editor page (sprites5.png) - all sprites needed for rendering in the editor, including block icons and a few minor sprites
      public enum PageType{
          //main page can be massive, but 8192 throws GL_OUT_OF_MEMORY on some GPUs and I can't deal with it yet.
 -        main(4096),
 +        main(16384, 4096), //MDTX 更大图集
  
-         environment(4096),
-         ui(4096),
+         //TODO stuff like this throws OOM on some devices
+         environment(4096, 2048),

@@ -11,10 +11,10 @@ Subject: [PATCH] HG: Hooks
  4 files changed, 7 insertions(+)
 
 diff --git a/core/src/mindustry/ClientLauncher.java b/core/src/mindustry/ClientLauncher.java
-index c68681b7a9d6caf8e0ed8dace53b839efbf34eb5..1b5a25a7cbbd00c5a8e463ec722fb3b3ac5da9d6 100644
+index 7e0757047006ed5d6e8b1165124b7de90a8e037d..87c1dfce278bdc123ee761d8e1e16c2b883d2c8a 100644
 --- a/core/src/mindustry/ClientLauncher.java
 +++ b/core/src/mindustry/ClientLauncher.java
-@@ -173,6 +173,7 @@ public abstract class ClientLauncher extends ApplicationCore implements Platform
+@@ -170,6 +170,7 @@ public abstract class ClientLauncher extends ApplicationCore implements Platform
          add(ui = new UI());
          add(netServer = new NetServer());
          add(netClient = new NetClient());
@@ -23,10 +23,10 @@ index c68681b7a9d6caf8e0ed8dace53b839efbf34eb5..1b5a25a7cbbd00c5a8e463ec722fb3b3
          assets.load(schematics);
  
 diff --git a/core/src/mindustry/Vars.java b/core/src/mindustry/Vars.java
-index ccc9c764d4a1fd163b01d000dc54de1ddd28050c..c7b05105ef282cb30e0ef62a702bb17f6cf85f8c 100644
+index ec34503e16c87ab34dcdba33e7e89d8f644048c6..ae716151e019fa61af85b99583d3bc8dba9a3e18 100644
 --- a/core/src/mindustry/Vars.java
 +++ b/core/src/mindustry/Vars.java
-@@ -270,6 +270,7 @@ public class Vars implements Loadable{
+@@ -259,6 +259,7 @@ public class Vars implements Loadable{
      }
  
      public static void init(){
@@ -35,7 +35,7 @@ index ccc9c764d4a1fd163b01d000dc54de1ddd28050c..c7b05105ef282cb30e0ef62a702bb17f
  
          if(loadLocales){
 diff --git a/core/src/mindustry/core/NetClient.java b/core/src/mindustry/core/NetClient.java
-index a85c88738b520ed904f0f51bfc1417c57ae9fab4..e6b2f149d83cf4dcb449413b901b6a782ed6b2cb 100644
+index a258e8c305b78ccb12f76b5f4757cf8b378f570b..de725eefa2243af7ac9c6fa78955a06b96737205 100644
 --- a/core/src/mindustry/core/NetClient.java
 +++ b/core/src/mindustry/core/NetClient.java
 @@ -198,6 +198,8 @@ public class NetClient implements ApplicationListener{
@@ -57,7 +57,7 @@ index a85c88738b520ed904f0f51bfc1417c57ae9fab4..e6b2f149d83cf4dcb449413b901b6a78
              Vars.ui.chatfrag.addMessage(message);
              Sounds.chatMessage.play();
 diff --git a/server/src/mindustry/server/ServerLauncher.java b/server/src/mindustry/server/ServerLauncher.java
-index d8737fc5e1f449c7b0d093e6c2de3b9722952481..0f23c39ad937d6ead6e3657eb57a0c725ec84b56 100644
+index 1aea11b2cc877ef9a35280575e6419d9fab16f01..1799c999b2affdc0de392841212edc1f544e4751 100644
 --- a/server/src/mindustry/server/ServerLauncher.java
 +++ b/server/src/mindustry/server/ServerLauncher.java
 @@ -76,6 +76,7 @@ public class ServerLauncher implements ApplicationListener{

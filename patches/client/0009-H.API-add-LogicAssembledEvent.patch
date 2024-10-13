@@ -32,10 +32,10 @@ index 6f65e9981f2291d1c892c23f3ec8603aec8e3a4c..32133826223d3e4fe1be991c8abd3bc2
                  }
                  line ++;
 diff --git a/core/src/mindustry/logic/LStatements.java b/core/src/mindustry/logic/LStatements.java
-index 9d8faa880a9e518d6b303c7d0e67f4419026e208..580202ec1745ae6982dc5b485c16914e24439b93 100644
+index 73ce558eb343b812561f76a65efc795008533a9e..9ca0dca4133fc15af3feb32e5ef770d806f9812d 100644
 --- a/core/src/mindustry/logic/LStatements.java
 +++ b/core/src/mindustry/logic/LStatements.java
-@@ -20,6 +20,7 @@ import mindustry.logic.LogicFx.*;
+@@ -18,6 +18,7 @@ import mindustry.logic.LogicFx.*;
  import mindustry.type.*;
  import mindustry.ui.*;
  import mindustry.world.meta.*;
@@ -43,7 +43,7 @@ index 9d8faa880a9e518d6b303c7d0e67f4419026e208..580202ec1745ae6982dc5b485c16914e
  
  import static mindustry.Vars.*;
  import static mindustry.logic.LCanvas.*;
-@@ -45,6 +46,16 @@ public class LStatements{
+@@ -43,6 +44,16 @@ public class LStatements{
  
      @RegisterStatement("noop")
      public static class InvalidStatement extends LStatement{
@@ -61,7 +61,7 @@ index 9d8faa880a9e518d6b303c7d0e67f4419026e208..580202ec1745ae6982dc5b485c16914e
          @Override
          public void build(Table table){
 diff --git a/core/src/mindustry/world/blocks/logic/LogicBlock.java b/core/src/mindustry/world/blocks/logic/LogicBlock.java
-index b0af04af3eb5311bee7ef27fa0208f99d23d7894..12cda95f81156b8b5ce60d3ab97aa6db90bd3f0d 100644
+index e726a36e0129961c4f10664e0a2277d5b3c377be..753688265a060d519686d49a24eac6627cd21991 100644
 --- a/core/src/mindustry/world/blocks/logic/LogicBlock.java
 +++ b/core/src/mindustry/world/blocks/logic/LogicBlock.java
 @@ -1,5 +1,6 @@
@@ -71,7 +71,7 @@ index b0af04af3eb5311bee7ef27fa0208f99d23d7894..12cda95f81156b8b5ce60d3ab97aa6db
  import arc.Graphics.*;
  import arc.Graphics.Cursor.*;
  import arc.func.*;
-@@ -25,6 +26,7 @@ import mindustry.world.*;
+@@ -24,6 +25,7 @@ import mindustry.world.*;
  import mindustry.world.blocks.ConstructBlock.*;
  import mindustry.world.meta.*;
  import mindustryX.*;
@@ -79,7 +79,7 @@ index b0af04af3eb5311bee7ef27fa0208f99d23d7894..12cda95f81156b8b5ce60d3ab97aa6db
  
  import java.io.*;
  import java.util.zip.*;
-@@ -404,6 +406,8 @@ public class LogicBlock extends Block{
+@@ -382,6 +384,8 @@ public class LogicBlock extends Block{
                      asm.putConst("@thisx", World.conv(x));
                      asm.putConst("@thisy", World.conv(y));
  

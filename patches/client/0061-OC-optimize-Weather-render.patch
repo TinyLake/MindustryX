@@ -8,11 +8,11 @@ Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 
 ---
- core/src/mindustry/type/Weather.java | 18 +++++++-----------
- 1 file changed, 7 insertions(+), 11 deletions(-)
+ core/src/mindustry/type/Weather.java | 20 ++++++++------------
+ 1 file changed, 8 insertions(+), 12 deletions(-)
 
 diff --git a/core/src/mindustry/type/Weather.java b/core/src/mindustry/type/Weather.java
-index e70e0af9af7233663453ff4d57466622cb6f4cf8..4de97a345f19bcf09c6bfa6522a5d2fd9d478b45 100644
+index 286b7880fab4e2185941861169cf1959d5829fa9..af2f2b4c3ebffc88cbe52dd54496dd06f1601362 100644
 --- a/core/src/mindustry/type/Weather.java
 +++ b/core/src/mindustry/type/Weather.java
 @@ -119,11 +119,10 @@ public class Weather extends UnlockableContent{
@@ -47,8 +47,9 @@ index e70e0af9af7233663453ff4d57466622cb6f4cf8..4de97a345f19bcf09c6bfa6522a5d2fd
          Core.camera.bounds(Tmp.r2);
          int total = (int)(Tmp.r1.area() / density * intensity);
          Lines.stroke(stroke);
-         float alpha = Draw.getColorAlpha();
+-        float alpha = Draw.getColor().a;
 -        Draw.color(color);
++        float alpha = Draw.getColorAlpha();
  
          for(int i = 0; i < total; i++){
              float scl = rand.random(0.5f, 1f);

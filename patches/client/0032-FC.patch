@@ -8,14 +8,24 @@ Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 
 ---
- core/src/mindustry/ui/Minimap.java | 16 ++++++++++++----
- 1 file changed, 12 insertions(+), 4 deletions(-)
+ core/src/mindustry/ui/Minimap.java | 32 +++++++++++++++++++++++++++---
+ 1 file changed, 29 insertions(+), 3 deletions(-)
 
 diff --git a/core/src/mindustry/ui/Minimap.java b/core/src/mindustry/ui/Minimap.java
-index ee03fc2435166bbdb72f1f416c992efffa178371..037dea9ae4e54db3661071cb388d3850f6a156c0 100644
+index ad828a8dd2394d2c9759e215ebc0d91945357409..adbc80fcd5cfb2b4e127603b1241b9c5b133e5e9 100644
 --- a/core/src/mindustry/ui/Minimap.java
 +++ b/core/src/mindustry/ui/Minimap.java
-@@ -13,16 +13,15 @@ import mindustry.gen.*;
+@@ -3,32 +3,58 @@ package mindustry.ui;
+ import arc.*;
+ import arc.graphics.g2d.*;
+ import arc.input.*;
++import arc.math.*;
+ import arc.scene.*;
+ import arc.scene.event.*;
+ import arc.scene.ui.layout.*;
++import arc.util.*;
+ import mindustry.gen.*;
+ 
  import static mindustry.Vars.*;
  
  public class Minimap extends Table{
@@ -30,11 +40,22 @@ index ee03fc2435166bbdb72f1f416c992efffa178371..037dea9ae4e54db3661071cb388d3850
 +        mapCell = add(new Element(){
              {
 -                setSize(Scl.scl(140f));
--
-                 addListener(new ClickListener(KeyCode.mouseRight){
-                     @Override
-                     public void clicked(InputEvent event, float cx, float cy){
-@@ -42,11 +41,20 @@ public class Minimap extends Table{
++                addListener(new ClickListener(KeyCode.mouseRight){
++                    @Override
++                    public void clicked(InputEvent event, float cx, float cy){
++                        var region = renderer.minimap.getRegion();
++                        if(region == null) return;
++
++                        float
++                        sx = (cx - x) / width,
++                        sy = (cy - y) / height,
++                        scaledX = Mathf.lerp(region.u, region.u2, sx) * world.width() * tilesize,
++                        scaledY = Mathf.lerp(1f - region.v2, 1f - region.v, sy) * world.height() * tilesize;
++
++                        control.input.panCamera(Tmp.v1.set(scaledX, scaledY));
++                    }
++                });
+             }
  
              @Override
              public void act(float delta){
@@ -55,7 +76,7 @@ index ee03fc2435166bbdb72f1f416c992efffa178371..037dea9ae4e54db3661071cb388d3850
              @Override
              public void draw(){
                  if(renderer.minimap.getRegion() == null) return;
-@@ -56,7 +64,7 @@ public class Minimap extends Table{
+@@ -38,7 +64,7 @@ public class Minimap extends Table{
  
                  if(renderer.minimap.getTexture() != null){
                      Draw.alpha(parentAlpha);
