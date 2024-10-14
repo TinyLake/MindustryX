@@ -7,7 +7,6 @@ import arc.input.InputDevice
 import arc.input.KeyCode
 import arc.util.Reflect
 import mindustry.Vars
-import mindustryX.features.func.focusLogicController
 
 @Suppress("EnumEntryName")
 enum class BindingExt(val default: KeybindValue = KeyCode.unset, val category: String? = null, val onTap: (() -> Unit)? = null) {
@@ -23,7 +22,7 @@ enum class BindingExt(val default: KeybindValue = KeyCode.unset, val category: S
     point(KeyCode.j, onTap = MarkerType::showPanUI),
     lockonLastMark(KeyCode.unset, onTap = MarkerType::lockOnLastMark),
     toggle_block_render(KeyCode.unset, onTap = { Settings.cycle("blockRenderLevel", 3) }),
-    focusLogicController(KeyCode.unset, onTap = ::focusLogicController),
+    focusLogicController(KeyCode.unset, onTap = { mindustryX.features.func.focusLogicController() }),
     ;
 
     //KT-14115 can't implement KeyBind directly
