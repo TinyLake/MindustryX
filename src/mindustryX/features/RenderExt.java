@@ -67,7 +67,7 @@ public class RenderExt{
             }
         });
 
-        Events.run(Trigger.preDraw, () -> {
+        Events.run(Trigger.update, () -> {
             bulletShow = Core.settings.getBool("bulletShow");
             showMineBeam = !unitHide && Core.settings.getBool("showminebeam");
             displayAllMessage = Core.settings.getBool("displayallmessage");

@@ -9,6 +9,7 @@ import arc.math.*;
 import arc.math.geom.*;
 import arc.scene.*;
 import arc.scene.event.*;
+import arc.scene.style.*;
 import arc.scene.ui.layout.*;
 import arc.struct.*;
 import arc.util.*;
@@ -17,6 +18,7 @@ import mindustry.entities.*;
 import mindustry.game.EventType.*;
 import mindustry.gen.*;
 import mindustry.graphics.*;
+import mindustry.ui.*;
 import mindustryX.features.func.*;
 import mindustryX.features.ui.*;
 import mindustryX.features.ui.ArcMessageDialog.*;
@@ -37,6 +39,16 @@ public class MarkerType{
     public static Seq<MarkerType> allTypes;
     private static MarkElement last;
     private static final Vec2 panCenter = new Vec2();
+    private static final Element markHitter = new Table(){{
+        fillParent = true;
+        touchable = Touchable.enabled;
+        background(((TextureRegionDrawable)Tex.whiteui).tint(0, 0, 0, 0.1f));
+        center().add("[cyan]标记模式,点击屏幕标记.", Styles.outlineLabel);
+        tapped(() -> {
+            MarkerType.showPanUI();
+            Core.app.post(this::remove);
+        });
+    }};
 
     public static void init(){
         mark = new MarkerType("Mark", new Effect(1800, e -> {
@@ -170,6 +182,14 @@ public class MarkerType{
 
     public static void showPanUI(){
         panCenter.set(Core.input.mouseWorld());
+    }
+
+    public static void toggleMarkHitterUI(){
+        if(markHitter.parent == null){
+            ui.hudGroup.addChildAt(0, markHitter);
+        }else{
+            markHitter.remove();
+        }
     }
 
 

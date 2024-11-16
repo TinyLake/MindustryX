@@ -1,0 +1,39 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: way-zer <himc.wicp@gmail.com>
+Date: Sun, 10 Nov 2024 00:55:04 +0800
+Subject: [PATCH] FC allow change type in BlockInventoryFragment
+
+---
+ .../ui/fragments/BlockInventoryFragment.java         | 12 ++++++++++--
+ 1 file changed, 10 insertions(+), 2 deletions(-)
+
+diff --git a/core/src/mindustry/ui/fragments/BlockInventoryFragment.java b/core/src/mindustry/ui/fragments/BlockInventoryFragment.java
+index bd810004301a4534c6568fb0bcd85f4a4a0c44ef..5fc9f9400645a756460cb765838cb4949d79298f 100644
+--- a/core/src/mindustry/ui/fragments/BlockInventoryFragment.java
++++ b/core/src/mindustry/ui/fragments/BlockInventoryFragment.java
+@@ -72,6 +72,14 @@ public class BlockInventoryFragment{
+     private void takeItem(int requested){
+         if(!build.canWithdraw()) return;
+ 
++        //MDTX: auto change type
++        if(player.unit().hasItem() && lastItem != player.unit().item()){
++            Call.transferInventory(player, build);
++            if(net.client()){
++                player.unit().stack.amount = 0;
++            }
++        }
++
+         //take everything
+         int amount = Math.min(requested, player.unit().maxAccepted(lastItem));
+ 
+@@ -151,8 +159,8 @@ public class BlockInventoryFragment{
+                 if(!build.items.has(item)) continue;
+ 
+                 container.add(i);
+-
+-                Boolp canPick = () -> !player.dead() && player.unit().acceptsItem(item) && !state.isPaused() && player.within(build, itemTransferRange);
++                //MDTX: allow different item type
++                Boolp canPick = () -> !player.dead() && (player.unit().acceptsItem(item) || player.unit().item() != item) && !state.isPaused() && player.within(build, itemTransferRange);
+ 
+                 HandCursorListener l = new HandCursorListener();
+                 l.enabled = canPick;

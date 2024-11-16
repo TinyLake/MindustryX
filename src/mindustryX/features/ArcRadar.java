@@ -50,7 +50,6 @@ public class ArcRadar{
     public static void drawScanner(){
         if(Core.settings.getInt("radarMode") == 0) return;
         float extendSpd = Core.settings.getInt("radarMode") * 0.2f;
-        Draw.reset();
 
         if(extendSpd >= 6){
             if(BindingExt.arcDetail.keyTap() || mobileRadar){

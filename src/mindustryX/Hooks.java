@@ -37,7 +37,9 @@ public class Hooks implements ApplicationListener{
             ReplayController.init();
             ArcOld.colorizeContent();
         }
-        Vars.mods.getScripts().runConsole("X=Packages.mindustryX.features");
+        if(Core.settings.getBool("console")){
+            Vars.mods.getScripts().runConsole("X=Packages.mindustryX.features");
+        }
     }
 
     @SuppressWarnings("unused")//call before arc.util.Http$HttpRequest.block

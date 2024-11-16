@@ -1,6 +1,7 @@
 package mindustryX.features.ui;
 
 import arc.*;
+import arc.graphics.*;
 import arc.scene.*;
 import arc.scene.event.*;
 import arc.scene.ui.*;
@@ -9,8 +10,11 @@ import arc.util.*;
 import mindustry.content.*;
 import mindustry.game.*;
 import mindustry.gen.*;
+import mindustry.graphics.*;
 import mindustry.ui.*;
 import mindustry.ui.dialogs.*;
+import mindustry.world.*;
+import mindustry.world.blocks.environment.*;
 import mindustryX.features.Settings;
 import mindustryX.features.*;
 
@@ -20,7 +24,7 @@ import static mindustry.ui.Styles.flatTogglet;
 
 //moved from mindustry.arcModule.ui.quickTool.HudSettingsTable
 public class HudSettingsTable extends ToolTableBase{
-    private final Table cont = new Table();
+    private final Table cont = new Table(Styles.black6);
 
     public HudSettingsTable(){
         icon = String.valueOf(Iconc.settings);
@@ -31,81 +35,75 @@ public class HudSettingsTable extends ToolTableBase{
     @Override
     protected void buildTable(){
         cont.clearChildren();
-
-        cont.background(Styles.black6);
         cont.table(t -> {
-            t.button("[cyan]S", Styles.flatBordert, () -> Call.sendChatMessage("/sync")).size(30).tooltip("同步一波");
-            t.button("[cyan]观", Styles.flatBordert, () -> Call.sendChatMessage("/ob")).size(30).tooltip("观察者模式");
-            t.button("[cyan]技", Styles.flatBordert, () -> Call.sendChatMessage("/skill")).size(30).tooltip("技能！");
-            t.button("[cyan]版", Styles.flatBordert, () -> Call.sendChatMessage("/broad")).size(30).tooltip("服务器信息版");
-            t.button("[red]版", Styles.flatTogglet, () -> Settings.toggle("ShowInfoPopup")).checked(a -> Core.settings.getBool("ShowInfoPopup")).size(30, 30).tooltip("关闭所有信息版");
-            t.button("[white]法", Styles.flatBordert, () -> ui.showConfirm("受不了，直接投降？", () -> Call.sendChatMessage("/vote gameover"))).size(30, 30).tooltip("法国军礼");
+            t.defaults().size(30);
+            t.button("[cyan]信", Styles.flatBordert, () -> UIExt.arcMessageDialog.show()).tooltip("中央监控室");
+            t.button("[cyan]S", Styles.flatBordert, () -> Call.sendChatMessage("/sync")).tooltip("同步一波");
+            t.button("[cyan]观", Styles.flatBordert, () -> Call.sendChatMessage("/ob")).tooltip("观察者模式");
+            t.button("[cyan]技", Styles.flatBordert, () -> Call.sendChatMessage("/skill")).tooltip("技能！");
+            t.button("[cyan]版", Styles.flatBordert, () -> Call.sendChatMessage("/broad")).tooltip("服务器信息版");
+            t.button("[cyan]雾", Styles.flatTogglet, () -> state.rules.fog ^= true).checked(a -> state.rules.fog).tooltip("战争迷雾").disabled((_t) -> state.rules.pvp && player.team().id != 255);
+            t.button("[red]版", Styles.flatTogglet, () -> Settings.toggle("ShowInfoPopup")).checked(a -> !Core.settings.getBool("ShowInfoPopup")).tooltip("关闭所有信息版");
+            t.button("[white]法", Styles.flatBordert, () -> ui.showConfirm("受不了，直接投降？", () -> Call.sendChatMessage("/vote gameover"))).tooltip("法国军礼");
+            t.row();
+            t.button("[cyan]块", Styles.flatTogglet, () -> Settings.cycle("blockRenderLevel", 3))
+            .checked((a) -> RenderExt.blockRenderLevel > 0).tooltip("建筑显示");
+            t.button("[cyan]兵", Styles.flatTogglet, () -> RenderExt.unitHide = !RenderExt.unitHide)
+            .checked(a -> !RenderExt.unitHide).tooltip("兵种显示");
+            t.button("[cyan]弹", Styles.flatTogglet, () -> Settings.toggle("bulletShow"))
+            .checked(a -> Core.settings.getBool("bulletShow")).tooltip("子弹显示");
+            t.button("[cyan]灯", Styles.flatTogglet, () -> Settings.toggle("drawlight"))
+            .checked(a -> renderer.drawLight).name("灯光").tooltip("[cyan]开灯啊！");
+            t.button("[cyan]效", Styles.flatTogglet, () -> Settings.toggle("effects"))
+            .checked(a -> Core.settings.getBool("effects")).tooltip("特效显示");
+            t.button("[cyan]光", Styles.flatTogglet, () -> {
+                Settings.toggle("bloom");
+                renderer.toggleBloom(settings.getBool("bloom"));
+            }).checked(a -> Core.settings.getBool("bloom")).tooltip("光效显示");
+            t.button("[cyan]墙", Styles.flatTogglet, () -> enableDarkness ^= true)
+            .checked(a -> enableDarkness).tooltip("墙体阴影显示");
+            t.button("[cyan]天", Styles.flatTogglet, () -> Settings.toggle("showweather"))
+            .checked(a -> Core.settings.getBool("showweather")).tooltip("天气显示");
+            t.button("[cyan]" + Iconc.map, Styles.flatTogglet, () -> Settings.toggle("minimap"))
+            .checked(a -> Core.settings.getBool("minimap")).tooltip("小地图显示");
+            t.row();
+            t.button("箱", Styles.flatTogglet, () -> Settings.toggle("unithitbox"))
+            .checked(a -> Core.settings.getBool("unithitbox")).tooltip("碰撞箱显示");
+            t.button("扫", Styles.flatTogglet, () -> ArcScanMode.enabled = !ArcScanMode.enabled).checked(a -> ArcScanMode.enabled).tooltip("扫描模式");
+            t.button("" + Iconc.blockRadar, Styles.flatBordert, () -> ArcRadar.mobileRadar = !ArcRadar.mobileRadar).tooltip("雷达开关");
+            t.button("" + Iconc.blockWorldProcessor, Styles.flatTogglet, () -> {
+                Settings.toggle("removeLogicLock");
+                control.input.logicCutscene = false;
+                ui.announce("已移除逻辑视角锁定");
+            }).checked(a -> Core.settings.getBool("removeLogicLock")).tooltip("逻辑锁定");
+            t.button(Blocks.worldMessage.emoji(), flatTogglet, () -> Settings.toggle("displayallmessage")).checked(a -> RenderExt.displayAllMessage).tooltip("开关信息板全显示");
+            t.button("" + Iconc.itemCopper, Styles.flatBordert, this::floorStatisticDialog).tooltip("矿物信息");
+            t.button(Icon.fillSmall, Styles.flati, () -> EffectsDialog.withAllEffects().show()).tooltip("特效大全");
+            if(!mobile) t.button(Icon.starSmall, Styles.flati, this::uiTable).tooltip("ui大全");
             if(settings.getInt("arcQuickMsg", 0) == 0)
-                t.button("\uE87C", Styles.flatBordert, this::arcQuickMsgTable).size(30, 30).tooltip("快捷消息");
+                t.button("\uE87C", Styles.flatBordert, this::arcQuickMsgTable).tooltip("快捷消息");
         }).left().row();
 
         if(settings.getInt("arcQuickMsg") > 0){
             cont.table(t -> {
+                t.defaults().size(30);
                 for(int i = 0; i < settings.getInt("arcQuickMsg"); i++){
                     if(i % settings.getInt("arcQuickMsgKey", 8) == 0) t.row();
                     int finalI = i;
                     t.button(settings.getString(getArcQuickMsgShortName(i)), Styles.flatBordert, () -> {
                         if(settings.getBool(getArcQuickMsgJs(finalI))) mods.getScripts().runConsole(settings.getString(getArcQuickMsgName(finalI)));
                         else Call.sendChatMessage(settings.getString(getArcQuickMsgName(finalI)));
-                    }
-                    ).size(30);
+                    });
                 }
-                t.button("\uE87C", Styles.flatBordert, this::arcQuickMsgTable).size(30, 30).tooltip("快捷消息");
+                t.button("\uE87C", Styles.flatBordert, this::arcQuickMsgTable).tooltip("快捷消息");
             }).left().row();
         }
-        cont.table(t -> {
-            t.button("[cyan]块", Styles.flatTogglet, () -> Settings.cycle("blockRenderLevel", 3))
-            .checked((a) -> RenderExt.blockRenderLevel > 0).size(30, 30).tooltip("建筑显示");
-            t.button("[cyan]兵", Styles.flatTogglet, () -> RenderExt.unitHide = !RenderExt.unitHide)
-            .checked(a -> !RenderExt.unitHide).size(30, 30).tooltip("兵种显示");
-            t.button("[cyan]箱", Styles.flatTogglet, () -> Settings.toggle("unithitbox"))
-            .checked(a -> Core.settings.getBool("unithitbox")).size(30, 30).tooltip("碰撞箱显示");
-            t.button("[cyan]弹", Styles.flatTogglet, () -> Settings.toggle("bulletShow"))
-            .checked(a -> Core.settings.getBool("bulletShow")).size(30, 30).tooltip("子弹显示");
-            t.button("[cyan]" + Iconc.map, Styles.flatTogglet, () -> Settings.toggle("minimap"))
-            .checked(a -> Core.settings.getBool("minimap")).size(30, 30).tooltip("小地图显示");
-            t.button("[violet]锁", Styles.flatTogglet, () -> {
-                Settings.toggle("removeLogicLock");
-                control.input.logicCutscene = false;
-                ui.announce("已移除逻辑视角锁定");
-            }).checked(a -> Core.settings.getBool("removeLogicLock")).size(30, 30).tooltip("逻辑锁定");
-            t.button("[cyan]雾", Styles.flatTogglet, () -> state.rules.fog ^= true).checked(a -> state.rules.fog).size(30, 30).tooltip("战争迷雾").disabled((_t) -> state.rules.pvp && player.team().id != 255);
-        }).left().row();
-        cont.table(t -> {
-            t.button("[red]灯", Styles.flatTogglet, () -> Settings.toggle("drawlight"))
-            .checked(a -> state.rules.lighting).size(30, 30).name("灯光").tooltip("[cyan]开灯啊！");
-            t.button("[acid]效", Styles.flatTogglet, () -> Settings.toggle("effects"))
-            .checked(a -> Core.settings.getBool("effects")).size(30, 30).tooltip("特效显示");
-            t.button("[acid]光", Styles.flatTogglet, () -> {
-                Settings.toggle("bloom");
-                renderer.toggleBloom(settings.getBool("bloom"));
-            }).checked(a -> Core.settings.getBool("bloom")).size(30, 30).tooltip("光效显示");
-            t.button("[acid]墙", Styles.flatTogglet, () -> enableDarkness ^= true)
-            .checked(a -> enableDarkness).size(30, 30).tooltip("墙体阴影显示");
-            t.button("[acid]天", Styles.flatTogglet, () -> Settings.toggle("showweather"))
-            .checked(a -> Core.settings.getBool("showweather")).size(30, 30).tooltip("天气显示");
-            t.button("[cyan]扫", Styles.flatTogglet, () -> ArcScanMode.enabled = !ArcScanMode.enabled)
-            .checked(a -> ArcScanMode.enabled).size(30, 30).tooltip("扫描模式");
-            t.button(Blocks.worldMessage.emoji(), flatTogglet, () -> Settings.toggle("displayallmessage")).checked(a -> RenderExt.displayAllMessage).size(30, 30).tooltip("开关信息板全显示");
-        }).left().row();
 
         sliderPref("turretShowRange", 0, 3, 1, s -> switch(s){
             case 0 -> "关闭";
             case 1 -> "仅对地";
             case 2 -> "仅对空";
             case 3 -> "全部";
-            default -> s + "";
-        });
-        sliderPref("chatValidType", 0, 3, 1, s -> switch(s){
-            case 0 -> "原版模式";
-            case 1 -> "纯净聊天";
-            case 2 -> "服务器记录";
-            case 3 -> "全部记录";
             default -> s + "";
         });
         checkPref("unitHealthBar");
@@ -125,7 +123,7 @@ public class HudSettingsTable extends ToolTableBase{
         checkPref("newWaveInfoDisplay");
         settings.defaults("newWaveInfoDisplay", true);
 
-        ScrollPane pane = pane(cont).maxSize(800f, 300f).get();
+        ScrollPane pane = pane(cont).maxSize(800f, 240f).get();
         pane.update(() -> {
             Element e = Core.scene.hit(Core.input.mouseX(), Core.input.mouseY(), true);
             if(e != null && e.isDescendantOf(pane)){
@@ -191,6 +189,106 @@ public class HudSettingsTable extends ToolTableBase{
         return "arcQuickMsgJs" + i;
     }
 
+
+    private void floorStatisticDialog(){
+        BaseDialog dialog = new BaseDialog("ARC-矿物统计");
+        Table table = dialog.cont;
+        table.clear();
+
+        table.table(c -> {
+            c.add("地表矿").color(Pal.accent).center().fillX().row();
+            c.image().color(Pal.accent).fillX().row();
+            c.table(list -> {
+                int i = 0;
+                for(Block block : content.blocks().select(b -> b instanceof Floor f && !f.wallOre && f.itemDrop != null)){
+                    if(indexer.floorOresCount[block.id] == 0) continue;
+                    if(i++ % 4 == 0) list.row();
+                    list.add(block.emoji() + " " + block.localizedName + "\n" + indexer.floorOresCount[block.id]).width(100f).height(50f);
+                }
+            }).row();
+
+            c.add("墙矿").color(Pal.accent).center().fillX().row();
+            c.image().color(Pal.accent).fillX().row();
+            c.table(list -> {
+                int i = 0;
+                for(Block block : content.blocks().select(b -> ((b instanceof Floor f && f.wallOre) || b instanceof StaticWall) && b.itemDrop != null)){
+                    if(indexer.wallOresCount[block.id] == 0) continue;
+                    if(i++ % 4 == 0) list.row();
+                    list.add(block.emoji() + " " + block.localizedName + "\n" + indexer.wallOresCount[block.id]).width(100f).height(50f);
+                }
+            }).row();
+
+            c.add("液体").color(Pal.accent).center().fillX().row();
+            c.image().color(Pal.accent).fillX().row();
+            c.table(list -> {
+                int i = 0;
+                for(Block block : content.blocks().select(b -> ((b instanceof Floor f && f.liquidDrop != null)))){
+                    if(indexer.floorOresCount[block.id] == 0) continue;
+                    if(i++ % 4 == 0) list.row();
+                    list.add(block.emoji() + " " + block.localizedName + "\n" + indexer.floorOresCount[block.id]).width(100f).height(50f);
+                }
+            }).row();
+        });
+        dialog.addCloseButton();
+        dialog.show();
+    }
+
+    private void uiTable(){
+        BaseDialog dialog = new BaseDialog("ARC-ui大全");
+        TextField sField = dialog.cont.field("", text -> {
+        }).fillX().get();
+        dialog.cont.row();
+
+        dialog.cont.pane(c -> {
+            c.add("颜色").color(Pal.accent).center().fillX().row();
+            c.image().color(Pal.accent).fillX().row();
+            c.table(ct -> {
+                int i = 0;
+                for(var colorEntry : Colors.getColors()){
+                    Color value = colorEntry.value;
+                    String key = colorEntry.key;
+                    ct.button("[#" + value + "]" + key, Styles.cleart, () -> {
+                        Core.app.setClipboardText("[#" + value + "]");
+                        sField.appendText("[#" + value + "]");
+                    }).size(50f).tooltip(key);
+                    i += 1;
+                    if(i % 15 == 0) ct.row();
+                }
+            }).row();
+            c.add("物品").color(Pal.accent).center().fillX().row();
+            c.image().color(Pal.accent).fillX().row();
+            c.table(ct -> {
+                int i = 0;
+                for(var it : Fonts.stringIcons){
+                    final String icon = it.value;
+                    ct.button(icon, Styles.cleart, () -> {
+                        Core.app.setClipboardText(icon);
+                        sField.appendText(icon);
+                    }).size(50f).tooltip(it.key);
+                    i += 1;
+                    if(i % 15 == 0) ct.row();
+                }
+            }).row();
+            c.add("图标").color(Pal.accent).center().fillX().row();
+            c.image().color(Pal.accent).fillX().row();
+            c.table(ct -> {
+                int i = 0;
+                for(var it : Iconc.codes){
+                    String icon = String.valueOf((char)it.value), internal = it.key;
+                    ct.button(icon, Styles.cleart, () -> {
+                        Core.app.setClipboardText(icon);
+                        sField.appendText(icon);
+                    }).size(50f).tooltip(internal);
+                    i += 1;
+                    if(i % 15 == 0) ct.row();
+                }
+            }).row();
+        }).row();
+
+        dialog.addCloseButton();
+        dialog.show();
+    }
+
     public interface StringProcessor{
         String get(int i);
     }
@@ -210,7 +308,7 @@ public class HudSettingsTable extends ToolTableBase{
         content.margin(3f, 33f, 3f, 33f);
         content.touchable = Touchable.disabled;
 
-        cont.stack(slider, content).width(Math.min(Core.graphics.getWidth() / 1.2f, 300f)).left().padTop(4f).get();
+        cont.stack(slider, content).width(270f).left().padTop(4f).get();
         cont.row();
 
         if(settings.getDefault(name) == null)

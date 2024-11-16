@@ -6,6 +6,7 @@ import arc.struct.Seq
 import mindustry.Vars
 import mindustry.content.Items
 import mindustry.content.UnitTypes
+import mindustry.editor.MapInfoDialog
 import mindustry.game.Team
 import mindustry.gen.Icon
 import mindustry.gen.Iconc
@@ -23,6 +24,7 @@ import mindustryX.features.UIExt
 class AdvanceToolTable : ToolTableBase() {
     val factoryDialog: ArcUnitFactoryDialog = ArcUnitFactoryDialog()
     private val rulesDialog = CustomRulesDialog()
+    private val mapInfoDialog: MapInfoDialog = MapInfoDialog()
 
     init {
         icon = Iconc.wrench.toString()
@@ -80,6 +82,7 @@ class AdvanceToolTable : ToolTableBase() {
 
             row().add("规则：")
             with(table().get()) {
+                button(Iconc.map.toString(), Styles.cleart) { mapInfoDialog.show() }.width(40f)
                 button("无限火力", Styles.flatToggleMenut) { Vars.player.team().rules().cheat = !Vars.player.team().rules().cheat }
                     .checked { Vars.player.team().rules().cheat }.tooltip("[acid]开关自己队的无限火力").size(90f, 30f)
                 button("编辑器", Styles.flatToggleMenut) { Vars.state.rules.editor = !Vars.state.rules.editor }

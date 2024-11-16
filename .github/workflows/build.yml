@@ -11,7 +11,7 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v4
       - name: Set up JDK 17
         uses: actions/setup-java@v4
         with:
@@ -35,27 +35,22 @@ jobs:
           
           echo "${{ secrets.KEYSTORE_BASE64 }}" | openssl enc -d -base64 -in - -out bekeystore.jks
       - name: Build
+        env:
+          keystore_password: ${{ secrets.KEYSTORE_PASSWORD_SECRET }}
+          keystore_alias_password: ${{ secrets.KEYSTORE_PASSWORD_SECRET }}
+          keystore_alias: MindustryX
         run: |
           git submodule update --init --depth=10
           cd work
           ../scripts/applyPatches.sh
-          gradle desktop:dist server:dist core:genLoaderModAll -Pbuildversion=${RELEASE_VERSION}
+          gradle -Pbuildversion=${RELEASE_VERSION} --parallel \
+            desktop:dist server:dist core:genLoaderModAll android:assembleRelease
           
           cd ..
           mkdir artifacts
           mv work/desktop/build/libs/Mindustry.jar artifacts/MindustryX-${{env.RELEASE_VERSION}}-Desktop.jar
           mv work/server/build/libs/server-release.jar artifacts/server-${{env.RELEASE_VERSION}}.jar
           mv work/core/build/distributions/MindustryX.loader.dex.jar artifacts/MindustryX-${{env.RELEASE_VERSION}}.loader.dex.jar
-      - name: Build Android
-        env:
-          keystore_password: ${{ secrets.KEYSTORE_PASSWORD_SECRET }}
-          keystore_alias_password: ${{ secrets.KEYSTORE_PASSWORD_SECRET }}
-          keystore_alias: MindustryX
-        run: |
-          cd work
-          gradle android:assembleRelease -Pbuildversion=${RELEASE_VERSION}
-          
-          cd ..
           mv work/android/build/outputs/apk/release/android-release.apk artifacts/MindustryX-${{env.RELEASE_VERSION}}-Android.apk
 #      - name: Update Tag
 #        uses: rickstaa/action-create-tag@v1

@@ -135,13 +135,6 @@ public class ArcOld{
 
 
             c.addCategory("arcShareinfo");
-            c.sliderPref("chatValidType", 0, 0, 3, 1, s -> switch(s){
-                case 0 -> "原版模式";
-                case 1 -> "纯净聊天";
-                case 2 -> "服务器记录";
-                case 3 -> "全部记录";
-                default -> s + "";
-            });
             c.checkPref("ShowInfoPopup", true);
             c.checkPref("arcShareWaveInfo", false);
             c.checkPref("arcAlwaysTeamColor", false);

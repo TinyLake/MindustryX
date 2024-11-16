@@ -13,7 +13,7 @@ Content-Transfer-Encoding: 8bit
  2 files changed, 57 insertions(+), 18 deletions(-)
 
 diff --git a/core/src/mindustry/game/Schematics.java b/core/src/mindustry/game/Schematics.java
-index 0a7394838bbb36aa985383eae069f7bf6a1fb15d..35843db3e559cc691d987aab8bd345c52dc04538 100644
+index 2da5a90379f9b9896cdef7ac1540c34fe472d649..0098805f982c8b85ae9f0aa90ec74ffed04366bb 100644
 --- a/core/src/mindustry/game/Schematics.java
 +++ b/core/src/mindustry/game/Schematics.java
 @@ -34,6 +34,7 @@ import mindustry.world.blocks.sandbox.*;

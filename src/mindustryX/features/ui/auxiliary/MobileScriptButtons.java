@@ -30,7 +30,6 @@ public class MobileScriptButtons extends AuxiliaryTools.Table{
             if(build == null || player.dead()) return;
             Call.unitBuildingControlSelect(player.unit(), build);
         });
-        scriptButton(Blocks.radar.uiIcon, "雷达扫描", () -> ArcRadar.mobileRadar = !ArcRadar.mobileRadar);
     }
 
     protected void scriptButton(TextureRegion region, String description, Runnable runnable){

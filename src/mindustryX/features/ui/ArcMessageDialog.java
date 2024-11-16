@@ -10,7 +10,6 @@ import arc.struct.*;
 import arc.util.*;
 import mindustry.*;
 import mindustry.content.*;
-import mindustry.core.*;
 import mindustry.ctype.*;
 import mindustry.game.*;
 import mindustry.gen.*;
@@ -332,7 +331,7 @@ public class ArcMessageDialog extends BaseDialog{
         public final Type msgType;
         public final String message;
         public final Date time;
-        public final String sender;
+        public final @Nullable String sender;
         public boolean selected;
         public final @Nullable Vec2 msgLoc;
 
@@ -349,16 +348,15 @@ public class ArcMessageDialog extends BaseDialog{
         }
 
         public Msg(Type msgType, String message, Vec2 msgLoc){
-            this(msgType, message, "null", msgLoc);
+            this(msgType, message, null, msgLoc);
         }
 
         public Msg(Type msgType, String message){
             this(msgType, message, null);
         }
 
-
-        public Msg sendMessage(){
-            ui.chatfrag.addMessage(msgType.arcMsgPreFix() + message);
+        public Msg add(){
+            ArcMessageDialog.addMsg(this);
             return this;
         }
     }
@@ -411,10 +409,5 @@ public class ArcMessageDialog extends BaseDialog{
         Type(String type, Color color){
             this(type, "", color);
         }
-
-        public String arcMsgPreFix(){
-            return "[#" + color.toString() + "]" + "[" + name + "][]";
-        }
-
     }
 }
