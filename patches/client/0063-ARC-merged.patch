@@ -94,7 +94,7 @@ way-zer <himc.wicp@gmail.com> on 2024/7/28
 way-zer <himc.wicp@gmail.com> on 2024/9/8
 ---
  core/src/mindustry/ai/BlockIndexer.java       | 116 ++++++
- core/src/mindustry/core/UI.java               |   3 +
+ core/src/mindustry/core/UI.java               |   2 +
  core/src/mindustry/editor/MapInfoDialog.java  | 147 ++++++-
  .../mindustry/entities/comp/BuildingComp.java |  18 +-
  .../mindustry/entities/comp/ShieldComp.java   |   6 +
@@ -105,6 +105,7 @@ way-zer <himc.wicp@gmail.com> on 2024/9/8
  core/src/mindustry/input/DesktopInput.java    |  87 +++-
  core/src/mindustry/input/InputHandler.java    |  51 ++-
  core/src/mindustry/input/MobileInput.java     |  16 +-
+ core/src/mindustry/logic/LExecutor.java       |  12 +-
  core/src/mindustry/type/UnitType.java         | 142 +++++--
  core/src/mindustry/type/Weapon.java           |  26 +-
  core/src/mindustry/ui/Fonts.java              |   2 +-
@@ -115,14 +116,14 @@ way-zer <himc.wicp@gmail.com> on 2024/9/8
  .../mindustry/ui/dialogs/PlanetDialog.java    |  70 +++-
  .../ui/dialogs/SchematicsDialog.java          | 320 ++++++++++++++-
  .../ui/dialogs/SettingsMenuDialog.java        |  28 +-
- .../mindustry/ui/fragments/ChatFragment.java  |  25 +-
+ .../mindustry/ui/fragments/ChatFragment.java  |   9 +-
  .../ui/fragments/ConsoleFragment.java         |   3 +
- .../mindustry/ui/fragments/HudFragment.java   | 234 ++++++++++-
+ .../mindustry/ui/fragments/HudFragment.java   | 217 +++++++++-
  .../mindustry/ui/fragments/MenuFragment.java  |  59 ++-
  .../ui/fragments/PlacementFragment.java       | 150 +++++--
  .../ui/fragments/PlayerListFragment.java      |  93 ++---
  core/src/mindustry/world/Block.java           |   7 +-
- 29 files changed, 1860 insertions(+), 317 deletions(-)
+ 30 files changed, 1844 insertions(+), 311 deletions(-)
 
 diff --git a/core/src/mindustry/ai/BlockIndexer.java b/core/src/mindustry/ai/BlockIndexer.java
 index 60bcca661ec27bbd5dc718ab9b4d7e1fc69d40dc..0b5de3b1215c9fdfd25e207e4491f792cc8b11a8 100644
@@ -290,7 +291,7 @@ index 60bcca661ec27bbd5dc718ab9b4d7e1fc69d40dc..0b5de3b1215c9fdfd25e207e4491f792
          var team = tile.team();
          //only process entity changes with centered tiles
 diff --git a/core/src/mindustry/core/UI.java b/core/src/mindustry/core/UI.java
-index 190d52b2fdd8c651b6949bd8575f56d23d2371ed..3bb8e8562c225fa014465fbc3c49e9b8377d5273 100644
+index 190d52b2fdd8c651b6949bd8575f56d23d2371ed..6a6594082421155178eb6468f06b24258172fc3a 100644
 --- a/core/src/mindustry/core/UI.java
 +++ b/core/src/mindustry/core/UI.java
 @@ -28,6 +28,7 @@ import mindustry.logic.*;
@@ -301,15 +302,7 @@ index 190d52b2fdd8c651b6949bd8575f56d23d2371ed..3bb8e8562c225fa014465fbc3c49e9b8
  
  import static arc.scene.actions.Actions.*;
  import static mindustry.Vars.*;
-@@ -361,6 +362,7 @@ public class UI implements ApplicationListener, Loadable{
- 
-     /** Shows a fading label at the top of the screen. */
-     public void showInfoToast(String info, float duration){
-+        if (!info.contains("建筑过多单位") && !info.contains("可能造成服务器卡顿"))  ui.chatfrag.addMessage("[acid][公屏][white]"+info);
-         var cinfo = Core.scene.find("coreinfo");
-         Table table = new Table();
-         table.touchable = Touchable.disabled;
-@@ -377,6 +379,7 @@ public class UI implements ApplicationListener, Loadable{
+@@ -377,6 +378,7 @@ public class UI implements ApplicationListener, Loadable{
  
      /** Shows a label at some position on the screen. Does not fade. */
      public void showInfoPopup(String info, float duration, int align, int top, int left, int bottom, int right){
@@ -795,7 +788,7 @@ index ea5060298da5e478b234e8d0575ab2ceedb5b6e6..e59bff905f7398b0eb3c780c0cda5a30
                  }
                  Draw.reset();
 diff --git a/core/src/mindustry/graphics/OverlayRenderer.java b/core/src/mindustry/graphics/OverlayRenderer.java
-index 8e0e3e6c6b2eba997c09a65ecf2977a2d84db946..a09e670819389261c060fd64af846fc0d411b9c9 100644
+index 8e0e3e6c6b2eba997c09a65ecf2977a2d84db946..b230e9c1b668e2bc4950767981aa0a881d89a7ae 100644
 --- a/core/src/mindustry/graphics/OverlayRenderer.java
 +++ b/core/src/mindustry/graphics/OverlayRenderer.java
 @@ -17,6 +17,7 @@ import mindustry.gen.*;
@@ -859,9 +852,9 @@ index 8e0e3e6c6b2eba997c09a65ecf2977a2d84db946..a09e670819389261c060fd64af846fc0
  
 +        //单位射程
 +        if(ui.hudfrag.blockfrag.hover() instanceof Unit unit){
-+            Draw.reset();
 +            Draw.color(unit.team.color);
 +            Lines.dashCircle(unit.x, unit.y, unit.type.range);
++            Draw.color();
 +        }
 +
          if(ui.hudfrag.blockfrag.hover() instanceof Unit unit && unit.controller() instanceof LogicAI ai && ai.controller != null && ai.controller.isValid()){
@@ -1255,6 +1248,36 @@ index dfac50b02c171c61b02f4e7da4d20ce7e5e00c1a..7d594d6edcd88e9f1658f2569d778b13
  
          unit.movePref(movement);
  
+diff --git a/core/src/mindustry/logic/LExecutor.java b/core/src/mindustry/logic/LExecutor.java
+index 35e081764e15b55e9005dd8ed8dee2021ed20243..75c9c7d91aa2e9f4ed7e1593334361f639768127 100644
+--- a/core/src/mindustry/logic/LExecutor.java
++++ b/core/src/mindustry/logic/LExecutor.java
+@@ -27,6 +27,8 @@ import mindustry.world.blocks.logic.MemoryBlock.*;
+ import mindustry.world.blocks.logic.MessageBlock.*;
+ import mindustry.world.blocks.payloads.*;
+ import mindustry.world.meta.*;
++import mindustryX.features.ui.*;
++import mindustryX.features.ui.ArcMessageDialog.*;
+ 
+ import static mindustry.Vars.*;
+ 
+@@ -1594,8 +1596,14 @@ public class LExecutor{
+             }
+ 
+             switch(type){
+-                case notify -> ui.hudfrag.showToast(Icon.info, text);
+-                case announce -> ui.announce(text, exec.numf(duration));
++                case notify -> {
++                    ui.hudfrag.showToast(Icon.info, text);
++                    new ArcMessageDialog.Msg(Type.logicNotify, text).add();
++                }
++                case announce -> {
++                    ui.announce(text, exec.numf(duration));
++                    new ArcMessageDialog.Msg(Type.logicAnnounce, text).add();
++                }
+                 case toast -> ui.showInfoToast(text, exec.numf(duration));
+                 //TODO desync?
+                 case mission -> state.rules.mission = text;
 diff --git a/core/src/mindustry/type/UnitType.java b/core/src/mindustry/type/UnitType.java
 index 7f8a9640ebabf89177391ff1b2ec5127fb704599..147aed781d05c0e27f74c2401d56fb02d8cc98b7 100644
 --- a/core/src/mindustry/type/UnitType.java
@@ -3014,40 +3037,10 @@ index 9d1fac76623f76f2be91b68bd339c9e821405ede..0e0293f0d1c24cb0184e56e5563ff8e9
          graphics.checkPref("animatedwater", true);
  
 diff --git a/core/src/mindustry/ui/fragments/ChatFragment.java b/core/src/mindustry/ui/fragments/ChatFragment.java
-index 89b9a23ce2bb850df5c7ae99a5f964753a807662..03bbbbfca69229893fc097479f4078843ea0c56d 100644
+index 89b9a23ce2bb850df5c7ae99a5f964753a807662..3ace45e2b2b37f9b631e9bf6a84720733dc3d758 100644
 --- a/core/src/mindustry/ui/fragments/ChatFragment.java
 +++ b/core/src/mindustry/ui/fragments/ChatFragment.java
-@@ -163,7 +163,10 @@ public class ChatFragment extends Table{
-         Draw.alpha(shadowColor.a * opacity);
- 
-         float theight = offsety + spacing + getMarginBottom() + scene.marginBottom;
--        for(int i = scrollPos; i < messages.size && i < messagesShown + scrollPos && (i < fadetime || shown); i++){
-+        int messageCount = 0;
-+        for(int i = scrollPos; i < messages.size && messageCount < messagesShown && (i < fadetime || shown); i++){
-+            if(!chatValidType(messages.get(i))) continue;
-+            messageCount += 1;
- 
-             layout.setText(font, messages.get(i), Color.white, textWidth, Align.bottomLeft, true);
-             theight += layout.height + textspacing;
-@@ -194,6 +197,17 @@ public class ChatFragment extends Table{
-         }
-     }
- 
-+    private boolean chatValidType(String msg){
-+        int chatType = settings.getInt("chatValidType");
-+        if(chatType == 0 && (msg.contains("[acid][公屏][white]") || msg.contains("[逻辑~"))) return false;
-+        else if(chatType == 1 &&
-+        (msg.contains("加入了服务器") || msg.contains("离开了服务器") || msg.contains("小贴士") || msg.contains("自动存档完成") ||
-+        msg.contains("登录成功") || msg.contains("经验+") || msg.contains("[ARC")
-+        || (msg.contains("[acid][公屏][white]")) || msg.contains("[逻辑~"))) return false;
-+        else if(chatType == 2 && !(msg.contains("[acid][公屏][white]") || msg.contains("[逻辑~"))) return false;
-+        return true;
-+    }
-+
-     private void sendMessage(){
-         String message = chatfield.getText().trim();
-         clearChatInput();
-@@ -216,6 +230,8 @@ public class ChatFragment extends Table{
+@@ -216,6 +216,8 @@ public class ChatFragment extends Table{
              if(mobile){
                  TextInput input = new TextInput();
                  input.maxLength = maxTextLength;
@@ -3056,7 +3049,7 @@ index 89b9a23ce2bb850df5c7ae99a5f964753a807662..03bbbbfca69229893fc097479f407884
                  input.accepted = text -> {
                      chatfield.setText(text);
                      sendMessage();
-@@ -245,7 +261,12 @@ public class ChatFragment extends Table{
+@@ -245,7 +247,12 @@ public class ChatFragment extends Table{
      }
  
      public void updateChat(){
@@ -3095,7 +3088,7 @@ index e74e6a12e3da57eb58598eb4e679a7990c109def..013255ce5aa828d538814fa25dc64c6a
          //special case for 'clear' command
          if(message.equals("clear")){
 diff --git a/core/src/mindustry/ui/fragments/HudFragment.java b/core/src/mindustry/ui/fragments/HudFragment.java
-index 4cd802d1000f7e9498543f1c5f5161bd2fd03113..e5f805ccc199b79130eb87c6e46907d17ea395ba 100644
+index baf0187e4dcc806eadbc22dadd2f0000f3e0b8ed..fcb696dab08eadf62702341b518ba1f002cdb0be 100644
 --- a/core/src/mindustry/ui/fragments/HudFragment.java
 +++ b/core/src/mindustry/ui/fragments/HudFragment.java
 @@ -27,10 +27,18 @@ import mindustry.input.*;
@@ -3147,31 +3140,7 @@ index 4cd802d1000f7e9498543f1c5f5161bd2fd03113..e5f805ccc199b79130eb87c6e46907d1
          //paused table
          parent.fill(t -> {
              t.name = "paused";
-@@ -116,13 +133,16 @@ public class HudFragment{
-             t.add(new Minimap()).name("minimap");
-             t.row();
-             //position
--            t.label(() ->
--                (Core.settings.getBool("position") ? player.tileX() + "," + player.tileY() + "\n" : "") +
--                (Core.settings.getBool("mouseposition") ? "[lightgray]" + World.toTile(Core.input.mouseWorldX()) + "," + World.toTile(Core.input.mouseWorldY()) : ""))
--            .visible(() -> Core.settings.getBool("position") || Core.settings.getBool("mouseposition"))
--            .touchable(Touchable.disabled)
--            .style(Styles.outlineLabel)
--            .name("position");
-+            t.table(tt-> {
-+                tt.label(() -> player.unit().type.emoji() +
-+                                (Core.settings.getBool("position") ? player.tileX() + "," + player.tileY() + "\n" : "") +
-+                                (Core.settings.getBool("mouseposition") ? "[lightgray]" + "♐" + World.toTile(Core.input.mouseWorldX()) + "," + World.toTile(Core.input.mouseWorldY()) : ""))
-+                        .visible(() -> Core.settings.getBool("position") || Core.settings.getBool("mouseposition"))
-+                        .touchable(Touchable.disabled)
-+                        .style(Styles.outlineLabel)
-+                        .name("position");
-+                tt.button("♐",cleart, MarkerType::lockOnLastMark).size(30,30).tooltip("锁定上个标记点");
-+            }).style(Styles.outlineLabel);
-             if(Core.settings.getInt("AuxiliaryTable") == 3){
-                 t.row().add(UIExt.auxiliaryTools);
-             }
-@@ -215,12 +235,16 @@ public class HudFragment{
+@@ -220,12 +237,16 @@ public class HudFragment{
              Table wavesMain, editorMain;
  
              cont.stack(wavesMain = new Table(), editorMain = new Table()).height(wavesMain.getPrefHeight())
@@ -3189,7 +3158,7 @@ index 4cd802d1000f7e9498543f1c5f5161bd2fd03113..e5f805ccc199b79130eb87c6e46907d1
                  //wave info button with text
                  s.add(makeStatusTable()).grow().name("status");
  
-@@ -241,7 +265,13 @@ public class HudFragment{
+@@ -246,7 +267,13 @@ public class HudFragment{
                          logic.skipWave();
                      }
                  }).growY().fillX().right().width(40f).disabled(b -> !canSkipWave()).name("skip").get().toBack();
@@ -3204,7 +3173,7 @@ index 4cd802d1000f7e9498543f1c5f5161bd2fd03113..e5f805ccc199b79130eb87c6e46907d1
  
              wavesMain.row();
  
-@@ -253,7 +283,7 @@ public class HudFragment{
+@@ -258,7 +285,7 @@ public class HudFragment{
  
              editorMain.name = "editor";
              editorMain.table(Tex.buttonEdge4, t -> {
@@ -3213,7 +3182,7 @@ index 4cd802d1000f7e9498543f1c5f5161bd2fd03113..e5f805ccc199b79130eb87c6e46907d1
                  t.name = "teams";
                  t.add("@editor.teams").growX().left();
                  t.row();
-@@ -271,6 +301,7 @@ public class HudFragment{
+@@ -276,6 +303,7 @@ public class HudFragment{
                              teams.row();
                          }
                      }
@@ -3221,7 +3190,7 @@ index 4cd802d1000f7e9498543f1c5f5161bd2fd03113..e5f805ccc199b79130eb87c6e46907d1
                  }).left();
              }).width(dsize * 5 + 4f);
              editorMain.visible(() -> shown && state.isEditor());
-@@ -291,6 +322,8 @@ public class HudFragment{
+@@ -296,6 +324,8 @@ public class HudFragment{
                  IntFormat mem = new IntFormat("memory");
                  IntFormat memnative = new IntFormat("memory2");
  
@@ -3230,7 +3199,7 @@ index 4cd802d1000f7e9498543f1c5f5161bd2fd03113..e5f805ccc199b79130eb87c6e46907d1
                  info.label(() -> fps.get(Core.graphics.getFramesPerSecond())).left().style(Styles.outlineLabel).name("fps");
                  info.row();
                  info.label(() -> Strings.format("LG/DW/UI(ms) @/@/@", Time.nanosToMillis(DebugUtil.logicTime), Time.nanosToMillis(DebugUtil.rendererTime), Time.nanosToMillis(DebugUtil.uiTime)))
-@@ -300,6 +333,11 @@ public class HudFragment{
+@@ -305,6 +335,11 @@ public class HudFragment{
                  DebugUtil.lastDrawRequests, DebugUtil.lastVertices, DebugUtil.lastSwitchTexture, DebugUtil.lastFlushCount)).left().style(Styles.outlineLabel).name("draw"), ()->DebugUtil.renderDebug);
                  info.row();
  
@@ -3242,7 +3211,7 @@ index 4cd802d1000f7e9498543f1c5f5161bd2fd03113..e5f805ccc199b79130eb87c6e46907d1
                  if(android){
                      info.label(() -> memnative.get((int)(Core.app.getJavaHeap() / 1024 / 1024), (int)(Core.app.getNativeHeap() / 1024 / 1024))).left().style(Styles.outlineLabel).name("memory2");
                  }else{
-@@ -909,6 +947,142 @@ public class HudFragment{
+@@ -914,6 +949,142 @@ public class HudFragment{
          return table;
      }
  
@@ -3385,7 +3354,7 @@ index 4cd802d1000f7e9498543f1c5f5161bd2fd03113..e5f805ccc199b79130eb87c6e46907d1
      private void addInfoTable(Table table){
          table.name = "infotable";
          table.left();
-@@ -953,7 +1127,45 @@ public class HudFragment{
+@@ -958,7 +1129,45 @@ public class HudFragment{
      }
  
      private boolean canSkipWave(){

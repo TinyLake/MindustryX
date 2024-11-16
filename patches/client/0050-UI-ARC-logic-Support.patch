@@ -19,12 +19,12 @@ way-zer <himc.wicp@gmail.com> on 2024/7/14
 way-zer <himc.wicp@gmail.com> on 2024/9/8
 ---
  core/src/mindustry/logic/LCanvas.java         |  54 +++-
- core/src/mindustry/logic/LExecutor.java       |  15 +-
+ core/src/mindustry/logic/LExecutor.java       |   3 +-
  core/src/mindustry/logic/LStatements.java     |  12 +
  core/src/mindustry/logic/LogicDialog.java     | 240 +++++++++++++++---
  .../world/blocks/logic/LogicBlock.java        |  82 +++++-
  .../world/blocks/logic/MemoryBlock.java       |  72 +++++-
- 6 files changed, 417 insertions(+), 58 deletions(-)
+ 6 files changed, 407 insertions(+), 56 deletions(-)
 
 diff --git a/core/src/mindustry/logic/LCanvas.java b/core/src/mindustry/logic/LCanvas.java
 index d8c28c046483618a8bfb5f6a457b54e555f69141..2eee81193225c88dd7279163b67027f074e01225 100644
@@ -125,26 +125,10 @@ index d8c28c046483618a8bfb5f6a457b54e555f69141..2eee81193225c88dd7279163b67027f0
  
                  float maxX = Math.max(x, x2) + len;
 diff --git a/core/src/mindustry/logic/LExecutor.java b/core/src/mindustry/logic/LExecutor.java
-index dc6716375964ec579572888ff572f2803798e9d9..f3173eb2ffb9da891074a6dbafc77e08da63f7c3 100644
+index dc6716375964ec579572888ff572f2803798e9d9..35e081764e15b55e9005dd8ed8dee2021ed20243 100644
 --- a/core/src/mindustry/logic/LExecutor.java
 +++ b/core/src/mindustry/logic/LExecutor.java
-@@ -9,6 +9,7 @@ import arc.util.*;
- import mindustry.*;
- import mindustry.ai.types.*;
- import mindustry.annotations.Annotations.*;
-+import mindustryX.features.ui.ArcMessageDialog;
- import mindustry.content.*;
- import mindustry.core.*;
- import mindustry.ctype.*;
-@@ -27,6 +28,7 @@ import mindustry.world.blocks.logic.MemoryBlock.*;
- import mindustry.world.blocks.logic.MessageBlock.*;
- import mindustry.world.blocks.payloads.*;
- import mindustry.world.meta.*;
-+import mindustryX.features.ui.ArcMessageDialog.*;
- 
- import static mindustry.Vars.*;
- 
-@@ -609,6 +611,7 @@ public class LExecutor{
+@@ -609,6 +609,7 @@ public class LExecutor{
          public void run(LExecutor exec){
              Object obj = exec.obj(target);
              if(obj instanceof Building b && (exec.privileged || (b.team == exec.team && exec.linkIds.contains(b.id)))){
@@ -152,7 +136,7 @@ index dc6716375964ec579572888ff572f2803798e9d9..f3173eb2ffb9da891074a6dbafc77e08
  
                  if(type == LAccess.enabled && !exec.bool(p1)){
                      b.lastDisabler = exec.build;
-@@ -1206,7 +1209,7 @@ public class LExecutor{
+@@ -1206,7 +1207,7 @@ public class LExecutor{
          @Override
          public void run(LExecutor exec){
              if(headless) return;
@@ -161,23 +145,6 @@ index dc6716375964ec579572888ff572f2803798e9d9..f3173eb2ffb9da891074a6dbafc77e08
              switch(action){
                  case pan -> {
                      control.input.logicCutscene = true;
-@@ -1593,8 +1596,14 @@ public class LExecutor{
-             }
- 
-             switch(type){
--                case notify -> ui.hudfrag.showToast(Icon.info, text);
--                case announce -> ui.announce(text, exec.numf(duration));
-+                case notify -> {
-+                    ui.hudfrag.showToast(Icon.info, text);
-+                    ArcMessageDialog.addMsg(new Msg(Type.logicNotify,text).sendMessage());
-+                }
-+                case announce -> {
-+                    ui.announce(text, exec.numf(duration));
-+                    ArcMessageDialog.addMsg(new Msg(Type.logicAnnounce,text).sendMessage());
-+                }
-                 case toast -> ui.showInfoToast(text, exec.numf(duration));
-                 //TODO desync?
-                 case mission -> state.rules.mission = text;
 diff --git a/core/src/mindustry/logic/LStatements.java b/core/src/mindustry/logic/LStatements.java
 index 9ca0dca4133fc15af3feb32e5ef770d806f9812d..0550de2a282781a38815041cc4cc72cec733c3c6 100644
 --- a/core/src/mindustry/logic/LStatements.java

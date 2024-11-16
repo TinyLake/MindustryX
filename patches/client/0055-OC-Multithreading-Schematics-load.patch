@@ -9,7 +9,7 @@ Inspired by FOO client.
  1 file changed, 20 insertions(+), 7 deletions(-)
 
 diff --git a/core/src/mindustry/game/Schematics.java b/core/src/mindustry/game/Schematics.java
-index 0098805f982c8b85ae9f0aa90ec74ffed04366bb..81c7ba09211697f74f3f45f8d6b7a1e2181d4f90 100644
+index 35843db3e559cc691d987aab8bd345c52dc04538..dc88a0313bb3ee0fb7c0ddd64a7069ee0aa1dd3b 100644
 --- a/core/src/mindustry/game/Schematics.java
 +++ b/core/src/mindustry/game/Schematics.java
 @@ -37,6 +37,7 @@ import mindustry.world.meta.*;

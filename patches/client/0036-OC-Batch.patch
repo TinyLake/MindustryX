@@ -22,9 +22,10 @@ way-zer <himc.wicp@gmail.com> on 2024/7/23
 顶点合并等优化已合并到arc上游
 way-zer <himc.wicp@gmail.com> on 2024/8/4
 ---
- core/src/arc/graphics/g2d/MySpriteBatch.java | 224 +++++++++++++++++++
- core/src/mindustry/graphics/MultiPacker.java |   2 +-
- 2 files changed, 225 insertions(+), 1 deletion(-)
+ core/src/arc/graphics/g2d/MySpriteBatch.java  | 224 ++++++++++++++++++
+ core/src/mindustry/graphics/MultiPacker.java  |   2 +-
+ .../world/blocks/logic/LogicDisplay.java      |   4 +-
+ 3 files changed, 227 insertions(+), 3 deletions(-)
 
 diff --git a/core/src/arc/graphics/g2d/MySpriteBatch.java b/core/src/arc/graphics/g2d/MySpriteBatch.java
 index e2bdb30e190a210f25130c423c853892798e4c28..f0c580f01f0a0014870d1f37b37cbf4eeb4748d6 100644
@@ -283,3 +284,25 @@ index 8d5fb2dd8d7148977ba2d98bb93658ec7a7ba44d..324bdce5bcc94d31e48a67eaddaf7bc7
  
          //TODO stuff like this throws OOM on some devices
          environment(4096, 2048),
+diff --git a/core/src/mindustry/world/blocks/logic/LogicDisplay.java b/core/src/mindustry/world/blocks/logic/LogicDisplay.java
+index 8d9665398a71d86da90f94a87e046a74d11a020a..0f0b5e2ab53f9c42f39960e0d81889527612b4e1 100644
+--- a/core/src/mindustry/world/blocks/logic/LogicDisplay.java
++++ b/core/src/mindustry/world/blocks/logic/LogicDisplay.java
+@@ -65,7 +65,7 @@ public class LogicDisplay extends Block{
+             //don't even bother processing anything when displays are off.
+             if(!Vars.renderer.drawDisplays) return;
+ 
+-            Draw.draw(Draw.z(), () -> {
++            Draw.draw(Draw.z() - 0.001f, () -> {
+                 if(buffer == null){
+                     buffer = new FrameBuffer(displaySize, displaySize);
+                     //clear the buffer - some OSs leave garbage in it
+@@ -121,7 +121,7 @@ public class LogicDisplay extends Block{
+             }
+ 
+             Draw.blend(Blending.disabled);
+-            Draw.draw(Draw.z(), () -> {
++            Draw.draw(Draw.z() + 0.001f, () -> {
+                 if(buffer != null){
+                     if(RenderExt.logicDisplayNoBorder){
+                         Draw.rect(Draw.wrap(buffer.getTexture()), x, y, (buffer.getWidth() + 16) * Draw.scl, -(buffer.getHeight() + 16) * Draw.scl);

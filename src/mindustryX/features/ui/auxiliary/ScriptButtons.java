@@ -1,11 +1,13 @@
 package mindustryX.features.ui.auxiliary;
 
 import arc.*;
+import arc.func.*;
 import arc.scene.style.*;
 import mindustry.content.*;
 import mindustry.entities.units.*;
 import mindustry.game.*;
 import mindustry.gen.*;
+import mindustry.input.*;
 import mindustryX.features.*;
 import mindustryX.features.ui.*;
 
