@@ -1,0 +1,51 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: way-zer <himc.wicp@gmail.com>
+Date: Sun, 17 Nov 2024 20:45:08 +0800
+Subject: [PATCH] FIX.G filter air BuildPayload
+
+---
+ core/src/mindustry/world/blocks/payloads/Constructor.java   | 3 +++
+ core/src/mindustry/world/blocks/payloads/Payload.java       | 1 +
+ core/src/mindustry/world/blocks/payloads/PayloadSource.java | 3 +++
+ 3 files changed, 7 insertions(+)
+
+diff --git a/core/src/mindustry/world/blocks/payloads/Constructor.java b/core/src/mindustry/world/blocks/payloads/Constructor.java
+index 695600afddc6687abe526813f8c6f07fadbf2083..c515d2c0863b895c208646e4b718b14e4880215b 100644
+--- a/core/src/mindustry/world/blocks/payloads/Constructor.java
++++ b/core/src/mindustry/world/blocks/payloads/Constructor.java
+@@ -89,6 +89,9 @@ public class Constructor extends BlockProducer{
+         public void read(Reads read, byte revision){
+             super.read(read, revision);
+             recipe = Vars.content.block(read.s());
++            if(recipe != null && recipe.isAir()){
++                recipe = null;
++            }
+         }
+     }
+ }
+diff --git a/core/src/mindustry/world/blocks/payloads/Payload.java b/core/src/mindustry/world/blocks/payloads/Payload.java
+index 218fab7192939e87af189f3c4d3dabb53726ec86..68256e8cb6d40227659633fd8e9544732b0be686 100644
+--- a/core/src/mindustry/world/blocks/payloads/Payload.java
++++ b/core/src/mindustry/world/blocks/payloads/Payload.java
+@@ -95,6 +95,7 @@ public interface Payload extends Position{
+             byte version = read.b();
+             payload.build.readAll(read, version);
+             payload.build.tile = emptyTile;
++            if(block.isAir()) return null;
+             return (T)payload;
+         }else if(type == payloadUnit){
+             byte id = read.b();
+diff --git a/core/src/mindustry/world/blocks/payloads/PayloadSource.java b/core/src/mindustry/world/blocks/payloads/PayloadSource.java
+index 8e90508e6103c20df6ddf0b831eb54fa38f012fc..8e8de3400a383e24dd64013253307778d4212696 100644
+--- a/core/src/mindustry/world/blocks/payloads/PayloadSource.java
++++ b/core/src/mindustry/world/blocks/payloads/PayloadSource.java
+@@ -167,6 +167,9 @@ public class PayloadSource extends PayloadBlock{
+             super.read(read, revision);
+             unit = Vars.content.unit(read.s());
+             configBlock = Vars.content.block(read.s());
++            if(configBlock!=null&&configBlock.isAir()){
++                configBlock = null;
++            }
+         }
+     }
+ }
