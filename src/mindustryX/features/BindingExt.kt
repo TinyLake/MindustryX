@@ -23,6 +23,7 @@ enum class BindingExt(val default: KeybindValue = KeyCode.unset, val category: S
     lockonLastMark(KeyCode.unset, onTap = MarkerType::lockOnLastMark),
     toggle_block_render(KeyCode.unset, onTap = { Settings.cycle("blockRenderLevel", 3) }),
     focusLogicController(KeyCode.unset, onTap = { mindustryX.features.func.focusLogicController() }),
+    placeRouterReplacement(KeyCode.shiftLeft),
     ;
 
     //KT-14115 can't implement KeyBind directly

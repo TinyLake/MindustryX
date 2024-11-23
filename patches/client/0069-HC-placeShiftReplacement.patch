@@ -1,0 +1,44 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: way-zer <himc.wicp@gmail.com>
+Date: Sat, 23 Nov 2024 19:44:52 +0800
+Subject: [PATCH] =?UTF-8?q?HC:=20placeShiftReplacement=20=E4=BC=A0?=
+ =?UTF-8?q?=E9=80=81=E5=B8=A6=E5=BF=AB=E9=80=9F=E6=9B=BF=E6=8D=A2?=
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+---
+ core/src/mindustry/input/InputHandler.java | 13 +++++++++++++
+ 1 file changed, 13 insertions(+)
+
+diff --git a/core/src/mindustry/input/InputHandler.java b/core/src/mindustry/input/InputHandler.java
+index d79f97a06997ee5d0d719de22e82e312d1687e32..8ac7540b9487b7c90f142380d935a515b76c99bb 100644
+--- a/core/src/mindustry/input/InputHandler.java
++++ b/core/src/mindustry/input/InputHandler.java
+@@ -1446,6 +1446,18 @@ public abstract class InputHandler implements InputProcessor, GestureListener{
+ 
+     protected void updateLine(int x1, int y1, int x2, int y2){
+         linePlans.clear();
++        Block old = block;
++        if(BindingExt.placeRouterReplacement.keyDown()){
++            if(old == Blocks.duct){
++                block = (x1 == x2 & y1 == y2) ? Blocks.ductRouter : Blocks.ductBridge;
++            }else if(old == Blocks.conveyor || old == Blocks.titaniumConveyor){
++                block = (x1 == x2 & y1 == y2) ? Blocks.router : Blocks.itemBridge;
++            }else if(old == Blocks.conduit || old == Blocks.pulseConduit){
++                block = (x1 == x2 & y1 == y2) ? Blocks.liquidRouter : Blocks.bridgeConduit;
++            }else if(old == Blocks.reinforcedConduit){
++                block = (x1 == x2 & y1 == y2) ? Blocks.reinforcedLiquidRouter : Blocks.reinforcedBridgeConduit;
++            }
++        }
+         iterateLine(x1, y1, x2, y2, l -> {
+             rotation = l.rotation;
+             var plan = new BuildPlan(l.x, l.y, l.rotation, block, block.nextConfig());
+@@ -1463,6 +1475,7 @@ public abstract class InputHandler implements InputProcessor, GestureListener{
+ 
+             block.handlePlacementLine(linePlans);
+         }
++        block = old;
+     }
+ 
+     protected void updateLine(int x1, int y1){

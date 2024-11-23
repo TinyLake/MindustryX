@@ -12,6 +12,7 @@ public class LogicExt{
     public static boolean terrainSchematic = false;
     public static boolean invertMapClick = false;
     public static boolean reliableSync = false;
+    public static boolean placeShiftReplacement = false;
 
     public static void init(){
         Events.run(Trigger.update, () -> {
@@ -26,6 +27,7 @@ public class LogicExt{
             terrainSchematic = Core.settings.getBool("terrainSchematic");
             invertMapClick = Core.settings.getBool("invertMapClick");
             reliableSync = Core.settings.getBool("reliableSync");
+            placeShiftReplacement = Core.settings.getBool("placeReplacement");
         });
     }
 }
