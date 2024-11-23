@@ -95,7 +95,7 @@ way-zer <himc.wicp@gmail.com> on 2024/9/8
 ---
  core/src/mindustry/ai/BlockIndexer.java       | 116 ++++++
  core/src/mindustry/core/UI.java               |   2 +
- core/src/mindustry/editor/MapInfoDialog.java  | 147 ++++++-
+ core/src/mindustry/editor/MapInfoDialog.java  | 135 ++++++-
  .../mindustry/entities/comp/BuildingComp.java |  18 +-
  .../mindustry/entities/comp/ShieldComp.java   |   6 +
  .../mindustry/entities/comp/StatusComp.java   |   3 +
@@ -123,7 +123,7 @@ way-zer <himc.wicp@gmail.com> on 2024/9/8
  .../ui/fragments/PlacementFragment.java       | 150 +++++--
  .../ui/fragments/PlayerListFragment.java      |  93 ++---
  core/src/mindustry/world/Block.java           |   7 +-
- 30 files changed, 1844 insertions(+), 311 deletions(-)
+ 30 files changed, 1839 insertions(+), 304 deletions(-)
 
 diff --git a/core/src/mindustry/ai/BlockIndexer.java b/core/src/mindustry/ai/BlockIndexer.java
 index 60bcca661ec27bbd5dc718ab9b4d7e1fc69d40dc..0b5de3b1215c9fdfd25e207e4491f792cc8b11a8 100644
@@ -311,34 +311,10 @@ index 190d52b2fdd8c651b6949bd8575f56d23d2371ed..6a6594082421155178eb6468f06b2425
          table.setFillParent(true);
          table.touchable = Touchable.disabled;
 diff --git a/core/src/mindustry/editor/MapInfoDialog.java b/core/src/mindustry/editor/MapInfoDialog.java
-index 2c7e4e46ab46b6634ee9d6cca90e9c19784cadaf..37313188488766404a26795d69c94a1a416c44ed 100644
+index 2c7e4e46ab46b6634ee9d6cca90e9c19784cadaf..cf8f998b4775197891fde1bc98e307136558530a 100644
 --- a/core/src/mindustry/editor/MapInfoDialog.java
 +++ b/core/src/mindustry/editor/MapInfoDialog.java
-@@ -9,19 +9,17 @@ import mindustry.io.*;
- import mindustry.maps.filters.*;
- import mindustry.ui.*;
- import mindustry.ui.dialogs.*;
-+import mindustryX.features.*;
- 
- import static mindustry.Vars.*;
- 
- public class MapInfoDialog extends BaseDialog{
--    private final WaveInfoDialog waveInfo;
--    private final MapGenerateDialog generate;
--    private final CustomRulesDialog ruleInfo = new CustomRulesDialog();
--    private final MapObjectivesDialog objectives = new MapObjectivesDialog();
-+    private MapGenerateDialog generate = new MapGenerateDialog(false);
-+    private CustomRulesDialog ruleInfo = new CustomRulesDialog();
-+    private MapObjectivesDialog objectives = new MapObjectivesDialog();
- 
-     public MapInfoDialog(){
-         super("@editor.mapinfo");
--        this.waveInfo = new WaveInfoDialog();
--        this.generate = new MapGenerateDialog(false);
- 
-         addCloseButton();
- 
-@@ -32,12 +30,12 @@ public class MapInfoDialog extends BaseDialog{
+@@ -32,12 +32,12 @@ public class MapInfoDialog extends BaseDialog{
          cont.clear();
  
          ObjectMap<String, String> tags = editor.tags;
@@ -353,7 +329,7 @@ index 2c7e4e46ab46b6634ee9d6cca90e9c19784cadaf..37313188488766404a26795d69c94a1a
                  tags.put("name", text);
              }).size(400, 55f).maxTextLength(50).get();
              name.setMessageText("@unknown");
-@@ -45,14 +43,76 @@ public class MapInfoDialog extends BaseDialog{
+@@ -45,14 +45,76 @@ public class MapInfoDialog extends BaseDialog{
              t.row();
              t.add("@editor.description").padRight(8).left();
  
@@ -432,16 +408,7 @@ index 2c7e4e46ab46b6634ee9d6cca90e9c19784cadaf..37313188488766404a26795d69c94a1a
                  tags.put("author", text);
              }).size(400, 55f).maxTextLength(50).get();
              author.setMessageText("@unknown");
-@@ -70,7 +130,7 @@ public class MapInfoDialog extends BaseDialog{
-                 }).marginLeft(10f);
- 
-                 r.button("@editor.waves", Icon.units, style, () -> {
--                    waveInfo.show();
-+                    UIExt.waveInfoDialog.show();
-                     hide();
-                 }).marginLeft(10f);
- 
-@@ -98,9 +158,74 @@ public class MapInfoDialog extends BaseDialog{
+@@ -98,9 +160,74 @@ public class MapInfoDialog extends BaseDialog{
  
              name.change();
              description.change();

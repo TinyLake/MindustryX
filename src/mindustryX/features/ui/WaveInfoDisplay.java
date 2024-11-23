@@ -18,6 +18,7 @@ import static mindustry.Vars.*;
 public class WaveInfoDisplay extends Table{
     public static final float fontScl = 0.8f;
     private int waveOffset = 0;
+    private WaveInfoDialog waveInfoDialog = new WaveInfoDialog();
     private final Table waveInfo;
 
     public WaveInfoDisplay(){
@@ -32,7 +33,7 @@ public class WaveInfoDisplay extends Table{
         table(buttons -> {
             buttons.defaults().size(32);
 
-            buttons.button(Icon.waves, Styles.clearNonei, iconMed, UIExt.waveInfoDialog::show).tooltip("波次信息");
+            buttons.button(Icon.waves, Styles.clearNonei, iconMed, waveInfoDialog::show).tooltip("波次信息");
 
             buttons.button("<", Styles.cleart, () -> shiftWaveOffset(-1));
             var i = buttons.button("", Styles.cleart, this::setWaveOffsetDialog).get();

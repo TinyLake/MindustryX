@@ -97,7 +97,7 @@ index 0a7394838bbb36aa985383eae069f7bf6a1fb15d..35843db3e559cc691d987aab8bd345c5
          return new Schematic(tiles, new StringMap(), width, height);
      }
 diff --git a/core/src/mindustry/world/blocks/environment/Floor.java b/core/src/mindustry/world/blocks/environment/Floor.java
-index dc056da237eda03e3c04328cf648a1c29df55154..facd6d75710f4d3628cb9f058674feadc37ac732 100644
+index dc056da237eda03e3c04328cf648a1c29df55154..fc619377d2b0e7c918d8e018396907c0038ad081 100644
 --- a/core/src/mindustry/world/blocks/environment/Floor.java
 +++ b/core/src/mindustry/world/blocks/environment/Floor.java
 @@ -77,19 +77,21 @@ public class Floor extends Block{

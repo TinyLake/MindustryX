@@ -10,6 +10,7 @@ import arc.scene.ui.layout.*;
 import arc.util.*;
 import mindustry.content.*;
 import mindustry.core.*;
+import mindustry.editor.*;
 import mindustry.gen.*;
 import mindustry.ui.*;
 import mindustryX.features.ui.*;
@@ -24,7 +25,6 @@ public class UIExt{
     public static HudSettingsTable hudSettingsTable = new HudSettingsTable();
     public static AdvanceToolTable advanceToolTable = new AdvanceToolTable();
     public static AdvanceBuildTool advanceBuildTool = new AdvanceBuildTool();
-    public static ArcWaveInfoDialog waveInfoDialog = new ArcWaveInfoDialog();
     public static AuxiliaryTools auxiliaryTools = new AuxiliaryTools();
     public static WaveInfoDisplay waveInfoDisplay = new WaveInfoDisplay();
     public static NewCoreItemsDisplay coreItems = new NewCoreItemsDisplay();

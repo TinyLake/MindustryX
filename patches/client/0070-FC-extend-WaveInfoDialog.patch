@@ -1,0 +1,275 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: way-zer <himc.wicp@gmail.com>
+Date: Sat, 23 Nov 2024 22:34:33 +0800
+Subject: [PATCH] =?UTF-8?q?FC:=20extend=20WaveInfoDialog=20=E6=B3=A2?=
+ =?UTF-8?q?=E6=AC=A1=E7=95=8C=E9=9D=A2=E6=89=A9=E5=B1=95?=
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+* 编辑波次的负载及携带物品
+* 列表状波次浏览
+* 其他细节优化
+---
+ core/src/mindustry/editor/WaveInfoDialog.java | 164 ++++++++++++++++--
+ 1 file changed, 150 insertions(+), 14 deletions(-)
+
+diff --git a/core/src/mindustry/editor/WaveInfoDialog.java b/core/src/mindustry/editor/WaveInfoDialog.java
+index d3f2e7ca6e6246e7d8d382ad6045d67572dd5287..72cefeb4d630ce111d708c8393b8f0b54fd7e915 100644
+--- a/core/src/mindustry/editor/WaveInfoDialog.java
++++ b/core/src/mindustry/editor/WaveInfoDialog.java
+@@ -6,6 +6,7 @@ import arc.graphics.*;
+ import arc.input.*;
+ import arc.math.*;
+ import arc.math.geom.*;
++import arc.scene.*;
+ import arc.scene.event.*;
+ import arc.scene.style.*;
+ import arc.scene.ui.*;
+@@ -22,9 +23,12 @@ import mindustry.io.*;
+ import mindustry.type.*;
+ import mindustry.ui.*;
+ import mindustry.ui.dialogs.*;
++import mindustryX.features.*;
++import mindustryX.features.ui.*;
+ 
+ import static mindustry.Vars.*;
+ import static mindustry.game.SpawnGroup.*;
++import static mindustryX.features.ArcWaveSpawner.calWinWave;
+ 
+ public class WaveInfoDialog extends BaseDialog{
+     private int start = 0, displayed = 20;
+@@ -40,10 +44,16 @@ public class WaveInfoDialog extends BaseDialog{
+     private boolean checkedSpawns;
+     private WaveGraph graph = new WaveGraph();
+ 
++    //Arc extended;
++    private boolean wavesListMode;
++    private Cell<?> wavesListCell;
++    private Element wavesList;
++
+     public WaveInfoDialog(){
+         super("@waves.title");
+ 
+         shown(() -> {
++            groups = JsonIO.copy(state.rules.spawns.isEmpty() ? waves.get() : state.rules.spawns);
+             checkedSpawns = false;
+             setup();
+         });
+@@ -71,7 +81,7 @@ public class WaveInfoDialog extends BaseDialog{
+                         groups = maps.readWaves(Core.app.getClipboardText());
+                         buildGroups();
+                     }catch(Exception e){
+-                        e.printStackTrace();
++                        Log.err(e);
+                         ui.showErrorMessage("@waves.invalid");
+                     }
+                     dialog.hide();
+@@ -93,6 +103,11 @@ public class WaveInfoDialog extends BaseDialog{
+             dialog.show();
+         }).size(250f, 64f);
+ 
++        buttons.button("切换显示模式", () -> {
++            wavesListMode = !wavesListMode;
++            wavesListCell.setElement(wavesListMode ? wavesList : graph);
++        }).width(200f);
++
+         buttons.defaults().width(60f);
+ 
+         buttons.button("<", () -> {}).update(t -> {
+@@ -117,13 +132,11 @@ public class WaveInfoDialog extends BaseDialog{
+             }
+         });
+ 
+-        if(experimental){
+-            buttons.button(Core.bundle.get("waves.random"), Icon.refresh, () -> {
+-                groups.clear();
+-                groups = Waves.generate(1f / 10f);
+-                buildGroups();
+-            }).width(200f);
+-        }
++        buttons.button(Core.bundle.get("waves.random"), Icon.refresh, () -> {
++            groups.clear();
++            groups = Waves.generate(1f / 10f);
++            buildGroups();
++        }).width(200f);
+     }
+ 
+     void view(int amount){
+@@ -147,7 +160,6 @@ public class WaveInfoDialog extends BaseDialog{
+     }
+ 
+     void setup(){
+-        groups = JsonIO.copy(state.rules.spawns.isEmpty() ? waves.get() : state.rules.spawns);
+         if(groups == null) groups = new Seq<>();
+ 
+         cont.clear();
+@@ -199,11 +211,50 @@ public class WaveInfoDialog extends BaseDialog{
+             setAlignment(Align.center, Align.center);
+         }}).width(390f).growY();
+ 
+-        cont.add(graph = new WaveGraph()).grow();
++        graph = new WaveGraph();
++        var cell = wavesListCell = cont.pane(this::buildsWaveList).scrollX(false).grow();
++        wavesList = cell.get();
++        if(!wavesListMode) wavesListCell.setElement(graph);
+ 
+         buildGroups();
+     }
+ 
++    void buildsWaveList(Table p){
++        int winWave = calWinWave();
++        p.table(Tex.button, t -> {
++            p.margin(0).defaults().pad(5).growX();
++            t.add("\uE86D 为单位数量；\uE813 为单位血+盾；\uE810 为计算buff的血+盾；\uE86E 为预估DPS。在游戏中时会考虑地图出怪点数目").color(Pal.accent);
++        }).scrollX(false).growX().row();
++        for(int wave = 0; wave < winWave; wave++){
++            ArcWaveSpawner.waveInfo thisWave = ArcWaveSpawner.getOrInit(wave);
++            thisWave.specLoc(-1, group -> true);
++            int finalWave = wave;
++            p.table(Tex.button, t -> {
++                t.table(tt -> {
++                    tt.add("第[accent]" + (finalWave + 1) + "[]波");
++                    tt.row();
++                    float firstWaveTime = state.rules.initialWaveSpacing <= 0 ? (2 * state.rules.waveSpacing) : state.rules.initialWaveSpacing;
++                    int thisTime = (int)(finalWave * state.rules.waveSpacing + firstWaveTime);
++                    tt.add(FormatDefault.duration(thisTime / 60f, false)).row();
++                    Label waveTime = tt.add("").get();
++                    tt.update(() -> {
++                        if(!state.isGame()) waveTime.setText("");
++                        else{
++                            int deltaTime = thisTime - (int)(state.wave <= 1 ? (firstWaveTime - state.wavetime) : (firstWaveTime + state.rules.waveSpacing * (state.wave - 1) - state.wavetime));
++                            waveTime.setText(FormatDefault.duration(deltaTime / 60, false));
++                        }
++                    });
++                }).width(120f).left();
++                if(thisWave.amount == 0) t.add("该波次没有敌人");
++                else{
++                    t.add(thisWave.proTable(true));
++                    t.pane(thisWave.unitTable(-1, group -> true, mobile ? 8 : 15)).scrollX(true).scrollY(false).growX();
++                }
++            }).growX().row();
++            p.margin(0).defaults().pad(5).growX();
++        }
++    }
++
+     void buildGroups(){
+         table.clear();
+         table.top();
+@@ -222,12 +273,25 @@ public class WaveInfoDialog extends BaseDialog{
+                     t.button(b -> {
+                         b.left();
+                         b.image(group.type.uiIcon).size(32f).padRight(3).scaling(Scaling.fit);
+-                        b.add(group.type.localizedName).color(Pal.accent);
++                        b.add(group.type.typeColor() + group.type.localizedName).color(Pal.accent);
++                        if(group.effect != null && group.effect != StatusEffects.none)
++                            b.image(group.effect.uiIcon).size(20f).padRight(3).scaling(Scaling.fit);
++                        if(group.items != null && group.items.amount > 0)
++                            b.image(group.items.item.uiIcon).size(20f).padRight(3).scaling(Scaling.fit);
++                        if(group.payloads != null && group.payloads.size > 0)
++                            b.image(Icon.uploadSmall).size(20f).padRight(3).scaling(Scaling.fit);
+ 
+                         b.add().growX();
+ 
+-                        b.label(() -> (group.begin + 1) + "").color(Color.lightGray).minWidth(45f).labelAlign(Align.left).left();
+-
++                        b.label(() -> {
++                            StringBuilder builder = new StringBuilder();
++                            builder.append("[lightgray]").append(group.begin + 1);
++                            if(group.begin == group.end) return builder.toString();
++                            if(group.end > 999999) builder.append("+");
++                            else builder.append("~").append(group.end + 1);
++                            if(group.spacing > 1) builder.append("[white]|[lightgray]").append(group.spacing);
++                            return builder.append("  ").toString();
++                        }).minWidth(45f).labelAlign(Align.left).left();
+                         b.button(Icon.copySmall, Styles.emptyi, () -> {
+                             groups.insert(groups.indexOf(group) + 1, expandedGroup = group.copy());
+                             buildGroups();
+@@ -389,7 +453,39 @@ public class WaveInfoDialog extends BaseDialog{
+                                 dialog.show();
+                             }).width(160f).height(36f).get().getLabel().setText(() -> group.spawn == -1 ? "@waves.spawn.all" : Point2.x(group.spawn) + ", " + Point2.y(group.spawn));
+ 
+-                        }).padBottom(8f).row();
++                        }).row();
++
++                        t.table(a -> {
++                            if(group.payloads == null) group.payloads = Seq.with();
++                            a.defaults().pad(2);
++                            a.add("携带物品[gold]X[]: ");
++
++                            if(group.items != null){
++                                a.image(group.items.item.uiIcon);
++                                a.add("x" + group.items.amount);
++                            }else{
++                                a.image(Icon.noneSmall).size(iconSmall);
++                            }
++
++                            a.add().growX();
++                            a.button(Icon.settingsSmall, Styles.emptyi, iconSmall, () -> showItems((it) -> group.items = it, group.type.itemCapacity)).padLeft(6f);
++                        }).margin(8).row();
++
++                        if(group.type.payloadCapacity > 0) t.table(a -> {
++                            a.defaults().pad(2);
++                            a.add("携带载荷[gold]X[]: ");
++
++                            if(group.payloads != null)
++                                for(var it : group.payloads){
++                                    a.button(new TextureRegionDrawable(it.uiIcon), Styles.emptyi, iconSmall, () -> group.payloads.remove(it));
++                                }
++
++                            a.add().growX();
++                            a.button(Icon.addSmall, Styles.emptyi, iconSmall, () -> showUnits((type) -> {
++                                if(group.payloads == null) group.payloads = Seq.with();
++                                group.payloads.add(type);
++                            }, false));
++                        }).margin(8).row();
+                     }
+                 }).width(340f).pad(8);
+ 
+@@ -440,6 +536,46 @@ public class WaveInfoDialog extends BaseDialog{
+         dialog.show();
+     }
+ 
++    void showItems(Cons<ItemStack> cons, int max){
++        BaseDialog dialog = new BaseDialog("");
++        dialog.cont.pane(p -> {
++            p.defaults().pad(2).fillX();
++            int[] count = {max};
++            p.table(items -> {
++                items.add(Core.bundle.get("filter.option.amount") + ":");
++                items.slider(1, max, 1, (it) -> {
++                    count[0] = (int)it;
++                }).width(120f).pad(2).margin(12f);
++            }).padBottom(6f).row();
++
++            p.button(t -> {
++                t.left();
++                t.image(Icon.none).size(8 * 4).scaling(Scaling.fit).padRight(2f);
++                t.add("@settings.resetKey");
++            }, () -> {
++                cons.get(null);
++                dialog.hide();
++                buildGroups();
++            }).margin(12f);
++            int i = 1;
++            for(var type : content.items()){
++                if(type.isHidden()) continue;
++                p.button(t -> {
++                    t.left();
++                    t.image(type.uiIcon).size(8 * 4).scaling(Scaling.fit).padRight(2f);
++                    t.add(type.localizedName);
++                }, () -> {
++                    cons.get(new ItemStack(type, count[0]));
++                    dialog.hide();
++                    buildGroups();
++                }).margin(12f);
++                if(++i % 3 == 0) p.row();
++            }
++        }).growX().scrollX(false);
++        dialog.addCloseButton();
++        dialog.show();
++    }
++
+     void showEffects(SpawnGroup group){
+         BaseDialog dialog = new BaseDialog("");
+         dialog.cont.pane(p -> {
