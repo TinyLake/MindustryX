@@ -139,17 +139,6 @@ public class ArcOld{
             c.checkPref("arcShareWaveInfo", false);
             c.checkPref("arcAlwaysTeamColor", false);
 
-            c.addCategory("arcRadar");
-            c.sliderPref("radarMode", 0, 0, 30, 1, s -> switch(s){
-                case 0 -> "关闭";
-                case 30 -> "一键开关";
-                default -> "[lightgray]x[white]" + Strings.autoFixed(s * 0.2f, 1) + "倍搜索";
-            });
-            c.sliderPref("radarSize", 0, 0, 50, 1, s -> {
-                if(s == 0) return "固定大小";
-                return "[lightgray]x[white]" + Strings.autoFixed(s * 0.1f, 1) + "倍";
-            });
-
             c.addCategory("arcWeakCheat");
             c.checkPref("save_more_map", false);
             c.checkPref("forceIgnoreAttack", false);

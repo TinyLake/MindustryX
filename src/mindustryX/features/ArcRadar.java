@@ -13,7 +13,10 @@ import mindustry.graphics.*;
 import mindustry.ui.*;
 import mindustry.world.*;
 import mindustry.world.blocks.storage.*;
+import mindustryX.features.SettingsV2.*;
 import mindustryX.features.func.*;
+
+import java.util.*;
 
 import static mindustry.Vars.*;
 
@@ -43,13 +46,28 @@ public class ArcRadar{
     private static boolean working = false;
     private static Table t;
 
+    private static SettingsV2.SliderPref mode, size;
+    public static List<ISetting> settings = new ArrayList<>();
+
     static{
+        mode = new SliderPref("radarMode", 1, 1, 30, 1);
+        mode.setLabelMap(s -> switch(s){
+            case 0 -> "关闭";
+            case 30 -> "瞬间完成";
+            default -> "[lightgray]x[white]" + Strings.autoFixed(s * 0.2f, 1) + "倍搜索速度";
+        });
+        settings.add(mode);
+        size = new SliderPref("radarSize", 0, 0, 50, 1);
+        size.setLabelMap(s -> {
+            if(s == 0) return "固定大小";
+            return "[lightgray]x[white]" + Strings.autoFixed(s * 0.1f, 1) + "倍";
+        });
+        settings.add(size);
         Events.on(EventType.WorldLoadEvent.class, event -> scanTime = Math.max(Mathf.dst(world.width(), world.height()) / 20f, 7.5f));
     }
 
     public static void drawScanner(){
-        if(Core.settings.getInt("radarMode") == 0) return;
-        float extendSpd = Core.settings.getInt("radarMode") * 0.2f;
+        float extendSpd = mode.getValue() * 0.2f;
 
         if(extendSpd >= 6){
             if(BindingExt.arcDetail.keyTap() || mobileRadar){
@@ -84,7 +102,7 @@ public class ArcRadar{
         float playerSize = Math.min(world.width(), world.height()) * tilesize * 0.03f;
 
         /* 整体缩放倍率，最重要的可调参数 */
-        float sizeRate = Core.settings.getInt("radarSize") == 0 ? 1f : Core.settings.getInt("radarSize") * 0.1f / renderer.getScale();
+        float sizeRate = size.getValue() == 0 ? 1f : size.getValue() * 0.1f / renderer.getDisplayScale();
         sizeRate *= Math.min(Core.scene.getHeight() / (world.height() * tilesize), Core.scene.getWidth() / (world.width() * tilesize)) * 2f;
         rRatio = ratio / sizeRate;
         float rUnitSize = unitSize * sizeRate;

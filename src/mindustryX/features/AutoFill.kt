@@ -2,6 +2,7 @@ package mindustryX.features
 
 import arc.Core
 import arc.Events
+import arc.util.Interval
 import mindustry.Vars
 import mindustry.game.EventType
 import mindustry.gen.Building
@@ -18,8 +19,11 @@ object AutoFill {
     var enable = false
     private val justTransferred = mutableSetOf<Building>()
     private val justTransferredNext = mutableSetOf<Building>()
+    val cooldown = SettingsV2.SliderPref("autoFill.cooldown", 300, 0, 3000, 100)
+    private var timer = Interval()
 
     private fun justTransferred(build: Building): Boolean {
+        if (!timer[cooldown.value * 60f / 1000]) return true
         if (justTransferred.add(build)) return false
         justTransferredNext.add(build)
         return true

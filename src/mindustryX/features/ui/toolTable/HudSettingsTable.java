@@ -66,7 +66,8 @@ public class HudSettingsTable extends ToolTableBase{
             t.button("箱", Styles.flatTogglet, () -> Settings.toggle("unithitbox"))
             .checked(a -> Core.settings.getBool("unithitbox")).tooltip("碰撞箱显示");
             t.button("扫", Styles.flatTogglet, () -> ArcScanMode.enabled = !ArcScanMode.enabled).checked(a -> ArcScanMode.enabled).tooltip("扫描模式");
-            t.button("" + Iconc.blockRadar, Styles.flatBordert, () -> ArcRadar.mobileRadar = !ArcRadar.mobileRadar).tooltip("雷达开关");
+            var b = t.button("" + Iconc.blockRadar, Styles.flatBordert, () -> ArcRadar.mobileRadar = !ArcRadar.mobileRadar).tooltip("雷达开关").get();
+            SettingsV2.bindQuickSettings(b, ArcRadar.settings);
             t.button("" + Iconc.blockWorldProcessor, Styles.flatTogglet, () -> {
                 Settings.toggle("removeLogicLock");
                 control.input.logicCutscene = false;
