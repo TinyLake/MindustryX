@@ -10,10 +10,10 @@ import arc.scene.ui.layout.*;
 import arc.util.*;
 import mindustry.content.*;
 import mindustry.core.*;
-import mindustry.editor.*;
 import mindustry.gen.*;
 import mindustry.ui.*;
 import mindustryX.features.ui.*;
+import mindustryX.features.ui.toolTable.*;
 
 import static mindustry.Vars.*;
 
@@ -42,9 +42,10 @@ public class UIExt{
         ui.hudGroup.fill(t -> {
             t.right().name = "quickTool";
             t.update(() -> t.y = Core.settings.getInt("quickToolOffset"));
-            t.add(hudSettingsTable).growX().row();
-            t.add(advanceToolTable).growX().row();
-            t.add(advanceBuildTool).growX().row();
+            t.add(auxiliaryTools.wrapped()).growX().row();
+            t.add(hudSettingsTable.wrapped()).growX().row();
+            t.add(advanceToolTable.wrapped()).growX().row();
+            t.add(advanceBuildTool.wrapped()).growX().row();
             t.visible(() -> ui.hudfrag.shown && Core.settings.getBool("showQuickToolTable"));
         });
     }

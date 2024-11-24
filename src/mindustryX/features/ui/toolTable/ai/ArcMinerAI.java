@@ -1,10 +1,9 @@
-package mindustryX.features.ui.auxiliary.ai;
+package mindustryX.features.ui.toolTable.ai;
 
 import arc.struct.*;
 import arc.util.*;
 import mindustry.entities.units.*;
 import mindustry.gen.*;
-import mindustry.input.*;
 import mindustry.type.*;
 import mindustry.world.*;
 import mindustry.world.blocks.environment.*;

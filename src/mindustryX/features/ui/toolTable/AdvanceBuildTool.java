@@ -1,4 +1,4 @@
-package mindustryX.features.ui;
+package mindustryX.features.ui.toolTable;
 
 import arc.*;
 import arc.func.*;
@@ -24,6 +24,7 @@ import mindustry.world.blocks.power.*;
 import mindustry.world.blocks.production.*;
 import mindustry.world.blocks.storage.*;
 import mindustryX.features.func.*;
+import mindustryX.features.ui.*;
 
 import static mindustry.Vars.*;
 
@@ -41,110 +42,108 @@ public class AdvanceBuildTool extends ToolTableBase{
 
 
     public AdvanceBuildTool(){
-        icon = Blocks.buildTower.emoji();
+        super(Blocks.buildTower.emoji());
         Events.on(EventType.WorldLoadEvent.class, e -> rebuild());
     }
 
-    @Override
-    protected void buildTable(){
-        table(Styles.black6, t -> {
-            t.row().add("区域：");
-            t.table(tt -> {
-                tt.button((placement == BuildRange.global ? "[cyan]" : "[gray]") + "", Styles.flatBordert, () -> {
-                    placement = BuildRange.global;
-                    rebuild();
-                }).tooltip("[cyan]全局检查").size(30f);
-                tt.button((placement == BuildRange.zone ? "[cyan]" : "[gray]") + "\uE818", Styles.flatBordert, () -> {
-                    selection = control.input.lastSelection;
-                    if(selection.area() < 10f){
-                        ui.announce("当前选定区域为空，请通过F规划区域");
-                        return;
-                    }
-                    placement = BuildRange.zone;
-                    rebuild();
-                }).tooltip("[cyan]选择范围").size(30f);
-                tt.button((placement == BuildRange.team ? "" : "[gray]") + Blocks.coreShard.emoji(), Styles.flatBordert, () -> {
-                    placement = BuildRange.team;
-                    rebuild();
-                }).tooltip("[cyan]队伍区域").size(30f);
-                tt.button((placement == BuildRange.player ? "" : "[gray]") + UnitTypes.gamma.emoji(), Styles.flatBordert, () -> {
-                    placement = BuildRange.player;
-                    rebuild();
-                }).tooltip("[cyan]玩家建造区").size(30f);
-                tt.update(() -> {
-                    if(placement != BuildRange.zone) return;
-                    FuncX.drawText(selection.getCenter(Tmp.v1).scl(tilesize), "建造区域", Scl.scl(1.25f), Color.white);
-                    Draw.color(Pal.stat, 0.7f);
-                    Draw.z(Layer.effect - 1f);
-                    Lines.stroke(Math.min(Math.abs(width), Math.abs(height)) / tilesize / 10f);
-                    Lines.rect(selection.x * tilesize - tilesize / 2f, selection.y * tilesize - tilesize / 2f, selection.width * tilesize + tilesize, selection.height * tilesize + tilesize);
-                    Draw.reset();
-                });
-            }).fillX().row();
-            t.row().add("设定：");
-            t.table(tt -> {
-                tt.update(() -> {
-                    if(control.input.selectedBlock() && target != control.input.block){
-                        target = control.input.block;
-                        rebuild();
-                    }
-                });
-                tt.button(find.emoji(), Styles.flatBordert, () -> {
-                    new BlockSelectDialog(Block::isPlaceable, block -> this.find = block, block -> this.find == block).show();
-                    rebuild();
-                }).size(30f).tooltip("源方块");
-                tt.button("", Styles.flatBordert, this::searchBlock).update(button -> {
-                    buildingSeq.clear();
-                    if(find.privileged){
-                        for(Team team : Team.all){
-                            buildingSeq.add(team.data().getBuildings(find));
-                        }
-                    }else{
-                        buildingSeq.add(player.team().data().getBuildings(find));
-                    }
-
-                    if(!buildingSeq.contains(searchBuild)){
-                        searchBuild = null;
-                        searchBlockIndex = -1;
-                    }
-
-                    if(buildingSeq.isEmpty()) button.setText("0/0");
-                    else button.setText((searchBlockIndex + 1) + "/" + buildingSeq.size);
-                }).tooltip("搜索方块").growX().width(90f).height(30f);
-                tt.button("\uE803", Styles.flatBordert, this::replaceBlockSetting).tooltip("快速设置").size(30f);
-                tt.button(target.emoji(), Styles.flatBordert, () -> {
-                    new BlockSelectDialog(Block::isPlaceable, block -> target = block, block -> target == block).show();
-                    rebuild();
-                }).size(30f).tooltip("目标方块");
-                tt.add().width(16);
-            }).fillX().row();
-            t.row().add("操作：");
-            t.table(tt -> {
-                tt.button("\uE88A" + Blocks.worldProcessor.emoji(), Styles.flatBordert, () -> {
-                    showWorldProcessorInfo();
-                    find = Blocks.worldProcessor;
-                    rebuild();
-                }).tooltip("地图世处信息").width(60f).height(30f);
-                tt.button("P", Styles.flatBordert, () -> buildTiles.buildBlock(target, tile -> {
-                    if(target instanceof ThermalGenerator g){
-                        if(g.attribute == null || target.floating) return 0;
-                        float[] res = {0f};
-                        tile.getLinkedTilesAs(target, other -> res[0] += other.floor().isDeep() ? 0f : other.floor().attributes.get(g.attribute));
-                        return res[0];
-                    }
-                    if(target instanceof Drill) return ((Drill)target).countOreArc(tile);
-                    return 1f;
-                })).tooltip("自动放置").size(30f);
-                tt.button("R", Styles.flatBordert, () -> replaceBlock(find, target)).tooltip("一键替换").size(30f);
-                if(!net.client()){
-                    tt.button("\uE800", Styles.flatBordert, () -> {
-                        instantBuild();
-                        if(mobile)
-                            ui.announce("瞬间建造\n[cyan]强制瞬间建造[acid]选择范围内[cyan]内规划中的所有建筑\n[orange]可能出现bug");
-                    }).size(30, 30).tooltip("瞬间建造\n[cyan]强制瞬间建造[acid]选择范围内[cyan]规划中的所有建筑\n[orange]可能出现bug");
+    protected void rebuild(){
+        clear();
+        row().add("区域：");
+        table(tt -> {
+            tt.button((placement == BuildRange.global ? "[cyan]" : "[gray]") + "", Styles.flatBordert, () -> {
+                placement = BuildRange.global;
+                rebuild();
+            }).tooltip("[cyan]全局检查").size(30f);
+            tt.button((placement == BuildRange.zone ? "[cyan]" : "[gray]") + "\uE818", Styles.flatBordert, () -> {
+                selection = control.input.lastSelection;
+                if(selection.area() < 10f){
+                    ui.announce("当前选定区域为空，请通过F规划区域");
+                    return;
                 }
-            }).fillX().row();
-        });
+                placement = BuildRange.zone;
+                rebuild();
+            }).tooltip("[cyan]选择范围").size(30f);
+            tt.button((placement == BuildRange.team ? "" : "[gray]") + Blocks.coreShard.emoji(), Styles.flatBordert, () -> {
+                placement = BuildRange.team;
+                rebuild();
+            }).tooltip("[cyan]队伍区域").size(30f);
+            tt.button((placement == BuildRange.player ? "" : "[gray]") + UnitTypes.gamma.emoji(), Styles.flatBordert, () -> {
+                placement = BuildRange.player;
+                rebuild();
+            }).tooltip("[cyan]玩家建造区").size(30f);
+            tt.update(() -> {
+                if(placement != BuildRange.zone) return;
+                FuncX.drawText(selection.getCenter(Tmp.v1).scl(tilesize), "建造区域", Scl.scl(1.25f), Color.white);
+                Draw.color(Pal.stat, 0.7f);
+                Draw.z(Layer.effect - 1f);
+                Lines.stroke(Math.min(Math.abs(width), Math.abs(height)) / tilesize / 10f);
+                Lines.rect(selection.x * tilesize - tilesize / 2f, selection.y * tilesize - tilesize / 2f, selection.width * tilesize + tilesize, selection.height * tilesize + tilesize);
+                Draw.reset();
+            });
+        }).fillX().row();
+        row().add("设定：");
+        table(tt -> {
+            tt.update(() -> {
+                if(control.input.selectedBlock() && target != control.input.block){
+                    target = control.input.block;
+                    rebuild();
+                }
+            });
+            tt.button(find.emoji(), Styles.flatBordert, () -> {
+                new BlockSelectDialog(Block::isPlaceable, block -> this.find = block, block -> this.find == block).show();
+                rebuild();
+            }).size(30f).tooltip("源方块");
+            tt.button("", Styles.flatBordert, this::searchBlock).update(button -> {
+                buildingSeq.clear();
+                if(find.privileged){
+                    for(Team team : Team.all){
+                        buildingSeq.add(team.data().getBuildings(find));
+                    }
+                }else{
+                    buildingSeq.add(player.team().data().getBuildings(find));
+                }
+
+                if(!buildingSeq.contains(searchBuild)){
+                    searchBuild = null;
+                    searchBlockIndex = -1;
+                }
+
+                if(buildingSeq.isEmpty()) button.setText("0/0");
+                else button.setText((searchBlockIndex + 1) + "/" + buildingSeq.size);
+            }).tooltip("搜索方块").growX().width(90f).height(30f);
+            tt.button("\uE803", Styles.flatBordert, this::replaceBlockSetting).tooltip("快速设置").size(30f);
+            tt.button(target.emoji(), Styles.flatBordert, () -> {
+                new BlockSelectDialog(Block::isPlaceable, block -> target = block, block -> target == block).show();
+                rebuild();
+            }).size(30f).tooltip("目标方块");
+            tt.add().width(16);
+        }).fillX().row();
+        row().add("操作：");
+        table(tt -> {
+            tt.button("\uE88A" + Blocks.worldProcessor.emoji(), Styles.flatBordert, () -> {
+                showWorldProcessorInfo();
+                find = Blocks.worldProcessor;
+                rebuild();
+            }).tooltip("地图世处信息").width(60f).height(30f);
+            tt.button("P", Styles.flatBordert, () -> buildTiles.buildBlock(target, tile -> {
+                if(target instanceof ThermalGenerator g){
+                    if(g.attribute == null || target.floating) return 0;
+                    float[] res = {0f};
+                    tile.getLinkedTilesAs(target, other -> res[0] += other.floor().isDeep() ? 0f : other.floor().attributes.get(g.attribute));
+                    return res[0];
+                }
+                if(target instanceof Drill) return ((Drill)target).countOreArc(tile);
+                return 1f;
+            })).tooltip("自动放置").size(30f);
+            tt.button("R", Styles.flatBordert, () -> replaceBlock(find, target)).tooltip("一键替换").size(30f);
+            if(!net.client()){
+                tt.button("\uE800", Styles.flatBordert, () -> {
+                    instantBuild();
+                    if(mobile)
+                        ui.announce("瞬间建造\n[cyan]强制瞬间建造[acid]选择范围内[cyan]内规划中的所有建筑\n[orange]可能出现bug");
+                }).size(30, 30).tooltip("瞬间建造\n[cyan]强制瞬间建造[acid]选择范围内[cyan]规划中的所有建筑\n[orange]可能出现bug");
+            }
+        }).fillX().row();
     }
 
     void replaceBlockGroup(Dialog dialog, Table t, Block ori, Block re){

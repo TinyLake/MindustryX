@@ -1,4 +1,4 @@
-package mindustryX.features.ui.auxiliary.ai;
+package mindustryX.features.ui.toolTable.ai;
 
 import arc.util.*;
 import mindustry.entities.*;

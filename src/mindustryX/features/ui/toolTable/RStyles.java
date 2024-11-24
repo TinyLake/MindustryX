@@ -1,22 +1,15 @@
-package mindustryX.features.ui.auxiliary;
+package mindustryX.features.ui.toolTable;
 
 import arc.graphics.*;
-import arc.scene.style.*;
 import arc.scene.ui.ImageButton.*;
 import arc.scene.ui.TextButton.*;
-import mindustry.gen.*;
-import mindustry.ui.*;
 
 import static mindustry.gen.Tex.underlineWhite;
 import static mindustry.ui.Styles.*;
 
 //move from mindustry.arcModule.ui.RStyles
 public class RStyles{
-    public static Drawable black1;
-
-    public static TextButtonStyle
-    clearLineNonet,
-    clearLineNoneTogglet;
+    public static TextButtonStyle clearLineNoneTogglet;
 
     public static ImageButtonStyle
     clearAccentNonei,
@@ -25,20 +18,6 @@ public class RStyles{
     clearLineNoneTogglei;
 
     public static void load(){
-        var whiteuir = (TextureRegionDrawable)Tex.whiteui;
-
-        black1 = whiteuir.tint(0f, 0f, 0f, 0.1f);
-
-        clearLineNonet = new TextButtonStyle(){{
-            font = Fonts.def;
-            fontColor = Color.white;
-            disabled = black;
-            disabledFontColor = Color.gray;
-            up = none;
-            over = accentDrawable;
-            down = underlineWhite;
-        }};
-
         clearLineNoneTogglet = new TextButtonStyle(fullTogglet){{
             up = none;
             over = accentDrawable;

@@ -1,8 +1,7 @@
-package mindustryX.features.ui;
+package mindustryX.features.ui.toolTable;
 
 import arc.*;
 import arc.graphics.*;
-import arc.scene.*;
 import arc.scene.event.*;
 import arc.scene.ui.*;
 import arc.scene.ui.layout.*;
@@ -24,18 +23,15 @@ import static mindustry.ui.Styles.flatTogglet;
 
 //moved from mindustry.arcModule.ui.quickTool.HudSettingsTable
 public class HudSettingsTable extends ToolTableBase{
-    private final Table cont = new Table(Styles.black6);
-
     public HudSettingsTable(){
-        icon = String.valueOf(Iconc.settings);
+        super(String.valueOf(Iconc.settings));
+        maxHeight = 240f;
         rebuild();
         Events.on(EventType.WorldLoadEvent.class, e -> Core.settings.put("removeLogicLock", false));
     }
 
-    @Override
-    protected void buildTable(){
-        cont.clearChildren();
-        cont.table(t -> {
+    protected void rebuild(){
+        table(t -> {
             t.defaults().size(30);
             t.button("[cyan]信", Styles.flatBordert, () -> UIExt.arcMessageDialog.show()).tooltip("中央监控室");
             t.button("[cyan]S", Styles.flatBordert, () -> Call.sendChatMessage("/sync")).tooltip("同步一波");
@@ -85,7 +81,7 @@ public class HudSettingsTable extends ToolTableBase{
         }).left().row();
 
         if(settings.getInt("arcQuickMsg") > 0){
-            cont.table(t -> {
+            table(t -> {
                 t.defaults().size(30);
                 for(int i = 0; i < settings.getInt("arcQuickMsg"); i++){
                     if(i % settings.getInt("arcQuickMsgKey", 8) == 0) t.row();
@@ -122,27 +118,19 @@ public class HudSettingsTable extends ToolTableBase{
         sliderPref("quickToolOffset", -250, 250, 10, i -> i + "");
         checkPref("newWaveInfoDisplay");
         settings.defaults("newWaveInfoDisplay", true);
-
-        ScrollPane pane = pane(cont).maxSize(800f, 240f).get();
-        pane.update(() -> {
-            Element e = Core.scene.hit(Core.input.mouseX(), Core.input.mouseY(), true);
-            if(e != null && e.isDescendantOf(pane)){
-                pane.requestScroll();
-            }else if(pane.hasScroll()){
-                Core.scene.setScrollFocus(null);
-            }
-        });
     }
 
     private void arcQuickMsgTable(){
         BaseDialog dialog = new BaseDialog("快捷信息");
+        dialog.hidden(() -> {
+            clear();
+            rebuild();
+        });
         dialog.cont.table(t -> {
             t.add("""
             在此编辑快速消息，可在快捷设置面板显示。如设置：
             [white]法 /vote gameover
-            这一指令会添加一个“[white]法的按钮，点击会自动输入/vote gameover。
-            由于懒得写更新，请修改滑块后[orange]关闭此窗口后再打开一次[white]
-            快捷设置面板同样需要[orange]关闭后再打开一次[white]才能生效""").center().fillX().row();
+            这一指令会添加一个“[white]法的按钮，点击会自动输入/vote gameover。""").center().fillX().row();
             t.table(tt -> {
                 tt.add("快捷消息个数： ");
                 Label label = tt.add(String.valueOf(settings.getInt("arcQuickMsg", 0))).get();
@@ -308,8 +296,7 @@ public class HudSettingsTable extends ToolTableBase{
         content.margin(3f, 33f, 3f, 33f);
         content.touchable = Touchable.disabled;
 
-        cont.stack(slider, content).width(270f).left().padTop(4f).get();
-        cont.row();
+        stack(slider, content).width(270f).left().padTop(4f).row();
 
         if(settings.getDefault(name) == null)
             Log.warn("no default value for " + name);
@@ -321,8 +308,7 @@ public class HudSettingsTable extends ToolTableBase{
         box.changed(() -> settings.put(name, box.isChecked()));
 
         box.left();
-        cont.add(box).left().padTop(0.5f);
-        cont.row();
+        add(box).left().padTop(0.5f).row();
 
         if(settings.getDefault(name) == null)
             Log.warn("no default value for " + name);

@@ -1,4 +1,4 @@
-package mindustryX.features.ui;
+package mindustryX.features.ui.toolTable;
 
 import arc.*;
 import arc.graphics.*;
@@ -18,6 +18,7 @@ import mindustry.ui.dialogs.*;
 import mindustry.world.*;
 import mindustry.world.blocks.payloads.*;
 import mindustryX.features.*;
+import mindustryX.features.ui.*;
 
 import java.util.*;
 

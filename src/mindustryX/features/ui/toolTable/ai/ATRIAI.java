@@ -1,4 +1,4 @@
-package mindustryX.features.ui.auxiliary.ai;
+package mindustryX.features.ui.toolTable.ai;
 
 import arc.struct.*;
 import arc.util.*;
@@ -6,40 +6,69 @@ import mindustry.*;
 import mindustry.ai.types.*;
 import mindustry.entities.*;
 import mindustry.entities.units.*;
-import mindustry.game.Teams.*;
+import mindustry.game.*;
 import mindustry.gen.*;
 import mindustry.input.*;
+import mindustry.type.*;
 import mindustry.world.*;
-import mindustry.world.blocks.ConstructBlock.*;
+import mindustry.world.blocks.*;
+import mindustry.world.blocks.environment.*;
 
 import static mindustry.Vars.*;
 
-public class ArcBuilderAI extends AIController{
+public class ATRIAI extends AIController{
+    //builderAI
+
     public static final float buildRadius = 1500;
     public static final float retreatDst = 110f;
     public static final float retreatDelay = Time.toSeconds * 2f;
-    public static float rebuildTime = 120f;
+    public static final float rebuildTime = 120f;
 
     public @Nullable Unit following;
     public @Nullable Teamc enemy;
-    public @Nullable BlockPlan lastPlan;
+    public @Nullable Teams.BlockPlan lastPlan;
 
     public float fleeRange = 370f;
-    public boolean alwaysFlee;
 
     boolean found = false;
     float retreatTimer;
 
-    public ArcBuilderAI(boolean alwaysFlee, float fleeRange){
-        this.alwaysFlee = alwaysFlee;
+    //minerAI
+    public static final Seq<Block> oreAllList = content.blocks().select(b -> b instanceof Floor f && !f.wallOre && f.itemDrop != null);
+    public static final Seq<Block> oreAllWallList = content.blocks().select(b -> ((b instanceof Floor f && f.wallOre) || b instanceof StaticWall) && b.itemDrop != null);
+    public static final Seq<Block> oreList = content.blocks().select(b -> b instanceof Floor f && !f.wallOre && f.itemDrop != null);
+    public static final Seq<Block> oreWallList = content.blocks().select(b -> ((b instanceof Floor f && f.wallOre) || b instanceof StaticWall) && b.itemDrop != null);
+
+    public Seq<Item> canMineList;
+    public boolean mining = true;
+    public Item targetItem;
+    public Tile ore;
+
+
+    public ATRIAI(float fleeRange){
         this.fleeRange = fleeRange;
     }
 
-    public ArcBuilderAI(){
+    public ATRIAI(){
+    }
+
+    @Override
+    public void init(){
+        if(!unit.canMine()) return;
+
+        if(unit.type.mineFloor){
+            canMineList = oreList.map(b -> b.itemDrop).select(i -> unit.canMine(i));
+        }else if(unit.type.mineWalls){
+            canMineList = oreWallList.map(b -> b.itemDrop).select(i -> unit.canMine(i));
+        }
     }
 
     @Override
     public void updateMovement(){
+        builderMode();
+    }
+
+    private void builderMode(){
 
         if(target != null && shouldShoot()){
             unit.lookAt(target);
@@ -62,14 +91,14 @@ public class ArcBuilderAI extends AIController{
             unit.plans.clear();
             unit.plans.addFirst(following.buildPlan());
             lastPlan = null;
-        }else if(unit.buildPlan() == null || alwaysFlee){
+        }else if(unit.buildPlan() == null){
             //not following anyone or building
             if(timer.get(timerTarget4, 40)){
                 enemy = target(unit.x, unit.y, fleeRange, true, true);
             }
 
             //fly away from enemy when not doing anything, but only after a delay
-            if((retreatTimer += Time.delta) >= retreatDelay || alwaysFlee){
+            if((retreatTimer += Time.delta) >= retreatDelay){
                 if(enemy != null){
                     unit.clearBuilding();
                     var core = unit.closestCore();
@@ -82,7 +111,6 @@ public class ArcBuilderAI extends AIController{
 
         if(unit.buildPlan() != null){
             if(unit.controller() == Vars.player && control.input instanceof DesktopInput di) di.isBuilding = true;
-            if(!alwaysFlee) retreatTimer = 0f;
             //approach plan if building
             BuildPlan req = unit.buildPlan();
 
@@ -100,7 +128,7 @@ public class ArcBuilderAI extends AIController{
 
             boolean valid =
             !(lastPlan != null && lastPlan.removed) &&
-            ((req.tile() != null && req.tile().build instanceof ConstructBuild cons && cons.current == req.block) ||
+            ((req.tile() != null && req.tile().build instanceof ConstructBlock.ConstructBuild cons && cons.current == req.block) ||
             (req.breaking ?
             Build.validBreak(unit.team(), req.x, req.y) :
             Build.validPlace(req.block, unit.team(), req.x, req.y, req.rotation)));
@@ -114,7 +142,6 @@ public class ArcBuilderAI extends AIController{
                 lastPlan = null;
             }
         }else{
-
             //follow someone and help them build
             if(timer.get(timerTarget2, 60f)){
                 found = false;
@@ -126,7 +153,7 @@ public class ArcBuilderAI extends AIController{
                         BuildPlan plan = u.buildPlan();
 
                         Building build = world.build(plan.x, plan.y);
-                        if(build instanceof ConstructBuild cons){
+                        if(build instanceof ConstructBlock.ConstructBuild cons){
                             float dist = Math.min(cons.dst(unit) - unit.type.buildRange, 0);
 
                             //make sure you can reach the plan in time
@@ -141,13 +168,13 @@ public class ArcBuilderAI extends AIController{
 
             //find new plan
             if(!unit.team.data().plans.isEmpty() && following == null && timer.get(timerTarget3, rebuildTime)){
-                Queue<BlockPlan> blocks = unit.team.data().plans;
-                BlockPlan block = blocks.first();
+                Queue<Teams.BlockPlan> blocks = unit.team.data().plans;
+                Teams.BlockPlan block = blocks.first();
 
                 //check if it's already been placed
                 if(world.tile(block.x, block.y) != null && world.tile(block.x, block.y).block().id == block.block){
                     blocks.removeFirst();
-                }else if(Build.validPlace(content.block(block.block), unit.team(), block.x, block.y, block.rotation) && (!alwaysFlee || !nearEnemy(block.x, block.y))){ //it's valid
+                }else if(Build.validPlace(content.block(block.block), unit.team(), block.x, block.y, block.rotation) && (!nearEnemy(block.x, block.y))){ //it's valid
                     lastPlan = block;
                     //add build plan
                     unit.addBuild(new BuildPlan(block.x, block.y, block.rotation, content.block(block.block), block.config));
@@ -160,6 +187,7 @@ public class ArcBuilderAI extends AIController{
             }
         }
     }
+
 
     protected boolean nearEnemy(int x, int y){
         return Units.nearEnemy(unit.team, x * tilesize - fleeRange / 2f, y * tilesize - fleeRange / 2f, fleeRange, fleeRange);

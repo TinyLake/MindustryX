@@ -43,13 +43,6 @@ public class Settings{
             c.checkPref("powerStatistic", true);
             c.checkPref("showOtherTeamResource", false);
             c.checkPref("showQuickToolTable", true);
-            c.sliderPref("AuxiliaryTable", 0, 0, 3, 1, s -> switch(s){
-                case 0 -> "关闭";
-                case 1 -> "左上-右";
-                case 2 -> "左上-下";
-                case 3 -> "右上-下";
-                default -> "";
-            });
             c.sliderPref("arccoreitems", 3, 0, 3, 1, s -> switch(s){
                 case 0 -> "不显示";
                 case 1 -> "资源状态";
