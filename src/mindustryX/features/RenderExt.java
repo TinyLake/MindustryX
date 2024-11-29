@@ -91,7 +91,7 @@ public class RenderExt{
             deadOverlay = Core.settings.getBool("deadOverlay");
             drawBlockDisabled = Core.settings.getBool("blockdisabled");
             showOtherInfo = Core.settings.getBool("showOtherTeamState");
-            showOtherInfo |= Vars.player.team().id == 255 || Vars.state.rules.mode() != Gamemode.pvp;
+            showOtherInfo &= Vars.player.team().id == 255 || Vars.state.rules.mode() != Gamemode.pvp;
             editOtherBlock = Core.settings.getBool("editOtherBlock");
             editOtherBlock &= !net.client();
         });
