@@ -120,10 +120,10 @@ way-zer <himc.wicp@gmail.com> on 2024/9/8
  .../ui/fragments/ConsoleFragment.java         |   3 +
  .../mindustry/ui/fragments/HudFragment.java   | 217 +++++++++-
  .../mindustry/ui/fragments/MenuFragment.java  |  59 ++-
- .../ui/fragments/PlacementFragment.java       | 150 +++++--
+ .../ui/fragments/PlacementFragment.java       | 151 +++++--
  .../ui/fragments/PlayerListFragment.java      |  93 ++---
  core/src/mindustry/world/Block.java           |   7 +-
- 30 files changed, 1787 insertions(+), 299 deletions(-)
+ 30 files changed, 1788 insertions(+), 299 deletions(-)
 
 diff --git a/core/src/mindustry/ai/BlockIndexer.java b/core/src/mindustry/ai/BlockIndexer.java
 index 60bcca661ec27bbd5dc718ab9b4d7e1fc69d40dc..0b5de3b1215c9fdfd25e207e4491f792cc8b11a8 100644
@@ -3439,7 +3439,7 @@ index 25d953a861fbcddea24225be733445e953e717ef..85a5ca45ad3c3741633b646bff8d8ba9
                  new MenuButton("@settings", Icon.settings, ui.settings::show)
              );
 diff --git a/core/src/mindustry/ui/fragments/PlacementFragment.java b/core/src/mindustry/ui/fragments/PlacementFragment.java
-index 284e8b637ea33574094a21827b4c5e771e40805f..b6659961e84e14b5b012100a200fbe76db09c746 100644
+index 284e8b637ea33574094a21827b4c5e771e40805f..8ca10c26eab1ca1d966728b1019cda728d51b571 100644
 --- a/core/src/mindustry/ui/fragments/PlacementFragment.java
 +++ b/core/src/mindustry/ui/fragments/PlacementFragment.java
 @@ -1,6 +1,7 @@
@@ -3655,9 +3655,11 @@ index 284e8b637ea33574094a21827b4c5e771e40805f..b6659961e84e14b5b012100a200fbe76
                          for(Category cat : getCategories()){
                              if(f++ % 2 == 0) categories.row();
  
-@@ -682,36 +752,46 @@ public class PlacementFragment{
+@@ -681,37 +751,48 @@ public class PlacementFragment{
+     }
  
      boolean hasInfoBox(){
++        if(!state.isGame()) return false;
          hover = hovered();
 -        return control.input.block != null || menuHoverBlock != null || hover != null;
 +        return control.input.block != null || menuHoverBlock != null || hover != null || hoverTile != null;

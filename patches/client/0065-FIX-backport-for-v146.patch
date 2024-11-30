@@ -275,7 +275,7 @@ index 581f4fc4b8bf801264d61c27278997f413ebea18..b09c133bfc7246d090300a67561a9b19
  import mindustry.content.*;
  import mindustry.core.GameState.*;
 diff --git a/core/src/mindustry/ui/fragments/PlacementFragment.java b/core/src/mindustry/ui/fragments/PlacementFragment.java
-index b6659961e84e14b5b012100a200fbe76db09c746..1692bfb997bbd802d9186d1365b841360c2c79c3 100644
+index 8ca10c26eab1ca1d966728b1019cda728d51b571..02100284bcfc041f9b53c4102bb7224632801903 100644
 --- a/core/src/mindustry/ui/fragments/PlacementFragment.java
 +++ b/core/src/mindustry/ui/fragments/PlacementFragment.java
 @@ -565,16 +565,46 @@ public class PlacementFragment{
