@@ -12,10 +12,12 @@ import mindustry.gen.*;
 import mindustry.ui.*;
 import mindustry.ui.dialogs.*;
 import mindustryX.features.*;
+import mindustryX.features.SettingsV2.*;
 
 import static mindustry.Vars.*;
 
 public class WaveInfoDisplay extends Table{
+    public static SettingsV2.CheckPref enable = new CheckPref("newWaveInfoDisplay", true);
     public static final float fontScl = 0.8f;
     private int waveOffset = 0;
     private WaveInfoDialog waveInfoDialog = new WaveInfoDialog();
@@ -41,7 +43,11 @@ public class WaveInfoDisplay extends Table{
             i.getLabel().setText(() -> "" + (state.wave + waveOffset));
             buttons.button(">", Styles.cleart, () -> shiftWaveOffset(1));
 
-            buttons.button("R", Styles.cleart, () -> setWaveOffset(0));
+            buttons.button("R", Styles.cleart, () -> setWaveOffset(0)).tooltip("恢复当前波次");
+            buttons.button("J", Styles.cleart, () -> ui.showConfirm("[red]这是一个作弊功能[]\n快速跳转到目标波次(不刷兵)", () -> {
+                state.wave += waveOffset;
+                setWaveOffset(0);
+            })).tooltip("强制跳波").disabled((b) -> net.client());
             buttons.button("♐", Styles.cleart, () -> ArcMessageDialog.shareWaveInfo(state.wave + waveOffset))
             .disabled((b) -> !state.rules.waves && !Core.settings.getBool("arcShareWaveInfo"));
         }).center().row();
@@ -71,7 +77,7 @@ public class WaveInfoDisplay extends Table{
             t.add().height(4).row();
             t.add(this).growX();
         }, true);
-        ret.setCollapsed(false, () -> !state.rules.waves || !Core.settings.getBool("newWaveInfoDisplay"));
+        ret.setCollapsed(false, () -> !state.rules.waves || !enable.getValue());
         return ret;
     }
 
