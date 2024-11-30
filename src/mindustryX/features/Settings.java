@@ -95,7 +95,6 @@ public class Settings{
             c.checkPref("unithitbox", false);
 
             c.addCategory("developerMode");
-            c.checkPref("renderMerge", true);
             c.checkPref("renderSort", false);
             c.checkPref("reliableSync", false);
             c.checkPref("renderDebug", false);
