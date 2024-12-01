@@ -95,8 +95,8 @@ public class AuxiliaryTools extends ToolTableBase{
 
     protected void toggleButton(Drawable icon, String settingName, String description){
         button(icon, RStyles.clearLineNoneTogglei, iconMed, () -> {
-            Settings.toggle("viewMode");
-            boolean setting = Core.settings.getBool("viewMode");
+            Settings.toggle(settingName);
+            boolean setting = Core.settings.getBool(settingName);
             UIExt.announce("已" + (setting ? "开启" : "取消") + description);
         }).tooltip(description, true).checked(b -> Core.settings.getBool(settingName));
     }
