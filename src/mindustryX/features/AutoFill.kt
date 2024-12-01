@@ -18,22 +18,24 @@ object AutoFill {
     @JvmField
     var enable = false
     private val justTransferred = mutableSetOf<Building>()
-    private val justTransferredNext = mutableSetOf<Building>()
+    private val transferredThisTick = mutableSetOf<Building>()
     val cooldown = SettingsV2.SliderPref("autoFill.cooldown", 300, 0, 3000, 100)
+    val minFill = SettingsV2.SliderPref("autoFill.minFill", 5, 1, 20, 1)
+    val fillStorageBlock = SettingsV2.CheckPref("autoFill.fillStorageBlock")
+    val settings = listOf(cooldown, minFill, fillStorageBlock)
     private var timer = Interval()
 
     private fun justTransferred(build: Building): Boolean {
+        transferredThisTick.add(build)
         if (!timer[cooldown.value * 60f / 1000]) return true
-        if (justTransferred.add(build)) return false
-        justTransferredNext.add(build)
-        return true
+        return !justTransferred.add(build)
     }
 
     private fun tryFill(build: Building) {
         val player = Vars.player ?: return
-        if (build.block is StorageBlock || build.team != player.team()) return
+        if ((!fillStorageBlock.value && build.block is StorageBlock) || build.team != player.team()) return
         val item = player.unit()?.item() ?: return
-        if (build.within(player, Vars.itemTransferRange) && build.acceptItem(build, item)) {
+        if (build.within(player, Vars.itemTransferRange) && build.acceptStack(item, 9999, player.unit()) >= minFill.value) {
             if (justTransferred(build)) return
             Call.transferInventory(player, build)
         }
@@ -50,8 +52,8 @@ object AutoFill {
 
     fun update() {
         justTransferred.clear()
-        justTransferred.addAll(justTransferredNext)
-        justTransferredNext.clear()
+        justTransferred.addAll(transferredThisTick)
+        transferredThisTick.clear()
         if (!enable || Vars.player.dead()) return
         val player = Vars.player
         val item = player.unit()?.item() ?: return
@@ -60,7 +62,7 @@ object AutoFill {
 
         if (player.unit().stack.amount < player.unit().itemCapacity() * 0.5) {
             Vars.indexer.findTile(player.team(), player.x, player.y, Vars.buildingRange, {
-                it.block is StorageBlock && it.items.has(item)
+                it.block is StorageBlock && it.items.has(item) && it !in transferredThisTick
             })?.let { find ->
                 if (justTransferred(find)) return@let
                 Call.requestItem(player, find, item, 9999)

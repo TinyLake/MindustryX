@@ -6,7 +6,6 @@ import arc.scene.style.*;
 import arc.scene.ui.*;
 import arc.scene.ui.layout.*;
 import arc.util.*;
-import kotlin.collections.*;
 import mindustry.ai.types.*;
 import mindustry.content.*;
 import mindustry.entities.units.*;
@@ -58,8 +57,8 @@ public class AuxiliaryTools extends ToolTableBase{
                 }
             }
         }).tooltip("在建造列表加入被摧毁建筑");
-        var t = button(new TextureRegionDrawable(Items.copper.uiIcon), RStyles.clearLineNoneTogglei, () -> AutoFill.enable ^= true).tooltip("一键装弹").checked((b) -> AutoFill.enable).get();
-        SettingsV2.bindQuickSettings(t, CollectionsKt.listOf(AutoFill.INSTANCE.getCooldown()));
+        var t = button(new TextureRegionDrawable(Items.copper.uiIcon), RStyles.clearLineNoneTogglei, () -> AutoFill.enable ^= true).tooltip("一键装填").checked((b) -> AutoFill.enable).get();
+        SettingsV2.bindQuickSettings(t, AutoFill.INSTANCE.getSettings());
         toggleButton(Icon.modeAttack, "autotarget", "自动攻击");
         toggleButton(new TextureRegionDrawable(UnitTypes.vela.uiIcon), "forceBoost", "强制助推");
         button(Icon.eyeSmall, RStyles.clearLineNoneTogglei, iconMed, () -> {
