@@ -17,7 +17,6 @@ import mindustry.world.blocks.storage.StorageBlock
 object AutoFill {
     @JvmField
     var enable = false
-    private val justTransferred = mutableSetOf<Building>()
     private val transferredThisTick = mutableSetOf<Building>()
     val cooldown = SettingsV2.SliderPref("autoFill.cooldown", 300, 0, 3000, 100)
     val minFill = SettingsV2.SliderPref("autoFill.minFill", 5, 1, 20, 1)
@@ -27,8 +26,7 @@ object AutoFill {
 
     private fun justTransferred(build: Building): Boolean {
         transferredThisTick.add(build)
-        if (!timer[cooldown.value * 60f / 1000]) return true
-        return !justTransferred.add(build)
+        return !timer[cooldown.value * 60f / 1000]
     }
 
     private fun tryFill(build: Building) {
@@ -51,8 +49,6 @@ object AutoFill {
     }
 
     fun update() {
-        justTransferred.clear()
-        justTransferred.addAll(transferredThisTick)
         transferredThisTick.clear()
         if (!enable || Vars.player.dead()) return
         val player = Vars.player
