@@ -1,0 +1,168 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: way-zer <himc.wicp@gmail.com>
+Date: Tue, 3 Dec 2024 22:18:06 +0800
+Subject: [PATCH] =?UTF-8?q?=E6=B8=85=E7=90=86=20PicToMindustry=20FC:=20pas?=
+ =?UTF-8?q?te=20logicCode=20from=20schematic(=E4=B8=A4=E7=A7=8D=E4=BB=8E?=
+ =?UTF-8?q?=E8=93=9D=E5=9B=BE=E4=B8=AD=E6=8F=90=E5=8F=96=E9=80=BB=E8=BE=91?=
+ =?UTF-8?q?=E4=BB=A3=E7=A0=81=E5=BF=AB=E6=8D=B7=E6=96=B9=E5=BC=8F)?=
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+---
+ .../ui/dialogs/SchematicsDialog.java          | 20 ++++++++
+ .../world/blocks/logic/LogicBlock.java        | 47 +++++++++++++++----
+ 2 files changed, 58 insertions(+), 9 deletions(-)
+
+diff --git a/core/src/mindustry/ui/dialogs/SchematicsDialog.java b/core/src/mindustry/ui/dialogs/SchematicsDialog.java
+index 522aa7cfaeb8cae7f9c032efd5623939ee266cc1..a1f0756985d1559c983218cc2dc61f97279e6c96 100644
+--- a/core/src/mindustry/ui/dialogs/SchematicsDialog.java
++++ b/core/src/mindustry/ui/dialogs/SchematicsDialog.java
+@@ -25,6 +25,8 @@ import mindustry.input.*;
+ import mindustry.type.*;
+ import mindustry.ui.*;
+ import mindustry.world.*;
++import mindustry.world.blocks.logic.*;
++import mindustry.world.blocks.logic.LogicBlock.*;
+ import mindustry.world.blocks.production.*;
+ import mindustry.world.meta.*;
+ import mindustryX.features.*;
+@@ -1053,6 +1055,24 @@ public class SchematicsDialog extends BaseDialog{
+                 }
+             });
+             cont.row();
++            if(schem.tiles.contains(stile -> stile.block instanceof LogicBlock)){
++                LogicBuild tmpBuild = ((LogicBlock)Blocks.logicProcessor).new LogicBuild();
++                cont.table(t -> {
++                    schem.tiles.each(stile -> {
++                        if(stile.block instanceof LogicBlock logicBlock){
++                            tmpBuild.readCompressed((byte[])stile.config,false);
++                            String codeString = tmpBuild.code;
++                            if(codeString.isEmpty()) return;
++                            t.button(logicBlock.emoji(), Styles.cleart, () -> {
++                                Core.app.setClipboardText(codeString);
++                                UIExt.announce("已复制逻辑代码");
++                            }).tooltip(Strings.truncate(codeString, 500, "\n...")).size(40f);
++                            if(t.getChildren().size % 15 == 0) t.row();
++                        }
++                    });
++                });
++                cont.row();
++            }
+             float cons = schem.powerConsumption() * 60, prod = schem.powerProduction() * 60;
+             if(!Mathf.zero(cons) || !Mathf.zero(prod)){
+                 cont.table(t -> {
+diff --git a/core/src/mindustry/world/blocks/logic/LogicBlock.java b/core/src/mindustry/world/blocks/logic/LogicBlock.java
+index 08d27dfbaa39dd7d356645aa6bdddb7858d2944c..9f442b07e75639d557025ec31afdc908cd2593a9 100644
+--- a/core/src/mindustry/world/blocks/logic/LogicBlock.java
++++ b/core/src/mindustry/world/blocks/logic/LogicBlock.java
+@@ -22,6 +22,7 @@ import mindustry.logic.*;
+ import mindustry.logic.LAssembler.*;
+ import mindustry.logic.LExecutor.*;
+ import mindustry.ui.*;
++import mindustry.ui.dialogs.*;
+ import mindustry.world.*;
+ import mindustry.world.blocks.ConstructBlock.*;
+ import mindustry.world.meta.*;
+@@ -174,7 +175,7 @@ public class LogicBlock extends Block{
+     public void drawPlace(int x, int y, int rotation, boolean valid){
+         if(privileged) return;
+ 
+-        Drawf.circles(x*tilesize + offset, y*tilesize + offset, range);
++        Drawf.circles(x * tilesize + offset, y * tilesize + offset, range);
+     }
+ 
+     @Override
+@@ -200,7 +201,7 @@ public class LogicBlock extends Block{
+                     String name = stream.readUTF();
+                     short x = stream.readShort(), y = stream.readShort();
+ 
+-                    Tmp.p2.set((int)(offset / (tilesize/2)), (int)(offset / (tilesize/2)));
++                    Tmp.p2.set((int)(offset / (tilesize / 2)), (int)(offset / (tilesize / 2)));
+                     transformer.get(Tmp.p1.set(x * 2, y * 2).sub(Tmp.p2));
+                     Tmp.p1.add(Tmp.p2);
+                     Tmp.p1.x /= 2;
+@@ -362,7 +363,7 @@ public class LogicBlock extends Block{
+                     for(LogicLink link : links){
+                         if(link.active && link.valid){
+                             Building build = world.build(link.x, link.y);
+-                            executor.links[index ++] = build;
++                            executor.links[index++] = build;
+                             if(build != null) executor.linkIds.add(build.id);
+                         }
+                     }
+@@ -527,7 +528,7 @@ public class LogicBlock extends Block{
+                 running = true;
+                 for(int i = 0; i < (int)accumulator; i++){
+                     executor.runOnce();
+-                    accumulator --;
++                    accumulator--;
+                     if(executor.yield){
+                         executor.yield = false;
+                         break;
+@@ -589,7 +590,7 @@ public class LogicBlock extends Block{
+         }
+ 
+         public boolean validLink(Building other){
+-            return other != null && other.isValid() && (privileged || (!other.block.privileged && other.team == team && other.within(this, range + other.block.size*tilesize/2f))) && !(other instanceof ConstructBuild);
++            return other != null && other.isValid() && (privileged || (!other.block.privileged && other.team == team && other.within(this, range + other.block.size * tilesize / 2f))) && !(other instanceof ConstructBuild);
+         }
+ 
+         @Override
+@@ -602,7 +603,7 @@ public class LogicBlock extends Block{
+             table.setBackground(Styles.black3);
+             Table vars = new Table();
+             table.table(t -> {
+-                t.button(Icon.pencil, Styles.cleari, ()->{
++                t.button(Icon.pencil, Styles.cleari, () -> {
+                     if(!accessible())
+                         UIExt.announce("[yellow]当前无权编辑，仅供查阅");
+                     showEditDialog();
+@@ -612,6 +613,34 @@ public class LogicBlock extends Block{
+                     vars.clear();
+                     if(showVars) buildVarsTable(vars);
+                 }).size(40);
++                t.button(Icon.paste, Styles.cleari, () -> {
++                    var all = schematics.all().select(it -> it.tiles.contains(s -> s.block instanceof LogicBlock));
++                    new BaseDialog("选择代码"){{
++                        addCloseButton();
++                        closeOnBack();
++                        cont.add("TIP: 所有包含处理器的蓝图").row();
++                        cont.pane(tt->{
++                            for(var schem : all){
++                                tt.button(schem.name(), () -> {
++                                    var blocks = schem.tiles.select(s -> s.block instanceof LogicBlock);
++                                    cont.clear();
++                                    LogicBuild tmp = new LogicBuild();
++                                    for(var block : blocks){
++                                        tmp.readCompressed((byte[])block.config, false);
++                                        String code = tmp.code;
++                                        cont.button(block.block.emoji(), () -> {
++                                            updateCode(code);
++                                            hide();
++                                        }).tooltip(Strings.truncate(code, 300, "\n...")).size(iconMed);
++                                    }
++                                    if(blocks.size == 1){
++                                        cont.getChildren().pop().change();
++                                    }
++                                }).growX().row();
++                            }
++                        }).growX().maxWidth(600f);
++                    }}.show();
++                });
+             });
+             table.row().pane(Styles.noBarPane, vars).pad(4).maxHeight(400f).get().setScrollingDisabledX(true);
+             if(showVars) buildVarsTable(vars);
+@@ -756,9 +785,9 @@ public class LogicBlock extends Block{
+ 
+                     if(dest != null && (!dest.constant || dest.id == LExecutor.varUnit)){
+                         dest.value =
+-                            values[i] instanceof BuildingBox box ? box.unbox() :
+-                            values[i] instanceof UnitBox box ? box.unbox() :
+-                            values[i];
++                        values[i] instanceof BuildingBox box ? box.unbox() :
++                        values[i] instanceof UnitBox box ? box.unbox() :
++                        values[i];
+                     }
+                 }
+             });
