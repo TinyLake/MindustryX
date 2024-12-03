@@ -3,36 +3,28 @@ package mindustryX.features;
 import arc.*;
 import arc.files.*;
 import arc.graphics.*;
+import arc.math.*;
 import arc.scene.ui.*;
 import arc.scene.ui.layout.*;
 import arc.struct.*;
 import arc.util.*;
+import kotlin.collections.*;
 import mindustry.*;
 import mindustry.content.*;
 import mindustry.game.*;
 import mindustry.graphics.*;
 import mindustry.ui.*;
 import mindustry.ui.dialogs.*;
-import mindustry.world.blocks.distribution.*;
 import mindustry.world.blocks.logic.*;
 import mindustry.world.blocks.logic.CanvasBlock.*;
 
 import static mindustry.Vars.*;
-import static mindustry.content.Blocks.*;
 
 //move from mindustry.arcModule.toolpack.picToMindustry
 public class PicToMindustry{
-    static Pixmap oriImage, image, Cimage;
-    static Integer closest = null;
-    static Table tTable;
-    static Fi originFile;
-
     static final int[] palette;
     static final int canvasSize;
-
-    static float scale = 1f;
     static final float[] scaleList = {0.02f, 0.05f, 0.1f, 0.15f, 0.2f, 0.25f, 0.3f, 0.4f, 0.5f, 0.65f, 0.8f, 1f, 1.25f, 1.5f, 2f, 3f, 5f};
-    static int colorDisFun = 0;
     static final String[] disFunList = {"基础对比", "平方对比", "LAB"};
 
     static{
@@ -41,25 +33,32 @@ public class PicToMindustry{
         canvasSize = canva.canvasSize;
     }
 
-    public static void show(){
-        ptDialog().show();
-    }
+    static Table tTable = new Table();
+    static float scale = 1f;
+    static int colorDisFun = 0;
+    static Pixmap oriImage;
+    static Fi originFile;
 
-    public static Dialog ptDialog(){
+
+    public static void show(){
         Dialog pt = new BaseDialog("arc-图片转换器");
         pt.cont.table(t -> {
             t.add("选择并导入图片，可将其转成画板、像素画或是逻辑画").padBottom(20f).row();
             t.button("[cyan]选择图片[white](png)", () -> Vars.platform.showFileChooser(false, "png", file -> {
+                if(oriImage != null){
+                    oriImage.dispose();
+                    oriImage = null;
+                }
                 try{
                     originFile = file;
                     byte[] bytes = file.readBytes();
                     oriImage = new Pixmap(bytes);
-                    rebuilt();
                     if(oriImage.width > 500 || oriImage.height > 500)
                         UIExt.announce("[orange]警告：图片可能过大，请尝试压缩图片", (float)5);
                 }catch(Throwable e){
                     UIExt.announce("读取图片失败，请尝试更换图片\n" + e);
                 }
+                rebuilt();
             })).size(240, 50).padBottom(20f).row();
             t.check("自动保存为蓝图", Core.settings.getBool("autoSavePTM"), ta -> Core.settings.put("autoSavePTM", ta));
         }).padBottom(20f).row();
@@ -80,7 +79,7 @@ public class PicToMindustry{
                 zoom.setText(disFunList[colorDisFun]);
             }).width(200f);
         }).padBottom(20f).visible(() -> oriImage != null).row();
-        pt.cont.table(a -> tTable = a);
+        pt.cont.add(tTable);
         pt.cont.row();
         pt.cont.button("逻辑画网站 " + Blocks.logicDisplay.emoji(), () -> {
             String imageUrl = "https://buibiu.github.io/imageToMLogicPage/#/";
@@ -90,21 +89,18 @@ public class PicToMindustry{
             }
         }).width(200f);
         pt.addCloseButton();
-        return pt;
+        pt.show();
     }
+
 
     private static String formatNumber(int number){
-        return formatNumber(number, 1f);
-    }
-
-    private static String formatNumber(int number, float alert){
-        if(number >= 500 * alert) return "[red]" + number + "[]";
-        else if(number >= 200 * alert) return "[orange]" + number + "[]";
+        if(number >= 500) return "[red]" + number + "[]";
+        else if(number >= 200) return "[orange]" + number + "[]";
         else return String.valueOf(number);
     }
 
     private static void rebuilt(){
-        image = Pixmaps.scale(oriImage, scale);
+        int scaledW = (int)(oriImage.getWidth() * scale), scaledH = (int)(oriImage.getHeight() * scale);
         tTable.clear();
         tTable.table(t -> {
             t.add("路径").color(Pal.accent).padRight(25f).padBottom(10f);
@@ -116,37 +112,48 @@ public class PicToMindustry{
             t.add(originFile.name()).padBottom(10f).row();
 
             t.add("原始大小").color(Pal.accent).padRight(25f);
-            t.add(formatNumber(oriImage.width) + "\uE815" + formatNumber(oriImage.height));
+            t.add(formatNumber(oriImage.width) + "\uE815" + formatNumber(oriImage.height)).row();
+
+            t.add("缩放后大小").color(Pal.accent).padRight(25f);
+            t.add(formatNumber(scaledW) + "\uE815" + formatNumber(scaledH));
         }).padBottom(20f).row();
         tTable.table(t -> {
             t.table(tt -> {
-                tt.button("画板 " + canvas.emoji(), Styles.cleart, () -> {
-                    Cimage = image.copy();
-                    create_rbg(palette);
-                    canvasGenerator();
+                int w = Mathf.ceil(scaledW * 1f / canvasSize), h = Mathf.ceil(scaledH * 1f / canvasSize);
+                tt.button("画板 " + Blocks.canvas.emoji(), Styles.cleart, () -> {
+                    Pixmap image = Pixmaps.scale(oriImage, w * canvasSize, h * canvasSize, false);
+                    image.replace((pixel) -> ArraysKt.minByOrThrow(palette, (it) -> diff_rbg(it, pixel)));
+                    Schematic schem = canvasGenerator(image, w, h);
+                    image.dispose();
+                    saveSchem(schem, Blocks.canvas.emoji());
                 }).size(100, 50);
-                tt.add("大小：" + formatNumber(image.width / canvasSize, 0.5f) + "\uE815" + formatNumber(image.height / canvasSize + 1, 0.5f));
+                tt.add("大小：" + w + "\uE815" + h);
             });
             t.row();
             t.table(tt -> {
-                tt.button("画板++ " + canvas.emoji(), Styles.cleart, () -> {
-                    Cimage = image.copy();
-                    canvasPlus(Cimage);
-                    canvasGenerator();
+                int w = Mathf.ceil(scaledW * 1f / canvasSize), h = Mathf.ceil(scaledH * 1f / canvasSize);
+                tt.button("画板++ " + Blocks.canvas.emoji(), Styles.cleart, () -> {
+                    Pixmap image = Pixmaps.scale(oriImage, w * canvasSize, h * canvasSize, false);
+                    mapPalettePlus(image);
+                    Schematic schem = canvasGenerator(image, w, h);
+                    image.dispose();
+                    saveSchem(schem, Blocks.canvas.emoji());
                 }).size(100, 50);
-                tt.add("大小：" + formatNumber(image.width / canvasSize, 0.5f) + "\uE815" + formatNumber(image.height / canvasSize + 1, 0.5f));
+                tt.add("大小：" + w + "\uE815" + h);
             }).row();
             t.table(tt -> {
                 tt.button("像素画 " + Blocks.sorter.emoji(), Styles.cleart, () -> {
-                    Cimage = image.copy();
-                    sorterGenerator();
+                    Pixmap image = Pixmaps.scale(oriImage, scale);
+                    Schematic schem = sorterGenerator(image);
+                    image.dispose();
+                    saveSchem(schem, Blocks.sorter.emoji());
                 }).size(100, 50);
-                tt.add("大小：" + formatNumber(image.width) + "\uE815" + formatNumber(image.height));
+                tt.add("大小：" + formatNumber(scaledW) + "\uE815" + formatNumber(scaledH));
             }).row();
         });
     }
 
-    private static float diff_rbg(Integer a, Integer b){
+    private static float diff_rbg(int a, int b){
         int ar = a >> 24 & 0xFF,
         ag = a >> 16 & 0xFF,
         ab = a >> 8 & 0xFF;
@@ -171,42 +178,22 @@ public class PicToMindustry{
         }
     }
 
-    private static void create_rbg(int[] colorBar){
-        for(int x = 0; x < image.width; x++){
-            for(int y = 0; y < image.height; y++){
-                Integer pixel = image.get(x, y);
-                float egg = 1000;
-                for(int other : colorBar){
-                    float h = diff_rbg(pixel, other);
-                    if(h < egg){
-                        closest = other;
-                        egg = h;
-                    }
-                }
-                Cimage.set(x, y, closest);
-            }
-        }
-    }
-
-    private static void canvasGenerator(){
-        int width = Cimage.width / canvasSize, height = Cimage.height / canvasSize + 1;
+    private static Schematic canvasGenerator(Pixmap image, int w, int h){
         Seq<Schematic.Stile> tiles = new Seq<>();
-        for(int y = 0; y < height; y++){
-            for(int x = 0; x < width; x++){
-                // add canvas to the schematic
-                CanvasBuild build = (CanvasBuild)canvas.newBuilding();
+        CanvasBuild build = (CanvasBuild)Blocks.canvas.newBuilding();
+        for(int y = 0; y < h; y++){
+            for(int x = 0; x < w; x++){
                 // get max 12x12 region of the image
-                Pixmap region = Cimage.crop(x * canvasSize, (height - y - 1) * canvasSize, canvasSize, canvasSize);
+                Pixmap region = image.crop(x * canvasSize, (h - y - 1) * canvasSize, canvasSize, canvasSize);
                 // convert pixel data of the region
                 byte[] bytes = build.packPixmap(region);
-                Schematic.Stile stile = new Schematic.Stile(canvas, x * 2, y * 2, bytes, (byte)0);
+                Schematic.Stile stile = new Schematic.Stile(Blocks.canvas, x * 2, y * 2, bytes, (byte)0);
                 tiles.add(stile);
             }
         }
         StringMap tags = new StringMap();
         tags.put("name", originFile.name());
-        Schematic schem = new Schematic(tiles, tags, width * 2, height * 2);
-        saveSchem(schem, canvas.emoji());
+        return new Schematic(tiles, tags, w * 2, h * 2);
     }
 
     private static void saveSchem(Schematic schem, String l){
@@ -222,40 +209,31 @@ public class PicToMindustry{
         }
     }
 
-    private static void sorterGenerator(){
+    private static Schematic sorterGenerator(Pixmap image){
         Seq<Schematic.Stile> tiles = new Seq<>();
         for(int y = 0; y < image.height; y++){
             for(int x = 0; x < image.width; x++){
-                if(image.get(x, y) == 0) continue;
-                Sorter.SorterBuild build = (Sorter.SorterBuild)sorter.newBuilding();
-                final float[] closestItem = {99999};
-                int finalX = x;
-                int finalY = y;
-                content.items().each(t -> {
-                    float dst = diff_rbg(t.color.rgba(), image.get(finalX, finalY));
-                    if(dst > closestItem[0]) return;
-                    build.sortItem = t;
-                    closestItem[0] = dst;
-                });
-                Schematic.Stile stile = new Schematic.Stile(sorter, x, image.height - y - 1, build.config(), (byte)0);
+                var pixel = image.get(x, y);
+                if(pixel == 0) continue;
+                var closest = Structs.findMin(content.items().items, (t) -> diff_rbg(t.color.rgba(), pixel));
+                Schematic.Stile stile = new Schematic.Stile(Blocks.sorter, x, image.height - y - 1, closest, (byte)0);
                 tiles.add(stile);
             }
         }
         StringMap tags = new StringMap();
         tags.put("name", originFile.name());
-        Schematic schem = new Schematic(tiles, tags, image.width, image.height);
-        saveSchem(schem, sorter.emoji());
+        return new Schematic(tiles, tags, image.width, image.height);
     }
 
     private static int trans(RGB c1, RGB c2, int mul){
         return c1.add(c2.cpy().mul(mul).mv(4)).rgba();
     }
 
-    private static void canvasPlus(Pixmap image){
+    private static void mapPalettePlus(Pixmap image){
         for(int y = 0; y < image.height; y++){
             for(int x = 0; x < image.width; x++){
                 RGB pix = new RGB(image.get(x, y));
-                int nearest = findNearestColor(pix);
+                int nearest = ArraysKt.minByOrThrow(palette, (it) -> new RGB(it).sub(pix).pow());
                 image.set(x, y, nearest);
                 pix.sub(new RGB(nearest));
                 if(x + 1 < image.width){
@@ -272,19 +250,6 @@ public class PicToMindustry{
                 }
             }
         }
-    }
-
-    private static int findNearestColor(RGB color){
-        int max = 255 * 255 + 255 * 255 + 255 * 255 + 1;
-        int output = 0;
-        for(int i : palette){
-            int delta = color.cpy().sub(new RGB(i)).pow();
-            if(delta < max){
-                max = delta;
-                output = i;
-            }
-        }
-        return output;
     }
 
     private static class RGB{
