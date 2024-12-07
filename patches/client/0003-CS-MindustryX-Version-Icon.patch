@@ -182,13 +182,13 @@ index 250d7e0a01e6d93bae5bbef412e1e8ae69154f2c..fd75f9dd7e3fc12e13f0a9ed86abd763
          }catch(Throwable e){
              handleCrash(e);
 diff --git a/gradle.properties b/gradle.properties
-index 312dbd41088f0ce62ec516e7cbc4431fb9e2e1fb..c42e4f71e9e6803e70e7405262018043e40f5794 100644
+index f5a1baf9d9c5b0644a6924f23ecd77aff664baee..2c802e422e7abcdbd2ac109edd9a0b53f93906cc 100644
 --- a/gradle.properties
 +++ b/gradle.properties
 @@ -25,4 +25,7 @@ org.gradle.caching=true
  #used for slow jitpack builds; TODO see if this actually works
- org.gradle.internal.http.socketTimeout=100000
- org.gradle.internal.http.connectionTimeout=100000
+ org.gradle.internal.http.socketTimeout=1200000
+ org.gradle.internal.http.connectionTimeout=1200000
 -archash=152e49944a
 +android.enableR8.fullMode=false
 +archash=89c7f1aee6

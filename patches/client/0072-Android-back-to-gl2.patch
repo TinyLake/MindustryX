@@ -1,0 +1,21 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: way-zer <himc.wicp@gmail.com>
+Date: Sat, 7 Dec 2024 22:24:13 +0800
+Subject: [PATCH] Android back to gl2
+
+---
+ android/src/mindustry/android/AndroidLauncher.java | 1 -
+ 1 file changed, 1 deletion(-)
+
+diff --git a/android/src/mindustry/android/AndroidLauncher.java b/android/src/mindustry/android/AndroidLauncher.java
+index 49a62c03087aad7b0da0df1f156ebaad158ef4be..e1465fe16f45a9322db111ebbac979831f5e75ed 100644
+--- a/android/src/mindustry/android/AndroidLauncher.java
++++ b/android/src/mindustry/android/AndroidLauncher.java
+@@ -182,7 +182,6 @@ public class AndroidLauncher extends AndroidApplication{
+         }, new AndroidApplicationConfiguration(){{
+             useImmersiveMode = true;
+             hideStatusBar = true;
+-            useGL30 = true;
+         }});
+         checkFiles(getIntent());
+ 
