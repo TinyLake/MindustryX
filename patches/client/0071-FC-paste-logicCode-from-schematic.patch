@@ -1,10 +1,10 @@
 From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
 From: way-zer <himc.wicp@gmail.com>
 Date: Tue, 3 Dec 2024 22:18:06 +0800
-Subject: [PATCH] =?UTF-8?q?=E6=B8=85=E7=90=86=20PicToMindustry=20FC:=20pas?=
- =?UTF-8?q?te=20logicCode=20from=20schematic(=E4=B8=A4=E7=A7=8D=E4=BB=8E?=
- =?UTF-8?q?=E8=93=9D=E5=9B=BE=E4=B8=AD=E6=8F=90=E5=8F=96=E9=80=BB=E8=BE=91?=
- =?UTF-8?q?=E4=BB=A3=E7=A0=81=E5=BF=AB=E6=8D=B7=E6=96=B9=E5=BC=8F)?=
+Subject: [PATCH] =?UTF-8?q?FC:=20paste=20logicCode=20from=20schematic(?=
+ =?UTF-8?q?=E4=B8=A4=E7=A7=8D=E4=BB=8E=E8=93=9D=E5=9B=BE=E4=B8=AD=E6=8F=90?=
+ =?UTF-8?q?=E5=8F=96=E9=80=BB=E8=BE=91=E4=BB=A3=E7=A0=81=E5=BF=AB=E6=8D=B7?=
+ =?UTF-8?q?=E6=96=B9=E5=BC=8F)?=
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
