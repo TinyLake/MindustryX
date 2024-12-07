@@ -247,10 +247,10 @@ index 0bd53c93425716c0dcfd0972f0a80fc12a145bec..7a942a20b2c6a604c021bcbce4b9bfea
              if(array.size == 0) continue;
  
 diff --git a/core/src/mindustry/ui/dialogs/SchematicsDialog.java b/core/src/mindustry/ui/dialogs/SchematicsDialog.java
-index 0d34cd1b583bc90c51f2f095f9b5a140050a120d..522aa7cfaeb8cae7f9c032efd5623939ee266cc1 100644
+index 75eca56accb429ca618f3d6364f2617d098ae0f1..e5634a86878cd39b8b3f9c2a5f1fa1ad4bce6d74 100644
 --- a/core/src/mindustry/ui/dialogs/SchematicsDialog.java
 +++ b/core/src/mindustry/ui/dialogs/SchematicsDialog.java
-@@ -180,7 +180,10 @@ public class SchematicsDialog extends BaseDialog{
+@@ -177,7 +177,10 @@ public class SchematicsDialog extends BaseDialog{
                      //make sure search fits
                      if(!search.isEmpty() && !ignoreSymbols.matcher(s.name().toLowerCase()).replaceAll("").contains(searchString)) continue;
  

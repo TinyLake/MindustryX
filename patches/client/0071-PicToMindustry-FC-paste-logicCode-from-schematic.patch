@@ -15,7 +15,7 @@ Content-Transfer-Encoding: 8bit
  2 files changed, 58 insertions(+), 9 deletions(-)
 
 diff --git a/core/src/mindustry/ui/dialogs/SchematicsDialog.java b/core/src/mindustry/ui/dialogs/SchematicsDialog.java
-index 522aa7cfaeb8cae7f9c032efd5623939ee266cc1..a1f0756985d1559c983218cc2dc61f97279e6c96 100644
+index e5634a86878cd39b8b3f9c2a5f1fa1ad4bce6d74..9554d9d4b5fa311fbfb4f3c3eacbd46400e9019a 100644
 --- a/core/src/mindustry/ui/dialogs/SchematicsDialog.java
 +++ b/core/src/mindustry/ui/dialogs/SchematicsDialog.java
 @@ -25,6 +25,8 @@ import mindustry.input.*;
@@ -27,7 +27,7 @@ index 522aa7cfaeb8cae7f9c032efd5623939ee266cc1..a1f0756985d1559c983218cc2dc61f97
  import mindustry.world.blocks.production.*;
  import mindustry.world.meta.*;
  import mindustryX.features.*;
-@@ -1053,6 +1055,24 @@ public class SchematicsDialog extends BaseDialog{
+@@ -1006,6 +1008,24 @@ public class SchematicsDialog extends BaseDialog{
                  }
              });
              cont.row();

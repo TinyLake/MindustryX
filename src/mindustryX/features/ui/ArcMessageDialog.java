@@ -273,7 +273,10 @@ public class ArcMessageDialog extends BaseDialog{
             case schematic -> {
                 String id = message.split("<Schem>")[1];
                 id = id.substring(id.indexOf(' ') + 1);
-                Http.get("https://pastebin.com/raw/" + id, r -> ui.schematics.readShare(r.getResultAsString().replace(" ", "+"), sender));
+                Http.get("https://pastebin.com/raw/" + id, r -> {
+                    String content = r.getResultAsString().replace(" ", "+");
+                    Core.app.post(() -> ui.schematics.readShare(content, sender));
+                });
             }
             case markPlayer -> {
                 if(!message.split("AT")[1].contains(player.name)) return;
