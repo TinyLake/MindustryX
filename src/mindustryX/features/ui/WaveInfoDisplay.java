@@ -20,7 +20,7 @@ public class WaveInfoDisplay extends Table{
     public static SettingsV2.CheckPref enable = new CheckPref("newWaveInfoDisplay", true);
     public static final float fontScl = 0.8f;
     private int waveOffset = 0;
-    private WaveInfoDialog waveInfoDialog = new WaveInfoDialog();
+    private final WaveInfoDialog waveInfoDialog = new WaveInfoDialog();
     private final Table waveInfo;
 
     public WaveInfoDisplay(){
@@ -49,7 +49,7 @@ public class WaveInfoDisplay extends Table{
                 setWaveOffset(0);
             })).tooltip("强制跳波").disabled((b) -> net.client());
             buttons.button("♐", Styles.cleart, () -> ArcMessageDialog.shareWaveInfo(state.wave + waveOffset))
-            .disabled((b) -> !state.rules.waves && !Core.settings.getBool("arcShareWaveInfo"));
+            .disabled((b) -> !state.rules.waves);
         }).center().row();
 
         waveInfo = new Table().left().top();

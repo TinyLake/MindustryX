@@ -109,7 +109,7 @@ way-zer <himc.wicp@gmail.com> on 2024/9/8
  core/src/mindustry/type/UnitType.java         | 142 +++++--
  core/src/mindustry/type/Weapon.java           |  26 +-
  core/src/mindustry/ui/Fonts.java              |   2 +-
- .../ui/dialogs/ContentInfoDialog.java         |  27 +-
+ .../ui/dialogs/ContentInfoDialog.java         |  22 +-
  .../ui/dialogs/CustomRulesDialog.java         | 371 +++++++++++++-----
  .../mindustry/ui/dialogs/DatabaseDialog.java  |   3 +-
  .../mindustry/ui/dialogs/PausedDialog.java    |  12 +-
@@ -123,7 +123,7 @@ way-zer <himc.wicp@gmail.com> on 2024/9/8
  .../ui/fragments/PlacementFragment.java       | 151 +++++--
  .../ui/fragments/PlayerListFragment.java      |  93 ++---
  core/src/mindustry/world/Block.java           |   7 +-
- 30 files changed, 1788 insertions(+), 299 deletions(-)
+ 30 files changed, 1783 insertions(+), 299 deletions(-)
 
 diff --git a/core/src/mindustry/ai/BlockIndexer.java b/core/src/mindustry/ai/BlockIndexer.java
 index 60bcca661ec27bbd5dc718ab9b4d7e1fc69d40dc..0b5de3b1215c9fdfd25e207e4491f792cc8b11a8 100644
@@ -1658,7 +1658,7 @@ index fe055ed5f0aa980f8177690bc14430bd6e920108..3514bfb883f7e81bb7f65e9c6d4e03cc
      private static TextureRegion[] iconTable;
      private static int lastCid;
 diff --git a/core/src/mindustry/ui/dialogs/ContentInfoDialog.java b/core/src/mindustry/ui/dialogs/ContentInfoDialog.java
-index 8defe26a2482e54d24d9b12e4a9ae453e13348f3..bd97f9cc7c1c491b1cb7eee0c19a32041b225674 100644
+index 8defe26a2482e54d24d9b12e4a9ae453e13348f3..09e0436a567d0ab282e137bbf4ed2d75906f2c6c 100644
 --- a/core/src/mindustry/ui/dialogs/ContentInfoDialog.java
 +++ b/core/src/mindustry/ui/dialogs/ContentInfoDialog.java
 @@ -8,8 +8,10 @@ import arc.util.*;
@@ -1684,12 +1684,11 @@ index 8defe26a2482e54d24d9b12e4a9ae453e13348f3..bd97f9cc7c1c491b1cb7eee0c19a3204
          });
  
          table.row();
-@@ -89,12 +92,30 @@ public class ContentInfoDialog extends BaseDialog{
+@@ -89,12 +92,25 @@ public class ContentInfoDialog extends BaseDialog{
          }
  
          if(content.details != null){
 -            table.add("[gray]" + (content.unlocked() || !content.hideDetails ? content.details : Iconc.lock + " " + Core.bundle.get("unlock.incampaign"))).pad(6).padTop(20).width(400f).wrap().fillX();
-+            //table.add("[gray]" + (content.unlocked() || !content.hideDetails ? content.details : Iconc.lock + " " + Core.bundle.get("unlock.incampaign"))).pad(6).padTop(20).width(400f).wrap().fillX();
 +            table.add("[gray]" + content.details ).pad(6).padTop(20).width(400f).wrap().fillX();
              table.row();
          }
@@ -1697,20 +1696,16 @@ index 8defe26a2482e54d24d9b12e4a9ae453e13348f3..bd97f9cc7c1c491b1cb7eee0c19a3204
          content.displayExtra(table);
  
 +        table.table(t -> {
-+            t.row();
-+            t.table(tt->{
-+                tt.button(content.emoji(), Styles.cleart, () -> Core.app.setClipboardText(content.emoji())).width(60f).tooltip(content.emoji());
-+                tt.button(Icon.info, Styles.clearNonei, () -> Core.app.setClipboardText(content.name)).width(50f).tooltip(content.name);
-+                tt.button(Icon.book, Styles.clearNonei, () -> Core.app.setClipboardText(content.description)).width(50f).tooltip(content.description);
-+            });
++            t.defaults().size(40f);
++            t.button(content.emoji(), Styles.cleart, () -> Core.app.setClipboardText(content.emoji())).tooltip(content.emoji());
++            t.button(Icon.info, Styles.clearNonei, () -> Core.app.setClipboardText(content.name)).tooltip(content.name);
++            if(content.description != null)
++                t.button(Icon.book, Styles.clearNonei, () -> Core.app.setClipboardText(content.description)).tooltip(content.description);
 +
-+            t.row();
-+            t.table(tt -> {
-+                tt.add("♐");
-+                tt.button("简", Styles.cleart, () -> ArcMessageDialog.shareContent(content, false)).width(50f);
-+                tt.button("详", Styles.cleart, () -> ArcMessageDialog.shareContent(content, true)).width(50f);
-+            }).visible(() -> Core.settings.getBool("arcShareWaveInfo"));
-+
++            if(net.active()){
++                t.button("♐简", Styles.cleart, () -> ArcMessageDialog.shareContent(content, false)).width(60f);
++                t.button("♐详", Styles.cleart, () -> ArcMessageDialog.shareContent(content, true)).width(60f);
++            }
 +        }).fillX().padLeft(10);
 +
          ScrollPane pane = new ScrollPane(table);

@@ -5,13 +5,11 @@ import arc.func.*;
 import arc.graphics.*;
 import arc.graphics.g2d.*;
 import arc.struct.*;
-import arc.util.*;
 import mindustry.ctype.*;
 import mindustry.gen.*;
 import mindustry.graphics.*;
 import mindustry.world.*;
 import mindustryX.features.Settings.*;
-import mindustryX.features.ui.*;
 
 import static arc.Core.settings;
 import static arc.graphics.Color.RGBtoHSV;
@@ -136,7 +134,6 @@ public class ArcOld{
 
             c.addCategory("arcShareinfo");
             c.checkPref("ShowInfoPopup", true);
-            c.checkPref("arcShareWaveInfo", false);
             c.checkPref("arcAlwaysTeamColor", false);
 
             c.addCategory("arcWeakCheat");
