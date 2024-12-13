@@ -182,7 +182,7 @@ index 250d7e0a01e6d93bae5bbef412e1e8ae69154f2c..fd75f9dd7e3fc12e13f0a9ed86abd763
          }catch(Throwable e){
              handleCrash(e);
 diff --git a/gradle.properties b/gradle.properties
-index 312dbd41088f0ce62ec516e7cbc4431fb9e2e1fb..c42e4f71e9e6803e70e7405262018043e40f5794 100644
+index 312dbd41088f0ce62ec516e7cbc4431fb9e2e1fb..1c6af65785dd635ffc91481c4bc9b34e9475aeaa 100644
 --- a/gradle.properties
 +++ b/gradle.properties
 @@ -25,4 +25,7 @@ org.gradle.caching=true
@@ -191,7 +191,7 @@ index 312dbd41088f0ce62ec516e7cbc4431fb9e2e1fb..c42e4f71e9e6803e70e7405262018043
  org.gradle.internal.http.connectionTimeout=100000
 -archash=152e49944a
 +android.enableR8.fullMode=false
-+archash=89c7f1aee6
++archash=ae657a7db3
 +
 +upstreamBuild=146
 \ No newline at end of file
