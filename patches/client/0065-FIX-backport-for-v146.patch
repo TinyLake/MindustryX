@@ -233,10 +233,10 @@ index e3d86b9a466b0e433d1a7cb06e3748b98ea2f5ac..af65da5b5672b841724fbaf287b77d31
              for(Team team : Team.all){
                  team.rules().cheat = true;
 diff --git a/core/src/mindustry/ui/dialogs/DatabaseDialog.java b/core/src/mindustry/ui/dialogs/DatabaseDialog.java
-index 0bd53c93425716c0dcfd0972f0a80fc12a145bec..7a942a20b2c6a604c021bcbce4b9bfea2e608b9d 100644
+index 021f2f930da62e8b8123edb29783132753a643a5..e1862a46cbe7c9f4bfa919f00079326ba70de854 100644
 --- a/core/src/mindustry/ui/dialogs/DatabaseDialog.java
 +++ b/core/src/mindustry/ui/dialogs/DatabaseDialog.java
-@@ -54,8 +54,7 @@ public class DatabaseDialog extends BaseDialog{
+@@ -61,8 +61,7 @@ public class DatabaseDialog extends BaseDialog{
  
              Seq<UnlockableContent> array = allContent[j]
                  .select(c -> c instanceof UnlockableContent u &&
