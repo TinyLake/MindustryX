@@ -1,36 +1,30 @@
 From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
 From: way-zer <himc.wicp@gmail.com>
 Date: Sat, 23 Nov 2024 19:43:57 +0800
-Subject: [PATCH] =?UTF-8?q?OC:=20limit=20pingExecutor(=E9=99=90=E5=88=B6Pi?=
- =?UTF-8?q?ng=E5=B9=B6=E5=8F=91)?=
-MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Subject: [PATCH] HC: replace pingHost with PingService
 
 ---
- core/src/mindustry/net/Net.java | 5 +++--
- 1 file changed, 3 insertions(+), 2 deletions(-)
+ core/src/mindustry/net/Net.java | 3 +--
+ 1 file changed, 1 insertion(+), 2 deletions(-)
 
 diff --git a/core/src/mindustry/net/Net.java b/core/src/mindustry/net/Net.java
-index a0ffd0d960772e45f16d935c46ffdcfcfaded35e..f9d157d8fa2f9cc8889a47877e40bbf6167e1688 100644
+index a0ffd0d960772e45f16d935c46ffdcfcfaded35e..280202c3ebe04cbccaa32e9f3230e9fc7d1a3f59 100644
 --- a/core/src/mindustry/net/Net.java
 +++ b/core/src/mindustry/net/Net.java
-@@ -36,7 +36,7 @@ public class Net{
+@@ -36,7 +36,6 @@ public class Net{
      private final ObjectMap<Class<?>, Cons> clientListeners = new ObjectMap<>();
      private final ObjectMap<Class<?>, Cons2<NetConnection, Object>> serverListeners = new ObjectMap<>();
      private final IntMap<StreamBuilder> streams = new IntMap<>();
 -    private final ExecutorService pingExecutor = OS.isWindows && !OS.is64Bit ? Threads.boundedExecutor("Ping Servers", 5) : Threads.unboundedExecutor();
-+//    private final ExecutorService pingExecutor = OS.isWindows && !OS.is64Bit ? Threads.boundedExecutor("Ping Servers", 5) : Threads.unboundedExecutor("Ping Servers", 4);
  
      private final NetProvider provider;
  
-@@ -337,7 +337,8 @@ public class Net{
+@@ -337,7 +336,7 @@ public class Net{
       * If the port is the default mindustry port, SRV records are checked too.
       */
      public void pingHost(String address, int port, Cons<Host> valid, Cons<Exception> failed){
 -        pingExecutor.submit(() -> provider.pingHost(address, port, valid, failed));
-+        //因为Ping会在瞬间添加大量请求，使用unbound会产生大量现在，而bounded始终只会使用单线程，故使用固定线程池mainExecutor
-+        mainExecutor.submit(() -> provider.pingHost(address, port, valid, failed));
++        mainExecutor.submit(() -> PingService.INSTANCE.pingHost(address, port, valid, failed));
      }
  
      /**
