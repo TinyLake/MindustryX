@@ -19,6 +19,8 @@ import mindustry.ui.Bar
 import mindustry.ui.dialogs.BaseDialog
 import mindustryX.VarsX
 import mindustryX.features.ui.Format
+import java.time.Duration
+import java.time.Instant
 
 object AutoUpdate {
     data class Release(val tag: String, val version: String, val json: Jval) {
@@ -50,6 +52,9 @@ object AutoUpdate {
     var latest: Release? = null
     val newVersion: Release? get() = latest?.takeIf { it.version > VarsX.version }
 
+    val ignoreOnce = SettingsV2.TextPref.create("AutoUpdate.ignoreOnce", "")
+    val ignoreUntil = SettingsV2.TextPref.create("AutoUpdate.ignoreUntil", "")
+
     fun checkUpdate() {
         if (versions.isNotEmpty()) return
         Http.get("https://api.github.com/repos/$repo/releases")
@@ -67,11 +72,15 @@ object AutoUpdate {
     private fun fetchSuccess() {
         val available = versions.filter { it.matchCurrent() }
         latest = available.maxByOrNull { it.version } ?: return
-        newVersion?.takeIf { Core.settings.getBool("showUpdateDialog", true) }?.let {
-            if (Vars.clientLoaded) return showDialog(newVersion)
-            Events.on(EventType.ClientLoadEvent::class.java) {
-                Vars.ui.showConfirm("检测到新版MindustryX!\n打开更新列表?", ::showDialog)
-            }
+
+        val newVersion = newVersion ?: return
+        if (!Core.settings.getBool("showUpdateDialog", true) || ignoreOnce.value == newVersion.version
+            || kotlin.runCatching { Instant.parse(ignoreUntil.value) > Instant.now() }.getOrNull() == true
+        ) return
+
+        if (Vars.clientLoaded) return showDialog(newVersion)
+        Events.on(EventType.ClientLoadEvent::class.java) {
+            Vars.ui.showConfirm("检测到新版MindustryX!\n打开更新列表?", ::showDialog)
         }
     }
 
@@ -108,6 +117,17 @@ object AutoUpdate {
                     Core.app.clipboardText = url
                 }
             }.width(50f)
+
+            if (version == newVersion) {
+                row().check("跳过当前版本") {
+                    if (it) ignoreOnce.value = version.version
+                    else ignoreOnce.resetDefault()
+                }.checked { ignoreOnce.value == version.version }
+                row().check("7天不再提示") {
+                    if (it) ignoreOnce.value = (Instant.now() + Duration.ofDays(7)).toString()
+                    else ignoreUntil.resetDefault()
+                }.checked { kotlin.runCatching { Instant.parse(ignoreUntil.value) > Instant.now() }.getOrNull() == true }
+            }
 
             row().button("自动下载更新") {
                 if (asset == null) return@button
