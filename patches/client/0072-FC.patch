@@ -1,0 +1,46 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: way-zer <himc.wicp@gmail.com>
+Date: Sun, 22 Dec 2024 16:36:48 +0800
+Subject: [PATCH] =?UTF-8?q?FC:=20=E5=B0=8F=E5=9C=B0=E5=9B=BE=E7=BC=A9?=
+ =?UTF-8?q?=E7=95=A5=E4=B8=AD=E6=98=BE=E7=A4=BA=20=E7=8E=A9=E5=AE=B6?=
+ =?UTF-8?q?=E5=90=8D/=E8=A7=86=E9=87=8E/=E5=87=BA=E7=94=9F=E7=82=B9?=
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+---
+ core/src/mindustry/graphics/MinimapRenderer.java | 10 +++++-----
+ 1 file changed, 5 insertions(+), 5 deletions(-)
+
+diff --git a/core/src/mindustry/graphics/MinimapRenderer.java b/core/src/mindustry/graphics/MinimapRenderer.java
+index 19736bd0dfb4235d6f753a6452198b3ca44d4f29..39ef13714de023afe19ae346e3abb6a92e62fc22 100644
+--- a/core/src/mindustry/graphics/MinimapRenderer.java
++++ b/core/src/mindustry/graphics/MinimapRenderer.java
+@@ -160,11 +160,11 @@ public class MinimapRenderer{
+             Draw.reset();
+         }
+ 
+-        if(fullView && net.active()){
++        if(net.active()){
+             for(Player player : Groups.player){
+                 if(!player.dead()){
+-                    float rx = player.x / (world.width() * tilesize) * w;
+-                    float ry = player.y / (world.height() * tilesize) * h;
++                    float rx = !fullView ? (player.x - rect.x) / rect.width * w : player.x / (world.width() * tilesize) * w;
++                    float ry = !fullView ? (player.y - rect.y) / rect.width * h : player.y / (world.height() * tilesize) * h;
+ 
+                     drawLabel(x + rx, y + ry, player.name, player.color);
+                 }
+@@ -211,10 +211,10 @@ public class MinimapRenderer{
+         }
+ 
+         //TODO might be useful in the standard minimap too
+-        if(fullView){
++        {
+             drawSpawns(x, y, w, h, scaling);
+ 
+-            if(!mobile){
++            {
+                 //draw bounds for camera - not drawn on mobile because you can't shift it by tapping anyway
+                 Rect r = Core.camera.bounds(Tmp.r1);
+                 Vec2 bot = transform(Tmp.v1.set(r.x, r.y));
