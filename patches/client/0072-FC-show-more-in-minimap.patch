@@ -1,0 +1,72 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: way-zer <himc.wicp@gmail.com>
+Date: Sun, 22 Dec 2024 16:36:48 +0800
+Subject: [PATCH] =?UTF-8?q?FC:=20show=20more=20in=20minimap(=E5=B0=8F?=
+ =?UTF-8?q?=E5=9C=B0=E5=9B=BE=E7=BC=A9=E7=95=A5=E4=B8=AD=E6=98=BE=E7=A4=BA?=
+ =?UTF-8?q?=20=E7=8E=A9=E5=AE=B6=E5=90=8D/=E8=A7=86=E9=87=8E/=E5=87=BA?=
+ =?UTF-8?q?=E7=94=9F=E7=82=B9)?=
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+---
+ .../mindustry/graphics/MinimapRenderer.java   | 21 ++++++++++++-------
+ 1 file changed, 13 insertions(+), 8 deletions(-)
+
+diff --git a/core/src/mindustry/graphics/MinimapRenderer.java b/core/src/mindustry/graphics/MinimapRenderer.java
+index 19736bd0dfb4235d6f753a6452198b3ca44d4f29..2da11d0c9d307c6ab45205b9105f6463285eed97 100644
+--- a/core/src/mindustry/graphics/MinimapRenderer.java
++++ b/core/src/mindustry/graphics/MinimapRenderer.java
+@@ -160,11 +160,11 @@ public class MinimapRenderer{
+             Draw.reset();
+         }
+ 
+-        if(fullView && net.active()){
++        if(net.active()){
+             for(Player player : Groups.player){
+                 if(!player.dead()){
+-                    float rx = player.x / (world.width() * tilesize) * w;
+-                    float ry = player.y / (world.height() * tilesize) * h;
++                    float rx = !fullView ? (player.x - rect.x) / rect.width * w : player.x / (world.width() * tilesize) * w;
++                    float ry = !fullView ? (player.y - rect.y) / rect.width * h : player.y / (world.height() * tilesize) * h;
+ 
+                     drawLabel(x + rx, y + ry, player.name, player.color);
+                 }
+@@ -211,10 +211,10 @@ public class MinimapRenderer{
+         }
+ 
+         //TODO might be useful in the standard minimap too
+-        if(fullView){
+-            drawSpawns(x, y, w, h, scaling);
++        {
++            drawSpawns(x, y, w, h, scaling, fullView);
+ 
+-            if(!mobile){
++            {
+                 //draw bounds for camera - not drawn on mobile because you can't shift it by tapping anyway
+                 Rect r = Core.camera.bounds(Tmp.r1);
+                 Vec2 bot = transform(Tmp.v1.set(r.x, r.y));
+@@ -261,7 +261,12 @@ public class MinimapRenderer{
+         });
+     }
+ 
++    @mindustryX.MindustryXApi.Keep
+     public void drawSpawns(float x, float y, float w, float h, float scaling){
++        drawSpawns(x, y, w, h, scaling, true);
++    }
++
++    private void drawSpawns(float x, float y, float w, float h, float scaling, boolean fullView){
+         if(!state.rules.showSpawns || !state.hasSpawns() || !state.rules.waves) return;
+ 
+         TextureRegion icon = Icon.units.getRegion();
+@@ -274,8 +279,8 @@ public class MinimapRenderer{
+         float curve = Mathf.curve(Time.time % 240f, 120f, 240f);
+ 
+         for(Tile tile : spawner.getSpawns()){
+-            float tx = ((tile.x + 0.5f) / world.width()) * w;
+-            float ty = ((tile.y + 0.5f) / world.height()) * h;
++            float tx = !fullView ? ((tile.x + 0.5f) - rect.x) / rect.width * w : (tile.x + 0.5f) / (world.width() * tilesize) * w;
++            float ty = !fullView ? ((tile.y + 0.5f) - rect.y) / rect.width * h : (tile.y + 0.5f) / (world.height() * tilesize) * h;
+ 
+             Draw.rect(icon, x + tx, y + ty, icon.width, icon.height);
+             Lines.circle(x + tx, y + ty, rad);
