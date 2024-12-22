@@ -7,6 +7,7 @@ import mindustry.Vars
 import mindustry.game.EventType
 import mindustry.gen.Building
 import mindustry.gen.Call
+import mindustry.type.Category
 import mindustry.world.blocks.storage.StorageBlock
 
 /** 一键装弹
@@ -18,10 +19,12 @@ object AutoFill {
     @JvmField
     var enable = false
     private val transferredThisTick = mutableSetOf<Building>()
-    val cooldown = SettingsV2.SliderPref(0, 3000, 100).create("autoFill.cooldown", 300)
-    val minFill = SettingsV2.SliderPref(1, 20, 1).create("autoFill.minFill", 5)
-    val fillStorageBlock = SettingsV2.CheckPref.create("autoFill.fillStorageBlock")
-    val settings = listOf(cooldown, minFill, fillStorageBlock)
+    private val cooldown = SettingsV2.SliderPref(0, 3000, 100).create("autoFill.cooldown", 300)
+    private val minFill = SettingsV2.SliderPref(1, 20, 1).create("autoFill.minFill", 5)
+    private val fillStorageBlock = SettingsV2.CheckPref.create("autoFill.fillStorageBlock")
+    private val fillDistribution = SettingsV2.CheckPref.create("autoFill.fillDistribution")
+    val settings = listOf(cooldown, minFill, fillStorageBlock, fillDistribution)
+
     private var timer = Interval()
 
     private fun justTransferred(build: Building): Boolean {
@@ -31,7 +34,10 @@ object AutoFill {
 
     private fun tryFill(build: Building) {
         val player = Vars.player ?: return
-        if ((!fillStorageBlock.value && build.block is StorageBlock) || build.team != player.team()) return
+        if (build.team != player.team()
+            || (!fillStorageBlock.value && build.block is StorageBlock)
+            || (!fillDistribution.value && build.block.category == Category.distribution) || build.team != player.team()
+        ) return
         val item = player.unit()?.item() ?: return
         if (build.within(player, Vars.itemTransferRange) && build.acceptStack(item, 9999, player.unit()) >= minFill.value) {
             if (justTransferred(build)) return

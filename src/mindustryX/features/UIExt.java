@@ -18,6 +18,8 @@ import mindustryX.features.ui.toolTable.*;
 import static mindustry.Vars.*;
 
 public class UIExt{
+    public static SettingsV2.Data<Integer> quickToolOffset = new SettingsV2.SliderPref(-250, 250, 10).create("quickToolOffset", 0);
+
     public static TeamSelectDialog teamSelect;
     public static ModsRecommendDialog modsRecommend = new ModsRecommendDialog();
     public static TeamsStatDisplay teamsStatDisplay;
@@ -28,8 +30,6 @@ public class UIExt{
     public static AuxiliaryTools auxiliaryTools = new AuxiliaryTools();
     public static WaveInfoDisplay waveInfoDisplay = new WaveInfoDisplay();
     public static NewCoreItemsDisplay coreItems = new NewCoreItemsDisplay();
-
-    public static SettingsV2.Data<Integer> quickToolOffset = new SettingsV2.SliderPref(-250, 250, 10).create("quickToolOffset", 0);
 
     public static void init(){
         teamSelect = new TeamSelectDialog();
