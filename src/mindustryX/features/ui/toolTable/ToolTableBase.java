@@ -1,6 +1,7 @@
 package mindustryX.features.ui.toolTable;
 
 import arc.*;
+import arc.graphics.*;
 import arc.scene.*;
 import arc.scene.ui.*;
 import arc.scene.ui.layout.*;
@@ -33,8 +34,8 @@ public abstract class ToolTableBase extends Table{
                 });
             }
             t.collapser(main, () -> expand);
-            t.button("", Styles.flatBordert, () -> expand = !expand).width(36f).minHeight(40f).fillY()
-            .update(i -> i.setText((expand ? "" : "[lightgray]") + icon));
+            t.button(icon, Styles.flatBordert, () -> expand = !expand).width(40f).minHeight(40f).fillY()
+            .update(i -> i.getLabel().setColor(expand ? Color.white : Color.lightGray));
         });
     }
 }

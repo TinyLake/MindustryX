@@ -165,7 +165,7 @@ object SettingsV2 {
             cont.add(Table().also { t ->
                 settings.forEach { it.buildUI(t) }
             }).fill().row()
-            cont.button("@settings.reset") {
+            cont.button("@settingV2.reset") {
                 settings.forEach { it.resetDefault() }
             }
             addCloseButton()

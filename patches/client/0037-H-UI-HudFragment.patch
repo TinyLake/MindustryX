@@ -8,11 +8,11 @@ Content-Transfer-Encoding: 8bit
 
 AuxiliaryTools, NewCoreItemsDisplay(新制核心资源显示), WaveInfoDisplay(波次信息显示)
 ---
- .../mindustry/ui/fragments/HudFragment.java   | 26 +++++++++++++------
- 1 file changed, 18 insertions(+), 8 deletions(-)
+ .../mindustry/ui/fragments/HudFragment.java   | 25 +++++++++++++------
+ 1 file changed, 17 insertions(+), 8 deletions(-)
 
 diff --git a/core/src/mindustry/ui/fragments/HudFragment.java b/core/src/mindustry/ui/fragments/HudFragment.java
-index 9e26012834bf8d958d0a436616fb653256858f66..b88c201363f48453910068a29b79009af30e6928 100644
+index 9e26012834bf8d958d0a436616fb653256858f66..a136fe1ecffd2c78b8e5212e2246a9f412d846dc 100644
 --- a/core/src/mindustry/ui/fragments/HudFragment.java
 +++ b/core/src/mindustry/ui/fragments/HudFragment.java
 @@ -116,13 +116,18 @@ public class HudFragment{
@@ -41,14 +41,13 @@ index 9e26012834bf8d958d0a436616fb653256858f66..b88c201363f48453910068a29b79009a
              t.top().right();
          });
  
-@@ -317,7 +322,12 @@ public class HudFragment{
+@@ -317,7 +322,11 @@ public class HudFragment{
  
              t.table(c -> {
                  //core items
 -                c.top().collapser(coreItems, () -> Core.settings.getBool("coreitems") && !mobile && shown).fillX().row();
 +                //MDTX: replace coreItems with UIExt.coreItems, keep but invisible for compatibility.
-+                c.top().collapser(coreItems, () -> true).fillX().visible(false).row();
-+                c.top().add(UIExt.coreItems).touchable(Touchable.disabled).fillX().row();
++                c.top().collapser(coreItems, () -> false).fillX().visible(false).row();
 +
 +                //MDTX: add waveInfoDisplay
 +                c.add(UIExt.waveInfoDisplay.wrapped()).fillX().row();

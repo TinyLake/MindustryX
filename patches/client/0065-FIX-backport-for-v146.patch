@@ -263,7 +263,7 @@ index 75eca56accb429ca618f3d6364f2617d098ae0f1..e5634a86878cd39b8b3f9c2a5f1fa1ad
                      if(Core.settings.getBool("arcSchematicCanBuild") && !arcSchematicCanBuild(s)) continue;
                      if(firstSchematic == null) firstSchematic = s;
 diff --git a/core/src/mindustry/ui/fragments/HudFragment.java b/core/src/mindustry/ui/fragments/HudFragment.java
-index 581f4fc4b8bf801264d61c27278997f413ebea18..b09c133bfc7246d090300a67561a9b19492d6a81 100644
+index c7a1a0473455992cf737ce1affa17dd8b0b3079d..0b114a71a0a58e3276445cdf0a84bac11fe02eab 100644
 --- a/core/src/mindustry/ui/fragments/HudFragment.java
 +++ b/core/src/mindustry/ui/fragments/HudFragment.java
 @@ -14,6 +14,7 @@ import arc.scene.ui.ImageButton.*;

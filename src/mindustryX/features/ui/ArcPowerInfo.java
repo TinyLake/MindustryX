@@ -58,7 +58,6 @@ public class ArcPowerInfo{
         () -> Pal.powerBar,
         () -> stored / capacity);
 
-        power.clicked(() -> Settings.cycle("arccoreitems",4));
         power.margin(0);
         power.add(powerBar).height(18).growX().padBottom(1);
         power.row();

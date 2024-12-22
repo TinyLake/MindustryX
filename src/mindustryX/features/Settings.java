@@ -43,13 +43,6 @@ public class Settings{
             c.checkPref("powerStatistic", true);
             c.checkPref("showOtherTeamResource", false);
             c.checkPref("showQuickToolTable", true);
-            c.sliderPref("arccoreitems", 3, 0, 3, 1, s -> switch(s){
-                case 0 -> "不显示";
-                case 1 -> "资源状态";
-                case 2 -> "兵种状态";
-                default -> "显示资源和兵种";
-            });
-            c.sliderPref("arcCoreItemsCol", 5, 4, 15, 1, i -> i + "列");
             c.sliderPref("itemSelectionHeight", 4, 4, 12, i -> i + "行");
             c.sliderPref("itemSelectionWidth", 4, 4, 12, i -> i + "列");
             c.sliderPref("blockInventoryWidth", 3, 3, 16, i -> i + "");

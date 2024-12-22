@@ -6,6 +6,7 @@ import arc.scene.ui.*;
 import arc.scene.ui.layout.*;
 import arc.struct.*;
 import arc.util.*;
+import kotlin.collections.*;
 import mindustry.core.*;
 import mindustry.entities.*;
 import mindustry.game.EventType.*;
@@ -16,7 +17,10 @@ import mindustry.world.*;
 import mindustry.world.blocks.ConstructBlock.*;
 import mindustry.world.blocks.power.*;
 import mindustry.world.blocks.storage.*;
+import mindustryX.features.*;
+import mindustryX.features.SettingsV2.*;
 
+import java.util.List;
 import java.util.*;
 
 import static mindustry.Vars.*;
@@ -28,7 +32,6 @@ public class NewCoreItemsDisplay extends Table{
     private Table itemsTable, unitsTable, plansTable;
 
     private static final Interval timer = new Interval(2);
-    private int columns = -1;
 
     private final int[] itemDelta;
     private final int[] lastItemAmount;
@@ -37,6 +40,12 @@ public class NewCoreItemsDisplay extends Table{
 
     private final ItemSeq planItems = new ItemSeq();
     private final ObjectIntMap<Block> planCounter = new ObjectIntMap<>();
+
+    private final SettingsV2.Data<Integer> columns = new SettingsV2.SliderPref(4, 15).create("coreItems.columns", 5);
+    private final SettingsV2.Data<Boolean> showItem = CheckPref.INSTANCE.create("coreItems.showItem", true);
+    private final SettingsV2.Data<Boolean> showUnit = CheckPref.INSTANCE.create("coreItems.showUnit", true);
+    private final SettingsV2.Data<Boolean> showPlan = CheckPref.INSTANCE.create("coreItems.showPlan", true);
+    final List<Data<?>> settings = CollectionsKt.listOf(columns, showItem, showUnit, showPlan);
 
     public NewCoreItemsDisplay(){
         itemDelta = new int[content.items().size];
@@ -55,28 +64,20 @@ public class NewCoreItemsDisplay extends Table{
     }
 
     private void setup(){
-        itemsTable = new Table(Styles.black3);
-        unitsTable = new Table(Styles.black3);
-        plansTable = new Table(Styles.black3);
+        collapser(itemsTable = new Table(Styles.black3), showItem::getValue).growX().row();
+        collapser(unitsTable = new Table(Styles.black3), showUnit::getValue).growX().row();
 
-        var itemCol = add(new SimpleCollapser(itemsTable, true)).growX().get();
-        var unitsCol = row().add(new SimpleCollapser(unitsTable, true)).growX().get();
         var emptyLine = row().add();
-        var plansCol = row().add(new SimpleCollapser(plansTable, true)).growX().get();
+        row().collapser(plansTable = new Table(Styles.black3), showPlan::getValue).growX().row();
+
         update(() -> {
-            var columns = Core.settings.getInt("arcCoreItemsCol");
-            int displayType = Core.settings.getInt("arccoreitems");
-            itemCol.setCollapsed(displayType != 1 && displayType != 3);
-            unitsCol.setCollapsed(displayType != 2 && displayType != 3);
-            plansCol.setCollapsed(displayType < 1);
             var newHeight = plansTable.hasChildren() ? 12f : 0f;
             if(emptyLine.maxHeight() != newHeight){
                 emptyLine.height(newHeight);
                 emptyLine.getTable().invalidate();
             }
 
-            if(this.columns != columns){
-                this.columns = columns;
+            if(this.columns.changed()){
                 rebuildItems();
                 rebuildUnits();
                 rebuildPlans();
@@ -172,7 +173,7 @@ public class NewCoreItemsDisplay extends Table{
                 });
             }).minWidth(MIN_WIDTH).left();
 
-            if(++i % columns == 0){
+            if(++i % columns.getValue() == 0){
                 itemsTable.row();
             }
         }
@@ -191,7 +192,7 @@ public class NewCoreItemsDisplay extends Table{
                     return (typeCount == Units.getCap(player.team()) ? "[stat]" : "") + typeCount;
                 }).minWidth(MIN_WIDTH).left();
 
-                if(++i % columns == 0){
+                if(++i % columns.getValue() == 0){
                     unitsTable.row();
                 }
             }
@@ -233,7 +234,7 @@ public class NewCoreItemsDisplay extends Table{
             plansTable.image(block.uiIcon).size(iconSmall).scaling(Scaling.fit).pad(2f);
             plansTable.label(() -> (count > 0 ? "[green]+" : "[red]") + count).minWidth(MIN_WIDTH).left();
 
-            if(++i % columns == 0){
+            if(++i % columns.getValue() == 0){
                 plansTable.row();
             }
         }

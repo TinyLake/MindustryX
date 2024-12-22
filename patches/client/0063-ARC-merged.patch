@@ -2985,7 +2985,7 @@ index e74e6a12e3da57eb58598eb4e679a7990c109def..013255ce5aa828d538814fa25dc64c6a
          //special case for 'clear' command
          if(message.equals("clear")){
 diff --git a/core/src/mindustry/ui/fragments/HudFragment.java b/core/src/mindustry/ui/fragments/HudFragment.java
-index b88c201363f48453910068a29b79009af30e6928..581f4fc4b8bf801264d61c27278997f413ebea18 100644
+index a136fe1ecffd2c78b8e5212e2246a9f412d846dc..c7a1a0473455992cf737ce1affa17dd8b0b3079d 100644
 --- a/core/src/mindustry/ui/fragments/HudFragment.java
 +++ b/core/src/mindustry/ui/fragments/HudFragment.java
 @@ -27,10 +27,18 @@ import mindustry.input.*;
@@ -3108,7 +3108,7 @@ index b88c201363f48453910068a29b79009af30e6928..581f4fc4b8bf801264d61c27278997f4
                  if(android){
                      info.label(() -> memnative.get((int)(Core.app.getJavaHeap() / 1024 / 1024), (int)(Core.app.getNativeHeap() / 1024 / 1024))).left().style(Styles.outlineLabel).name("memory2");
                  }else{
-@@ -902,6 +937,142 @@ public class HudFragment{
+@@ -901,6 +936,142 @@ public class HudFragment{
          return table;
      }
  
@@ -3251,7 +3251,7 @@ index b88c201363f48453910068a29b79009af30e6928..581f4fc4b8bf801264d61c27278997f4
      private void addInfoTable(Table table){
          table.name = "infotable";
          table.left();
-@@ -946,7 +1117,45 @@ public class HudFragment{
+@@ -945,7 +1116,45 @@ public class HudFragment{
      }
  
      private boolean canSkipWave(){

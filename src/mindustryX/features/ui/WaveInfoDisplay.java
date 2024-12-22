@@ -1,6 +1,8 @@
 package mindustryX.features.ui;
 
 import arc.*;
+import arc.scene.*;
+import arc.scene.event.*;
 import arc.scene.ui.*;
 import arc.scene.ui.layout.*;
 import arc.util.*;
@@ -48,8 +50,16 @@ public class WaveInfoDisplay extends Table{
                 state.wave += waveOffset;
                 setWaveOffset(0);
             })).tooltip("强制跳波").disabled((b) -> net.client());
-            buttons.button("♐", Styles.cleart, () -> ArcMessageDialog.shareWaveInfo(state.wave + waveOffset))
-            .disabled((b) -> !state.rules.waves);
+            buttons.button("♐", Styles.cleart, () -> ArcMessageDialog.shareWaveInfo(state.wave + waveOffset)).tooltip("分享波次信息");
+
+            buttons.button(Icon.settingsSmall, Styles.clearNonei, iconMed, () -> {
+            }).tooltip("配置资源显示").get().addListener(new ClickListener(){
+                @Override
+                public void clicked(InputEvent event, float x, float y){
+                    new SettingsV2.SettingDialog(UIExt.coreItems.settings).showFloatPanel(event.stageX, event.stageY);
+                }
+            });
+            buttons.button(Icon.eyeOffSmall, Styles.clearNonei, iconMed, () -> enable.setValue(false)).tooltip("隐藏波次显示");
         }).center().row();
 
         waveInfo = new Table().left().top();
@@ -72,12 +82,12 @@ public class WaveInfoDisplay extends Table{
         }).growX();
     }
 
-    public Collapser wrapped(){
-        var ret = new Collapser(t -> {
-            t.add().height(4).row();
-            t.add(this).growX();
-        }, true);
-        ret.setCollapsed(false, () -> !state.rules.waves || !enable.getValue());
+    public Element wrapped(){
+        var ret = new Table();
+        ret.add(UIExt.coreItems).touchable(Touchable.disabled).fillX().row();
+        ret.add().height(4).row();
+        ret.collapser(this, () -> enable.getValue()).growX().row();
+        ret.collapser(tt -> tt.button(Icon.downOpen, Styles.emptyi, () -> enable.setValue(true)), () -> !enable.getValue()).center().row();
         return ret;
     }
 
