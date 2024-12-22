@@ -14,7 +14,6 @@ Rules界面合并be的搜索功能
  android/AndroidManifest.xml                   |  3 +-
  .../mindustry/android/AndroidLauncher.java    |  3 ++
  build.gradle                                  |  5 ---
- .../mindustry/entities/comp/MinerComp.java    |  2 +
  .../mindustry/entities/comp/PlayerComp.java   |  4 +-
  core/src/mindustry/logic/LCanvas.java         |  5 ---
  core/src/mindustry/logic/LogicDialog.java     |  1 -
@@ -29,7 +28,7 @@ Rules界面合并be的搜索功能
  .../world/blocks/production/BeamDrill.java    |  7 +++-
  core/src/mindustry/world/meta/StatValues.java | 12 +++---
  .../mindustry/desktop/DesktopLauncher.java    |  4 ++
- 18 files changed, 73 insertions(+), 42 deletions(-)
+ 17 files changed, 71 insertions(+), 42 deletions(-)
 
 diff --git a/android/AndroidManifest.xml b/android/AndroidManifest.xml
 index 68a2db550a609be9366f5d093e0096ea504e5baa..9b0c06287bf52a48823eaa018e9b23c2d304a4c2 100644
@@ -94,26 +93,6 @@ index 273566d64e870371bb8d80d4569bce069316ce63..8372190ef1cae6d8aa4b1ba6dea4168d
      }
  }
  
-diff --git a/core/src/mindustry/entities/comp/MinerComp.java b/core/src/mindustry/entities/comp/MinerComp.java
-index 0e1caeb7283ae45f57c55825affe28a2b644bac0..65a55cc0a5c6601241d7bfc404bd0eaa259dc164 100644
---- a/core/src/mindustry/entities/comp/MinerComp.java
-+++ b/core/src/mindustry/entities/comp/MinerComp.java
-@@ -12,6 +12,7 @@ import mindustry.graphics.*;
- import mindustry.input.*;
- import mindustry.type.*;
- import mindustry.world.*;
-+import mindustryX.features.*;
- 
- import static mindustry.Vars.*;
- 
-@@ -126,6 +127,7 @@ abstract class MinerComp implements Itemsc, Posc, Teamc, Rotc, Drawc{
- 
-     @Override
-     public void draw(){
-+        if(!RenderExt.showMineBeam) return;
-         if(!mining()) return;
-         float focusLen = hitSize / 2f + Mathf.absin(Time.time, 1.1f, 0.5f);
-         float swingScl = 12f, swingMag = tilesize / 8f;
 diff --git a/core/src/mindustry/entities/comp/PlayerComp.java b/core/src/mindustry/entities/comp/PlayerComp.java
 index 5e847e15f0128714ee2fc5dde3939a4805336f9a..04dee366a50fb6332dc4c9a2ee2e93f3373c36e8 100644
 --- a/core/src/mindustry/entities/comp/PlayerComp.java

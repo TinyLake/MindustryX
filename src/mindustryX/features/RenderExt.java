@@ -10,7 +10,6 @@ import arc.util.*;
 import mindustry.*;
 import mindustry.entities.*;
 import mindustry.game.EventType.*;
-import mindustry.game.*;
 import mindustry.gen.*;
 import mindustry.graphics.*;
 import mindustry.type.*;
@@ -30,7 +29,7 @@ import mindustryX.features.func.*;
 import static mindustry.Vars.*;
 
 public class RenderExt{
-    public static boolean bulletShow, showMineBeam, displayAllMessage;
+    public static boolean bulletShow, displayAllMessage;
     public static boolean arcChoiceUiIcon;
     public static boolean researchViewer;
     public static boolean showPlacementEffect;
@@ -49,7 +48,7 @@ public class RenderExt{
     public static boolean drawBlockDisabled;
     public static boolean showOtherInfo, editOtherBlock;
 
-    public static boolean unitHide = false;
+    public static boolean unitHide = false, alwaysShowPlayerUnit;
     public static Color massDriverLineColor = Color.clear;
     public static Color playerEffectColor = Color.clear;
 
@@ -68,8 +67,8 @@ public class RenderExt{
         });
 
         Events.run(Trigger.update, () -> {
+            alwaysShowPlayerUnit = Core.settings.getBool("alwaysShowPlayerUnit");
             bulletShow = Core.settings.getBool("bulletShow");
-            showMineBeam = !unitHide && Core.settings.getBool("showminebeam");
             displayAllMessage = Core.settings.getBool("displayallmessage");
             arcChoiceUiIcon = Core.settings.getBool("arcchoiceuiIcon");
             researchViewer = Core.settings.getBool("researchViewer");
@@ -128,6 +127,7 @@ public class RenderExt{
 
     public static void onGroupDraw(Drawc t){
         if(!bulletShow && t instanceof Bulletc) return;
+        if(unitHide && t instanceof Unitc unitc && (!alwaysShowPlayerUnit || unitc.isPlayer())) return;
         t.draw();
     }
 

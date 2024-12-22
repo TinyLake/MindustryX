@@ -20,7 +20,7 @@ import static mindustry.Vars.*;
 //move from mindustry.arcModule.draw.ARCUnits
 public class ArcUnits{
     private static final int maxBuildPlans = 100;
-    private static boolean alwaysShowPlayerUnit, alwaysShowUnitRTSAi, unitHealthBar, unitLogicMoveLine, unitLogicTimerBars, unithitbox, unitBuildPlan;
+    private static boolean alwaysShowUnitRTSAi, unitHealthBar, unitLogicMoveLine, unitLogicTimerBars, unithitbox, unitBuildPlan;
     private static float defaultUnitTrans, unitDrawMinHealth, unitBarDrawMinHealth;
     private static float unitWeaponRange, unitWeaponRangeAlpha;
     public static boolean selectedUnitsFlyer, selectedUnitsLand;
@@ -33,7 +33,6 @@ public class ArcUnits{
     static{
         // 减少性能开销
         Events.run(EventType.Trigger.update, () -> {
-            alwaysShowPlayerUnit = Core.settings.getBool("alwaysShowPlayerUnit");
             alwaysShowUnitRTSAi = Core.settings.getBool("alwaysShowUnitRTSAi");
             unitHealthBar = Core.settings.getBool("unitHealthBar");
             unitLogicMoveLine = Core.settings.getBool("unitLogicMoveLine");
@@ -64,7 +63,7 @@ public class ArcUnits{
     public static float drawARCUnits(Unit unit){
         if(unit.controller() instanceof Player){
             drawPlayerEffect(unit);
-            if(alwaysShowPlayerUnit){
+            if(RenderExt.alwaysShowPlayerUnit){
                 drawUnitBar(unit);
                 return 1f;
             }
