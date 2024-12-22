@@ -117,8 +117,8 @@ public class HudSettingsTable extends ToolTableBase{
         checkPref("blockWeaponTargetLine");
         checkPref("unitbuildplan");
         sliderPref("minimapSize", 40, 400, 10, i -> i + "");
-        sliderPref("quickToolOffset", -250, 250, 10, i -> i + "");
-        WaveInfoDisplay.enable.build(this);
+        UIExt.quickToolOffset.buildUI(this);
+        WaveInfoDisplay.enable.buildUI(this);
     }
 
     private void arcQuickMsgTable(){

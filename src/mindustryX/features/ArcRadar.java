@@ -7,6 +7,7 @@ import arc.math.*;
 import arc.scene.event.*;
 import arc.scene.ui.layout.*;
 import arc.util.*;
+import kotlin.collections.*;
 import mindustry.game.*;
 import mindustry.gen.*;
 import mindustry.graphics.*;
@@ -16,7 +17,7 @@ import mindustry.world.blocks.storage.*;
 import mindustryX.features.SettingsV2.*;
 import mindustryX.features.func.*;
 
-import java.util.*;
+import java.util.List;
 
 import static mindustry.Vars.*;
 
@@ -46,23 +47,19 @@ public class ArcRadar{
     private static boolean working = false;
     private static Table t;
 
-    private static SettingsV2.SliderPref mode, size;
-    public static List<ISetting> settings = new ArrayList<>();
+    private static final SettingsV2.Data<Integer>
+    mode = new SliderPref(1, 30, 1, s -> switch(s){
+        case 0 -> "关闭";
+        case 30 -> "瞬间完成";
+        default -> "[lightgray]x[white]" + Strings.autoFixed(s * 0.2f, 1) + "倍搜索速度";
+    }).create("radarMode", 1),
+    size = new SliderPref(0, 50, 1, s -> {
+        if(s == 0) return "固定大小";
+        return "[lightgray]x[white]" + Strings.autoFixed(s * 0.1f, 1) + "倍";
+    }).create("radarSize", 0);
+    public static List<SettingsV2.Data<?>> settings = CollectionsKt.listOf(mode, size);
 
     static{
-        mode = new SliderPref("radarMode", 1, 1, 30, 1);
-        mode.setLabelMap(s -> switch(s){
-            case 0 -> "关闭";
-            case 30 -> "瞬间完成";
-            default -> "[lightgray]x[white]" + Strings.autoFixed(s * 0.2f, 1) + "倍搜索速度";
-        });
-        settings.add(mode);
-        size = new SliderPref("radarSize", 0, 0, 50, 1);
-        size.setLabelMap(s -> {
-            if(s == 0) return "固定大小";
-            return "[lightgray]x[white]" + Strings.autoFixed(s * 0.1f, 1) + "倍";
-        });
-        settings.add(size);
         Events.on(EventType.WorldLoadEvent.class, event -> scanTime = Math.max(Mathf.dst(world.width(), world.height()) / 20f, 7.5f));
     }
 

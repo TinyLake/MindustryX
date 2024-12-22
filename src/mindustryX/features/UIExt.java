@@ -29,6 +29,8 @@ public class UIExt{
     public static WaveInfoDisplay waveInfoDisplay = new WaveInfoDisplay();
     public static NewCoreItemsDisplay coreItems = new NewCoreItemsDisplay();
 
+    public static SettingsV2.Data<Integer> quickToolOffset = new SettingsV2.SliderPref(-250, 250, 10).create("quickToolOffset", 0);
+
     public static void init(){
         teamSelect = new TeamSelectDialog();
 
@@ -41,7 +43,7 @@ public class UIExt{
 
         ui.hudGroup.fill(t -> {
             t.right().name = "quickTool";
-            t.update(() -> t.y = Core.settings.getInt("quickToolOffset"));
+            t.update(() -> t.y = quickToolOffset.getValue());
             t.add(auxiliaryTools.wrapped()).growX().row();
             t.add(hudSettingsTable.wrapped()).growX().row();
             t.add(advanceToolTable.wrapped()).growX().row();

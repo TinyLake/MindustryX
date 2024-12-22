@@ -17,7 +17,7 @@ import mindustryX.features.SettingsV2.*;
 import static mindustry.Vars.*;
 
 public class WaveInfoDisplay extends Table{
-    public static SettingsV2.CheckPref enable = new CheckPref("newWaveInfoDisplay", true);
+    public static SettingsV2.Data<Boolean> enable = CheckPref.INSTANCE.create("newWaveInfoDisplay", true);
     public static final float fontScl = 0.8f;
     private int waveOffset = 0;
     private final WaveInfoDialog waveInfoDialog = new WaveInfoDialog();
