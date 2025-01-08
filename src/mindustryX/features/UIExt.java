@@ -37,7 +37,7 @@ public class UIExt{
         teamsStatDisplay = new TeamsStatDisplay();
         ui.hudGroup.fill(t -> {
             t.name = "otherCore";
-            t.left().add(teamsStatDisplay);
+            t.left().add(teamsStatDisplay.wrapped());
             t.visible(() -> ui.hudfrag.shown && Core.settings.getBool("showOtherTeamResource"));
         });
 

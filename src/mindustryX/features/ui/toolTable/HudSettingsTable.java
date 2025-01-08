@@ -16,11 +16,9 @@ import mindustry.world.*;
 import mindustry.world.blocks.environment.*;
 import mindustryX.features.Settings;
 import mindustryX.features.*;
-import mindustryX.features.ui.*;
 
 import static arc.Core.*;
 import static mindustry.Vars.*;
-import static mindustry.ui.Styles.flatTogglet;
 
 //moved from mindustry.arcModule.ui.quickTool.HudSettingsTable
 public class HudSettingsTable extends ToolTableBase{
@@ -35,6 +33,7 @@ public class HudSettingsTable extends ToolTableBase{
         table(t -> {
             t.defaults().size(30);
             t.button("[cyan]信", Styles.flatBordert, () -> UIExt.arcMessageDialog.show()).tooltip("中央监控室");
+            t.button("[cyan]资", Styles.flatTogglet, () -> Settings.toggle("showOtherTeamResource")).tooltip("多队伍资源信息显示(左侧)").checked(a -> Core.settings.getBool("showOtherTeamResource"));
             t.button("[cyan]S", Styles.flatBordert, () -> Call.sendChatMessage("/sync")).tooltip("同步一波");
             t.button("[cyan]观", Styles.flatBordert, () -> Call.sendChatMessage("/ob")).tooltip("观察者模式");
             t.button("[cyan]技", Styles.flatBordert, () -> Call.sendChatMessage("/skill")).tooltip("技能！");
@@ -74,7 +73,7 @@ public class HudSettingsTable extends ToolTableBase{
                 control.input.logicCutscene = false;
                 ui.announce("已移除逻辑视角锁定");
             }).checked(a -> Core.settings.getBool("removeLogicLock")).tooltip("逻辑锁定");
-            t.button(Blocks.worldMessage.emoji(), flatTogglet, () -> Settings.toggle("displayallmessage")).checked(a -> RenderExt.displayAllMessage).tooltip("开关信息板全显示");
+            t.button(Blocks.worldMessage.emoji(), Styles.flatTogglet, () -> Settings.toggle("displayallmessage")).checked(a -> RenderExt.displayAllMessage).tooltip("开关信息板全显示");
             t.button("" + Iconc.itemCopper, Styles.flatBordert, this::floorStatisticDialog).tooltip("矿物信息");
             t.button(Icon.fillSmall, Styles.flati, () -> EffectsDialog.withAllEffects().show()).tooltip("特效大全");
             if(!mobile) t.button(Icon.starSmall, Styles.flati, this::uiTable).tooltip("ui大全");
