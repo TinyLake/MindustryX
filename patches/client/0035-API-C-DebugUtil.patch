@@ -9,45 +9,11 @@ Content-Transfer-Encoding: 8bit
 更多统计信息
 way-zer <himc.wicp@gmail.com> on 2024/7/21
 ---
- core/src/arc/graphics/g2d/MySpriteBatch.java  | 26 +++++++++++++++++++
- core/src/mindustry/ClientLauncher.java        |  2 +-
- core/src/mindustry/core/Logic.java            |  3 +++
- .../mindustry/ui/fragments/HudFragment.java   |  7 +++++
- 4 files changed, 37 insertions(+), 1 deletion(-)
- create mode 100644 core/src/arc/graphics/g2d/MySpriteBatch.java
+ core/src/mindustry/ClientLauncher.java           | 2 +-
+ core/src/mindustry/core/Logic.java               | 3 +++
+ core/src/mindustry/ui/fragments/HudFragment.java | 7 +++++++
+ 3 files changed, 11 insertions(+), 1 deletion(-)
 
-diff --git a/core/src/arc/graphics/g2d/MySpriteBatch.java b/core/src/arc/graphics/g2d/MySpriteBatch.java
-new file mode 100644
-index 0000000000000000000000000000000000000000..e2bdb30e190a210f25130c423c853892798e4c28
---- /dev/null
-+++ b/core/src/arc/graphics/g2d/MySpriteBatch.java
-@@ -0,0 +1,26 @@
-+package arc.graphics.g2d;
-+
-+import arc.graphics.*;
-+import mindustryX.features.*;
-+
-+//MDTX: add some DebugUtil count.
-+public class MySpriteBatch extends SpriteBatch{
-+    @Override
-+    protected void flush(){
-+        DebugUtil.lastFlushCount++;
-+        super.flush();
-+    }
-+
-+    @Override
-+    protected void flushRequests(){
-+        DebugUtil.lastVertices += requestVertOffset / 6;
-+        DebugUtil.lastDrawRequests += numRequests;
-+        super.flushRequests();
-+    }
-+
-+    @Override
-+    protected void switchTexture(Texture texture){
-+        DebugUtil.lastSwitchTexture++;
-+        super.switchTexture(texture);
-+    }
-+}
 diff --git a/core/src/mindustry/ClientLauncher.java b/core/src/mindustry/ClientLauncher.java
 index bb7e299b171161d1416d27e724a40968961725f9..227495e812499ffaae06c12f6fe235b68feab488 100644
 --- a/core/src/mindustry/ClientLauncher.java
