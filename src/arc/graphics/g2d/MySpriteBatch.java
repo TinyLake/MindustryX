@@ -67,19 +67,19 @@ public class MySpriteBatch extends SpriteBatch{
 
     @Override
     protected void sortRequests(){
-        if(!RenderExt.renderSort){
-            super.sortRequests();
-            return;
-        }
-        hashZ = DebugUtil.renderDebug ? Float.floatToIntBits((float)Math.random()) : 0;
-
         int numRequests = this.numRequests;
-        int[] arr = this.requestZ, extraZ = this.extraZ;
-        sortMap(arr, numRequests);
-        sortMap(extraZ, numRequests);
-        for(int i = 0; i < numRequests; i++){
-            arr[i] = (arr[i] << 16) | extraZ[i];
+        int[] arr = this.requestZ;
+        if(RenderExt.renderSort){
+            hashZ = DebugUtil.renderDebug ? Float.floatToIntBits((float)Math.random()) : 0;
+            int[] extraZ = this.extraZ;
+            //分别map以缩小值域，以合并到一个int值域
+            mapToRank(arr, numRequests);
+            mapToRank(extraZ, numRequests);
+            for(int i = 0; i < numRequests; i++){
+                arr[i] = (arr[i] << 16) | extraZ[i];
+            }
         }
+
         countingSortMap(arr, numRequests);//arr is loc now;
 
         if(copy.length < requests.length) copy = new DrawRequest[requests.length];
@@ -93,11 +93,11 @@ public class MySpriteBatch extends SpriteBatch{
     private static int[] orderArr = new int[1000], orderArr2 = new int[1000];
 
     /**
-     * 将输入arr重映射到有序的[0,unique)域
-     * @param arr 待排序数组，输出会映射为id值
+     * 将输入arr重映射到[0,unique)域，并保持原始值大小关系
+     * @param arr 待排序数组，输出会映射为rank,反映原始值大小
      * @return unique
      */
-    private static int sortMap(int[] arr, int len){
+    private static int mapToRank(int[] arr, int len){
         var map = vMap;
         int[] order = orderArr;
         map.clear();
@@ -108,13 +108,12 @@ public class MySpriteBatch extends SpriteBatch{
             arr[i] = id;//arr现在表示id
             if(id == unique){
                 if(order.length <= unique){
-                    order = Arrays.copyOf(order, unique << 1);
+                    order = orderArr = Arrays.copyOf(order, unique << 1);
                 }
                 order[unique] = v;
                 unique++;
             }
         }
-        orderArr = order;
 
         //对z值排序
         Arrays.sort(order, 0, unique);//order -> z
@@ -147,7 +146,7 @@ public class MySpriteBatch extends SpriteBatch{
             int id = map.getOrPut(v, unique);
             arr[i] = id;//arr现在表示id
             if(id == unique){
-                if(unique >= counts.length){
+                if(order.length <= unique){
                     order = orderArr = Arrays.copyOf(order, unique << 1);
                     counts = orderArr2 = Arrays.copyOf(counts, unique << 1);
                 }
