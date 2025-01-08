@@ -215,7 +215,7 @@ public class PicToMindustry{
             for(int x = 0; x < image.width; x++){
                 var pixel = image.get(x, y);
                 if(pixel == 0) continue;
-                var closest = Structs.findMin(content.items().items, (t) -> diff_rbg(t.color.rgba(), pixel));
+                var closest = CollectionsKt.minByOrThrow(content.items(), (it) -> diff_rbg(it.color.rgba(), pixel));
                 Schematic.Stile stile = new Schematic.Stile(Blocks.sorter, x, image.height - y - 1, closest, (byte)0);
                 tiles.add(stile);
             }
