@@ -70,7 +70,6 @@ public class ArcOld{
 
             c.addCategory("arcAddUnitInfo");
             c.checkPref("unitHealthBar", false);
-            c.sliderPref("unitBarDrawMinHealth", settings.getInt("minhealth_unithealthbarshown", 0), 0, 2500, 100, i -> i + "[red]HP");
 
 
             c.sliderPref("unitWeaponRange", settings.getInt("unitAlertRange", 0), 0, 30, 1, s -> switch(s){

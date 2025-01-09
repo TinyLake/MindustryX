@@ -22,7 +22,6 @@ import static mindustry.Vars.*;
 public class ArcUnits{
     private static final int maxBuildPlans = 100;
     private static boolean alwaysShowUnitRTSAi, unitHealthBar, unitLogicMoveLine, unitLogicTimerBars, unithitbox, unitBuildPlan;
-    private static float minHealthDrawStat;
     private static float unitWeaponRange, unitWeaponRangeAlpha;
     public static boolean selectedUnitsFlyer, selectedUnitsLand;
 
@@ -39,8 +38,6 @@ public class ArcUnits{
             unitLogicTimerBars = Core.settings.getBool("unitLogicTimerBars");
             unithitbox = Core.settings.getBool("unithitbox");
             unitBuildPlan = Core.settings.getBool("unitbuildplan");
-
-            minHealthDrawStat = Core.settings.getInt("unitBarDrawMinHealth");
 
             unitWeaponRange = Core.settings.getInt("unitWeaponRange") * tilesize;
             unitWeaponRangeAlpha = Core.settings.getInt("unitWeaponRangeAlpha") / 100f;
@@ -61,20 +58,18 @@ public class ArcUnits{
             if(unitTargetType > 0) drawAimTarget(unit);
             if(arcBuildInfo && unit.isLocal()) drawBuildRange();
         }
-        if((RenderExt.unitHideExcludePlayers && unit.isPlayer()) || (unit.maxHealth + unit.shield) >= minHealthDrawStat){
-            Draw.z(Draw.z() + 0.1f);
-            if(unit.team() == player.team() || RenderExt.showOtherInfo){
-                if(unitWeaponRange > 0) drawWeaponRange(unit);
-                if(alwaysShowUnitRTSAi) drawRTSAI(unit);
-                if(unitHealthBar) drawHealthBar(unit);
-                if(unit.controller() instanceof LogicAI ai){
-                    if(unitLogicMoveLine) drawLogicMove(unit, ai);
-                    if(unitLogicTimerBars) drawLogicTimer(unit, ai);
-                }
-                if(unitBuildPlan) drawBuildPlan(unit);
+        Draw.z(Draw.z() + 0.1f);
+        if(unit.team() == player.team() || RenderExt.showOtherInfo){
+            if(unitWeaponRange > 0) drawWeaponRange(unit);
+            if(alwaysShowUnitRTSAi) drawRTSAI(unit);
+            if(unitHealthBar) drawHealthBar(unit);
+            if(unit.controller() instanceof LogicAI ai){
+                if(unitLogicMoveLine) drawLogicMove(unit, ai);
+                if(unitLogicTimerBars) drawLogicTimer(unit, ai);
             }
-            if(unithitbox) drawHitBox(unit);
+            if(unitBuildPlan) drawBuildPlan(unit);
         }
+        if(unithitbox) drawHitBox(unit);
     }
 
     private static void drawAimRange(Unit unit){

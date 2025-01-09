@@ -105,7 +105,6 @@ public class HudSettingsTable extends ToolTableBase{
         });
         checkPref("unitHealthBar");
         sliderPref("unitDrawMinHealth", 0, 2500, 50, i -> i + "[red]HP");
-        sliderPref("unitBarDrawMinHealth", 0, 2500, 100, i -> i + "[red]HP");
         sliderPref("unitWeaponRange", 0, 100, 1, i -> i > 0 ? i + "%" : "关闭");
 
         checkPref("alwaysShowUnitRTSAi");
