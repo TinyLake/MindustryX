@@ -295,6 +295,11 @@ public class MarkerType{
         }
 
         @Override
+        public float clipSize(){
+            return Float.MAX_VALUE;
+        }
+
+        @Override
         public void draw(){
             super.draw();
             Draw.z(Layer.overlayUI);
