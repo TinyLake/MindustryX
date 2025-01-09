@@ -49,7 +49,7 @@ public class Hooks implements ApplicationListener{
                 String url = req.url;
                 String host = new URL(url).getHost();
                 if(host.contains("github.com") || host.contains("raw.githubusercontent.com")){
-                    url = "https://gh.tinylake.tech/" + url;
+                    url = "https://gh.tinylake.top/" + url;
                     req.url = url;
                 }
             }catch(Exception e){
