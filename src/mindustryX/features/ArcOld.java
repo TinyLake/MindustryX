@@ -69,11 +69,6 @@ public class ArcOld{
             c.checkPref("blockWeaponTargetLineWhenIdle", false);
 
             c.addCategory("arcAddUnitInfo");
-            c.checkPref("alwaysShowPlayerUnit", false);
-
-            c.sliderPref("unitTransparency", 100, 0, 100, 5, i -> i > 0 ? i + "%" : "关闭");
-            c.sliderPref("unitDrawMinHealth", settings.getInt("minhealth_unitshown", 0), 0, 2500, 50, i -> i + "[red]HP");
-
             c.checkPref("unitHealthBar", false);
             c.sliderPref("unitBarDrawMinHealth", settings.getInt("minhealth_unithealthbarshown", 0), 0, 2500, 100, i -> i + "[red]HP");
 

@@ -1,4 +1,4 @@
-package mindustryX.features;
+package mindustryX.features.draw;
 
 import arc.*;
 import arc.graphics.*;
@@ -12,6 +12,7 @@ import mindustry.game.*;
 import mindustry.gen.*;
 import mindustry.graphics.*;
 import mindustry.world.blocks.payloads.*;
+import mindustryX.features.*;
 
 import static arc.graphics.g2d.Draw.color;
 import static arc.graphics.g2d.Lines.*;
@@ -21,10 +22,9 @@ import static mindustry.Vars.*;
 public class ArcUnits{
     private static final int maxBuildPlans = 100;
     private static boolean alwaysShowUnitRTSAi, unitHealthBar, unitLogicMoveLine, unitLogicTimerBars, unithitbox, unitBuildPlan;
-    private static float defaultUnitTrans, minHealthDraw, minHealthDrawStat;
+    private static float minHealthDrawStat;
     private static float unitWeaponRange, unitWeaponRangeAlpha;
     public static boolean selectedUnitsFlyer, selectedUnitsLand;
-    public static boolean unitWeaponTargetLine, unitItemCarried;
 
     private static float curStroke;
     private static int unitTargetType, superUnitEffect;
@@ -40,8 +40,6 @@ public class ArcUnits{
             unithitbox = Core.settings.getBool("unithitbox");
             unitBuildPlan = Core.settings.getBool("unitbuildplan");
 
-            defaultUnitTrans = RenderExt.unitHide ? 0 : Core.settings.getInt("unitTransparency") / 100f;
-            minHealthDraw = Core.settings.getInt("unitDrawMinHealth");
             minHealthDrawStat = Core.settings.getInt("unitBarDrawMinHealth");
 
             unitWeaponRange = Core.settings.getInt("unitWeaponRange") * tilesize;
@@ -54,40 +52,29 @@ public class ArcUnits{
             unitTargetType = Core.settings.getInt("unitTargetType");
             superUnitEffect = Core.settings.getInt("superUnitEffect");
             arcBuildInfo = Core.settings.getBool("arcBuildInfo");
-
-            unitWeaponTargetLine = Core.settings.getBool("unitWeaponTargetLine");
-            unitItemCarried = Core.settings.getBool("unitItemCarried");
         });
     }
 
-    public static float drawARCUnits(Unit unit){
-        if(unit.controller() instanceof Player){
-            if(superUnitEffect > 0 && (unit.controller() == player || superUnitEffect == 2)) drawAimRange(unit);
+    public static void draw(Unit unit){
+        if(unit.isPlayer()){
+            if(superUnitEffect > 0 && (unit.isLocal() || superUnitEffect == 2)) drawAimRange(unit);
             if(unitTargetType > 0) drawAimTarget(unit);
-            if(arcBuildInfo && unit.controller() == player) drawBuildRange();
-            if(alwaysShowPlayerUnit){
-                drawUnitStat(unit);
-                return 1f;
-            }
+            if(arcBuildInfo && unit.isLocal()) drawBuildRange();
         }
-        if(defaultUnitTrans == 0 || (unit.maxHealth + unit.shield) < minHealthDraw) return 0f;
-        if((unit.maxHealth + unit.shield) >= minHealthDrawStat) drawUnitStat(unit);
-        return defaultUnitTrans;
-    }
-
-    private static void drawUnitStat(Unit unit){
-        Draw.z(Draw.z() + 0.1f);
-        if(unit.team() == player.team() || RenderExt.showOtherInfo){
-            if(unitWeaponRange > 0) drawWeaponRange(unit);
-            if(alwaysShowUnitRTSAi) drawRTSAI(unit);
-            if(unitHealthBar) drawHealthBar(unit);
-            if(unit.controller() instanceof LogicAI ai){
-                if(unitLogicMoveLine) drawLogicMove(unit, ai);
-                if(unitLogicTimerBars) drawLogicTimer(unit, ai);
+        if((RenderExt.unitHideExcludePlayers && unit.isPlayer()) || (unit.maxHealth + unit.shield) >= minHealthDrawStat){
+            Draw.z(Draw.z() + 0.1f);
+            if(unit.team() == player.team() || RenderExt.showOtherInfo){
+                if(unitWeaponRange > 0) drawWeaponRange(unit);
+                if(alwaysShowUnitRTSAi) drawRTSAI(unit);
+                if(unitHealthBar) drawHealthBar(unit);
+                if(unit.controller() instanceof LogicAI ai){
+                    if(unitLogicMoveLine) drawLogicMove(unit, ai);
+                    if(unitLogicTimerBars) drawLogicTimer(unit, ai);
+                }
+                if(unitBuildPlan) drawBuildPlan(unit);
             }
-            if(unitBuildPlan) drawBuildPlan(unit);
+            if(unithitbox) drawHitBox(unit);
         }
-        if(unithitbox) drawHitBox(unit);
     }
 
     private static void drawAimRange(Unit unit){

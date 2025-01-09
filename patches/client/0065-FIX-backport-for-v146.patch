@@ -137,10 +137,10 @@ index d2514073bec9fb876ab68cb6654b8a692b9dc614..3f927767b2d36da305268bcb5113f65c
  import mindustryX.features.*;
  import mindustryX.features.Settings;
 diff --git a/core/src/mindustry/type/Weapon.java b/core/src/mindustry/type/Weapon.java
-index 7261413c96c6a50bb553ff6f1a689ce89b563e64..91ead2fb3ad9a2b676666f4a69d13adb9be18d1f 100644
+index 3bada74c318d0b5918b02ae2573e7739052b80a2..bdd6600b6c946a55ca4ba05cdf6fbbaf4feedc1d 100644
 --- a/core/src/mindustry/type/Weapon.java
 +++ b/core/src/mindustry/type/Weapon.java
-@@ -164,6 +164,11 @@ public class Weapon implements Cloneable{
+@@ -163,6 +163,11 @@ public class Weapon implements Cloneable{
      }
  
      public void addStats(UnitType u, Table t){

@@ -13,6 +13,7 @@ import mindustry.gen.*;
 import mindustry.graphics.*;
 import mindustry.type.*;
 import mindustry.world.blocks.defense.turrets.*;
+import mindustryX.features.draw.*;
 
 import static mindustry.Vars.*;
 

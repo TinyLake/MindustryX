@@ -47,6 +47,9 @@ public class RenderExt{
     public static boolean deadOverlay;
     public static boolean drawBlockDisabled;
     public static boolean showOtherInfo, editOtherBlock;
+    public static boolean unitHideExcludePlayers;
+    public static float unitHideMinHealth;
+    public static boolean unitWeaponTargetLine, unitItemCarried;
 
     public static boolean unitHide = false, alwaysShowPlayerUnit;
     public static Color massDriverLineColor = Color.clear;
@@ -92,6 +95,11 @@ public class RenderExt{
             showOtherInfo = Core.settings.getBool("showOtherTeamState");
             editOtherBlock = Core.settings.getBool("editOtherBlock");
             editOtherBlock &= !net.client();
+
+            unitHideExcludePlayers = Core.settings.getBool("unitHideExcludePlayers");
+            unitHideMinHealth = Core.settings.getInt("unitDrawMinHealth");
+            unitWeaponTargetLine = Core.settings.getBool("unitWeaponTargetLine");
+            unitItemCarried = Core.settings.getBool("unitItemCarried");
         });
         Events.run(Trigger.draw, RenderExt::draw);
         Events.on(TileChangeEvent.class, RenderExt::onSetBlock);
@@ -127,8 +135,12 @@ public class RenderExt{
 
     public static void onGroupDraw(Drawc t){
         if(!bulletShow && t instanceof Bulletc) return;
-        if(unitHide && t instanceof Unitc u && !u.isPlayer()) return;
+        if(t instanceof Unitc u) hide:{
+            if(u.isPlayer() && (u.isLocal() || unitHideExcludePlayers)) break hide;
+            if(unitHide || u.maxHealth() + u.shield() < unitHideMinHealth) return;
+        }
         t.draw();
+        if(t instanceof Unit u) ArcUnits.draw(u);
     }
 
     public static void onBlockDraw(Tile tile, Block block, @Nullable Building build){

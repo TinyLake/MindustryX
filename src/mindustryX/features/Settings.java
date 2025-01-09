@@ -86,6 +86,8 @@ public class Settings{
             c.checkPref("noPlayerHitBox", false);
             c.checkPref("payloadpreview", true);
             c.checkPref("unithitbox", false);
+            c.checkPref("unitHideExcludePlayers", true);
+            c.sliderPref("unitDrawMinHealth", 0, 0, 2500, 50, i -> i + "[red]HP");
 
             c.addCategory("developerMode");
             c.checkPref("renderSort", false);
