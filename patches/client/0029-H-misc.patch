@@ -128,7 +128,7 @@ index cabc19671d3393a933e64a5f451a0079beafa2b3..88308fb7d5b39c82207ea4b19f58705b
      }
  
 diff --git a/core/src/mindustry/core/UI.java b/core/src/mindustry/core/UI.java
-index c5b749e3802b85e30de6eb10dc470455700aa5ba..182bbc6a26564ba516fe442889615ad1fc338482 100644
+index c5b749e3802b85e30de6eb10dc470455700aa5ba..7bf9cf271e2bdb6afc0fdba422f588c17ec7f8cc 100644
 --- a/core/src/mindustry/core/UI.java
 +++ b/core/src/mindustry/core/UI.java
 @@ -586,7 +586,7 @@ public class UI implements ApplicationListener, Loadable{
@@ -161,7 +161,7 @@ index c5b749e3802b85e30de6eb10dc470455700aa5ba..182bbc6a26564ba516fe442889615ad1
 -        }else{
 -            return number + "";
 -        }
-+        return FormatDefault.format(number);
++        return mindustryX.features.ui.FormatDefault.format(number);
      }
  
      public static int roundAmount(int number){

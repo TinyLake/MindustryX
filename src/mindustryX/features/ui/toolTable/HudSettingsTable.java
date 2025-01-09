@@ -36,10 +36,8 @@ public class HudSettingsTable extends ToolTableBase{
             t.button("[cyan]资", Styles.flatTogglet, () -> Settings.toggle("showOtherTeamResource")).tooltip("多队伍资源信息显示(左侧)").checked(a -> Core.settings.getBool("showOtherTeamResource"));
             t.button("[cyan]S", Styles.flatBordert, () -> Call.sendChatMessage("/sync")).tooltip("同步一波");
             t.button("[cyan]观", Styles.flatBordert, () -> Call.sendChatMessage("/ob")).tooltip("观察者模式");
-            t.button("[cyan]技", Styles.flatBordert, () -> Call.sendChatMessage("/skill")).tooltip("技能！");
             t.button("[cyan]版", Styles.flatBordert, () -> Call.sendChatMessage("/broad")).tooltip("服务器信息版");
             t.button("[cyan]雾", Styles.flatTogglet, () -> state.rules.fog ^= true).checked(a -> state.rules.fog).tooltip("战争迷雾").disabled((_t) -> state.rules.pvp && player.team().id != 255);
-            t.button("[red]版", Styles.flatTogglet, () -> Settings.toggle("ShowInfoPopup")).checked(a -> !Core.settings.getBool("ShowInfoPopup")).tooltip("关闭所有信息版");
             t.button("[white]法", Styles.flatBordert, () -> ui.showConfirm("受不了，直接投降？", () -> Call.sendChatMessage("/vote gameover"))).tooltip("法国军礼");
             t.row();
             t.button("[cyan]块", Styles.flatTogglet, () -> Settings.cycle("blockRenderLevel", 3))
@@ -48,18 +46,10 @@ public class HudSettingsTable extends ToolTableBase{
             .checked(a -> !RenderExt.unitHide).tooltip("兵种显示");
             t.button("[cyan]弹", Styles.flatTogglet, () -> Settings.toggle("bulletShow"))
             .checked(a -> Core.settings.getBool("bulletShow")).tooltip("子弹显示");
-            t.button("[cyan]灯", Styles.flatTogglet, () -> Settings.toggle("drawlight"))
-            .checked(a -> renderer.drawLight).name("灯光").tooltip("[cyan]开灯啊！");
             t.button("[cyan]效", Styles.flatTogglet, () -> Settings.toggle("effects"))
             .checked(a -> Core.settings.getBool("effects")).tooltip("特效显示");
-            t.button("[cyan]光", Styles.flatTogglet, () -> {
-                Settings.toggle("bloom");
-                renderer.toggleBloom(settings.getBool("bloom"));
-            }).checked(a -> Core.settings.getBool("bloom")).tooltip("光效显示");
             t.button("[cyan]墙", Styles.flatTogglet, () -> enableDarkness ^= true)
             .checked(a -> enableDarkness).tooltip("墙体阴影显示");
-            t.button("[cyan]天", Styles.flatTogglet, () -> Settings.toggle("showweather"))
-            .checked(a -> Core.settings.getBool("showweather")).tooltip("天气显示");
             t.button("[cyan]" + Iconc.map, Styles.flatTogglet, () -> Settings.toggle("minimap"))
             .checked(a -> Core.settings.getBool("minimap")).tooltip("小地图显示");
             t.row();
@@ -103,7 +93,6 @@ public class HudSettingsTable extends ToolTableBase{
             case 3 -> "全部";
             default -> s + "";
         });
-        checkPref("unitHealthBar");
         sliderPref("unitDrawMinHealth", 0, 2500, 50, i -> i + "[red]HP");
         sliderPref("unitWeaponRange", 0, 100, 1, i -> i > 0 ? i + "%" : "关闭");
 

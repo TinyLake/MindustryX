@@ -45,7 +45,7 @@ class AdvanceToolTable : ToolTableBase(Iconc.wrench.toString()) {
                 cloneUnit[Vars.player.x + Mathf.range(8f)] = Vars.player.y + Mathf.range(8f)
                 cloneUnit.add()
             }.width(40f).tooltip("[acid]克隆")
-            button(UnitTypes.gamma.emoji() + "[red]×", Styles.cleart) { Vars.player.unit().kill() }.width(40f).tooltip("[red]自杀")
+            button(UnitTypes.gamma.emoji() + "[red]×", Styles.cleart) { if (!Vars.player.dead()) Vars.player.unit().kill() }.width(40f).tooltip("[red]自杀")
             button(Icon.waves, Styles.clearNonei) { factoryDialog.show() }.width(40f).tooltip("[acid]单位工厂-ARC")
         }
 

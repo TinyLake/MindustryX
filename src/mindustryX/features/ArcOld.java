@@ -121,6 +121,7 @@ public class ArcOld{
 
 
             c.addCategory("arcShareinfo");
+            c.checkPref("arcAlwaysTeamColor", false);
 
             c.addCategory("arcWeakCheat");
             c.checkPref("save_more_map", false);

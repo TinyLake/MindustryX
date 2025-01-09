@@ -13,7 +13,6 @@ import mindustry.*;
 import mindustry.content.*;
 import mindustry.game.*;
 import mindustry.graphics.*;
-import mindustry.type.*;
 import mindustry.ui.*;
 import mindustry.ui.dialogs.*;
 import mindustry.world.blocks.logic.*;

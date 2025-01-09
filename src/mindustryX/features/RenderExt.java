@@ -51,7 +51,7 @@ public class RenderExt{
     public static float unitHideMinHealth;
     public static boolean unitWeaponTargetLine, unitItemCarried;
 
-    public static boolean unitHide = false, alwaysShowPlayerUnit;
+    public static boolean unitHide = false;
     public static Color massDriverLineColor = Color.clear;
     public static Color playerEffectColor = Color.clear;
 
@@ -70,7 +70,6 @@ public class RenderExt{
         });
 
         Events.run(Trigger.update, () -> {
-            alwaysShowPlayerUnit = Core.settings.getBool("alwaysShowPlayerUnit");
             bulletShow = Core.settings.getBool("bulletShow");
             displayAllMessage = Core.settings.getBool("displayallmessage");
             arcChoiceUiIcon = Core.settings.getBool("arcchoiceuiIcon");
