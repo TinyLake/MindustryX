@@ -163,7 +163,7 @@ public class TeamsStatDisplay extends Table{
         image(icon).size(15, 15).left();
         for(Teams.TeamData teamData : teams){
             label(() -> "[#" + teamData.team.color + "]" + teamFunc.get(teamData))
-            .padLeft(2).uniformX().fontScale(fontScl);
+            .padLeft(2).expandX().uniformX().fontScale(fontScl);
         }
         row();
     }
