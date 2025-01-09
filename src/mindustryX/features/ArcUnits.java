@@ -21,7 +21,7 @@ import static mindustry.Vars.*;
 public class ArcUnits{
     private static final int maxBuildPlans = 100;
     private static boolean alwaysShowUnitRTSAi, unitHealthBar, unitLogicMoveLine, unitLogicTimerBars, unithitbox, unitBuildPlan;
-    private static float defaultUnitTrans, unitDrawMinHealth, unitBarDrawMinHealth;
+    private static float defaultUnitTrans, minHealthDraw, minHealthDrawStat;
     private static float unitWeaponRange, unitWeaponRangeAlpha;
     public static boolean selectedUnitsFlyer, selectedUnitsLand;
     public static boolean unitWeaponTargetLine, unitItemCarried;
@@ -41,8 +41,8 @@ public class ArcUnits{
             unitBuildPlan = Core.settings.getBool("unitbuildplan");
 
             defaultUnitTrans = RenderExt.unitHide ? 0 : Core.settings.getInt("unitTransparency") / 100f;
-            unitDrawMinHealth = Core.settings.getInt("unitDrawMinHealth");
-            unitBarDrawMinHealth = Core.settings.getInt("unitBarDrawMinHealth");
+            minHealthDraw = Core.settings.getInt("unitDrawMinHealth");
+            minHealthDrawStat = Core.settings.getInt("unitBarDrawMinHealth");
 
             unitWeaponRange = Core.settings.getInt("unitWeaponRange") * tilesize;
             unitWeaponRangeAlpha = Core.settings.getInt("unitWeaponRangeAlpha") / 100f;
@@ -62,78 +62,77 @@ public class ArcUnits{
 
     public static float drawARCUnits(Unit unit){
         if(unit.controller() instanceof Player){
-            drawPlayerEffect(unit);
-            if(RenderExt.alwaysShowPlayerUnit){
-                drawUnitBar(unit);
+            if(superUnitEffect > 0 && (unit.controller() == player || superUnitEffect == 2)) drawAimRange(unit);
+            if(unitTargetType > 0) drawAimTarget(unit);
+            if(arcBuildInfo && unit.controller() == player) drawBuildRange();
+            if(alwaysShowPlayerUnit){
+                drawUnitStat(unit);
                 return 1f;
             }
         }
-        if(defaultUnitTrans == 0 || (unit.maxHealth + unit.shield) < unitDrawMinHealth) return 0f;
-        if((unit.maxHealth + unit.shield) >= unitBarDrawMinHealth) drawUnitBar(unit);
+        if(defaultUnitTrans == 0 || (unit.maxHealth + unit.shield) < minHealthDraw) return 0f;
+        if((unit.maxHealth + unit.shield) >= minHealthDrawStat) drawUnitStat(unit);
         return defaultUnitTrans;
     }
 
-    private static void drawUnitBar(Unit unit){
+    private static void drawUnitStat(Unit unit){
         Draw.z(Draw.z() + 0.1f);
         if(unit.team() == player.team() || RenderExt.showOtherInfo){
-            drawWeaponRange(unit);
-            drawRTSAI(unit);
-            drawHealthBar(unit);
-            drawLogic(unit);
-            drawBuildPlan(unit);
+            if(unitWeaponRange > 0) drawWeaponRange(unit);
+            if(alwaysShowUnitRTSAi) drawRTSAI(unit);
+            if(unitHealthBar) drawHealthBar(unit);
+            if(unit.controller() instanceof LogicAI ai){
+                if(unitLogicMoveLine) drawLogicMove(unit, ai);
+                if(unitLogicTimerBars) drawLogicTimer(unit, ai);
+            }
+            if(unitBuildPlan) drawBuildPlan(unit);
         }
-        drawHitBox(unit);
+        if(unithitbox) drawHitBox(unit);
     }
 
-    private static void drawPlayerEffect(Unit unit){
+    private static void drawAimRange(Unit unit){
+        if(curStroke <= 0) return;
         Color effectColor = unit.controller() == player ? RenderExt.playerEffectColor : unit.team.color;
 
-        boolean drawCircle = (unit.controller() == player && superUnitEffect != 0) || (unit.controller() instanceof Player && superUnitEffect == 2);
-        if(drawCircle){
-            // 射程圈
-            Lines.stroke(Lines.getStroke() * curStroke);
+        float z = Draw.z();
+        Draw.z(Layer.effect - 2f);
+        Draw.color(effectColor);
+        Lines.stroke(curStroke);
 
-            Draw.z(Layer.effect - 2f);
-            Draw.color(effectColor);
-
-            Tmp.v1.trns(unit.rotation - 90, unit.x, unit.y).add(unit.x, unit.y);
-
-            if(curStroke > 0){
-                for(int i = 0; i < 5; i++){
-                    float rot = unit.rotation + i * 360f / 5 + Time.time * 0.5f;
-                    Lines.arc(unit.x, unit.y, unit.type.maxRange, 0.14f, rot, (int)(50 + unit.type.maxRange / 10));
-                }
-            }
+        for(int i = 0; i < 5; i++){
+            float rot = unit.rotation + i * 360f / 5 + Time.time * 0.5f;
+            Lines.arc(unit.x, unit.y, unit.type.maxRange, 0.14f, rot, (int)(50 + unit.type.maxRange / 10));
         }
-        // 武器圈
-        if(unitTargetType > 0){
-            Draw.z(Layer.effect);
-            Draw.color(effectColor, 0.8f);
-            Lines.stroke(1f);
-            Lines.line(unit.x, unit.y, unit.aimX, unit.aimY);
-            switch(unitTargetType){
-                case 1:
-                    Lines.dashCircle(unit.aimX, unit.aimY, 8);
-                    break;
-                case 2:
-                    Drawf.target(unit.aimX, unit.aimY, 6f, 0.7f, effectColor);
-                    break;
-                case 3:
-                case 4:
-                case 5:
-                    Draw.color(effectColor, 0.7f);
-                    if(unitTargetType == 3) Lines.poly(unit.aimX, unit.aimY, 4, 6f, Time.time * 1.5f);
-                    if(unitTargetType == 4) Lines.circle(unit.aimX, unit.aimY, 6f);
-                    Lines.spikes(unit.aimX, unit.aimY, 3f / 7f * 6f, 6f / 7f * 6f, 4, Time.time * 1.5f);
-                    Draw.color();
-                    break;
-            }
+        Draw.reset();
+        Draw.z(z);
+    }
+
+    private static void drawAimTarget(Unit unit){
+        Color effectColor = unit.controller() == player ? RenderExt.playerEffectColor : unit.team.color;
+        float z = Draw.z();
+        Draw.z(Layer.effect);
+
+        Draw.color(effectColor, 0.8f);
+        Lines.line(unit.x, unit.y, unit.aimX, unit.aimY);
+        switch(unitTargetType){
+            case 1:
+                Lines.dashCircle(unit.aimX, unit.aimY, 8);
+                break;
+            case 2:
+                Drawf.target(unit.aimX, unit.aimY, 6f, 0.7f, effectColor);
+                break;
+            case 3:
+            case 4:
+            case 5:
+                Draw.color(effectColor, 0.7f);
+                if(unitTargetType == 3) Lines.poly(unit.aimX, unit.aimY, 4, 6f, Time.time * 1.5f);
+                if(unitTargetType == 4) Lines.circle(unit.aimX, unit.aimY, 6f);
+                Lines.spikes(unit.aimX, unit.aimY, 3f / 7f * 6f, 6f / 7f * 6f, 4, Time.time * 1.5f);
+                break;
         }
 
-        //玩家专属特效
-        if(unit.controller() == player){
-            detailBuildMode();
-        }
+        Draw.color();
+        Draw.z(z);
     }
 
     private static void drawWeaponRange(Unit unit){
@@ -159,7 +158,7 @@ public class ArcUnits{
     }
 
     private static void drawRTSAI(Unit unit){
-        if(!control.input.commandMode && alwaysShowUnitRTSAi && unit.isCommandable() && unit.command().command != null){
+        if(!control.input.commandMode && unit.isCommandable() && unit.command().command != null){
             Draw.z(Layer.effect);
             CommandAI ai = unit.command();
             if(ai.attackTarget != null){
@@ -178,7 +177,6 @@ public class ArcUnits{
     }
 
     private static void drawHealthBar(Unit unit){
-        if(!unitHealthBar) return;
         Draw.z(Layer.shields + 6f);
         float y_corr = 0f;
         if(!player.dead() && unit.hitSize < 30f && unit.hitSize > 20f && unit.controller().isBeingControlled(player.unit())) y_corr = 2f;
@@ -242,82 +240,76 @@ public class ArcUnits{
         Draw.reset();
     }
 
-    private static void drawLogic(Unit unit){
-        if(unit.controller() instanceof LogicAI logicai){
-            if(unitLogicMoveLine && Mathf.len(logicai.moveX - unit.x, logicai.moveY - unit.y) <= 1200f){
-                Lines.stroke(1f);
-                Draw.color(0.2f, 0.2f, 1f, 0.9f);
-                Lines.dashLine(unit.x, unit.y, logicai.moveX, logicai.moveY, (int)(Mathf.len(logicai.moveX - unit.x, logicai.moveY - unit.y) / 8));
-                Lines.dashCircle(logicai.moveX, logicai.moveY, logicai.moveRad);
-                Draw.reset();
-            }
-            if(unitLogicTimerBars){
-                Lines.stroke(2f);
-                Draw.color(Pal.heal);
-                Lines.line(unit.x - (unit.hitSize() / 2f), unit.y - (unit.hitSize() / 2f), unit.x - (unit.hitSize() / 2f), unit.y + unit.hitSize() * (logicai.controlTimer / LogicAI.logicControlTimeout - 0.5f));
-                Draw.reset();
-            }
-        }
+    private static void drawLogicMove(Unit unit, LogicAI ai){
+        if(Mathf.len(ai.moveX - unit.x, ai.moveY - unit.y) > 1200f) return;
+
+        Draw.color(0.2f, 0.2f, 1f, 0.9f);
+        Lines.dashLine(unit.x, unit.y, ai.moveX, ai.moveY, (int)(Mathf.len(ai.moveX - unit.x, ai.moveY - unit.y) / 8));
+        Lines.dashCircle(ai.moveX, ai.moveY, ai.moveRad);
+        Draw.color();
+    }
+
+    private static void drawLogicTimer(Unit unit, LogicAI ai){
+        Draw.color(Pal.heal);
+        Lines.stroke(2f);
+        Lines.line(unit.x - (unit.hitSize() / 2f), unit.y - (unit.hitSize() / 2f), unit.x - (unit.hitSize() / 2f), unit.y + unit.hitSize() * (ai.controlTimer / LogicAI.logicControlTimeout - 0.5f));
+        Draw.reset();
     }
 
     private static void drawBuildPlan(Unit unit){
-        if(unitBuildPlan && !unit.plans().isEmpty()){
-            int counter = 0;
-            if(unit != player.unit()){
-                for(BuildPlan b : unit.plans()){
-                    unit.drawPlan(b, 0.5f);
-                    counter += 1;
-                    if(counter >= maxBuildPlans) break;
-                }
-            }
-            counter = 0;
-            Draw.color(Pal.gray);
-            Lines.stroke(2f);
-            float x = unit.x, y = unit.y, s = unit.hitSize / 2f;
+        if(unit.plans().isEmpty()) return;
+        int counter = 0;
+        if(unit != player.unit()){
             for(BuildPlan b : unit.plans()){
-                Tmp.v2.trns(Angles.angle(x, y, b.drawx(), b.drawy()), s);
-                Tmp.v3.trns(Angles.angle(x, y, b.drawx(), b.drawy()), b.block.size * 2f);
-                Lines.circle(b.drawx(), b.drawy(), b.block.size * 2f);
-                Lines.line(x + Tmp.v2.x, y + Tmp.v2.y, b.drawx() - Tmp.v3.x, b.drawy() - Tmp.v3.y);
-                x = b.drawx();
-                y = b.drawy();
-                s = b.block.size * 2f;
+                unit.drawPlan(b, 0.5f);
                 counter += 1;
                 if(counter >= maxBuildPlans) break;
             }
-
-            counter = 0;
-            Draw.color(unit.team.color);
-            Lines.stroke(0.75f);
-            x = unit.x;
-            y = unit.y;
-            s = unit.hitSize / 2f;
-            for(BuildPlan b : unit.plans()){
-                Tmp.v2.trns(Angles.angle(x, y, b.drawx(), b.drawy()), s);
-                Tmp.v3.trns(Angles.angle(x, y, b.drawx(), b.drawy()), b.block.size * 2f);
-                Lines.circle(b.drawx(), b.drawy(), b.block.size * 2f);
-                Draw.color(unit.team.color);
-                Lines.line(x + Tmp.v2.x, y + Tmp.v2.y, b.drawx() - Tmp.v3.x, b.drawy() - Tmp.v3.y);
-                x = b.drawx();
-                y = b.drawy();
-                s = b.block.size * 2f;
-                counter += 1;
-                if(counter >= maxBuildPlans) break;
-            }
-            Draw.reset();
         }
+        counter = 0;
+        Draw.color(Pal.gray);
+        Lines.stroke(2f);
+        float x = unit.x, y = unit.y, s = unit.hitSize / 2f;
+        for(BuildPlan b : unit.plans()){
+            Tmp.v2.trns(Angles.angle(x, y, b.drawx(), b.drawy()), s);
+            Tmp.v3.trns(Angles.angle(x, y, b.drawx(), b.drawy()), b.block.size * 2f);
+            Lines.circle(b.drawx(), b.drawy(), b.block.size * 2f);
+            Lines.line(x + Tmp.v2.x, y + Tmp.v2.y, b.drawx() - Tmp.v3.x, b.drawy() - Tmp.v3.y);
+            x = b.drawx();
+            y = b.drawy();
+            s = b.block.size * 2f;
+            counter += 1;
+            if(counter >= maxBuildPlans) break;
+        }
+
+        counter = 0;
+        Draw.color(unit.team.color);
+        Lines.stroke(0.75f);
+        x = unit.x;
+        y = unit.y;
+        s = unit.hitSize / 2f;
+        for(BuildPlan b : unit.plans()){
+            Tmp.v2.trns(Angles.angle(x, y, b.drawx(), b.drawy()), s);
+            Tmp.v3.trns(Angles.angle(x, y, b.drawx(), b.drawy()), b.block.size * 2f);
+            Lines.circle(b.drawx(), b.drawy(), b.block.size * 2f);
+            Draw.color(unit.team.color);
+            Lines.line(x + Tmp.v2.x, y + Tmp.v2.y, b.drawx() - Tmp.v3.x, b.drawy() - Tmp.v3.y);
+            x = b.drawx();
+            y = b.drawy();
+            s = b.block.size * 2f;
+            counter += 1;
+            if(counter >= maxBuildPlans) break;
+        }
+        Draw.reset();
     }
 
     private static void drawHitBox(Unit unit){
-        if(unithitbox){
-            Draw.color(unit.team.color, 0.5f);
-            Lines.circle(unit.x, unit.y, unit.hitSize / 2f);
-            Draw.reset();
-        }
+        Draw.color(unit.team.color, 0.5f);
+        Lines.circle(unit.x, unit.y, unit.hitSize / 2f);
+        Draw.color();
     }
 
-    private static void detailBuildMode(){
-        if(!arcBuildInfo || player.dead()) return;
+    private static void drawBuildRange(){
         if(control.input.droppingItem){
             Color color = player.within(Core.input.mouseWorld(control.input.getMouseX(), control.input.getMouseY()), itemTransferRange) ? Color.gold : Color.red;
             drawNSideRegion(player.unit().x, player.unit().y, 3, player.unit().type.buildRange, player.unit().rotation, color, 0.25f, player.unit().stack.item.fullIcon, false);
