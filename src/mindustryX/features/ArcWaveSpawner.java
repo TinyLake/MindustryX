@@ -72,9 +72,8 @@ public class ArcWaveSpawner{
             if(group.end > 99999) continue;
             maxwave = Math.max(maxwave, group.end);
         }
-        if(maxwave > 5000) return 200;
-        if(maxwave < 2 && state.rules.waveSpacing > 30f) return (int)(1800000 / state.rules.waveSpacing);
-        return maxwave + 1;
+        if(maxwave == 0 && state.rules.waveSpacing > 10f * Time.toSeconds) maxwave = (int)(120 * Time.toMinutes / state.rules.waveSpacing);
+        return Math.min(maxwave + 1, 1000);
     }
 
     public static void arcDashCircling(float x, float y, float radius, float speed){
