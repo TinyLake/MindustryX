@@ -101,7 +101,7 @@ way-zer <himc.wicp@gmail.com> on 2024/9/8
  core/src/mindustry/game/Schematic.java        | 104 +++++
  .../src/mindustry/graphics/BlockRenderer.java |  17 +-
  .../mindustry/graphics/OverlayRenderer.java   |  37 +-
- core/src/mindustry/input/DesktopInput.java    |  87 +++-
+ core/src/mindustry/input/DesktopInput.java    |  85 +++-
  core/src/mindustry/input/InputHandler.java    |  51 ++-
  core/src/mindustry/input/MobileInput.java     |  16 +-
  core/src/mindustry/logic/LExecutor.java       |  12 +-
@@ -122,7 +122,7 @@ way-zer <himc.wicp@gmail.com> on 2024/9/8
  .../ui/fragments/PlacementFragment.java       | 151 +++++--
  .../ui/fragments/PlayerListFragment.java      |  93 ++---
  core/src/mindustry/world/Block.java           |   7 +-
- 29 files changed, 1755 insertions(+), 284 deletions(-)
+ 29 files changed, 1754 insertions(+), 283 deletions(-)
 
 diff --git a/core/src/mindustry/ai/BlockIndexer.java b/core/src/mindustry/ai/BlockIndexer.java
 index 60bcca661ec27bbd5dc718ab9b4d7e1fc69d40dc..0b5de3b1215c9fdfd25e207e4491f792cc8b11a8 100644
@@ -829,7 +829,7 @@ index 8e0e3e6c6b2eba997c09a65ecf2977a2d84db946..b230e9c1b668e2bc4950767981aa0a88
  
      private static class CoreEdge{
 diff --git a/core/src/mindustry/input/DesktopInput.java b/core/src/mindustry/input/DesktopInput.java
-index 2dfd03352c965a11af6c6f2bf451a72e4a1ffede..be803fed2cdc5e128077895a6b82afec306bb89b 100644
+index 2dfd03352c965a11af6c6f2bf451a72e4a1ffede..812663d1a327b5c31e46ce6596b39951838a5ddd 100644
 --- a/core/src/mindustry/input/DesktopInput.java
 +++ b/core/src/mindustry/input/DesktopInput.java
 @@ -13,17 +13,25 @@ import arc.scene.ui.layout.*;
@@ -879,13 +879,11 @@ index 2dfd03352c965a11af6c6f2bf451a72e4a1ffede..be803fed2cdc5e128077895a6b82afec
              }).margin(6f);
          });
      }
-@@ -227,8 +242,9 @@ public class DesktopInput extends InputHandler{
-             panning = true;
+@@ -228,7 +243,8 @@ public class DesktopInput extends InputHandler{
          }
  
--        if((Math.abs(Core.input.axis(Binding.move_x)) > 0 || Math.abs(Core.input.axis(Binding.move_y)) > 0 || input.keyDown(Binding.mouse_move)) && (!scene.hasField())){
+         if((Math.abs(Core.input.axis(Binding.move_x)) > 0 || Math.abs(Core.input.axis(Binding.move_y)) > 0 || input.keyDown(Binding.mouse_move)) && (!scene.hasField())){
 -            panning = false;
-+        if((Math.abs(Core.input.axis(Binding.move_x)) > 0 || Math.abs(Core.input.axis(Binding.move_y)) > 0 || input.keyDown(Binding.mouse_move))){
 +            if(!Core.settings.getBool("viewMode")) panning = false;
 +            follow = null;
          }
