@@ -6,6 +6,7 @@ import arc.net.Client
 import arc.scene.ui.layout.Cell
 import arc.scene.ui.layout.Table
 import arc.util.Http
+import arc.util.Log
 import arc.util.serialization.Jval
 import mindustry.Vars
 import mindustry.gen.Icon
@@ -14,6 +15,7 @@ import mindustry.ui.dialogs.BaseDialog
 import mindustryX.mods.claj.ClajIntegration
 
 class ManageRoomsDialog : BaseDialog("管理claj房间") {
+    private val api = "https://api.mindustry.top/servers/claj"
     private var servers: List<ClajServer> = emptyList()
     private val list: Table
 
@@ -26,15 +28,22 @@ class ManageRoomsDialog : BaseDialog("管理claj房间") {
         list.defaults().growX().padBottom(8f)
         list.update { list.cells.retainAll { cell: Cell<*> -> cell.get() != null } } // remove closed rooms
         cont.row()
-        cont.labelWrap("复制Claj代码给你的朋友来联机").labelAlign(2, 8).padTop(16f).width(400f).get().style.fontColor = Color.lightGray
+        cont.labelWrap("选择一个服务器，创建Claj房间，复制Claj代码给你的朋友来联机").labelAlign(2, 8).padTop(16f).width(400f).get().style.fontColor = Color.lightGray
 
         shown {
             list.clearChildren()
             if (servers.isEmpty()) {
                 list.add("获取可用服务器中，请稍后...")
-                Http.get("http://p4.simpfun.cn:8667/client/servers") { res: Http.HttpResponse ->
-                    servers = Jval.read(res.resultAsString).asArray().asIterable().map {
-                        ClajServer(it.getString("address"), it.getInt("port", Vars.port))
+                Http.get(api) { res: Http.HttpResponse ->
+                    servers += Jval.read(res.resultAsString).asArray().asIterable().mapNotNull {
+                        try {
+                            val addr = it.asString().split(":")[0]
+                            val port = it.asString().split(":").getOrNull(1)?.toInt() ?: Vars.port
+                            ClajServer(addr, port)
+                        } catch (e: Exception) {
+                            Log.warn("解析Claj服务器失败: ${e.message}")
+                            return@mapNotNull null
+                        }
                     }
                     Core.app.post { show() }
                 }
@@ -44,6 +53,14 @@ class ManageRoomsDialog : BaseDialog("管理claj房间") {
                     if (!it.hasChildren()) it.rebuild()
                 }
             }
+        }
+
+        buttons.button("手动添加", Icon.add, Vars.iconMed) {
+            Vars.ui.showTextInput("添加Claj服务器", "请输入服务器地址", "", { addr ->
+                val port = addr.split(":").getOrNull(1)?.toInt() ?: Vars.port
+                servers += ClajServer(addr.split(":")[0], port)
+                show()
+            })
         }
     }
 
