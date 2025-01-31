@@ -1,8 +1,11 @@
 package mindustryX.features;
 
 import arc.*;
+import arc.graphics.*;
+import arc.graphics.g2d.*;
 import arc.math.*;
 import arc.math.geom.*;
+import arc.scene.*;
 import arc.scene.actions.*;
 import arc.scene.event.*;
 import arc.scene.ui.*;
@@ -21,6 +24,7 @@ public class UIExt{
     public static SettingsV2.Data<Integer> quickToolOffset = new SettingsV2.SliderPref(-250, 250, 10).create("quickToolOffset", 0);
 
     public static TeamSelectDialog teamSelect;
+    public static ContentSelector contentSelector;
     public static ModsRecommendDialog modsRecommend = new ModsRecommendDialog();
     public static TeamsStatDisplay teamsStatDisplay;
     public static ArcMessageDialog arcMessageDialog = new ArcMessageDialog();
@@ -33,6 +37,7 @@ public class UIExt{
 
     public static void init(){
         teamSelect = new TeamSelectDialog();
+        contentSelector = new ContentSelector();
 
         teamsStatDisplay = new TeamsStatDisplay();
         ui.hudGroup.fill(t -> {
@@ -123,5 +128,45 @@ public class UIExt{
             ui.showErrorMessage("@linkfail");
             Core.app.setClipboardText(uri);
         }
+    }
+
+    public static Element hitter(boolean background, HitterCons cons, String hint){
+        Element hitter;
+        if(background){
+            hitter = new Element(){
+                @Override
+                public void draw(){
+                    super.draw();
+
+                    Draw.color(Color.black, 0.25f);
+                    Fill.rect(x + width / 2, y + height / 2, width, height);
+                }
+            };
+        }else{
+            hitter = new Element();
+        }
+
+        hitter.setFillParent(true);
+
+        // hitter should be added by user.
+//        Core.scene.add(hitter);
+
+        hitter.update(hitter::toFront);
+
+        hitter.addListener(new ClickListener(){
+            @Override
+            public void clicked(InputEvent event, float x, float y){
+                super.clicked(event, x, y);
+
+                cons.get(x, y, hitter::remove);
+            }
+        });
+
+        announce(hint, 2);
+        return hitter;
+    }
+
+    public interface HitterCons{
+        void get(float x, float y, Runnable hider);
     }
 }
