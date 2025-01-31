@@ -373,7 +373,7 @@ public class UnitFactoryDialog extends BaseDialog{
                 input.panning = true;
             }
 
-            UIExt.hitter( (cx, cy) -> {
+            UIExt.hitter((cx, cy) -> {
                 show();
 
                 lookingLocation = false;
