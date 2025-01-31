@@ -1,17 +1,19 @@
 package mindustryX.events;
 
 import arc.*;
+import arc.graphics.*;
 import arc.util.*;
+import mindustry.content.*;
 import mindustry.entities.*;
 import mindustry.gen.*;
-import mindustryX.features.*;
+import mindustry.graphics.*;
 
 /**
  * @author minri2
  * Create by 2025/1/31
  */
 public class HealthChangedEvent{
-    public static final HealthChangedEvent healthChangedEvent = new HealthChangedEvent();
+    private static final HealthChangedEvent healthChangedEvent = new HealthChangedEvent();
     private static boolean autoReset = true;
 
     public Healthc entity;
@@ -22,45 +24,55 @@ public class HealthChangedEvent{
     private HealthChangedEvent(){
     }
 
-    public HealthChangedEvent setSource(Sized source){
-        this.source = source;
-        return this;
+    public static void setSource(Sized source){
+        healthChangedEvent.source = source;
     }
 
-    public HealthChangedEvent setType(DamageType type){
-        this.type = type;
-        return this;
+    public static void setType(DamageType type){
+        healthChangedEvent.type = type;
     }
 
-    public HealthChangedEvent startWrap(){
+    public static void startWrap(){
         autoReset = false;
-        return this;
     }
 
-    public HealthChangedEvent endWrap(){
+    public static void endWrap(){
         autoReset = true;
-        reset();
-        return this;
+        healthChangedEvent.reset();
     }
 
-    public HealthChangedEvent fire(Healthc entity, float amount){
-        if(type == null){ // default normal
-            type = DamageType.normal;
+    public static void fire(Healthc entity, float amount){
+        if(healthChangedEvent.type == null){ // default normal
+            healthChangedEvent.type = DamageType.normal;
         }
 
-        this.entity = entity;
-        this.amount = amount;
-        Events.fire(this);
+        healthChangedEvent.entity = entity;
+        healthChangedEvent.amount = amount;
+        Events.fire(healthChangedEvent);
 
         if(autoReset){
-            reset();
+            healthChangedEvent.reset();
         }
-        return this;
     }
 
     public HealthChangedEvent reset(){
         setSource(null);
         setType(DamageType.normal);
         return this;
+    }
+
+    public static class DamageType{
+        public static DamageType
+        normal = new DamageType(null, Pal.health),
+        heal = new DamageType(null, Pal.heal),
+        splash = new DamageType(StatusEffects.blasted.emoji(), StatusEffects.blasted.color);
+
+        public final Color color;
+        public @Nullable String icon;
+
+        private DamageType(String icon, Color color){
+            this.icon = icon;
+            this.color = color.cpy();
+        }
     }
 }
