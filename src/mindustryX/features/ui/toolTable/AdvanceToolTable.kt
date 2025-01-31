@@ -19,10 +19,11 @@ import mindustryX.features.LogicExt
 import mindustryX.features.Settings
 import mindustryX.features.TimeControl
 import mindustryX.features.UIExt
+import mindustryX.features.ui.UnitFactoryDialog
 
 //move from mindustry.arcModule.ui.AdvanceToolTable
 class AdvanceToolTable : ToolTableBase(Iconc.wrench.toString()) {
-    val factoryDialog: ArcUnitFactoryDialog = ArcUnitFactoryDialog()
+    val factoryDialog: UnitFactoryDialog = UnitFactoryDialog()
     private val rulesDialog = CustomRulesDialog()
     private val mapInfoDialog: MapInfoDialog = MapInfoDialog()
 
@@ -46,7 +47,7 @@ class AdvanceToolTable : ToolTableBase(Iconc.wrench.toString()) {
                 cloneUnit.add()
             }.width(40f).tooltip("[acid]克隆")
             button(UnitTypes.gamma.emoji() + "[red]×", Styles.cleart) { if (!Vars.player.dead()) Vars.player.unit().kill() }.width(40f).tooltip("[red]自杀")
-            button(Icon.waves, Styles.clearNonei) { factoryDialog.show() }.width(40f).tooltip("[acid]单位工厂-ARC")
+            button(Icon.waves, Styles.clearNonei) { factoryDialog.show() }.width(40f).tooltip("[accent]单位工厂-X")
         }
 
 
