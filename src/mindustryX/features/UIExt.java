@@ -130,43 +130,37 @@ public class UIExt{
         }
     }
 
-    public static Element hitter(boolean background, HitterCons cons, String hint){
+    public static void hitter(HitterCons cons){
         Element hitter;
-        if(background){
-            hitter = new Element(){
-                @Override
-                public void draw(){
-                    super.draw();
+        hitter = new Element(){
+            @Override
+            public void draw(){
+                super.draw();
 
-                    Draw.color(Color.black, 0.25f);
-                    Fill.rect(x + width / 2, y + height / 2, width, height);
-                }
-            };
-        }else{
-            hitter = new Element();
-        }
-
+                Draw.color(Color.black, 0.25f);
+                Fill.rect(x + width / 2, y + height / 2, width, height);
+            }
+        };
         hitter.setFillParent(true);
-
-        // hitter should be added by user.
-//        Core.scene.add(hitter);
-
         hitter.update(hitter::toFront);
-
         hitter.addListener(new ClickListener(){
             @Override
             public void clicked(InputEvent event, float x, float y){
                 super.clicked(event, x, y);
 
-                cons.get(x, y, hitter::remove);
+                if(cons.get(x, y)){
+                    hitter.remove();
+                };
             }
         });
 
-        announce(hint, 2);
-        return hitter;
+        Core.scene.add(hitter);
     }
 
     public interface HitterCons{
-        void get(float x, float y, Runnable hider);
+        /**
+         * @return whether hitter should be removed.
+         */
+        boolean get(float x, float y);
     }
 }

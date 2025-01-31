@@ -349,20 +349,19 @@ public class UnitFactoryDialog extends BaseDialog{
             lookingLocation = true;
             hide();
 
-            Element hitter = UIExt.hitter(true, (cx, cy, hider) -> {
+            UIExt.hitter((cx, cy) -> {
                 Vec2 v = Core.camera.unproject(cx, cy);
                 spawnUnit.set(v);
-
-                hider.run();
 
                 // 给个时间反应一下
                 Timer.schedule(() -> {
                     show();
                     lookingLocation = false;
                 }, 0.5f);
-            }, "[green]点击屏幕采集坐标");
+                return true;
+            });
 
-            Core.scene.add(hitter);
+            UIExt.announce("[green]点击屏幕采集坐标", 2f);
         });
 
         posTable.button(Icon.eyeSmall, clearNonei, () -> {
@@ -374,15 +373,14 @@ public class UnitFactoryDialog extends BaseDialog{
                 input.panning = true;
             }
 
-            Element hitter = UIExt.hitter(false, (cx, cy, hider) -> {
-                hider.run();
-
+            UIExt.hitter( (cx, cy) -> {
                 show();
 
                 lookingLocation = false;
-            }, "[green]点击屏幕返回");
+                return true;
+            });
 
-            Core.scene.add(hitter);
+            UIExt.announce("[green]点击屏幕返回", 2f);
         }).padLeft(4);
 
         posTable.button(new TextureRegionDrawable(UnitTypes.gamma.uiIcon), clearNonei, 24, () -> {
