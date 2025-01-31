@@ -86,6 +86,10 @@ public class Settings{
             c.checkPref("unithitbox", false);
             c.checkPref("unitHideExcludePlayers", true);
             c.sliderPref("unitDrawMinHealth", 0, 0, 2500, 50, i -> i + "[red]HP");
+            c.checkPref("damagePopup", true);
+            c.checkPref("healPopup", true);
+            c.checkPref("playerPopupOnly", true);
+            c.sliderPref("popupMinHealth", 600, 0, 4000, 50, i -> i + "[red]HP");
 
             c.addCategory("developerMode");
             c.checkPref("renderSort", false);
