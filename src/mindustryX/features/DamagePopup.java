@@ -17,6 +17,7 @@ import mindustry.gen.*;
 import mindustry.graphics.*;
 import mindustry.ui.*;
 import mindustryX.events.*;
+import mindustryX.events.HealthChangedEvent.*;
 
 import java.util.*;
 

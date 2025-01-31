@@ -1,48 +1,52 @@
-Subject: [PATCH] C: 伤害跳字
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: MinRi2 <2275045670@qq.com>
+Date: Fri, 31 Jan 2025 23:13:28 +0800
+Subject: [PATCH] HAPI: health changed event
+
 ---
-Index: core/src/mindustry/entities/Damage.java
-IDEA additional info:
-Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
-<+>UTF-8
-===================================================================
+ core/src/mindustry/entities/Damage.java       |  5 ++++
+ core/src/mindustry/entities/Lightning.java    |  3 ++-
+ .../mindustry/entities/bullet/BulletType.java |  9 +++++++
+ .../mindustry/entities/comp/BuildingComp.java | 10 +++++++-
+ .../mindustry/entities/comp/HealthComp.java   | 25 +++++++++++++++++++
+ .../mindustry/entities/comp/ShieldComp.java   |  3 +++
+ 6 files changed, 53 insertions(+), 2 deletions(-)
+
 diff --git a/core/src/mindustry/entities/Damage.java b/core/src/mindustry/entities/Damage.java
---- a/core/src/mindustry/entities/Damage.java	(revision 4b425b627339002360a89f999d8e6d672ca5701d)
-+++ b/core/src/mindustry/entities/Damage.java	(revision 147646f3aec8a5d4fc683524605eca0d1dbf6f40)
-@@ -20,6 +20,7 @@
+index 7f13c16546af4650e8dee67fbb62e39c911d1814..38dd605720c06c45b0ce832f19fc0c16dc19d969 100644
+--- a/core/src/mindustry/entities/Damage.java
++++ b/core/src/mindustry/entities/Damage.java
+@@ -18,6 +18,7 @@ import mindustry.type.*;
+ import mindustry.world.*;
+ import mindustry.world.blocks.*;
  import mindustry.world.meta.*;
++import mindustryX.events.*;
  
  import static mindustry.Vars.*;
-+import static mindustryX.events.HealthChangedEvent.healthChangedEvent;
  
- /** Utility class for damaging in an area. */
- public class Damage{
-@@ -502,6 +503,8 @@
+@@ -502,6 +503,8 @@ public class Damage{
              boolean dead = unit.dead;
  
              float amount = calculateDamage(scaled ? Math.max(0, unit.dst(x, y) - unit.type.hitSize/2) : unit.dst(x, y), radius, damage);
 +
-+            healthChangedEvent.setSource(source);
++            HealthChangedEvent.setSource(source);
              unit.damage(amount);
  
              if(source != null){
-@@ -548,6 +551,8 @@
+@@ -548,6 +551,8 @@ public class Damage{
              //why? because otherwise the building would absorb everything in one cell, which means much less damage than a nearby explosion.
              //this needs to be compensated
              if(in != null && in.team != team && in.block.size > 1 && in.health > damage){
-+                healthChangedEvent.setSource(source);
++                HealthChangedEvent.setSource(source);
 +
                  //deal the damage of an entire side, to be equivalent with maximum 'standard' damage
                  in.damage(team, damage * Math.min((in.block.size), baseRadius * 0.4f));
                  //no need to continue with the explosion
-Index: core/src/mindustry/entities/Lightning.java
-IDEA additional info:
-Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
-<+>UTF-8
-===================================================================
 diff --git a/core/src/mindustry/entities/Lightning.java b/core/src/mindustry/entities/Lightning.java
---- a/core/src/mindustry/entities/Lightning.java	(revision 4b425b627339002360a89f999d8e6d672ca5701d)
-+++ b/core/src/mindustry/entities/Lightning.java	(revision 147646f3aec8a5d4fc683524605eca0d1dbf6f40)
-@@ -43,7 +43,8 @@
+index 76bbcb82b5895ac1b38a6eb15354e9213388f7da..d7319ea55492280601dd9ef80d0f02bc1c9e889d 100644
+--- a/core/src/mindustry/entities/Lightning.java
++++ b/core/src/mindustry/entities/Lightning.java
+@@ -43,7 +43,8 @@ public class Lightning{
          bhit = false;
  
          for(int i = 0; i < length / 2; i++){
@@ -52,15 +56,11 @@ diff --git a/core/src/mindustry/entities/Lightning.java b/core/src/mindustry/ent
              lines.add(new Vec2(x + Mathf.range(3f), y + Mathf.range(3f)));
  
              if(lines.size > 1){
-Index: core/src/mindustry/entities/bullet/BulletType.java
-IDEA additional info:
-Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
-<+>UTF-8
-===================================================================
 diff --git a/core/src/mindustry/entities/bullet/BulletType.java b/core/src/mindustry/entities/bullet/BulletType.java
---- a/core/src/mindustry/entities/bullet/BulletType.java	(revision 4b425b627339002360a89f999d8e6d672ca5701d)
-+++ b/core/src/mindustry/entities/bullet/BulletType.java	(revision 147646f3aec8a5d4fc683524605eca0d1dbf6f40)
-@@ -22,9 +22,11 @@
+index a53fbb9d96e2667ab5f77874c28a0dbdc24b3bcf..fa7435bc5fc44b37ee155de7279478819b20dd8e 100644
+--- a/core/src/mindustry/entities/bullet/BulletType.java
++++ b/core/src/mindustry/entities/bullet/BulletType.java
+@@ -22,6 +22,7 @@ import mindustry.graphics.*;
  import mindustry.type.*;
  import mindustry.world.*;
  import mindustry.world.blocks.*;
@@ -68,111 +68,99 @@ diff --git a/core/src/mindustry/entities/bullet/BulletType.java b/core/src/mindu
  import mindustryX.features.*;
  
  import static mindustry.Vars.*;
-+import static mindustryX.events.HealthChangedEvent.healthChangedEvent;
- 
- public class BulletType extends Content implements Cloneable{
-     static final UnitDamageEvent bulletDamageEvent = new UnitDamageEvent();
-@@ -391,6 +393,7 @@
+@@ -391,6 +392,7 @@ public class BulletType extends Content implements Cloneable{
          }
  
          if(heals() && build.team == b.team && !(build.block instanceof ConstructBlock)){
-+            healthChangedEvent.setSource(b);
++            HealthChangedEvent.setSource(b);
              healEffect.at(build.x, build.y, 0f, healColor, build.block);
              build.heal(healPercent / 100f * build.maxHealth + healAmount);
          }else if(build.team != b.team && direct){
-@@ -404,6 +407,8 @@
+@@ -404,6 +406,8 @@ public class BulletType extends Content implements Cloneable{
          boolean wasDead = entity instanceof Unit u && u.dead;
  
          if(entity instanceof Healthc h){
-+            healthChangedEvent.setSource(entity);
++            HealthChangedEvent.setSource(entity);
 +
              float damage = b.damage;
              float shield = entity instanceof Shieldc s ? Math.max(s.shield(), 0f) : 0f;
              if(maxDamageFraction > 0){
-@@ -505,7 +510,10 @@
+@@ -505,7 +509,11 @@ public class BulletType extends Content implements Cloneable{
  
      public void createSplashDamage(Bullet b, float x, float y){
          if(splashDamageRadius > 0 && !b.absorbed){
 +            // MDTX: 建筑会延迟一帧 不取建筑爆炸
-+            healthChangedEvent.startWrap().setType(DamageType.splash);
++            HealthChangedEvent.startWrap();
++            HealthChangedEvent.setType(HealthChangedEvent.DamageType.splash);
              Damage.damage(b.team, x, y, splashDamageRadius, splashDamage * b.damageMultiplier(), splashDamagePierce, collidesAir, collidesGround, scaledSplashDamage, b);
-+            healthChangedEvent.endWrap();
++            HealthChangedEvent.endWrap();
  
              if(status != StatusEffects.none){
                  Damage.status(b.team, x, y, splashDamageRadius, status, statusDuration, collidesAir, collidesGround);
-@@ -513,6 +521,7 @@
+@@ -513,6 +521,7 @@ public class BulletType extends Content implements Cloneable{
  
              if(heals()){
                  indexer.eachBlock(b.team, x, y, splashDamageRadius, Building::damaged, other -> {
-+                    healthChangedEvent.setSource(b);
++                    HealthChangedEvent.setSource(b);
                      healEffect.at(other.x, other.y, 0f, healColor, other.block);
                      other.heal(healPercent / 100f * other.maxHealth() + healAmount);
                  });
-Index: core/src/mindustry/entities/comp/BuildingComp.java
-IDEA additional info:
-Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
-<+>UTF-8
-===================================================================
 diff --git a/core/src/mindustry/entities/comp/BuildingComp.java b/core/src/mindustry/entities/comp/BuildingComp.java
---- a/core/src/mindustry/entities/comp/BuildingComp.java	(revision 4b425b627339002360a89f999d8e6d672ca5701d)
-+++ b/core/src/mindustry/entities/comp/BuildingComp.java	(revision 147646f3aec8a5d4fc683524605eca0d1dbf6f40)
-@@ -46,6 +46,7 @@
+index 0ae44bc028104fc13cef6853bb8f0c4f8113a24e..c3dfedfd20c7495f7101ce6f1f43149338e2065b 100644
+--- a/core/src/mindustry/entities/comp/BuildingComp.java
++++ b/core/src/mindustry/entities/comp/BuildingComp.java
+@@ -41,6 +41,7 @@ import mindustry.world.blocks.power.*;
+ import mindustry.world.consumers.*;
+ import mindustry.world.meta.*;
+ import mindustry.world.modules.*;
++import mindustryX.events.*;
+ import mindustryX.features.*;
+ 
  import java.util.*;
- 
- import static mindustry.Vars.*;
-+import static mindustryX.events.HealthChangedEvent.healthChangedEvent;
- 
- @EntityDef(value = {Buildingc.class}, isFinal = false, genio = false, serialize = false)
- @Component(base = true)
-@@ -1658,6 +1659,7 @@
+@@ -1658,6 +1659,7 @@ abstract class BuildingComp implements Posc, Teamc, Healthc, Buildingc, Timerc,
              damage = Damage.applyArmor(damage, block.armor);
          }
  
-+        healthChangedEvent.setSource(other);
++        HealthChangedEvent.setSource(other);
          damage(other.team, damage);
          Events.fire(bulletDamageEvent.set(self(), other));
  
-@@ -1675,6 +1677,8 @@
+@@ -1675,6 +1677,8 @@ abstract class BuildingComp implements Posc, Teamc, Healthc, Buildingc, Timerc,
  
      /** Handles splash damage with a bullet source. */
      public void damage(Bullet bullet, Team source, float damage){
-+        healthChangedEvent.setSource(bullet);
++        HealthChangedEvent.setSource(bullet);
 +
          damage(source, damage);
          Events.fire(bulletDamageEvent.set(self(), bullet));
      }
-@@ -1927,7 +1931,10 @@
+@@ -1927,7 +1931,11 @@ abstract class BuildingComp implements Posc, Teamc, Healthc, Buildingc, Timerc,
  
          //TODO handle this better on the client.
          if(!net.client()){
 -            health -= handleDamage(damage);
 +            float handledDamage = handleDamage(damage);
++
 +            health -= handledDamage;
 +
 +            onDamaged(handledDamage);
          }
  
          healthChanged();
-Index: core/src/mindustry/entities/comp/HealthComp.java
-IDEA additional info:
-Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
-<+>UTF-8
-===================================================================
 diff --git a/core/src/mindustry/entities/comp/HealthComp.java b/core/src/mindustry/entities/comp/HealthComp.java
---- a/core/src/mindustry/entities/comp/HealthComp.java	(revision 4b425b627339002360a89f999d8e6d672ca5701d)
-+++ b/core/src/mindustry/entities/comp/HealthComp.java	(revision 147646f3aec8a5d4fc683524605eca0d1dbf6f40)
-@@ -3,6 +3,10 @@
+index f315b3fb753d1c2d4a2895fc27e0d06ac141b174..62f6845c9338eac71dbbfb0a49d33bdc4ef422be 100644
+--- a/core/src/mindustry/entities/comp/HealthComp.java
++++ b/core/src/mindustry/entities/comp/HealthComp.java
+@@ -3,6 +3,8 @@ package mindustry.entities.comp;
  import arc.util.*;
  import mindustry.annotations.Annotations.*;
  import mindustry.gen.*;
 +import mindustryX.*;
-+import mindustryX.features.*;
-+
-+import static mindustryX.events.HealthChangedEvent.healthChangedEvent;
++import mindustryX.events.*;
  
  @Component
  abstract class HealthComp implements Entityc, Posc{
-@@ -62,6 +66,11 @@
+@@ -62,6 +64,11 @@ abstract class HealthComp implements Entityc, Posc{
          if(Float.isNaN(health)) health = 0f;
  
          health -= amount;
@@ -184,25 +172,25 @@ diff --git a/core/src/mindustry/entities/comp/HealthComp.java b/core/src/mindust
          hitTime = 1f;
          if(health <= 0 && !dead){
              kill();
-@@ -86,6 +95,17 @@
+@@ -86,6 +93,17 @@ abstract class HealthComp implements Entityc, Posc{
          damagePierce(amount * Time.delta, hitTime <= -20 + hitDuration);
      }
  
 +    @MindustryXApi
 +    void onDamaged(float damage){
-+        healthChangedEvent.fire(self(), damage);
++        HealthChangedEvent.fire(self(), damage);
 +    }
 +
 +    @MindustryXApi
 +    void onHealed(float amount){
-+        healthChangedEvent.setType(DamageType.heal);
-+        healthChangedEvent.fire(self(), amount);
++        HealthChangedEvent.setType(HealthChangedEvent.DamageType.heal);
++        HealthChangedEvent.fire(self(), amount);
 +    }
 +
      void clampHealth(){
          health = Math.min(health, maxHealth);
          if(Float.isNaN(health)) health = 0f;
-@@ -93,8 +113,15 @@
+@@ -93,8 +111,15 @@ abstract class HealthComp implements Entityc, Posc{
  
      /** Heals by a flat amount. */
      void heal(float amount){
@@ -218,23 +206,11 @@ diff --git a/core/src/mindustry/entities/comp/HealthComp.java b/core/src/mindust
      }
  
      /** Heals by a 0-1 fraction of max health. */
-Index: core/src/mindustry/entities/comp/ShieldComp.java
-IDEA additional info:
-Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
-<+>UTF-8
-===================================================================
 diff --git a/core/src/mindustry/entities/comp/ShieldComp.java b/core/src/mindustry/entities/comp/ShieldComp.java
---- a/core/src/mindustry/entities/comp/ShieldComp.java	(revision 4b425b627339002360a89f999d8e6d672ca5701d)
-+++ b/core/src/mindustry/entities/comp/ShieldComp.java	(revision 147646f3aec8a5d4fc683524605eca0d1dbf6f40)
-@@ -1,6 +1,6 @@
- package mindustry.entities.comp;
- 
--import arc.math.WindowedMean;
-+import arc.math.*;
- import arc.util.*;
- import mindustry.*;
- import mindustry.annotations.Annotations.*;
-@@ -61,6 +61,9 @@
+index 1e06d2950428331e65745d4821d3c53f079c75c4..520f26b693a9ac69fff9fee687974c7f7dc739cf 100644
+--- a/core/src/mindustry/entities/comp/ShieldComp.java
++++ b/core/src/mindustry/entities/comp/ShieldComp.java
+@@ -61,6 +61,9 @@ abstract class ShieldComp implements Healthc, Posc{
  
          if(amount > 0 && type.killable){
              health -= amount;
