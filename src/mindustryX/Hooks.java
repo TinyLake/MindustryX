@@ -21,6 +21,7 @@ public class Hooks implements ApplicationListener{
         Settings.addSettings();
         DebugUtil.init();//this is safe, and better at beforeInit,
         BindingExt.init();
+        DamagePopup.init();
     }
 
     /** invoke after loading, just before `Mod::init` */

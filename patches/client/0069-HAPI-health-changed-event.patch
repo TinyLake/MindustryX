@@ -1,0 +1,246 @@
+Subject: [PATCH] C: 伤害跳字
+---
+Index: core/src/mindustry/entities/Damage.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/core/src/mindustry/entities/Damage.java b/core/src/mindustry/entities/Damage.java
+--- a/core/src/mindustry/entities/Damage.java	(revision 4b425b627339002360a89f999d8e6d672ca5701d)
++++ b/core/src/mindustry/entities/Damage.java	(revision 147646f3aec8a5d4fc683524605eca0d1dbf6f40)
+@@ -20,6 +20,7 @@
+ import mindustry.world.meta.*;
+ 
+ import static mindustry.Vars.*;
++import static mindustryX.events.HealthChangedEvent.healthChangedEvent;
+ 
+ /** Utility class for damaging in an area. */
+ public class Damage{
+@@ -502,6 +503,8 @@
+             boolean dead = unit.dead;
+ 
+             float amount = calculateDamage(scaled ? Math.max(0, unit.dst(x, y) - unit.type.hitSize/2) : unit.dst(x, y), radius, damage);
++
++            healthChangedEvent.setSource(source);
+             unit.damage(amount);
+ 
+             if(source != null){
+@@ -548,6 +551,8 @@
+             //why? because otherwise the building would absorb everything in one cell, which means much less damage than a nearby explosion.
+             //this needs to be compensated
+             if(in != null && in.team != team && in.block.size > 1 && in.health > damage){
++                healthChangedEvent.setSource(source);
++
+                 //deal the damage of an entire side, to be equivalent with maximum 'standard' damage
+                 in.damage(team, damage * Math.min((in.block.size), baseRadius * 0.4f));
+                 //no need to continue with the explosion
+Index: core/src/mindustry/entities/Lightning.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/core/src/mindustry/entities/Lightning.java b/core/src/mindustry/entities/Lightning.java
+--- a/core/src/mindustry/entities/Lightning.java	(revision 4b425b627339002360a89f999d8e6d672ca5701d)
++++ b/core/src/mindustry/entities/Lightning.java	(revision 147646f3aec8a5d4fc683524605eca0d1dbf6f40)
+@@ -43,7 +43,8 @@
+         bhit = false;
+ 
+         for(int i = 0; i < length / 2; i++){
+-            hitCreate.create(null, team, x, y, rotation, damage * (hitter == null ? 1f : hitter.damageMultiplier()), 1f, 1f, hitter);
++            // MDTX: hitBullet set the owner to hitter.
++            hitCreate.create(hitter, team, x, y, rotation, damage * (hitter == null ? 1f : hitter.damageMultiplier()), 1f, 1f, hitter);
+             lines.add(new Vec2(x + Mathf.range(3f), y + Mathf.range(3f)));
+ 
+             if(lines.size > 1){
+Index: core/src/mindustry/entities/bullet/BulletType.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/core/src/mindustry/entities/bullet/BulletType.java b/core/src/mindustry/entities/bullet/BulletType.java
+--- a/core/src/mindustry/entities/bullet/BulletType.java	(revision 4b425b627339002360a89f999d8e6d672ca5701d)
++++ b/core/src/mindustry/entities/bullet/BulletType.java	(revision 147646f3aec8a5d4fc683524605eca0d1dbf6f40)
+@@ -22,9 +22,11 @@
+ import mindustry.type.*;
+ import mindustry.world.*;
+ import mindustry.world.blocks.*;
++import mindustryX.events.*;
+ import mindustryX.features.*;
+ 
+ import static mindustry.Vars.*;
++import static mindustryX.events.HealthChangedEvent.healthChangedEvent;
+ 
+ public class BulletType extends Content implements Cloneable{
+     static final UnitDamageEvent bulletDamageEvent = new UnitDamageEvent();
+@@ -391,6 +393,7 @@
+         }
+ 
+         if(heals() && build.team == b.team && !(build.block instanceof ConstructBlock)){
++            healthChangedEvent.setSource(b);
+             healEffect.at(build.x, build.y, 0f, healColor, build.block);
+             build.heal(healPercent / 100f * build.maxHealth + healAmount);
+         }else if(build.team != b.team && direct){
+@@ -404,6 +407,8 @@
+         boolean wasDead = entity instanceof Unit u && u.dead;
+ 
+         if(entity instanceof Healthc h){
++            healthChangedEvent.setSource(entity);
++
+             float damage = b.damage;
+             float shield = entity instanceof Shieldc s ? Math.max(s.shield(), 0f) : 0f;
+             if(maxDamageFraction > 0){
+@@ -505,7 +510,10 @@
+ 
+     public void createSplashDamage(Bullet b, float x, float y){
+         if(splashDamageRadius > 0 && !b.absorbed){
++            // MDTX: 建筑会延迟一帧 不取建筑爆炸
++            healthChangedEvent.startWrap().setType(DamageType.splash);
+             Damage.damage(b.team, x, y, splashDamageRadius, splashDamage * b.damageMultiplier(), splashDamagePierce, collidesAir, collidesGround, scaledSplashDamage, b);
++            healthChangedEvent.endWrap();
+ 
+             if(status != StatusEffects.none){
+                 Damage.status(b.team, x, y, splashDamageRadius, status, statusDuration, collidesAir, collidesGround);
+@@ -513,6 +521,7 @@
+ 
+             if(heals()){
+                 indexer.eachBlock(b.team, x, y, splashDamageRadius, Building::damaged, other -> {
++                    healthChangedEvent.setSource(b);
+                     healEffect.at(other.x, other.y, 0f, healColor, other.block);
+                     other.heal(healPercent / 100f * other.maxHealth() + healAmount);
+                 });
+Index: core/src/mindustry/entities/comp/BuildingComp.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/core/src/mindustry/entities/comp/BuildingComp.java b/core/src/mindustry/entities/comp/BuildingComp.java
+--- a/core/src/mindustry/entities/comp/BuildingComp.java	(revision 4b425b627339002360a89f999d8e6d672ca5701d)
++++ b/core/src/mindustry/entities/comp/BuildingComp.java	(revision 147646f3aec8a5d4fc683524605eca0d1dbf6f40)
+@@ -46,6 +46,7 @@
+ import java.util.*;
+ 
+ import static mindustry.Vars.*;
++import static mindustryX.events.HealthChangedEvent.healthChangedEvent;
+ 
+ @EntityDef(value = {Buildingc.class}, isFinal = false, genio = false, serialize = false)
+ @Component(base = true)
+@@ -1658,6 +1659,7 @@
+             damage = Damage.applyArmor(damage, block.armor);
+         }
+ 
++        healthChangedEvent.setSource(other);
+         damage(other.team, damage);
+         Events.fire(bulletDamageEvent.set(self(), other));
+ 
+@@ -1675,6 +1677,8 @@
+ 
+     /** Handles splash damage with a bullet source. */
+     public void damage(Bullet bullet, Team source, float damage){
++        healthChangedEvent.setSource(bullet);
++
+         damage(source, damage);
+         Events.fire(bulletDamageEvent.set(self(), bullet));
+     }
+@@ -1927,7 +1931,10 @@
+ 
+         //TODO handle this better on the client.
+         if(!net.client()){
+-            health -= handleDamage(damage);
++            float handledDamage = handleDamage(damage);
++            health -= handledDamage;
++
++            onDamaged(handledDamage);
+         }
+ 
+         healthChanged();
+Index: core/src/mindustry/entities/comp/HealthComp.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/core/src/mindustry/entities/comp/HealthComp.java b/core/src/mindustry/entities/comp/HealthComp.java
+--- a/core/src/mindustry/entities/comp/HealthComp.java	(revision 4b425b627339002360a89f999d8e6d672ca5701d)
++++ b/core/src/mindustry/entities/comp/HealthComp.java	(revision 147646f3aec8a5d4fc683524605eca0d1dbf6f40)
+@@ -3,6 +3,10 @@
+ import arc.util.*;
+ import mindustry.annotations.Annotations.*;
+ import mindustry.gen.*;
++import mindustryX.*;
++import mindustryX.features.*;
++
++import static mindustryX.events.HealthChangedEvent.healthChangedEvent;
+ 
+ @Component
+ abstract class HealthComp implements Entityc, Posc{
+@@ -62,6 +66,11 @@
+         if(Float.isNaN(health)) health = 0f;
+ 
+         health -= amount;
++
++        if(amount != 0){
++            onDamaged(amount);
++        }
++
+         hitTime = 1f;
+         if(health <= 0 && !dead){
+             kill();
+@@ -86,6 +95,17 @@
+         damagePierce(amount * Time.delta, hitTime <= -20 + hitDuration);
+     }
+ 
++    @MindustryXApi
++    void onDamaged(float damage){
++        healthChangedEvent.fire(self(), damage);
++    }
++
++    @MindustryXApi
++    void onHealed(float amount){
++        healthChangedEvent.setType(DamageType.heal);
++        healthChangedEvent.fire(self(), amount);
++    }
++
+     void clampHealth(){
+         health = Math.min(health, maxHealth);
+         if(Float.isNaN(health)) health = 0f;
+@@ -93,8 +113,15 @@
+ 
+     /** Heals by a flat amount. */
+     void heal(float amount){
++        float lastHealth = health;
++
+         health += amount;
+         clampHealth();
++
++        float healAmount = health - lastHealth;
++        if(healAmount != 0){
++            onHealed(healAmount);
++        }
+     }
+ 
+     /** Heals by a 0-1 fraction of max health. */
+Index: core/src/mindustry/entities/comp/ShieldComp.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/core/src/mindustry/entities/comp/ShieldComp.java b/core/src/mindustry/entities/comp/ShieldComp.java
+--- a/core/src/mindustry/entities/comp/ShieldComp.java	(revision 4b425b627339002360a89f999d8e6d672ca5701d)
++++ b/core/src/mindustry/entities/comp/ShieldComp.java	(revision 147646f3aec8a5d4fc683524605eca0d1dbf6f40)
+@@ -1,6 +1,6 @@
+ package mindustry.entities.comp;
+ 
+-import arc.math.WindowedMean;
++import arc.math.*;
+ import arc.util.*;
+ import mindustry.*;
+ import mindustry.annotations.Annotations.*;
+@@ -61,6 +61,9 @@
+ 
+         if(amount > 0 && type.killable){
+             health -= amount;
++
++            onDamaged(amount);
++
+             if(health <= 0 && !dead){
+                 kill();
+             }
