@@ -7,11 +7,13 @@ import mindustry.content.*;
 import mindustry.entities.*;
 import mindustry.gen.*;
 import mindustry.graphics.*;
+import mindustryX.*;
 
 /**
  * @author minri2
  * Create by 2025/1/31
  */
+@MindustryXApi
 public class HealthChangedEvent{
     private static final HealthChangedEvent healthChangedEvent = new HealthChangedEvent();
     private static boolean autoReset = true;
@@ -51,14 +53,13 @@ public class HealthChangedEvent{
         Events.fire(healthChangedEvent);
 
         if(autoReset){
-            healthChangedEvent.reset();
+            reset();
         }
     }
 
-    public HealthChangedEvent reset(){
+    public static void reset(){
         setSource(null);
         setType(DamageType.normal);
-        return this;
     }
 
     public static class DamageType{
