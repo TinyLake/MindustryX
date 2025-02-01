@@ -3,6 +3,7 @@ package mindustryX.features.ui;
 import arc.*;
 import arc.flabel.*;
 import arc.func.*;
+import arc.graphics.*;
 import arc.graphics.g2d.*;
 import arc.math.*;
 import arc.math.geom.*;
@@ -31,7 +32,7 @@ import mindustryX.features.*;
 import mindustryX.features.func.*;
 
 import static mindustry.Vars.*;
-import static mindustry.ui.Styles.*;
+import static mindustry.gen.Tex.*;
 
 public class UnitFactoryDialog extends BaseDialog{
     private static final int maxCount = 50;
@@ -45,7 +46,6 @@ public class UnitFactoryDialog extends BaseDialog{
     /** 载荷独立存储 */
     private final Seq<Payload> unitPayloads = new Seq<>();
 
-    private float chatTime = 0;
     private boolean lookingLocation;
     private Table selection, infoTable, posTable, countTable, itemTable, propertiesTable, teamTable, effectTable, payloadTable;
 
@@ -82,6 +82,7 @@ public class UnitFactoryDialog extends BaseDialog{
 
         buttons.button("重置", Icon.refresh, () -> {
             resetUnit(spawnUnit);
+            rebuildTables();
         });
         buttons.button("[orange]生成！", Icon.modeAttack, this::spawn);
 
@@ -185,7 +186,7 @@ public class UnitFactoryDialog extends BaseDialog{
         main.defaults().growX().expandY().top();
 
         if(Core.graphics.isPortrait()){
-            cont.pane(noBarPane, main).growX();
+            cont.pane(Styles.noBarPane, main).growX();
         }else{
             cont.add(main).width(width).growY();
         }
@@ -260,6 +261,7 @@ public class UnitFactoryDialog extends BaseDialog{
         spawnUnit.type = unitType;
         spawnUnit = cloneUnit(spawnUnit);
         spawnUnit.health = unitType.health;
+        spawnUnit.elevation = Mathf.num(unitType.flying);
 
         if(spawnUnit instanceof PayloadUnit payloadUnit){
             payloadUnit.payloads = unitPayloads;
@@ -290,7 +292,7 @@ public class UnitFactoryDialog extends BaseDialog{
                     b.image(icon).scaling(Scaling.fit).size(48f).pad(8f);
 
                     b.add(stack.name()).width(128f);
-                }, clearTogglei, () -> {
+                }, Styles.clearTogglei, () -> {
                     selected = stack;
                     rebuildSelectTable(selected, unitSelectTable);
                 }).height(64f).pad(8f).checked(b -> selected == stack);
@@ -301,7 +303,7 @@ public class UnitFactoryDialog extends BaseDialog{
             });
         }).fillX().row();
 
-        selection.pane(noBarPane, unitSelectTable).scrollX(false).pad(8).padTop(0).growX();
+        selection.pane(Styles.noBarPane, unitSelectTable).scrollX(false).pad(8).padTop(0).growX();
         Core.app.post(() -> rebuildSelectTable(selected, unitSelectTable));
 
         selection.row();
@@ -318,20 +320,13 @@ public class UnitFactoryDialog extends BaseDialog{
             // block单位只会造成崩溃
             if(unit == UnitTypes.block) return;
 
-            table.button(new TextureRegionDrawable(unit.uiIcon), clearTogglei, 32f, () -> {
+            table.button(new TextureRegionDrawable(unit.uiIcon), Styles.clearTogglei, 32f, () -> {
                 setSpawnUnitType(unit);
-            }).margin(3).size(64f).pad(4f).checked(b -> spawnUnit.type == unit);
+            }).margin(3).size(64f).pad(4f).tooltip(unit.localizedName).checked(b -> spawnUnit.type == unit);
 
             if(++i[0] % rows == 0){
                 table.row();
             }
-        });
-
-        Core.app.post(() -> {
-            float w = selection.getWidth();
-            int r = Math.max(1, (int)((w - 4f * 2) / (64f + 4f) / Scl.scl()));
-
-            Log.info("AfterBuild Selection width: @, rows: @", w, r);
         });
     }
 
@@ -345,7 +340,7 @@ public class UnitFactoryDialog extends BaseDialog{
         }).left().expandX().padLeft(4);
 
         posTable.defaults().size(48);
-        posTable.button(Icon.pickSmall, clearNonei, () -> {
+        posTable.button(Icon.pickSmall, Styles.clearNonei, () -> {
             lookingLocation = true;
             hide();
 
@@ -364,7 +359,7 @@ public class UnitFactoryDialog extends BaseDialog{
             UIExt.announce("[green]点击屏幕采集坐标", 2f);
         });
 
-        posTable.button(Icon.eyeSmall, clearNonei, () -> {
+        posTable.button(Icon.eyeSmall, Styles.clearNonei, () -> {
             lookingLocation = true;
             hide();
 
@@ -383,7 +378,7 @@ public class UnitFactoryDialog extends BaseDialog{
             UIExt.announce("[green]点击屏幕返回", 2f);
         }).padLeft(4);
 
-        posTable.button(new TextureRegionDrawable(UnitTypes.gamma.uiIcon), clearNonei, 24, () -> {
+        posTable.button(new TextureRegionDrawable(UnitTypes.gamma.uiIcon), Styles.clearNonei, 24, () -> {
             spawnUnit.set(player.unit());
         }).padLeft(4);
     }
@@ -397,7 +392,7 @@ public class UnitFactoryDialog extends BaseDialog{
             changeCount[0].get(Math.min(maxCount, Strings.parseInt(text)));
         }).left().expandX().width(80).valid(Strings::canParseInt).get();
 
-        countTable.button(b -> b.add("MAX"), clearNonei, () -> {
+        countTable.button(b -> b.add("MAX"), Styles.clearNonei, () -> {
             changeCount[0].get(maxCount);
         }).size(48f).padLeft(4);
 
@@ -431,7 +426,7 @@ public class UnitFactoryDialog extends BaseDialog{
                 Label label = labelTable.add(text).labelAlign(Align.left).left().expandX().get();
 
                 labelTable.table(null, buttons -> {
-                    buttons.button(Icon.copySmall, clearNonei, 16, () -> {
+                    buttons.button(Icon.copySmall, Styles.clearNonei, 16, () -> {
                         Core.app.setClipboardText("" + label.getText());
 
                         ui.announce("复制成功:" + label.getText(), 3);
@@ -443,7 +438,7 @@ public class UnitFactoryDialog extends BaseDialog{
                 }).right();
             }).growX().row();
 
-            rightTable.pane(noBarPane, describeTable -> {
+            rightTable.pane(Styles.noBarPane, describeTable -> {
                 describeTable.background(Tex.pane);
 
                 describeTable.label(() -> unit.type.description).labelAlign(Align.left).grow().wrap();
@@ -456,9 +451,9 @@ public class UnitFactoryDialog extends BaseDialog{
         propertiesTable.defaults().expandX().left();
 
         propertiesTable.table(t -> {
-            t.check("飞行模式    [orange]生成的单位会飞起来", unit.elevation > 0, a -> {
+            t.check("飞行模式", unit.elevation > 0, a -> {
                 unit.elevation = a ? 1 : 0;
-            }).padBottom(5f).padRight(10f)
+            }).padBottom(5f).padRight(10f).tooltip("[orange]生成的单位会飞起来", true)
             .checked(b -> unit.elevation > 0);
         });
 
@@ -494,7 +489,7 @@ public class UnitFactoryDialog extends BaseDialog{
         Image image = new Image(getItemIcon(unit.item()));
         itemTable.button(b -> {
             b.add(image).size(48f).scaling(Scaling.fit).padLeft(8f).get();
-        }, clearNonei, () -> {
+        }, Styles.clearNonei, () -> {
             UIExt.contentSelector.select(content.items(), item -> item != unit.item(), item -> {
                 changeItem[0].get(item);
                 return true;
@@ -505,11 +500,11 @@ public class UnitFactoryDialog extends BaseDialog{
             changeItemCount[0].get(Math.min(itemCapacity, Strings.parseInt(text)));
         }).padLeft(8f).expandX().left().width(80).valid(Strings::canParsePositiveInt).get();
 
-        itemTable.button(b -> b.add("MAX"), clearNonei, () -> {
+        itemTable.button(b -> b.add("MAX"), Styles.clearNonei, () -> {
             changeItemCount[0].get(itemCapacity);
         }).size(48f).padLeft(4);
 
-        itemTable.button(Icon.none, clearNonei, () -> {
+        itemTable.button(Icon.none, Styles.clearNonei, () -> {
             changeItem[0].get(null);
         }).size(48f).padLeft(4);
 
@@ -541,7 +536,7 @@ public class UnitFactoryDialog extends BaseDialog{
         teamTable.label(() -> {
             Team team = unit.team;
             return "[#" + team.color + "]" + team.localized();
-        }).minWidth(128f).padLeft(8f);
+        }).minWidth(88f).padLeft(8f);
 
         Image image = new Image();
         image.setColor(unit.team.color);
@@ -553,7 +548,7 @@ public class UnitFactoryDialog extends BaseDialog{
         for(Team team : Team.baseTeams){
             teamTable.button(b -> {
                 b.image().grow().color(team.color);
-            }, clearNonei, () -> {
+            }, Styles.clearNonei, () -> {
                 changeTeam[0].get(team);
             }).size(36).pad(8);
         }
@@ -576,15 +571,69 @@ public class UnitFactoryDialog extends BaseDialog{
         effectTable.clearChildren();
 
         Seq<StatusEntry> unitStatus = unit.statuses();
-        Table settingTable = new Table(Tex.whiteui);
+        Table settingTable = new Table(Tex.whiteui), effectInfo = new Table(Styles.grayPanel);
         settingTable.setColor(Pal.gray);
+
+        Runnable rebuildInfo = () -> {
+            float[] status = {1f, 1f, 1f, 1f, 1f, 1f, -1f};
+
+            unitStatus.each(entry -> {
+                StatusEffect effect = entry.effect;
+
+                if(effect.dynamic){
+                    status[0] *= entry.damageMultiplier;
+                    status[1] *= entry.healthMultiplier;
+                    status[2] *= entry.speedMultiplier;
+                    status[3] *= entry.reloadMultiplier;
+                    status[4] *= entry.buildSpeedMultiplier;
+                    status[5] *= entry.dragMultiplier;
+                    status[6] = entry.armorOverride;
+                }else{
+                    status[0] *= effect.damageMultiplier;
+                    status[1] *= effect.healthMultiplier;
+                    status[2] *= effect.speedMultiplier;
+                    status[3] *= effect.reloadMultiplier;
+                    status[4] *= effect.buildSpeedMultiplier;
+                    status[5] *= effect.dragMultiplier;
+                }
+            });
+
+            effectInfo.clearChildren();
+            effectInfo.defaults().pad(4f);
+
+            effectInfo.add("[red]伤害");
+            effectInfo.add(FormatDefault.format(status[0])).expandX().right();
+
+            effectInfo.add("[acid]血量").padLeft(12f);
+            effectInfo.add(FormatDefault.format(status[1])).expandX().right();
+            effectInfo.row();
+
+            effectInfo.add("[cyan]移速");
+            effectInfo.add(FormatDefault.format(status[2])).expandX().right();
+
+            effectInfo.add("[violet]攻速").padLeft(12f);
+            effectInfo.add(FormatDefault.format(status[3])).expandX().right();
+            effectInfo.row();
+
+            effectInfo.add("[accent]建速");
+            effectInfo.add(FormatDefault.format(status[4])).expandX().right();
+
+            effectInfo.add("[purple]阻力").padLeft(12f);
+            effectInfo.add(FormatDefault.format(status[5])).expandX().right();
+            effectInfo.row();
+
+            if(status[6] >= 0){
+                effectInfo.add("[teal]装甲");
+                effectInfo.add(FormatDefault.format(status[6])).expandX().right();
+            }
+        };
 
         effectTable.defaults().growX();
 
         effectTable.table(Tex.whiteui, topTable -> {
             topTable.top();
             topTable.setColor(Pal.gray);
-            topTable.defaults().expandX().fillY();
+            topTable.defaults().fillY();
 
             topTable.table(leftTable -> {
                 leftTable.top();
@@ -592,82 +641,56 @@ public class UnitFactoryDialog extends BaseDialog{
                 leftTable.table(statusTable -> {
                     statusTable.image(StatusEffects.burning.uiIcon).size(64).scaling(Scaling.fit).expandX().left();
 
-                    statusTable.button(Icon.refresh, cleari, 48f, () -> {
+                    statusTable.button(Icon.refresh, Styles.cleari, 48f, () -> {
                         unitStatus.clear();
-                        rebuildEffectSettingTable(unitStatus, settingTable);
+                        rebuildInfo.run();
+                        rebuildEffectSettingTable(unitStatus, settingTable, rebuildInfo);
                     }).size(64f).pad(8f);
                 }).growX();
 
                 leftTable.row();
 
-                leftTable.table(grayPanel, effectInfo -> {
-                    effectInfo.defaults().padTop(4f).fillX();
-
-                    Runnable rebuildInfo = () -> {
-                        effectInfo.clearChildren();
-
-                        float[] status = {1f, 1f, 1f, 1f};
-                        unitStatus.each(s -> {
-                            status[0] *= s.effect.healthMultiplier;
-                            status[1] *= s.effect.damageMultiplier;
-                            status[2] *= s.effect.reloadMultiplier;
-                            status[3] *= s.effect.speedMultiplier;
-                        });
-
-                        effectInfo.add("[acid]血量").pad(4f);
-                        effectInfo.add(FormatDefault.format(status[0])).minWidth(64f).expandX().right();
-                        effectInfo.row();
-
-                        effectInfo.add("[red]伤害").pad(4f);
-                        effectInfo.add(FormatDefault.format(status[1])).minWidth(64f).expandX().right();
-                        effectInfo.row();
-
-                        effectInfo.add("[violet]攻速").pad(4f);
-                        effectInfo.add(FormatDefault.format(status[2])).minWidth(64f).expandX().right();
-                        effectInfo.row();
-
-                        effectInfo.add("[cyan]移速").pad(4f);
-                        effectInfo.add(FormatDefault.format(status[3])).minWidth(64f).expandX().right();
-                    };
-
-                    int lastSize = -1;
-                    effectInfo.update(() -> {
-                        if(unitStatus.size != lastSize){
-                            rebuildInfo.run();
-                        }
-                    });
-                }).fill().pad(8f);
+                leftTable.add(effectInfo).fill().pad(8f);
             });
 
-            topTable.pane(noBarPane, selection -> {
+            topTable.pane(Styles.noBarPane, selection -> {
                 int i = 0;
                 for(StatusEffect effect : content.statusEffects()){
-                    selection.button(new TextureRegionDrawable(effect.uiIcon), cleari, 32f, () -> {
+                    Cell<ImageButton> cell = selection.button(new TextureRegionDrawable(effect.uiIcon), Styles.cleari, 32f, () -> {
                         float time = unitStatus.isEmpty() ? 600f : unitStatus.peek().time;
                         unitStatus.add(new StatusEntry().set(effect, time));
-                        rebuildEffectSettingTable(unitStatus, settingTable);
-                    }).size(48f).pad(4f);
+
+                        rebuildInfo.run();
+                        rebuildEffectSettingTable(unitStatus, settingTable, rebuildInfo);
+                    }).size(48f).pad(4f).tooltip(effect.localizedName);
+
+                    if(effect.dynamic){
+                        cell.disabled(b -> unit.statuses().contains(e -> e.effect == effect));
+                    }
 
                     if(++i % 3 == 0){
                         selection.row();
                     }
                 }
-            }).pad(8f).maxHeight(48f * 4);
+            }).pad(8f).maxHeight(48f * 4).expandX().right();
         });
 
         effectTable.row();
 
         effectTable.add(settingTable).fillY();
-        rebuildEffectSettingTable(unitStatus, settingTable);
+
+        rebuildInfo.run();
+        rebuildEffectSettingTable(unitStatus, settingTable, rebuildInfo);
     }
 
-    private void rebuildEffectSettingTable(Seq<StatusEntry> unitStatus, Table table){
+    private void rebuildEffectSettingTable(Seq<StatusEntry> unitStatus, Table table, Runnable onChanged){
         table.clearChildren();
+        table.defaults().growX();
 
         unitStatus.each(entry -> {
             StatusEffect effect = entry.effect;
 
-            table.table(Tex.whiteui, t -> {
+            table.table(whiteui, t -> {
                 t.setColor(Pal.lightishGray);
 
                 t.image(effect.uiIcon).pad(4f).size(40).scaling(Scaling.fit);
@@ -689,7 +712,7 @@ public class UnitFactoryDialog extends BaseDialog{
 
                         bottom.button(b -> {
                             b.add(new FLabel("{rainbow}∞"));
-                        }, clearNonei, () -> {
+                        }, Styles.clearNonei, () -> {
                             changeTime[0].get(Float.POSITIVE_INFINITY);
                         }).size(32f).padLeft(8).expandX().right();
 
@@ -702,21 +725,65 @@ public class UnitFactoryDialog extends BaseDialog{
                     }).padTop(8f).expandX().left();
                 }
 
-                t.button(Icon.copySmall, clearNonei, 32, () -> {
-                    StatusEntry copied = new StatusEntry().set(entry.effect, entry.time);
-                    unitStatus.add(copied);
+                t.button(Icon.copySmall, Styles.clearNonei, 32, () -> {
+                    unitStatus.add(cloneStatus(entry));
 
-                    rebuildEffectSettingTable(unitStatus, table);
-                }).size(32);
+                    onChanged.run();
+                    rebuildEffectSettingTable(unitStatus, table, onChanged);
+                }).size(32).disabled(effect.dynamic);
 
-                t.button(Icon.cancelSmall, clearNonei, 32, () -> {
+                t.button(Icon.cancelSmall, Styles.clearNonei, 32, () -> {
                     unitStatus.remove(entry, true);
 
-                    rebuildEffectSettingTable(unitStatus, table);
+                    onChanged.run();
+                    rebuildEffectSettingTable(unitStatus, table, onChanged);
                 }).size(32);
-            }).pad(8).growX();
+            }).padLeft(8f).padRight(8f).padTop(12f);
 
             table.row();
+
+            if(effect.dynamic) table.add(new Card(Pal.darkestGray, Card.grayOuterDark, t -> {
+                t.defaults().pad(4f).padLeft(8f).left();
+
+                t.add("[red]伤害").style(Styles.outlineLabel);
+                t.field("" + entry.damageMultiplier, text -> entry.damageMultiplier = Strings.parseFloat(text)).valid(Strings::canParsePositiveFloat).width(88f);
+
+                t.add().expandX();
+
+                t.add("[acid]血量").style(Styles.outlineLabel);
+                t.field("" + entry.healthMultiplier, text -> entry.healthMultiplier = Strings.parseFloat(text)).valid(Strings::canParsePositiveFloat).width(88f);
+                t.add().expandX().row();
+
+                t.add("[cyan]移速").style(Styles.outlineLabel);
+                t.field("" + entry.speedMultiplier, text -> entry.speedMultiplier = Strings.parseFloat(text)).valid(Strings::canParsePositiveFloat).width(88f);
+
+                t.add().expandX();
+
+                t.add("[violet]攻速").style(Styles.outlineLabel);
+                t.field("" + entry.reloadMultiplier, text -> entry.reloadMultiplier = Strings.parseFloat(text)).valid(Strings::canParsePositiveFloat).width(88f);
+                t.add().expandX().row();
+
+                t.add("[accent]建速").style(Styles.outlineLabel);
+                t.field("" + entry.buildSpeedMultiplier, text -> entry.buildSpeedMultiplier = Strings.parseFloat(text)).valid(Strings::canParsePositiveFloat).width(88f);
+
+                t.add().expandX();
+
+                t.add("[purple]阻力").style(Styles.outlineLabel);
+                t.field("" + entry.dragMultiplier, text -> entry.dragMultiplier = Strings.parseFloat(text)).valid(Strings::canParsePositiveFloat).width(88f);
+                t.add().expandX().row();
+
+                t.add("[teal]装甲").style(Styles.outlineLabel);
+                t.field("" + entry.armorOverride, text -> entry.armorOverride = Strings.parseFloat(text)).valid(Strings::canParseFloat).width(88f);
+
+                for(Element child : t.getChildren()){
+                    if(child instanceof TextField field){
+                        field.changed(onChanged);
+                    }
+                }
+            })).padLeft(8f).padRight(8f).fillX();
+
+            table.row();
+
         });
     }
 
@@ -737,7 +804,7 @@ public class UnitFactoryDialog extends BaseDialog{
 
             topTable.image(Blocks.payloadLoader.uiIcon).size(64).scaling(Scaling.fit).expandX().left();
 
-            topTable.button(Icon.refresh, cleari, 48f, () -> {
+            topTable.button(Icon.refresh, Styles.cleari, 48f, () -> {
                 payloads.clear();
                 rebuildPayloadSettingTable(payloads, settingTable);
             }).size(64f).pad(8f);
@@ -765,7 +832,7 @@ public class UnitFactoryDialog extends BaseDialog{
                     });
                 });
 
-                buttons.button("装载自己", cleart, () -> {
+                buttons.button("装载自己", Styles.cleart, () -> {
                     payloads.add(new UnitPayload(cloneUnit(payloadUnit)));
                     rebuildPayloadSettingTable(payloads, settingTable);
                 }).width(72f);
@@ -774,7 +841,7 @@ public class UnitFactoryDialog extends BaseDialog{
 
         payloadTable.row();
 
-        payloadTable.pane(noBarPane, settingTable).fillY();
+        payloadTable.pane(Styles.noBarPane, settingTable).fillY();
 
         rebuildPayloadSettingTable(payloads, settingTable);
     }
@@ -792,19 +859,19 @@ public class UnitFactoryDialog extends BaseDialog{
                 t.defaults().size(32).pad(4f);
 
                 if(payload instanceof UnitPayload unitPayload){
-                    t.button(Icon.editSmall, clearNonei, 24f, () -> {
+                    t.button(Icon.editSmall, Styles.clearNonei, 24f, () -> {
                         simpleFactory(unitPayload.unit);
                     });
                 }
 
-                t.button(Icon.copySmall, clearNonei, 24f, () -> {
+                t.button(Icon.copySmall, Styles.clearNonei, 24f, () -> {
                     Payload copied = clonePayload(payload);
                     payloads.add(copied);
 
                     rebuildPayloadSettingTable(payloads, table);
                 });
 
-                t.button(Icon.cancelSmall, clearNonei, 24f, () -> {
+                t.button(Icon.cancelSmall, Styles.clearNonei, 24f, () -> {
                     payloads.remove(payload, true);
 
                     rebuildPayloadSettingTable(payloads, table);
@@ -860,6 +927,7 @@ public class UnitFactoryDialog extends BaseDialog{
         dialog.addCloseButton();
         dialog.buttons.button("重置", Icon.refresh, () -> {
             resetUnit(unit);
+            rebuildTables();
         });
 
         dialog.show();
@@ -889,22 +957,13 @@ public class UnitFactoryDialog extends BaseDialog{
 
         Seq<StatusEntry> statusEntries = cloned.statuses();
         statusEntries.set(unit.statuses());
-        statusEntries.map(UnitFactoryDialog::cloneStatus);
+        statusEntries.replace(UnitFactoryDialog::cloneStatus);
         return cloned;
-    }
-
-    private void sendFormatChat(String format, Object... args){
-        for(int i = 0; i < args.length; i++){
-            if(args[i] instanceof Float f){
-                args[i] = Strings.autoFixed(f, 1);
-            }
-        }
-        Time.run(chatTime, () -> Call.sendChatMessage(Strings.format(format, args)));
-        chatTime = chatTime + 10f;
     }
 
     private static void resetUnit(Unit unit){
         unit.setType(unit.type);
+        unit.elevation = Mathf.num(unit.type.flying);
         unit.statuses().clear();
         if(unit instanceof Payloadc pay){
             pay.payloads().clear();
@@ -912,7 +971,19 @@ public class UnitFactoryDialog extends BaseDialog{
     }
 
     private static StatusEntry cloneStatus(StatusEntry entry){
-        return new StatusEntry().set(entry.effect, entry.time);
+        StatusEntry cloned = new StatusEntry().set(entry.effect, entry.time);
+
+        if(entry.effect.dynamic){
+            cloned.damageMultiplier = entry.damageMultiplier;
+            cloned.healthMultiplier = entry.healthMultiplier;
+            cloned.speedMultiplier = entry.speedMultiplier;
+            cloned.reloadMultiplier = entry.reloadMultiplier;
+            cloned.buildSpeedMultiplier = entry.buildSpeedMultiplier;
+            cloned.dragMultiplier = entry.dragMultiplier;
+            cloned.armorOverride = entry.armorOverride;
+        }
+
+        return cloned;
     }
 
     private static Payload clonePayload(Payload payload){

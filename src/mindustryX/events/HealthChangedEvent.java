@@ -1,13 +1,8 @@
 package mindustryX.events;
 
 import arc.*;
-import arc.graphics.*;
 import arc.util.*;
-import mindustry.content.*;
-import mindustry.entities.*;
 import mindustry.gen.*;
-import mindustry.graphics.*;
-import mindustryX.*;
 
 /**
  * @author minri2

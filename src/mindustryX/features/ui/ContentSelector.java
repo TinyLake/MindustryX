@@ -32,16 +32,16 @@ public class ContentSelector extends BaseDialog{
     private Boolf<UnlockableContent> selectable, consumer;
 
     private String query = "";
-    private final Table content;
+    private final Table contentTable;
 
     private static Drawable getColoredRegion(Color color){
         return ((TextureRegionDrawable)Tex.whiteui).tint(color);
     }
 
     public ContentSelector(){
-        super("@content-selector");
+        super("@contentSelector");
 
-        content = new Table();
+        contentTable = new Table();
 
         setup();
 
@@ -71,26 +71,25 @@ public class ContentSelector extends BaseDialog{
 
         cont.row();
 
-        cont.pane(content).scrollX(false).grow();
+        cont.pane(contentTable).scrollX(false).grow();
 
         addCloseButton();
     }
 
     private void rebuild(){
-        content.clearChildren();
+        contentTable.clearChildren();
 
-        content.top();
+        contentTable.top();
 
         float selectorWidth = Core.scene.getWidth() * 0.8f;
         int rows = (int)(selectorWidth / width / Scl.scl());
 
         int index = 0;
         for(UnlockableContent content : contents){
-
             if(!selectable.get(content)) continue;
             if(!query.isEmpty() && (!Strings.matches(query, content.name) || !Strings.matches(query, content.localizedName))) continue;
 
-            this.content.button(table -> {
+            contentTable.button(table -> {
                 setupContentTable(table, content);
             }, buttonStyle, () -> {
                 if(consumer.get(content)){
@@ -99,7 +98,7 @@ public class ContentSelector extends BaseDialog{
             }).pad(8f).width(width);
 
             if(++index % rows == 0){
-                this.content.row();
+                this.contentTable.row();
             }
         }
     }
