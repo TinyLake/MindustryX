@@ -2275,7 +2275,7 @@ index 823c2d70a68b63c1237a2d06744b876a577b2223..b0e2c07ae2016ab6329e23d8bb0baff6
          //special case for 'clear' command
          if(message.equals("clear")){
 diff --git a/core/src/mindustry/ui/fragments/HudFragment.java b/core/src/mindustry/ui/fragments/HudFragment.java
-index 4518f3d50c1c333438d2696b25c16fc2611e8376..91b8c703a303616761341043c985e725bfdc8776 100644
+index 4edb47c449a7d3b91508f6f400c5f1ef0c378d45..7b5fd24aa713820aeaa38eee170c78c47cd67d86 100644
 --- a/core/src/mindustry/ui/fragments/HudFragment.java
 +++ b/core/src/mindustry/ui/fragments/HudFragment.java
 @@ -29,11 +29,13 @@ import mindustry.net.Packets.*;
