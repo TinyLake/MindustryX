@@ -18,14 +18,14 @@ Content-Transfer-Encoding: 8bit
  core/src/mindustry/game/Schematics.java       |  8 +++++---
  .../mindustry/graphics/MinimapRenderer.java   |  6 ++++--
  core/src/mindustry/ui/dialogs/JoinDialog.java | 19 ++++++++++--------
- .../mindustry/ui/dialogs/KeybindDialog.java   |  9 ++++++---
+ .../mindustry/ui/dialogs/KeybindDialog.java   | 12 +++++++----
  .../ui/fragments/BlockInventoryFragment.java  |  2 +-
  .../mindustry/ui/fragments/ChatFragment.java  |  7 +++++--
  .../mindustry/world/blocks/defense/Radar.java |  9 +++++++++
  .../world/blocks/distribution/Router.java     |  3 ++-
  .../world/blocks/production/BeamDrill.java    | 12 ++++-------
  .../mindustry/desktop/DesktopLauncher.java    | 18 ++++++++++++++++-
- 17 files changed, 87 insertions(+), 50 deletions(-)
+ 17 files changed, 89 insertions(+), 51 deletions(-)
 
 diff --git a/core/src/mindustry/ClientLauncher.java b/core/src/mindustry/ClientLauncher.java
 index a64b7b36fdd74a29a3caae54a1f1a514039b891f..beea309f225be8de3799089a87d1fdcb8e30ee5c 100644
@@ -58,10 +58,10 @@ index a64b7b36fdd74a29a3caae54a1f1a514039b891f..beea309f225be8de3799089a87d1fdcb
          }
  
 diff --git a/core/src/mindustry/Vars.java b/core/src/mindustry/Vars.java
-index fe68f1c673d2957227bd63f61de9bee14a0bb9aa..97871fdb3b827498496636146836ae483387d7e8 100644
+index 560e1b69133b34bf876ddd00f365e709ab09f76a..1721160e3b2d16a04594da22e3b50b44a63a87ae 100644
 --- a/core/src/mindustry/Vars.java
 +++ b/core/src/mindustry/Vars.java
-@@ -398,6 +398,11 @@ public class Vars implements Loadable{
+@@ -399,6 +399,11 @@ public class Vars implements Loadable{
                  if(!headless && (ui == null || ui.consolefrag == null)){
                      logBuffer.add(result);
                  }else if(!headless){
@@ -74,7 +74,7 @@ index fe68f1c673d2957227bd63f61de9bee14a0bb9aa..97871fdb3b827498496636146836ae48
                          for(String code : ColorCodes.values){
                              result = result.replace(code, "");
 diff --git a/core/src/mindustry/ai/BlockIndexer.java b/core/src/mindustry/ai/BlockIndexer.java
-index 1206dc71d1d87b2a5432898a3991a93260b475e7..51cee565b4213048744d9a1741138add3e073201 100644
+index 4a87c1df67adce8d07ec55f14e42137154acbe84..7d2e3905eedb5bfeeb8de8027fedff66203e66aa 100644
 --- a/core/src/mindustry/ai/BlockIndexer.java
 +++ b/core/src/mindustry/ai/BlockIndexer.java
 @@ -37,7 +37,7 @@ public class BlockIndexer{
@@ -87,10 +87,10 @@ index 1206dc71d1d87b2a5432898a3991a93260b475e7..51cee565b4213048744d9a1741138add
      private Seq<Team> activeTeams = new Seq<>(Team.class);
      /** Maps teams to a map of flagged tiles by flag. */
 diff --git a/core/src/mindustry/core/Control.java b/core/src/mindustry/core/Control.java
-index ac274c820cb1362a4863ca6cf98384dadbaafc07..63e6c3ef13f839f531387b10789d135585b19863 100644
+index eb69d4e90442611e92881ba1fe266034f641f59d..47f55d3ff7f6605bafe4ff3ab52ab21498003916 100644
 --- a/core/src/mindustry/core/Control.java
 +++ b/core/src/mindustry/core/Control.java
-@@ -573,7 +573,8 @@ public class Control implements ApplicationListener, Loadable{
+@@ -574,7 +574,8 @@ public class Control implements ApplicationListener, Loadable{
                  BaseDialog dialog = new BaseDialog("@confirm");
                  dialog.setFillParent(true);
  
@@ -116,7 +116,7 @@ index b49fbe345d8987f023b037d1c1b94953098487e1..e80d5029613f62f112e4f2c8e1be25ee
  
              player.admin = false;
 diff --git a/core/src/mindustry/core/Renderer.java b/core/src/mindustry/core/Renderer.java
-index 0efb58fc8488af063ac609a96ad1dcbd71de350d..63e98c8608c92f92e4d983588f009de2f00b6b77 100644
+index e5a5a3e83a71852877e31100c0eb4bf80b56128a..87b49a668cb165317c846d504577d645f9fe1e25 100644
 --- a/core/src/mindustry/core/Renderer.java
 +++ b/core/src/mindustry/core/Renderer.java
 @@ -161,7 +161,7 @@ public class Renderer implements ApplicationListener{
@@ -129,10 +129,10 @@ index 0efb58fc8488af063ac609a96ad1dcbd71de350d..63e98c8608c92f92e4d983588f009de2
          if(Mathf.equal(camerascale, dest, 0.001f)) camerascale = dest;
          unitLaserOpacity = settings.getInt("unitlaseropacity") / 100f;
 diff --git a/core/src/mindustry/core/UI.java b/core/src/mindustry/core/UI.java
-index c2e777ac5ee850a0a3af94ade3bd30bf4a35e0ae..7266031779aef1048f5045b26b5281a686edf9d8 100644
+index 8a3d830d8fe215154af569b863214dab26096f3a..5b0ee5946cb022e256aff23f2f1bfc71ab1d9abb 100644
 --- a/core/src/mindustry/core/UI.java
 +++ b/core/src/mindustry/core/UI.java
-@@ -595,7 +595,7 @@ public class UI implements ApplicationListener, Loadable{
+@@ -599,7 +599,7 @@ public class UI implements ApplicationListener, Loadable{
          t.touchable = Touchable.disabled;
          t.margin(8f).add(text).style(Styles.outlineLabel).labelAlign(Align.center);
          t.update(() -> t.setPosition(Core.graphics.getWidth()/2f, Core.graphics.getHeight()/2f, Align.center));
@@ -141,7 +141,7 @@ index c2e777ac5ee850a0a3af94ade3bd30bf4a35e0ae..7266031779aef1048f5045b26b5281a6
          t.pack();
          t.act(0.1f);
          Core.scene.add(t);
-@@ -734,23 +734,7 @@ public class UI implements ApplicationListener, Loadable{
+@@ -738,23 +738,7 @@ public class UI implements ApplicationListener, Loadable{
      }
  
      public static String formatAmount(long number){
@@ -167,10 +167,10 @@ index c2e777ac5ee850a0a3af94ade3bd30bf4a35e0ae..7266031779aef1048f5045b26b5281a6
  
      public static int roundAmount(int number){
 diff --git a/core/src/mindustry/game/Schematics.java b/core/src/mindustry/game/Schematics.java
-index 2db321df7e134094f76a43b848b89c86127b158f..af3ac2a19fd2d59c42c58c72c8c893258cee3466 100644
+index 620434d144ed63ec2bb31797a818ffab294d311c..20e5aeac5a46c49c792904f3eb6c5ec702b947a9 100644
 --- a/core/src/mindustry/game/Schematics.java
 +++ b/core/src/mindustry/game/Schematics.java
-@@ -97,7 +97,9 @@ public class Schematics implements Loadable{
+@@ -99,7 +99,9 @@ public class Schematics implements Loadable{
          all.sort();
  
          if(shadowBuffer == null){
@@ -181,7 +181,7 @@ index 2db321df7e134094f76a43b848b89c86127b158f..af3ac2a19fd2d59c42c58c72c8c89325
          }
      }
  
-@@ -541,7 +543,7 @@ public class Schematics implements Loadable{
+@@ -543,7 +545,7 @@ public class Schematics implements Loadable{
          try(DataInputStream stream = new DataInputStream(new InflaterInputStream(input))){
              short width = stream.readShort(), height = stream.readShort();
  
@@ -190,7 +190,7 @@ index 2db321df7e134094f76a43b848b89c86127b158f..af3ac2a19fd2d59c42c58c72c8c89325
  
              StringMap map = new StringMap();
              int tags = stream.readUnsignedByte();
-@@ -567,7 +569,7 @@ public class Schematics implements Loadable{
+@@ -569,7 +571,7 @@ public class Schematics implements Loadable{
  
              int total = stream.readInt();
  
@@ -200,7 +200,7 @@ index 2db321df7e134094f76a43b848b89c86127b158f..af3ac2a19fd2d59c42c58c72c8c89325
              Seq<Stile> tiles = new Seq<>(total);
              for(int i = 0; i < total; i++){
 diff --git a/core/src/mindustry/graphics/MinimapRenderer.java b/core/src/mindustry/graphics/MinimapRenderer.java
-index 449fc74406920897a045793e57d906dd9dc01a83..ef9c7d8a2c547e9e233464808766f6a30699bcb3 100644
+index de42d089571c5093a9103f787a0b6dd2accc452f..6dbe5beb6a52baa63e46df6a4bfdd406488b1124 100644
 --- a/core/src/mindustry/graphics/MinimapRenderer.java
 +++ b/core/src/mindustry/graphics/MinimapRenderer.java
 @@ -102,7 +102,8 @@ public class MinimapRenderer{
@@ -261,33 +261,46 @@ index 093c36beb214adabf18f35c4bb4992e78969d1bc..087470ad988b649d17d02c6d252796d5
          add = new BaseDialog("@joingame.title");
          add.cont.add("@joingame.ip").padRight(5f).left();
 diff --git a/core/src/mindustry/ui/dialogs/KeybindDialog.java b/core/src/mindustry/ui/dialogs/KeybindDialog.java
-index 58c186ff3151d8bba395b1bc1a51a821b81c40e1..b3e0318791e123b784e9953b9fb39ea273888ee0 100644
+index 2ef05ddf87a8fd4fa51a56ab91cd157345b59bd6..2aca87c9929d7c78b1bbf9004585233acc6b407b 100644
 --- a/core/src/mindustry/ui/dialogs/KeybindDialog.java
 +++ b/core/src/mindustry/ui/dialogs/KeybindDialog.java
-@@ -143,7 +143,7 @@ public class KeybindDialog extends Dialog{
-                         rebindAxis = true;
-                         rebindMin = true;
-                         openDialog(section, keybind);
--                    }).width(130f);
-+                    }).width(100f);
-                 }else{
-                     table.add(bundle.get("keybind." + keybind.name() + ".name", Strings.capitalize(keybind.name())), Color.white).left().padRight(40).padLeft(8);
-                     table.label(() -> keybinds.get(section, keybind).key.toString()).color(Pal.accent).left().minWidth(90).padRight(20);
-@@ -152,9 +152,12 @@ public class KeybindDialog extends Dialog{
-                         rebindAxis = false;
-                         rebindMin = false;
-                         openDialog(section, keybind);
--                    }).width(130f);
-+                    }).width(100f);
-                 }
--                table.button("@settings.resetKey", tstyle, () -> keybinds.resetToDefault(section, keybind)).width(130f).pad(2f).padLeft(4f);
-+                table.button("取消绑定", tstyle, () -> {
-+                    section.binds.get(section.device.type(), OrderedMap::new).put(keybind, new Axis(KeyCode.unset));
-+                }).width(100f).pad(2f).padLeft(4f);
-+                table.button("@settings.resetKey", tstyle, () -> keybinds.resetToDefault(section, keybind)).width(100f).pad(2f).padLeft(4f);
-                 table.row();
+@@ -79,7 +79,7 @@ public class KeybindDialog extends Dialog{
+         String lastCategory = null;
+         var tstyle = Styles.grayt;
+ 
+-        float bw = 140f, bh = 40f;
++        float bw = 100f, bh = 40f;
+ 
+         for(KeyBind keybind : KeyBind.all){
+             if(!searchText.isEmpty() && !bundle.get("keybind." + keybind.name + ".name", keybind.name).toLowerCase(Locale.ROOT).contains(searchText.toLowerCase(Locale.ROOT))){
+@@ -87,8 +87,8 @@ public class KeybindDialog extends Dialog{
              }
  
+             if(lastCategory != keybind.category && keybind.category != null){
+-                table.add(bundle.get("category." + keybind.category + ".name", Strings.capitalize(keybind.category))).color(Color.gray).colspan(4).pad(10).padBottom(4).row();
+-                table.image().color(Color.gray).fillX().height(3).pad(6).colspan(4).padTop(0).padBottom(10).row();
++                table.add(bundle.get("category." + keybind.category + ".name", Strings.capitalize(keybind.category))).color(Color.gray).colspan(5).pad(10).padBottom(4).row();//MDTX: fix colspan for unbind
++                table.image().color(Color.gray).fillX().height(3).pad(6).colspan(5).padTop(0).padBottom(10).row();//MDTX: fix colspan for unbind
+                 lastCategory = keybind.category;
+             }
+ 
+@@ -115,11 +115,15 @@ public class KeybindDialog extends Dialog{
+                     openDialog(keybind);
+                 }).size(bw, bh);
+             }
++            table.button("取消绑定", tstyle, () -> {
++                keybind.value = new Axis(KeyCode.unset);
++                keybind.save();
++            }).size(bw, bh).pad(2f).padLeft(4f);
+             table.button("@settings.resetKey", tstyle, keybind::resetToDefault).disabled(t -> keybind.isDefault()).size(bw, bh).pad(2f).padLeft(4f);
+             table.row();
+         }
+ 
+-        table.button("@settings.reset", Icon.refresh, tstyle, KeyBind::resetAll).minWidth(200f).colspan(4).padTop(4).margin(10f).height(50f).fill();
++        table.button("@settings.reset", Icon.refresh, tstyle, KeyBind::resetAll).minWidth(200f).colspan(5).padTop(4).margin(10f).height(50f).fill();//MDTX: fix colspan for unbind
+     }
+ 
+     void rebind(KeyBind bind, KeyCode newKey){
 diff --git a/core/src/mindustry/ui/fragments/BlockInventoryFragment.java b/core/src/mindustry/ui/fragments/BlockInventoryFragment.java
 index 54a36cde6eee102c9c8f3bfd5e4c76a2f4d0f1e1..f06641d677746d1f70880bea7c972ab1f65970fa 100644
 --- a/core/src/mindustry/ui/fragments/BlockInventoryFragment.java
@@ -302,7 +315,7 @@ index 54a36cde6eee102c9c8f3bfd5e4c76a2f4d0f1e1..f06641d677746d1f70880bea7c972ab1
  
          table.margin(4f);
 diff --git a/core/src/mindustry/ui/fragments/ChatFragment.java b/core/src/mindustry/ui/fragments/ChatFragment.java
-index cfff9282efc61f93ebbfb1805a9c4ba76020b62d..61f2d769fa4bb807f58b67eea14072783acf2b6c 100644
+index add50b5864c311b66d4278e684a4e0260170139f..6202aadb499174630a04c0210e7390a0af4f6a42 100644
 --- a/core/src/mindustry/ui/fragments/ChatFragment.java
 +++ b/core/src/mindustry/ui/fragments/ChatFragment.java
 @@ -5,6 +5,7 @@ import arc.Input.*;
@@ -327,8 +340,8 @@ index cfff9282efc61f93ebbfb1805a9c4ba76020b62d..61f2d769fa4bb807f58b67eea1407278
                      updateChat();
                  }
 +                //MDTX: disable FocusTraversal when tab is used as chat_mode
-+                chatfield.setFocusTraversal(keybinds.get(Binding.chat_mode).key != KeyCode.tab);
-                 if(input.keyTap(Binding.chat_mode)){
++                chatfield.setFocusTraversal(Binding.chatMode.value.key != KeyCode.tab);
+                 if(input.keyTap(Binding.chatMode)){
                      nextMode();
                  }
 @@ -292,7 +295,7 @@ public class ChatFragment extends Table{
@@ -411,7 +424,7 @@ index 9921e4d7cf3f704a666262479af575a7dec9d668..b5d675df53bf84bc68222c8556480cd3
              drawPlaceText(Core.bundle.get("bar.drilltierreq"), x, y, false);
          }
 diff --git a/desktop/src/mindustry/desktop/DesktopLauncher.java b/desktop/src/mindustry/desktop/DesktopLauncher.java
-index f83760561d387249ba114d42356e92a6cf0c4392..1f930df3ba68f8bee14cce3e15f1aefe4a7da278 100644
+index bee67a07c282daadc799d3f345bee48b9223b536..ec0580ac35748b7a329c4275a672daa00f1077b3 100644
 --- a/desktop/src/mindustry/desktop/DesktopLauncher.java
 +++ b/desktop/src/mindustry/desktop/DesktopLauncher.java
 @@ -23,6 +23,7 @@ import mindustry.net.*;
@@ -422,7 +435,7 @@ index f83760561d387249ba114d42356e92a6cf0c4392..1f930df3ba68f8bee14cce3e15f1aefe
  
  import java.io.*;
  
-@@ -72,6 +73,18 @@ public class DesktopLauncher extends ClientLauncher{
+@@ -73,6 +74,18 @@ public class DesktopLauncher extends ClientLauncher{
  
      public DesktopLauncher(String[] args){
          Version.init();
@@ -441,7 +454,7 @@ index f83760561d387249ba114d42356e92a6cf0c4392..1f930df3ba68f8bee14cce3e15f1aefe
          boolean useSteam = Version.modifier.contains("steam");
          testMobile = Seq.with(args).contains("-testMobile");
  
-@@ -100,7 +113,10 @@ public class DesktopLauncher extends ClientLauncher{
+@@ -101,7 +114,10 @@ public class DesktopLauncher extends ClientLauncher{
              });
  
              try{

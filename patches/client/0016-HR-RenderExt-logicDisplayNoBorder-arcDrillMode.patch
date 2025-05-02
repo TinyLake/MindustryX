@@ -14,10 +14,10 @@ Content-Transfer-Encoding: 8bit
  2 files changed, 8 insertions(+), 1 deletion(-)
 
 diff --git a/core/src/mindustry/world/blocks/logic/LogicDisplay.java b/core/src/mindustry/world/blocks/logic/LogicDisplay.java
-index 1816245ad2a2e21501da4817c00ba8ba0de04f9f..1db6409a264c5977e4ccfbf7709d1db430ac31e6 100644
+index 66099d29d51dd7e333e976ac0ded0c317a69421c..a265aa0d0727d27acc6e43fb44073c33e8bbce37 100644
 --- a/core/src/mindustry/world/blocks/logic/LogicDisplay.java
 +++ b/core/src/mindustry/world/blocks/logic/LogicDisplay.java
-@@ -16,6 +16,7 @@ import mindustry.graphics.*;
+@@ -17,6 +17,7 @@ import mindustry.logic.*;
  import mindustry.ui.*;
  import mindustry.world.*;
  import mindustry.world.meta.*;
@@ -25,7 +25,7 @@ index 1816245ad2a2e21501da4817c00ba8ba0de04f9f..1db6409a264c5977e4ccfbf7709d1db4
  
  public class LogicDisplay extends Block{
      public static final byte
-@@ -73,7 +74,7 @@ public class LogicDisplay extends Block{
+@@ -81,7 +82,7 @@ public class LogicDisplay extends Block{
  
          @Override
          public void draw(){
@@ -34,7 +34,7 @@ index 1816245ad2a2e21501da4817c00ba8ba0de04f9f..1db6409a264c5977e4ccfbf7709d1db4
  
              //don't even bother processing anything when displays are off.
              if(!Vars.renderer.drawDisplays) return;
-@@ -152,6 +153,10 @@ public class LogicDisplay extends Block{
+@@ -100,6 +101,10 @@ public class LogicDisplay extends Block{
              Draw.blend(Blending.disabled);
              Draw.draw(Draw.z(), () -> {
                  if(buffer != null){

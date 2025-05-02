@@ -1,9 +1,9 @@
 From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
 From: way-zer <himc.wicp@gmail.com>
 Date: Fri, 29 Nov 2024 20:16:58 +0800
-Subject: [PATCH] =?UTF-8?q?HC:=20v146=20protocol=20compatible=20mode=20(?=
- =?UTF-8?q?=E5=85=81=E8=AE=B8=E8=B7=A8=E7=89=88=E6=9C=AC=E5=8A=A0=E5=85=A5?=
- =?UTF-8?q?v146=E6=9C=8D=E5=8A=A1=E5=99=A8)?=
+Subject: [PATCH] =?UTF-8?q?HC:=20v146=20protocol&contents=20compatible=20m?=
+ =?UTF-8?q?ode=20(=E5=85=81=E8=AE=B8=E8=B7=A8=E7=89=88=E6=9C=AC=E5=8A=A0?=
+ =?UTF-8?q?=E5=85=A5v146=E6=9C=8D=E5=8A=A1=E5=99=A8)?=
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
@@ -12,13 +12,13 @@ Content-Transfer-Encoding: 8bit
  core/src/mindustry/core/ContentLoader.java | 17 ++++++++++
  core/src/mindustry/core/NetClient.java     |  2 ++
  core/src/mindustry/io/TypeIO.java          | 12 +++++--
- core/src/mindustry/net/Net.java            | 38 ++++++++++++++++++++--
+ core/src/mindustry/net/Net.java            | 39 +++++++++++++++++++---
  core/src/mindustry/net/NetworkIO.java      | 13 +++++++-
  core/src/mindustry/net/Packets.java        |  2 +-
- 6 files changed, 77 insertions(+), 7 deletions(-)
+ 6 files changed, 77 insertions(+), 8 deletions(-)
 
 diff --git a/core/src/mindustry/core/ContentLoader.java b/core/src/mindustry/core/ContentLoader.java
-index 4e2f86410a33f8189976a143d0cd697ec7c56de5..67b051c81d5ce7f0f134ab5cd99d4aa7ad9c7b92 100644
+index 1ef48b5018109fbf1ab14475c93ad4867a7fffbf..1b6076ffaa5b184f0743e421b2f013bd04d0a9ee 100644
 --- a/core/src/mindustry/core/ContentLoader.java
 +++ b/core/src/mindustry/core/ContentLoader.java
 @@ -33,6 +33,8 @@ public class ContentLoader{
@@ -66,10 +66,10 @@ index e80d5029613f62f112e4f2c8e1be25eeca91dd4e..3a55382ddd0f404bf97d7c25d99507ed
              netClient.byteStream.setBytes(data);
              DataInputStream input = netClient.dataStream;
 diff --git a/core/src/mindustry/io/TypeIO.java b/core/src/mindustry/io/TypeIO.java
-index 21d16d848be4df4ab8c9317b6825717d4037f198..6b31b63100f05e83d179c39e1b3baafebe7ac5cc 100644
+index c93d0921230fcbaacdd8cd673cf12fd4c313e823..bf922b62c173997e6d4d4e14b7533aaddcb97f22 100644
 --- a/core/src/mindustry/io/TypeIO.java
 +++ b/core/src/mindustry/io/TypeIO.java
-@@ -25,6 +25,7 @@ import mindustry.type.*;
+@@ -26,6 +26,7 @@ import mindustry.type.*;
  import mindustry.world.*;
  import mindustry.world.blocks.*;
  import mindustry.world.blocks.payloads.*;
@@ -77,30 +77,30 @@ index 21d16d848be4df4ab8c9317b6825717d4037f198..6b31b63100f05e83d179c39e1b3baafe
  
  import java.io.*;
  import java.nio.*;
-@@ -54,7 +55,10 @@ public class TypeIO{
+@@ -55,7 +56,10 @@ public class TypeIO{
          }else if(object instanceof Content map){
              write.b((byte)5);
              write.b((byte)map.getContentType().ordinal());
 -            write.s(map.id);
-+            if(LogicExt.v146Mode && map instanceof Block b)
++            if(LogicExt.contentsCompatibleMode && map instanceof Block b)
 +                writeBlock(write, b);
 +            else
 +                write.s(map.id);
          }else if(object instanceof IntSeq arr){
              write.b((byte)6);
              write.s((short)arr.size);
-@@ -349,6 +353,10 @@ public class TypeIO{
+@@ -390,6 +394,10 @@ public class TypeIO{
      }
  
      public static void writeBlock(Writes write, Block block){
-+        if(LogicExt.v146Mode){
++        if(LogicExt.contentsCompatibleMode){
 +            write.s(content.getTemporaryMapperId(block));
 +            return;
 +        }
          write.s(block.id);
      }
  
-@@ -411,7 +419,7 @@ public class TypeIO{
+@@ -452,7 +460,7 @@ public class TypeIO{
          write.b(plan.breaking ? (byte)1 : 0);
          write.i(Point2.pack(plan.x, plan.y));
          if(!plan.breaking){
@@ -110,7 +110,7 @@ index 21d16d848be4df4ab8c9317b6825717d4037f198..6b31b63100f05e83d179c39e1b3baafe
              boolean writePlan = !headless || !net.server();
              write.b(writePlan ? 1 : 0); //always has config
 diff --git a/core/src/mindustry/net/Net.java b/core/src/mindustry/net/Net.java
-index 48c4d6749bd6f0776547fd633d7ac18c76af2452..14e2f7fc8790a36b7293334f7311b75f0d2befb3 100644
+index 48c4d6749bd6f0776547fd633d7ac18c76af2452..d12c1a1d70f082fbdb54cb26ea8be0c5613dcdde 100644
 --- a/core/src/mindustry/net/Net.java
 +++ b/core/src/mindustry/net/Net.java
 @@ -1,6 +1,7 @@
@@ -121,16 +121,18 @@ index 48c4d6749bd6f0776547fd633d7ac18c76af2452..14e2f7fc8790a36b7293334f7311b75f
  import arc.func.*;
  import arc.net.*;
  import arc.net.Server.*;
-@@ -19,7 +20,7 @@ import java.nio.*;
+@@ -17,9 +18,8 @@ import net.jpountz.lz4.*;
+ import java.io.*;
+ import java.nio.*;
  import java.nio.channels.*;
- import java.util.concurrent.*;
+-import java.util.concurrent.*;
  
 -import static arc.util.Log.*;
 +import static arc.util.Log.debug;
  import static mindustry.Vars.*;
  
  @SuppressWarnings("unchecked")
-@@ -27,6 +28,9 @@ public class Net{
+@@ -27,6 +27,9 @@ public class Net{
      private static Seq<Prov<? extends Packet>> packetProvs = new Seq<>();
      private static Seq<Class<? extends Packet>> packetClasses = new Seq<>();
      private static ObjectIntMap<Class<?>> packetToId = new ObjectIntMap<>();
@@ -140,7 +142,7 @@ index 48c4d6749bd6f0776547fd633d7ac18c76af2452..14e2f7fc8790a36b7293334f7311b75f
  
      private boolean server;
      private boolean active;
-@@ -48,6 +52,24 @@ public class Net{
+@@ -48,6 +51,24 @@ public class Net{
  
          //register generated packet classes
          Call.registerPackets();
@@ -165,7 +167,7 @@ index 48c4d6749bd6f0776547fd633d7ac18c76af2452..14e2f7fc8790a36b7293334f7311b75f
      }
  
      /** Registers a new packet type for serialization. */
-@@ -59,12 +81,16 @@ public class Net{
+@@ -59,12 +80,16 @@ public class Net{
      }
  
      public static byte getPacketId(Packet packet){
@@ -183,7 +185,7 @@ index 48c4d6749bd6f0776547fd633d7ac18c76af2452..14e2f7fc8790a36b7293334f7311b75f
          return ((Prov<T>)packetProvs.get(id & 0xff)).get();
      }
  
-@@ -199,6 +225,7 @@ public class Net{
+@@ -199,6 +224,7 @@ public class Net{
      }
  
      public void disconnect(){
@@ -191,7 +193,7 @@ index 48c4d6749bd6f0776547fd633d7ac18c76af2452..14e2f7fc8790a36b7293334f7311b75f
          if(active && !server){
              Log.info("Disconnecting.");
          }
-@@ -268,7 +295,12 @@ public class Net{
+@@ -268,7 +294,12 @@ public class Net{
       * Call to handle a packet being received for the client.
       */
      public void handleClientReceived(Packet object){
@@ -199,14 +201,14 @@ index 48c4d6749bd6f0776547fd633d7ac18c76af2452..14e2f7fc8790a36b7293334f7311b75f
 +        try{
 +            object.handled();
 +        }catch(RuntimeException e){
-+            if(LogicExt.v146Mode && e.getCause() instanceof EOFException){
++            if(LogicExt.contentsCompatibleMode && e.getCause() instanceof EOFException){
 +            }else throw e;
 +        }
          ReplayController.onClientPacket(object);
  
          if(object instanceof StreamBegin b){
 diff --git a/core/src/mindustry/net/NetworkIO.java b/core/src/mindustry/net/NetworkIO.java
-index 89a5e536fe62ed8d3dc04e291fb705167a06ed89..a6b59d23f0d394086205a34108f468bcf26e1b44 100644
+index 89a5e536fe62ed8d3dc04e291fb705167a06ed89..2a9481ee3cea1da06888cf2f35a23f0ea618758a 100644
 --- a/core/src/mindustry/net/NetworkIO.java
 +++ b/core/src/mindustry/net/NetworkIO.java
 @@ -4,6 +4,7 @@ import arc.*;
@@ -256,7 +258,7 @@ index 89a5e536fe62ed8d3dc04e291fb705167a06ed89..a6b59d23f0d394086205a34108f468bc
          }catch(IOException e){
              throw new RuntimeException(e);
          }finally{
-+            if(!LogicExt.v146Mode)
++            if(!LogicExt.contentsCompatibleMode)
              content.setTemporaryMapper(null);
          }
      }

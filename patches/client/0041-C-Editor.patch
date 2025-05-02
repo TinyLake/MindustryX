@@ -168,7 +168,7 @@ index 7a5c15ce71ac487492b0685e7cc99d061bae5b76..531e545323ec177de4a0ae29a2986dfa
                  table.row();
              }
 diff --git a/core/src/mindustry/editor/MapView.java b/core/src/mindustry/editor/MapView.java
-index 4131bc2bcd213e315fa6abeaf6ee94d6f30e7144..8423f67663e99616d2cfa431ba454519f1ef5f94 100644
+index e4f571bfb0f0778f5b7474c9aae1066a6f69377b..f966dd3c4a3ce9aac2a31c6a057ceb4064f4ba3c 100644
 --- a/core/src/mindustry/editor/MapView.java
 +++ b/core/src/mindustry/editor/MapView.java
 @@ -254,6 +254,11 @@ public class MapView extends Element implements GestureListener{

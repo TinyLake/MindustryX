@@ -9,6 +9,7 @@ import arc.util.*;
 import mindustry.ctype.*;
 import mindustry.gen.*;
 import mindustry.graphics.*;
+import mindustry.input.*;
 import mindustry.ui.*;
 import mindustry.ui.dialogs.*;
 
@@ -28,14 +29,19 @@ public class ContentSelectDialog extends BaseDialog{
 
             TextField field = queryTable.field(query, text -> query = text).pad(8f).growX().get();
 
-            if(Core.app.isDesktop()){
-                Core.scene.setKeyboardFocus(field);
-            }
-
             queryTable.button(Icon.cancel, Styles.clearNonei, () -> {
                 query = "";
                 field.setText(query);
             }).size(64f);
+
+            queryTable.update(() -> {
+                if(Core.scene.getKeyboardFocus()==this)
+                    Core.scene.setKeyboardFocus(field);
+                if(Core.input.keyTap(Binding.chat) && Core.scene.getKeyboardFocus() == field){
+                    var first = contentTable.firstElement();
+                    if(first != null) first.fireClick();
+                }
+            });
         }).growX().row();
 
         contentTable.defaults().width(300);

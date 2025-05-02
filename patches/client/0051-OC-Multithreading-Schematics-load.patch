@@ -9,7 +9,7 @@ Inspired by FOO client.
  1 file changed, 20 insertions(+), 7 deletions(-)
 
 diff --git a/core/src/mindustry/game/Schematics.java b/core/src/mindustry/game/Schematics.java
-index 9c3d6ac56ab22fe4cd6130ae84f9c9d1bddbb551..92f43d414c6b231e50de284c6edb2925a425275d 100644
+index 004d1f7f97e43ec51af4dfc4818e84e49e8166aa..36a6754f3b29d11a10d7f2976659a12083bdab17 100644
 --- a/core/src/mindustry/game/Schematics.java
 +++ b/core/src/mindustry/game/Schematics.java
 @@ -37,6 +37,7 @@ import mindustry.world.meta.*;
@@ -20,16 +20,18 @@ index 9c3d6ac56ab22fe4cd6130ae84f9c9d1bddbb551..92f43d414c6b231e50de284c6edb2925
  import java.util.zip.*;
  
  import static mindustry.Vars.*;
-@@ -81,20 +82,34 @@ public class Schematics implements Loadable{
+@@ -81,22 +82,36 @@ public class Schematics implements Loadable{
  
          loadLoadouts();
  
 +        //MDTX: multithreading schematics load, inspired by FOO
 +        var await = new Seq<Future<Schematic>>();
-         for(Fi file : schematicDirectory.list()){
--            loadFile(file);
-+            await.add(mainExecutor.submit(() -> loadFile(file)));
-         }
+         schematicDirectory.walk(file -> {
+             if(file.extEquals(schematicExtension)){
+-                loadFile(file);
++                await.add(mainExecutor.submit(() -> loadFile(file)));
+             }
+         });
  
 -        platform.getWorkshopContent(Schematic.class).each(this::loadFile);
 +        platform.getWorkshopContent(Schematic.class).each(file -> await.add(mainExecutor.submit(() -> loadFile(file))));
@@ -59,7 +61,7 @@ index 9c3d6ac56ab22fe4cd6130ae84f9c9d1bddbb551..92f43d414c6b231e50de284c6edb2925
          all.sort();
  
          if(shadowBuffer == null){
-@@ -139,8 +154,6 @@ public class Schematics implements Loadable{
+@@ -141,8 +156,6 @@ public class Schematics implements Loadable{
  
          try{
              Schematic s = read(file);
@@ -68,7 +70,7 @@ index 9c3d6ac56ab22fe4cd6130ae84f9c9d1bddbb551..92f43d414c6b231e50de284c6edb2925
  
              //external file from workshop
              if(!s.file.parent().equals(schematicDirectory)){
-@@ -601,7 +614,7 @@ public class Schematics implements Loadable{
+@@ -603,7 +616,7 @@ public class Schematics implements Loadable{
              for(int i = 0; i < total; i++){
                  Block block = blocks.get(stream.readByte());
                  int position = stream.readInt();

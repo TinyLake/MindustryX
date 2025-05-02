@@ -351,7 +351,7 @@ public class ArcMessageDialog extends BaseDialog{
         public boolean selected;
         public final @Nullable Vec2 msgLoc;
 
-        public Msg(Type msgType, String message, Date time, String sender, Vec2 msgLoc){
+        public Msg(Type msgType, String message, Date time, @Nullable String sender, @Nullable Vec2 msgLoc){
             this.msgType = msgType;
             this.message = message;
             this.time = time;
@@ -407,7 +407,7 @@ public class ArcMessageDialog extends BaseDialog{
         public final String name;
         public final String type;
         public final String subClass;
-        public Color color;
+        public final Color color;
         public Boolean show;
 
         Type(String type, String subClass, Color color, Boolean show){

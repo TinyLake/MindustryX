@@ -9,7 +9,7 @@ Subject: [PATCH] HR: RenderExt
  2 files changed, 4 insertions(+), 2 deletions(-)
 
 diff --git a/core/src/mindustry/core/Renderer.java b/core/src/mindustry/core/Renderer.java
-index 22a2db65ab43002c54c51fec8eccf10ad88b00ad..e41d6c46d6ab99dd9f9029e3ce58968dc2ac91b3 100644
+index 3afdb572016951071cb58933b567e43a851ef5b3..df1caf14d2130450e34a8caa97924c1f5e22396d 100644
 --- a/core/src/mindustry/core/Renderer.java
 +++ b/core/src/mindustry/core/Renderer.java
 @@ -21,6 +21,7 @@ import mindustry.graphics.g3d.*;

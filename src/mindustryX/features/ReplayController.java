@@ -104,7 +104,7 @@ public class ReplayController{
         writes = null;
     }
 
-    private static Net fakeServer = new Net(null){
+    private static final Net fakeServer = new Net(null){
         @Override
         public boolean server(){
             return true;

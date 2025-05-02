@@ -23,8 +23,8 @@ way-zer <himc.wicp@gmail.com> on 2024/7/23
 way-zer <himc.wicp@gmail.com> on 2024/8/4
 ---
  core/src/mindustry/graphics/MultiPacker.java            | 2 +-
- core/src/mindustry/world/blocks/logic/LogicDisplay.java | 4 ++--
- 2 files changed, 3 insertions(+), 3 deletions(-)
+ core/src/mindustry/world/blocks/logic/LogicDisplay.java | 6 +++---
+ 2 files changed, 4 insertions(+), 4 deletions(-)
 
 diff --git a/core/src/mindustry/graphics/MultiPacker.java b/core/src/mindustry/graphics/MultiPacker.java
 index 42bc8d00d7a66148b1c7ee63e5cb24c2d0d99ce3..bf50ab0e5db2dde9b3812bc80784c5c1eb4b8884 100644
@@ -40,20 +40,20 @@ index 42bc8d00d7a66148b1c7ee63e5cb24c2d0d99ce3..bf50ab0e5db2dde9b3812bc80784c5c1
          environment(4096),
          ui(4096),
 diff --git a/core/src/mindustry/world/blocks/logic/LogicDisplay.java b/core/src/mindustry/world/blocks/logic/LogicDisplay.java
-index 1db6409a264c5977e4ccfbf7709d1db430ac31e6..aa4bfb1073bba985cf4461fb68eb2cf44861224a 100644
+index a265aa0d0727d27acc6e43fb44073c33e8bbce37..9fda0a464ae216d6abea85aaddd24729023a18a0 100644
 --- a/core/src/mindustry/world/blocks/logic/LogicDisplay.java
 +++ b/core/src/mindustry/world/blocks/logic/LogicDisplay.java
-@@ -79,7 +79,7 @@ public class LogicDisplay extends Block{
+@@ -87,7 +87,7 @@ public class LogicDisplay extends Block{
              //don't even bother processing anything when displays are off.
              if(!Vars.renderer.drawDisplays) return;
  
 -            Draw.draw(Draw.z(), () -> {
-+            Draw.draw(Draw.z() - 0.001f, () -> {
++            Draw.draw(Draw.z() - 0.002f, () -> {
                  if(buffer == null){
                      buffer = new FrameBuffer(displaySize, displaySize);
                      //clear the buffer - some OSs leave garbage in it
-@@ -151,7 +151,7 @@ public class LogicDisplay extends Block{
-             }
+@@ -99,7 +99,7 @@ public class LogicDisplay extends Block{
+             processCommands();
  
              Draw.blend(Blending.disabled);
 -            Draw.draw(Draw.z(), () -> {
@@ -61,3 +61,12 @@ index 1db6409a264c5977e4ccfbf7709d1db430ac31e6..aa4bfb1073bba985cf4461fb68eb2cf4
                  if(buffer != null){
                      if(RenderExt.logicDisplayNoBorder){
                          Draw.rect(Draw.wrap(buffer.getTexture()), x, y, (buffer.getWidth() + 16) * Draw.scl, -(buffer.getHeight() + 16) * Draw.scl);
+@@ -131,7 +131,7 @@ public class LogicDisplay extends Block{
+         public void processCommands(){
+             //don't bother processing commands if displays are off
+             if(!commands.isEmpty() && buffer != null){
+-                Draw.draw(Draw.z(), () -> {
++                Draw.draw(Draw.z() - 0.001f, () -> {
+                     if(buffer == null) return;
+ 
+                     Tmp.m1.set(Draw.proj());

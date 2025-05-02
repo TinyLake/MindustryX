@@ -92,9 +92,7 @@ public class Settings{
             c.checkPref("limitupdate", false, v -> {
                 if(!v) return;
                 settings.put("limitupdate", false);
-                ui.showConfirm("确认开启限制更新", "此功能可以大幅减少LG开销，但会导致视角外的一切停止更新\n强烈不建议在单人开启，在服务器里会造成不同步", () -> {
-                    settings.put("limitupdate", true);
-                });
+                ui.showConfirm("确认开启限制更新", "此功能可以大幅减少LG开销，但会导致视角外的一切停止更新\n强烈不建议在单人开启，在服务器里会造成不同步", () -> settings.put("limitupdate", true));
             });
             c.sliderPref("limitdst", 10, 0, 100, 1, s -> s + "格");
         }));

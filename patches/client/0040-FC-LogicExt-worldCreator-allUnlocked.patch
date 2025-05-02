@@ -91,10 +91,10 @@ index df3b0c68e7c5d93371cc42f95a497535a9a167dd..e48dc1c0d75a97ea64718bd5300bab07
      }
  }
 diff --git a/core/src/mindustry/ui/fragments/PlacementFragment.java b/core/src/mindustry/ui/fragments/PlacementFragment.java
-index e14edc448ce50a1e69cbc8b38d3e1b0b13d5d678..cd31c0fa231c0a0033ade71a9cc57f5cfa0209da 100644
+index 01c84ab75d3c426989595868089525f07c3de047..b64e11daa8366ff1e2c3093c63ece8288c17b2c5 100644
 --- a/core/src/mindustry/ui/fragments/PlacementFragment.java
 +++ b/core/src/mindustry/ui/fragments/PlacementFragment.java
-@@ -25,13 +25,16 @@ import mindustry.input.*;
+@@ -26,13 +26,16 @@ import mindustry.input.*;
  import mindustry.type.*;
  import mindustry.ui.*;
  import mindustry.world.*;
@@ -111,7 +111,7 @@ index e14edc448ce50a1e69cbc8b38d3e1b0b13d5d678..cd31c0fa231c0a0033ade71a9cc57f5c
  
      public Category currentCategory = Category.distribution;
  
-@@ -108,6 +111,10 @@ public class PlacementFragment{
+@@ -109,6 +112,10 @@ public class PlacementFragment{
                  if(nextFlowBuild.flowItems() != null) nextFlowBuild.flowItems().updateFlow();
                  if(nextFlowBuild.liquids != null) nextFlowBuild.liquids.updateFlow();
              }
@@ -122,7 +122,7 @@ index e14edc448ce50a1e69cbc8b38d3e1b0b13d5d678..cd31c0fa231c0a0033ade71a9cc57f5c
          });
      }
  
-@@ -128,6 +135,27 @@ public class PlacementFragment{
+@@ -129,6 +136,27 @@ public class PlacementFragment{
          if(Core.input.keyTap(Binding.pick) && player.isBuilder() && !Core.scene.hasDialog()){ //mouse eyedropper select
              var build = world.buildWorld(Core.input.mouseWorld().x, Core.input.mouseWorld().y);
  
@@ -150,7 +150,7 @@ index e14edc448ce50a1e69cbc8b38d3e1b0b13d5d678..cd31c0fa231c0a0033ade71a9cc57f5c
              //can't middle click buildings in fog
              if(build != null && build.inFogTo(player.team())){
                  build = null;
-@@ -263,6 +291,7 @@ public class PlacementFragment{
+@@ -264,6 +292,7 @@ public class PlacementFragment{
      }
  
      public void build(Group parent){
@@ -158,7 +158,7 @@ index e14edc448ce50a1e69cbc8b38d3e1b0b13d5d678..cd31c0fa231c0a0033ade71a9cc57f5c
          parent.fill(full -> {
              toggler = full;
              full.bottom().right().visible(() -> ui.hudfrag.shown);
-@@ -281,6 +310,7 @@ public class PlacementFragment{
+@@ -282,6 +311,7 @@ public class PlacementFragment{
  
                      for(Block block : getUnlockedByCategory(currentCategory)){
                          if(!unlocked(block)) continue;
@@ -166,7 +166,7 @@ index e14edc448ce50a1e69cbc8b38d3e1b0b13d5d678..cd31c0fa231c0a0033ade71a9cc57f5c
                          if(index++ % rowWidth == 0){
                              blockTable.row();
                          }
-@@ -732,7 +762,7 @@ public class PlacementFragment{
+@@ -738,7 +768,7 @@ public class PlacementFragment{
      }
  
      boolean unlocked(Block block){
@@ -176,10 +176,10 @@ index e14edc448ce50a1e69cbc8b38d3e1b0b13d5d678..cd31c0fa231c0a0033ade71a9cc57f5c
      }
  
 diff --git a/core/src/mindustry/world/Block.java b/core/src/mindustry/world/Block.java
-index f12d50e75fd310d19807cf205fbcec982c651789..174b7fa2552b57989df85c7b20f4857b7ae632a2 100644
+index dec2a2c4db241a26f7d2721eeae0efaa4dbf6b81..0876d188c8ed09a946e8b14d4bdf8769783dc5b5 100644
 --- a/core/src/mindustry/world/Block.java
 +++ b/core/src/mindustry/world/Block.java
-@@ -930,11 +930,11 @@ public class Block extends UnlockableContent implements Senseable{
+@@ -934,11 +934,11 @@ public class Block extends UnlockableContent implements Senseable{
      }
  
      public boolean isVisible(){

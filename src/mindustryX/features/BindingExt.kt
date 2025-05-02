@@ -1,11 +1,9 @@
 package mindustryX.features
 
 import arc.Core
-import arc.KeyBinds.KeyBind
-import arc.KeyBinds.KeybindValue
-import arc.input.InputDevice
+import arc.input.KeyBind
+import arc.input.KeyBind.KeybindValue
 import arc.input.KeyCode
-import arc.util.Reflect
 import mindustry.Vars
 
 @Suppress("EnumEntryName")
@@ -26,12 +24,7 @@ enum class BindingExt(val default: KeybindValue = KeyCode.unset, val category: S
     placeRouterReplacement(KeyCode.shiftLeft),
     ;
 
-    //KT-14115 can't implement KeyBind directly
-    private val bind: KeyBind = object : KeyBind {
-        override fun name(): String = name
-        override fun category(): String? = category
-        override fun defaultValue(p0: InputDevice.DeviceType?): KeybindValue = default
-    }
+    private val bind: KeyBind = KeyBind.add(name, default, category)
 
     fun keyTap() = Core.input.keyTap(bind)
     fun keyDown() = Core.input.keyDown(bind)
@@ -39,10 +32,6 @@ enum class BindingExt(val default: KeybindValue = KeyCode.unset, val category: S
     companion object {
         @JvmStatic
         fun init() {
-            Core.keybinds.apply {
-                setDefaults(arrayOf<KeyBind>(*keybinds, *entries.map { it.bind }.toTypedArray()))
-                Reflect.invoke(this,"load")
-            }
         }
 
         @JvmStatic

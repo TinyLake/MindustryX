@@ -15,7 +15,6 @@ import mindustry.graphics.*;
 import mindustry.type.*;
 import mindustry.ui.*;
 import mindustry.ui.dialogs.*;
-import mindustry.world.*;
 import mindustryX.features.*;
 import mindustryX.features.ui.toolTable.ai.*;
 

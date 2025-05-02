@@ -13,7 +13,7 @@ Subject: [PATCH] API: health changed event
  6 files changed, 41 insertions(+), 2 deletions(-)
 
 diff --git a/core/src/mindustry/entities/Damage.java b/core/src/mindustry/entities/Damage.java
-index 2648e37b867d385bc3d6c7dd38b31e14f75741cd..3d0d4011c5436fac372bc730e43301d0fc8b2b9b 100644
+index 767a7ace780dde0eb6247e291a0da8a14866fc2d..f8f8d0dcae2c6e407d1b7160a45f02c8cef86d27 100644
 --- a/core/src/mindustry/entities/Damage.java
 +++ b/core/src/mindustry/entities/Damage.java
 @@ -18,6 +18,7 @@ import mindustry.type.*;
@@ -57,7 +57,7 @@ index 0bd26d7cebe9118efacc6382c1eb27009ed36f01..19c35cc94b913fed2996c86779b6f750
  
              if(lines.size > 1){
 diff --git a/core/src/mindustry/entities/bullet/BulletType.java b/core/src/mindustry/entities/bullet/BulletType.java
-index e6f82bd66e4c3b302855a6b1d21c7fd3bd90455b..88b52eb43b94e4713bc2818e8492775af3b8dda3 100644
+index 097a3045042c6d4bf2af1d39095890a1cc9e0bc1..134ee56df517044321c02db78430d680c0f32fdb 100644
 --- a/core/src/mindustry/entities/bullet/BulletType.java
 +++ b/core/src/mindustry/entities/bullet/BulletType.java
 @@ -22,6 +22,7 @@ import mindustry.graphics.*;
@@ -68,15 +68,15 @@ index e6f82bd66e4c3b302855a6b1d21c7fd3bd90455b..88b52eb43b94e4713bc2818e8492775a
  import mindustryX.features.*;
  
  import static mindustry.Vars.*;
-@@ -430,6 +431,7 @@ public class BulletType extends Content implements Cloneable{
+@@ -434,6 +435,7 @@ public class BulletType extends Content implements Cloneable{
          }
  
          if(heals() && build.team == b.team && !(build.block instanceof ConstructBlock)){
 +            HealthChangedEvent.INSTANCE.source = b;
              healEffect.at(build.x, build.y, 0f, healColor, build.block);
              build.heal(healPercent / 100f * build.maxHealth + healAmount);
-         }else if(build.team != b.team && direct){
-@@ -448,6 +450,8 @@ public class BulletType extends Content implements Cloneable{
+ 
+@@ -454,6 +456,8 @@ public class BulletType extends Content implements Cloneable{
          boolean wasDead = entity instanceof Unit u && u.dead;
  
          if(entity instanceof Healthc h){
@@ -85,7 +85,7 @@ index e6f82bd66e4c3b302855a6b1d21c7fd3bd90455b..88b52eb43b94e4713bc2818e8492775a
              float damage = b.damage;
              float shield = entity instanceof Shieldc s ? Math.max(s.shield(), 0f) : 0f;
              if(maxDamageFraction > 0){
-@@ -553,7 +557,9 @@ public class BulletType extends Content implements Cloneable{
+@@ -559,7 +563,9 @@ public class BulletType extends Content implements Cloneable{
  
      public void createSplashDamage(Bullet b, float x, float y){
          if(splashDamageRadius > 0 && !b.absorbed){
@@ -95,7 +95,7 @@ index e6f82bd66e4c3b302855a6b1d21c7fd3bd90455b..88b52eb43b94e4713bc2818e8492775a
  
              if(status != StatusEffects.none){
                  Damage.status(b.team, x, y, splashDamageRadius, status, statusDuration, collidesAir, collidesGround);
-@@ -561,6 +567,7 @@ public class BulletType extends Content implements Cloneable{
+@@ -567,6 +573,7 @@ public class BulletType extends Content implements Cloneable{
  
              if(heals()){
                  indexer.eachBlock(b.team, x, y, splashDamageRadius, Building::damaged, other -> {
@@ -104,7 +104,7 @@ index e6f82bd66e4c3b302855a6b1d21c7fd3bd90455b..88b52eb43b94e4713bc2818e8492775a
                      other.heal(healPercent / 100f * other.maxHealth() + healAmount);
                  });
 diff --git a/core/src/mindustry/entities/comp/BuildingComp.java b/core/src/mindustry/entities/comp/BuildingComp.java
-index 0ecb92b6cafe0739d44e05f5aedd04ba342b57f3..3730928ea15a66b310a0b46bd19b883097145c67 100644
+index 7bd56ead8b8d11f559908eb4cef41b84087db142..f06464c8f249a84b821af5f89dbb052237800975 100644
 --- a/core/src/mindustry/entities/comp/BuildingComp.java
 +++ b/core/src/mindustry/entities/comp/BuildingComp.java
 @@ -40,6 +40,7 @@ import mindustry.world.blocks.power.*;
@@ -115,7 +115,7 @@ index 0ecb92b6cafe0739d44e05f5aedd04ba342b57f3..3730928ea15a66b310a0b46bd19b8830
  import mindustryX.features.*;
  
  import java.util.*;
-@@ -1699,6 +1700,8 @@ abstract class BuildingComp implements Posc, Teamc, Healthc, Buildingc, Timerc,
+@@ -1709,6 +1710,8 @@ abstract class BuildingComp implements Posc, Teamc, Healthc, Buildingc, Timerc,
  
      /** Handles splash damage with a bullet source. */
      public void damage(Bullet bullet, Team source, float damage){
@@ -124,7 +124,7 @@ index 0ecb92b6cafe0739d44e05f5aedd04ba342b57f3..3730928ea15a66b310a0b46bd19b8830
          damage(source, damage);
          Events.fire(bulletDamageEvent.set(self(), bullet));
      }
-@@ -1977,7 +1980,9 @@ abstract class BuildingComp implements Posc, Teamc, Healthc, Buildingc, Timerc,
+@@ -1987,7 +1990,9 @@ abstract class BuildingComp implements Posc, Teamc, Healthc, Buildingc, Timerc,
  
          //TODO handle this better on the client.
          if(!net.client()){

@@ -27,10 +27,10 @@ index 2c0077cc99557c80f49d0cf496c92309b31e482e..341b81c8ec8cae795b3e5c3872e253f9
      }
  }
 diff --git a/core/src/mindustry/world/blocks/distribution/ItemBridge.java b/core/src/mindustry/world/blocks/distribution/ItemBridge.java
-index fa11e9f00f1e62b7bfb78067d1da88e405f91ab3..0bb4a1343cd3d5a030fd1ced7217317234493c15 100644
+index 97c69dd2cfe25d81b94b7031fbd5919672f0b8cf..4d2332b508b174c001969b741d5ad5edfa81c6dc 100644
 --- a/core/src/mindustry/world/blocks/distribution/ItemBridge.java
 +++ b/core/src/mindustry/world/blocks/distribution/ItemBridge.java
-@@ -532,5 +532,17 @@ public class ItemBridge extends Block{
+@@ -540,5 +540,17 @@ public class ItemBridge extends Block{
                  wasMoved = moved = read.bool();
              }
          }
@@ -48,6 +48,7 @@ index fa11e9f00f1e62b7bfb78067d1da88e405f91ab3..0bb4a1343cd3d5a030fd1ced72173172
 +        }
      }
  }
+\ No newline at end of file
 diff --git a/core/src/mindustry/world/blocks/distribution/MassDriver.java b/core/src/mindustry/world/blocks/distribution/MassDriver.java
 index 4aef759357661787b2b61e542671f1c6f78d5dc1..2b29f1128fb6bee59fe1d22ee81fb14618edf686 100644
 --- a/core/src/mindustry/world/blocks/distribution/MassDriver.java

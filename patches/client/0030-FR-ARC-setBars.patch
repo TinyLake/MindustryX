@@ -50,7 +50,7 @@ index a4d60c3eec14d87c8310b146ff1550e8145dbf89..0c05a4deafb47f756f1f3e31e26e3d4c
      }
  }
 diff --git a/core/src/mindustry/world/Block.java b/core/src/mindustry/world/Block.java
-index 8ec54d65db2d42c30b340785f65aac3503d50747..f12d50e75fd310d19807cf205fbcec982c651789 100644
+index 114945ac017c87344a9bb14a9607b89946edaf6e..dec2a2c4db241a26f7d2721eeae0efaa4dbf6b81 100644
 --- a/core/src/mindustry/world/Block.java
 +++ b/core/src/mindustry/world/Block.java
 @@ -33,6 +33,7 @@ import mindustry.world.blocks.power.*;
@@ -61,7 +61,7 @@ index 8ec54d65db2d42c30b340785f65aac3503d50747..f12d50e75fd310d19807cf205fbcec98
  
  import java.lang.reflect.*;
  import java.util.*;
-@@ -609,7 +610,7 @@ public class Block extends UnlockableContent implements Senseable{
+@@ -613,7 +614,7 @@ public class Block extends UnlockableContent implements Senseable{
  
      public void addLiquidBar(Liquid liq){
          addBar("liquid-" + liq.name, entity -> !liq.unlockedNow() ? null : new Bar(
@@ -70,7 +70,7 @@ index 8ec54d65db2d42c30b340785f65aac3503d50747..f12d50e75fd310d19807cf205fbcec98
              liq::barColor,
              () -> entity.liquids.get(liq) / liquidCapacity
          ));
-@@ -617,15 +618,19 @@ public class Block extends UnlockableContent implements Senseable{
+@@ -621,15 +622,19 @@ public class Block extends UnlockableContent implements Senseable{
  
      /** Adds a liquid bar that dynamically displays a liquid type. */
      public <T extends Building> void addLiquidBar(Func<T, Liquid> current){
@@ -95,7 +95,7 @@ index 8ec54d65db2d42c30b340785f65aac3503d50747..f12d50e75fd310d19807cf205fbcec98
  
          if(consPower != null){
              boolean buffered = consPower.buffered;
-@@ -633,7 +638,11 @@ public class Block extends UnlockableContent implements Senseable{
+@@ -637,7 +642,11 @@ public class Block extends UnlockableContent implements Senseable{
  
              addBar("power", entity -> new Bar(
                  () -> buffered ? Core.bundle.format("bar.poweramount", Float.isNaN(entity.power.status * capacity) ? "<ERROR>" : UI.formatAmount((int)(entity.power.status * capacity))) :
@@ -539,7 +539,7 @@ index c87a05d828c63556bc8edcb54870f9a3b11b1de3..d414e1b86563a7990165b48db8549896
          new Bar(
              () -> e.unit() == null ? "[lightgray]" + Iconc.cancel :
 diff --git a/core/src/mindustry/world/blocks/units/UnitAssembler.java b/core/src/mindustry/world/blocks/units/UnitAssembler.java
-index 271ac5d744a5d2b97c49d5e817c728f0ac936d0b..ae378126b648bcfa9e1c770787429640ec8a015a 100644
+index c165cfb609e323e453a418445a69a38953cd6659..edeb6ee5e9ceba4a4e41a0eb6411d8b38fee87cb 100644
 --- a/core/src/mindustry/world/blocks/units/UnitAssembler.java
 +++ b/core/src/mindustry/world/blocks/units/UnitAssembler.java
 @@ -115,6 +115,10 @@ public class UnitAssembler extends PayloadBlock{

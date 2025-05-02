@@ -9,7 +9,7 @@ Subject: [PATCH] FIX.G: compatibility for old mixed tech
  2 files changed, 12 insertions(+)
 
 diff --git a/core/src/mindustry/game/Rules.java b/core/src/mindustry/game/Rules.java
-index 2339e5f1b2219b3763c289ba7f823b842ba40ee6..873ae17f60857b9bef4054515f8cc7e0d5fd4033 100644
+index fc367c1ad9e552f48fdabed6f5c73e5510f33973..d663955391ac641346c492cdd6513c20b5837604 100644
 --- a/core/src/mindustry/game/Rules.java
 +++ b/core/src/mindustry/game/Rules.java
 @@ -164,6 +164,11 @@ public class Rules{

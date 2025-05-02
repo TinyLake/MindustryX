@@ -35,7 +35,7 @@ index b5b2a237c2f5343aab2fb668337c2bc47a45c1b8..308ff12c92a06e11c18b33f540098a0f
  /out/
  ios/libs/
 diff --git a/android/build.gradle b/android/build.gradle
-index 11f5fcf77dfc2e54ad1c18b183ad1957ff3dfe9a..23eb0e5b84894538ee19ee7fa437950622c56a2a 100644
+index 3377ee1e7d5500b61612c10b7783a14a02544a74..086afef51661c2d01e366f99e6afbcf6ce48f744 100644
 --- a/android/build.gradle
 +++ b/android/build.gradle
 @@ -18,7 +18,7 @@ configurations{ natives }
@@ -93,10 +93,10 @@ index 0881a8a6c843fe5c6bfd78cf5a0aeee834ccb769..39332d4d175d89e93c48ebb7b9532c7d
      }
      processResources.configure {
 diff --git a/core/src/mindustry/Vars.java b/core/src/mindustry/Vars.java
-index 635430017f121c5e67d36193c4c14facf5af4642..792ff4df7a541da1e52ca9c55f38d7be7614c249 100644
+index e2394a3c0d37199f177f9d24f14a6c85e6f19548..0c630ca7902a615c9773b3e42e0dcef05e56d9a6 100644
 --- a/core/src/mindustry/Vars.java
 +++ b/core/src/mindustry/Vars.java
-@@ -83,7 +83,7 @@ public class Vars implements Loadable{
+@@ -84,7 +84,7 @@ public class Vars implements Loadable{
      /** URLs to the JSON files containing the list of mods.  */
      public static final String[] modJsonURLs = {"https://raw.githubusercontent.com/Anuken/MindustryMods/master/mods.json", "https://cdn.jsdelivr.net/gh/anuken/mindustrymods/mods.json"};
      /** URL of the github issue report template.*/
@@ -169,10 +169,10 @@ index 5b49342d67c5ee443ba789417f231b75d79ee1cb..89a5e536fe62ed8d3dc04e291fb70516
          buffer.put((byte)state.rules.mode().ordinal());
          buffer.putInt(netServer.admins.getPlayerLimit());
 diff --git a/desktop/src/mindustry/desktop/DesktopLauncher.java b/desktop/src/mindustry/desktop/DesktopLauncher.java
-index e0c2158c1c65178db97e269f77fb468de00f0df1..f83760561d387249ba114d42356e92a6cf0c4392 100644
+index 9e18ce5a54be5f6ca97395737d65de56495aeac0..bee67a07c282daadc799d3f345bee48b9223b536 100644
 --- a/desktop/src/mindustry/desktop/DesktopLauncher.java
 +++ b/desktop/src/mindustry/desktop/DesktopLauncher.java
-@@ -63,7 +63,7 @@ public class DesktopLauncher extends ClientLauncher{
+@@ -64,7 +64,7 @@ public class DesktopLauncher extends ClientLauncher{
                          }
                      }
                  }
@@ -182,13 +182,13 @@ index e0c2158c1c65178db97e269f77fb468de00f0df1..f83760561d387249ba114d42356e92a6
          }catch(Throwable e){
              handleCrash(e);
 diff --git a/gradle.properties b/gradle.properties
-index b986070a482f77fa1dc87b459b94b9f4d5ad2dc9..7f42259f829105231351c78fe275a0b2de813b6d 100644
+index 2073ba8091c39ed3455f6ea09d1131675c627d87..e40dc71f73b04c3360ad8ee5c98479457e98b266 100644
 --- a/gradle.properties
 +++ b/gradle.properties
 @@ -27,3 +27,5 @@ org.gradle.internal.http.socketTimeout=100000
  org.gradle.internal.http.connectionTimeout=100000
  android.enableR8.fullMode=false
- archash=ad0b6c5662
+ archash=23264f9514
 +
-+upstreamBuild=147.1
++upstreamBuild=149
 \ No newline at end of file

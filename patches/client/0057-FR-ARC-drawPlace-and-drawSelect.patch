@@ -16,7 +16,7 @@ Subject: [PATCH] FR: ARC drawPlace and drawSelect
  9 files changed, 94 insertions(+), 13 deletions(-)
 
 diff --git a/core/src/mindustry/game/Universe.java b/core/src/mindustry/game/Universe.java
-index 33fcc893c17585aef5f24f0282db5788410a5237..4012377fec3fb9161645e7d76616b2f7f78d48c8 100644
+index e82224d6e517acf0933747720fe1d68d403ff9d0..2417e905fbd7e59506ec031a8e46847878d74323 100644
 --- a/core/src/mindustry/game/Universe.java
 +++ b/core/src/mindustry/game/Universe.java
 @@ -21,7 +21,7 @@ public class Universe{
@@ -302,7 +302,7 @@ index f6454de7e47676d8372db35f75c5b835321ab289..f1587b033da7a916e42e06b8ab931a5e
          returnItem = null;
          returnCount = 0;
 diff --git a/core/src/mindustry/world/blocks/storage/CoreBlock.java b/core/src/mindustry/world/blocks/storage/CoreBlock.java
-index 47d70253ac4c200876ee80254f55e9f5f0df2c63..baa3f317d9149cdd3ebeec0715b2b17c0fcae7d7 100644
+index 5bfab32686d87a3b65427594ecf326a33668da1c..18079e53cf5e8e65c4a23cb05729c5e9b82bcaa0 100644
 --- a/core/src/mindustry/world/blocks/storage/CoreBlock.java
 +++ b/core/src/mindustry/world/blocks/storage/CoreBlock.java
 @@ -89,6 +89,7 @@ public class CoreBlock extends StorageBlock{
@@ -313,7 +313,7 @@ index 47d70253ac4c200876ee80254f55e9f5f0df2c63..baa3f317d9149cdd3ebeec0715b2b17c
              Unit unit = spawnType.create(tile.team());
              //reset reload so that the player can't shoot immediately
              for(var mount : unit.mounts){
-@@ -724,6 +725,14 @@ public class CoreBlock extends StorageBlock{
+@@ -725,6 +726,14 @@ public class CoreBlock extends StorageBlock{
                  outline.get(core);
                  core.proximity.each(storage -> storage.items == items, outline);
              });

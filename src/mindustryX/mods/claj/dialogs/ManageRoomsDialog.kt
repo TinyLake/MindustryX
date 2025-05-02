@@ -56,11 +56,11 @@ class ManageRoomsDialog : BaseDialog("管理claj房间") {
         }
 
         buttons.button("手动添加", Icon.add, Vars.iconMed) {
-            Vars.ui.showTextInput("添加Claj服务器", "请输入服务器地址", "", { addr ->
+            Vars.ui.showTextInput("添加Claj服务器", "请输入服务器地址", "") { addr ->
                 val port = addr.split(":").getOrNull(1)?.toInt() ?: Vars.port
                 servers += ClajServer(addr.split(":")[0], port)
                 show()
-            })
+            }
         }
     }
 

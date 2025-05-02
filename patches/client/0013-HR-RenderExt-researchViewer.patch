@@ -42,7 +42,7 @@ index fb947c4bd06e676c79ff2c4b3578e286d048e60a..1941128ce1c18c771c3660f00ae6c8a2
      }
  
 diff --git a/core/src/mindustry/ui/dialogs/ResearchDialog.java b/core/src/mindustry/ui/dialogs/ResearchDialog.java
-index 13bfcd6617728834874a3d762d7399e8cf176090..8c499299cc9a171d09a62e4344d44dec7c5686ec 100644
+index 5db3bfba9f5b975459511e14a5e0890b0d32a7ac..14d7a6e11b608e072d0ff09fede11f37d205fc02 100644
 --- a/core/src/mindustry/ui/dialogs/ResearchDialog.java
 +++ b/core/src/mindustry/ui/dialogs/ResearchDialog.java
 @@ -27,6 +27,7 @@ import mindustry.type.*;
@@ -80,7 +80,7 @@ index 13bfcd6617728834874a3d762d7399e8cf176090..8c499299cc9a171d09a62e4344d44dec
                      button.getImage().setColor(!locked(node.node) ? Color.white : node.selectable ? Color.gray : Pal.gray);
                      button.getImage().layout();
                  });
-@@ -628,13 +631,13 @@ public class ResearchDialog extends BaseDialog{
+@@ -629,13 +632,13 @@ public class ResearchDialog extends BaseDialog{
              infoTable.table(b -> {
                  b.margin(0).left().defaults().left();
  

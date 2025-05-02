@@ -94,7 +94,6 @@ public class ModsRecommendDialog extends BaseDialog{
         float width = Math.min(Core.graphics.getWidth() / Scl.scl(1.05f), 556f);
 
         cont.top().clearChildren();
-        cont.defaults();
 
         cont.add(new Card(Pal.lightishGray, Card.grayOuterDark, info -> {
             info.top();
@@ -123,9 +122,7 @@ public class ModsRecommendDialog extends BaseDialog{
                     continue;
                 }
 
-                t.table(Tex.whiteui, card -> {
-                    setupModCard(card, modMeta);
-                }).color(Pal.darkerGray).width(width).pad(12f).with(card -> {
+                t.table(Tex.whiteui, card -> setupModCard(card, modMeta)).color(Pal.darkerGray).width(width).pad(12f).with(card -> {
                     if(installed(modMeta)){
                         card.addAction(Actions.color(Pal.accent, 1.5f));
                     }
@@ -163,9 +160,7 @@ public class ModsRecommendDialog extends BaseDialog{
 
             title.add(new BorderImage(){{
                 border(Pal.darkestGray);
-            }}).size(128f).pad(4f).with(image -> {
-                getModIcon(modMeta.repo, image::setDrawable);
-            });
+            }}).size(128f).pad(4f).with(image -> getModIcon(modMeta.repo, image::setDrawable));
         });
 
         table.row();
@@ -178,9 +173,7 @@ public class ModsRecommendDialog extends BaseDialog{
                 buttons.right().bottom();
                 buttons.defaults().size(32f);
 
-                buttons.button(Icon.download, Styles.cleari, 24f, () -> {
-                    Vars.ui.mods.githubImportMod(modListing.repo, modListing.hasJava);
-                });
+                buttons.button(Icon.download, Styles.cleari, 24f, () -> Vars.ui.mods.githubImportMod(modListing.repo, modListing.hasJava));
             }));
         })).minHeight(48f).pad(8f);
     }

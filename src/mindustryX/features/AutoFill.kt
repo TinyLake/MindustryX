@@ -64,9 +64,9 @@ object AutoFill {
         Core.input.mouseWorld().run { Vars.world.buildWorld(x, y) }?.let { tryFill(it) }
 
         if (player.unit().stack.amount < player.unit().itemCapacity() * 0.5) {
-            Vars.indexer.findTile(player.team(), player.x, player.y, Vars.buildingRange, {
+            Vars.indexer.findTile(player.team(), player.x, player.y, Vars.buildingRange) {
                 it.block is StorageBlock && it.items.has(item) && it !in transferredThisTick
-            })?.let { find ->
+            }?.let { find ->
                 if (justTransferred(find)) return@let
                 Call.requestItem(player, find, item, 9999)
             }

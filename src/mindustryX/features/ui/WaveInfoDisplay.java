@@ -56,7 +56,7 @@ public class WaveInfoDisplay extends Table{
             }).tooltip("配置资源显示").get().addListener(new ClickListener(){
                 @Override
                 public void clicked(InputEvent event, float x, float y){
-                    new SettingsV2.SettingDialog(UIExt.coreItems.settings).showFloatPanel(event.stageX, event.stageY);
+                    SettingsV2.showFloatSettingsPanel(event.stageX, event.stageY, UIExt.coreItems.settings);
                 }
             });
             buttons.button(Icon.eyeOffSmall, Styles.clearNonei, iconMed, () -> enable.set(false)).tooltip("隐藏波次显示");

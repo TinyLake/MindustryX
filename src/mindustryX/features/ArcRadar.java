@@ -1,7 +1,6 @@
 package mindustryX.features;
 
 import arc.*;
-import arc.graphics.*;
 import arc.graphics.g2d.*;
 import arc.math.*;
 import arc.scene.event.*;
@@ -17,7 +16,6 @@ import mindustry.world.blocks.storage.*;
 import mindustryX.features.SettingsV2.*;
 import mindustryX.features.func.*;
 
-import java.util.*;
 import java.util.List;
 
 import static mindustry.Vars.*;
@@ -60,7 +58,7 @@ public class ArcRadar{
     });
     public static List<SettingsV2.Data<?>> settings = CollectionsKt.listOf(mode, size);
 
-    {
+    static{
         mode.addFallbackName("radarMode");
         size.addFallbackName("radarSize");
     }
@@ -165,7 +163,7 @@ public class ArcRadar{
                     continue;
 
                 Draw.color(state.rules.waveTeam.color, 1f);
-                arcDrawNearby(Icon.units.getRegion(), tile, Math.max(6 * expandRate, state.rules.dropZoneRadius / rRatio / 2), state.rules.waveTeam.color);
+                arcDrawNearby(Icon.units.getRegion(), tile, Math.max(6 * expandRate, state.rules.dropZoneRadius / rRatio / 2));
 
                 float curve = Mathf.curve(Time.time % 200f, 60f, 200f);
                 Draw.color(state.rules.waveTeam.color, 1f);
@@ -223,7 +221,7 @@ public class ArcRadar{
         });
     }
 
-    public static void arcDrawNearby(TextureRegion region, Tile tile, float size, Color color){
+    public static void arcDrawNearby(TextureRegion region, Tile tile, float size){
         float range = Mathf.dst(tile.worldy() - player.y, tile.worldx() - player.x);
         if(range > curScanRange) return;
         float nx = player.x + (tile.worldx() - player.x) / rRatio;

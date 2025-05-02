@@ -27,7 +27,6 @@ public class UIExt{
     public static ModsRecommendDialog modsRecommend = new ModsRecommendDialog();
     public static TeamsStatDisplay teamsStatDisplay;
     public static ArcMessageDialog arcMessageDialog = new ArcMessageDialog();
-    public static HudSettingsTable hudSettingsTable = new HudSettingsTable();
     public static AdvanceToolTable advanceToolTable = new AdvanceToolTable();
     public static AdvanceBuildTool advanceBuildTool = new AdvanceBuildTool();
     public static AuxiliaryTools auxiliaryTools = new AuxiliaryTools();
@@ -46,25 +45,22 @@ public class UIExt{
 
         ui.hudGroup.fill(t -> {
             t.right().name = "quickTool";
+            t.defaults().right();
             t.update(() -> t.y = quickToolOffset.getValue());
-            t.add(auxiliaryTools.wrapped()).growX().row();
-            t.add(hudSettingsTable.wrapped()).growX().row();
-            t.add(advanceToolTable.wrapped()).growX().row();
-            t.add(advanceBuildTool.wrapped()).growX().row();
+            t.add(auxiliaryTools.wrapped()).row();
+            t.add(NewToolTable.INSTANCE.wrapped()).row();
+            t.add(advanceToolTable.wrapped()).row();
+            t.add(advanceBuildTool.wrapped()).row();
             t.visible(() -> ui.hudfrag.shown && Core.settings.getBool("showQuickToolTable"));
         });
     }
 
     public static void buildPositionRow(Table tt, Vec2 vec){
         tt.add("x= ");
-        TextField x = tt.field(Strings.autoFixed(vec.x, 2), text -> {
-            vec.x = Float.parseFloat(text);
-        }).valid(Strings::canParseFloat).maxTextLength(8).get();
+        TextField x = tt.field(Strings.autoFixed(vec.x, 2), text -> vec.x = Float.parseFloat(text)).valid(Strings::canParseFloat).maxTextLength(8).get();
 
         tt.add("y= ").marginLeft(32f);
-        TextField y = tt.field(Strings.autoFixed(vec.y, 2), text -> {
-            vec.y = Float.parseFloat(text);
-        }).valid(Strings::canParseFloat).maxTextLength(8).get();
+        TextField y = tt.field(Strings.autoFixed(vec.y, 2), text -> vec.y = Float.parseFloat(text)).valid(Strings::canParseFloat).maxTextLength(8).get();
 
         tt.button(UnitTypes.gamma.emoji(), () -> {
             vec.set(player.tileX(), player.tileY());
@@ -149,7 +145,6 @@ public class UIExt{
                 if(cons.get(x, y)){
                     hitter.remove();
                 }
-                ;
             }
         });
 

@@ -92,7 +92,7 @@ public class Card extends Table{
         /**
          * 外阴影 有外凸的效果
          */
-        outer;
+        outer
     }
 
     public static class CardStyle{

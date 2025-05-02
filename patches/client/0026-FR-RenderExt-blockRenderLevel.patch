@@ -11,7 +11,7 @@ Subject: [PATCH] FR(RenderExt) blockRenderLevel
  4 files changed, 11 insertions(+), 6 deletions(-)
 
 diff --git a/core/src/mindustry/core/Renderer.java b/core/src/mindustry/core/Renderer.java
-index 0279b44e1da1d2425350843b4fe075fd9272d963..0efb58fc8488af063ac609a96ad1dcbd71de350d 100644
+index cf406487b3bf6cbf1e592a15728a8440299efec1..e5a5a3e83a71852877e31100c0eb4bf80b56128a 100644
 --- a/core/src/mindustry/core/Renderer.java
 +++ b/core/src/mindustry/core/Renderer.java
 @@ -332,7 +332,8 @@ public class Renderer implements ApplicationListener{

@@ -12,10 +12,10 @@ Content-Transfer-Encoding: 8bit
  1 file changed, 5 insertions(+), 4 deletions(-)
 
 diff --git a/core/src/mindustry/entities/comp/BuildingComp.java b/core/src/mindustry/entities/comp/BuildingComp.java
-index fd6b3adfb0a463d50c97ddf105a1b8c1cf9d4cef..6d4c738750d4dfe63ee66879e294d7b5bac2abd2 100644
+index 9c44162eab8e492245a8a7aa7fad310ec704612e..dc1a5ac9e6946f7f820083987de784c0028c2173 100644
 --- a/core/src/mindustry/entities/comp/BuildingComp.java
 +++ b/core/src/mindustry/entities/comp/BuildingComp.java
-@@ -1116,10 +1116,11 @@ abstract class BuildingComp implements Posc, Teamc, Healthc, Buildingc, Timerc,
+@@ -1126,10 +1126,11 @@ abstract class BuildingComp implements Posc, Teamc, Healthc, Buildingc, Timerc,
      }
  
      public void updatePowerGraph(){

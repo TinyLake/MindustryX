@@ -48,8 +48,8 @@ object AutoUpdate {
 
     val active get() = !VarsX.devVersion
 
-    val repo = "TinyLake/MindustryX"
-    val devRepo = "TinyLake/MindustryX-work"
+    const val repo = "TinyLake/MindustryX"
+    const val devRepo = "TinyLake/MindustryX-work"
     var versions = emptyList<Release>()
     val currentBranch get() = VarsX.version.split('-', limit = 2).getOrNull(1)
     var latest: Release? = null
@@ -78,7 +78,7 @@ object AutoUpdate {
             val versions = versions0.filter { it.tag == "v${it.version}" }//filter old release
             getReleases(devRepo) { devVersions ->
                 this.versions = versions + devVersions
-                fetchSuccess()
+                Core.app.post { fetchSuccess() }
             }
         }
     }

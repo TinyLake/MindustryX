@@ -11,10 +11,10 @@ Content-Transfer-Encoding: 8bit
 ---
  .../world/DirectionalItemBuffer.java          | 11 +++++
  core/src/mindustry/world/ItemBuffer.java      |  9 ++++
- .../distribution/BufferedItemBridge.java      | 47 +++++++++++++++++++
+ .../distribution/BufferedItemBridge.java      | 48 ++++++++++++++++++-
  .../world/blocks/distribution/ItemBridge.java | 15 ++++++
  .../world/blocks/distribution/Junction.java   | 30 ++++++++++++
- 5 files changed, 112 insertions(+)
+ 5 files changed, 112 insertions(+), 1 deletion(-)
 
 diff --git a/core/src/mindustry/world/DirectionalItemBuffer.java b/core/src/mindustry/world/DirectionalItemBuffer.java
 index f71aa74671a3ef59579ff3e1fde127406a1401ea..d15edc5db9297ae74cfa6f91e53a60b1cf8b8009 100644
@@ -59,10 +59,10 @@ index d91da022ce4ca749164958cf8fc4438ddf777b23..1b8ac44e8773af0b69e40f284a1dfff5
          return index < buffer.length;
      }
 diff --git a/core/src/mindustry/world/blocks/distribution/BufferedItemBridge.java b/core/src/mindustry/world/blocks/distribution/BufferedItemBridge.java
-index 6fe8e90722ef740148d337a09754febd47a7ab10..8a6de353e073b653abfd14a2610905705cc4e034 100644
+index f14c73a48307a043a7562f0015f6240e50425c9d..c79a5c21485da2f6c8a9daad1ba7877819f43775 100644
 --- a/core/src/mindustry/world/blocks/distribution/BufferedItemBridge.java
 +++ b/core/src/mindustry/world/blocks/distribution/BufferedItemBridge.java
-@@ -1,9 +1,17 @@
+@@ -1,10 +1,18 @@
  package mindustry.world.blocks.distribution;
  
 +import arc.graphics.g2d.*;
@@ -74,13 +74,23 @@ index 6fe8e90722ef740148d337a09754febd47a7ab10..8a6de353e073b653abfd14a261090570
 +import mindustry.graphics.*;
  import mindustry.type.*;
  import mindustry.world.*;
+ import mindustry.world.meta.*;
 +import mindustryX.features.*;
 +
 +import static mindustry.Vars.*;
  
  public class BufferedItemBridge extends ItemBridge{
      public final int timerAccept = timers++;
-@@ -40,6 +48,45 @@ public class BufferedItemBridge extends ItemBridge{
+@@ -19,7 +27,7 @@ public class BufferedItemBridge extends ItemBridge{
+         hasItems = true;
+         canOverdrive = true;
+     }
+-    
++
+     @Override
+     public void setStats(){
+         super.setStats();
+@@ -51,6 +59,44 @@ public class BufferedItemBridge extends ItemBridge{
              dump();
          }
  
@@ -122,12 +132,11 @@ index 6fe8e90722ef740148d337a09754febd47a7ab10..8a6de353e073b653abfd14a261090570
 +            }
 +        }
 +
-+
+ 
          @Override
          public void write(Writes write){
-             super.write(write);
 diff --git a/core/src/mindustry/world/blocks/distribution/ItemBridge.java b/core/src/mindustry/world/blocks/distribution/ItemBridge.java
-index 0ec2e16bcd63482b2d3a24a50d8700b2f6b33afe..fa11e9f00f1e62b7bfb78067d1da88e405f91ab3 100644
+index 6213a8a2a05f46c647a3deb3a2bbcf8be922b120..97c69dd2cfe25d81b94b7031fbd5919672f0b8cf 100644
 --- a/core/src/mindustry/world/blocks/distribution/ItemBridge.java
 +++ b/core/src/mindustry/world/blocks/distribution/ItemBridge.java
 @@ -17,6 +17,7 @@ import mindustry.input.*;
@@ -138,7 +147,7 @@ index 0ec2e16bcd63482b2d3a24a50d8700b2f6b33afe..fa11e9f00f1e62b7bfb78067d1da88e4
  
  import static mindustry.Vars.*;
  
-@@ -356,6 +357,20 @@ public class ItemBridge extends Block{
+@@ -364,6 +365,20 @@ public class ItemBridge extends Block{
          public void draw(){
              super.draw();
  
@@ -160,7 +169,7 @@ index 0ec2e16bcd63482b2d3a24a50d8700b2f6b33afe..fa11e9f00f1e62b7bfb78067d1da88e4
  
              Tile other = world.tile(link);
 diff --git a/core/src/mindustry/world/blocks/distribution/Junction.java b/core/src/mindustry/world/blocks/distribution/Junction.java
-index ec21de0b1618f59bec6816a906e1dd612513822b..7c1ac4c85932b974434abce3cbd3a160edcdf0ab 100644
+index cadd970ab157b93d2aa1667df2a8317085f51eaa..b452ce570ec65cada0eeca929d723c39ada7c506 100644
 --- a/core/src/mindustry/world/blocks/distribution/Junction.java
 +++ b/core/src/mindustry/world/blocks/distribution/Junction.java
 @@ -1,11 +1,17 @@
@@ -181,7 +190,7 @@ index ec21de0b1618f59bec6816a906e1dd612513822b..7c1ac4c85932b974434abce3cbd3a160
  
  import static mindustry.Vars.*;
  
-@@ -79,6 +85,30 @@ public class Junction extends Block{
+@@ -89,6 +95,30 @@ public class Junction extends Block{
              return to != null && to.team == team;
          }
  
