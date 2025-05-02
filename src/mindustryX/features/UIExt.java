@@ -53,10 +53,6 @@ public class UIExt{
             t.add(advanceBuildTool.wrapped()).row();
             t.visible(() -> ui.hudfrag.shown && Core.settings.getBool("showQuickToolTable"));
         });
-
-        Core.assets.load("x-logo.png", Texture.class).loaded = texture -> {
-            Core.atlas.addRegion("logo", new TextureRegion(texture));
-        };
     }
 
     public static void buildPositionRow(Table tt, Vec2 vec){
