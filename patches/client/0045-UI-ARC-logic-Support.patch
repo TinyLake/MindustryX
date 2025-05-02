@@ -17,14 +17,16 @@ way-zer <himc.wicp@gmail.com> on 2024/7/14
 
 防止多人模式下编辑世处，并给出提示
 way-zer <himc.wicp@gmail.com> on 2024/9/8
+
+clean
 ---
- core/src/mindustry/logic/LCanvas.java         |  58 ++++++-
- core/src/mindustry/logic/LExecutor.java       |   3 +-
- core/src/mindustry/logic/LStatements.java     |  12 ++
- core/src/mindustry/logic/LogicDialog.java     | 146 +++++++++++++++++-
- .../world/blocks/logic/LogicBlock.java        |  72 ++++++++-
- .../world/blocks/logic/MemoryBlock.java       |  73 ++++++++-
- 6 files changed, 347 insertions(+), 17 deletions(-)
+ core/src/mindustry/logic/LCanvas.java         | 58 +++++++++++++-
+ core/src/mindustry/logic/LExecutor.java       |  3 +-
+ core/src/mindustry/logic/LStatements.java     | 12 +++
+ core/src/mindustry/logic/LogicDialog.java     | 30 ++++++--
+ .../world/blocks/logic/LogicBlock.java        | 77 +++++++++++++++++--
+ .../world/blocks/logic/MemoryBlock.java       | 73 +++++++++++++++++-
+ 6 files changed, 234 insertions(+), 19 deletions(-)
 
 diff --git a/core/src/mindustry/logic/LCanvas.java b/core/src/mindustry/logic/LCanvas.java
 index 2bfd96ac4b9685bde38edee0d80be66380fdf6f2..ba5401c7c2ee4f8d9e7ffcc7da8ca3ad5bdb2a77 100644
@@ -173,7 +175,7 @@ index eda6c92c970e9f3f632094cd5018dcdf9a711d64..b65fb50382f246452b7c75a788e3bd5f
  
              String name = name();
 diff --git a/core/src/mindustry/logic/LogicDialog.java b/core/src/mindustry/logic/LogicDialog.java
-index 047e54c99c9605494ac29adc192f6f3b2ac5311a..a69ff47c5b380f76e0961fe776afeca38ca62572 100644
+index 047e54c99c9605494ac29adc192f6f3b2ac5311a..50daf30de795d8b5ccc9bd0c68784a2be5b6b43a 100644
 --- a/core/src/mindustry/logic/LogicDialog.java
 +++ b/core/src/mindustry/logic/LogicDialog.java
 @@ -5,6 +5,7 @@ import arc.func.*;
@@ -194,18 +196,19 @@ index 047e54c99c9605494ac29adc192f6f3b2ac5311a..a69ff47c5b380f76e0961fe776afeca3
  
  import java.util.*;
  
-@@ -29,6 +33,10 @@ public class LogicDialog extends BaseDialog{
+@@ -29,9 +33,10 @@ public class LogicDialog extends BaseDialog{
      public LCanvas canvas;
      Cons<String> consumer = s -> {};
      boolean privileged;
-+    private static float period = 15f;
-+    Table varTable = new Table();
-+    private static boolean refreshing = true, doRefresh, noSave;
 +
      @Nullable LExecutor executor;
      GlobalVarsDialog globalsDialog = new GlobalVarsDialog();
-     boolean wasRows, wasPortrait, forceRestart;
-@@ -48,11 +56,17 @@ public class LogicDialog extends BaseDialog{
+-    boolean wasRows, wasPortrait, forceRestart;
++    boolean wasRows, wasPortrait, forceRestart, noSave;
+ 
+     public LogicDialog(){
+         super("logic");
+@@ -48,7 +53,12 @@ public class LogicDialog extends BaseDialog{
              wasRows = LCanvas.useRows();
              wasPortrait = Core.graphics.isPortrait();
          });
@@ -219,142 +222,11 @@ index 047e54c99c9605494ac29adc192f6f3b2ac5311a..a69ff47c5b380f76e0961fe776afeca3
          onResize(() -> {
              if(wasRows != LCanvas.useRows() || wasPortrait != Core.graphics.isPortrait()){
                  setup();
-                 canvas.rebuild();
-+                buildVarsTable();
-                 wasPortrait = Core.graphics.isPortrait();
-                 wasRows = LCanvas.useRows();
-             }
-@@ -66,12 +80,126 @@ public class LogicDialog extends BaseDialog{
-         });
- 
-         add(canvas).grow().name("canvas");
-+        addChild(new Table(t -> {
-+            t.name = "logicSupport";
-+            t.setFillParent(true);
-+            t.visible(() -> Core.settings.getBool("logicSupport"));
-+
-+            t.center().left();
-+            t.table(this::buildLogicSupport).growY();
-+            Interval interval = new Interval();
-+            t.update(() -> {
-+                if(!varTable.hasChildren()) buildVarsTable();
-+                doRefresh = refreshing && interval.get(period);
-+            });
-+        }));
-+        addChild(new Table(t -> {
-+            t.name = "open_logicSupport";
-+            t.setFillParent(true);
-+            t.visible(() -> !Core.settings.getBool("logicSupport"));
-+
-+            t.center().left().button(Icon.rightOpen, Styles.clearNonei, iconMed, () -> Settings.toggle("logicSupport"));
-+        }));
- 
-         row();
- 
-         add(buttons).growX().name("canvas");
-     }
- 
-+    private void buildLogicSupport(Table table){
-+        table.background(Styles.black3);
-+        table.table(t -> {
-+            t.table(tt -> {
-+                tt.add("刷新间隔").padRight(5f).left();
-+                TextField field = tt.field((int)period + "", text -> period = Integer.parseInt(text)).width(100f).valid(Strings::canParsePositiveInt).maxTextLength(5).get();
-+                tt.slider(1, 60, 1, period, res -> {
-+                    period = res;
-+                    field.setText((int)res + "");
-+                });
-+            });
-+            t.row();
-+            t.table(tt -> {
-+                tt.defaults().size(50f);
-+                tt.button(Icon.downloadSmall, Styles.cleari, () -> {
-+                    executor.build.updateCode(executor.build.code);
-+                    buildVarsTable();
-+                    UIExt.announce("[orange]已重新加载逻辑！");
-+                }).tooltip("加载逻辑代码");
-+                tt.button(Icon.refreshSmall, Styles.clearTogglei, () -> {
-+                    refreshing = !refreshing;
-+                    String text = "[orange]已" + (refreshing ? "开启" : "关闭") + "逻辑刷新";
-+                    UIExt.announce(text);
-+                }).checked((b) -> refreshing).tooltip("辅助器自动刷新");
-+                tt.button(Icon.pause, Styles.clearTogglei, () -> {
-+                    if(state.isPaused()) state.set(State.playing);
-+                    else state.set(State.paused);
-+                    String text = state.isPaused() ? "已暂停" : "已继续游戏";
-+                    UIExt.announce(text);
-+                }).checked((b) -> state.isPaused()).tooltip("暂停逻辑(游戏)运行");
-+                tt.button(Icon.eyeOffSmall, Styles.cleari, () -> Settings.toggle("logicSupport")).tooltip("隐藏逻辑辅助器");
-+            });
-+        }).row();
-+        table.pane(varTable).width(400f).padLeft(20f);
-+    }
-+
-+    private void buildVarsTable(){
-+        varTable.clearChildren();
-+        if(executor == null) return;
-+        varTable.defaults().padTop(10f);
-+        for(var s : executor.vars){
-+            if(s.name.startsWith("___")) continue;
-+            varTable.table(Tex.whitePane, tt -> {
-+                tt.table(tv -> {
-+                    tv.labelWrap(s.name).width(100f);
-+                    tv.touchable = Touchable.enabled;
-+                    tv.tapped(() -> {
-+                        Core.app.setClipboardText(s.name);
-+                        UIExt.announce("[cyan]复制变量名[white]\n " + s.name);
-+                    });
-+                });
-+                tt.table(tv -> {
-+                    Label varPro = tv.labelWrap(arcVarsText(s)).width(200f).get();
-+                    tv.touchable = Touchable.enabled;
-+                    tv.tapped(() -> {
-+                        Core.app.setClipboardText(varPro.getText().toString());
-+                        UIExt.announce("[cyan]复制变量属性[white]\n " + varPro.getText());
-+                    });
-+                    tv.update(() -> {
-+                        if(doRefresh){
-+                            tt.setColor(arcVarsColor(s));
-+                            varPro.setText(arcVarsText(s));
-+                        }
-+                    });
-+                }).padLeft(20f);
-+            }).row();
-+        }
-+        varTable.table(Tex.whitePane, tt -> {
-+            tt.setColor(Color.valueOf("#e600e6"));
-+            tt.add("@printbuffer").center().row();
-+            var labelC = tt.labelWrap(() -> executor.textBuffer).labelAlign(Align.topLeft).minHeight(1).growX();
-+            tt.update(() -> {
-+                if(labelC.prefHeight() > labelC.minHeight())
-+                    labelC.height(labelC.prefHeight());
-+            });
-+            tt.touchable = Touchable.enabled;
-+            tt.tapped(() -> {
-+                String text = executor.textBuffer.toString();
-+                Core.app.setClipboardText(text);
-+                UIExt.announce("[cyan]复制信息版[white]\n " + text);
-+            });
-+        }).padLeft(4f).fillX().row();
-+    }
-+
-+    public static String arcVarsText(LVar s){
-+        return s.isobj ? PrintI.toString(s.objval) : Math.abs(s.numval - (long)s.numval) < 0.00001 ? (long)s.numval + "" : s.numval + "";
-+    }
-+
-+    public static Color arcVarsColor(LVar s){
-+        if(s.constant && s.name.startsWith("@")) return Color.goldenrod;
-+        else if (s.constant) return Color.valueOf("00cc7e");
-+        else return typeColor(s,new Color());
-+    }
-+
-     public static Color typeColor(LVar s, Color color){
-         return color.set(
-             !s.isobj ? Pal.place :
-@@ -150,6 +278,12 @@ public class LogicDialog extends BaseDialog{
+@@ -149,7 +159,12 @@ public class LogicDialog extends BaseDialog{
+                         dialog.hide();
                          hide();
                      }).marginLeft(12f);
- 
+-
 +                    t.row();
 +                    t.button("[orange]丢弃更改", Icon.cancel,style, () -> ui.showConfirm("确认丢弃?", () -> {
 +                        noSave = true;
@@ -364,7 +236,7 @@ index 047e54c99c9605494ac29adc192f6f3b2ac5311a..a69ff47c5b380f76e0961fe776afeca3
                  });
              });
  
-@@ -254,6 +388,11 @@ public class LogicDialog extends BaseDialog{
+@@ -254,6 +269,11 @@ public class LogicDialog extends BaseDialog{
      }
  
      public void showAddDialog(){
@@ -376,7 +248,7 @@ index 047e54c99c9605494ac29adc192f6f3b2ac5311a..a69ff47c5b380f76e0961fe776afeca3
          BaseDialog dialog = new BaseDialog("@add");
          dialog.cont.table(table -> {
              String[] searchText = {""};
-@@ -278,7 +417,7 @@ public class LogicDialog extends BaseDialog{
+@@ -278,7 +298,7 @@ public class LogicDialog extends BaseDialog{
  
                      search.keyDown(KeyCode.enter, () -> {
                          if(!searchText[0].isEmpty() && matched[0] != null){
@@ -385,7 +257,7 @@ index 047e54c99c9605494ac29adc192f6f3b2ac5311a..a69ff47c5b380f76e0961fe776afeca3
                              dialog.hide();
                          }
                      });
-@@ -325,7 +464,7 @@ public class LogicDialog extends BaseDialog{
+@@ -325,7 +345,7 @@ public class LogicDialog extends BaseDialog{
                          style.font = Fonts.outline;
  
                          cat.button(example.name(), style, () -> {
@@ -394,19 +266,11 @@ index 047e54c99c9605494ac29adc192f6f3b2ac5311a..a69ff47c5b380f76e0961fe776afeca3
                              dialog.hide();
                          }).size(130f, 50f).self(c -> tooltip(c, "lst." + example.name())).top().left();
  
-@@ -344,6 +483,7 @@ public class LogicDialog extends BaseDialog{
-         this.executor = executor;
-         this.privileged = privileged;
-         this.forceRestart = false;
-+        varTable.clearChildren();
-         canvas.statements.clearChildren();
-         canvas.rebuild();
-         canvas.privileged = privileged;
 diff --git a/core/src/mindustry/world/blocks/logic/LogicBlock.java b/core/src/mindustry/world/blocks/logic/LogicBlock.java
-index 24465dba760b6204352aaa767287175307264e48..cf8a94cf7f4bb1e0bf223aa406acc62b4b48fc78 100644
+index 24465dba760b6204352aaa767287175307264e48..cbe810cfd04e53892b0e68b836b3a298656a0dc7 100644
 --- a/core/src/mindustry/world/blocks/logic/LogicBlock.java
 +++ b/core/src/mindustry/world/blocks/logic/LogicBlock.java
-@@ -16,6 +16,7 @@ import arc.util.io.*;
+@@ -16,17 +16,21 @@ import arc.util.io.*;
  import arc.util.pooling.*;
  import mindustry.ai.types.*;
  import mindustry.core.*;
@@ -414,15 +278,21 @@ index 24465dba760b6204352aaa767287175307264e48..cf8a94cf7f4bb1e0bf223aa406acc62b
  import mindustry.gen.*;
  import mindustry.graphics.*;
  import mindustry.io.*;
-@@ -27,6 +28,7 @@ import mindustry.world.blocks.ConstructBlock.*;
+ import mindustry.io.TypeIO.*;
+ import mindustry.logic.*;
+ import mindustry.ui.*;
++import mindustry.ui.dialogs.*;
+ import mindustry.world.*;
+ import mindustry.world.blocks.ConstructBlock.*;
  import mindustry.world.meta.*;
  import mindustryX.*;
  import mindustryX.events.*;
 +import mindustryX.features.*;
++import mindustryX.features.ui.*;
  
  import java.io.*;
  import java.util.zip.*;
-@@ -110,11 +112,15 @@ public class LogicBlock extends Block{
+@@ -110,11 +114,15 @@ public class LogicBlock extends Block{
  
      @Override
      public boolean checkForceDark(Tile tile){
@@ -440,7 +310,7 @@ index 24465dba760b6204352aaa767287175307264e48..cf8a94cf7f4bb1e0bf223aa406acc62b
      }
  
      @Override
-@@ -260,6 +266,8 @@ public class LogicBlock extends Block{
+@@ -260,6 +268,8 @@ public class LogicBlock extends Block{
          public @Nullable String tag;
          public char iconTag;
  
@@ -449,7 +319,7 @@ index 24465dba760b6204352aaa767287175307264e48..cf8a94cf7f4bb1e0bf223aa406acc62b
          /** Block of code to run after load. */
          public @Nullable Runnable loadBlock;
  
-@@ -432,7 +440,7 @@ public class LogicBlock extends Block{
+@@ -432,7 +442,7 @@ public class LogicBlock extends Block{
  
          @Override
          public boolean displayable(){
@@ -458,7 +328,7 @@ index 24465dba760b6204352aaa767287175307264e48..cf8a94cf7f4bb1e0bf223aa406acc62b
          }
  
          @Override
-@@ -455,7 +463,12 @@ public class LogicBlock extends Block{
+@@ -455,7 +465,12 @@ public class LogicBlock extends Block{
  
          @Override
          public Cursor getCursor(){
@@ -472,7 +342,7 @@ index 24465dba760b6204352aaa767287175307264e48..cf8a94cf7f4bb1e0bf223aa406acc62b
          }
  
          //logic blocks cause write problems when picked up
-@@ -591,17 +604,19 @@ public class LogicBlock extends Block{
+@@ -591,17 +606,19 @@ public class LogicBlock extends Block{
              }
  
              //draw top text on separate layer
@@ -494,7 +364,7 @@ index 24465dba760b6204352aaa767287175307264e48..cf8a94cf7f4bb1e0bf223aa406acc62b
  
              Groups.unit.each(u -> u.controller() instanceof LogicAI ai && ai.controller == this, unit -> {
                  Drawf.square(unit.x, unit.y, unit.hitSize, unit.rotation + 45);
-@@ -648,12 +663,53 @@ public class LogicBlock extends Block{
+@@ -648,12 +665,56 @@ public class LogicBlock extends Block{
  
          @Override
          public boolean shouldShowConfigure(Player player){
@@ -518,6 +388,9 @@ index 24465dba760b6204352aaa767287175307264e48..cf8a94cf7f4bb1e0bf223aa406acc62b
 +                    vars.clear();
 +                    if(showVars) buildVarsTable(vars);
 +                }).size(40);
++                t.button(Icon.trash, Styles.cleari, () -> {
++                    links.clear();
++                }).disabled(b -> net.client()).tooltip("重置所有链接");
 +            });
 +            table.row().pane(Styles.noBarPane, vars).pad(4).maxHeight(400f).get().setScrollingDisabledX(true);
 +            if(showVars) buildVarsTable(vars);
@@ -543,8 +416,8 @@ index 24465dba760b6204352aaa767287175307264e48..cf8a94cf7f4bb1e0bf223aa406acc62b
 +            table.setColor(Color.lightGray);
 +            for(var s : vars){
 +                if(s.name.startsWith("___")) continue;
-+                table.add(s.name).color(LogicDialog.arcVarsColor(s)).align(Align.left);
-+                table.label(() -> LogicDialog.arcVarsText(s)).align(Align.right).labelAlign(Align.right);
++                table.add(s.name).color(LogicSupport.arcVarsColor(s)).align(Align.left);
++                table.label(() -> LogicSupport.arcVarsText(s)).align(Align.right).labelAlign(Align.right);
 +                table.row();
 +            }
          }

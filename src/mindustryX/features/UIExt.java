@@ -53,6 +53,8 @@ public class UIExt{
             t.add(advanceBuildTool.wrapped()).row();
             t.visible(() -> ui.hudfrag.shown && Core.settings.getBool("showQuickToolTable"));
         });
+
+        LogicSupport.init();
     }
 
     public static void buildPositionRow(Table tt, Vec2 vec){
