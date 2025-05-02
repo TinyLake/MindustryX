@@ -19,14 +19,16 @@ way-zer <himc.wicp@gmail.com> on 2024/7/14
 way-zer <himc.wicp@gmail.com> on 2024/9/8
 
 clean
+
+调整Jump样式，添加跳转强调
 ---
  core/src/mindustry/logic/LCanvas.java         | 58 +++++++++++++-
  core/src/mindustry/logic/LExecutor.java       |  3 +-
- core/src/mindustry/logic/LStatements.java     | 12 +++
+ core/src/mindustry/logic/LStatements.java     | 27 +++++++
  core/src/mindustry/logic/LogicDialog.java     | 30 ++++++--
  .../world/blocks/logic/LogicBlock.java        | 77 +++++++++++++++++--
  .../world/blocks/logic/MemoryBlock.java       | 73 +++++++++++++++++-
- 6 files changed, 234 insertions(+), 19 deletions(-)
+ 6 files changed, 249 insertions(+), 19 deletions(-)
 
 diff --git a/core/src/mindustry/logic/LCanvas.java b/core/src/mindustry/logic/LCanvas.java
 index 2bfd96ac4b9685bde38edee0d80be66380fdf6f2..ba5401c7c2ee4f8d9e7ffcc7da8ca3ad5bdb2a77 100644
@@ -145,10 +147,20 @@ index 07721e1d4e0e3662320d0b49e31f7ef528b34eb4..c7a5fbefd8e4880b99f07f7dba50cd28
                  case pan -> {
                      control.input.logicCutscene = true;
 diff --git a/core/src/mindustry/logic/LStatements.java b/core/src/mindustry/logic/LStatements.java
-index eda6c92c970e9f3f632094cd5018dcdf9a711d64..b65fb50382f246452b7c75a788e3bd5f61b71bdf 100644
+index eda6c92c970e9f3f632094cd5018dcdf9a711d64..0de042aaa9ef9e3d63727be18bca0d3511e778fb 100644
 --- a/core/src/mindustry/logic/LStatements.java
 +++ b/core/src/mindustry/logic/LStatements.java
-@@ -22,6 +22,7 @@ import mindustry.ui.*;
+@@ -3,6 +3,9 @@ package mindustry.logic;
+ import arc.*;
+ import arc.func.*;
+ import arc.graphics.*;
++import arc.math.*;
++import arc.scene.*;
++import arc.scene.actions.*;
+ import arc.scene.style.*;
+ import arc.scene.ui.*;
+ import arc.scene.ui.layout.*;
+@@ -22,6 +25,7 @@ import mindustry.ui.*;
  import mindustry.world.*;
  import mindustry.world.meta.*;
  import mindustryX.*;
@@ -156,12 +168,12 @@ index eda6c92c970e9f3f632094cd5018dcdf9a711d64..b65fb50382f246452b7c75a788e3bd5f
  
  import static mindustry.Vars.*;
  import static mindustry.logic.LCanvas.*;
-@@ -945,6 +946,17 @@ public class LStatements{
+@@ -945,6 +949,29 @@ public class LStatements{
              table.table(this::rebuild);
  
              table.add().growX();
 +            if(!mobile || !Core.graphics.isPortrait()){
-+                table.button("JUMP", () -> {
++                table.button("JUMP", Styles.grayt, () -> {
 +                    if(dest == null) return;
 +                    //table, elem, dragLayout, table(y), scrollPane
 +                    var canvas = dest.parent.parent;
@@ -169,7 +181,19 @@ index eda6c92c970e9f3f632094cd5018dcdf9a711d64..b65fb50382f246452b7c75a788e3bd5f
 +                    scroll.setScrollY(scroll.getMaxY() - dest.y + scroll.getHeight() * 0.5f);
 +                    saveUI();
 +                    UIExt.announce("[gold]跳转行号:[] " + destIndex);
-+                });
++
++                    Element header = dest.getChildren().first();
++                    dest.clearActions();
++                    header.clearActions();
++                    dest.addAction(Actions.repeat(2, Actions.sequence(
++                    Actions.color(Pal.placing, 0.5f, Interp.smooth),
++                    Actions.color(dest.st.category().color, 0.5f, Interp.smooth)
++                    )));
++                    header.addAction(Actions.repeat(2, Actions.sequence(
++                    Actions.color(Pal.placing, 0.5f, Interp.smooth),
++                    Actions.color(dest.st.category().color, 0.5f, Interp.smooth)
++                    )));
++                }).width(80f);
 +            }
              table.add(new JumpButton(() -> dest, s -> dest = s, this.elem)).size(30).right().padLeft(-8);
  
