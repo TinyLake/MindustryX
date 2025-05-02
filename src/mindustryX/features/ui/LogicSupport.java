@@ -152,11 +152,8 @@ public class LogicSupport{
         for(var v : executor.vars){
             if(v.name.startsWith("___")) continue;
             varsTable.table(Tex.whitePane, table -> {
-                Label nameLabel = table.add(v.name).ellipsis(true).expand(2, 1).fill().get();
-                Label valueLabel = table.add(arcVarsText(v)).ellipsis(true).padLeft(16f).expand(3, 1).fill().get();
-
-                nameLabel.setSize(0);
-                valueLabel.setSize(0);
+                Label nameLabel = table.labelWrap(v.name).ellipsis(true).expand(2, 1).fill().get();
+                Label valueLabel = table.labelWrap(arcVarsText(v)).ellipsis(true).padLeft(16f).expand(3, 1).fill().get();
 
                 Color typeColor = arcVarsColor(v);
                 final float[] heat = {1};
@@ -234,11 +231,8 @@ public class LogicSupport{
                 int finalIndex = index;
                 linkTable.table(Tex.whitePane, table -> {
                     table.left();
-                    Label label = table.add(link.name).ellipsis(true).expand(2, 1).fill().get();
+                    Label label = table.labelWrap(link.name).ellipsis(true).expand(2, 1).fill().get();
                     Label indexLabel = table.labelWrap("[" + finalIndex + "]").padLeft(16f).expand(3, 1).fill().get();
-
-                    label.setSize(0);
-                    indexLabel.setSize(0);
 
                     final float[] heat = {1};
                     label.update(() -> {

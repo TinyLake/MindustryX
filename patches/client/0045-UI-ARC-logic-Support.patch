@@ -21,14 +21,17 @@ way-zer <himc.wicp@gmail.com> on 2024/9/8
 clean
 
 调整Jump样式，添加跳转强调
+
+按钮调整
+MinRi2 <2275045670@qq.com>
 ---
  core/src/mindustry/logic/LCanvas.java         | 58 +++++++++++++-
  core/src/mindustry/logic/LExecutor.java       |  3 +-
  core/src/mindustry/logic/LStatements.java     | 27 +++++++
- core/src/mindustry/logic/LogicDialog.java     | 30 ++++++--
- .../world/blocks/logic/LogicBlock.java        | 77 +++++++++++++++++--
- .../world/blocks/logic/MemoryBlock.java       | 73 +++++++++++++++++-
- 6 files changed, 249 insertions(+), 19 deletions(-)
+ core/src/mindustry/logic/LogicDialog.java     | 30 +++++--
+ .../world/blocks/logic/LogicBlock.java        | 78 +++++++++++++++++--
+ .../world/blocks/logic/MemoryBlock.java       | 73 ++++++++++++++++-
+ 6 files changed, 250 insertions(+), 19 deletions(-)
 
 diff --git a/core/src/mindustry/logic/LCanvas.java b/core/src/mindustry/logic/LCanvas.java
 index 2bfd96ac4b9685bde38edee0d80be66380fdf6f2..ba5401c7c2ee4f8d9e7ffcc7da8ca3ad5bdb2a77 100644
@@ -291,7 +294,7 @@ index 047e54c99c9605494ac29adc192f6f3b2ac5311a..50daf30de795d8b5ccc9bd0c68784a2b
                          }).size(130f, 50f).self(c -> tooltip(c, "lst." + example.name())).top().left();
  
 diff --git a/core/src/mindustry/world/blocks/logic/LogicBlock.java b/core/src/mindustry/world/blocks/logic/LogicBlock.java
-index 24465dba760b6204352aaa767287175307264e48..cbe810cfd04e53892b0e68b836b3a298656a0dc7 100644
+index 24465dba760b6204352aaa767287175307264e48..0e591e84eaf04a8a3e0e82d96efc400d443dabd7 100644
 --- a/core/src/mindustry/world/blocks/logic/LogicBlock.java
 +++ b/core/src/mindustry/world/blocks/logic/LogicBlock.java
 @@ -16,17 +16,21 @@ import arc.util.io.*;
@@ -388,7 +391,7 @@ index 24465dba760b6204352aaa767287175307264e48..cbe810cfd04e53892b0e68b836b3a298
  
              Groups.unit.each(u -> u.controller() instanceof LogicAI ai && ai.controller == this, unit -> {
                  Drawf.square(unit.x, unit.y, unit.hitSize, unit.rotation + 45);
-@@ -648,12 +665,56 @@ public class LogicBlock extends Block{
+@@ -648,12 +665,57 @@ public class LogicBlock extends Block{
  
          @Override
          public boolean shouldShowConfigure(Player player){
@@ -402,16 +405,17 @@ index 24465dba760b6204352aaa767287175307264e48..cbe810cfd04e53892b0e68b836b3a298
 +            table.setBackground(Styles.black3);
 +            Table vars = new Table();
 +            table.table(t -> {
++                t.defaults().size(40);
 +                t.button(Icon.pencil, Styles.cleari, ()->{
 +                    if(!accessible())
 +                        UIExt.announce("[yellow]当前无权编辑，仅供查阅");
 +                    showEditDialog();
-+                }).size(40);
++                });
 +                t.button(Icon.info, Styles.cleari, () -> {
 +                    showVars = !showVars;
 +                    vars.clear();
 +                    if(showVars) buildVarsTable(vars);
-+                }).size(40);
++                });
 +                t.button(Icon.trash, Styles.cleari, () -> {
 +                    links.clear();
 +                }).disabled(b -> net.client()).tooltip("重置所有链接");
