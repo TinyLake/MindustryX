@@ -1,4 +1,4 @@
-<img src=assets/icon.png height="64"> <img src=assets/sprites/logo.png height="64">
+<img src=assets/icon.png height="64"> <img src=assets/x-logo.png height="64">
 
 
 ![GitHub Actions Workflow Status](https://img.shields.io/github/actions/workflow/status/TinyLake/MindustryX/build.yml?label=Building)  ![GitHub Release](https://img.shields.io/github/v/release/TinyLake/MindustryX?label=Latest%20Version&labelColor=blue&color=green&link=https%3A%2F%2Fgithub.com%2FTinyLake%2FMindustryX%2Freleases)  ![GitHub Downloads (all assets, all releases)](https://img.shields.io/github/downloads/TinyLake/MindustryX/total?label=Downloads)
@@ -30,10 +30,11 @@
 **Loader 需要作为mod导入游戏**
 
 ### 贡献代码
-1. cd [`work/`](work) 并运行 `../scripts/applyPatches`
-2. 在 [`work/`](work) 中提交你的代码
-3. 用 `../scripts/genPatches.sh` 生成 patch 文件.
-4. 在 MDTX 根目录里提交 patch 文件
+1. 使用 `git clone --recursive https://github.com/TinyLake/MindustryX.git` 或者在 `clone` 后，执行 `git submodule init` 初始化mdt模块
+2. cd [`work/`](work) 并运行 `../scripts/applyPatches`
+3. 在 [`work/`](work) 中提交你的代码
+4. 用 `../scripts/genPatches.sh` 生成 patch 文件.
+5. 在 MDTX 根目录里提交 patch 文件
 
 有开发能力的可私聊WZ加入开发群
 
