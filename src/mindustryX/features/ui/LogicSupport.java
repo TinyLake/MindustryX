@@ -4,10 +4,12 @@ import arc.*;
 import arc.func.*;
 import arc.graphics.*;
 import arc.math.*;
+import arc.scene.*;
 import arc.scene.event.*;
 import arc.scene.ui.*;
 import arc.scene.ui.TextButton.*;
 import arc.scene.ui.layout.*;
+import arc.struct.*;
 import arc.util.*;
 import mindustry.core.GameState.*;
 import mindustry.gen.*;
@@ -21,8 +23,8 @@ import mindustryX.features.Settings;
 import static mindustry.Vars.*;
 
 public class LogicSupport{
-    private static float period = 15f;
-    private static final Table varsTable = new Table(), linkTable = new Table();
+    private static float refreshTime = 15f;
+    private static final Table varsTable = new Table(), constTable = new Table();
     private static Table mainTable;
 
     private static boolean refresh;
@@ -42,6 +44,8 @@ public class LogicSupport{
         logic.fill(t -> {
             t.left().name = "logicSupportX";
 
+            t.visibility = () -> !Core.graphics.isPortrait();
+
             t.button(Icon.rightOpen, Styles.clearNonei, iconMed, () -> {
                 Settings.toggle("logicSupport");
             }).height(150f).visible(() -> !mainTable.visible);
@@ -58,7 +62,7 @@ public class LogicSupport{
                     cont.top();
 
                     varsTable.background(Styles.grayPanel);
-                    linkTable.background(Styles.grayPanel);
+                    constTable.background(Styles.grayPanel);
                     TextButtonStyle style = new TextButtonStyle(Styles.defaultt){{
                         over = checked = Styles.grayPanel;
                         up = Styles.black;
@@ -72,10 +76,9 @@ public class LogicSupport{
                             pane.setWidget(varsTable);
                             varsTable.clearChildren();
                         }).checked(b -> pane.getWidget() == varsTable);
-                        buttons.button("链接表", style, () -> {
-                            pane.setWidget(linkTable);
-                            linkTable.clearChildren();
-                        }).checked(b -> pane.getWidget() == linkTable);
+                        buttons.button("常量表", style, () -> {
+                            pane.setWidget(constTable); // 仅打开逻辑页面时重构
+                        }).checked(b -> pane.getWidget() == constTable);
                     }).growX().row();
                     cont.add(pane).minHeight(450f).fillX().scrollX(false).get();
                 }).width(400f).padTop(8f);
@@ -83,8 +86,8 @@ public class LogicSupport{
                 Interval interval = new Interval();
                 main.update(() -> {
                     if(varsTable.hasParent() && !varsTable.hasChildren()) rebuildVarsTable();
-                    if(linkTable.hasParent() && !linkTable.hasChildren()) rebuildLinkTable();
-                    refresh = autoRefresh && interval.get(period);
+                    if(constTable.hasParent() && !constTable.hasChildren()) rebuildConstTable();
+                    refresh = autoRefresh && interval.get(refreshTime);
                 });
             });
         });
@@ -94,8 +97,7 @@ public class LogicSupport{
             executor = Reflect.get(logic, "executor");
             consumer = Reflect.get(logic, "consumer");
 
-            varsTable.clearChildren();
-            linkTable.clearChildren();
+            clearTables();
         });
 
 //        logic.resized(() -> {
@@ -106,13 +108,18 @@ public class LogicSupport{
 //        });
     }
 
+    private static void clearTables(){
+        varsTable.clearChildren();
+        constTable.clearChildren();
+    }
+
     private static void buildConfigTable(Table table){
         table.background(Styles.black3);
         table.table(t -> {
             t.add("刷新间隔").padRight(5f).left();
-            TextField field = t.field((int)period + "", text -> period = Integer.parseInt(text)).width(100f).valid(Strings::canParsePositiveInt).maxTextLength(5).get();
-            t.slider(1, 60, 1, period, res -> {
-                period = res;
+            TextField field = t.field((int)refreshTime + "", text -> refreshTime = Integer.parseInt(text)).width(100f).valid(Strings::canParsePositiveInt).maxTextLength(5).get();
+            t.slider(1, 60, 1, refreshTime, res -> {
+                refreshTime = res;
                 field.setText((int)res + "");
             });
         }).row();
@@ -120,7 +127,7 @@ public class LogicSupport{
             t.defaults().size(50f);
             t.button(Icon.downloadSmall, Styles.cleari, () -> {
                 consumer.get(canvas.save());
-                rebuildVarsTable();
+                clearTables();
                 UIExt.announce("[orange]已更新编辑的逻辑！");
             }).tooltip("更新编辑的逻辑");
             t.button(Icon.eyeSmall, Styles.clearTogglei, () -> {
@@ -152,8 +159,11 @@ public class LogicSupport{
         for(var v : executor.vars){
             if(v.name.startsWith("___")) continue;
             varsTable.table(Tex.whitePane, table -> {
-                Label nameLabel = table.labelWrap(v.name).ellipsis(true).expand(2, 1).fill().get();
-                Label valueLabel = table.labelWrap(arcVarsText(v)).ellipsis(true).padLeft(16f).expand(3, 1).fill().get();
+                Label valueLabel = createCopiedLabel(arcVarsText(v), null, "[cyan]复制变量属性[white]\n@");
+                Label nameLabel = createCopiedLabel(v.name, null, "[cyan]复制变量名[white]\n@");
+
+                table.add(nameLabel).ellipsis(true).wrap().expand(3, 1).fill().get();
+                table.add(valueLabel).ellipsis(true).wrap().padLeft(16f).expand(2, 1).fill().get();
 
                 Color typeColor = arcVarsColor(v);
                 final float[] heat = {1};
@@ -174,24 +184,16 @@ public class LogicSupport{
                         table.color.set(typeColor);
                     }
                 });
-
-                nameLabel.tapped(() -> {
-                    Core.app.setClipboardText(v.name);
-                    UIExt.announce("[cyan]复制变量名[white]\n " + v.name);
-                });
-                valueLabel.tapped(() -> {
-                    Core.app.setClipboardText(valueLabel.getText().toString());
-                    UIExt.announce("[cyan]复制变量属性[white]\n " + valueLabel.getText());
-                });
             }).row();
         }
 
         varsTable.table(Tex.whitePane, table -> {
             Color color = Color.valueOf("#e600e6");
+            Label label = createCopiedLabel("", table, "[cyan]复制信息版[white]\n@");
 
             table.setColor(color);
             table.add("@printbuffer").center().row();
-            Label label = table.labelWrap("").labelAlign(Align.topLeft).minHeight(150).growX().get();
+            table.add(label).labelAlign(Align.topLeft).wrap().minHeight(150).growX();
 
             final float[] heat = {1};
             label.update(() -> {
@@ -210,63 +212,64 @@ public class LogicSupport{
                     table.color.set(color);
                 }
             });
-
-            table.touchable = Touchable.enabled;
-            table.tapped(() -> {
-                String text = executor.textBuffer.toString();
-                Core.app.setClipboardText(text);
-                UIExt.announce("[cyan]复制信息版[white]\n " + text);
-            });
         }).fillX().row();
     }
 
-    private static void rebuildLinkTable(){
-        linkTable.top().clearChildren();
+    private static void rebuildConstTable(){
+        constTable.top().clearChildren();
+
+        Seq<LVar> constVars = new Seq<>();
+        executor.build.updateCode(executor.build.code, true, assembler -> {
+            constVars.set(assembler.vars.values().toSeq().select(v -> v.constant));
+        });
 
         Color color = Color.valueOf("#e600e6");
+        constTable.defaults().padTop(10f).growX();
+
+        for(LVar v : constVars){
+            if(v.name.startsWith("___")) continue;
+            if(v.isobj && v.obj() instanceof Building building && Structs.contains(executor.links, building)) continue;
+
+            constTable.table(Tex.whitePane, table -> {
+                table.setColor(color);
+
+                table.add(createCopiedLabel(v.name, null, "[cyan]复制常量名[white]\n@")).ellipsis(true).wrap().expand(3, 1).fill();
+                table.add(createCopiedLabel(arcVarsText(v), null, "[cyan]复制常量[white]\n@")).ellipsis(true).wrap().padLeft(16f).expand(2, 1).fill();
+            }).row();
+        }
 
         int index = 0;
         for(LogicLink link : executor.build.links){
             if(link.active && link.valid){
                 int finalIndex = index;
-                linkTable.table(Tex.whitePane, table -> {
-                    table.left();
-                    Label label = table.labelWrap(link.name).ellipsis(true).expand(2, 1).fill().get();
-                    Label indexLabel = table.labelWrap("[" + finalIndex + "]").padLeft(16f).expand(3, 1).fill().get();
+                constTable.table(Tex.whitePane, table -> {
+                    table.left().setColor(color);
 
-                    final float[] heat = {1};
-                    label.update(() -> {
-                        if(refresh){
-                            String text = link.name;
-                            if(!label.textEquals(text)){
-                                label.setText(text);
-                                heat[0] = 1;
-                            }
-                        }
+                    table.add(createCopiedLabel(link.name, null, "[cyan]复制链接建筑[white]\n@")).ellipsis(true).wrap().expand(3, 1).fill();
+                    table.table(indexTable -> {
+                        indexTable.left();
 
-                        if(changeSplash){
-                            heat[0] = Mathf.lerpDelta(heat[0], 0, 0.1f);
-                            table.color.set(Tmp.c1.set(color).lerp(Color.white, heat[0]));
-                        }else{
-                            table.color.set(color);
-                        }
-                    });
-
-                    label.tapped(() -> {
-                        String text = link.name;
-                        Core.app.setClipboardText(text);
-                        UIExt.announce("[cyan]复制链接建筑[white]\n " + text);
-                    });
-                    indexLabel.tapped(() -> {
-                        String text = finalIndex + "";
-                        Core.app.setClipboardText(text);
-                        UIExt.announce("[cyan]复制链接建筑索引[white]\n " + text);
-                    });
-                }).padTop(10f).growX().row();
+                        indexTable.add("[");
+                        indexTable.add(createCopiedLabel("" + finalIndex, indexTable, "[cyan]复制链接索引[white]\n@")).labelAlign(Align.center).minWidth(24f);
+                        indexTable.add("]");
+                    }).padLeft(16f).expand(2, 1).fill();
+                }).row();
 
                 index++;
             }
         }
+    }
+
+    private static Label createCopiedLabel(String text, @Nullable  Element hitter, String hint){
+        Label label = new Label(text);
+        hitter = hitter == null ? label : hitter;
+        hitter.touchable = Touchable.enabled;
+        hitter.tapped(() -> {
+            String t = label.getText().toString();
+            Core.app.setClipboardText(t);
+            UIExt.announce(Strings.format(hint, t));
+        });
+        return label;
     }
 
     public static String arcVarsText(LVar s){
