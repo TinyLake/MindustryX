@@ -16,7 +16,7 @@ Content-Transfer-Encoding: 8bit
  core/src/mindustry/core/NetClient.java        |  4 ++++
  core/src/mindustry/core/Renderer.java         |  2 +-
  core/src/mindustry/core/UI.java               | 20 ++-----------------
- core/src/mindustry/game/Schematics.java       |  4 ++--
+ core/src/mindustry/game/Schematics.java       |  8 +++++---
  .../mindustry/graphics/MinimapRenderer.java   |  6 ++++--
  core/src/mindustry/ui/dialogs/JoinDialog.java | 19 ++++++++++--------
  .../mindustry/ui/dialogs/KeybindDialog.java   | 12 +++++++----
@@ -28,7 +28,7 @@ Content-Transfer-Encoding: 8bit
  .../world/blocks/distribution/Router.java     |  3 ++-
  .../world/blocks/production/BeamDrill.java    | 12 ++++-------
  .../mindustry/desktop/DesktopLauncher.java    | 20 ++++++++++++++++++-
- 20 files changed, 93 insertions(+), 56 deletions(-)
+ 20 files changed, 96 insertions(+), 57 deletions(-)
 
 diff --git a/core/src/mindustry/ClientLauncher.java b/core/src/mindustry/ClientLauncher.java
 index a64b7b36fdd74a29a3caae54a1f1a514039b891f..beea309f225be8de3799089a87d1fdcb8e30ee5c 100644
@@ -77,7 +77,7 @@ index 560e1b69133b34bf876ddd00f365e709ab09f76a..1721160e3b2d16a04594da22e3b50b44
                          for(String code : ColorCodes.values){
                              result = result.replace(code, "");
 diff --git a/core/src/mindustry/ai/BlockIndexer.java b/core/src/mindustry/ai/BlockIndexer.java
-index 4a87c1df67adce8d07ec55f14e42137154acbe84..7d2e3905eedb5bfeeb8de8027fedff66203e66aa 100644
+index 2026468685fcf5073820cb6187624d70d73054c7..d74408ee188bb7a3c89c70faf45242c1565c2b3a 100644
 --- a/core/src/mindustry/ai/BlockIndexer.java
 +++ b/core/src/mindustry/ai/BlockIndexer.java
 @@ -37,7 +37,7 @@ public class BlockIndexer{
@@ -182,10 +182,21 @@ index 8a3d830d8fe215154af569b863214dab26096f3a..5b0ee5946cb022e256aff23f2f1bfc71
  
      public static int roundAmount(int number){
 diff --git a/core/src/mindustry/game/Schematics.java b/core/src/mindustry/game/Schematics.java
-index 93b85a591a895fb117f7b4fb983f25cd90a923a0..2dc045bac5da01f0e4f08cbccc1ff9c0044c7d4f 100644
+index 93b85a591a895fb117f7b4fb983f25cd90a923a0..d992db855c0b4f78549e9769a7916806d16eb5f6 100644
 --- a/core/src/mindustry/game/Schematics.java
 +++ b/core/src/mindustry/game/Schematics.java
-@@ -542,7 +543,7 @@ public class Schematics implements Loadable{
+@@ -98,7 +99,9 @@ public class Schematics implements Loadable{
+         all.sort();
+ 
+         if(shadowBuffer == null && !headless){
+-            Core.app.post(() -> shadowBuffer = new FrameBuffer(maxSchematicSize + padding + 8, maxSchematicSize + padding + 8));
++            //MDTX: support larger schematic, maxSchematicSize may be MAX_VALUE
++            var size = Math.min(maxSchematicSize, 1024) + padding + 8;
++            Core.app.post(() -> shadowBuffer = new FrameBuffer(size, size));
+         }
+     }
+ 
+@@ -542,7 +545,7 @@ public class Schematics implements Loadable{
          try(DataInputStream stream = new DataInputStream(new InflaterInputStream(input))){
              short width = stream.readShort(), height = stream.readShort();
  
@@ -194,7 +205,7 @@ index 93b85a591a895fb117f7b4fb983f25cd90a923a0..2dc045bac5da01f0e4f08cbccc1ff9c0
  
              StringMap map = new StringMap();
              int tags = stream.readUnsignedByte();
-@@ -568,7 +569,7 @@ public class Schematics implements Loadable{
+@@ -568,7 +571,7 @@ public class Schematics implements Loadable{
  
              int total = stream.readInt();
  

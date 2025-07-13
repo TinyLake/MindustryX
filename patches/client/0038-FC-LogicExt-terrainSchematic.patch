@@ -8,11 +8,11 @@ Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 
 ---
- .../mindustry/entities/comp/BuilderComp.java  |  5 ++-
- core/src/mindustry/game/Schematics.java       | 40 +++++++++++++++----
- core/src/mindustry/input/MobileInput.java     | 11 +----
+ .../mindustry/entities/comp/BuilderComp.java  |  5 +--
+ core/src/mindustry/game/Schematics.java       | 36 +++++++++++++++----
+ core/src/mindustry/input/MobileInput.java     | 11 ++----
  .../world/blocks/environment/Floor.java       |  1 +
- 4 files changed, 39 insertions(+), 18 deletions(-)
+ 4 files changed, 36 insertions(+), 17 deletions(-)
 
 diff --git a/core/src/mindustry/entities/comp/BuilderComp.java b/core/src/mindustry/entities/comp/BuilderComp.java
 index 866717c452850ab14c94e81c4b34b540afbc9553..05b6b25f0cf612d8cf39a798e9422f769e97b667 100644
@@ -45,7 +45,7 @@ index 866717c452850ab14c94e81c4b34b540afbc9553..05b6b25f0cf612d8cf39a798e9422f76
          }
          Tile tile = world.tile(place.x, place.y);
 diff --git a/core/src/mindustry/game/Schematics.java b/core/src/mindustry/game/Schematics.java
-index 2dc045bac5da01f0e4f08cbccc1ff9c0044c7d4f..73cf53228343852f6ae58d3dda6d3e9599ee513f 100644
+index d992db855c0b4f78549e9769a7916806d16eb5f6..73cf53228343852f6ae58d3dda6d3e9599ee513f 100644
 --- a/core/src/mindustry/game/Schematics.java
 +++ b/core/src/mindustry/game/Schematics.java
 @@ -34,6 +34,7 @@ import mindustry.world.blocks.sandbox.*;
@@ -56,18 +56,7 @@ index 2dc045bac5da01f0e4f08cbccc1ff9c0044c7d4f..73cf53228343852f6ae58d3dda6d3e95
  
  import java.io.*;
  import java.util.zip.*;
-@@ -99,7 +100,9 @@ public class Schematics implements Loadable{
-         all.sort();
- 
-         if(shadowBuffer == null && !headless){
--            Core.app.post(() -> shadowBuffer = new FrameBuffer(maxSchematicSize + padding + 8, maxSchematicSize + padding + 8));
-+            //MDTX: support larger schematic, maxSchematicSize may be MAX_VALUE
-+            var size = Math.min(maxSchematicSize, 1024) + padding + 8;
-+            Core.app.post(() -> shadowBuffer = new FrameBuffer(size, size));
-         }
-     }
- 
-@@ -277,7 +280,7 @@ public class Schematics implements Loadable{
+@@ -279,7 +280,7 @@ public class Schematics implements Loadable{
      /** Creates an array of build plans from a schematic's data, centered on the provided x+y coordinates. */
      public Seq<BuildPlan> toPlans(Schematic schem, int x, int y){
          return schem.tiles.map(t -> new BuildPlan(t.x + x - schem.width/2, t.y + y - schem.height/2, t.rotation, t.block, t.config))
@@ -76,7 +65,7 @@ index 2dc045bac5da01f0e4f08cbccc1ff9c0044c7d4f..73cf53228343852f6ae58d3dda6d3e95
      }
  
      /** @return all the valid loadouts for a specific core type. */
-@@ -368,10 +371,10 @@ public class Schematics implements Loadable{
+@@ -370,10 +371,10 @@ public class Schematics implements Loadable{
      public Schematic create(int x, int y, int x2, int y2){
          Team team = headless ? null : Vars.player.team();
          NormalizeResult result = Placement.normalizeArea(x, y, x2, y2, 0, false, maxSchematicSize);
@@ -91,7 +80,7 @@ index 2dc045bac5da01f0e4f08cbccc1ff9c0044c7d4f..73cf53228343852f6ae58d3dda6d3e95
  
          int ox = x, oy = y, ox2 = x2, oy2 = y2;
  
-@@ -398,7 +401,7 @@ public class Schematics implements Loadable{
+@@ -400,7 +401,7 @@ public class Schematics implements Loadable{
              }
          }
  
@@ -100,7 +89,7 @@ index 2dc045bac5da01f0e4f08cbccc1ff9c0044c7d4f..73cf53228343852f6ae58d3dda6d3e95
              x = minx;
              y = miny;
              x2 = maxx;
-@@ -407,6 +410,20 @@ public class Schematics implements Loadable{
+@@ -409,6 +410,20 @@ public class Schematics implements Loadable{
              return new Schematic(new Seq<>(), new StringMap(), 1, 1);
          }
  
@@ -121,7 +110,7 @@ index 2dc045bac5da01f0e4f08cbccc1ff9c0044c7d4f..73cf53228343852f6ae58d3dda6d3e95
          int width = x2 - x + 1, height = y2 - y + 1;
          int offsetX = -x, offsetY = -y;
          IntSet counted = new IntSet();
-@@ -425,6 +442,15 @@ public class Schematics implements Loadable{
+@@ -427,6 +442,15 @@ public class Schematics implements Loadable{
                  }
              }
          }
