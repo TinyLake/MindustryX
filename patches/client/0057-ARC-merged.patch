@@ -689,7 +689,7 @@ index 1def8b5806f0f20035fdf37860e7fe71891b0d77..d7007fbb38d120cf2455494757f4417b
          !(player.unit() instanceof Mechc && player.unit().isFlying()) && !player.unit().mining() && !commandMode;
      }
 diff --git a/core/src/mindustry/input/MobileInput.java b/core/src/mindustry/input/MobileInput.java
-index 5981c4395cd97d988109f1325dd0fd67f4f38fa1..4fffc2dbbf50ea92b5f702956b5b88e51ec69899 100644
+index 1ebb2888672ce37be40f9ffb2fc227cc901cd146..1088b8d248565a3f57bcbd401aa6f93c6bc013e0 100644
 --- a/core/src/mindustry/input/MobileInput.java
 +++ b/core/src/mindustry/input/MobileInput.java
 @@ -334,7 +334,7 @@ public class MobileInput extends InputHandler implements GestureListener{

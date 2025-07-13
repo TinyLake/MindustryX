@@ -8,7 +8,7 @@ Subject: [PATCH] FIX.G: Fix #6
  1 file changed, 4 insertions(+), 1 deletion(-)
 
 diff --git a/core/src/mindustry/world/blocks/payloads/PayloadConveyor.java b/core/src/mindustry/world/blocks/payloads/PayloadConveyor.java
-index a2bceb9977eeebc76882666e77a28c91e19e883d..6d2a806c7103ea3baaa9bd9f8cc96ae83157a46d 100644
+index 37f489f8d910f32f59a89a6785459404ea7e0a42..7a076a543d800f418444a9a1be7bf71509008176 100644
 --- a/core/src/mindustry/world/blocks/payloads/PayloadConveyor.java
 +++ b/core/src/mindustry/world/blocks/payloads/PayloadConveyor.java
 @@ -158,7 +158,10 @@ public class PayloadConveyor extends Block{

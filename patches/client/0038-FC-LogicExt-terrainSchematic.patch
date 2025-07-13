@@ -127,7 +127,7 @@ index d992db855c0b4f78549e9769a7916806d16eb5f6..73cf53228343852f6ae58d3dda6d3e95
          return new Schematic(tiles, new StringMap(), width, height);
      }
 diff --git a/core/src/mindustry/input/MobileInput.java b/core/src/mindustry/input/MobileInput.java
-index 5b61bcb907807316906682135f04f710ac270790..5981c4395cd97d988109f1325dd0fd67f4f38fa1 100644
+index 3c291a14a3dcbaee09c33d8b0059c2b3b4b24c41..1ebb2888672ce37be40f9ffb2fc227cc901cd146 100644
 --- a/core/src/mindustry/input/MobileInput.java
 +++ b/core/src/mindustry/input/MobileInput.java
 @@ -235,15 +235,8 @@ public class MobileInput extends InputHandler implements GestureListener{
