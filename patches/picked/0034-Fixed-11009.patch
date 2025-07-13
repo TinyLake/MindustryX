@@ -1,0 +1,92 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Anuken <arnukren@gmail.com>
+Date: Sat, 12 Jul 2025 12:42:05 -0400
+Subject: [PATCH] Fixed #11009
+
+(cherry picked from commit aeee327e6c1a09c1a8b4baae7ea84f9ee9b964a4)
+---
+ core/src/mindustry/ai/BlockIndexer.java | 67 +++++++++++++------------
+ 1 file changed, 34 insertions(+), 33 deletions(-)
+
+diff --git a/core/src/mindustry/ai/BlockIndexer.java b/core/src/mindustry/ai/BlockIndexer.java
+index 4a87c1df67adce8d07ec55f14e42137154acbe84..2026468685fcf5073820cb6187624d70d73054c7 100644
+--- a/core/src/mindustry/ai/BlockIndexer.java
++++ b/core/src/mindustry/ai/BlockIndexer.java
+@@ -194,43 +194,44 @@ public class BlockIndexer{
+         }
+     }
+ 
+-    public void addIndex(Tile tile){
+-        process(tile);
+-
+-        Item drop = tile.drop(), wallDrop = tile.wallDrop();
+-        if(drop == null && wallDrop == null) return;
+-        int qx = tile.x / quadrantSize, qy = tile.y / quadrantSize;
+-        int pos = tile.pos();
+-
+-        if(tile.block() == Blocks.air){
+-            if(drop != null){ //floor
+-                if(ores[drop.id] == null) ores[drop.id] = new IntSeq[quadWidth][quadHeight];
+-                if(ores[drop.id][qx][qy] == null) ores[drop.id][qx][qy] = new IntSeq(false, 16);
+-                if(ores[drop.id][qx][qy].addUnique(pos)){
+-                    int old = allOres.increment(drop); //increment ore count only if not already counted
+-                    if(old == 0) updatePresentOres();
++    public void addIndex(Tile base){
++        process(base);
++
++        base.getLinkedTiles(tile -> {
++            Item drop = tile.drop(), wallDrop = tile.wallDrop();
++            if(drop == null && wallDrop == null) return;
++            int qx = tile.x / quadrantSize, qy = tile.y / quadrantSize;
++            int pos = tile.pos();
++
++            if(tile.block() == Blocks.air){
++                if(drop != null){ //floor
++                    if(ores[drop.id] == null) ores[drop.id] = new IntSeq[quadWidth][quadHeight];
++                    if(ores[drop.id][qx][qy] == null) ores[drop.id][qx][qy] = new IntSeq(false, 16);
++                    if(ores[drop.id][qx][qy].addUnique(pos)){
++                        int old = allOres.increment(drop); //increment ore count only if not already counted
++                        if(old == 0) updatePresentOres();
++                    }
+                 }
+-            }
+-            if(wallDrop != null && wallOres != null && wallOres[wallDrop.id] != null && wallOres[wallDrop.id][qx][qy] != null && wallOres[wallDrop.id][qx][qy].removeValue(pos)){ //wall
+-                int old = allWallOres.increment(wallDrop, -1);
+-                if(old == 1) updatePresentOres();
+-            }
+-        }else{
+-            if(wallDrop != null){ //wall
+-                if(wallOres[wallDrop.id] == null) wallOres[wallDrop.id] = new IntSeq[quadWidth][quadHeight];
+-                if(wallOres[wallDrop.id][qx][qy] == null) wallOres[wallDrop.id][qx][qy] = new IntSeq(false, 16);
+-                if(wallOres[wallDrop.id][qx][qy].addUnique(pos)){
+-                    int old = allWallOres.increment(wallDrop); //increment ore count only if not already counted
+-                    if(old == 0) updatePresentOres();
++                if(wallDrop != null && wallOres != null && wallOres[wallDrop.id] != null && wallOres[wallDrop.id][qx][qy] != null && wallOres[wallDrop.id][qx][qy].removeValue(pos)){ //wall
++                    int old = allWallOres.increment(wallDrop, -1);
++                    if(old == 1) updatePresentOres();
++                }
++            }else{
++                if(wallDrop != null){ //wall
++                    if(wallOres[wallDrop.id] == null) wallOres[wallDrop.id] = new IntSeq[quadWidth][quadHeight];
++                    if(wallOres[wallDrop.id][qx][qy] == null) wallOres[wallDrop.id][qx][qy] = new IntSeq(false, 16);
++                    if(wallOres[wallDrop.id][qx][qy].addUnique(pos)){
++                        int old = allWallOres.increment(wallDrop); //increment ore count only if not already counted
++                        if(old == 0) updatePresentOres();
++                    }
+                 }
+-            }
+ 
+-            if(drop != null && ores != null && ores[drop.id] != null && ores[drop.id][qx][qy] != null && ores[drop.id][qx][qy].removeValue(pos)){ //floor
+-                int old = allOres.increment(drop, -1);
+-                if(old == 1) updatePresentOres();
++                if(drop != null && ores != null && ores[drop.id] != null && ores[drop.id][qx][qy] != null && ores[drop.id][qx][qy].removeValue(pos)){ //floor
++                    int old = allOres.increment(drop, -1);
++                    if(old == 1) updatePresentOres();
++                }
+             }
+-        }
+-
++        });
+     }
+ 
+     /** @return whether a certain block is anywhere on this map. */

@@ -1,0 +1,26 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Anuken <arnukren@gmail.com>
+Date: Fri, 11 Jul 2025 10:56:25 -0400
+Subject: [PATCH] Mining units now search for the closest ore to the core, not
+ themselves
+
+(cherry picked from commit f5f19339234d3ba8efb5eaa108011f7ea6e064d5)
+---
+ core/src/mindustry/ai/types/MinerAI.java | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/core/src/mindustry/ai/types/MinerAI.java b/core/src/mindustry/ai/types/MinerAI.java
+index 598e479515f6772b5c9052bd4e14b3744ec54a36..0bf4c46d790f26d4cf9f1ee66a38485dbf2e47f5 100644
+--- a/core/src/mindustry/ai/types/MinerAI.java
++++ b/core/src/mindustry/ai/types/MinerAI.java
+@@ -45,8 +45,8 @@ public class MinerAI extends AIController{
+             }else{
+                 if(timer.get(timerTarget3, 60) && targetItem != null){
+                     ore = null;
+-                    if(unit.type.mineFloor) ore = indexer.findClosestOre(unit, targetItem);
+-                    if(ore == null && unit.type.mineWalls) ore = indexer.findClosestWallOre(unit, targetItem);
++                    if(unit.type.mineFloor) ore = indexer.findClosestOre(core.x, core.y, targetItem);
++                    if(ore == null && unit.type.mineWalls) ore = indexer.findClosestWallOre(core.x, core.y, targetItem);
+                 }
+ 
+                 if(ore != null){
