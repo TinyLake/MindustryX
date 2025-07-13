@@ -5,12 +5,11 @@ Subject: [PATCH] Fixed #10915
 
 (cherry picked from commit 7da5f0a6d93f6e0a36e8ecbbc2ccb899aefde5cb)
 ---
- .../mindustry/entities/units/BuildPlan.java   | 12 ----------
- core/src/mindustry/game/Schematics.java       |  2 +-
- core/src/mindustry/input/InputHandler.java    | 18 +++++++--------
- .../world/blocks/power/PowerNode.java         |  5 +++++
- tools/src/mindustry/tools/Generators.java     | 22 +++++++++++++++++++
- 5 files changed, 37 insertions(+), 22 deletions(-)
+ .../mindustry/entities/units/BuildPlan.java    | 12 ------------
+ core/src/mindustry/game/Schematics.java        |  2 +-
+ core/src/mindustry/input/InputHandler.java     | 18 +++++++++---------
+ .../world/blocks/power/PowerNode.java          |  5 +++++
+ 4 files changed, 15 insertions(+), 22 deletions(-)
 
 diff --git a/core/src/mindustry/entities/units/BuildPlan.java b/core/src/mindustry/entities/units/BuildPlan.java
 index f9930f707f74bb2bc6f5d6114acf80c54fbf6cf7..8dfb53de7a993cb0e6619bc9868c9fc331167c64 100644
@@ -123,36 +122,3 @@ index a3eae8fb0805891a267b03c481c89c36729a9008..f01d93ef9ab12d7cc181fbc283743b4e
                  if(otherReq == null || otherReq.block == null) continue;
  
                  drawLaser(plan.drawx(), plan.drawy(), otherReq.drawx(), otherReq.drawy(), size, otherReq.block.size);
-diff --git a/tools/src/mindustry/tools/Generators.java b/tools/src/mindustry/tools/Generators.java
-index 8503c80b26a6ed6389e71a151750eafd4c90f2df..8fbda7d9f85efc294ae06d3d6d0bcb506bdeedfe 100644
---- a/tools/src/mindustry/tools/Generators.java
-+++ b/tools/src/mindustry/tools/Generators.java
-@@ -69,6 +69,28 @@ public class Generators{
-     public static void run(){
-         ObjectMap<Block, Pixmap> gens = new ObjectMap<>();
- 
-+        generate("autotiles", () -> {
-+            for(Floor floor : content.blocks().select(b -> b.isFloor() && b.asFloor().autotile).<Floor>as()){
-+                Fi basePath = new Fi("../../../assets-raw/sprites_out/blocks/environment/" + floor.name + "-autotile.png");
-+
-+                if(basePath.exists()){
-+                    //theoretically this might not finish in time, but I doubt that will ever happen
-+                    mainExecutor.submit(() -> {
-+                        try{
-+                            ImageTileGenerator.generate(basePath, floor.name, new Fi("../../../assets-raw/sprites_out/blocks/environment/" + floor.name));
-+                        }catch(Throwable e){
-+                            Log.err("Failed to autotile: " + floor.name, e);
-+                        }finally{
-+                            //the raw autotile source image must never be included, it isn't useful
-+                            basePath.delete();
-+                        }
-+                    });
-+                }else{
-+                    Log.warn("Autotile floor '@' not found: @", floor.name, basePath.absolutePath());
-+                }
-+            }
-+        });
-+
-         generate("splashes", () -> {
- 
-             int frames = 12;

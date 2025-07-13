@@ -3503,10 +3503,10 @@ index 6701a24f5fb261ed6ff21fc80d049577002861e0..95796a7bbfd10f0e2f8ef5b8b5c858ac
                      for(int j = 0; j < 4 - hex.length(); j++){
                          outBuffer.append('0')
 diff --git a/tools/src/mindustry/tools/Generators.java b/tools/src/mindustry/tools/Generators.java
-index 8fbda7d9f85efc294ae06d3d6d0bcb506bdeedfe..a46e7f2d3cf63281ce6c614df8531486dc75a459 100644
+index 8503c80b26a6ed6389e71a151750eafd4c90f2df..8f9c903d397bb4540167e7b77b9dfa11c3a0bf9e 100644
 --- a/tools/src/mindustry/tools/Generators.java
 +++ b/tools/src/mindustry/tools/Generators.java
-@@ -439,7 +439,7 @@ public class Generators{
+@@ -417,7 +417,7 @@ public class Generators{
                  }
              }
  
