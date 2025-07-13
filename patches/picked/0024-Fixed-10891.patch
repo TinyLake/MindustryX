@@ -1,0 +1,37 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Anuken <arnukren@gmail.com>
+Date: Wed, 4 Jun 2025 03:37:19 +0800
+Subject: [PATCH] Fixed #10891
+
+(cherry picked from commit a22e532034abbef62250ad20adefb9a0f6295f8b)
+---
+ core/src/mindustry/game/Schematics.java       | 2 +-
+ core/src/mindustry/ui/dialogs/ModsDialog.java | 2 +-
+ 2 files changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/core/src/mindustry/game/Schematics.java b/core/src/mindustry/game/Schematics.java
+index 620434d144ed63ec2bb31797a818ffab294d311c..71c227a32b7bc653df29212c71b36826da8791c3 100644
+--- a/core/src/mindustry/game/Schematics.java
++++ b/core/src/mindustry/game/Schematics.java
+@@ -98,7 +97,7 @@ public class Schematics implements Loadable{
+ 
+         all.sort();
+ 
+-        if(shadowBuffer == null){
++        if(shadowBuffer == null && !headless){
+             Core.app.post(() -> shadowBuffer = new FrameBuffer(maxSchematicSize + padding + 8, maxSchematicSize + padding + 8));
+         }
+     }
+diff --git a/core/src/mindustry/ui/dialogs/ModsDialog.java b/core/src/mindustry/ui/dialogs/ModsDialog.java
+index f177ac7e32bfd405734998affced2ad15e8b1b43..3e7a2e2448b5a4d6440d4777f8ccb9f46d705da9 100644
+--- a/core/src/mindustry/ui/dialogs/ModsDialog.java
++++ b/core/src/mindustry/ui/dialogs/ModsDialog.java
+@@ -365,7 +365,7 @@ public class ModsDialog extends BaseDialog{
+ 
+     private @Nullable String getStateDetails(LoadedMod item){
+         if(item.isOutdated()){
+-            return Core.bundle.format("mod.outdated.details", item.isJava() ? minJavaModGameVersion : minModGameVersion);
++            return "@mod.incompatiblemod.details";
+         }else if(item.isBlacklisted()){
+             return "@mod.blacklisted.details";
+         }else if(!item.isSupported()){

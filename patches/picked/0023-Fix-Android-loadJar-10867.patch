@@ -1,0 +1,162 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Wxp <102459686+DSFdsfWxp@users.noreply.github.com>
+Date: Tue, 3 Jun 2025 02:32:24 +0800
+Subject: [PATCH] Fix Android loadJar (#10867)
+
+* Fix Android loadJar
+
+* Using another way
+
+* Code formating
+
+* Fix mod update
+
+(cherry picked from commit 7076d1bf975365e3cdc1e306f6ebb75250dfbffc)
+---
+ .../mindustry/android/AndroidLauncher.java    | 65 ++++++++++++++-----
+ core/assets/contributors                      |  1 +
+ core/src/mindustry/mod/Mods.java              | 28 ++++++--
+ 3 files changed, 70 insertions(+), 24 deletions(-)
+
+diff --git a/android/src/mindustry/android/AndroidLauncher.java b/android/src/mindustry/android/AndroidLauncher.java
+index 548f1b607887818b319b3d3dd7d914f4bf4ffe43..e6809bec45c7686a68c309ae03acbaf5eaa64282 100644
+--- a/android/src/mindustry/android/AndroidLauncher.java
++++ b/android/src/mindustry/android/AndroidLauncher.java
+@@ -73,28 +73,57 @@ public class AndroidLauncher extends AndroidApplication{
+             @Override
+             public ClassLoader loadJar(Fi jar, ClassLoader parent) throws Exception{
+                 //Required to load jar files in Android 14: https://developer.android.com/about/versions/14/behavior-changes-14#safer-dynamic-code-loading
+-                jar.file().setReadOnly();
+-                return new DexClassLoader(jar.file().getPath(), getFilesDir().getPath(), null, parent){
+-                    @Override
+-                    protected Class<?> loadClass(String name, boolean resolve) throws ClassNotFoundException{
+-                        //check for loaded state
+-                        Class<?> loadedClass = findLoadedClass(name);
+-                        if(loadedClass == null){
+-                            try{
+-                                //try to load own class first
+-                                loadedClass = findClass(name);
+-                            }catch(ClassNotFoundException | NoClassDefFoundError e){
+-                                //use parent if not found
+-                                return parent.loadClass(name);
++                try{
++                    jar.file().setReadOnly();
++                    return new DexClassLoader(jar.file().getPath(), getFilesDir().getPath(), null, parent){
++                        @Override
++                        protected Class<?> loadClass(String name, boolean resolve) throws ClassNotFoundException{
++                            //check for loaded state
++                            Class<?> loadedClass = findLoadedClass(name);
++                            if(loadedClass == null){
++                                try{
++                                    //try to load own class first
++                                    loadedClass = findClass(name);
++                                }catch(ClassNotFoundException | NoClassDefFoundError e){
++                                    //use parent if not found
++                                    return parent.loadClass(name);
++                                }
+                             }
+-                        }
+ 
+-                        if(resolve){
+-                            resolveClass(loadedClass);
++                            if(resolve){
++                                resolveClass(loadedClass);
++                            }
++                            return loadedClass;
+                         }
+-                        return loadedClass;
++                    };
++                }catch(SecurityException e){
++                    //`setReadOnly` to jar file in `/sdcard/Android/data/...` does not work on some Android 14 device
++                    //But in `/data/...` it works
++
++                    if(Build.VERSION.SDK_INT < VERSION_CODES.O_MR1){
++                        throw e;
++                    }
++
++                    Fi cacheDir = new Fi(getCacheDir()).child("mods");
++                    cacheDir.mkdirs();
++
++                    //long file name support
++                    Fi modCacheDir = cacheDir.child(jar.nameWithoutExtension());
++                    Fi modCache = modCacheDir.child(Long.toHexString(jar.lastModified()) + ".zip");
++
++                    if(modCacheDir.equals(jar.parent())){
++                        //should not reach here, just in case
++                        throw e;
+                     }
+-                };
++
++                    //Cache will be deleted when mod is removed
++                    if(!modCache.exists() || jar.length() != modCache.length()){
++                        modCacheDir.mkdirs();
++                        jar.copyTo(modCache);
++                    }
++                    modCache.file().setReadOnly();
++                    return loadJar(modCache, parent);
++                }
+             }
+ 
+             @Override
+diff --git a/core/assets/contributors b/core/assets/contributors
+index f5b70d3741bb851854261a2367aeeaa0c4238918..bb401300618db36b590ee4b1dddacd3f89c6c78a 100644
+--- a/core/assets/contributors
++++ b/core/assets/contributors
+@@ -182,3 +182,4 @@ MonoChronos
+ RushieWashie
+ ITY
+ Iniquit
++DSFdsfWxp
+diff --git a/core/src/mindustry/mod/Mods.java b/core/src/mindustry/mod/Mods.java
+index b3044a2a4a9358f23c1d45caa41c6fae798398d5..a1c6196f301fc44fc2e04d49e4c6e1ad193ae870 100644
+--- a/core/src/mindustry/mod/Mods.java
++++ b/core/src/mindustry/mod/Mods.java
+@@ -413,11 +413,22 @@ public class Mods implements Loadable{
+ 
+     /** Removes a mod file and marks it for requiring a restart. */
+     public void removeMod(LoadedMod mod){
+-        if(!android && mod.loader != null){
+-            try{
+-                ClassLoaderCloser.close(mod.loader);
+-            }catch(Exception e){
+-                Log.err(e);
++        boolean deleted = true;
++
++        if(mod.loader != null){
++            if(android){
++                //Try to remove cache for Android 14 security problem
++                Fi cacheDir = new Fi(Core.files.getCachePath()).child("mods");
++                Fi modCacheDir = cacheDir.child(mod.file.nameWithoutExtension());
++                if(modCacheDir.exists()){
++                    deleted = modCacheDir.deleteDirectory();
++                }
++            }else{
++                try{
++                    ClassLoaderCloser.close(mod.loader);
++                }catch(Exception e){
++                    Log.err(e);
++                }
+             }
+         }
+ 
+@@ -425,7 +436,7 @@ public class Mods implements Loadable{
+             mod.root.delete();
+         }
+ 
+-        boolean deleted = mod.file.isDirectory() ? mod.file.deleteDirectory() : mod.file.delete();
++        deleted &= mod.file.isDirectory() ? mod.file.deleteDirectory() : mod.file.delete();
+ 
+         if(!deleted){
+             ui.showErrorMessage("@mod.delete.error");
+@@ -1112,6 +1123,11 @@ public class Mods implements Loadable{
+                     //close the classloader for jar mods
+                     if(!android){
+                         ClassLoaderCloser.close(other.loader);
++                    }else if(other.loader != null){
++                        //Try to remove cache for Android 14 security problem
++                        Fi cacheDir = new Fi(Core.files.getCachePath()).child("mods");
++                        Fi modCacheDir = cacheDir.child(other.file.nameWithoutExtension());
++                        modCacheDir.deleteDirectory();
+                     }
+ 
+                     //close zip file

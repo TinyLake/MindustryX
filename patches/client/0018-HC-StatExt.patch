@@ -96,7 +96,7 @@ index 05dc34595d11d67a878c5dbaef8340fe6becf3ce..423eece86780e56801cae15e5870bc25
          if(damage < 0) stats.add(Stat.healing, -damage * 60f, StatUnit.perSecond);
  
 diff --git a/core/src/mindustry/type/UnitType.java b/core/src/mindustry/type/UnitType.java
-index 6f2b6d784b23124a5b103d66bdd8a9452a819a49..5aae9bbf6f9a14f1f37c3d30adb8906bb40e0f5f 100644
+index 9002ef6d3a63ace145aa051cc7d96b1d80bac36e..1f563d93654aed2033135b022c4e535abc451789 100644
 --- a/core/src/mindustry/type/UnitType.java
 +++ b/core/src/mindustry/type/UnitType.java
 @@ -37,6 +37,7 @@ import mindustry.world.blocks.payloads.*;
@@ -522,7 +522,7 @@ index 416df5a20af4767cdfdc2646bce19468ad11cd28..239311eea91980f2c3e0facd6613b237
      public final String name;
      public final int id;
 diff --git a/core/src/mindustry/world/meta/StatValues.java b/core/src/mindustry/world/meta/StatValues.java
-index 74e253ca3816ae354e8079f901c9454dee75bcc8..4f716dc5a1495efdf8fb9944737134b2c916e55c 100644
+index 886fa305abb4deb98f09bbe88a29bcea0356f090..06a784e8eaf020b3da5b13aa95d0464a23f6a398 100644
 --- a/core/src/mindustry/world/meta/StatValues.java
 +++ b/core/src/mindustry/world/meta/StatValues.java
 @@ -25,6 +25,8 @@ import mindustry.ui.*;

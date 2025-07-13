@@ -16,7 +16,7 @@ Content-Transfer-Encoding: 8bit
  core/src/mindustry/core/NetClient.java        |  4 ++++
  core/src/mindustry/core/Renderer.java         |  2 +-
  core/src/mindustry/core/UI.java               | 20 ++-----------------
- core/src/mindustry/game/Schematics.java       |  8 +++++---
+ core/src/mindustry/game/Schematics.java       |  4 ++--
  .../mindustry/graphics/MinimapRenderer.java   |  6 ++++--
  core/src/mindustry/ui/dialogs/JoinDialog.java | 19 ++++++++++--------
  .../mindustry/ui/dialogs/KeybindDialog.java   | 12 +++++++----
@@ -28,7 +28,7 @@ Content-Transfer-Encoding: 8bit
  .../world/blocks/distribution/Router.java     |  3 ++-
  .../world/blocks/production/BeamDrill.java    | 12 ++++-------
  .../mindustry/desktop/DesktopLauncher.java    | 20 ++++++++++++++++++-
- 20 files changed, 96 insertions(+), 57 deletions(-)
+ 20 files changed, 93 insertions(+), 56 deletions(-)
 
 diff --git a/core/src/mindustry/ClientLauncher.java b/core/src/mindustry/ClientLauncher.java
 index a64b7b36fdd74a29a3caae54a1f1a514039b891f..beea309f225be8de3799089a87d1fdcb8e30ee5c 100644
@@ -182,21 +182,10 @@ index 8a3d830d8fe215154af569b863214dab26096f3a..5b0ee5946cb022e256aff23f2f1bfc71
  
      public static int roundAmount(int number){
 diff --git a/core/src/mindustry/game/Schematics.java b/core/src/mindustry/game/Schematics.java
-index 620434d144ed63ec2bb31797a818ffab294d311c..20e5aeac5a46c49c792904f3eb6c5ec702b947a9 100644
+index 93b85a591a895fb117f7b4fb983f25cd90a923a0..2dc045bac5da01f0e4f08cbccc1ff9c0044c7d4f 100644
 --- a/core/src/mindustry/game/Schematics.java
 +++ b/core/src/mindustry/game/Schematics.java
-@@ -99,7 +99,9 @@ public class Schematics implements Loadable{
-         all.sort();
- 
-         if(shadowBuffer == null){
--            Core.app.post(() -> shadowBuffer = new FrameBuffer(maxSchematicSize + padding + 8, maxSchematicSize + padding + 8));
-+            //MDTX: support larger schematic, maxSchematicSize may be MAX_VALUE
-+            var size = Math.min(maxSchematicSize, 1024) + padding + 8;
-+            Core.app.post(() -> shadowBuffer = new FrameBuffer(size, size));
-         }
-     }
- 
-@@ -543,7 +545,7 @@ public class Schematics implements Loadable{
+@@ -542,7 +543,7 @@ public class Schematics implements Loadable{
          try(DataInputStream stream = new DataInputStream(new InflaterInputStream(input))){
              short width = stream.readShort(), height = stream.readShort();
  
@@ -205,7 +194,7 @@ index 620434d144ed63ec2bb31797a818ffab294d311c..20e5aeac5a46c49c792904f3eb6c5ec7
  
              StringMap map = new StringMap();
              int tags = stream.readUnsignedByte();
-@@ -569,7 +571,7 @@ public class Schematics implements Loadable{
+@@ -568,7 +569,7 @@ public class Schematics implements Loadable{
  
              int total = stream.readInt();
  
@@ -390,10 +379,10 @@ index add50b5864c311b66d4278e684a4e0260170139f..6202aadb499174630a04c0210e7390a0
          team("/t"),
          admin("/a", player::admin)
 diff --git a/core/src/mindustry/ui/fragments/PlacementFragment.java b/core/src/mindustry/ui/fragments/PlacementFragment.java
-index 01c84ab75d3c426989595868089525f07c3de047..9f826ded301115dbbeed5ae05ba1b3627fc985cb 100644
+index 01e984ba718425a0296ce4e80b0a16967dd0d117..5a34a71de3c2fddfbb6399c52f1851093274c008 100644
 --- a/core/src/mindustry/ui/fragments/PlacementFragment.java
 +++ b/core/src/mindustry/ui/fragments/PlacementFragment.java
-@@ -749,10 +749,8 @@ public class PlacementFragment{
+@@ -753,10 +753,8 @@ public class PlacementFragment{
  
      /** @return the thing being hovered over. */
      public @Nullable Displayable hovered(){

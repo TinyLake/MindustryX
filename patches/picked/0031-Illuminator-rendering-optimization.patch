@@ -1,0 +1,34 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Anuken <arnukren@gmail.com>
+Date: Wed, 18 Jun 2025 20:11:06 -0400
+Subject: [PATCH] Illuminator rendering optimization
+
+(cherry picked from commit f7c72e950ca6aac5744b5c7cc521c38f74b36195)
+---
+ core/src/mindustry/world/blocks/power/LightBlock.java | 5 +----
+ 1 file changed, 1 insertion(+), 4 deletions(-)
+
+diff --git a/core/src/mindustry/world/blocks/power/LightBlock.java b/core/src/mindustry/world/blocks/power/LightBlock.java
+index d36cc97e729697e65e7a26f34be6b15b25e026f8..fafe8e2060e33aadb4f77fb5dc8e8f899fc32882 100644
+--- a/core/src/mindustry/world/blocks/power/LightBlock.java
++++ b/core/src/mindustry/world/blocks/power/LightBlock.java
+@@ -1,6 +1,5 @@
+ package mindustry.world.blocks.power;
+ 
+-import arc.graphics.*;
+ import arc.graphics.g2d.*;
+ import arc.math.*;
+ import arc.math.geom.*;
+@@ -96,11 +95,9 @@ public class LightBlock extends Block{
+         @Override
+         public void draw(){
+             super.draw();
+-            Draw.blend(Blending.additive);
+-            Draw.color(Tmp.c1.set(color), efficiency * 0.3f);
++            Draw.color(Tmp.c1.set(color), 0.4f);
+             Draw.rect(topRegion, x, y);
+             Draw.color();
+-            Draw.blend();
+         }
+ 
+         @Override

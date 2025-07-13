@@ -1,0 +1,41 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Anuken <arnukren@gmail.com>
+Date: Wed, 18 Jun 2025 19:14:10 -0400
+Subject: [PATCH] Closes Anuken/Mindustry-Suggestions/issues/5674
+
+(cherry picked from commit 8569eed795dcf4889c337ac9612729352419552b)
+---
+ .../mindustry/world/blocks/power/LightBlock.java | 16 ++++++++++++++++
+ 1 file changed, 16 insertions(+)
+
+diff --git a/core/src/mindustry/world/blocks/power/LightBlock.java b/core/src/mindustry/world/blocks/power/LightBlock.java
+index 529ba33ac08dacbf6e37cf22f93d651cf3c5dc84..d36cc97e729697e65e7a26f34be6b15b25e026f8 100644
+--- a/core/src/mindustry/world/blocks/power/LightBlock.java
++++ b/core/src/mindustry/world/blocks/power/LightBlock.java
+@@ -58,10 +58,26 @@ public class LightBlock extends Block{
+         Placement.calculateNodes(points, this, rotation, (point, other) -> point.dst2(other) <= placeRadius2);
+     }
+ 
++    @Override
++    public int minimapColor(Tile tile){
++        var build = (LightBuild)tile.build;
++        //make sure A is 255
++        return build == null ? 0 : build.color | 0xff;
++    }
++
+     public class LightBuild extends Building{
+         public int color = Pal.accent.rgba();
+         public float smoothTime = 1f;
+ 
++        @Override
++        public void configured(Unit player, Object value){
++            super.configured(player, value);
++
++            if(!headless){
++                renderer.minimap.update(tile);
++            }
++        }
++
+         @Override
+         public void control(LAccess type, double p1, double p2, double p3, double p4){
+             if(type == LAccess.color){

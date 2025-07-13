@@ -22,7 +22,7 @@ index 474953f0b7610058572ba9fa10de89b2db774f83..9f9253cc20fd2e87b6f3c78a945cc5b9
          api arcModule("extensions:fx")
          api arcModule("extensions:arcnet")
 diff --git a/core/src/mindustry/ui/dialogs/SchematicsDialog.java b/core/src/mindustry/ui/dialogs/SchematicsDialog.java
-index f64cf14ca2f0f06d90147364c9bfeded363ff95b..1819d3cabac2aeadbb57bf74cf6962f829c7dded 100644
+index 508ec2a6c99e96b56f2cc76aa98afbf004636b06..fef8e21d771ccfd81cbc65a0bc62642ebf721952 100644
 --- a/core/src/mindustry/ui/dialogs/SchematicsDialog.java
 +++ b/core/src/mindustry/ui/dialogs/SchematicsDialog.java
 @@ -683,6 +683,7 @@ public class SchematicsDialog extends BaseDialog{

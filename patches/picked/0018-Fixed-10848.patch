@@ -1,0 +1,23 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Anuken <arnukren@gmail.com>
+Date: Sat, 31 May 2025 01:21:15 -0400
+Subject: [PATCH] Fixed #10848
+
+(cherry picked from commit 556cbb48153fcbdf42eb4379ae5408e7c7199b06)
+---
+ core/src/mindustry/ui/dialogs/SchematicsDialog.java | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/core/src/mindustry/ui/dialogs/SchematicsDialog.java b/core/src/mindustry/ui/dialogs/SchematicsDialog.java
+index f64cf14ca2f0f06d90147364c9bfeded363ff95b..508ec2a6c99e96b56f2cc76aa98afbf004636b06 100644
+--- a/core/src/mindustry/ui/dialogs/SchematicsDialog.java
++++ b/core/src/mindustry/ui/dialogs/SchematicsDialog.java
+@@ -557,7 +557,7 @@ public class SchematicsDialog extends BaseDialog{
+                     next.pack();
+                     float w = next.getWidth() + Scl.scl(9f);
+ 
+-                    if(w + sum >= Core.graphics.getWidth() * 0.9f){
++                    if(w*2f + sum >= Core.graphics.getWidth() * 0.9f){
+                         p.add(current).row();
+                         current = new Table();
+                         current.left();

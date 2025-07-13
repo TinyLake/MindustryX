@@ -56,7 +56,7 @@ index 025de0c738054913d6f23e731a43b7ade96f3d33..d9c8b797863cb95f419519220fcca579
  
      /** @return whether the wave timer is paused due to enemies */
 diff --git a/core/src/mindustry/ui/fragments/HudFragment.java b/core/src/mindustry/ui/fragments/HudFragment.java
-index 122f55acba10a4c91a1569968ee17556d51ff109..d8a51d77b7bf8dedad29ed2f17eb6fa82870b233 100644
+index cac1defa52161cddc44055e5016f8a0eca4a42c6..37da0e2ac749085168207b101e59e9adccad8b48 100644
 --- a/core/src/mindustry/ui/fragments/HudFragment.java
 +++ b/core/src/mindustry/ui/fragments/HudFragment.java
 @@ -31,6 +31,7 @@ import mindustry.ui.*;

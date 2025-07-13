@@ -58,7 +58,7 @@ index 5b0ee5946cb022e256aff23f2f1bfc71ab1d9abb..b3683879a2b1ddec68ec18bfdd1b7179
          Colors.put("accent", Pal.accent);
          Colors.put("unlaunched", Color.valueOf("8982ed"));
 diff --git a/core/src/mindustry/ui/Fonts.java b/core/src/mindustry/ui/Fonts.java
-index ef68462bf6212b7caf5010ccdcac3c8fda601246..b0187a93a5daee8575ad5fd825b724fd64490669 100644
+index f302c762a5c88a50a53d4702c31e958033352c61..c784bbf56e85194f93a9e11ef2486a9eb0fd5077 100644
 --- a/core/src/mindustry/ui/Fonts.java
 +++ b/core/src/mindustry/ui/Fonts.java
 @@ -61,11 +61,25 @@ public class Fonts{

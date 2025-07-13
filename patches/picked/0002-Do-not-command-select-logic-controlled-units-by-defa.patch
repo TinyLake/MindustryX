@@ -1,0 +1,126 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Anuken <arnukren@gmail.com>
+Date: Thu, 1 May 2025 22:27:47 +0800
+Subject: [PATCH] Do not command select logic controlled units by default
+
+(cherry picked from commit 1a07efd80bf86f417b25a9a691b541f70ed83f35)
+---
+ core/src/mindustry/ai/types/LogicAI.java         | 3 +--
+ core/src/mindustry/entities/comp/UnitComp.java   | 4 ++--
+ core/src/mindustry/graphics/OverlayRenderer.java | 2 +-
+ core/src/mindustry/input/DesktopInput.java       | 4 ++--
+ core/src/mindustry/input/InputHandler.java       | 9 +++++----
+ 5 files changed, 11 insertions(+), 11 deletions(-)
+
+diff --git a/core/src/mindustry/ai/types/LogicAI.java b/core/src/mindustry/ai/types/LogicAI.java
+index f6be1965b35269f5f49c38d35a40c2d42844befd..52473da1a17d0a0c8421d3b46f83e715403a3df8 100644
+--- a/core/src/mindustry/ai/types/LogicAI.java
++++ b/core/src/mindustry/ai/types/LogicAI.java
+@@ -20,8 +20,7 @@ public class LogicAI extends AIController{
+     public LUnitControl control = LUnitControl.idle;
+     public float moveX, moveY, moveRad;
+     public float controlTimer = logicControlTimeout, targetTimer;
+-    @Nullable
+-    public Building controller;
++    public @Nullable Building controller;
+     public BuildPlan plan = new BuildPlan();
+ 
+     //special cache for instruction to store data
+diff --git a/core/src/mindustry/entities/comp/UnitComp.java b/core/src/mindustry/entities/comp/UnitComp.java
+index ce1775e29a59ef4630cde03c752a5e84aba18e83..0932e0e2f26f5788d8ed3133da349ee58f26d8de 100644
+--- a/core/src/mindustry/entities/comp/UnitComp.java
++++ b/core/src/mindustry/entities/comp/UnitComp.java
+@@ -475,7 +475,7 @@ abstract class UnitComp implements Healthc, Physicsc, Hitboxc, Statusc, Teamc, I
+ 
+     /** @return whether the unit *can* be commanded, even if its controller is not currently CommandAI. */
+     public boolean allowCommand(){
+-        return controller instanceof CommandAI || (controller instanceof LogicAI && type.allowChangeCommands);
++        return controller instanceof CommandAI || (controller instanceof LogicAI ai && (ai.controller == null || !ai.controller.block.privileged) && type.allowChangeCommands);
+     }
+ 
+     /** @return whether the unit has a CommandAI controller */
+@@ -525,7 +525,7 @@ abstract class UnitComp implements Healthc, Physicsc, Hitboxc, Statusc, Teamc, I
+     }
+ 
+     public boolean playerControllable(){
+-        return type.playerControllable;
++        return type.playerControllable && !(controller instanceof LogicAI ai && ai.controller != null && ai.controller.block.privileged);
+     }
+ 
+     public boolean targetable(Team targeter){
+diff --git a/core/src/mindustry/graphics/OverlayRenderer.java b/core/src/mindustry/graphics/OverlayRenderer.java
+index 9e98c067fd3cb8746ade5c9b31377a0e0855f9dc..29e76dc7ace4edabf9c729dca5e95f894a297b9a 100644
+--- a/core/src/mindustry/graphics/OverlayRenderer.java
++++ b/core/src/mindustry/graphics/OverlayRenderer.java
+@@ -225,7 +225,7 @@ public class OverlayRenderer{
+ 
+         input.drawOverSelect();
+ 
+-        if(ui.hudfrag.blockfrag.hover() instanceof Unit unit && unit.controller() instanceof LogicAI ai && ai.controller != null && ai.controller.isValid()){
++        if(ui.hudfrag.blockfrag.hover() instanceof Unit unit && unit.controller() instanceof LogicAI ai && ai.controller != null && ai.controller.isValid() && (state.isEditor() || !ai.controller.block.privileged)){
+             var build = ai.controller;
+             Drawf.square(build.x, build.y, build.block.size * tilesize/2f + 2f);
+             if(!unit.within(build, unit.hitSize * 2f)){
+diff --git a/core/src/mindustry/input/DesktopInput.java b/core/src/mindustry/input/DesktopInput.java
+index eeca7177aaccd87f554796d95e6557ce8ad739f6..8bd67fab2967f3396b81b8ea402def875bd33a37 100644
+--- a/core/src/mindustry/input/DesktopInput.java
++++ b/core/src/mindustry/input/DesktopInput.java
+@@ -299,7 +299,7 @@ public class DesktopInput extends InputHandler{
+                     selectedUnits.set(selectedCommandUnits(Tmp.r1.x, Tmp.r1.y, Tmp.r1.width, Tmp.r1.height));
+                 }else {
+                     for(var unit : player.team().data().units){
+-                        if(unit.allowCommand()){
++                        if(unit.isCommandable()){
+                             selectedUnits.add(unit);
+                         }
+                     }
+@@ -315,7 +315,7 @@ public class DesktopInput extends InputHandler{
+                     selectedUnits.set(selectedCommandUnits(Tmp.r1.x, Tmp.r1.y, Tmp.r1.width, Tmp.r1.height, u -> u instanceof Payloadc));
+                 }else {
+                     for(var unit : player.team().data().units){
+-                        if(unit.allowCommand() && unit instanceof  Payloadc){
++                        if(unit.isCommandable() && unit instanceof  Payloadc){
+                             selectedUnits.add(unit);
+                         }
+                     }
+diff --git a/core/src/mindustry/input/InputHandler.java b/core/src/mindustry/input/InputHandler.java
+index 70a116842879233f2f1cb5b5b4008bf303e53805..4a8e9d250bfb9a84f93f3c783b8ecf1d4cb55908 100644
+--- a/core/src/mindustry/input/InputHandler.java
++++ b/core/src/mindustry/input/InputHandler.java
+@@ -265,7 +265,8 @@ public abstract class InputHandler implements InputProcessor, GestureListener{
+             Unit unit = Groups.unit.getByID(id);
+             if(unit != null && unit.team == player.team()){
+ 
+-                if(unit.controller() instanceof LogicAI){
++                //Units with logic AI can still be controlled, but there currently aren't any mechanisms to do so on the client end unless the processor "steals" units that are already selected (control issue)
++                if(unit.controller() instanceof LogicAI ai && !(ai.controller != null && ai.controller.block.privileged)){
+                     //reset to commandAI if applicable
+                     unit.resetController();
+                 }
+@@ -1114,7 +1115,7 @@ public abstract class InputHandler implements InputProcessor, GestureListener{
+ 
+         if(commandMode){
+             //happens sometimes
+-            selectedUnits.removeAll(u -> !u.allowCommand());
++            selectedUnits.removeAll(u -> !u.isCommandable());
+ 
+             //draw command overlay UI
+             for(Unit unit : selectedUnits){
+@@ -1943,7 +1944,7 @@ public abstract class InputHandler implements InputProcessor, GestureListener{
+         tmpUnits.clear();
+         float rad = 4f;
+         tree.intersect(x - rad/2f, y - rad/2f, rad, rad, tmpUnits);
+-        return tmpUnits.min(u -> u.allowCommand(), u -> u.dst(x, y) - u.hitSize/2f);
++        return tmpUnits.min(u -> u.isCommandable(), u -> u.dst(x, y) - u.hitSize/2f);
+     }
+ 
+     public @Nullable Unit selectedEnemyUnit(float x, float y){
+@@ -1965,7 +1966,7 @@ public abstract class InputHandler implements InputProcessor, GestureListener{
+         tmpUnits.clear();
+         float rad = 4f;
+         tree.intersect(Tmp.r1.set(x - rad/2f, y - rad/2f, rad*2f + w, rad*2f + h).normalize(), tmpUnits);
+-        tmpUnits.removeAll(u -> !u.allowCommand() || !predicate.get(u));
++        tmpUnits.removeAll(u -> !u.isCommandable() || !predicate.get(u));
+         return tmpUnits;
+     }
+ 

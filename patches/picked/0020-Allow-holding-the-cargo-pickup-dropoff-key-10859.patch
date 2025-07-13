@@ -1,0 +1,65 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Iniquit <45113412+Iniquit@users.noreply.github.com>
+Date: Sat, 31 May 2025 10:18:14 -0400
+Subject: [PATCH] Allow holding the cargo pickup & dropoff key (#10859)
+
+Allow holding down the cargo pickup & cargo drop keys to repeatedly pick up or drop off payloads. This takes effect after a short delay so that tapping to pick up or drop off individual payloads is still reliable.
+
+(cherry picked from commit 9419f85642d7270d10a2130e96e4f68341bf35b5)
+---
+ core/assets/contributors                   |  1 +
+ core/src/mindustry/input/DesktopInput.java | 21 +++++++++++++++++++++
+ 2 files changed, 22 insertions(+)
+
+diff --git a/core/assets/contributors b/core/assets/contributors
+index c8b2ef69de4c7c0796f095eb4a8c110b372a9f4a..f5b70d3741bb851854261a2367aeeaa0c4238918 100644
+--- a/core/assets/contributors
++++ b/core/assets/contributors
+@@ -181,3 +181,4 @@ IchMagSchokolade
+ MonoChronos
+ RushieWashie
+ ITY
++Iniquit
+diff --git a/core/src/mindustry/input/DesktopInput.java b/core/src/mindustry/input/DesktopInput.java
+index 8bd67fab2967f3396b81b8ea402def875bd33a37..b17228e12c55a1ad571fb405144122085ba4934d 100644
+--- a/core/src/mindustry/input/DesktopInput.java
++++ b/core/src/mindustry/input/DesktopInput.java
+@@ -56,6 +56,11 @@ public class DesktopInput extends InputHandler{
+     /** Time of most recent control group selection */
+     public long lastCtrlGroupSelectMillis;
+ 
++    /** Time of most recent payload pickup/drop key press*/
++    public long lastPayloadKeyTapMillis;
++    /** Time of most recent payload pickup/drop key hold*/
++    public long lastPayloadKeyHoldMillis;
++
+     private float buildPlanMouseOffsetX, buildPlanMouseOffsetY;
+ 
+     boolean showHint(){
+@@ -964,10 +969,26 @@ public class DesktopInput extends InputHandler{
+         if(unit instanceof Payloadc){
+             if(Core.input.keyTap(Binding.pickupCargo)){
+                 tryPickupPayload();
++                lastPayloadKeyTapMillis = Time.millis();
++            }
++
++            if(Core.input.keyDown(Binding.pickupCargo)
++            && Time.timeSinceMillis(lastPayloadKeyHoldMillis) > 20
++            && Time.timeSinceMillis(lastPayloadKeyTapMillis) > 200){
++                tryPickupPayload();
++                lastPayloadKeyHoldMillis = Time.millis();
+             }
+ 
+             if(Core.input.keyTap(Binding.dropCargo)){
+                 tryDropPayload();
++                lastPayloadKeyTapMillis = Time.millis();
++            }
++
++            if(Core.input.keyDown(Binding.dropCargo)
++            && Time.timeSinceMillis(lastPayloadKeyHoldMillis) > 20
++            && Time.timeSinceMillis(lastPayloadKeyTapMillis) > 200){
++                tryDropPayload();
++                lastPayloadKeyHoldMillis = Time.millis();
+             }
+         }
+     }

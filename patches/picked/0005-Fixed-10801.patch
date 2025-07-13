@@ -1,0 +1,63 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Anuken <arnukren@gmail.com>
+Date: Wed, 14 May 2025 10:29:05 -0400
+Subject: [PATCH] Fixed #10801
+
+(cherry picked from commit c5f3d584f03c12e5d9afff03c7e5df7c7246f76e)
+---
+ core/src/mindustry/logic/LStatement.java  | 4 ++++
+ core/src/mindustry/logic/LStatements.java | 4 +++-
+ core/src/mindustry/logic/LogicDialog.java | 3 ++-
+ 3 files changed, 9 insertions(+), 2 deletions(-)
+
+diff --git a/core/src/mindustry/logic/LStatement.java b/core/src/mindustry/logic/LStatement.java
+index 76bcd781b3b324381df947ee2eb005fe54635447..a7a384084f0f926230e59788c1c927dd83f6c68a 100644
+--- a/core/src/mindustry/logic/LStatement.java
++++ b/core/src/mindustry/logic/LStatement.java
+@@ -244,6 +244,10 @@ public abstract class LStatement{
+ 
+     }
+ 
++    public String typeName(){
++        return getClass().getSimpleName().replace("Statement", "");
++    }
++
+     public String name(){
+         return Strings.insertSpaces(getClass().getSimpleName().replace("Statement", ""));
+     }
+diff --git a/core/src/mindustry/logic/LStatements.java b/core/src/mindustry/logic/LStatements.java
+index 4a61bb70c0ce2ee78cacb578138578c14700ce05..762ffab33266ca4f47638c1ef1e18076678aa494 100644
+--- a/core/src/mindustry/logic/LStatements.java
++++ b/core/src/mindustry/logic/LStatements.java
+@@ -1605,6 +1605,8 @@ public class LStatements{
+                 case mapArea -> {
+                     table.add(" = ");
+ 
++                    row(table);
++
+                     fields(table, "x", p1, s -> p1 = s);
+                     fields(table, "y", p2, s -> p2 = s);
+                     row(table);
+@@ -1624,7 +1626,7 @@ public class LStatements{
+                 case ban, unban -> {
+                     table.add(" block/unit ");
+ 
+-                    field(table, value, s -> value = s);
++                    fields(table, value, s -> value = s);
+                 }
+                 default -> {
+                     table.add(" = ");
+diff --git a/core/src/mindustry/logic/LogicDialog.java b/core/src/mindustry/logic/LogicDialog.java
+index 047e54c99c9605494ac29adc192f6f3b2ac5311a..f5b09226f309211c84c2743fb191a026d7886f5f 100644
+--- a/core/src/mindustry/logic/LogicDialog.java
++++ b/core/src/mindustry/logic/LogicDialog.java
+@@ -295,7 +295,8 @@ public class LogicDialog extends BaseDialog{
+ 
+                     for(Prov<LStatement> prov : LogicIO.allStatements){
+                         LStatement example = prov.get();
+-                        if(example instanceof InvalidStatement || example.hidden() || (example.privileged() && !privileged) || (example.nonPrivileged() && privileged) || (!text.isEmpty() && !example.name().toLowerCase(Locale.ROOT).contains(text))) continue;
++                        if(example instanceof InvalidStatement || example.hidden() || (example.privileged() && !privileged) || (example.nonPrivileged() && privileged) ||
++                            (!text.isEmpty() && !example.name().toLowerCase(Locale.ROOT).contains(text) && !example.typeName().toLowerCase(Locale.ROOT).contains(text))) continue;
+ 
+                         if(matched[0] == null){
+                             matched[0] = prov;

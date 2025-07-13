@@ -82,7 +82,7 @@ index df3b0c68e7c5d93371cc42f95a497535a9a167dd..79b774cc0640d32daa41b98cf7cebe21
      }
  }
 diff --git a/core/src/mindustry/ui/fragments/PlacementFragment.java b/core/src/mindustry/ui/fragments/PlacementFragment.java
-index 9f826ded301115dbbeed5ae05ba1b3627fc985cb..6442d78f00e1288793ce7365b886f9f4acc34529 100644
+index 5a34a71de3c2fddfbb6399c52f1851093274c008..e53073d758e15317347718119bca018805391bf2 100644
 --- a/core/src/mindustry/ui/fragments/PlacementFragment.java
 +++ b/core/src/mindustry/ui/fragments/PlacementFragment.java
 @@ -26,8 +26,10 @@ import mindustry.input.*;
@@ -135,7 +135,7 @@ index 9f826ded301115dbbeed5ae05ba1b3627fc985cb..6442d78f00e1288793ce7365b886f9f4
              //can't middle click buildings in fog
              if(build != null && build.inFogTo(player.team())){
                  build = null;
-@@ -282,6 +309,7 @@ public class PlacementFragment{
+@@ -286,6 +313,7 @@ public class PlacementFragment{
  
                      for(Block block : getUnlockedByCategory(currentCategory)){
                          if(!unlocked(block)) continue;
@@ -143,7 +143,7 @@ index 9f826ded301115dbbeed5ae05ba1b3627fc985cb..6442d78f00e1288793ce7365b886f9f4
                          if(index++ % rowWidth == 0){
                              blockTable.row();
                          }
-@@ -738,7 +766,7 @@ public class PlacementFragment{
+@@ -742,7 +770,7 @@ public class PlacementFragment{
      }
  
      boolean unlocked(Block block){

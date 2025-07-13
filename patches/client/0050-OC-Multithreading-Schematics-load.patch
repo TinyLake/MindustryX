@@ -9,7 +9,7 @@ Inspired by FOO client.
  1 file changed, 20 insertions(+), 7 deletions(-)
 
 diff --git a/core/src/mindustry/game/Schematics.java b/core/src/mindustry/game/Schematics.java
-index ce8f648cf5d11cc8585b734a7fe6778a13f3cdcf..407fed4b69e6ed89bd302bb21f2b018bdd1cfb92 100644
+index 73cf53228343852f6ae58d3dda6d3e9599ee513f..de173c8db19c35dd3d8286d9b48a37e0fab802bb 100644
 --- a/core/src/mindustry/game/Schematics.java
 +++ b/core/src/mindustry/game/Schematics.java
 @@ -37,6 +37,7 @@ import mindustry.world.meta.*;
@@ -60,7 +60,7 @@ index ce8f648cf5d11cc8585b734a7fe6778a13f3cdcf..407fed4b69e6ed89bd302bb21f2b018b
 +        await.each(Threads::await);
          all.sort();
  
-         if(shadowBuffer == null){
+         if(shadowBuffer == null && !headless){
 @@ -141,8 +156,6 @@ public class Schematics implements Loadable{
  
          try{

@@ -1,0 +1,42 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Sh1p*nfire <73347888+Sh1penfire@users.noreply.github.com>
+Date: Mon, 2 Jun 2025 01:49:03 +1000
+Subject: [PATCH] Fix randomWaveAI causing units to target untargetable blocks
+ (#10870)
+
+* Update Pathfinder.java
+
+* Update FlyingAI.java
+
+(cherry picked from commit 6c29460ade529d5a9f236f2f7e9b77da85e3b80c)
+---
+ core/src/mindustry/ai/Pathfinder.java     | 2 +-
+ core/src/mindustry/ai/types/FlyingAI.java | 2 +-
+ 2 files changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/core/src/mindustry/ai/Pathfinder.java b/core/src/mindustry/ai/Pathfinder.java
+index 8376d4dd6e9e9636739f1d75dafd0a2194e986ed..9d7a4efd8f82979e8aced36ca3d4d1336b7d06dd 100644
+--- a/core/src/mindustry/ai/Pathfinder.java
++++ b/core/src/mindustry/ai/Pathfinder.java
+@@ -535,7 +535,7 @@ public class Pathfinder implements Runnable{
+                     if(!targets.isEmpty()){
+                         boolean any = false;
+                         for(Building other : targets){
+-                            if((other.items != null && other.items.any()) || other.status() != BlockStatus.noInput){
++                            if(((other.items != null && other.items.any()) || other.status() != BlockStatus.noInput) && other.block.targetable){
+                                 out.add(other.tile.array());
+                                 any = true;
+                             }
+diff --git a/core/src/mindustry/ai/types/FlyingAI.java b/core/src/mindustry/ai/types/FlyingAI.java
+index a412c6f4daf5f8a9510eb57a22a821243dd836c0..c328b41b41735bb3f7aa70de364b83b000c62b93 100644
+--- a/core/src/mindustry/ai/types/FlyingAI.java
++++ b/core/src/mindustry/ai/types/FlyingAI.java
+@@ -41,7 +41,7 @@ public class FlyingAI extends AIController{
+             Building closest = null;
+             float cdist = 0f;
+             for(Building t : list){
+-                if((t.items != null && t.items.any()) || t.status() != BlockStatus.noInput){
++                if(((t.items != null && t.items.any()) || t.status() != BlockStatus.noInput) && t.block.targetable){
+                     float dst = t.dst2(x, y);
+                     if(closest == null || dst < cdist){
+                         closest = t;

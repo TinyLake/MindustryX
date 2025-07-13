@@ -9,10 +9,10 @@ Subject: [PATCH] HC(LogicExt) noUpdatePlayerMovement
  2 files changed, 4 insertions(+), 3 deletions(-)
 
 diff --git a/core/src/mindustry/input/DesktopInput.java b/core/src/mindustry/input/DesktopInput.java
-index d0df68276aaee12cec1f3485cf4513790ebd01eb..2fb9fa584238b47611021e85e0a55bc3d3f8a510 100644
+index d722a7545f327abd3fe038af4e90b0021141abb1..c4328b04ee1889c9dfb4a906f9e280fb3597c076 100644
 --- a/core/src/mindustry/input/DesktopInput.java
 +++ b/core/src/mindustry/input/DesktopInput.java
-@@ -424,7 +424,7 @@ public class DesktopInput extends InputHandler{
+@@ -429,7 +429,7 @@ public class DesktopInput extends InputHandler{
          }
  
          if(!player.dead() && !state.isPaused() && !scene.hasField() && !locked){
@@ -21,7 +21,7 @@ index d0df68276aaee12cec1f3485cf4513790ebd01eb..2fb9fa584238b47611021e85e0a55bc3
  
              if(Core.input.keyTap(Binding.respawn)){
                  controlledType = null;
-@@ -433,7 +433,7 @@ public class DesktopInput extends InputHandler{
+@@ -438,7 +438,7 @@ public class DesktopInput extends InputHandler{
              }
          }
  

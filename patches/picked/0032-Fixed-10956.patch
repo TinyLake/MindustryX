@@ -1,0 +1,23 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Anuken <arnukren@gmail.com>
+Date: Sat, 21 Jun 2025 21:18:25 -0400
+Subject: [PATCH] Fixed #10956
+
+(cherry picked from commit 4f04bf4b113802c9b35bbb806ad621a48cc81391)
+---
+ core/src/mindustry/ai/UnitGroup.java | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/core/src/mindustry/ai/UnitGroup.java b/core/src/mindustry/ai/UnitGroup.java
+index 0c0366cf299587f8e814a9afd7e50ea5a6bcdfc3..b79fde2099a06917b2fa70ba570bce3591768c26 100644
+--- a/core/src/mindustry/ai/UnitGroup.java
++++ b/core/src/mindustry/ai/UnitGroup.java
+@@ -158,7 +158,7 @@ public class UnitGroup{
+     }
+ 
+     private void updateRaycast(int index, Vec2 dest, Vec2 v1){
+-        if(collisionLayer != PhysicsProcess.layerFlying){
++        if(collisionLayer != PhysicsProcess.layerFlying && originalPositions != null && positions != null){
+ 
+             //coordinates in world space
+             float

@@ -1,0 +1,33 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Anuken <arnukren@gmail.com>
+Date: Wed, 14 May 2025 10:24:15 -0400
+Subject: [PATCH] Fixed #10807
+
+(cherry picked from commit f1390f39334f9b65d53d0788e760e2fc042b4dce)
+---
+ core/src/mindustry/entities/comp/UnitComp.java | 5 ++++-
+ 1 file changed, 4 insertions(+), 1 deletion(-)
+
+diff --git a/core/src/mindustry/entities/comp/UnitComp.java b/core/src/mindustry/entities/comp/UnitComp.java
+index 0932e0e2f26f5788d8ed3133da349ee58f26d8de..351b1feab1e6930b1cbc48c978a77b87a22b0e3d 100644
+--- a/core/src/mindustry/entities/comp/UnitComp.java
++++ b/core/src/mindustry/entities/comp/UnitComp.java
+@@ -35,7 +35,7 @@ import static mindustry.logic.GlobalVars.*;
+ @Component(base = true)
+ abstract class UnitComp implements Healthc, Physicsc, Hitboxc, Statusc, Teamc, Itemsc, Rotc, Unitc, Weaponsc, Drawc, Syncc, Shieldc, Displayable, Ranged, Minerc, Builderc, Senseable, Settable{
+     private static final Vec2 tmp1 = new Vec2(), tmp2 = new Vec2();
+-    static final float warpDst = 30f;
++    static final float warpDst = 20f;
+ 
+     @Import boolean dead, disarmed;
+     @Import float x, y, rotation, maxHealth, drag, armor, hitSize, health, shield, ammo, dragMultiplier, armorOverride, speedMultiplier;
+@@ -647,6 +647,9 @@ abstract class UnitComp implements Healthc, Physicsc, Hitboxc, Statusc, Teamc, I
+                 if(y > top) dy -= (y - top)/warpDst;
+ 
+                 velAddNet(dx * Time.delta, dy * Time.delta);
++                float margin = tilesize * 2f;
++                x = Mathf.clamp(x, left - margin, right - tilesize + margin);
++                y = Mathf.clamp(y, bot - margin, top - tilesize + margin);
+             }
+ 
+             //clamp position if not flying

@@ -155,7 +155,7 @@ index 07721e1d4e0e3662320d0b49e31f7ef528b34eb4..c7a5fbefd8e4880b99f07f7dba50cd28
                  case pan -> {
                      control.input.logicCutscene = true;
 diff --git a/core/src/mindustry/logic/LStatements.java b/core/src/mindustry/logic/LStatements.java
-index eda6c92c970e9f3f632094cd5018dcdf9a711d64..0de042aaa9ef9e3d63727be18bca0d3511e778fb 100644
+index 93f7149bdcf7c080e50f1741a598b4e576d8a3d1..aa53d4536301d9a17656248f94bfb8801ca37e3b 100644
 --- a/core/src/mindustry/logic/LStatements.java
 +++ b/core/src/mindustry/logic/LStatements.java
 @@ -3,6 +3,9 @@ package mindustry.logic;
@@ -207,7 +207,7 @@ index eda6c92c970e9f3f632094cd5018dcdf9a711d64..0de042aaa9ef9e3d63727be18bca0d35
  
              String name = name();
 diff --git a/core/src/mindustry/logic/LogicDialog.java b/core/src/mindustry/logic/LogicDialog.java
-index 047e54c99c9605494ac29adc192f6f3b2ac5311a..50daf30de795d8b5ccc9bd0c68784a2be5b6b43a 100644
+index 350f1f3694d198f0f7d2f2ab842eab0c7f2ed93d..297e8646e67f29ad8b4bcde7efce4e53392dabf8 100644
 --- a/core/src/mindustry/logic/LogicDialog.java
 +++ b/core/src/mindustry/logic/LogicDialog.java
 @@ -5,6 +5,7 @@ import arc.func.*;
@@ -289,7 +289,7 @@ index 047e54c99c9605494ac29adc192f6f3b2ac5311a..50daf30de795d8b5ccc9bd0c68784a2b
                              dialog.hide();
                          }
                      });
-@@ -325,7 +345,7 @@ public class LogicDialog extends BaseDialog{
+@@ -326,7 +346,7 @@ public class LogicDialog extends BaseDialog{
                          style.font = Fonts.outline;
  
                          cat.button(example.name(), style, () -> {

@@ -15,7 +15,7 @@ Content-Transfer-Encoding: 8bit
  2 files changed, 54 insertions(+), 6 deletions(-)
 
 diff --git a/core/src/mindustry/ui/dialogs/SchematicsDialog.java b/core/src/mindustry/ui/dialogs/SchematicsDialog.java
-index 1591e0b8277d1e7a082f4838464cfe69f38bb114..e685cea5640a4ca066cc6a7ba282c726a5846d2b 100644
+index a7acdc419bf88e63c98a88bb5ff8e7393f028c8c..b64106d2d78e05e53ef965a3310463319a24fb41 100644
 --- a/core/src/mindustry/ui/dialogs/SchematicsDialog.java
 +++ b/core/src/mindustry/ui/dialogs/SchematicsDialog.java
 @@ -25,6 +25,8 @@ import mindustry.input.*;

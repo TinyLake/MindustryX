@@ -1,0 +1,32 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Iniquit <45113412+Iniquit@users.noreply.github.com>
+Date: Sun, 1 Jun 2025 11:46:55 -0400
+Subject: [PATCH] Clamp continuous laser bullet position to min zero (#10873)
+
+This prevents the laser from moving behind the unit at the end of the animation.
+
+(cherry picked from commit 44b25d6e64b88b75b86441528a6344eed7186e4b)
+---
+ .../mindustry/entities/bullet/ContinuousLaserBulletType.java  | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/core/src/mindustry/entities/bullet/ContinuousLaserBulletType.java b/core/src/mindustry/entities/bullet/ContinuousLaserBulletType.java
+index df7cebd304f1fe8d9b12c920a84ddf1907e8a85e..f19e8f7a37d3c7d53d08cbae1218657564751036 100644
+--- a/core/src/mindustry/entities/bullet/ContinuousLaserBulletType.java
++++ b/core/src/mindustry/entities/bullet/ContinuousLaserBulletType.java
+@@ -55,13 +55,13 @@ public class ContinuousLaserBulletType extends ContinuousBulletType{
+             float ellipseLenScl = Mathf.lerp(1 - i / (float)(colors.length), 1f, pointyScaling);
+ 
+             Lines.stroke(stroke);
+-            Lines.lineAngle(b.x, b.y, rot, realLength - frontLength, false);
++            Lines.lineAngle(b.x, b.y, rot, Math.max(0, realLength - frontLength), false);
+ 
+             //back ellipse
+             Drawf.flameFront(b.x, b.y, divisions, rot + 180f, backLength, stroke / 2f);
+ 
+             //front ellipse
+-            Tmp.v1.trnsExact(rot, realLength - frontLength);
++            Tmp.v1.trnsExact(rot, Math.max(0, realLength - frontLength));
+             Drawf.flameFront(b.x + Tmp.v1.x, b.y + Tmp.v1.y, divisions, rot, frontLength * ellipseLenScl, stroke / 2f);
+         }
+ 

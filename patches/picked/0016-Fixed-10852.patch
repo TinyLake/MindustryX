@@ -1,0 +1,23 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Anuken <arnukren@gmail.com>
+Date: Tue, 27 May 2025 11:26:31 -0400
+Subject: [PATCH] Fixed #10852
+
+(cherry picked from commit b9c224e114f7601144cadbe4c06894579fd49a30)
+---
+ core/src/mindustry/ui/Fonts.java | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/core/src/mindustry/ui/Fonts.java b/core/src/mindustry/ui/Fonts.java
+index ef68462bf6212b7caf5010ccdcac3c8fda601246..f302c762a5c88a50a53d4702c31e958033352c61 100644
+--- a/core/src/mindustry/ui/Fonts.java
++++ b/core/src/mindustry/ui/Fonts.java
+@@ -27,7 +27,7 @@ import java.io.*;
+ 
+ public class Fonts{
+     private static final String mainFont = "fonts/font.woff";
+-    private static final ObjectSet<String> unscaled = ObjectSet.with("iconLarge");
++    private static final ObjectSet<String> unscaled = ObjectSet.with("iconLarge", "logic");
+     private static ObjectIntMap<String> unicodeIcons = new ObjectIntMap<>();
+     private static IntMap<String> unicodeToName = new IntMap<>();
+     private static ObjectMap<String, String> stringIcons = new ObjectMap<>();

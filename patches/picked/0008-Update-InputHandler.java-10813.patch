@@ -1,0 +1,23 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: ity <i@ity.moe>
+Date: Sat, 17 May 2025 02:17:32 +0800
+Subject: [PATCH] Update InputHandler.java (#10813)
+
+(cherry picked from commit 5bcaff0694a630e3b1a174d5b9a081f6bc2f4d59)
+---
+ core/src/mindustry/input/InputHandler.java | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/core/src/mindustry/input/InputHandler.java b/core/src/mindustry/input/InputHandler.java
+index 4a8e9d250bfb9a84f93f3c783b8ecf1d4cb55908..2a56d250efd3027071c227583dc9a1a5592333df 100644
+--- a/core/src/mindustry/input/InputHandler.java
++++ b/core/src/mindustry/input/InputHandler.java
+@@ -610,7 +610,7 @@ public abstract class InputHandler implements InputProcessor, GestureListener{
+ 
+     @Remote(targets = Loc.client, called = Loc.server)
+     public static void dropItem(Player player, float angle){
+-        if(player == null) return;
++        if(player == null || player.unit() == null) return;
+ 
+         if(net.server() && player.unit().stack.amount <= 0){
+             throw new ValidateException(player, "Player cannot drop an item.");

@@ -1,0 +1,23 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Anuken <arnukren@gmail.com>
+Date: Sat, 17 May 2025 10:33:45 -0400
+Subject: [PATCH] Don't show mining stances for wall ores when irrelevant
+
+(cherry picked from commit 0a046f8fa5abe4fb1797f802ce5fb7f91c330e85)
+---
+ core/src/mindustry/type/UnitType.java | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/core/src/mindustry/type/UnitType.java b/core/src/mindustry/type/UnitType.java
+index 6f2b6d784b23124a5b103d66bdd8a9452a819a49..9002ef6d3a63ace145aa051cc7d96b1d80bac36e 100644
+--- a/core/src/mindustry/type/UnitType.java
++++ b/core/src/mindustry/type/UnitType.java
+@@ -599,7 +599,7 @@ public class UnitType extends UnlockableContent implements Senseable{
+         if(unit.controller() instanceof CommandAI ai && ai.currentCommand() == UnitCommand.mineCommand){
+             out.add(UnitStance.mineAuto);
+             for(Item item : indexer.getAllPresentOres()){
+-                if(unit.canMine(item)){
++                if(unit.canMine(item) && ((mineFloor && indexer.hasOre(item)) || (mineWalls && indexer.hasWallOre(item)))){
+                     var itemStance = ItemUnitStance.getByItem(item);
+                     if(itemStance != null){
+                         out.add(itemStance);

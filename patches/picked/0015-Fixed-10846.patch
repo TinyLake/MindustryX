@@ -1,0 +1,23 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Anuken <arnukren@gmail.com>
+Date: Sun, 25 May 2025 12:32:47 -0400
+Subject: [PATCH] Fixed #10846
+
+(cherry picked from commit c15d8d15cbccb8b7db6ed9304f222c922a8ad197)
+---
+ core/src/mindustry/logic/LogicDialog.java | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/core/src/mindustry/logic/LogicDialog.java b/core/src/mindustry/logic/LogicDialog.java
+index f5b09226f309211c84c2743fb191a026d7886f5f..350f1f3694d198f0f7d2f2ab842eab0c7f2ed93d 100644
+--- a/core/src/mindustry/logic/LogicDialog.java
++++ b/core/src/mindustry/logic/LogicDialog.java
+@@ -221,7 +221,7 @@ public class LogicDialog extends BaseDialog{
+                             update(() -> setColor(typeColor(s, color)));
+                         }}, new Label(() -> " " + typeName(s) + " "){{
+                             setStyle(Styles.outlineLabel);
+-                        }});
++                        }}).minWidth(120f);
+ 
+                         t.row();
+ 

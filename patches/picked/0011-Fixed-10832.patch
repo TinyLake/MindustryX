@@ -1,0 +1,23 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Anuken <arnukren@gmail.com>
+Date: Thu, 22 May 2025 19:08:14 -0400
+Subject: [PATCH] Fixed #10832
+
+(cherry picked from commit 2436e54149d2d2fa7c8b80fdac38b945bd197198)
+---
+ core/src/mindustry/ui/fragments/HudFragment.java | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/core/src/mindustry/ui/fragments/HudFragment.java b/core/src/mindustry/ui/fragments/HudFragment.java
+index 122f55acba10a4c91a1569968ee17556d51ff109..c604cf2b32ade339748f4f7e434383c3a0ea14e9 100644
+--- a/core/src/mindustry/ui/fragments/HudFragment.java
++++ b/core/src/mindustry/ui/fragments/HudFragment.java
+@@ -991,7 +991,7 @@ public class HudFragment{
+                         if(applied.get(effect.id) && !effect.isHidden()){
+                             t.image(effect.uiIcon).size(iconMed).get()
+                             .addListener(new Tooltip(l -> l.label(() ->
+-                                effect.localizedName + " [lightgray]" + UI.formatTime(player.unit().getDuration(effect))).style(Styles.outlineLabel)));
++                                player.dead() ? "" : effect.localizedName + " [lightgray]" + UI.formatTime(player.unit().getDuration(effect))).style(Styles.outlineLabel)));
+                         }
+                     }
+ 

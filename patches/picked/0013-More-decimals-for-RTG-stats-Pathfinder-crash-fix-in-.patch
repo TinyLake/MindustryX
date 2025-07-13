@@ -1,0 +1,55 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Anuken <arnukren@gmail.com>
+Date: Fri, 23 May 2025 19:23:09 -0400
+Subject: [PATCH] More decimals for RTG stats / Pathfinder crash fix in editor
+
+(cherry picked from commit 91ca60e90f449de81a2ba196e2c0a0abbfd4d00b)
+---
+ core/src/mindustry/ai/Pathfinder.java         | 10 ++++++++--
+ core/src/mindustry/world/meta/StatValues.java |  2 +-
+ 2 files changed, 9 insertions(+), 3 deletions(-)
+
+diff --git a/core/src/mindustry/ai/Pathfinder.java b/core/src/mindustry/ai/Pathfinder.java
+index 40d7fc5e94d90c78d92d327ce647fcd8d3258edd..8376d4dd6e9e9636739f1d75dafd0a2194e986ed 100644
+--- a/core/src/mindustry/ai/Pathfinder.java
++++ b/core/src/mindustry/ai/Pathfinder.java
+@@ -145,10 +145,16 @@ public class Pathfinder implements Runnable{
+ 
+         Events.on(ResetEvent.class, event -> stop());
+ 
+-        Events.on(TileChangeEvent.class, event -> updateTile(event.tile));
++        Events.on(TileChangeEvent.class, event -> {
++            if(state.isEditor()) return;
++
++            updateTile(event.tile);
++        });
+ 
+         //remove nearSolid flag for tiles
+         Events.on(TilePreChangeEvent.class, event -> {
++            if(state.isEditor()) return;
++
+             Tile tile = event.tile;
+ 
+             if(tile.solid()){
+@@ -224,7 +230,7 @@ public class Pathfinder implements Runnable{
+                 if(other.legSolid()) nearLegSolid = true;
+ 
+                 //other tile is now near solid
+-                if(solid && !tile.block().teamPassable){
++                if(solid && !tile.block().teamPassable && other.array() < tiles.length){
+                     tiles[other.array()] |= PathTile.bitMaskNearSolid;
+                 }
+             }
+diff --git a/core/src/mindustry/world/meta/StatValues.java b/core/src/mindustry/world/meta/StatValues.java
+index 74e253ca3816ae354e8079f901c9454dee75bcc8..cad7a64a4a1bed4ac98472d5a66921f26af9d7f2 100644
+--- a/core/src/mindustry/world/meta/StatValues.java
++++ b/core/src/mindustry/world/meta/StatValues.java
+@@ -474,7 +474,7 @@ public class StatValues{
+ 
+                     c.table(Styles.grayPanel, b -> {
+                         b.image(item.uiIcon).size(40).pad(10f).left().scaling(Scaling.fit);
+-                        b.add(item.localizedName + (timePeriod > 0 ? "\n[lightgray]" + (time < 0.01f ? Strings.fixed(time, 3) : Strings.autoFixed(time, 2)) + StatUnit.perSecond.localized() : "")).left().grow();
++                        b.add(item.localizedName + (timePeriod > 0 ? "\n[lightgray]" + (time < 0.01f ? Strings.fixed(time, 4) : Strings.autoFixed(time, 2)) + StatUnit.perSecond.localized() : "")).left().grow();
+                         b.add(Core.bundle.format("stat.efficiency", fixValue(efficiency.get(item) * 100f))).right().pad(10f).padRight(15f);
+                     }).growX().pad(5).row();
+                 }

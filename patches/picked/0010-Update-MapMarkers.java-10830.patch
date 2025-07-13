@@ -1,0 +1,22 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Redstonneur1256 <29004178+Redstonneur1256@users.noreply.github.com>
+Date: Fri, 23 May 2025 00:13:21 +0200
+Subject: [PATCH] Update MapMarkers.java (#10830)
+
+(cherry picked from commit 58f0087cd370cb7885a9f9222dbf83c6a60fea14)
+---
+ core/src/mindustry/game/MapMarkers.java | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/core/src/mindustry/game/MapMarkers.java b/core/src/mindustry/game/MapMarkers.java
+index 3afb6895ee82c1972d02a5ce5128771305d4b886..e9eb6c696c5fcba2bd3dbfa4ad4f861bc3ff8e0c 100644
+--- a/core/src/mindustry/game/MapMarkers.java
++++ b/core/src/mindustry/game/MapMarkers.java
+@@ -20,6 +20,7 @@ public class MapMarkers implements Iterable<ObjectiveMarker>{
+         var prev = map.put(id, marker);
+         if(prev != null){
+             all.set(prev.arrayIndex, marker);
++            marker.arrayIndex = prev.arrayIndex;
+         }else{
+             all.add(marker);
+             marker.arrayIndex = all.size - 1;

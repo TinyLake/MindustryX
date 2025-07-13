@@ -1,0 +1,33 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Anuken <arnukren@gmail.com>
+Date: Sat, 24 May 2025 23:20:54 -0400
+Subject: [PATCH] Fixed #10845
+
+(cherry picked from commit 2e46633bcd2c78c1121fc5a6aad1d009bcc0388a)
+---
+ core/src/mindustry/game/MapObjectives.java | 10 +++++++---
+ 1 file changed, 7 insertions(+), 3 deletions(-)
+
+diff --git a/core/src/mindustry/game/MapObjectives.java b/core/src/mindustry/game/MapObjectives.java
+index 36773e7c51836e02b829d37eba3630efd845d01c..7c772e0a21915c5aafc63f09ec1c74d0e0321d6d 100644
+--- a/core/src/mindustry/game/MapObjectives.java
++++ b/core/src/mindustry/game/MapObjectives.java
+@@ -709,11 +709,15 @@ public class MapObjectives implements Iterable<MapObjective>, Eachable<MapObject
+ 
+                 String out;
+                 if(mobile){
+-                    out = state.mapLocales.containsProperty(key + ".mobile") ?
++                    out =
++                        state.mapLocales.containsProperty(key + ".mobile") ?
+                         state.mapLocales.getProperty(key + ".mobile") :
+-                        Core.bundle.get(key + ".mobile", Core.bundle.get(key));
++                        state.mapLocales.containsProperty(key) ?
++                        state.mapLocales.getProperty(key) :
++                        Core.bundle.get(key);
+                 }else{
+-                    out = state.mapLocales.containsProperty(key) ?
++                    out =
++                        state.mapLocales.containsProperty(key) ?
+                         state.mapLocales.getProperty(key) :
+                         Core.bundle.get(key);
+                 }

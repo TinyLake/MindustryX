@@ -1,0 +1,41 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Iniquit <45113412+Iniquit@users.noreply.github.com>
+Date: Fri, 13 Jun 2025 18:06:14 -0400
+Subject: [PATCH] Allow block info hotkey to also work on units (#10894)
+
+* Allow the block info key to also work on units
+
+* Follow code formatting guidelines
+
+(cherry picked from commit ef5fae289c5a2372d1db90bc2d3a3029978cee75)
+---
+ .../ui/fragments/PlacementFragment.java          | 16 ++++++++++------
+ 1 file changed, 10 insertions(+), 6 deletions(-)
+
+diff --git a/core/src/mindustry/ui/fragments/PlacementFragment.java b/core/src/mindustry/ui/fragments/PlacementFragment.java
+index 01c84ab75d3c426989595868089525f07c3de047..01e984ba718425a0296ce4e80b0a16967dd0d117 100644
+--- a/core/src/mindustry/ui/fragments/PlacementFragment.java
++++ b/core/src/mindustry/ui/fragments/PlacementFragment.java
+@@ -251,12 +251,16 @@ public class PlacementFragment{
+         }
+ 
+         if(Core.input.keyTap(Binding.blockInfo)){
+-            var build = world.buildWorld(Core.input.mouseWorld().x, Core.input.mouseWorld().y);
+-            Block hovering = build == null ? null : build instanceof ConstructBuild c ? c.current : build.block;
+-            Block displayBlock = menuHoverBlock != null ? menuHoverBlock : input.block != null ? input.block : hovering;
+-            if(displayBlock != null && displayBlock.unlockedNow()){
+-                ui.content.show(displayBlock);
+-                Events.fire(new BlockInfoEvent());
++            if(hovered() instanceof Unit unit && unit.type.unlockedNow()){
++                ui.content.show(unit.type());
++            }else{
++                var build = world.buildWorld(Core.input.mouseWorld().x, Core.input.mouseWorld().y);
++                Block hovering = build == null ? null : build instanceof ConstructBuild c ? c.current : build.block;
++                Block displayBlock = menuHoverBlock != null ? menuHoverBlock : input.block != null ? input.block : hovering;
++                if(displayBlock != null && displayBlock.unlockedNow()){
++                    ui.content.show(displayBlock);
++                    Events.fire(new BlockInfoEvent());
++                }
+             }
+         }
+ 

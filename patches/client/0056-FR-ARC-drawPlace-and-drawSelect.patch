@@ -14,7 +14,7 @@ Subject: [PATCH] FR: ARC drawPlace and drawSelect
  7 files changed, 87 insertions(+), 11 deletions(-)
 
 diff --git a/core/src/mindustry/world/blocks/ConstructBlock.java b/core/src/mindustry/world/blocks/ConstructBlock.java
-index 4a5078513c6db7d970de8e35b76cd50f8f2f5e2f..fbad02fa4b948c714cefc54c096812d7bb0f9870 100644
+index 3e53462cf1c8f3c388141f620c2370f1467080b2..0d596c7d1bbecbacdb9273f47f0d41b573f6f250 100644
 --- a/core/src/mindustry/world/blocks/ConstructBlock.java
 +++ b/core/src/mindustry/world/blocks/ConstructBlock.java
 @@ -3,14 +3,17 @@ package mindustry.world.blocks;
@@ -43,7 +43,7 @@ index 4a5078513c6db7d970de8e35b76cd50f8f2f5e2f..fbad02fa4b948c714cefc54c096812d7
  
  import java.util.*;
  
-@@ -127,7 +131,7 @@ public class ConstructBlock extends Block{
+@@ -129,7 +133,7 @@ public class ConstructBlock extends Block{
      static float calcPitch(boolean up){
          if(Time.timeSinceMillis(lastTime) < 16 * 30){
              lastTime = Time.millis();
@@ -52,7 +52,7 @@ index 4a5078513c6db7d970de8e35b76cd50f8f2f5e2f..fbad02fa4b948c714cefc54c096812d7
              if(pitchSeq > 30){
                  pitchSeq = 0;
              }
-@@ -170,6 +174,40 @@ public class ConstructBlock extends Block{
+@@ -172,6 +176,40 @@ public class ConstructBlock extends Block{
          private @Nullable float[] totalAccumulator;
          private @Nullable int[] itemsLeft;
  
@@ -93,7 +93,7 @@ index 4a5078513c6db7d970de8e35b76cd50f8f2f5e2f..fbad02fa4b948c714cefc54c096812d7
          @Override
          public String getDisplayName(){
              return Core.bundle.format("block.constructing", current.localizedName);
-@@ -248,7 +286,7 @@ public class ConstructBlock extends Block{
+@@ -250,7 +288,7 @@ public class ConstructBlock extends Block{
  
                      Draw.rect(region, x, y, current.rotate && (noOverrides || current.regionRotated2 == i || current.regionRotated1 == i) ? rotdeg() : 0);
                      Draw.flush();

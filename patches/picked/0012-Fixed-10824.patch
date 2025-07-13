@@ -1,0 +1,32 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Anuken <arnukren@gmail.com>
+Date: Thu, 22 May 2025 19:14:38 -0400
+Subject: [PATCH] Fixed #10824
+
+(cherry picked from commit 0de78ffa0dc2dfc6c6cd0b18bc83a0943cd5c828)
+---
+ .../mindustry/world/blocks/power/ConsumeGenerator.java    | 8 +++-----
+ 1 file changed, 3 insertions(+), 5 deletions(-)
+
+diff --git a/core/src/mindustry/world/blocks/power/ConsumeGenerator.java b/core/src/mindustry/world/blocks/power/ConsumeGenerator.java
+index 6ebecbfabbb0bc86f34566c6769455b3a2c15486..d405cebd119909ea6a90a48e98ae682b1fa7bdfd 100644
+--- a/core/src/mindustry/world/blocks/power/ConsumeGenerator.java
++++ b/core/src/mindustry/world/blocks/power/ConsumeGenerator.java
+@@ -89,14 +89,12 @@ public class ConsumeGenerator extends PowerGenerator{
+ 
+         @Override
+         public void updateEfficiencyMultiplier(){
+-            efficiencyMultiplier = 1f;
+             if(filterItem != null){
+                 float m = filterItem.efficiencyMultiplier(this);
+-                if(m > 0) efficiencyMultiplier *= m;
+-            }
+-            if(filterLiquid != null){
++                if(m > 0) efficiencyMultiplier = m;
++            }else if(filterLiquid != null){
+                 float m = filterLiquid.efficiencyMultiplier(this);
+-                if(m > 0) efficiencyMultiplier *= m;
++                if(m > 0) efficiencyMultiplier = m;
+             }
+         }
+ 

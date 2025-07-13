@@ -1,0 +1,23 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Anuken <arnukren@gmail.com>
+Date: Tue, 3 Jun 2025 15:40:03 -0400
+Subject: [PATCH] Fixed #10886
+
+(cherry picked from commit bcbe0890fef2b12dcc7eb2ca58c70919667e3dba)
+---
+ core/src/mindustry/game/MapObjectives.java | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/core/src/mindustry/game/MapObjectives.java b/core/src/mindustry/game/MapObjectives.java
+index 7c772e0a21915c5aafc63f09ec1c74d0e0321d6d..b554b9e277f60fda5d660207ce8da8de8505ec64 100644
+--- a/core/src/mindustry/game/MapObjectives.java
++++ b/core/src/mindustry/game/MapObjectives.java
+@@ -714,7 +714,7 @@ public class MapObjectives implements Iterable<MapObjective>, Eachable<MapObject
+                         state.mapLocales.getProperty(key + ".mobile") :
+                         state.mapLocales.containsProperty(key) ?
+                         state.mapLocales.getProperty(key) :
+-                        Core.bundle.get(key);
++                        Core.bundle.get(key + ".mobile", Core.bundle.get(key));
+                 }else{
+                     out =
+                         state.mapLocales.containsProperty(key) ?
