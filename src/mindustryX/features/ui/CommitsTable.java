@@ -90,7 +90,7 @@ public class CommitsTable extends Table{
     private void rebuildCommitsTable(){
         commitsTable.clearChildren();
 
-        commitsTable.image().color(color).width(stroke).padLeft(16f).growY();
+        commitsTable.image().color(color).width(stroke).growY();
         Table right = commitsTable.table().get();
 
         LocalDateTime lastDate = null;
