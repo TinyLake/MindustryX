@@ -77,7 +77,7 @@ public class CommitsTable extends Table{
         table(top -> {
             top.defaults().left();
             top.add(repo).style(Styles.outlineLabel).pad(4f);
-            top.add("近期更新").color(Pal.lightishGray);
+            top.add("@commit.recentUpdates").color(Pal.lightishGray);
         }).padBottom(16f).padTop(8f).growX();
 
         row();

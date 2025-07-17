@@ -1,7 +1,7 @@
 From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
 From: MinRi2 <minri2@qq.com>
 Date: Thu, 17 Jul 2025 16:35:17 +0800
-Subject: [PATCH] FC CommitsTable in ModsDialog
+Subject: [PATCH] C CommitsTable in ModsDialog
 
 ---
  core/src/mindustry/ui/dialogs/ModsDialog.java | 11 ++++++++++-
