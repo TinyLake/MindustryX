@@ -21,6 +21,7 @@ import mindustry.ui.Bar
 import mindustry.ui.Styles
 import mindustry.ui.dialogs.BaseDialog
 import mindustryX.VarsX
+import mindustryX.features.ui.CommitsTable
 import mindustryX.features.ui.Format
 import java.time.Duration
 import java.time.Instant
@@ -59,6 +60,8 @@ object AutoUpdate {
     val showUpdateDialog = SettingsV2.CheckPref("AutoUpdate.showUpdateDialog", true).apply { addFallbackName("showUpdateDialog") }
     val ignoreOnce = SettingsV2.Data("AutoUpdate.ignoreOnce", "")
     val ignoreUntil = SettingsV2.Data("AutoUpdate.ignoreUntil", "")
+
+    val commitsTable = CommitsTable(VarsX.repo)
 
     init {
         Events.on(EventType.ClientLoadEvent::class.java) {
@@ -119,7 +122,7 @@ object AutoUpdate {
     fun showDialog(version: Release? = latest) {
         checkUpdate()
         val dialog = BaseDialog("自动更新")
-        dialog.cont.apply {
+        dialog.cont.table().fill(0f, 3f).get().apply {
             fun buildVersionList(versions: List<Release>) {
                 table().fillX().get().apply {
                     versions.forEach {
@@ -198,6 +201,8 @@ object AutoUpdate {
                 }.row()
             }
         }
+        dialog.cont.row();
+        dialog.cont.add(commitsTable.update()).fillY();
         dialog.addCloseButton()
         dialog.show()
     }

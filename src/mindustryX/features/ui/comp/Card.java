@@ -61,7 +61,7 @@ public class Card extends Table{
             image().color(topLeft).width(size).growY();
         }
 
-        table(contCons).grow();
+        table(contCons).pad(size).grow();
 
         if(rightBottom != null){
             image().color(rightBottom).width(size).growY();
