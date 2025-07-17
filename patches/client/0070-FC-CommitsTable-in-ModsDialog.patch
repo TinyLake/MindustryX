@@ -8,7 +8,7 @@ Subject: [PATCH] FC CommitsTable in ModsDialog
  1 file changed, 10 insertions(+), 1 deletion(-)
 
 diff --git a/core/src/mindustry/ui/dialogs/ModsDialog.java b/core/src/mindustry/ui/dialogs/ModsDialog.java
-index 1f0cb9dc056ff1333c0661be36a6e27b96928bb4..0087a0ff19b7b3b007be66175ce93e2aaaea4ade 100644
+index 1f0cb9dc056ff1333c0661be36a6e27b96928bb4..46aa4c1290687ce46c61937cc3244fcaf410d3bf 100644
 --- a/core/src/mindustry/ui/dialogs/ModsDialog.java
 +++ b/core/src/mindustry/ui/dialogs/ModsDialog.java
 @@ -29,6 +29,7 @@ import mindustry.mod.*;
@@ -33,7 +33,7 @@ index 1f0cb9dc056ff1333c0661be36a6e27b96928bb4..0087a0ff19b7b3b007be66175ce93e2a
 +                if(mod.getRepo() != null){
 +                    right.button(Icon.githubSmall, Styles.clearNonei, () -> {
 +                        Dialog dialog = new BaseDialog("commits");
-+                        dialog.cont.add(new CommitsTable(mod.getRepo()).update());
++                        dialog.cont.add(new CommitsTable(mod.getRepo()).update()).color(Pal.lightishGray);
 +                        dialog.addCloseButton();
 +                        dialog.show();
 +                    });
