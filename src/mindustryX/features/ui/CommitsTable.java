@@ -15,7 +15,6 @@ import mindustry.gen.*;
 import mindustry.graphics.*;
 import mindustry.ui.*;
 import mindustryX.features.ui.CommitsTable.CommitData.*;
-import mindustryX.features.ui.comp.*;
 
 import java.time.*;
 import java.time.format.*;
@@ -24,7 +23,7 @@ import java.util.concurrent.*;
 public class CommitsTable extends Table{
     private static final ObjectMap<String, TextureRegion> avatarCache = new ObjectMap<>();
     private static final DateTimeFormatter dateFormater = DateTimeFormatter.ofPattern("yyyy-MM-dd");
-    private static final float stroke = 6f;
+    private static final float stroke = 1.5f;
 
     // commits sorted by date
     private final Seq<CommitData> commitsData = new Seq<>();
@@ -36,11 +35,13 @@ public class CommitsTable extends Table{
 
     public CommitsTable(String repo){
         this.repo = repo;
-        setup();
     }
 
     @SuppressWarnings("unchecked")
     public CommitsTable update(){
+        if(children.isEmpty()){
+            setup();
+        }
         setLoading(commitsTable);
 
         HttpRequest request = Http.get(Vars.ghApi + "/repos/" + repo + "/commits?&page=" + page);
@@ -73,9 +74,7 @@ public class CommitsTable extends Table{
     }
 
     private void setup(){
-        background(Styles.grayPanel);
-
-        table(Styles.grayPanel, top -> {
+        table(top -> {
             top.defaults().left();
             top.add(repo).style(Styles.outlineLabel).pad(4f);
             top.add("近期更新").color(Pal.lightishGray);
@@ -84,7 +83,6 @@ public class CommitsTable extends Table{
         row();
 
         pane(t -> {
-            t.image().color(Pal.darkerGray).width(stroke).padLeft(16f).growY();
             t.add(commitsTable).minHeight(200f).grow();
         }).grow();
     }
@@ -92,27 +90,30 @@ public class CommitsTable extends Table{
     private void rebuildCommitsTable(){
         commitsTable.clearChildren();
 
+        commitsTable.image().color(color).width(stroke).padLeft(16f).growY();
+        Table right = commitsTable.table().get();
+
         LocalDateTime lastDate = null;
         for(CommitData data : commitsData){
             LocalDateTime date = data.commit.author.getDate();
 
             // split by 1d
             if(date != null && (lastDate == null || !sameDay(lastDate, date))){
-                commitsTable.table(timeSplit -> {
-                    timeSplit.image().color(Pal.darkerGray).width(8f).height(stroke);
-                    timeSplit.add(date.format(dateFormater)).color(Pal.lightishGray).padLeft(8f).padRight(8f);
-                    timeSplit.image().color(Pal.darkerGray).height(stroke).padRight(8f).growX();
+                right.table(timeSplit -> {
+                    timeSplit.image().color(color).width(8f).height(stroke);
+                    timeSplit.add(date.format(dateFormater)).color(color).padLeft(8f).padRight(8f);
+                    timeSplit.image().color(color).height(stroke).padRight(8f).growX();
                 }).padTop(lastDate == null ? 0f : 16f).padBottom(8f).growX();
-                commitsTable.row();
+                right.row();
 
                 lastDate = date;
             }
 
-            commitsTable.add(new Card(Card.grayOuterDark, commitInfo -> {
+            right.table(commitInfo -> {
                 setupCommitInfo(commitInfo, data);
-            })).minWidth(400f).padLeft(16f).growX();
+            }).minWidth(400f).padLeft(16f).growX();
 
-            commitsTable.row();
+            right.row();
         }
     }
 
@@ -127,11 +128,11 @@ public class CommitsTable extends Table{
             left.defaults().left();
 
             Cell<?> topCell = left.table(top -> {
-                top.add(split[0] + (split.length > 1 ? "..." : "")).style(Styles.outlineLabel).expandX().left();
+                top.add(split[0] + (split.length > 1 ? "..." : "")).style(Styles.outlineLabel).minWidth(350f).wrap().expandX().left();
                 if(split.length > 1){
                     top.image(Icon.infoCircleSmall).pad(4f);
                 }
-            });
+            }).growX();
             if(split.length > 1){
                 topCell.tooltip(commit.message, true);
             }

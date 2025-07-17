@@ -122,7 +122,7 @@ object AutoUpdate {
     fun showDialog(version: Release? = latest) {
         checkUpdate()
         val dialog = BaseDialog("自动更新")
-        dialog.cont.table().fill(0f, 3f).get().apply {
+        dialog.cont.table().growY().get().apply {
             fun buildVersionList(versions: List<Release>) {
                 table().fillX().get().apply {
                     versions.forEach {
@@ -202,7 +202,7 @@ object AutoUpdate {
             }
         }
         dialog.cont.row();
-        dialog.cont.add(commitsTable.update()).fillY();
+        dialog.cont.add(commitsTable.update()).height(Core.scene.height * 0.3f).width(500f)
         dialog.addCloseButton()
         dialog.show()
     }
