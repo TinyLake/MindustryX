@@ -18,20 +18,19 @@ import mindustryX.features.ui.CommitsTable.CommitData.*;
 
 import java.time.*;
 import java.time.format.*;
+import java.util.*;
 import java.util.concurrent.*;
 
 public class CommitsTable extends Table{
-    private static final ObjectMap<String, TextureRegion> avatarCache = new ObjectMap<>();
-    private static final DateTimeFormatter dateFormater = DateTimeFormatter.ofPattern("yyyy-MM-dd");
-    private static final float stroke = 1.5f;
+    private static final ObjectMap<String, TextureRegion> AVATAR_CACHE = new ObjectMap<>();
+    private static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+    public static float stroke = 1.5f;
 
     // commits sorted by date
     private final Seq<CommitData> commitsData = new Seq<>();
-    public final String repo;
 
+    public String repo;
     private final Table commitsTable = new Table();
-
-    protected int page = 0;
 
     public CommitsTable(String repo){
         this.repo = repo;
@@ -44,7 +43,7 @@ public class CommitsTable extends Table{
         }
         setLoading(commitsTable);
 
-        HttpRequest request = Http.get(Vars.ghApi + "/repos/" + repo + "/commits?&page=" + page);
+        HttpRequest request = Http.get(Vars.ghApi + "/repos/" + repo + "/commits");
         request.header("Accept", "application/vnd.github+json");
         request.header("User-Agent", "TinyLake");
 
@@ -68,7 +67,8 @@ public class CommitsTable extends Table{
 
         // no author?
         commitsData.removeAll(commitData -> commitData.commit.author == null);
-        commitsData.sort(commitData -> -commitData.commit.author.getDate().getNano());
+        Comparator<CommitData> comparator = Comparator.nullsLast(Structs.comparing(c -> c.commit.author.getDate()));
+        commitsData.sort(comparator.reversed());
 
         rebuildCommitsTable();
     }
@@ -101,7 +101,7 @@ public class CommitsTable extends Table{
             if(date != null && (lastDate == null || !sameDay(lastDate, date))){
                 right.table(timeSplit -> {
                     timeSplit.image().color(color).width(8f).height(stroke);
-                    timeSplit.add(date.format(dateFormater)).color(color).padLeft(8f).padRight(8f);
+                    timeSplit.add(date.format(DATE_FORMATTER)).color(color).padLeft(8f).padRight(8f);
                     timeSplit.image().color(color).height(stroke).padRight(8f).growX();
                 }).padTop(lastDate == null ? 0f : 16f).padBottom(8f).growX();
                 right.row();
@@ -156,9 +156,9 @@ public class CommitsTable extends Table{
     }
 
     private static TextureRegion getAvatar(String login, String url){
-        if(!avatarCache.containsKey(login)){
+        if(!AVATAR_CACHE.containsKey(login)){
             // get once
-            avatarCache.put(login, Core.atlas.find("nomap"));
+            AVATAR_CACHE.put(login, Core.atlas.find("nomap"));
 
             Http.get(url, res -> {
                 Pixmap pix = new Pixmap(res.getResult());
@@ -166,7 +166,7 @@ public class CommitsTable extends Table{
                     try{
                         var tex = new Texture(pix);
                         tex.setFilter(TextureFilter.linear);
-                        avatarCache.put(login, new TextureRegion(tex));
+                        AVATAR_CACHE.put(login, new TextureRegion(tex));
                         pix.dispose();
                     }catch(Exception e){
                         Log.err(e);
@@ -174,11 +174,11 @@ public class CommitsTable extends Table{
                 });
             }, err -> {
                 // if error occurs, retry 2s later
-                Time.run(2 * 1000, () -> avatarCache.remove(login));
+                Time.run(2 * 1000, () -> AVATAR_CACHE.remove(login));
             });
         }
 
-        return avatarCache.get(login);
+        return AVATAR_CACHE.get(login);
     }
 
     private static String formatRelativeTime(LocalDateTime from, LocalDateTime to) {
