@@ -47,18 +47,18 @@ public class CommitsTable extends Table{
         request.header("Accept", "application/vnd.github+json");
         request.header("User-Agent", "TinyLake");
 
-        try {
-            request.submit(resp -> {
-                String result = resp.getResultAsString();
-                Core.app.post(() -> {
-                    Seq<CommitData> data = new Json().fromJson(Seq.class, CommitData.class, result);
-                    update(data);
-                });
-            });
-        } catch (Exception e) {
+        request.error(e -> Core.app.post(() -> {
             Vars.ui.showException(e);
             setLoadFailed(commitsTable);
-        }
+        }));
+
+        request.submit(resp -> {
+            String result = resp.getResultAsString();
+            Core.app.post(() -> {
+                Seq<CommitData> data = new Json().fromJson(Seq.class, CommitData.class, result);
+                update(data);
+            });
+        });
         return this;
     }
 
