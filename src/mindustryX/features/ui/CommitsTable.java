@@ -5,6 +5,7 @@ import arc.flabel.*;
 import arc.graphics.*;
 import arc.graphics.Texture.*;
 import arc.graphics.g2d.*;
+import arc.scene.style.*;
 import arc.scene.ui.*;
 import arc.scene.ui.layout.*;
 import arc.struct.*;
@@ -20,7 +21,6 @@ import mindustryX.features.ui.CommitsTable.CommitData.*;
 import java.time.*;
 import java.time.format.*;
 import java.util.*;
-import java.util.concurrent.*;
 
 public class CommitsTable extends Table{
     private static final ObjectMap<String, TextureRegion> AVATAR_CACHE = new ObjectMap<>();
@@ -57,7 +57,11 @@ public class CommitsTable extends Table{
             String result = resp.getResultAsString();
             Core.app.post(() -> {
                 Seq<CommitData> data = new Json().fromJson(Seq.class, CommitData.class, result);
-                update(data);
+                if(data == null){
+                    setLoadFailed(commitsTable);
+                }else{
+                    update(data);
+                }
             });
         });
         return this;
@@ -65,7 +69,6 @@ public class CommitsTable extends Table{
 
     private void update(Seq<CommitData> data){
         commitsData.set(data);
-
         // no author?
         commitsData.removeAll(commitData -> commitData.commit.author == null);
         Comparator<CommitData> comparator = Comparator.nullsLast(Structs.comparing(c -> c.commit.author.getDate()));
@@ -121,8 +124,6 @@ public class CommitsTable extends Table{
     private void setupCommitInfo(Table t, CommitData data){
         Commit commit = data.commit;
         Author author = data.author;
-        LocalDateTime date = commit.author.getDate();
-        LocalDateTime now = LocalDateTime.now();
 
         String[] split = commit.message.split("\n");
         t.table(left -> {
@@ -144,15 +145,7 @@ public class CommitsTable extends Table{
                 bottom.defaults().left();
                 Image image = bottom.image().pad(8f).size(Vars.iconMed).get();
                 bottom.add(author.login).style(Styles.outlineLabel).color(Pal.lightishGray).padLeft(4f);
-                bottom.add(date == null ? "unknown" : formatRelativeTime(date, now)).color(Pal.lightishGray).padLeft(4f);
-
-                image.update(() -> {
-                    TextureRegion avatar = getAvatar(author.login, author.avatar_url);
-                    image.setDrawable(avatar);
-                    if(avatar.texture != NOT_FOUND.texture){
-                        image.update(null);
-                    }
-                });
+                setAvatar(image, author.login, author.avatar_url);
             });
         });
 
@@ -164,13 +157,11 @@ public class CommitsTable extends Table{
         }).fillY();
     }
 
-    private static TextureRegion getAvatar(String login, String url){
+    private static void setAvatar(Image image, String login, String url){
         TextureRegion region = AVATAR_CACHE.get(login, TextureRegion::new);
-
-        // only null, NOT_FOUND or AVATAR_TEXTURE
+        ((TextureRegionDrawable)image.getDrawable()).setRegion(region);
         if(region.texture == null){
             region.set(NOT_FOUND);
-
             Http.get(url, res -> {
                 Pixmap pix = new Pixmap(res.getResult());
                 Core.app.post(() -> {
@@ -185,44 +176,9 @@ public class CommitsTable extends Table{
                     pix.dispose();
                 });
             }, err -> {
-                // if error occurs, retry 2s later
-                Time.run(2 * 1000, () -> {
-                    Log.err("Error occurs in getting avatar.", err);
-                    region.texture = null;
-                });
+                region.set(NOT_FOUND);
+                Log.err(err);
             });
-        }
-
-        return region;
-    }
-
-    private static String formatRelativeTime(LocalDateTime from, LocalDateTime to) {
-        long diffNano = Duration.between(from, to).toNanos();
-
-        long seconds = TimeUnit.NANOSECONDS.toSeconds(diffNano);
-        long minutes = TimeUnit.NANOSECONDS.toMinutes(diffNano);
-        long hours = TimeUnit.NANOSECONDS.toHours(diffNano);
-        long days = TimeUnit.NANOSECONDS.toDays(diffNano);
-
-        if (seconds < 60) {
-            return Core.bundle.format("commit.justNow");
-        } else if (minutes < 60) {
-            return Core.bundle.format("commit.minutesAgo", minutes);
-        } else if (hours < 24) {
-            return Core.bundle.format("commit.hoursAgo", hours);
-        } else if (days < 7) {
-            return Core.bundle.format("commit.daysAgo", days);
-        } else {
-            Period period = Period.between(from.toLocalDate(), to.toLocalDate());
-
-            if (period.getYears() > 0) {
-                return Core.bundle.format("commit.yearsAgo", period.getYears());
-            } else if (period.getMonths() > 0) {
-                return Core.bundle.format("commit.monthsAgo", period.getMonths());
-            } else {
-                long weeks = days / 7;
-                return Core.bundle.format("commit.weeksAgo", weeks);
-            }
         }
     }
 
@@ -290,7 +246,6 @@ public class CommitsTable extends Table{
         }
 
         public static class GitUser {
-
             public String name;
             public String email;
             public String date;
