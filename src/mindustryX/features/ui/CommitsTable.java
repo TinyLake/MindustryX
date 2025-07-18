@@ -33,6 +33,8 @@ public class CommitsTable extends Table{
     public String repo;
     private final Table commitsTable = new Table();
 
+    private boolean autoFetched = false;
+
     public CommitsTable(String repo){
         this.repo = repo;
 
@@ -47,8 +49,18 @@ public class CommitsTable extends Table{
         pane(t -> t.add(commitsTable).minHeight(200f).grow()).grow();
     }
 
+    @Override
+    public void act(float delta){
+        super.act(delta);
+
+        if(!commitsTable.hasChildren() && !autoFetched){
+            autoFetched = true;
+            fetch();
+        }
+    }
+
     @SuppressWarnings("unchecked")
-    public CommitsTable fetch(){
+    public void fetch(){
         commitsTable.clearChildren();
         commitsTable.add(new FLabel("@alphaLoading")).style(Styles.outlineLabel).expand().center();
 
@@ -80,7 +92,6 @@ public class CommitsTable extends Table{
                 rebuildCommitsTable();
             });
         });
-        return this;
     }
 
     private void rebuildCommitsTable(){
@@ -148,24 +159,26 @@ public class CommitsTable extends Table{
 
     private static TextureRegion getAvatar(String login, String url){
         TextureRegion region = AVATAR_CACHE.get(login, TextureRegion::new);
-        region.set(NOT_FOUND);
-        Http.get(url, res -> {
-            Pixmap pix = new Pixmap(res.getResult());
-            Core.app.post(() -> {
-                try{
-                    var tex = new Texture(pix);
-                    tex.setFilter(TextureFilter.linear);
-                    region.set(tex);
-                }catch(Exception e){
-                    Log.err(e);
-                }
-
-                pix.dispose();
-            });
-        }, err -> {
+        if(region.texture == null){
             region.set(NOT_FOUND);
-            Log.err(err);
-        });
+            Http.get(url, res -> {
+                Pixmap pix = new Pixmap(res.getResult());
+                Core.app.post(() -> {
+                    try{
+                        var tex = new Texture(pix);
+                        tex.setFilter(TextureFilter.linear);
+                        region.set(tex);
+                    }catch(Exception e){
+                        Log.err(e);
+                    }
+
+                    pix.dispose();
+                });
+            }, err -> {
+                region.set(NOT_FOUND);
+                Log.err(err);
+            });
+        }
         return region;
     }
 
