@@ -5,6 +5,7 @@ import arc.flabel.*;
 import arc.graphics.*;
 import arc.graphics.Texture.*;
 import arc.graphics.g2d.*;
+import arc.scene.ui.*;
 import arc.scene.ui.layout.*;
 import arc.struct.*;
 import arc.util.*;
@@ -23,6 +24,8 @@ import java.util.concurrent.*;
 
 public class CommitsTable extends Table{
     private static final ObjectMap<String, TextureRegion> AVATAR_CACHE = new ObjectMap<>();
+    private static final TextureRegion NOT_FOUND = Core.atlas.find("nomap");
+
     private static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd");
     public static float stroke = 1.5f;
 
@@ -34,18 +37,16 @@ public class CommitsTable extends Table{
 
     public CommitsTable(String repo){
         this.repo = repo;
+        setup();
     }
 
     @SuppressWarnings("unchecked")
     public CommitsTable update(){
-        if(children.isEmpty()){
-            setup();
-        }
         setLoading(commitsTable);
 
         HttpRequest request = Http.get(Vars.ghApi + "/repos/" + repo + "/commits");
         request.header("Accept", "application/vnd.github+json");
-        request.header("User-Agent", "TinyLake");
+        request.header("User-Agent", "MindustryX");
 
         request.error(e -> Core.app.post(() -> {
             Vars.ui.showException(e);
@@ -141,9 +142,17 @@ public class CommitsTable extends Table{
 
             left.table(bottom -> {
                 bottom.defaults().left();
-                bottom.image(() -> getAvatar(author.login, author.avatar_url)).pad(8f).size(Vars.iconMed);
+                Image image = bottom.image().pad(8f).size(Vars.iconMed).get();
                 bottom.add(author.login).style(Styles.outlineLabel).color(Pal.lightishGray).padLeft(4f);
                 bottom.add(date == null ? "unknown" : formatRelativeTime(date, now)).color(Pal.lightishGray).padLeft(4f);
+
+                image.update(() -> {
+                    TextureRegion avatar = getAvatar(author.login, author.avatar_url);
+                    image.setDrawable(avatar);
+                    if(avatar.texture != NOT_FOUND.texture){
+                        image.update(null);
+                    }
+                });
             });
         });
 
@@ -156,9 +165,11 @@ public class CommitsTable extends Table{
     }
 
     private static TextureRegion getAvatar(String login, String url){
-        if(!AVATAR_CACHE.containsKey(login)){
-            // get once
-            AVATAR_CACHE.put(login, Core.atlas.find("nomap"));
+        TextureRegion region = AVATAR_CACHE.get(login, TextureRegion::new);
+
+        // only null, NOT_FOUND or AVATAR_TEXTURE
+        if(region.texture == null){
+            region.set(NOT_FOUND);
 
             Http.get(url, res -> {
                 Pixmap pix = new Pixmap(res.getResult());
@@ -166,19 +177,23 @@ public class CommitsTable extends Table{
                     try{
                         var tex = new Texture(pix);
                         tex.setFilter(TextureFilter.linear);
-                        AVATAR_CACHE.put(login, new TextureRegion(tex));
-                        pix.dispose();
+                        region.set(tex);
                     }catch(Exception e){
                         Log.err(e);
                     }
+
+                    pix.dispose();
                 });
             }, err -> {
                 // if error occurs, retry 2s later
-                Time.run(2 * 1000, () -> AVATAR_CACHE.remove(login));
+                Time.run(2 * 1000, () -> {
+                    Log.err("Error occurs in getting avatar.", err);
+                    region.texture = null;
+                });
             });
         }
 
-        return AVATAR_CACHE.get(login);
+        return region;
     }
 
     private static String formatRelativeTime(LocalDateTime from, LocalDateTime to) {
