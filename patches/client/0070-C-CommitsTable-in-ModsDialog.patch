@@ -8,7 +8,7 @@ Subject: [PATCH] C CommitsTable in ModsDialog
  1 file changed, 10 insertions(+), 1 deletion(-)
 
 diff --git a/core/src/mindustry/ui/dialogs/ModsDialog.java b/core/src/mindustry/ui/dialogs/ModsDialog.java
-index 1f0cb9dc056ff1333c0661be36a6e27b96928bb4..e00023d580347718d043ef7045d3399f522d4219 100644
+index 1f0cb9dc056ff1333c0661be36a6e27b96928bb4..5d40a54706d81d978439164d77e91fed48bde58f 100644
 --- a/core/src/mindustry/ui/dialogs/ModsDialog.java
 +++ b/core/src/mindustry/ui/dialogs/ModsDialog.java
 @@ -29,6 +29,7 @@ import mindustry.mod.*;
@@ -36,7 +36,7 @@ index 1f0cb9dc056ff1333c0661be36a6e27b96928bb4..e00023d580347718d043ef7045d3399f
 +                        dialog.cont.add(new CommitsTable(mod.getRepo()).update()).color(Pal.lightishGray);
 +                        dialog.addCloseButton();
 +                        dialog.show();
-+                    });
++                    }).size(50f);
 +                }
              }).growX().right().padRight(-8f).padTop(-8f);
          }, Styles.flatBordert, () -> showMod(mod)).maxWidth(modCardWidth).height(modCardHeight).growX().pad(4f);
