@@ -202,7 +202,7 @@ object AutoUpdate {
             }
         }
         dialog.cont.row();
-        dialog.cont.add(commitsTable.update()).height(Core.scene.height * 0.3f).width(500f)
+        dialog.cont.add(commitsTable.fetch()).height(Core.scene.height * 0.3f).width(500f)
         dialog.addCloseButton()
         dialog.show()
     }

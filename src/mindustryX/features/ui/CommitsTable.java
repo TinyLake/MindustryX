@@ -5,8 +5,6 @@ import arc.flabel.*;
 import arc.graphics.*;
 import arc.graphics.Texture.*;
 import arc.graphics.g2d.*;
-import arc.scene.style.*;
-import arc.scene.ui.*;
 import arc.scene.ui.layout.*;
 import arc.struct.*;
 import arc.util.*;
@@ -27,7 +25,7 @@ public class CommitsTable extends Table{
     private static final TextureRegion NOT_FOUND = Core.atlas.find("nomap");
 
     private static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd");
-    public static float stroke = 1.5f;
+    public static final float STROKE = 1.5f;
 
     // commits sorted by date
     private final Seq<CommitData> commitsData = new Seq<>();
@@ -37,12 +35,22 @@ public class CommitsTable extends Table{
 
     public CommitsTable(String repo){
         this.repo = repo;
-        setup();
+
+        table(top -> {
+            top.defaults().left();
+            top.add(this.repo).style(Styles.outlineLabel).pad(4f);
+            top.add("@commit.recentUpdates").color(Pal.lightishGray);
+        }).padBottom(16f).padTop(8f).growX();
+
+        row();
+
+        pane(t -> t.add(commitsTable).minHeight(200f).grow()).grow();
     }
 
     @SuppressWarnings("unchecked")
-    public CommitsTable update(){
-        setLoading(commitsTable);
+    public CommitsTable fetch(){
+        commitsTable.clearChildren();
+        commitsTable.add(new FLabel("@alphaLoading")).style(Styles.outlineLabel).expand().center();
 
         HttpRequest request = Http.get(Vars.ghApi + "/repos/" + repo + "/commits");
         request.header("Accept", "application/vnd.github+json");
@@ -50,51 +58,35 @@ public class CommitsTable extends Table{
 
         request.error(e -> Core.app.post(() -> {
             Vars.ui.showException(e);
-            setLoadFailed(commitsTable);
+            commitsTable.clearChildren();
+            commitsTable.add(new FLabel("@alphaLoadFailed")).style(Styles.outlineLabel).expand().center();
         }));
-
         request.submit(resp -> {
             String result = resp.getResultAsString();
+            Seq<CommitData> data = new Json().fromJson(Seq.class, CommitData.class, result);
             Core.app.post(() -> {
-                Seq<CommitData> data = new Json().fromJson(Seq.class, CommitData.class, result);
                 if(data == null){
-                    setLoadFailed(commitsTable);
-                }else{
-                    update(data);
+                    commitsTable.clearChildren();
+                    commitsTable.add(new FLabel("@alphaLoadFailed")).style(Styles.outlineLabel).expand().center();
+                    return;
                 }
+
+                commitsData.set(data);
+                // no author?
+                commitsData.removeAll(commitData -> commitData.commit.author == null);
+                Comparator<CommitData> comparator = Comparator.nullsFirst(Structs.comparing(c -> c.commit.author.getDate()));
+                commitsData.sort(comparator.reversed());
+
+                rebuildCommitsTable();
             });
         });
         return this;
     }
 
-    private void update(Seq<CommitData> data){
-        commitsData.set(data);
-        // no author?
-        commitsData.removeAll(commitData -> commitData.commit.author == null);
-        Comparator<CommitData> comparator = Comparator.nullsLast(Structs.comparing(c -> c.commit.author.getDate()));
-        commitsData.sort(comparator.reversed());
-
-        rebuildCommitsTable();
-    }
-
-    private void setup(){
-        table(top -> {
-            top.defaults().left();
-            top.add(repo).style(Styles.outlineLabel).pad(4f);
-            top.add("@commit.recentUpdates").color(Pal.lightishGray);
-        }).padBottom(16f).padTop(8f).growX();
-
-        row();
-
-        pane(t -> {
-            t.add(commitsTable).minHeight(200f).grow();
-        }).grow();
-    }
-
     private void rebuildCommitsTable(){
         commitsTable.clearChildren();
 
-        commitsTable.image().color(color).width(stroke).growY();
+        commitsTable.image().color(color).width(STROKE).growY();
         Table right = commitsTable.table().get();
 
         LocalDateTime lastDate = null;
@@ -102,20 +94,18 @@ public class CommitsTable extends Table{
             LocalDateTime date = data.commit.author.getDate();
 
             // split by 1d
-            if(date != null && (lastDate == null || !sameDay(lastDate, date))){
+            if(date != null && (lastDate == null || !lastDate.toLocalDate().isEqual(date.toLocalDate()))){
                 right.table(timeSplit -> {
-                    timeSplit.image().color(color).width(8f).height(stroke);
+                    timeSplit.image().color(color).width(8f).height(STROKE);
                     timeSplit.add(date.format(DATE_FORMATTER)).color(color).padLeft(8f).padRight(8f);
-                    timeSplit.image().color(color).height(stroke).padRight(8f).growX();
+                    timeSplit.image().color(color).height(STROKE).padRight(8f).growX();
                 }).padTop(lastDate == null ? 0f : 16f).padBottom(8f).growX();
                 right.row();
 
                 lastDate = date;
             }
 
-            right.table(commitInfo -> {
-                setupCommitInfo(commitInfo, data);
-            }).minWidth(400f).padLeft(16f).growX();
+            right.table(commitInfo -> setupCommitInfo(commitInfo, data)).minWidth(400f).padLeft(16f).growX();
 
             right.row();
         }
@@ -143,9 +133,8 @@ public class CommitsTable extends Table{
 
             left.table(bottom -> {
                 bottom.defaults().left();
-                Image image = bottom.image().pad(8f).size(Vars.iconMed).get();
+                bottom.image(getAvatar(author.login, author.avatar_url)).pad(8f).size(Vars.iconMed);
                 bottom.add(author.login).style(Styles.outlineLabel).color(Pal.lightishGray).padLeft(4f);
-                setAvatar(image, author.login, author.avatar_url);
             });
         });
 
@@ -157,43 +146,27 @@ public class CommitsTable extends Table{
         }).fillY();
     }
 
-    private static void setAvatar(Image image, String login, String url){
+    private static TextureRegion getAvatar(String login, String url){
         TextureRegion region = AVATAR_CACHE.get(login, TextureRegion::new);
-        ((TextureRegionDrawable)image.getDrawable()).setRegion(region);
-        if(region.texture == null){
-            region.set(NOT_FOUND);
-            Http.get(url, res -> {
-                Pixmap pix = new Pixmap(res.getResult());
-                Core.app.post(() -> {
-                    try{
-                        var tex = new Texture(pix);
-                        tex.setFilter(TextureFilter.linear);
-                        region.set(tex);
-                    }catch(Exception e){
-                        Log.err(e);
-                    }
+        region.set(NOT_FOUND);
+        Http.get(url, res -> {
+            Pixmap pix = new Pixmap(res.getResult());
+            Core.app.post(() -> {
+                try{
+                    var tex = new Texture(pix);
+                    tex.setFilter(TextureFilter.linear);
+                    region.set(tex);
+                }catch(Exception e){
+                    Log.err(e);
+                }
 
-                    pix.dispose();
-                });
-            }, err -> {
-                region.set(NOT_FOUND);
-                Log.err(err);
+                pix.dispose();
             });
-        }
-    }
-
-    private static boolean sameDay(LocalDateTime date1, LocalDateTime date2) {
-        return date1.toLocalDate().isEqual(date2.toLocalDate());
-    }
-
-    private static void setLoading(Table table){
-        table.clearChildren();
-        table.add(new FLabel("@alphaLoading")).style(Styles.outlineLabel).expand().center();
-    }
-
-    private static void setLoadFailed(Table table){
-        table.clearChildren();
-        table.add(new FLabel("@alphaLoadFailed")).style(Styles.outlineLabel).expand().center();
+        }, err -> {
+            region.set(NOT_FOUND);
+            Log.err(err);
+        });
+        return region;
     }
 
     public static class CommitData{
