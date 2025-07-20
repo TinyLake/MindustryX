@@ -145,19 +145,22 @@ public class ArcTransportScanMode{
         }//塑钢带
         else if(build instanceof StackConveyor.StackConveyorBuild stackConveyorBuild){
             return switch(stackConveyorBuild.state){
-                case 2 -> from == build.back() && from instanceof StackConveyor.StackConveyorBuild;
-                case 1 -> from != build.front();
-                default -> from instanceof StackConveyor.StackConveyorBuild;
+                case 2 -> from == build.back() && from instanceof StackConveyor.StackConveyorBuild; // stateUnload
+                case 1 -> from != build.front(); // stateLoad
+                default -> from instanceof StackConveyor.StackConveyorBuild; // stateMove
             };
         }//交叉器
-        else if(build instanceof Junction.JunctionBuild){
-            return point.facing == -1 || from.relativeTo(build) == point.facing;
+        else if(build instanceof Junction.JunctionBuild || build instanceof DuctJunction.DuctJunctionBuild){
+            // Junction and DuctJunction accept from all directions
+            return true;
         }//分类
         else if(build instanceof Sorter.SorterBuild sorterBuild){
-            return !active || build.relativeTo(from) != point.facing && (sorterBuild.sortItem != null || (from.relativeTo(build) == point.facing) == ((Sorter)sorterBuild.block).invert);
+            // Sorter can accept from any direction except the output direction
+            return from.relativeTo(build) != build.rotation;
         }//溢流
         else if(build instanceof OverflowGate.OverflowGateBuild){
-            return !active || build.relativeTo(from) != point.facing;
+            // OverflowGate accepts from back and sides, not from front
+            return from.relativeTo(build) != build.rotation;
         }//导管路由器与导管溢流
         else if(build instanceof DuctRouter.DuctRouterBuild || build instanceof OverflowDuct.OverflowDuctBuild){
             return from == build.back();
@@ -170,6 +173,9 @@ public class ArcTransportScanMode{
             return directionBridgeBuild.arcCheckAccept(from);
         }else if(build instanceof Router.RouterBuild){
             return true;
+        }else if(build instanceof DirectionalUnloader.DirectionalUnloaderBuild){
+            // DirectionalUnloader doesn't accept items from transport, it extracts from back building
+            return false;
         }else if(canAccept(build.block)){
             point.trans = false;
             return true;
@@ -197,19 +203,22 @@ public class ArcTransportScanMode{
             return to == build.front();
         }//塑钢带
         else if(build instanceof StackConveyor.StackConveyorBuild stackConveyor){
-            if(stackConveyor.state == 2 && ((StackConveyor)stackConveyor.block).outputRouter){
+            if(stackConveyor.state == 2 && ((StackConveyor)stackConveyor.block).outputRouter){ // stateUnload with router mode
                 return to != build.back();
             }
             return to == build.front();
         }//交叉器
-        else if(build instanceof Junction.JunctionBuild){
-            return point.facing == -1 || build.relativeTo(to) == point.facing;
+        else if(build instanceof Junction.JunctionBuild || build instanceof DuctJunction.DuctJunctionBuild){
+            // Junction and DuctJunction output to all directions
+            return true;
         }//分类
         else if(build instanceof Sorter.SorterBuild sorterBuild){
-            return !active || to.relativeTo(build) != point.facing && (sorterBuild.sortItem != null || (build.relativeTo(to) == point.facing) == ((Sorter)sorterBuild.block).invert);
+            // Sorter can output to forward direction or side directions
+            return build.relativeTo(to) == build.rotation || (build.relativeTo(to) != (build.rotation + 2) % 4);
         }//溢流
         else if(build instanceof OverflowGate.OverflowGateBuild){
-            return !active || to.relativeTo(build) != point.facing;
+            // OverflowGate outputs to front and sides, not to back
+            return build.relativeTo(to) != (build.rotation + 2) % 4;
         }//导管路由器与导管溢流
         else if(build instanceof DuctRouter.DuctRouterBuild || build instanceof OverflowDuct.OverflowDuctBuild){
             return to != build.back();
@@ -219,10 +228,13 @@ public class ArcTransportScanMode{
             return bridge.arcCheckDump(to);
         }//导管桥
         else if(build instanceof DirectionBridge.DirectionBridgeBuild directionBridgeBuild){
-            DirectionBridge.DirectionBridgeBuild link = directionBridgeBuild.findLink();
-            return link == null && build.relativeTo(to) == build.rotation;
+            // DirectionBridge outputs in its rotation direction
+            return build.relativeTo(to) == build.rotation;
         }else if(build instanceof Router.RouterBuild || build instanceof Unloader.UnloaderBuild){
             return true;
+        }else if(build instanceof DirectionalUnloader.DirectionalUnloaderBuild){
+            // DirectionalUnloader outputs only to front
+            return to == build.front();
         }else if(build instanceof GenericCrafter.GenericCrafterBuild){
             point.trans = false;
             return true;
