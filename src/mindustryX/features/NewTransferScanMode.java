@@ -53,157 +53,441 @@ public class NewTransferScanMode {
     // ===== 收集器接口 Collection Interface =====
     
     /**
-     * 收集器 - 负责收集建筑的连接信息
-     * Collector - responsible for collecting building connection information
+     * 收集结果数据类
+     * Collection result data class
+     */
+    public static class CollectResult {
+        public final Building build;
+        public final boolean isOutput; // true = output, false = input
+        public final TransportType type;
+        
+        public CollectResult(Building build, boolean isOutput, TransportType type) {
+            this.build = build;
+            this.isOutput = isOutput;
+            this.type = type;
+        }
+    }
+    
+    /**
+     * 收集器 - 负责收集建筑的连接信息，处理绝大部分建筑类型相关的逻辑
+     * Collector - responsible for collecting building connection information and handling most building type logic
      */
     private static class TransportCollector {
         
         /**
-         * 收集指定建筑的连接信息
-         * Collect connections for the specified building
+         * 收集指定建筑的所有连接信息
+         * Collect all connections for the specified building
          */
-        public Seq<Connection> collect(Building building, TransportType type, boolean findInputs) {
-            Seq<Connection> connections = new Seq<>();
-            ObjectSet<Building> visited = new ObjectSet<>();
-            collectRecursive(building, type, findInputs, connections, visited, 0);
-            return connections;
+        public Seq<CollectResult> collect(Building self) {
+            Seq<CollectResult> results = new Seq<>();
+            if(self == null) return results;
+            
+            // 收集物品传输连接
+            if(self.block.hasItems) {
+                collectItemConnections(self, results);
+            }
+            
+            // 收集液体传输连接
+            if(self.block.hasLiquids) {
+                collectLiquidConnections(self, results);
+            }
+            
+            return results;
         }
         
-        private void collectRecursive(Building building, TransportType type, boolean findInputs, 
-                                     Seq<Connection> connections, ObjectSet<Building> visited, int depth) {
-            if(depth > maxDepth || visited.contains(building)) return;
-            visited.add(building);
+        /**
+         * 收集物品传输连接
+         * Collect item transport connections
+         */
+        private void collectItemConnections(Building self, Seq<CollectResult> results) {
+            // 传送带类
+            if(self instanceof Conveyor.ConveyorBuild || self instanceof Duct.DuctBuild) {
+                handleConveyorConnections(self, results);
+            }
+            // 塑钢传送带
+            else if(self instanceof StackConveyor.StackConveyorBuild stackConveyor) {
+                handleStackConveyorConnections(stackConveyor, results);
+            }
+            // 路由器和交叉器
+            else if(self instanceof Router.RouterBuild || self instanceof Junction.JunctionBuild || 
+                    self instanceof DuctRouter.DuctRouterBuild || self instanceof DuctJunction.DuctJunctionBuild) {
+                handleRouterConnections(self, results);
+            }
+            // 分拣器
+            else if(self instanceof Sorter.SorterBuild sorter) {
+                handleSorterConnections(sorter, results);
+            }
+            // 溢流门
+            else if(self instanceof OverflowGate.OverflowGateBuild || self instanceof OverflowDuct.OverflowDuctBuild) {
+                handleOverflowConnections(self, results);
+            }
+            // 定向卸载器
+            else if(self instanceof DirectionalUnloader.DirectionalUnloaderBuild) {
+                handleDirectionalUnloaderConnections(self, results);
+            }
+            // 物品桥
+            else if(self instanceof ItemBridge.ItemBridgeBuild bridge) {
+                handleItemBridgeConnections(bridge, results);
+            }
+            // 质量驱动器
+            else if(self instanceof MassDriver.MassDriverBuild massDriver) {
+                handleMassDriverConnections(massDriver, results);
+            }
+            // 导管桥
+            else if(self instanceof DirectionBridge.DirectionBridgeBuild dirBridge) {
+                handleDirectionBridgeConnections(dirBridge, results);
+            }
+            // 生产建筑和存储建筑
+            else if(hasProduction(self.block) || hasStorage(self.block)) {
+                handleGenericItemConnections(self, results);
+            }
+        }
+        
+        /**
+         * 收集液体传输连接
+         * Collect liquid transport connections
+         */
+        private void collectLiquidConnections(Building self, Seq<CollectResult> results) {
+            // 导管
+            if(self instanceof Conduit.ConduitBuild) {
+                handleConduitConnections(self, results);
+            }
+            // 液体路由器
+            else if(self instanceof LiquidRouter.LiquidRouterBuild) {
+                handleLiquidRouterConnections(self, results);
+            }
+            // 液体桥
+            else if(self instanceof LiquidBridge.LiquidBridgeBuild bridge) {
+                handleLiquidBridgeConnections(bridge, results);
+            }
+            // 生产建筑和存储建筑
+            else if(hasProduction(self.block) || hasStorage(self.block)) {
+                handleGenericLiquidConnections(self, results);
+            }
+        }
+        
+        // 传送带类连接处理
+        private void handleConveyorConnections(Building self, Seq<CollectResult> results) {
+            // 输出：向前方
+            Building front = self.front();
+            if(front != null && canAcceptItems(front, self)) {
+                results.add(new CollectResult(front, true, TransportType.ITEM));
+            }
             
-            Seq<Building> nextBuildings = findInputs ? 
-                getDirectInputSources(building, type) : 
-                getDirectOutputTargets(building, type);
-                
-            for(Building next : nextBuildings) {
-                if(next != null && !visited.contains(next)) {
-                    boolean isEndpoint = logic.isEndpoint(next, type);
-                    connections.add(new Connection(building, next, isEndpoint));
-                    if(!isEndpoint) {
-                        collectRecursive(next, type, findInputs, connections, visited, depth + 1);
-                    }
+            // 输入：从除前方外的相邻建筑
+            for(Building nearby : self.proximity) {
+                if(nearby != front && canOutputItems(nearby, self)) {
+                    results.add(new CollectResult(nearby, false, TransportType.ITEM));
                 }
             }
         }
         
-        /**
-         * 获取直接输出目标（不包含逻辑判断）
-         * Get direct output targets (without logic judgment)
-         */
-        private Seq<Building> getDirectOutputTargets(Building building, TransportType type) {
-            Seq<Building> outputs = new Seq<>();
+        // 塑钢传送带连接处理
+        private void handleStackConveyorConnections(StackConveyor.StackConveyorBuild stackConveyor, Seq<CollectResult> results) {
+            Building front = stackConveyor.front();
+            Building back = stackConveyor.back();
             
-            if(building == null) return outputs;
-            
-            // 处理特殊建筑的直接连接
-            if(handleSpecialConnections(building, type, outputs, false)) {
-                return outputs;
-            }
-            
-            // 收集相邻建筑
-            for(Building nearby : building.proximity) {
-                outputs.add(nearby);
-            }
-            
-            return outputs;
-        }
-        
-        /**
-         * 获取直接输入来源（不包含逻辑判断）
-         * Get direct input sources (without logic judgment)
-         */
-        private Seq<Building> getDirectInputSources(Building building, TransportType type) {
-            Seq<Building> inputs = new Seq<>();
-            
-            if(building == null) return inputs;
-            
-            // 处理特殊建筑的直接连接
-            if(handleSpecialConnections(building, type, inputs, true)) {
-                return inputs;
-            }
-            
-            // 收集相邻建筑
-            for(Building nearby : building.proximity) {
-                inputs.add(nearby);
-            }
-            
-            return inputs;
-        }
-        
-        /**
-         * 处理特殊建筑的连接（桥梁等）
-         * Handle special building connections (bridges, etc.)
-         */
-        private boolean handleSpecialConnections(Building building, TransportType type, Seq<Building> result, boolean isInput) {
-            // 质量驱动器
-            if(building instanceof MassDriver.MassDriverBuild massDriver && type == TransportType.ITEM) {
-                if(isInput) {
-                    // 质量驱动器可以从其他质量驱动器接收
-                    for(Building other : massDriver.proximity) {
-                        if(other instanceof MassDriver.MassDriverBuild otherMd && otherMd.linkValid() && 
-                           world.build(otherMd.link) == building) {
-                            result.add(other);
+            switch(stackConveyor.state) {
+                case 2: // 输出模式
+                    if(((StackConveyor)stackConveyor.block).outputRouter) {
+                        // 向除后方外的所有方向输出
+                        for(Building nearby : stackConveyor.proximity) {
+                            if(nearby != back && canAcceptItems(nearby, stackConveyor)) {
+                                results.add(new CollectResult(nearby, true, TransportType.ITEM));
+                            }
+                        }
+                    } else {
+                        // 只向前方输出
+                        if(front != null && canAcceptItems(front, stackConveyor)) {
+                            results.add(new CollectResult(front, true, TransportType.ITEM));
                         }
                     }
-                } else if(massDriver.linkValid()) {
-                    result.add(world.build(massDriver.link));
-                }
-                return true;
-            }
-            
-            // 物品桥
-            if(building instanceof ItemBridge.ItemBridgeBuild bridge && type == TransportType.ITEM) {
-                if(isInput) {
-                    bridge.incoming.each(pos -> {
-                        Building source = world.tile(pos).build;
-                        if(source != null) result.add(source);
-                    });
-                } else if(bridge.block.linkValid(bridge.tile, world.tile(bridge.link))) {
-                    result.add(world.build(bridge.link));
-                }
-                return true;
-            }
-            
-            // 液体桥
-            if(building instanceof LiquidBridge.LiquidBridgeBuild bridge && type == TransportType.LIQUID) {
-                if(isInput) {
-                    bridge.incoming.each(pos -> {
-                        Building source = world.tile(pos).build;
-                        if(source != null) result.add(source);
-                    });
-                } else if(bridge.block.linkValid(bridge.tile, world.tile(bridge.link))) {
-                    result.add(world.build(bridge.link));
-                }
-                return true;
-            }
-            
-            // 导管桥
-            if(building instanceof DirectionBridge.DirectionBridgeBuild dirBridge && type == TransportType.ITEM) {
-                if(isInput) {
-                    for(Building occupied : dirBridge.occupied) {
-                        if(occupied != null) result.add(occupied);
+                    // 只从后方的塑钢传送带接收
+                    if(back instanceof StackConveyor.StackConveyorBuild) {
+                        results.add(new CollectResult(back, false, TransportType.ITEM));
                     }
-                } else {
-                    DirectionBridge.DirectionBridgeBuild link = dirBridge.findLink();
-                    if(link != null) {
-                        result.add(link);
+                    break;
+                case 1: // 输入模式
+                    // 向前方输出
+                    if(front != null && canAcceptItems(front, stackConveyor)) {
+                        results.add(new CollectResult(front, true, TransportType.ITEM));
+                    }
+                    // 从除前方外的相邻建筑接收
+                    for(Building nearby : stackConveyor.proximity) {
+                        if(nearby != front && canOutputItems(nearby, stackConveyor)) {
+                            results.add(new CollectResult(nearby, false, TransportType.ITEM));
+                        }
+                    }
+                    break;
+                default: // 待机模式
+                    // 只与塑钢传送带连接
+                    for(Building nearby : stackConveyor.proximity) {
+                        if(nearby instanceof StackConveyor.StackConveyorBuild) {
+                            results.add(new CollectResult(nearby, true, TransportType.ITEM));
+                            results.add(new CollectResult(nearby, false, TransportType.ITEM));
+                        }
+                    }
+                    break;
+            }
+        }
+        
+        // 路由器和交叉器连接处理
+        private void handleRouterConnections(Building self, Seq<CollectResult> results) {
+            // 与所有相邻建筑双向连接
+            for(Building nearby : self.proximity) {
+                if(canAcceptItems(nearby, self)) {
+                    results.add(new CollectResult(nearby, true, TransportType.ITEM));
+                }
+                if(canOutputItems(nearby, self)) {
+                    results.add(new CollectResult(nearby, false, TransportType.ITEM));
+                }
+            }
+        }
+        
+        // 分拣器连接处理
+        private void handleSorterConnections(Sorter.SorterBuild sorter, Seq<CollectResult> results) {
+            // 输出：向前方和侧面（不向后方）
+            for(Building nearby : sorter.proximity) {
+                int relativeDir = sorter.relativeTo(nearby);
+                if(relativeDir == sorter.rotation || relativeDir != (sorter.rotation + 2) % 4) {
+                    if(canAcceptItems(nearby, sorter)) {
+                        results.add(new CollectResult(nearby, true, TransportType.ITEM));
                     }
                 }
-                return true;
             }
             
-            return false;
+            // 输入：从除前方外的相邻建筑
+            for(Building nearby : sorter.proximity) {
+                if(sorter.relativeTo(nearby) != sorter.rotation && canOutputItems(nearby, sorter)) {
+                    results.add(new CollectResult(nearby, false, TransportType.ITEM));
+                }
+            }
+        }
+        
+        // 溢流门连接处理
+        private void handleOverflowConnections(Building self, Seq<CollectResult> results) {
+            // 输出：向除后方外的所有方向
+            for(Building nearby : self.proximity) {
+                if(self.relativeTo(nearby) != (self.rotation + 2) % 4 && canAcceptItems(nearby, self)) {
+                    results.add(new CollectResult(nearby, true, TransportType.ITEM));
+                }
+            }
+            
+            // 输入：从除前方外的相邻建筑
+            for(Building nearby : self.proximity) {
+                if(self.relativeTo(nearby) != self.rotation && canOutputItems(nearby, self)) {
+                    results.add(new CollectResult(nearby, false, TransportType.ITEM));
+                }
+            }
+        }
+        
+        // 定向卸载器连接处理
+        private void handleDirectionalUnloaderConnections(Building self, Seq<CollectResult> results) {
+            // 只向前方输出，不接受输入
+            Building front = self.front();
+            if(front != null && canAcceptItems(front, self)) {
+                results.add(new CollectResult(front, true, TransportType.ITEM));
+            }
+        }
+        
+        // 物品桥连接处理
+        private void handleItemBridgeConnections(ItemBridge.ItemBridgeBuild bridge, Seq<CollectResult> results) {
+            // 输出：优先通过链接，否则向相邻建筑
+            if(bridge.block.linkValid(bridge.tile, world.tile(bridge.link))) {
+                Building linkTarget = world.build(bridge.link);
+                if(linkTarget != null) {
+                    results.add(new CollectResult(linkTarget, true, TransportType.ITEM));
+                }
+            } else {
+                // 无链接时向相邻建筑输出
+                for(Building nearby : bridge.proximity) {
+                    if(canAcceptItems(nearby, bridge)) {
+                        results.add(new CollectResult(nearby, true, TransportType.ITEM));
+                    }
+                }
+            }
+            
+            // 输入：从后方和链接源接收
+            Building back = bridge.back();
+            if(back != null && canOutputItems(back, bridge)) {
+                results.add(new CollectResult(back, false, TransportType.ITEM));
+            }
+            
+            // 从链接源接收
+            bridge.incoming.each(pos -> {
+                Building source = world.tile(pos).build;
+                if(source != null) {
+                    results.add(new CollectResult(source, false, TransportType.ITEM));
+                }
+            });
+        }
+        
+        // 质量驱动器连接处理
+        private void handleMassDriverConnections(MassDriver.MassDriverBuild massDriver, Seq<CollectResult> results) {
+            // 输出：通过链接发射
+            if(massDriver.linkValid()) {
+                Building target = world.build(massDriver.link);
+                if(target != null) {
+                    results.add(new CollectResult(target, true, TransportType.ITEM));
+                }
+            }
+            
+            // 输入：从其他质量驱动器接收
+            for(Building other : massDriver.proximity) {
+                if(other instanceof MassDriver.MassDriverBuild otherMd && 
+                   otherMd.linkValid() && world.build(otherMd.link) == massDriver) {
+                    results.add(new CollectResult(other, false, TransportType.ITEM));
+                }
+            }
+            
+            // 从相邻建筑接收物品
+            for(Building nearby : massDriver.proximity) {
+                if(canOutputItems(nearby, massDriver)) {
+                    results.add(new CollectResult(nearby, false, TransportType.ITEM));
+                }
+            }
+        }
+        
+        // 导管桥连接处理
+        private void handleDirectionBridgeConnections(DirectionBridge.DirectionBridgeBuild dirBridge, Seq<CollectResult> results) {
+            // 输出：通过链接
+            DirectionBridge.DirectionBridgeBuild link = dirBridge.findLink();
+            if(link != null) {
+                results.add(new CollectResult(link, true, TransportType.ITEM));
+            }
+            
+            // 输入：从占用的建筑
+            for(Building occupied : dirBridge.occupied) {
+                if(occupied != null) {
+                    results.add(new CollectResult(occupied, false, TransportType.ITEM));
+                }
+            }
+        }
+        
+        // 通用物品连接处理
+        private void handleGenericItemConnections(Building self, Seq<CollectResult> results) {
+            for(Building nearby : self.proximity) {
+                // 可以向相邻建筑输出
+                if(self.canDump(nearby, null)) {
+                    results.add(new CollectResult(nearby, true, TransportType.ITEM));
+                }
+                // 可以从相邻建筑接收
+                if(canOutputItems(nearby, self)) {
+                    results.add(new CollectResult(nearby, false, TransportType.ITEM));
+                }
+            }
+        }
+        
+        // 导管连接处理
+        private void handleConduitConnections(Building self, Seq<CollectResult> results) {
+            // 输出：向前方
+            Building front = self.front();
+            if(front != null && canAcceptLiquids(front, self)) {
+                results.add(new CollectResult(front, true, TransportType.LIQUID));
+            }
+            
+            // 输入：从除前方外的相邻建筑
+            for(Building nearby : self.proximity) {
+                if(nearby != front && canOutputLiquids(nearby, self)) {
+                    results.add(new CollectResult(nearby, false, TransportType.LIQUID));
+                }
+            }
+        }
+        
+        // 液体路由器连接处理
+        private void handleLiquidRouterConnections(Building self, Seq<CollectResult> results) {
+            // 与所有相邻建筑双向连接
+            for(Building nearby : self.proximity) {
+                if(canAcceptLiquids(nearby, self)) {
+                    results.add(new CollectResult(nearby, true, TransportType.LIQUID));
+                }
+                if(canOutputLiquids(nearby, self)) {
+                    results.add(new CollectResult(nearby, false, TransportType.LIQUID));
+                }
+            }
+        }
+        
+        // 液体桥连接处理
+        private void handleLiquidBridgeConnections(LiquidBridge.LiquidBridgeBuild bridge, Seq<CollectResult> results) {
+            // 输出：优先通过链接
+            if(bridge.block.linkValid(bridge.tile, world.tile(bridge.link))) {
+                Building linkTarget = world.build(bridge.link);
+                if(linkTarget != null) {
+                    results.add(new CollectResult(linkTarget, true, TransportType.LIQUID));
+                }
+            } else {
+                // 无链接时向相邻建筑输出
+                for(Building nearby : bridge.proximity) {
+                    if(bridge.canDump(nearby, null)) {
+                        results.add(new CollectResult(nearby, true, TransportType.LIQUID));
+                    }
+                }
+            }
+            
+            // 输入：从后方和链接源接收
+            Building back = bridge.back();
+            if(back != null && canOutputLiquids(back, bridge)) {
+                results.add(new CollectResult(back, false, TransportType.LIQUID));
+            }
+            
+            // 从链接源接收
+            bridge.incoming.each(pos -> {
+                Building source = world.tile(pos).build;
+                if(source != null) {
+                    results.add(new CollectResult(source, false, TransportType.LIQUID));
+                }
+            });
+        }
+        
+        // 通用液体连接处理
+        private void handleGenericLiquidConnections(Building self, Seq<CollectResult> results) {
+            if(!self.block.hasLiquids) return;
+            
+            for(Building nearby : self.proximity) {
+                // 可以向相邻建筑输出
+                if(self.canDump(nearby, null)) {
+                    results.add(new CollectResult(nearby, true, TransportType.LIQUID));
+                }
+                // 可以从相邻建筑接收
+                if(canOutputLiquids(nearby, self)) {
+                    results.add(new CollectResult(nearby, false, TransportType.LIQUID));
+                }
+            }
+        }
+        
+        // 辅助方法
+        private boolean hasStorage(Block block) {
+            return block instanceof StorageBlock || block.hasItems || block.hasLiquids;
+        }
+        
+        private boolean hasProduction(Block block) {
+            return block instanceof GenericCrafter || block instanceof Drill ||
+                   block instanceof Pump || block instanceof SolidPump ||
+                   block instanceof Fracker || block instanceof UnitFactory;
+        }
+        
+        private boolean canAcceptItems(Building to, Building from) {
+            return logic.canInput(to, from, (Item)null);
+        }
+        
+        private boolean canOutputItems(Building from, Building to) {
+            return logic.canOutput(from, to, (Item)null);
+        }
+        
+        private boolean canAcceptLiquids(Building to, Building from) {
+            return logic.canInput(to, from, (Liquid)null);
+        }
+        
+        private boolean canOutputLiquids(Building from, Building to) {
+            return logic.canOutput(from, to, (Liquid)null);
         }
     }
     
     // ===== 逻辑判断接口 Logic Interface =====
     
     /**
-     * 逻辑判断器 - 负责传输逻辑的判断
-     * Logic Judge - responsible for transport logic decisions
+     * 逻辑判断器 - 负责传输逻辑的判断，专注于canInput/canOutput验证
+     * Logic Judge - responsible for transport logic decisions, focused on canInput/canOutput validation
      */
     private static class TransportLogic {
         
@@ -244,8 +528,8 @@ public class NewTransferScanMode {
         }
         
         /**
-         * 判断建筑是否为端点
-         * Check if building is an endpoint
+         * 判断建筑是否为端点（存储或生产建筑）
+         * Check if building is an endpoint (storage or production building)
          */
         public boolean isEndpoint(Building building, TransportType type) {
             if(building == null) return false;
@@ -288,58 +572,7 @@ public class NewTransferScanMode {
             return block.consumes.any() || block instanceof Turret;
         }
         
-        private boolean canOutputItems(Building from, Building to) {
-            // 传送带类
-            if(from instanceof Conveyor.ConveyorBuild || from instanceof Duct.DuctBuild) {
-                return to == from.front();
-            }
-            
-            // 塑钢传送带
-            if(from instanceof StackConveyor.StackConveyorBuild stackConveyor) {
-                if(stackConveyor.state == 2 && ((StackConveyor)stackConveyor.block).outputRouter) {
-                    return to != from.back();
-                }
-                return to == from.front();
-            }
-            
-            // 路由器和交叉器
-            if(from instanceof Router.RouterBuild || from instanceof Junction.JunctionBuild || 
-               from instanceof DuctRouter.DuctRouterBuild || from instanceof DuctJunction.DuctJunctionBuild) {
-                return true;
-            }
-            
-            // 分拣器
-            if(from instanceof Sorter.SorterBuild) {
-                int relativeDir = from.relativeTo(to);
-                return relativeDir == from.rotation || relativeDir != (from.rotation + 2) % 4;
-            }
-            
-            // 溢流门
-            if(from instanceof OverflowGate.OverflowGateBuild || from instanceof OverflowDuct.OverflowDuctBuild) {
-                return from.relativeTo(to) != (from.rotation + 2) % 4;
-            }
-            
-            // 定向卸载器
-            if(from instanceof DirectionalUnloader.DirectionalUnloaderBuild) {
-                return to == from.front();
-            }
-            
-            // 桥梁有特殊处理
-            if(from instanceof ItemBridge.ItemBridgeBuild bridge) {
-                // 有链接时只通过链接输出
-                if(bridge.block.linkValid(bridge.tile, world.tile(bridge.link))) {
-                    return false;
-                }
-            }
-            
-            // 生产建筑和存储建筑
-            if(hasProduction(from.block) || hasStorage(from.block)) {
-                return from.canDump(to, null);
-            }
-            
-            return false;
-        }
-        
+        // 简化的输入输出验证方法
         private boolean canInputItems(Building to, Building from) {
             // 装甲传送带
             if(to instanceof ArmoredConveyor.ArmoredConveyorBuild) {
@@ -354,15 +587,6 @@ public class NewTransferScanMode {
             // 普通传送带和导管
             if(to instanceof Conveyor.ConveyorBuild || to instanceof Duct.DuctBuild) {
                 return from != to.front();
-            }
-            
-            // 塑钢传送带
-            if(to instanceof StackConveyor.StackConveyorBuild stackConveyor) {
-                return switch(stackConveyor.state) {
-                    case 2 -> from == to.back() && from instanceof StackConveyor.StackConveyorBuild;
-                    case 1 -> from != to.front();
-                    default -> from instanceof StackConveyor.StackConveyorBuild;
-                };
             }
             
             // 交叉器和路由器
@@ -391,7 +615,7 @@ public class NewTransferScanMode {
                 return false;
             }
             
-            // 消费建筑
+            // 消费建筑和存储建筑
             if(hasConsumption(to.block) || hasStorage(to.block)) {
                 return true;
             }
@@ -399,26 +623,35 @@ public class NewTransferScanMode {
             return false;
         }
         
-        private boolean canOutputLiquids(Building from, Building to) {
-            // 导管
-            if(from instanceof Conduit.ConduitBuild) {
+        private boolean canOutputItems(Building from, Building to) {
+            // 传送带类
+            if(from instanceof Conveyor.ConveyorBuild || from instanceof Duct.DuctBuild) {
                 return to == from.front();
             }
             
-            // 液体路由器
-            if(from instanceof LiquidRouter.LiquidRouterBuild) {
+            // 路由器和交叉器
+            if(from instanceof Router.RouterBuild || from instanceof Junction.JunctionBuild || 
+               from instanceof DuctRouter.DuctRouterBuild || from instanceof DuctJunction.DuctJunctionBuild) {
                 return true;
             }
             
-            // 液体桥不向相邻建筑输出（只通过链接）
-            if(from instanceof LiquidBridge.LiquidBridgeBuild bridge) {
-                if(bridge.block.linkValid(bridge.tile, world.tile(bridge.link))) {
-                    return false; // 有链接时不向相邻输出
-                }
-                return from.canDump(to, null);
+            // 分拣器
+            if(from instanceof Sorter.SorterBuild) {
+                int relativeDir = from.relativeTo(to);
+                return relativeDir == from.rotation || relativeDir != (from.rotation + 2) % 4;
             }
             
-            // 生产建筑
+            // 溢流门
+            if(from instanceof OverflowGate.OverflowGateBuild || from instanceof OverflowDuct.OverflowDuctBuild) {
+                return from.relativeTo(to) != (from.rotation + 2) % 4;
+            }
+            
+            // 定向卸载器
+            if(from instanceof DirectionalUnloader.DirectionalUnloaderBuild) {
+                return to == from.front();
+            }
+            
+            // 生产建筑和存储建筑
             if(hasProduction(from.block) || hasStorage(from.block)) {
                 return from.canDump(to, null);
             }
@@ -445,6 +678,25 @@ public class NewTransferScanMode {
             // 消费建筑
             if((hasConsumption(to.block) || hasStorage(to.block)) && to.block.hasLiquids) {
                 return true;
+            }
+            
+            return false;
+        }
+        
+        private boolean canOutputLiquids(Building from, Building to) {
+            // 导管
+            if(from instanceof Conduit.ConduitBuild) {
+                return to == from.front();
+            }
+            
+            // 液体路由器
+            if(from instanceof LiquidRouter.LiquidRouterBuild) {
+                return true;
+            }
+            
+            // 生产建筑
+            if(hasProduction(from.block) || hasStorage(from.block)) {
+                return from.canDump(to, null);
             }
             
             return false;
@@ -496,75 +748,71 @@ public class NewTransferScanMode {
             
             Building target = hoverTile.build;
             
-            // 绘制物品传输网络
-            if(target.block.hasItems) {
-                drawTransportNetwork(target, TransportType.ITEM);
-            }
+            // 使用新的收集接口
+            Seq<CollectResult> connections = collector.collect(target);
             
-            // 绘制液体传输网络  
-            if(target.block.hasLiquids) {
-                drawTransportNetwork(target, TransportType.LIQUID);
-            }
-        }
-        
-        /**
-         * 绘制指定类型的传输网络
-         * Draw transport network of specified type
-         */
-        public void drawTransportNetwork(Building target, TransportType type) {
-            // 使用收集器收集连接
-            Seq<Connection> inputs = collector.collect(target, type, true);
-            Seq<Connection> outputs = collector.collect(target, type, false);
+            // 分离输入和输出连接
+            Seq<CollectResult> itemInputs = new Seq<>();
+            Seq<CollectResult> itemOutputs = new Seq<>();
+            Seq<CollectResult> liquidInputs = new Seq<>();
+            Seq<CollectResult> liquidOutputs = new Seq<>();
             
-            // 过滤有效连接
-            Seq<Connection> validInputs = new Seq<>();
-            Seq<Connection> validOutputs = new Seq<>();
-            
-            for(Connection conn : inputs) {
-                if(type == TransportType.ITEM ? 
-                   logic.canOutput(conn.from, conn.to, null) : 
-                   logic.canOutput(conn.from, conn.to, (Liquid)null)) {
-                    validInputs.add(conn);
-                }
-            }
-            
-            for(Connection conn : outputs) {
-                if(type == TransportType.ITEM ? 
-                   logic.canOutput(conn.from, conn.to, null) : 
-                   logic.canOutput(conn.from, conn.to, (Liquid)null)) {
-                    validOutputs.add(conn);
+            for(CollectResult result : connections) {
+                if(result.type == TransportType.ITEM) {
+                    if(result.isOutput) {
+                        itemOutputs.add(result);
+                    } else {
+                        itemInputs.add(result);
+                    }
+                } else if(result.type == TransportType.LIQUID) {
+                    if(result.isOutput) {
+                        liquidOutputs.add(result);
+                    } else {
+                        liquidInputs.add(result);
+                    }
                 }
             }
             
             // 绘制连接
-            Color inputColor = type == TransportType.ITEM ? itemInputColor : liquidInputColor;
-            Color outputColor = type == TransportType.ITEM ? itemOutputColor : liquidOutputColor;
-            
-            drawConnections(validInputs, inputColor, false);
-            drawConnections(validOutputs, outputColor, true);
+            drawCollectResults(itemInputs, itemInputColor, false);
+            drawCollectResults(itemOutputs, itemOutputColor, true);
+            drawCollectResults(liquidInputs, liquidInputColor, false);
+            drawCollectResults(liquidOutputs, liquidOutputColor, true);
         }
         
         /**
-         * 绘制连接集合
-         * Draw connection collection
+         * 绘制收集结果连接
+         * Draw collect result connections
          */
-        public void drawConnections(Seq<Connection> connections, Color color, boolean isOutput) {
-            // 绘制连接线
-            for(Connection conn : connections) {
-                if(!conn.isEndpoint) {
-                    drawConnection(conn.from, conn.to, color, isOutput);
+        private void drawCollectResults(Seq<CollectResult> results, Color color, boolean isOutput) {
+            // 分离传输建筑和端点建筑
+            Seq<CollectResult> transportConnections = new Seq<>();
+            Seq<CollectResult> endpointConnections = new Seq<>();
+            
+            for(CollectResult result : results) {
+                if(logic.isEndpoint(result.build, result.type)) {
+                    endpointConnections.add(result);
                 } else {
-                    // 端点用不同的颜色高亮
-                    Color endpointColor = color.cpy().mul(1.2f);
-                    drawSelectedBuilding(conn.to, endpointColor);
+                    transportConnections.add(result);
                 }
             }
             
-            // 绘制方向指示器
-            for(Connection conn : connections) {
-                if(!conn.isEndpoint) {
-                    drawDirectionIndicator(conn.from, conn.to, color, isOutput);
+            // 绘制传输连接
+            for(CollectResult result : transportConnections) {
+                Building target = world.tileWorld(Core.input.mouseWorld().x, Core.input.mouseWorld().y).build;
+                if(isOutput) {
+                    drawConnection(target, result.build, color, true);
+                    drawDirectionIndicator(target, result.build, color, true);
+                } else {
+                    drawConnection(result.build, target, color, false);
+                    drawDirectionIndicator(result.build, target, color, false);
                 }
+            }
+            
+            // 绘制端点高亮
+            for(CollectResult result : endpointConnections) {
+                Color endpointColor = color.cpy().mul(1.2f);
+                drawSelectedBuilding(result.build, endpointColor);
             }
         }
         
@@ -624,21 +872,9 @@ public class NewTransferScanMode {
         }
     }
     
-    // ===== 传输类型和连接数据结构 Transport Types and Connection Data Structures =====
+    // ===== 传输类型枚举 Transport Type Enum =====
     
     public enum TransportType {
         ITEM, LIQUID
-    }
-    
-    private static class Connection {
-        public final Building from;
-        public final Building to;
-        public final boolean isEndpoint;
-        
-        public Connection(Building from, Building to, boolean isEndpoint) {
-            this.from = from;
-            this.to = to;
-            this.isEndpoint = isEndpoint;
-        }
     }
 }
