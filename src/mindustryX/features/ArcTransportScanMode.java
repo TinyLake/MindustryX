@@ -101,12 +101,12 @@ public class ArcTransportScanMode{
         Seq<Point> next = new Seq<>();
         //质驱
         if(build instanceof MassDriver.MassDriverBuild massDriverBuild){
-            if(massDriverBuild.arcLinkValid()){
+            if(massDriverBuild.linkValid()){
                 next.add(new Point(world.build(massDriverBuild.link), point));
             }
         }//桥
         else if(build instanceof ItemBridge.ItemBridgeBuild itemBridgeBuild){
-            if(itemBridgeBuild.arcLinkValid()){
+            if(itemBridgeBuild.block.linkValid(itemBridgeBuild.tile, world.tile(itemBridgeBuild.link))){
                 next.add(new Point(world.build(itemBridgeBuild.link), point));
             }
         }//导管桥
@@ -167,10 +167,12 @@ public class ArcTransportScanMode{
         }//桥
         else if(build instanceof ItemBridge.ItemBridgeBuild itemBridgeBuild){
             if(build.block instanceof LiquidBridge && !from.block.hasLiquids) return false;
-            return itemBridgeBuild.arcCheckAccept(from);
+            // ItemBridge accepts from back (for loading) or from linked bridges
+            return from == itemBridgeBuild.back() || itemBridgeBuild.linked(from);
         }//导管桥
         else if(build instanceof DirectionBridge.DirectionBridgeBuild directionBridgeBuild){
-            return directionBridgeBuild.arcCheckAccept(from);
+            // DirectionBridge only accepts through bridge connections, not from adjacent buildings
+            return false;
         }else if(build instanceof Router.RouterBuild){
             return true;
         }else if(build instanceof DirectionalUnloader.DirectionalUnloaderBuild){
@@ -225,11 +227,11 @@ public class ArcTransportScanMode{
         }//桥
         else if(build instanceof ItemBridge.ItemBridgeBuild bridge){
             if(build.block instanceof LiquidBridge && !to.block.hasLiquids) return false;
-            return bridge.arcCheckDump(to);
+            return bridge.canDump(to, null);
         }//导管桥
         else if(build instanceof DirectionBridge.DirectionBridgeBuild directionBridgeBuild){
-            // DirectionBridge outputs in its rotation direction
-            return build.relativeTo(to) == build.rotation;
+            // DirectionBridge only outputs through bridge connections, not to adjacent buildings
+            return false;
         }else if(build instanceof Router.RouterBuild || build instanceof Unloader.UnloaderBuild){
             return true;
         }else if(build instanceof DirectionalUnloader.DirectionalUnloaderBuild){

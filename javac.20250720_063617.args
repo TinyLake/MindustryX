@@ -1,0 +1,5 @@
+-cp
+work/core/build/libs/*:work/arc/build/libs/*
+-sourcepath
+src:work/core/src:work/arc/src
+src/mindustryX/features/ArcTransportScanMode.java
