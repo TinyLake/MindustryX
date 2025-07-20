@@ -2,6 +2,7 @@
 *.iml
 /work
 /patches/work/
+javac.*.args
 
 .gradle/
 build/
