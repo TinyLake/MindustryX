@@ -3,6 +3,7 @@
 /work
 /patches/work/
 javac.*.args
+*.class
 
 .gradle/
 build/
