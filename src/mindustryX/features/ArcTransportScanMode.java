@@ -99,24 +99,30 @@ public class ArcTransportScanMode{
         Building build = point.build;
         if(build == null) return new Seq<>();
         Seq<Point> next = new Seq<>();
+        
+        // Special handling for bridges with specified outputs - they only output through links
         //质驱
         if(build instanceof MassDriver.MassDriverBuild massDriverBuild){
             if(massDriverBuild.linkValid()){
                 next.add(new Point(world.build(massDriverBuild.link), point));
+                return next; // Mass driver with link only outputs to link
             }
         }//桥
         else if(build instanceof ItemBridge.ItemBridgeBuild itemBridgeBuild){
             if(itemBridgeBuild.block.linkValid(itemBridgeBuild.tile, world.tile(itemBridgeBuild.link))){
                 next.add(new Point(world.build(itemBridgeBuild.link), point));
+                return next; // Bridge with link only outputs to link
             }
         }//导管桥
         else if(build instanceof DirectionBridge.DirectionBridgeBuild directionBridgeBuild){
             DirectionBridge.DirectionBridgeBuild link = directionBridgeBuild.findLink();
             if(link != null){
                 next.add(new Point(link, point));
+                return next; // Direction bridge with link only outputs to link
             }
         }
 
+        // For all other buildings or bridges without links, check adjacent buildings
         for(Building b : build.proximity){
             Point to = new Point(b, build.relativeTo(b), b.block.instantTransfer ? point.conduit + 1 : 0, point);
             if(canInput(to, build, false) && canOutput(point, b, true)){
@@ -187,7 +193,18 @@ public class ArcTransportScanMode{
 
 
     private static boolean canAccept(Block block){
+        // Transportation blocks are part of the transport network, not endpoints
         if(block.group == BlockGroup.transportation) return true;
+        
+        // Focus on containers and factories as endpoints
+        if(block.group == BlockGroup.production || block.group == BlockGroup.crafting){
+            return true; // Factories and production buildings
+        }
+        if(block.group == BlockGroup.storage){
+            return true; // Storage containers
+        }
+        
+        // Other blocks that can accept items (like turrets, power blocks with item consumption)
         for(Item item : content.items()){
             if(block.consumesItem(item) || block.itemCapacity > 0){
                 return true;
@@ -203,6 +220,13 @@ public class ArcTransportScanMode{
         //传送带和导管
         if(build instanceof Conveyor.ConveyorBuild || build instanceof Duct.DuctBuild){
             return to == build.front();
+        }//质驱
+        else if(build instanceof MassDriver.MassDriverBuild massDriver){
+            // If mass driver has a valid link, it only outputs to that link, not to adjacent buildings
+            if(massDriver.linkValid()){
+                return false; // Mass driver with link doesn't output to adjacent buildings
+            }
+            return true; // Mass driver without link can output to adjacent buildings
         }//塑钢带
         else if(build instanceof StackConveyor.StackConveyorBuild stackConveyor){
             if(stackConveyor.state == 2 && ((StackConveyor)stackConveyor.block).outputRouter){ // stateUnload with router mode
@@ -227,6 +251,10 @@ public class ArcTransportScanMode{
         }//桥
         else if(build instanceof ItemBridge.ItemBridgeBuild bridge){
             if(build.block instanceof LiquidBridge && !to.block.hasLiquids) return false;
+            // If bridge has a valid link, it only outputs to that link, not to adjacent buildings
+            if(bridge.block.linkValid(bridge.tile, world.tile(bridge.link))){
+                return false; // Bridge with link doesn't output to adjacent buildings
+            }
             return bridge.canDump(to, null);
         }//导管桥
         else if(build instanceof DirectionBridge.DirectionBridgeBuild directionBridgeBuild){
@@ -240,6 +268,28 @@ public class ArcTransportScanMode{
         }else if(build instanceof GenericCrafter.GenericCrafterBuild){
             point.trans = false;
             return true;
+        }else if(canProduceItems(build.block)){
+            // Production buildings, storage containers, and other item-producing buildings are endpoints
+            point.trans = false;
+            return true;
+        }
+        return false;
+    }
+
+    private static boolean canProduceItems(Block block){
+        // Focus on production and storage buildings as endpoints
+        if(block.group == BlockGroup.production || block.group == BlockGroup.crafting){
+            return true; // Factories and production buildings
+        }
+        if(block.group == BlockGroup.storage){
+            return true; // Storage containers
+        }
+        
+        // Other blocks that can output items
+        for(Item item : content.items()){
+            if(block.itemCapacity > 0){
+                return true;
+            }
         }
         return false;
     }
