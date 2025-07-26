@@ -82,7 +82,7 @@ public class UnitFactoryDialog extends BaseDialog{
             resetUnit(spawnUnit);
             rebuildTables();
         });
-        buttons.button("[orange]生成！", Icon.modeAttack, this::spawn);
+        buttons.button("@unitFactoryDialog.spawn", Icon.modeAttack, this::spawn);
 
         rebuild();
 
@@ -269,7 +269,7 @@ public class UnitFactoryDialog extends BaseDialog{
     }
 
     private void setupPosTable(){
-        posTable.add("生成位置:");
+        posTable.add("@unitFactoryDialog.spawnPosition");
 
         posTable.label(() -> {
             int tileX = World.toTile(spawnUnit.x);
@@ -294,7 +294,7 @@ public class UnitFactoryDialog extends BaseDialog{
                 return true;
             });
 
-            UIExt.announce("[green]点击屏幕采集坐标", 2f);
+            UIExt.announce(Core.bundle.get("unitFactoryDialog.clickToCollectCoords"), 2f);
         });
 
         posTable.button(Icon.eyeSmall, Styles.clearNonei, () -> {
@@ -313,14 +313,14 @@ public class UnitFactoryDialog extends BaseDialog{
                 return true;
             });
 
-            UIExt.announce("[green]点击屏幕返回", 2f);
+            UIExt.announce(Core.bundle.get("unitFactoryDialog.clickToReturn"), 2f);
         }).padLeft(4);
 
         posTable.button(new TextureRegionDrawable(UnitTypes.gamma.uiIcon), Styles.clearNonei, 24, () -> spawnUnit.set(player)).padLeft(4);
     }
 
     private void setupCountTable(){
-        countTable.add("生成数量:");
+        countTable.add("@unitFactoryDialog.spawnCount");
         countTable.field("", text -> unitCount = Math.min(maxCount, Strings.parseInt(text)))
         .update(it -> it.setText("" + unitCount)).left().expandX().width(80).valid(Strings::canParseInt);
 
