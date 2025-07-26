@@ -44,29 +44,29 @@ object NewToolTable : Table() {
         }
         toggle("扫", "扫描模式", { RenderExt.transportScan.value }) { RenderExt.transportScan.toggle() }
 
-        toggle("[cyan]块", Core.bundle.get("newToolTable.buildingDisplay"), { RenderExt.blockRenderLevel > 0 }) { RenderExt.blockRenderLevel0.cycle() }
-        toggle("[cyan]兵", Core.bundle.get("newToolTable.unitDisplay"), { !RenderExt.unitHide.value }) { RenderExt.unitHide.toggle() }
-        toggle("[cyan]弹", Core.bundle.get("newToolTable.bulletDisplay"), { !RenderExt.noBulletShow.value }) { RenderExt.noBulletShow.toggle() }
-        toggle("[cyan]效", Core.bundle.get("newToolTable.effectDisplay"), { Vars.renderer.enableEffects }) { Settings.toggle("effects") }
-        toggle("[cyan]墙", Core.bundle.get("newToolTable.wallShadowDisplay"), { Vars.enableDarkness }) { Vars.enableDarkness = !Vars.enableDarkness }
-        toggle("[cyan]${Iconc.map}", Core.bundle.get("newToolTable.minimapDisplay"), { Core.settings.getBool("minimap") }) { Settings.toggle("minimap") }
-        toggle("箱", Core.bundle.get("newToolTable.hitboxDisplay"), { RenderExt.unitHitbox.value }) { RenderExt.unitHitbox.toggle() }
+        toggle("[cyan]块", "@newToolTable.buildingDisplay", { RenderExt.blockRenderLevel > 0 }) { RenderExt.blockRenderLevel0.cycle() }
+        toggle("[cyan]兵", "@newToolTable.unitDisplay", { !RenderExt.unitHide.value }) { RenderExt.unitHide.toggle() }
+        toggle("[cyan]弹", "@newToolTable.bulletDisplay", { !RenderExt.noBulletShow.value }) { RenderExt.noBulletShow.toggle() }
+        toggle("[cyan]效", "@newToolTable.effectDisplay", { Vars.renderer.enableEffects }) { Settings.toggle("effects") }
+        toggle("[cyan]墙", "@newToolTable.wallShadowDisplay", { Vars.enableDarkness }) { Vars.enableDarkness = !Vars.enableDarkness }
+        toggle("[cyan]${Iconc.map}", "@newToolTable.minimapDisplay", { Core.settings.getBool("minimap") }) { Settings.toggle("minimap") }
+        toggle("箱", "@newToolTable.hitboxDisplay", { RenderExt.unitHitbox.value }) { RenderExt.unitHitbox.toggle() }
 
-        button("${Iconc.blockRadar}", Core.bundle.get("newToolTable.radarToggle")) { ArcRadar.mobileRadar = !ArcRadar.mobileRadar }.get().also {
+        button("${Iconc.blockRadar}", "@newToolTable.radarToggle") { ArcRadar.mobileRadar = !ArcRadar.mobileRadar }.get().also {
             SettingsV2.bindQuickSettings(it, ArcRadar.settings)
         }
-        toggle("${Iconc.blockWorldProcessor}", Core.bundle.get("newToolTable.removeLogicLock"), { Core.settings.getBool("removeLogicLock") }) {
+        toggle("${Iconc.blockWorldProcessor}", "@newToolTable.removeLogicLock", { Core.settings.getBool("removeLogicLock") }) {
             Settings.toggle("removeLogicLock")
             if (Core.settings.getBool("removeLogicLock")) {
                 Vars.control.input.logicCutscene = false
                 Vars.ui.announce(Core.bundle.get("newToolTable.logicLockRemoved"))
             }
         }
-        toggle(Blocks.worldMessage.emoji(), Core.bundle.get("newToolTable.messageDisplayAll"), { RenderExt.displayAllMessage }) { Settings.toggle("displayallmessage") }
-        button("${Iconc.itemCopper}", Core.bundle.get("newToolTable.mineralInfo")) { floorStatisticDialog() }
+        toggle(Blocks.worldMessage.emoji(), "@newToolTable.messageDisplayAll", { RenderExt.displayAllMessage }) { Settings.toggle("displayallmessage") }
+        button("${Iconc.itemCopper}", "@newToolTable.mineralInfo") { floorStatisticDialog() }
 
-        button("${Iconc.fill}", Core.bundle.get("newToolTable.effectsCollection")) { EffectsDialog.withAllEffects().show() }
-        button("${Iconc.star}", Core.bundle.get("newToolTable.uiCollection")) { uiTableDialog().show() }
+        button("${Iconc.fill}", "@newToolTable.effectsCollection") { EffectsDialog.withAllEffects().show() }
+        button("${Iconc.star}", "@newToolTable.uiCollection") { uiTableDialog().show() }
 
 
         add(GridTable()).update { t: Table ->
@@ -111,7 +111,7 @@ object NewToolTable : Table() {
     data class Button(val icon: Drawable, val tooltip: String, val action: () -> Unit)
 
     data class CustomButton(val name: String, val content: String) {
-        constructor() : this("?", Core.bundle.get("newToolTable.noCommand"))
+        constructor() : this("?", "@newToolTable.noCommand")
 
         fun run() {
             if (content.startsWith("@js ")) {
@@ -165,7 +165,7 @@ object NewToolTable : Table() {
                 update {
                     if (changed()) clearChildren()
                     if (hasChildren()) return@update
-                    add(Core.bundle.get("newToolTable.serialNumber"));add(Core.bundle.get("newToolTable.displayName"));add(Core.bundle.get("newToolTable.messageScript"));row()
+                    add("@newToolTable.serialNumber");add("@newToolTable.displayName");add("@newToolTable.messageScript");row()
                     value.forEachIndexed { i, d ->
                         var tmp = d
                         add(i.toString()).padRight(4f)
@@ -182,7 +182,7 @@ object NewToolTable : Table() {
                     button("@add", Icon.addSmall) {
                         set(value + CustomButton())
                     }.colspan(columns).fillX().row()
-                    add(Core.bundle.get("newToolTable.saveBeforeAdd")).colspan(columns).center().padTop(-4f).row()
+                    add("@newToolTable.saveBeforeAdd").colspan(columns).center().padTop(-4f).row()
                 }
             }) { shown }.fillX()
             table.row()
@@ -191,12 +191,12 @@ object NewToolTable : Table() {
 
 
     private fun floorStatisticDialog() {
-        val dialog = BaseDialog(Core.bundle.get("newToolTable.mineralStatistics"))
+        val dialog = BaseDialog("@newToolTable.mineralStatistics")
         val table = dialog.cont
         table.clear()
 
         table.table { c: Table ->
-            c.add(Core.bundle.get("newToolTable.mineralOre")).color(Pal.accent).center().fillX().row()
+            c.add("@newToolTable.mineralOre").color(Pal.accent).center().fillX().row()
             c.image().color(Pal.accent).fillX().row()
             c.table { list: Table ->
                 var i = 0
@@ -233,13 +233,13 @@ object NewToolTable : Table() {
     }
 
 
-    private fun uiTableDialog() = BaseDialog(Core.bundle.get("newToolTable.uiIconCollection")).apply {
+    private fun uiTableDialog() = BaseDialog("@newToolTable.uiIconCollection").apply {
         cont.defaults().maxWidth(800f)
         val sField = cont.field("") { }.fillX().get()
         cont.row()
         Table().apply {
             defaults().minWidth(1f)
-            add(Core.bundle.get("newToolTable.color")).color(Pal.accent).center().row()
+            add("@newToolTable.color").color(Pal.accent).center().row()
             image().color(Pal.accent).fillX().row()
             GridTable().apply {
                 defaults().height(32f).width(80f).pad(4f)

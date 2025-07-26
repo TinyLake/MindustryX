@@ -43,7 +43,7 @@ public class MarkerType{
         fillParent = true;
         touchable = Touchable.enabled;
         background(((TextureRegionDrawable)Tex.whiteui).tint(0, 0, 0, 0.1f));
-        center().add(Core.bundle.get("markerType.markMode"), Styles.outlineLabel);
+        center().add("@markerType.markMode", Styles.outlineLabel);
         tapped(() -> {
             MarkerType.showPanUI();
             Core.app.post(this::remove);
