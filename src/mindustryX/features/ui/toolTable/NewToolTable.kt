@@ -32,41 +32,41 @@ object NewToolTable : Table() {
         add(gridTable).growX().row()
         gridTable.defaults().size(Vars.iconLarge)
 
-        button("[cyan]信", "中央监控室") { UIExt.arcMessageDialog.show() }
-        button("[cyan]S", "同步一波") { Call.sendChatMessage("/sync") }
-        button("[cyan]观", "观察者模式") { Call.sendChatMessage("/ob") }
-        button("[cyan]版", "服务器信息版") { Call.sendChatMessage("/broad") }
-        toggle("[cyan]雾", "战争迷雾", { Vars.state.rules.fog }) {
+        button("[cyan]信", Core.bundle.get("newToolTable.centralMonitoringRoom")) { UIExt.arcMessageDialog.show() }
+        button("[cyan]S", Core.bundle.get("newToolTable.syncWave")) { Call.sendChatMessage("/sync") }
+        button("[cyan]观", Core.bundle.get("newToolTable.observerMode")) { Call.sendChatMessage("/ob") }
+        button("[cyan]版", Core.bundle.get("newToolTable.serverInfoBoard")) { Call.sendChatMessage("/broad") }
+        toggle("[cyan]雾", Core.bundle.get("newToolTable.fogOfWar"), { Vars.state.rules.fog }) {
             Vars.state.rules.fog = Vars.state.rules.fog xor true
         }.disabled { Vars.state.rules.pvp && Vars.player.team().id != 255 }
-        button("[white]法", "法国军礼") {
-            Vars.ui.showConfirm("受不了，直接投降？") { Call.sendChatMessage("/vote gameover") }
+        button("[white]法", Core.bundle.get("newToolTable.frenchSalute")) {
+            Vars.ui.showConfirm(Core.bundle.get("newToolTable.surrender")) { Call.sendChatMessage("/vote gameover") }
         }
         toggle("扫", "扫描模式", { RenderExt.transportScan.value }) { RenderExt.transportScan.toggle() }
 
-        toggle("[cyan]块", "建筑显示", { RenderExt.blockRenderLevel > 0 }) { RenderExt.blockRenderLevel0.cycle() }
-        toggle("[cyan]兵", "兵种显示", { !RenderExt.unitHide.value }) { RenderExt.unitHide.toggle() }
-        toggle("[cyan]弹", "子弹显示", { !RenderExt.noBulletShow.value }) { RenderExt.noBulletShow.toggle() }
-        toggle("[cyan]效", "特效显示", { Vars.renderer.enableEffects }) { Settings.toggle("effects") }
-        toggle("[cyan]墙", "墙体阴影显示", { Vars.enableDarkness }) { Vars.enableDarkness = !Vars.enableDarkness }
-        toggle("[cyan]${Iconc.map}", "小地图显示", { Core.settings.getBool("minimap") }) { Settings.toggle("minimap") }
-        toggle("箱", "碰撞箱显示", { RenderExt.unitHitbox.value }) { RenderExt.unitHitbox.toggle() }
+        toggle("[cyan]块", Core.bundle.get("newToolTable.buildingDisplay"), { RenderExt.blockRenderLevel > 0 }) { RenderExt.blockRenderLevel0.cycle() }
+        toggle("[cyan]兵", Core.bundle.get("newToolTable.unitDisplay"), { !RenderExt.unitHide.value }) { RenderExt.unitHide.toggle() }
+        toggle("[cyan]弹", Core.bundle.get("newToolTable.bulletDisplay"), { !RenderExt.noBulletShow.value }) { RenderExt.noBulletShow.toggle() }
+        toggle("[cyan]效", Core.bundle.get("newToolTable.effectDisplay"), { Vars.renderer.enableEffects }) { Settings.toggle("effects") }
+        toggle("[cyan]墙", Core.bundle.get("newToolTable.wallShadowDisplay"), { Vars.enableDarkness }) { Vars.enableDarkness = !Vars.enableDarkness }
+        toggle("[cyan]${Iconc.map}", Core.bundle.get("newToolTable.minimapDisplay"), { Core.settings.getBool("minimap") }) { Settings.toggle("minimap") }
+        toggle("箱", Core.bundle.get("newToolTable.hitboxDisplay"), { RenderExt.unitHitbox.value }) { RenderExt.unitHitbox.toggle() }
 
-        button("${Iconc.blockRadar}", "雷达开关") { ArcRadar.mobileRadar = !ArcRadar.mobileRadar }.get().also {
+        button("${Iconc.blockRadar}", Core.bundle.get("newToolTable.radarToggle")) { ArcRadar.mobileRadar = !ArcRadar.mobileRadar }.get().also {
             SettingsV2.bindQuickSettings(it, ArcRadar.settings)
         }
-        toggle("${Iconc.blockWorldProcessor}", "移除逻辑锁定", { Core.settings.getBool("removeLogicLock") }) {
+        toggle("${Iconc.blockWorldProcessor}", Core.bundle.get("newToolTable.removeLogicLock"), { Core.settings.getBool("removeLogicLock") }) {
             Settings.toggle("removeLogicLock")
             if (Core.settings.getBool("removeLogicLock")) {
                 Vars.control.input.logicCutscene = false
-                Vars.ui.announce("已移除逻辑视角锁定")
+                Vars.ui.announce(Core.bundle.get("newToolTable.logicLockRemoved"))
             }
         }
-        toggle(Blocks.worldMessage.emoji(), "信息板全显示", { RenderExt.displayAllMessage }) { Settings.toggle("displayallmessage") }
-        button("${Iconc.itemCopper}", "矿物信息") { floorStatisticDialog() }
+        toggle(Blocks.worldMessage.emoji(), Core.bundle.get("newToolTable.messageDisplayAll"), { RenderExt.displayAllMessage }) { Settings.toggle("displayallmessage") }
+        button("${Iconc.itemCopper}", Core.bundle.get("newToolTable.mineralInfo")) { floorStatisticDialog() }
 
-        button("${Iconc.fill}", "特效大全") { EffectsDialog.withAllEffects().show() }
-        button("${Iconc.star}", "ui大全") { uiTableDialog().show() }
+        button("${Iconc.fill}", Core.bundle.get("newToolTable.effectsCollection")) { EffectsDialog.withAllEffects().show() }
+        button("${Iconc.star}", Core.bundle.get("newToolTable.uiCollection")) { uiTableDialog().show() }
 
 
         add(GridTable()).update { t: Table ->
@@ -111,7 +111,7 @@ object NewToolTable : Table() {
     data class Button(val icon: Drawable, val tooltip: String, val action: () -> Unit)
 
     data class CustomButton(val name: String, val content: String) {
-        constructor() : this("?", "未输入指令")
+        constructor() : this("?", Core.bundle.get("newToolTable.noCommand"))
 
         fun run() {
             if (content.startsWith("@js ")) {
@@ -165,7 +165,7 @@ object NewToolTable : Table() {
                 update {
                     if (changed()) clearChildren()
                     if (hasChildren()) return@update
-                    add("序号");add("显示名");add("消息(@js 开头为脚本)");row()
+                    add(Core.bundle.get("newToolTable.serialNumber"));add(Core.bundle.get("newToolTable.displayName"));add(Core.bundle.get("newToolTable.messageScript"));row()
                     value.forEachIndexed { i, d ->
                         var tmp = d
                         add(i.toString()).padRight(4f)
@@ -182,7 +182,7 @@ object NewToolTable : Table() {
                     button("@add", Icon.addSmall) {
                         set(value + CustomButton())
                     }.colspan(columns).fillX().row()
-                    add("[yellow]添加新指令前，请先保存编辑的指令").colspan(columns).center().padTop(-4f).row()
+                    add(Core.bundle.get("newToolTable.saveBeforeAdd")).colspan(columns).center().padTop(-4f).row()
                 }
             }) { shown }.fillX()
             table.row()
@@ -191,12 +191,12 @@ object NewToolTable : Table() {
 
 
     private fun floorStatisticDialog() {
-        val dialog = BaseDialog("ARC-矿物统计")
+        val dialog = BaseDialog(Core.bundle.get("newToolTable.mineralStatistics"))
         val table = dialog.cont
         table.clear()
 
         table.table { c: Table ->
-            c.add("矿物矿(地表/墙矿)").color(Pal.accent).center().fillX().row()
+            c.add(Core.bundle.get("newToolTable.mineralOre")).color(Pal.accent).center().fillX().row()
             c.image().color(Pal.accent).fillX().row()
             c.table { list: Table ->
                 var i = 0
@@ -233,13 +233,13 @@ object NewToolTable : Table() {
     }
 
 
-    private fun uiTableDialog() = BaseDialog("UI图标大全").apply {
+    private fun uiTableDialog() = BaseDialog(Core.bundle.get("newToolTable.uiIconCollection")).apply {
         cont.defaults().maxWidth(800f)
         val sField = cont.field("") { }.fillX().get()
         cont.row()
         Table().apply {
             defaults().minWidth(1f)
-            add("颜色").color(Pal.accent).center().row()
+            add(Core.bundle.get("newToolTable.color")).color(Pal.accent).center().row()
             image().color(Pal.accent).fillX().row()
             GridTable().apply {
                 defaults().height(32f).width(80f).pad(4f)
