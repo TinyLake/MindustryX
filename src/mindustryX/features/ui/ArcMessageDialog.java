@@ -33,17 +33,17 @@ public class ArcMessageDialog extends BaseDialog{
     private boolean fieldMode = false;
 
     public ArcMessageDialog(){
-        super("ARC-中央监控室");
+        super("@arcMessageDialog.title");
 
         //voiceControl.voiceControlDialog();
         cont.pane(t -> historyTable = t).maxWidth(1000).scrollX(false);
 
         addCloseButton();
-        buttons.button("设置", Icon.settings, this::arcMsgSettingTable);
-        buttons.button("导出", Icon.upload, this::exportMsg).name("导出聊天记录");
+        buttons.button("@arcMessageDialog.settings", Icon.settings, this::arcMsgSettingTable);
+        buttons.button("@arcMessageDialog.export", Icon.upload, this::exportMsg).name("@arcMessageDialog.exportTooltip");
 
         buttons.row();
-        buttons.button("清空", Icon.trash, () -> {
+        buttons.button("@arcMessageDialog.clear", Icon.trash, () -> {
             msgList.clear();
             build();
         });
@@ -52,19 +52,19 @@ public class ArcMessageDialog extends BaseDialog{
         onResize(this::build);
 
         Events.on(EventType.WorldLoadEvent.class, e -> {
-            addMsg(new Msg(Type.eventWorldLoad, "载入地图： " + state.map.name()));
-            addMsg(new Msg(Type.eventWorldLoad, "简介： " + state.map.description()));
+            addMsg(new Msg(Type.eventWorldLoad, Core.bundle.format("arcMessageDialog.loadMap", state.map.name())));
+            addMsg(new Msg(Type.eventWorldLoad, Core.bundle.format("arcMessageDialog.mapDescription", state.map.description())));
             while(msgList.size >= maxMsgRecorded) msgList.removeLast();
         });
 
         Events.on(EventType.WaveEvent.class, e -> {
             if(state.wavetime < 60f) return;
-            addMsg(new Msg(Type.eventWave, "波次： " + state.wave + " | " + getWaveInfo(state.wave - 1)));
+            addMsg(new Msg(Type.eventWave, Core.bundle.format("arcMessageDialog.wave", state.wave, getWaveInfo(state.wave - 1))));
         });
 
         Events.on(EventType.BlockDestroyEvent.class, e -> {
             if(e.tile.build instanceof CoreBlock.CoreBuild)
-                addMsg(new Msg(Type.eventCoreDestory, "核心摧毁： " + "(" + (int)e.tile.x + "," + (int)e.tile.y + ")", new Vec2(e.tile.x * 8, e.tile.y * 8)));
+                addMsg(new Msg(Type.eventCoreDestory, Core.bundle.format("arcMessageDialog.coreDestroy", "(" + (int)e.tile.x + "," + (int)e.tile.y + ")"), new Vec2(e.tile.x * 8, e.tile.y * 8)));
         });
     }
 
@@ -74,10 +74,9 @@ public class ArcMessageDialog extends BaseDialog{
 
     public static void shareContent(UnlockableContent content, boolean description){
         StringBuilder builder = new StringBuilder();
-        builder.append("标记了").append(content.localizedName).append(content.emoji());
-        builder.append("(").append(content.name).append(")");
+        builder.append(Core.bundle.format("arcMessageDialog.markContent", content.localizedName, content.emoji(), content.name));
         if(content.description != null && description){
-            builder.append("。介绍: ").append(content.description);
+            builder.append(Core.bundle.format("arcMessageDialog.markDescription", content.description));
         }
         ArcMessageDialog.share("Content", builder.toString());
     }
@@ -89,7 +88,7 @@ public class ArcMessageDialog extends BaseDialog{
             Core.app.post(() -> callback.get(code));
         });
         req.error(e -> Core.app.post(() -> {
-            ui.showException("上传失败，再重试一下？", e);
+            ui.showException(Core.bundle.get("arcMessageDialog.uploadFailed"), e);
             Core.app.post(() -> callback.get(null));
         }));
     }
@@ -98,9 +97,9 @@ public class ArcMessageDialog extends BaseDialog{
         StringBuilder builder = new StringBuilder();
         if(state.rules.attackMode){
             int sum = Math.max(state.teams.present.sum(t -> t.team != player.team() ? t.cores.size : 0), 1) + Vars.spawner.countSpawns();
-            builder.append("包含(×").append(sum).append(")");
+            builder.append(Core.bundle.format("arcMessageDialog.contains", sum));
         }else{
-            builder.append("包含(×").append(Vars.spawner.countSpawns()).append("):");
+            builder.append(Core.bundle.format("arcMessageDialog.containsColon", Vars.spawner.countSpawns()));
         }
         for(SpawnGroup group : state.rules.spawns){
             if(group.getSpawned(waves - 1) > 0){
@@ -135,12 +134,12 @@ public class ArcMessageDialog extends BaseDialog{
                     if(msg.msgType == Type.chat)
                         tt.add(getPlayerName(msg)).style(Styles.outlineLabel).left().width(300f);
                     else
-                        tt.add(msg.msgType.name).style(Styles.outlineLabel).color(msg.msgType.color).left().width(300f);
+                        tt.add(msg.msgType.getLocalizedName()).style(Styles.outlineLabel).color(msg.msgType.color).left().width(300f);
 
                     tt.add(formatTime(msg.time)).style(Styles.outlineLabel).color(msg.msgType.color).left().padLeft(20f).width(100f);
 
                     if(msg.msgLoc != null){
-                        tt.button("♐： " + (int)(msg.msgLoc.x / tilesize) + "," + (int)(msg.msgLoc.y / tilesize), Styles.logict, () -> {
+                        tt.button(Core.bundle.format("arcMessageDialog.location", (int)(msg.msgLoc.x / tilesize), (int)(msg.msgLoc.y / tilesize)), Styles.logict, () -> {
                             control.input.panCamera(msg.msgLoc);
                             MarkerType.mark.at(Tmp.v1.scl(msg.msgLoc.x, msg.msgLoc.y)).color = color;
                             hide();
@@ -152,7 +151,7 @@ public class ArcMessageDialog extends BaseDialog{
 
                     tt.button(Icon.copy, Styles.logici, () -> {
                         Core.app.setClipboardText(msg.message);
-                        ui.announce("已导出本条聊天记录");
+                        ui.announce(Core.bundle.get("arcMessageDialog.exported"));
                     }).size(24f).padRight(6);
                     tt.button(Icon.cancel, Styles.logici, () -> {
                         msgList.remove(msg);
@@ -181,7 +180,7 @@ public class ArcMessageDialog extends BaseDialog{
         int typeStart = msgElement.message.indexOf("[coral][");
         int typeEnd = msgElement.message.indexOf("[coral]]");
         if(typeStart == -1 || typeEnd == -1 || typeEnd <= typeStart){
-            return msgElement.msgType.name;
+            return msgElement.msgType.getLocalizedName();
         }
 
         return msgElement.message.substring(typeStart + 20, typeEnd);
@@ -198,21 +197,21 @@ public class ArcMessageDialog extends BaseDialog{
     }
 
     private void arcMsgSettingTable(){
-        BaseDialog setDialog = new BaseDialog("中央监控室-设置");
+        BaseDialog setDialog = new BaseDialog("@arcMessageDialog.settingsTitle");
         if(Core.settings.getInt("maxMsgRecorded") == 0) Core.settings.put("maxMsgRecorded", 500);
 
         setDialog.cont.table(t -> {
-            t.check("信息编辑模式", fieldMode, a -> {
+            t.check("@arcMessageDialog.editMode", fieldMode, a -> {
                 fieldMode = a;
                 build();
             }).left().width(200f).row();
 
-            t.add("调整显示的信息").height(50f).row();
+            t.add("@arcMessageDialog.adjustDisplay").height(50f).row();
             t.table(tt -> {
-                tt.button("关闭全部", Styles.cleart, () -> {
+                tt.button("@arcMessageDialog.closeAll", Styles.cleart, () -> {
                     for(Type type : Type.values()) type.show = false;
                 }).width(200f).height(50f);
-                tt.button("默认", Styles.cleart, () -> {
+                tt.button("@arcMessageDialog.default", Styles.cleart, () -> {
                     for(Type type : Type.values()) type.show = true;
                     Type.serverTips.show = false;
                 }).width(200f).height(50f);
@@ -220,7 +219,7 @@ public class ArcMessageDialog extends BaseDialog{
             t.table(Tex.button, tt -> tt.pane(tp -> {
                 for(Type type : Type.values()){
 
-                    CheckBox box = new CheckBox("[#" + type.color.toString() + "]" + type.name);
+                    CheckBox box = new CheckBox("[#" + type.color.toString() + "]" + type.getLocalizedName());
 
                     box.update(() -> box.setChecked(type.show));
                     box.changed(() -> {
@@ -237,18 +236,18 @@ public class ArcMessageDialog extends BaseDialog{
         setDialog.cont.row();
 
         setDialog.cont.table(t -> {
-            t.add("最大储存聊天记录(过高可能导致卡顿)：");
+            t.add("@arcMessageDialog.maxRecords");
             t.field(maxMsgRecorded + "", text -> {
                 int record = Math.min(Math.max(Integer.parseInt(text), 1), 9999);
                 maxMsgRecorded = record;
                 Core.settings.put("maxMsgRecorded", record);
             }).valid(Strings::canParsePositiveInt).width(200f).get();
             t.row();
-            t.add("超出限制的聊天记录将在载入地图时清除");
+            t.add("@arcMessageDialog.maxRecordsWarning");
         });
 
         setDialog.addCloseButton();
-        setDialog.button("刷新", Icon.refresh, this::build);
+        setDialog.button("@arcMessageDialog.refresh", Icon.refresh, this::build);
 
         setDialog.show();
     }
@@ -276,31 +275,54 @@ public class ArcMessageDialog extends BaseDialog{
             case markPlayer -> {
                 if(!message.split("AT")[1].contains(player.name)) return;
                 if(sender != null)
-                    ui.announce("[gold]你被[white] " + sender.name + " [gold]戳了一下，请注意查看信息框哦~", 10);
-                else ui.announce("[orange]你被戳了一下，请注意查看信息框哦~", 10);
+                    ui.announce(Core.bundle.format("arcMessageDialog.playerPoke", sender.name), 10);
+                else ui.announce(Core.bundle.get("arcMessageDialog.pokeTip"), 10);
             }
         }
     }
 
     public static Type resolveMarkType(String message){
         if(!message.contains("<ARC")) return null;
-        if(message.contains("标记了") && message.contains("Wave")) return Type.markWave;
-        if(message.contains("标记了") && message.contains("Content")) return Type.markContent;
+        if(message.contains(Core.bundle.get("arcMessageDialog.serverMsg.marked")) && message.contains("Wave")) return Type.markWave;
+        if(message.contains(Core.bundle.get("arcMessageDialog.serverMsg.marked")) && message.contains("Content")) return Type.markContent;
         if(message.contains("<AT>")) return Type.markPlayer;
         if(message.contains("<Schem>")) return Type.schematic;
         return null;
     }
 
-    private static final Seq<String> serverMsg = Seq.with("加入了服务器", "离开了服务器", "自动存档完成", "登录成功", "经验+", "[YELLOW]本局游戏时长:", "[YELLOW]单人快速投票", "[GREEN]回档成功",
-    "[YELLOW]PVP保护时间, 全力进攻吧", "[YELLOW]发起", "[YELLOW]你可以在投票结束前使用", "[GREEN]投票成功", "[GREEN]换图成功,当前地图",
-    "[RED]本地图禁用单位", "[RED]该地图限制空军,禁止进入敌方领空", "[yellow]本地图限制空军", "[YELLOW]火焰过多造成服务器卡顿,自动关闭火焰",
-    " [GREEN]====", "[RED]无效指令", "[RED]该技能", "切换成功",
-    "[violet][投票系统][]", "[coral][-]野生的", "[CYAN][+]野生的"   // xem相关
-    );
+    private static Seq<String> getServerMsgPatterns(){
+        return Seq.with(
+            Core.bundle.get("arcMessageDialog.serverMsg.joined"),
+            Core.bundle.get("arcMessageDialog.serverMsg.left"),
+            Core.bundle.get("arcMessageDialog.serverMsg.autoSave"),
+            Core.bundle.get("arcMessageDialog.serverMsg.loginSuccess"),
+            Core.bundle.get("arcMessageDialog.serverMsg.experience"),
+            Core.bundle.get("arcMessageDialog.serverMsg.gameTime"),
+            Core.bundle.get("arcMessageDialog.serverMsg.quickVote"),
+            Core.bundle.get("arcMessageDialog.serverMsg.rollback"),
+            Core.bundle.get("arcMessageDialog.serverMsg.pvpProtection"),
+            Core.bundle.get("arcMessageDialog.serverMsg.initiated"),
+            Core.bundle.get("arcMessageDialog.serverMsg.voteUsage"),
+            Core.bundle.get("arcMessageDialog.serverMsg.voteSuccess"),
+            Core.bundle.get("arcMessageDialog.serverMsg.mapChange"),
+            Core.bundle.get("arcMessageDialog.serverMsg.unitDisabled"),
+            Core.bundle.get("arcMessageDialog.serverMsg.airRestriction"),
+            Core.bundle.get("arcMessageDialog.serverMsg.airLimit"),
+            Core.bundle.get("arcMessageDialog.serverMsg.flameDisabled"),
+            Core.bundle.get("arcMessageDialog.serverMsg.separator"),
+            Core.bundle.get("arcMessageDialog.serverMsg.invalidCommand"),
+            Core.bundle.get("arcMessageDialog.serverMsg.skill"),
+            Core.bundle.get("arcMessageDialog.serverMsg.switchSuccess"),
+            Core.bundle.get("arcMessageDialog.serverMsg.voteSystem"),
+            Core.bundle.get("arcMessageDialog.serverMsg.wildMinus"),
+            Core.bundle.get("arcMessageDialog.serverMsg.wildPlus")   // xem相关
+        );
+    }
 
     public static Type resolveServerType(String message){
-        if(message.contains("小贴士")) return Type.serverTips;
-        if(message.contains("[YELLOW][技能]")) return Type.serverSkill;
+        if(message.contains(Core.bundle.get("arcMessageDialog.serverMsg.tips"))) return Type.serverTips;
+        if(message.contains(Core.bundle.get("arcMessageDialog.serverMsg.skillTag"))) return Type.serverSkill;
+        Seq<String> serverMsg = getServerMsgPatterns();
         for(int i = 0; i < serverMsg.size; i++){
             if(message.contains(serverMsg.get(i))){
                 return Type.serverMsg;
@@ -315,10 +337,10 @@ public class ArcMessageDialog extends BaseDialog{
 
     void exportMsg(){
         StringBuilder messageHis = new StringBuilder();
-        messageHis.append("下面是[MDTX-").append(VarsX.version).append("] 导出的游戏内聊天记录").append("\n");
-        messageHis.append("*** 当前地图名称: ").append(state.map.name()).append("（模式：").append(state.rules.modeName).append("）\n");
-        messageHis.append("*** 当前波次: ").append(state.wave).append("\n");
-        messageHis.append("成功选取共 ").append(msgList.size).append(" 条记录，如下：\n");
+        messageHis.append(Core.bundle.format("arcMessageDialog.exportHeader", VarsX.version)).append("\n");
+        messageHis.append(Core.bundle.format("arcMessageDialog.exportMapInfo", state.map.name(), state.rules.modeName)).append("\n");
+        messageHis.append(Core.bundle.format("arcMessageDialog.exportWaveInfo", state.wave)).append("\n");
+        messageHis.append(Core.bundle.format("arcMessageDialog.exportSummary", msgList.size)).append("\n");
         for(var msg : msgList){
             messageHis.append(Strings.stripColors(msg.message)).append("\n");
         }
@@ -360,40 +382,38 @@ public class ArcMessageDialog extends BaseDialog{
     }
 
     public enum Type{
-        normal("消息", Color.gray),
+        normal("normal", Color.gray),
 
-        chat("聊天", Color.valueOf("#778899")),
-        console("指令", Color.gold),
+        chat("chat", Color.valueOf("#778899")),
+        console("console", Color.gold),
 
-        markLoc("标记", "坐标", Color.valueOf("#7FFFD4")),
-        markWave("标记", "波次", Color.valueOf("#7FFFD4")),
-        markContent("标记", "内容", Color.valueOf("#7FFFD4")),
-        markPlayer("标记", "玩家", Color.valueOf("#7FFFD4")),
-        arcChatPicture("分享", "图片", Color.yellow),
-        music("分享", "音乐", Color.pink),
-        schematic("分享", "蓝图", Color.blue),
-        district("规划区", "", Color.violet),
+        markLoc("markLoc", "markLocSub", Color.valueOf("#7FFFD4")),
+        markWave("markWave", "markWaveSub", Color.valueOf("#7FFFD4")),
+        markContent("markContent", "markContentSub", Color.valueOf("#7FFFD4")),
+        markPlayer("markPlayer", "markPlayerSub", Color.valueOf("#7FFFD4")),
+        arcChatPicture("arcChatPicture", "arcChatPictureSub", Color.yellow),
+        music("music", "musicSub", Color.pink),
+        schematic("schematic", "schematicSub", Color.blue),
+        district("district", "", Color.violet),
 
-        serverTips("服务器", "小贴士", Color.valueOf("#98FB98"), false),
-        serverMsg("服务器", "信息", Color.valueOf("#cefdce")),
-        serverToast("服务器", "通报", Color.valueOf("#00FA9A")),
-        serverSkill("服务器", "技能", Color.valueOf("#e6ffcc")),
+        serverTips("serverTips", "serverTipsSub", Color.valueOf("#98FB98"), false),
+        serverMsg("serverMsg", "serverMsgSub", Color.valueOf("#cefdce")),
+        serverToast("serverToast", "serverToastSub", Color.valueOf("#00FA9A")),
+        serverSkill("serverSkill", "serverSkillSub", Color.valueOf("#e6ffcc")),
 
-        logicNotify("逻辑", "通报", Color.valueOf("#ffccff")),
-        logicAnnounce("逻辑", "公告", Color.valueOf("#ffccff")),
+        logicNotify("logicNotify", "logicNotifySub", Color.valueOf("#ffccff")),
+        logicAnnounce("logicAnnounce", "logicAnnounceSub", Color.valueOf("#ffccff")),
 
-        eventWorldLoad("事件", "载入地图", Color.valueOf("#ff9999")),
-        eventCoreDestory("事件", "核心摧毁", Color.valueOf("#ffcccc")),
-        eventWave("事件", "波次", Color.valueOf("#ffcc99"));
+        eventWorldLoad("eventWorldLoad", "eventWorldLoadSub", Color.valueOf("#ff9999")),
+        eventCoreDestory("eventCoreDestory", "eventCoreDestorySub", Color.valueOf("#ffcccc")),
+        eventWave("eventWave", "eventWaveSub", Color.valueOf("#ffcc99"));
 
-        public final String name;
         public final String type;
         public final String subClass;
         public final Color color;
         public Boolean show;
 
         Type(String type, String subClass, Color color, Boolean show){
-            this.name = subClass.isEmpty() ? type : (type + "~" + subClass);
             this.type = type;
             this.subClass = subClass;
             this.color = color;
@@ -406,6 +426,18 @@ public class ArcMessageDialog extends BaseDialog{
 
         Type(String type, Color color){
             this(type, "", color);
+        }
+        
+        public String getLocalizedName(){
+            String typeLocalized = Core.bundle.get("arcMessageDialog.type." + type, type);
+            if(subClass.isEmpty()) return typeLocalized;
+            String subLocalized = Core.bundle.get("arcMessageDialog.type." + subClass, subClass);
+            return typeLocalized + "~" + subLocalized;
+        }
+        
+        // For compatibility with existing code that uses .name
+        public String name(){
+            return getLocalizedName();
         }
     }
 }

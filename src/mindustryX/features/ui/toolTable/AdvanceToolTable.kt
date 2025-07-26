@@ -33,19 +33,19 @@ class AdvanceToolTable : Table() {
 
     init {
         background = Styles.black6
-        row().add("警告：该页功能主要供单机作图使用").color(Color.yellow).colspan(2)
+        row().add(Core.bundle.get("advanceToolTable.warning")).color(Color.yellow).colspan(2)
 
-        row().add("单位：")
+        row().add(Core.bundle.get("advanceToolTable.unitSection"))
         with(table().growX().get()) {
             defaults().size(Vars.iconMed).pad(4f)
             button(Items.copper.emoji() + "[acid]+", Styles.cleart) {
                 val core = Vars.player.core() ?: return@button
                 for (item in Vars.content.items()) core.items[item] = core.storageCapacity
-            }.tooltip("[acid]填满核心的所有资源")
+            }.tooltip(Core.bundle.get("advanceToolTable.fillCore"))
             button(Items.copper.emoji() + "[red]-", Styles.cleart) {
                 val core = Vars.player.core() ?: return@button
                 core.items.clear()
-            }.tooltip("[acid]清空核心的所有资源")
+            }.tooltip(Core.bundle.get("advanceToolTable.clearCore"))
             button(UnitTypes.gamma.emoji() + "[acid]+", Styles.cleart) {
                 if (Vars.player.dead()) return@button
                 val data = copyIO { Payload.write(UnitPayload(Vars.player.unit()), it) }
@@ -53,12 +53,12 @@ class AdvanceToolTable : Table() {
                 cloneUnit.resetController()
                 cloneUnit.set(Vars.player.x + Mathf.range(8f), Vars.player.y + Mathf.range(8f))
                 cloneUnit.add()
-            }.tooltip("[acid]克隆")
-            button(UnitTypes.gamma.emoji() + "[red]×", Styles.cleart) { if (!Vars.player.dead()) Vars.player.unit().kill() }.tooltip("[red]自杀")
-            button(Icon.waves, Styles.clearNonei) { factoryDialog.show() }.tooltip("[accent]单位工厂-X")
+            }.tooltip(Core.bundle.get("advanceToolTable.clone"))
+            button(UnitTypes.gamma.emoji() + "[red]×", Styles.cleart) { if (!Vars.player.dead()) Vars.player.unit().kill() }.tooltip(Core.bundle.get("advanceToolTable.suicide"))
+            button(Icon.waves, Styles.clearNonei) { factoryDialog.show() }.tooltip(Core.bundle.get("advanceToolTable.unitFactory"))
         }
 
-        row().add("队伍：")
+        row().add(Core.bundle.get("advanceToolTable.teamSection"))
         with(table().growX().get()) {
             defaults().size(Vars.iconMed).pad(4f)
             for (team in Team.baseTeams) {
@@ -67,23 +67,23 @@ class AdvanceToolTable : Table() {
             }
             button("[violet]+", Styles.flatToggleMenut) { UIExt.teamSelect.pickOne({ team: Team? -> Vars.player.team(team) }, Vars.player.team()) }
                 .checked { !Seq.with(*Team.baseTeams).contains(Vars.player.team()) }
-                .tooltip("[acid]更多队伍选择")
+                .tooltip(Core.bundle.get("advanceToolTable.moreTeams"))
         }
 
-        row().add("建筑：")
+        row().add(Core.bundle.get("advanceToolTable.buildingSection"))
         with(table().growX().get()) {
             defaults().pad(4f)
-            button("创世神", Styles.flatToggleMenut) { Settings.toggle("worldCreator") }
+            button(Core.bundle.get("advanceToolTable.worldCreator"), Styles.flatToggleMenut) { Settings.toggle("worldCreator") }
                 .checked { LogicExt.worldCreator }.wrapLabel(false)
-            button("解禁", Styles.flatToggleMenut) {
+            button(Core.bundle.get("advanceToolTable.unlock"), Styles.flatToggleMenut) {
                 VarsX.allUnlocked.toggle()
-            }.checked { VarsX.allUnlocked.value }.tooltip("[acid]显示并允许建造所有物品").wrapLabel(false)
-            button("地形蓝图", Styles.flatToggleMenut) { Settings.toggle("terrainSchematic") }
+            }.checked { VarsX.allUnlocked.value }.tooltip(Core.bundle.get("advanceToolTable.unlockTooltip")).wrapLabel(false)
+            button(Core.bundle.get("advanceToolTable.terrainSchematic"), Styles.flatToggleMenut) { Settings.toggle("terrainSchematic") }
                 .checked { LogicExt.terrainSchematic }.wrapLabel(false)
-            button("瞬间完成", Styles.cleart) {
+            button(Core.bundle.get("advanceToolTable.instantComplete"), Styles.cleart) {
                 Vars.player.unit()?.apply {
                     if (!canBuild()) {
-                        UIExt.announce("[red]当前单位不可建筑")
+                        UIExt.announce(Core.bundle.get("advanceToolTable.cannotBuild"))
                         return@apply
                     }
                     val bak = updateBuilding
@@ -94,22 +94,22 @@ class AdvanceToolTable : Table() {
             }.wrapLabel(false).disabled { Vars.net.client() }
         }
 
-        row().add("规则：")
+        row().add(Core.bundle.get("advanceToolTable.rulesSection"))
         with(table().growX().get()) {
             defaults().pad(4f)
             button(Iconc.map.toString(), Styles.cleart) { mapInfoDialog.show() }.width(40f)
-            button("无限火力", Styles.flatToggleMenut) { Vars.player.team().rules().cheat = !Vars.player.team().rules().cheat }
-                .checked { Vars.player.team().rules().cheat }.tooltip("[acid]开关自己队的无限火力").wrapLabel(false)
-            button("编辑器", Styles.flatToggleMenut) { Vars.state.rules.editor = !Vars.state.rules.editor }
+            button(Core.bundle.get("advanceToolTable.infiniteFire"), Styles.flatToggleMenut) { Vars.player.team().rules().cheat = !Vars.player.team().rules().cheat }
+                .checked { Vars.player.team().rules().cheat }.tooltip(Core.bundle.get("advanceToolTable.infiniteFireTooltip")).wrapLabel(false)
+            button(Core.bundle.get("advanceToolTable.editor"), Styles.flatToggleMenut) { Vars.state.rules.editor = !Vars.state.rules.editor }
                 .checked { Vars.state.rules.editor }.wrapLabel(false)
-            button("沙盒", Styles.flatToggleMenut) { Vars.state.rules.infiniteResources = !Vars.state.rules.infiniteResources }
+            button(Core.bundle.get("advanceToolTable.sandbox"), Styles.flatToggleMenut) { Vars.state.rules.infiniteResources = !Vars.state.rules.infiniteResources }
                 .checked { Vars.state.rules.infiniteResources }.wrapLabel(false)
             button(Iconc.edit.toString(), Styles.cleart) {
                 rulesDialog.show(Vars.state.rules) { Vars.state.rules }
             }.width(Vars.iconMed)
         }
 
-        row().add("沙漏：")
+        row().add(Core.bundle.get("advanceToolTable.timeSection"))
         table(TimeControl::draw)
     }
 

@@ -43,7 +43,7 @@ public class WaveInfoDisplay extends Table{
             buttons.defaults().size(32);
             buttons.add().growX();
 
-            buttons.button(Icon.waves, Styles.clearNonei, iconMed, waveInfoDialog::show).tooltip("波次信息");
+            buttons.button(Icon.waves, Styles.clearNonei, iconMed, waveInfoDialog::show).tooltip("@waveInfoDisplay.waveInfo");
 
             buttons.button("<", Styles.cleart, () -> shiftWaveOffset(-1));
             var i = buttons.button("", Styles.cleart, this::setWaveOffsetDialog).minHeight(48).maxWidth(160f).get();
@@ -51,25 +51,25 @@ public class WaveInfoDisplay extends Table{
             i.getLabel().setText(() -> "" + (state.wave + waveOffset));
             buttons.button(">", Styles.cleart, () -> shiftWaveOffset(1));
 
-            buttons.button("R", Styles.cleart, () -> setWaveOffset(0)).tooltip("恢复当前波次");
-            buttons.button("J", Styles.cleart, () -> ui.showConfirm("[red]这是一个作弊功能[]\n快速跳转到目标波次(不刷兵)", () -> {
+            buttons.button("R", Styles.cleart, () -> setWaveOffset(0)).tooltip("@waveInfoDisplay.restoreCurrent");
+            buttons.button("J", Styles.cleart, () -> ui.showConfirm(Core.bundle.get("waveInfoDisplay.cheatFunction"), () -> {
                 state.wave += waveOffset;
                 setWaveOffset(0);
-            })).tooltip("强制跳波").disabled((b) -> net.client());
+            })).tooltip("@waveInfoDisplay.forceSkip").disabled((b) -> net.client());
 
             buttons.button(Icon.settingsSmall, Styles.clearNonei, iconMed, () -> UIExtKt.showFloatSettingsPanel(table -> {
                 for(var it : UIExt.coreItems.settings){
                     it.buildUI(table);
                 }
-            })).tooltip("配置资源显示");
-            buttons.button(Icon.eyeOffSmall, Styles.clearNonei, iconMed, () -> enable.set(false)).tooltip("隐藏波次显示");
+            })).tooltip("@waveInfoDisplay.configResources");
+            buttons.button(Icon.eyeOffSmall, Styles.clearNonei, iconMed, () -> enable.set(false)).tooltip("@waveInfoDisplay.hideWaveDisplay");
 
             buttons.add().growX();
             buttons.add("♐>");
-            buttons.button(Icon.wavesSmall, Styles.clearNonei, iconMed, () -> shareWaveInfo(state.wave + waveOffset)).tooltip("分享波次信息");
-            buttons.button(Icon.powerSmall, Styles.clearNonei, iconMed, () -> UIExt.coreItems.sharePowerInfo()).tooltip("分享电力情况");
-            buttons.button(new TextureRegionDrawable(Items.copper.uiIcon), Styles.clearNonei, iconSmall, () -> UIExt.coreItems.shareItemInfo()).tooltip("分享库存情况");
-            buttons.button(Icon.unitsSmall, Styles.clearNonei, iconMed, () -> UIExt.coreItems.shareUnitInfo()).tooltip("分享单位数量");
+            buttons.button(Icon.wavesSmall, Styles.clearNonei, iconMed, () -> shareWaveInfo(state.wave + waveOffset)).tooltip("@waveInfoDisplay.shareWaveInfo");
+            buttons.button(Icon.powerSmall, Styles.clearNonei, iconMed, () -> UIExt.coreItems.sharePowerInfo()).tooltip("@waveInfoDisplay.sharePowerInfo");
+            buttons.button(new TextureRegionDrawable(Items.copper.uiIcon), Styles.clearNonei, iconSmall, () -> UIExt.coreItems.shareItemInfo()).tooltip("@waveInfoDisplay.shareItemInfo");
+            buttons.button(Icon.unitsSmall, Styles.clearNonei, iconMed, () -> UIExt.coreItems.shareUnitInfo()).tooltip("@waveInfoDisplay.shareUnitInfo");
         }).fillX().row();
 
         waveInfo = new Table().left().top();
@@ -95,16 +95,16 @@ public class WaveInfoDisplay extends Table{
     public void shareWaveInfo(int wave){
         if(!state.rules.waves) return;
         StringBuilder builder = new StringBuilder();
-        builder.append("第").append(wave).append("波");
+        builder.append(Core.bundle.format("waveInfoDisplay.wave", wave));
         if(wave >= state.wave){
             builder.append("(");
             if(wave > state.wave){
-                builder.append("还有").append(wave - state.wave).append("波, ");
+                builder.append(Core.bundle.format("waveInfoDisplay.remaining", wave - state.wave));
             }
             int timer = (int)(state.wavetime + (wave - state.wave) * state.rules.waveSpacing);
             builder.append(FormatDefault.duration((float)timer / 60)).append(")");
         }
-        builder.append("：");
+        builder.append(Core.bundle.get("waveInfoDisplay.waveColon"));
 
         builder.append(ArcMessageDialog.getWaveInfo(wave));
         UIExt.shareMessage(Iconc.waves, builder.toString());
@@ -120,8 +120,8 @@ public class WaveInfoDisplay extends Table{
     }
 
     private void setWaveOffsetDialog(){
-        Dialog lsSet = new BaseDialog("波次设定");
-        lsSet.cont.add("设定查询波次").padRight(5f).left();
+        Dialog lsSet = new BaseDialog("@waveInfoDisplay.waveSettingTitle");
+        lsSet.cont.add("@waveInfoDisplay.setQueryWave").padRight(5f).left();
         TextField field = lsSet.cont.field(state.wave + waveOffset + "", text -> waveOffset = Integer.parseInt(text) - state.wave).size(320f, 54f).valid(Strings::canParsePositiveInt).maxTextLength(100).get();
         lsSet.cont.row();
         lsSet.cont.slider(1, ArcWaveSpawner.calWinWaveClamped(), 1, res -> {

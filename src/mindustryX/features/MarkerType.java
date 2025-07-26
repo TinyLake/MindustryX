@@ -43,7 +43,7 @@ public class MarkerType{
         fillParent = true;
         touchable = Touchable.enabled;
         background(((TextureRegionDrawable)Tex.whiteui).tint(0, 0, 0, 0.1f));
-        center().add("[cyan]标记模式,点击屏幕标记.", Styles.outlineLabel);
+        center().add(Core.bundle.get("markerType.markMode"), Styles.outlineLabel);
         tapped(() -> {
             MarkerType.showPanUI();
             Core.app.post(this::remove);
@@ -218,7 +218,7 @@ public class MarkerType{
 
     public void markWithMessage(Vec2 pos){
         if(last != null && last.time < heatTime){
-            Vars.ui.announce("请不要频繁标记!");
+            Vars.ui.announce(Core.bundle.get("markerType.doNotSpam"));
             return;
         }
         last = at(pos);
