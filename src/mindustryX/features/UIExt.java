@@ -49,7 +49,7 @@ public class UIExt{
             vec.set(player.tileX(), player.tileY());
             x.setText(String.valueOf(vec.x));
             y.setText(String.valueOf(vec.y));
-        }).tooltip(b -> b.label(() -> "选择玩家当前位置：" + player.tileX() + "," + player.tileY())).height(50f);
+        }).tooltip(b -> b.label(() -> Core.bundle.format("uiExt.selectPlayerPosition", player.tileX(), player.tileY()))).height(50f);
 
         tt.button(StatusEffects.blasted.emoji(), () -> {
             var last = MarkerType.getLastPos();
@@ -59,7 +59,7 @@ public class UIExt{
             y.setText(String.valueOf(vec.y));
         }).height(50f).tooltip((t) -> t.label(() -> {
             var last = MarkerType.getLastPos();
-            if(last == null) return "[red]未标记";
+            if(last == null) return Core.bundle.get("uiExt.notMarked");
             return "选择上个标记点：" + FormatDefault.formatTile(last);
         }));
     }

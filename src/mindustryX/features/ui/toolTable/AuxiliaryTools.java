@@ -39,10 +39,10 @@ public class AuxiliaryTools extends Table{
 
     protected void rebuild(){
         defaults().size(40);
-        aiButton(new ArcMinerAI(), UnitTypes.mono.region, "矿机AI");
-        aiButton(new BuilderAI(), UnitTypes.poly.region, "重建AI");
-        aiButton(new RepairAI(), UnitTypes.mega.region, "修复AI");
-        aiButton(new DefenderAI(), UnitTypes.oct.region, "保护AI");
+        aiButton(new ArcMinerAI(), UnitTypes.mono.region, "@auxiliaryTools.minerAI");
+        aiButton(new BuilderAI(), UnitTypes.poly.region, "@auxiliaryTools.builderAI");
+        aiButton(new RepairAI(), UnitTypes.mega.region, "@auxiliaryTools.repairAI");
+        aiButton(new DefenderAI(), UnitTypes.oct.region, "@auxiliaryTools.protectorAI");
         button(Icon.settingsSmall, Styles.clearNonei, iconMed, this::showAiSettingDialog);
 
         row();
@@ -58,9 +58,9 @@ public class AuxiliaryTools extends Table{
         }).tooltip("在建造列表加入被摧毁建筑");
         var t = button(new TextureRegionDrawable(Items.copper.uiIcon), Styles.clearNoneTogglei, () -> AutoFill.enable ^= true).tooltip("一键装填").checked((b) -> AutoFill.enable).get();
         SettingsV2.bindQuickSettings(t, AutoFill.INSTANCE.getSettings());
-        toggleButton(Icon.modeAttack, "autotarget", "自动攻击");
-        toggleButton(new TextureRegionDrawable(UnitTypes.vela.uiIcon), "forceBoost", "强制助推");
-        toggleButton(Icon.eyeSmall, "detach-camera", "视角脱离玩家");
+        toggleButton(Icon.modeAttack, "autotarget", "@auxiliaryTools.autoAttack");
+        toggleButton(new TextureRegionDrawable(UnitTypes.vela.uiIcon), "forceBoost", "@auxiliaryTools.forceBoost");
+        toggleButton(Icon.eyeSmall, "detach-camera", "@auxiliaryTools.detachCamera");
 
         if(!mobile) return;
         row();
@@ -85,7 +85,7 @@ public class AuxiliaryTools extends Table{
             boolean setting = Core.settings.getBool(settingName);
 
             Core.settings.put(settingName, !setting);
-            UIExt.announce("已" + (setting ? "取消" : "开启") + description);
+            UIExt.announce(Core.bundle.format("auxiliaryTools.toggleStatus", setting ? Core.bundle.get("auxiliaryTools.cancel") : Core.bundle.get("auxiliaryTools.enable"), description));
         }).tooltip(description, true).checked(b -> Core.settings.getBool(settingName));
     }
 
@@ -100,10 +100,10 @@ public class AuxiliaryTools extends Table{
     private void showAiSettingDialog(){
         int cols = (int)Math.max(Core.graphics.getWidth() / Scl.scl(480), 1);
 
-        BaseDialog dialog = new BaseDialog("ARC-AI设定器");
+        BaseDialog dialog = new BaseDialog("@auxiliaryTools.aiConfigTitle");
 
         dialog.cont.table(t -> {
-            t.add("minerAI-矿物筛选器").color(Pal.accent).pad(cols / 2f).center().row();
+            t.add("@auxiliaryTools.minerFilter").color(Pal.accent).pad(cols / 2f).center().row();
             t.image().color(Pal.accent).fillX().row();
             t.table(list -> {
                 int i = 0;
