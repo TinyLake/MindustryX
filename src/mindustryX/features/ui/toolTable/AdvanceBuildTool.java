@@ -72,20 +72,20 @@ public class AdvanceBuildTool extends Table{
             }
         });
         add().height(40);
-        button("", Styles.flatTogglet, () -> placement = BuildRange.global).checked((b) -> placement == BuildRange.global).tooltip("[cyan]全局检查").size(30f);
+        button("", Styles.flatTogglet, () -> placement = BuildRange.global).checked((b) -> placement == BuildRange.global).tooltip("@advanceBuildTool.globalCheck").size(30f);
         button("\uE818", Styles.flatTogglet, () -> {
             selection = control.input.lastSelection;
             if(selection.area() < 10f){
-                UIExt.announce("当前选定区域为空，请通过F规划区域");
+                UIExt.announce(Core.bundle.get("advanceBuildTool.emptyZone"));
                 return;
             }
             placement = BuildRange.zone;
-        }).checked((b) -> placement == BuildRange.zone).tooltip("[cyan]选择范围").size(30f);
+        }).checked((b) -> placement == BuildRange.zone).tooltip("@advanceBuildTool.selectRange").size(30f);
         button(Blocks.coreShard.emoji(), Styles.flatTogglet, () -> {
             placement = BuildRange.team;
             rebuild();
-        }).checked((b) -> placement == BuildRange.team).tooltip("[cyan]队伍区域").size(30f);
-        button(UnitTypes.gamma.emoji(), Styles.flatTogglet, () -> placement = BuildRange.player).checked((b) -> placement == BuildRange.player).tooltip("[cyan]玩家建造区").size(30f);
+        }).checked((b) -> placement == BuildRange.team).tooltip("@advanceBuildTool.teamArea").size(30f);
+        button(UnitTypes.gamma.emoji(), Styles.flatTogglet, () -> placement = BuildRange.player).checked((b) -> placement == BuildRange.player).tooltip("@advanceBuildTool.playerBuildArea").size(30f);
 
         add().width(16);
         button("", Styles.flatTogglet, () -> placement = BuildRange.find).update((b) -> {
@@ -103,7 +103,7 @@ public class AdvanceBuildTool extends Table{
         }).height(30f).tooltip("查找方块");
         button(String.valueOf(Iconc.settings), Styles.flatBordert, () -> {
             if(target == null){
-                UIExt.announce("[yellow]当前选中物品为空，请在物品栏选中建筑");
+                UIExt.announce(Core.bundle.get("advanceBuildTool.noItemSelected"));
                 return;
             }
             find = target;
@@ -135,13 +135,13 @@ public class AdvanceBuildTool extends Table{
             var plans = player.unit().plans();
             if(plans.size > 1000){
                 while(plans.size > 1000) plans.removeLast();
-                UIExt.announce("[yellow]建筑过多，避免卡顿，仅保留前1000个规划");
+                UIExt.announce(Core.bundle.get("advanceBuildTool.tooManyBuildings"));
             }
         }).tooltip("放置/替换").size(30f);
     }
 
     public static void showWorldProcessorInfo(){
-        Log.info("当前地图:@", state.map.name());
+        Log.info(Core.bundle.format("advanceBuildTool.currentMap", state.map.name()));
         int[] data = new int[3];
         Groups.build.each(b -> {
             if(b instanceof LogicBlock.LogicBuild lb && lb.block.privileged){
