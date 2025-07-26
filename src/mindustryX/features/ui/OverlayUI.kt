@@ -330,7 +330,7 @@ object OverlayUI {
             t.defaults().size(Vars.iconLarge).width(Vars.iconLarge * 1.5f).pad(4f)
             t.button(Icon.add) {
                 UIExtKt.showFloatSettingsPanel {
-                    add("添加面板").color(Color.gold).align(Align.center).row()
+                    add(Core.bundle.get("overlayUI.addPanel")).color(Color.gold).align(Align.center).row()
                     defaults().minWidth(120f).fillX().pad(4f)
                     val notAvailable = mutableListOf<Window>()
                     windows.forEach {
@@ -345,7 +345,7 @@ object OverlayUI {
                         }).row()
                     }
                     if (notAvailable.isNotEmpty()) {
-                        add("当前不可用的面板:").align(Align.center).row()
+                        add(Core.bundle.get("overlayUI.unavailablePanels")).align(Align.center).row()
                         notAvailable.forEach {
                             add(TextButton(it.data.title).apply {
                                 label.setWrap(false)

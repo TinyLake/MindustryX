@@ -55,8 +55,8 @@ public class AuxiliaryTools extends Table{
                     if(++count >= 255) break;
                 }
             }
-        }).tooltip("在建造列表加入被摧毁建筑");
-        var t = button(new TextureRegionDrawable(Items.copper.uiIcon), Styles.clearNoneTogglei, () -> AutoFill.enable ^= true).tooltip("一键装填").checked((b) -> AutoFill.enable).get();
+        }).tooltip("@auxiliaryTools.addDestroyedBuildings");
+        var t = button(new TextureRegionDrawable(Items.copper.uiIcon), Styles.clearNoneTogglei, () -> AutoFill.enable ^= true).tooltip("@auxiliaryTools.oneClickFill").checked((b) -> AutoFill.enable).get();
         SettingsV2.bindQuickSettings(t, AutoFill.INSTANCE.getSettings());
         toggleButton(Icon.modeAttack, "autotarget", "@auxiliaryTools.autoAttack");
         toggleButton(new TextureRegionDrawable(UnitTypes.vela.uiIcon), "forceBoost", "@auxiliaryTools.forceBoost");

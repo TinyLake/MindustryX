@@ -137,24 +137,24 @@ public class LogicSupport{
                 consumer.get(canvas.save());
                 clearTables();
                 UIExt.announce("[orange]已更新编辑的逻辑！");
-            }).tooltip("更新编辑的逻辑");
+            }).tooltip("@logicSupport.updateLogic");
             t.button(Icon.eyeSmall, Styles.clearTogglei, () -> {
                 changeSplash.toggle();
                 String text = "[orange]已" + (changeSplash.get() ? "开启" : "关闭") + "变动闪烁";
                 UIExt.announce(text);
-            }).checked((b) -> changeSplash.get()).tooltip("变量变动闪烁");
+            }).checked((b) -> changeSplash.get()).tooltip("@logicSupport.changeSplash");
             t.button(Icon.refreshSmall, Styles.clearTogglei, () -> {
                 autoRefresh = !autoRefresh;
                 String text = "[orange]已" + (autoRefresh ? "开启" : "关闭") + "变量自动更新";
                 UIExt.announce(text);
-            }).checked((b) -> autoRefresh).tooltip("自动刷新变量");
+            }).checked((b) -> autoRefresh).tooltip("@logicSupport.autoRefresh");
             t.button(Icon.pause, Styles.clearTogglei, () -> {
                 if(state.isPaused()) state.set(State.playing);
                 else state.set(State.paused);
                 String text = state.isPaused() ? "已暂停" : "已继续游戏";
                 UIExt.announce(text);
-            }).checked((b) -> state.isPaused()).tooltip("暂停逻辑(游戏)运行");
-            t.button(Icon.eyeOffSmall, Styles.cleari, visible::toggle).tooltip("隐藏逻辑辅助器");
+            }).checked((b) -> state.isPaused()).tooltip("@logicSupport.pauseLogic");
+            t.button(Icon.eyeOffSmall, Styles.cleari, visible::toggle).tooltip("@logicSupport.hideAssistant");
         });
     }
 
