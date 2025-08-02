@@ -37,6 +37,7 @@ public class UIExt{
 
         UIExtKt.init();
         Settings.addSettings();
+        AutoUpdate.INSTANCE.initUI();
     }
 
     public static void announce(String text){

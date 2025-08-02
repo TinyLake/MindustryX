@@ -64,17 +64,15 @@ object AutoUpdate {
 
     private val commitsTable by lazy { CommitsTable(VarsX.repo) }
 
-    init {
-        Events.on(EventType.ClientLoadEvent::class.java) {
-            Vars.ui.menuGroup.fill { c ->
-                c.bottom().right().defaults().size(200f, 60f)
-                c.button("@mdtx.report", Icon.github) { UIExt.openURI("https://github.com/${VarsX.repo}") }.row()
-                c.button("@mdtx.qqLink", Icon.units) { UIExt.openURI(VarsX.qqLink) }.row()
-                c.button("@be.check", Icon.refresh) { showDialog() }.update {
-                    it.label.color.apply {
-                        set(Color.white)
-                        if (newVersion != null) lerp(Pal.accent, Mathf.absin(5f, 1f))
-                    }
+    fun initUI() {
+        Vars.ui.menuGroup.fill { c ->
+            c.bottom().right().defaults().size(200f, 60f)
+            c.button("@mdtx.report", Icon.github) { UIExt.openURI("https://github.com/${VarsX.repo}") }.row()
+            c.button("@mdtx.qqLink", Icon.units) { UIExt.openURI(VarsX.qqLink) }.row()
+            c.button("@be.check", Icon.refresh) { showDialog() }.update {
+                it.label.color.apply {
+                    set(Color.white)
+                    if (newVersion != null) lerp(Pal.accent, Mathf.absin(5f, 1f))
                 }
             }
         }

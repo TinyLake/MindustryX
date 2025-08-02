@@ -7,6 +7,7 @@ import arc.util.*;
 import arc.util.Log.*;
 import mindustry.*;
 import mindustry.core.*;
+import mindustry.game.*;
 import mindustry.game.EventType.*;
 import mindustry.mod.*;
 import mindustry.mod.Mods.*;
@@ -103,6 +104,7 @@ public class Main extends Mod{
             }
             VarsX.isLoader = true;
             AutoUpdate.INSTANCE.checkUpdate();
+            Events.on(EventType.ClientLoadEvent.class, (e) -> AutoUpdate.INSTANCE.initUI());
             return false;
         }
         return true;
