@@ -1,0 +1,49 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: way-zer <himc.wicp@gmail.com>
+Date: Sun, 3 Aug 2025 19:20:34 +0800
+Subject: [PATCH] FC: allow to publish zip mod to steam
+
+---
+ core/src/mindustry/mod/Mods.java | 22 ++++++++++++++++------
+ 1 file changed, 16 insertions(+), 6 deletions(-)
+
+diff --git a/core/src/mindustry/mod/Mods.java b/core/src/mindustry/mod/Mods.java
+index edcf254a1b7045f921598ba13d0aef31a710e2a8..181544ecdb75551ea9d332c29bcf7e09d72c6019 100644
+--- a/core/src/mindustry/mod/Mods.java
++++ b/core/src/mindustry/mod/Mods.java
+@@ -1361,7 +1361,22 @@ public class Mods implements Loadable{
+ 
+         @Override
+         public Fi createSteamFolder(String id){
+-            return file;
++            if(file.isDirectory()) return file;
++            Fi out = tmpDirectory.child("mod_" + name);
++            out.deleteDirectory();
++            copyRecursive(file, out);
++            return out;
++        }
++
++        private static void copyRecursive(Fi from, Fi to){
++            if(from.isDirectory()){
++                to.mkdirs();
++                for(Fi file : from.list()){
++                    copyRecursive(file, to.child(file.name()));
++                }
++            }else{
++                from.copyTo(to);
++            }
+         }
+ 
+         @Override
+@@ -1371,11 +1386,6 @@ public class Mods implements Loadable{
+ 
+         @Override
+         public boolean prePublish(){
+-            if(!file.isDirectory()){
+-                ui.showErrorMessage("@mod.folder.missing");
+-                return false;
+-            }
+-
+             if(!file.child("preview.png").exists()){
+                 ui.showErrorMessage("@mod.preview.missing");
+                 return false;
