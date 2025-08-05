@@ -169,7 +169,7 @@ index 6213a8a2a05f46c647a3deb3a2bbcf8be922b120..97c69dd2cfe25d81b94b7031fbd59196
  
              Tile other = world.tile(link);
 diff --git a/core/src/mindustry/world/blocks/distribution/Junction.java b/core/src/mindustry/world/blocks/distribution/Junction.java
-index cadd970ab157b93d2aa1667df2a8317085f51eaa..b452ce570ec65cada0eeca929d723c39ada7c506 100644
+index cadd970ab157b93d2aa1667df2a8317085f51eaa..a40817685dd7154faeea00c432648f556a500c8e 100644
 --- a/core/src/mindustry/world/blocks/distribution/Junction.java
 +++ b/core/src/mindustry/world/blocks/distribution/Junction.java
 @@ -1,11 +1,17 @@
@@ -202,10 +202,10 @@ index cadd970ab157b93d2aa1667df2a8317085f51eaa..b452ce570ec65cada0eeca929d723c39
 +                Draw.color(Color.white, RenderExt.hiddenItemTransparency / 100f);
 +                for(int dir = 0; dir < 4; dir++){
 +                    float
-+                    endx = x + Geometry.d4(dir).x * tilesize / 2f + Geometry.d4(Math.floorMod(dir + 1, 4)).x * tilesize / 4f,
-+                    endy = y + Geometry.d4(dir).y * tilesize / 2f + Geometry.d4(Math.floorMod(dir + 1, 4)).y * tilesize / 4f,
-+                    begx = x - Geometry.d4(dir).x * tilesize / 4f + Geometry.d4(Math.floorMod(dir + 1, 4)).x * tilesize / 4f,
-+                    begy = y - Geometry.d4(dir).y * tilesize / 4f + Geometry.d4(Math.floorMod(dir + 1, 4)).y * tilesize / 4f;
++                    endx = x + Geometry.d4(dir).x * tilesize / 2f + Geometry.d4(dir + 1).x * tilesize / 4f,
++                    endy = y + Geometry.d4(dir).y * tilesize / 2f + Geometry.d4(dir + 1).y * tilesize / 4f,
++                    begx = x - Geometry.d4(dir).x * tilesize / 4f + Geometry.d4(dir + 1).x * tilesize / 4f,
++                    begy = y - Geometry.d4(dir).y * tilesize / 4f + Geometry.d4(dir + 1).y * tilesize / 4f;
 +
 +                    Item item;
 +                    for(int i = 0; (item = buffer.getItem(dir, i)) != null; i++){
