@@ -38,7 +38,7 @@ MinRi2 <2275045670@qq.com> on 2025/5/3
  6 files changed, 211 insertions(+), 21 deletions(-)
 
 diff --git a/core/src/mindustry/logic/LCanvas.java b/core/src/mindustry/logic/LCanvas.java
-index 2bfd96ac4b9685bde38edee0d80be66380fdf6f2..b8a3902830d14b2c5bd77c3e1160263574f9ed5a 100644
+index 2bfd96ac4b9685bde38edee0d80be66380fdf6f2..cfd9503839daf8b4043827f2526d194ed5a3ed65 100644
 --- a/core/src/mindustry/logic/LCanvas.java
 +++ b/core/src/mindustry/logic/LCanvas.java
 @@ -18,6 +18,9 @@ import mindustry.gen.*;
@@ -95,7 +95,7 @@ index 2bfd96ac4b9685bde38edee0d80be66380fdf6f2..b8a3902830d14b2c5bd77c3e11602635
 +        @MindustryXApi
 +        public void toggleComment(){
 +            StatementElem newElem;
-+            if(st instanceof PrintStatement pst){ //print->代码
++            if(st instanceof PrintStatement pst && !pst.value.isEmpty()){ //print->代码
 +                String code = pst.value.replace("_", " ");
 +                Seq<LStatement> lsStatement = LAssembler.read(code, privileged);
 +                LStatement stNew = lsStatement.first();
