@@ -268,10 +268,10 @@ index f7012546ce66d7e054a21bf10809b54974832827..33bcead34c228067ba30de99860f80e8
          returnItem = null;
          returnCount = 0;
 diff --git a/core/src/mindustry/world/blocks/storage/CoreBlock.java b/core/src/mindustry/world/blocks/storage/CoreBlock.java
-index 0583fe6b52eb526f3fb3697eb19104653765a11f..07dfd6a13a5acdb4f3df0ab2c60e187ecc169bf7 100644
+index 65d723da57920144c6ced3a35498ef5c253132b0..8a3ab1ad3013cc7d81c7e5edeb8b3367aa275f73 100644
 --- a/core/src/mindustry/world/blocks/storage/CoreBlock.java
 +++ b/core/src/mindustry/world/blocks/storage/CoreBlock.java
-@@ -92,6 +92,7 @@ public class CoreBlock extends StorageBlock{
+@@ -93,6 +93,7 @@ public class CoreBlock extends StorageBlock{
          player.set(core);
  
          if(!net.client()){

@@ -155,7 +155,7 @@ index ae4a1c8f0d28895875642ebd2903b9d5c3c3e483..353ad72b8d6dbab84856aeed50606fe0
                  case pan -> {
                      control.input.logicCutscene = true;
 diff --git a/core/src/mindustry/logic/LStatements.java b/core/src/mindustry/logic/LStatements.java
-index fe9d07040e79fc213f35428f65cfd4d7db69615b..fa6d4ce9315e250f19345d7a718fcff2a18add77 100644
+index 2d3a22342e4f6cfaa8524bcd9762898ecb1df52d..4d8c89b530ff5e341646faf858ef96191669ab2f 100644
 --- a/core/src/mindustry/logic/LStatements.java
 +++ b/core/src/mindustry/logic/LStatements.java
 @@ -3,6 +3,9 @@ package mindustry.logic;
@@ -176,7 +176,7 @@ index fe9d07040e79fc213f35428f65cfd4d7db69615b..fa6d4ce9315e250f19345d7a718fcff2
  
  import static mindustry.Vars.*;
  import static mindustry.logic.LCanvas.*;
-@@ -1010,6 +1014,29 @@ public class LStatements{
+@@ -1012,6 +1016,29 @@ public class LStatements{
              table.table(this::rebuild);
  
              table.add().growX();

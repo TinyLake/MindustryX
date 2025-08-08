@@ -1,0 +1,144 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Anuken <arnukren@gmail.com>
+Date: Fri, 1 Aug 2025 04:32:17 -0400
+Subject: [PATCH] Schematic content ID mapping
+
+---
+ core/src/mindustry/game/Schematics.java | 34 ++++++++++++++++++++++---
+ core/src/mindustry/io/TypeIO.java       | 21 ++++++++++-----
+ 2 files changed, 45 insertions(+), 10 deletions(-)
+
+diff --git a/core/src/mindustry/game/Schematics.java b/core/src/mindustry/game/Schematics.java
+index 93b85a591a895fb117f7b4fb983f25cd90a923a0..12def3b98b7677fc1deefd0c6b01c3a739834672 100644
+--- a/core/src/mindustry/game/Schematics.java
++++ b/core/src/mindustry/game/Schematics.java
+@@ -25,6 +25,7 @@ import mindustry.gen.*;
+ import mindustry.input.*;
+ import mindustry.input.Placement.*;
+ import mindustry.io.*;
++import mindustry.io.TypeIO.*;
+ import mindustry.world.*;
+ import mindustry.world.blocks.ConstructBlock.*;
+ import mindustry.world.blocks.distribution.*;
+@@ -539,6 +540,8 @@ public class Schematics implements Loadable{
+ 
+         int ver = input.read();
+ 
++        if(ver > version) throw new IOException("Unknown version: " + ver + " (are you trying to load a schematic from a newer version of the game?)");
++
+         try(DataInputStream stream = new DataInputStream(new InflaterInputStream(input))){
+             short width = stream.readShort(), height = stream.readShort();
+ 
+@@ -550,13 +553,28 @@ public class Schematics implements Loadable{
+                 map.put(stream.readUTF(), stream.readUTF());
+             }
+ 
++            ContentMapper mapper = null;
++
++            //set up content mapping if found; this should not fail
++            if(map.containsKey("contentMap")){
++                IntMap<ObjectIntMap<String>> nameMap = JsonIO.json.fromJson(IntMap.class, ObjectIntMap.class, map.get("contentMap", "{}"));
++                IntMap<IntMap<Content>> contentMap = new IntMap<>();
++                for(var entry : nameMap){
++                    var inner = new IntMap<Content>();
++                    contentMap.put(entry.key, inner);
++                    for(var ce : entry.value){
++                        inner.put(ce.value, content.getByName(ContentType.all[entry.key], ce.key));
++                    }
++                }
++                mapper = (type, id) -> contentMap.get(type.ordinal(), IntMap::new).get(id);
++            }
++
+             String[] labels = null;
+ 
+             //try to read the categories, but skip if it fails
+             try{
+                 labels = JsonIO.read(String[].class, map.get("labels", "[]"));
+-            }catch(Exception ignored){
+-            }
++            }catch(Exception ignored){}
+ 
+             IntMap<Block> blocks = new IntMap<>();
+             int length = stream.readUnsignedByte();
+@@ -574,7 +592,7 @@ public class Schematics implements Loadable{
+             for(int i = 0; i < total; i++){
+                 Block block = blocks.get(stream.readByte());
+                 int position = stream.readInt();
+-                Object config = ver == 0 ? mapConfig(block, stream.readInt(), position) : TypeIO.readObject(Reads.get(stream));
++                Object config = ver == 0 ? mapConfig(block, stream.readInt(), position) : TypeIO.readObject(Reads.get(stream), false, mapper);
+                 byte rotation = stream.readByte();
+                 if(block != Blocks.air){
+                     tiles.add(new Stile(block, Point2.x(position), Point2.y(position), config, rotation));
+@@ -602,6 +620,16 @@ public class Schematics implements Loadable{
+ 
+             schematic.tags.put("labels", JsonIO.write(schematic.labels.toArray(String.class)));
+ 
++            //write a map for content name -> id to make sure remapping doesn't occur
++            IntMap<ObjectIntMap<String>> contentMap = new IntMap<>();
++            for(var tile : schematic.tiles){
++                if(tile.config instanceof MappableContent c){
++                    contentMap.get(c.getContentType().ordinal(), ObjectIntMap::new).put(c.name, c.id);
++                }
++            }
++
++            schematic.tags.put("contentMap", JsonIO.write(contentMap));
++
+             stream.writeByte(schematic.tags.size);
+             for(var e : schematic.tags.entries()){
+                 stream.writeUTF(e.key);
+diff --git a/core/src/mindustry/io/TypeIO.java b/core/src/mindustry/io/TypeIO.java
+index e8770f067564f81e3462373b5300538a83e97f03..2ffcf008db5c3cd7bd0ce3c65224ba9ef5e9506e 100644
+--- a/core/src/mindustry/io/TypeIO.java
++++ b/core/src/mindustry/io/TypeIO.java
+@@ -138,14 +138,16 @@ public class TypeIO{
+         }
+     }
+ 
+-    @Nullable
+-    public static Object readObject(Reads read){
++    public static @Nullable Object readObject(Reads read){
+         return readObjectBoxed(read, false);
+     }
+ 
+-    /** Reads an object, but boxes buildings. */
+-    @Nullable
+-    public static Object readObjectBoxed(Reads read, boolean box){
++    /** Reads an object, but optionally boxes buildings. */
++    public static @Nullable Object readObjectBoxed(Reads read, boolean box){
++        return readObject(read, box, null);
++    }
++
++    public static @Nullable Object readObject(Reads read, boolean box, @Nullable ContentMapper mapper){
+         byte type = read.b();
+         return switch(type){
+             case 0 -> null;
+@@ -153,7 +155,7 @@ public class TypeIO{
+             case 2 -> read.l();
+             case 3 -> read.f();
+             case 4 -> readString(read);
+-            case 5 -> content.getByID(ContentType.all[read.b()], read.s());
++            case 5 -> mapper == null ? content.getByID(ContentType.all[read.b()], read.s()) : mapper.get(ContentType.all[read.b()], read.s());
+             case 6 -> {
+                 short length = read.s();
+                 IntSeq arr = new IntSeq(length);
+@@ -202,7 +204,7 @@ public class TypeIO{
+             case 22 -> {
+                 int objlen = read.i();
+                 Object[] objs = new Object[objlen];
+-                for(int i = 0; i < objlen; i++) objs[i] = readObjectBoxed(read, box);
++                for(int i = 0; i < objlen; i++) objs[i] = readObject(read, box, mapper);
+                 yield objs;
+             }
+             case 23 -> content.unitCommand(read.us());
+@@ -1093,6 +1095,11 @@ public class TypeIO{
+         }
+     }
+ 
++    /** Converter of an ID to a content instance. */
++    public interface ContentMapper{
++        Content get(ContentType type, int id);
++    }
++
+     public interface Boxed<T> {
+         T unbox();
+     }

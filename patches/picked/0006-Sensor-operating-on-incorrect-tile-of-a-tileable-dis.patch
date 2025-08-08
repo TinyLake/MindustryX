@@ -1,0 +1,51 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Cardillan <122014763+cardillan@users.noreply.github.com>
+Date: Sun, 27 Jul 2025 16:47:44 +0200
+Subject: [PATCH] Sensor operating on incorrect tile of a tileable display
+ (#11069)
+
+* Sensor operating on incorrect tile of a tileable display
+
+* Moved rootDisplay to LogicDisplayBuild
+---
+ core/src/mindustry/world/blocks/logic/LogicDisplay.java     | 6 ++++--
+ .../mindustry/world/blocks/logic/TileableLogicDisplay.java  | 2 --
+ 2 files changed, 4 insertions(+), 4 deletions(-)
+
+diff --git a/core/src/mindustry/world/blocks/logic/LogicDisplay.java b/core/src/mindustry/world/blocks/logic/LogicDisplay.java
+index 1084c0c9e1c5803ddc9f7d3b2f5e53bf5efa88c2..393378f44078e3d914eec8246f2302249dcc1d0b 100644
+--- a/core/src/mindustry/world/blocks/logic/LogicDisplay.java
++++ b/core/src/mindustry/world/blocks/logic/LogicDisplay.java
+@@ -73,6 +73,8 @@ public class LogicDisplay extends Block{
+     }
+ 
+     public class LogicDisplayBuild extends Building{
++        //The root display (bottom left corner of display for tileable displays)
++        public LogicDisplayBuild rootDisplay = this;
+         public @Nullable FrameBuffer buffer;
+         public float color = Color.whiteFloatBits;
+         public float stroke = 1f;
+@@ -111,8 +113,8 @@ public class LogicDisplay extends Block{
+         public double sense(LAccess sensor){
+             return switch(sensor){
+                 case displayWidth, displayHeight -> displaySize;
+-                case bufferSize -> commands.size;
+-                case operations -> operations;
++                case bufferSize -> rootDisplay.commands.size;
++                case operations -> rootDisplay.operations;
+                 default -> super.sense(sensor);
+             };
+         }
+diff --git a/core/src/mindustry/world/blocks/logic/TileableLogicDisplay.java b/core/src/mindustry/world/blocks/logic/TileableLogicDisplay.java
+index a6ff9d3aeddc369f5104d35912b7db7235e44f12..72365b5eb29cbfc2450d3000597ff6eaafa47459 100644
+--- a/core/src/mindustry/world/blocks/logic/TileableLogicDisplay.java
++++ b/core/src/mindustry/world/blocks/logic/TileableLogicDisplay.java
+@@ -118,8 +118,6 @@ public class TileableLogicDisplay extends LogicDisplay{
+     }
+ 
+     public class TileableLogicDisplayBuild extends LogicDisplayBuild{
+-        //bottom left corner of display
+-        public TileableLogicDisplayBuild rootDisplay = this;
+         //size of display area
+         public int tilesWidth = 1, tilesHeight = 1, originX, originY;
+         public @Nullable Seq<MergeBuffer> prevBuffers;

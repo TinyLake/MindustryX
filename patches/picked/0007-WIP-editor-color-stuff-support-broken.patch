@@ -1,0 +1,97 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Anuken <arnukren@gmail.com>
+Date: Sun, 27 Jul 2025 15:46:58 -0400
+Subject: [PATCH] WIP editor color stuff support (broken)
+
+---
+ core/src/mindustry/editor/EditorTool.java      |  2 +-
+ core/src/mindustry/editor/MapEditor.java       |  9 +++++++++
+ core/src/mindustry/editor/MapEditorDialog.java | 16 ++++++++++++++++
+ 3 files changed, 26 insertions(+), 1 deletion(-)
+
+diff --git a/core/src/mindustry/editor/EditorTool.java b/core/src/mindustry/editor/EditorTool.java
+index 6848ae8f40bebb2e37d406413040065fd03c4da1..cb15f6a7c70fdd0044bc47af2ee476b34f561113 100644
+--- a/core/src/mindustry/editor/EditorTool.java
++++ b/core/src/mindustry/editor/EditorTool.java
+@@ -47,7 +47,7 @@ public enum EditorTool{
+         }
+     },
+     //the "under liquid" rendering is too buggy to make public
+-    pencil(KeyCode.b, "replace", "square", "drawteams"/*, "underliquid"*/){
++    pencil(KeyCode.b, "replace", "square", "drawteams", "underliquid"){
+         {
+             edit = true;
+             draggable = true;
+diff --git a/core/src/mindustry/editor/MapEditor.java b/core/src/mindustry/editor/MapEditor.java
+index 95add660b26df30f18723a5c9be5b555fef449ab..610cd42eb9d07baccf8d70d82d95a11faffbee19 100644
+--- a/core/src/mindustry/editor/MapEditor.java
++++ b/core/src/mindustry/editor/MapEditor.java
+@@ -155,13 +155,16 @@ public class MapEditor{
+ 
+             Cons<Tile> drawer = tile -> {
+                 if(!tester.get(tile)) return;
++                boolean changed = false;
+ 
+                 if(isFloor){
+                     if(forceOverlay){
+                         tile.setOverlay(drawBlock.asFloor());
++                        changed = true;
+                     }else{
+                         if(!(drawBlock.asFloor().wallOre && !tile.block().solid)){
+                             tile.setFloor(drawBlock.asFloor());
++                            changed = true;
+                         }
+                     }
+                 }else if(!(tile.block().isMultiblock() && !drawBlock.isMultiblock())){
+@@ -170,11 +173,17 @@ public class MapEditor{
+                     }
+ 
+                     tile.setBlock(drawBlock, drawTeam, rotation);
++                    changed = !drawBlock.synthetic();
+ 
+                     if(drawBlock.synthetic()){
+                         addTileOp(TileOp.get(tile.x, tile.y, DrawOperation.opTeam, (byte)drawTeam.id));
+                     }
+                 }
++
++                if(changed && drawBlock.saveConfig){
++                    drawBlock.placeEnded(tile, null, editor.rotation, drawBlock.lastConfig);
++                    renderer.updateStatic(tile.x, tile.y);
++                }
+             };
+ 
+             if(square){
+diff --git a/core/src/mindustry/editor/MapEditorDialog.java b/core/src/mindustry/editor/MapEditorDialog.java
+index 5e617806f47721e960ef91c4d2a929ad55f5900f..4aebc8b9db0a6eb8f0119dead029e2ddbd0b6f2e 100644
+--- a/core/src/mindustry/editor/MapEditorDialog.java
++++ b/core/src/mindustry/editor/MapEditorDialog.java
+@@ -787,6 +787,9 @@ public class MapEditorDialog extends Dialog implements Disposable{
+             }
+         });
+ 
++        Table[] configTable = {null};
++        Block[] lastBlock = {null};
++
+         cont.table(search -> {
+             search.image(Icon.zoom).padRight(8);
+             search.field("", this::rebuildBlockSelection).growX()
+@@ -795,6 +798,19 @@ public class MapEditorDialog extends Dialog implements Disposable{
+         cont.row();
+         cont.table(Tex.underline, extra -> extra.labelWrap(() -> editor.drawBlock.localizedName).width(200f).center()).growX();
+         cont.row();
++        cont.collapser(t -> {
++            configTable[0] = t;
++        }, () -> editor.drawBlock != null && editor.drawBlock.editorConfigurable).with(c -> c.setEnforceMinSize(true)).update(col -> {
++
++            if(lastBlock[0] != editor.drawBlock){
++                configTable[0].clear();
++                if(editor.drawBlock != null){
++                    editor.drawBlock.buildEditorConfig(configTable[0]);
++                    col.invalidateHierarchy();
++                }
++                lastBlock[0] = editor.drawBlock;
++            }
++        }).growX().row();
+         cont.add(pane).expandY().growX().top().left();
+ 
+         rebuildBlockSelection("");

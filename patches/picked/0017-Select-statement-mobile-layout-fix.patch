@@ -1,0 +1,34 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Anuken <arnukren@gmail.com>
+Date: Fri, 1 Aug 2025 05:14:06 -0400
+Subject: [PATCH] Select statement mobile layout fix
+
+---
+ core/src/mindustry/logic/LStatements.java | 6 ++++--
+ 1 file changed, 4 insertions(+), 2 deletions(-)
+
+diff --git a/core/src/mindustry/logic/LStatements.java b/core/src/mindustry/logic/LStatements.java
+index 0cf38a05802f5baf88b0202d0a860e5477cea044..e138af4a16717b8bf8a5bf1060ed209b84f9ce98 100644
+--- a/core/src/mindustry/logic/LStatements.java
++++ b/core/src/mindustry/logic/LStatements.java
+@@ -801,6 +801,8 @@ public class LStatements{
+                 field(t, result, str -> result = str);
+                 t.add(" = if ");
+ 
++                row(t);
++
+                 JumpStatement.addOp(this, t, op, o -> {
+                     op = o;
+                     rebuild(table);
+@@ -812,9 +814,9 @@ public class LStatements{
+                 t.setColor(table.color);
+ 
+                 t.add("then ");
+-                field(t, a, str -> a = str);
++                field(t, a, str -> a = str).width(130f);
+                 t.add(" else ");
+-                field(t, b, str -> b = str);
++                field(t, b, str -> b = str).width(130f);
+             }).left();
+         }
+ 

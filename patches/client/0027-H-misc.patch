@@ -62,10 +62,10 @@ index a64b7b36fdd74a29a3caae54a1f1a514039b891f..beea309f225be8de3799089a87d1fdcb
          }
  
 diff --git a/core/src/mindustry/Vars.java b/core/src/mindustry/Vars.java
-index f214835dfbcc80be9476a4caa50f6b4467cdffd3..3fe4c159cd46ba64087489c7942a2cb512c3ab74 100644
+index 398dd264efb2b4ef59daefd0241a221faf4732fa..1f3fcd70da484838fed750e0db963c37e23c9c45 100644
 --- a/core/src/mindustry/Vars.java
 +++ b/core/src/mindustry/Vars.java
-@@ -415,6 +415,11 @@ public class Vars implements Loadable{
+@@ -418,6 +418,11 @@ public class Vars implements Loadable{
                  if(!headless && (ui == null || ui.consolefrag == null)){
                      logBuffer.add(result);
                  }else if(!headless){
@@ -117,7 +117,7 @@ index 7a2574ccadcad4495b7c1e1c265f47630d6fc0d3..56c3a614b3888dc4896ede5523fd6173
                      Core.settings.put("uiscale", 100);
                      Core.settings.put("uiscalechanged", false);
 diff --git a/core/src/mindustry/core/NetClient.java b/core/src/mindustry/core/NetClient.java
-index 4e9a0515a149b8b08d5c2ea83b10aa51650267a4..c291772de8abcc7c63fb40486e65840536d0ddb1 100644
+index 0b3eaf2e4782c0582ef3966ca3ca639e9d4f23be..357a275e66b9d04c809a8f0cecff71155593f8b5 100644
 --- a/core/src/mindustry/core/NetClient.java
 +++ b/core/src/mindustry/core/NetClient.java
 @@ -71,6 +71,10 @@ public class NetClient implements ApplicationListener{
@@ -183,10 +183,10 @@ index 84eb1d70b908f0171a2201824043b088a2adb6d2..72316d3f95b80f51c11c6ad68fd87327
  
      public static int roundAmount(int number){
 diff --git a/core/src/mindustry/game/Schematics.java b/core/src/mindustry/game/Schematics.java
-index 93b85a591a895fb117f7b4fb983f25cd90a923a0..010d77c7e0b6846d50207c0d1d6cd167817082df 100644
+index 12def3b98b7677fc1deefd0c6b01c3a739834672..0899fe1c96d83b0b8be0835ffe792e9953f56f8f 100644
 --- a/core/src/mindustry/game/Schematics.java
 +++ b/core/src/mindustry/game/Schematics.java
-@@ -98,7 +98,9 @@ public class Schematics implements Loadable{
+@@ -99,7 +99,9 @@ public class Schematics implements Loadable{
          all.sort();
  
          if(shadowBuffer == null && !headless){
@@ -197,7 +197,7 @@ index 93b85a591a895fb117f7b4fb983f25cd90a923a0..010d77c7e0b6846d50207c0d1d6cd167
          }
      }
  
-@@ -542,7 +544,7 @@ public class Schematics implements Loadable{
+@@ -545,7 +547,7 @@ public class Schematics implements Loadable{
          try(DataInputStream stream = new DataInputStream(new InflaterInputStream(input))){
              short width = stream.readShort(), height = stream.readShort();
  
@@ -206,7 +206,7 @@ index 93b85a591a895fb117f7b4fb983f25cd90a923a0..010d77c7e0b6846d50207c0d1d6cd167
  
              StringMap map = new StringMap();
              int tags = stream.readUnsignedByte();
-@@ -568,7 +570,7 @@ public class Schematics implements Loadable{
+@@ -586,7 +588,7 @@ public class Schematics implements Loadable{
  
              int total = stream.readInt();
  
@@ -318,7 +318,7 @@ index e56d2f43cc0dbea91986edefd29189327d409bb6..e26fecde81717004b5561c53dc43ae28
  
      void rebind(KeyBind bind, KeyCode newKey){
 diff --git a/core/src/mindustry/ui/dialogs/SettingsMenuDialog.java b/core/src/mindustry/ui/dialogs/SettingsMenuDialog.java
-index 5d143f6d785ee1730288ac7324cc90a618cc828f..a30b51f229fe50ef2fa221ca9a6ddae0e1c18f6c 100644
+index 7395d57a3c349a0db43ea3537af1611db612695d..9dc95e87f853ba94653cc6e3f36f0d0c23eed507 100644
 --- a/core/src/mindustry/ui/dialogs/SettingsMenuDialog.java
 +++ b/core/src/mindustry/ui/dialogs/SettingsMenuDialog.java
 @@ -397,14 +397,14 @@ public class SettingsMenuDialog extends BaseDialog{
@@ -478,7 +478,7 @@ index cbe6d64d52f66d38be69a897a9a1a2f5b928e631..c5fe7f0080fea29764ebd94f576f1f98
  
          @Override
 diff --git a/core/src/mindustry/world/blocks/production/BeamDrill.java b/core/src/mindustry/world/blocks/production/BeamDrill.java
-index 27c1aac52ccb0cbdcaa21f029054bd6270209171..a86e8509e23146c2f14e360588ad440d9d7d2417 100644
+index 08c3cada1ce17bcabcf9a61fd1cf52a94a861d39..25b19302bfedc22cfcb523cc7558479d9fd1138e 100644
 --- a/core/src/mindustry/world/blocks/production/BeamDrill.java
 +++ b/core/src/mindustry/world/blocks/production/BeamDrill.java
 @@ -181,14 +181,10 @@ public class BeamDrill extends Block{

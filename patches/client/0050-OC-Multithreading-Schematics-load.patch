@@ -9,10 +9,10 @@ Inspired by FOO client.
  1 file changed, 20 insertions(+), 7 deletions(-)
 
 diff --git a/core/src/mindustry/game/Schematics.java b/core/src/mindustry/game/Schematics.java
-index 45cd1472ca5c8f5f0c0179c4cbad4d1cc7c3ba0a..8bef2b4ffd4231c7f42416ada1a87c722b5cf2d1 100644
+index dcf738756bf6add50e8bf6f614cf5eb3a951404e..90f6758738e2d12e38837f9d13e74d096f69e3a9 100644
 --- a/core/src/mindustry/game/Schematics.java
 +++ b/core/src/mindustry/game/Schematics.java
-@@ -37,6 +37,7 @@ import mindustry.world.meta.*;
+@@ -38,6 +38,7 @@ import mindustry.world.meta.*;
  import mindustryX.features.*;
  
  import java.io.*;
@@ -20,7 +20,7 @@ index 45cd1472ca5c8f5f0c0179c4cbad4d1cc7c3ba0a..8bef2b4ffd4231c7f42416ada1a87c72
  import java.util.zip.*;
  
  import static mindustry.Vars.*;
-@@ -80,22 +81,36 @@ public class Schematics implements Loadable{
+@@ -81,22 +82,36 @@ public class Schematics implements Loadable{
  
          loadLoadouts();
  
@@ -61,7 +61,7 @@ index 45cd1472ca5c8f5f0c0179c4cbad4d1cc7c3ba0a..8bef2b4ffd4231c7f42416ada1a87c72
          all.sort();
  
          if(shadowBuffer == null && !headless){
-@@ -140,8 +155,6 @@ public class Schematics implements Loadable{
+@@ -141,8 +156,6 @@ public class Schematics implements Loadable{
  
          try{
              Schematic s = read(file);
@@ -70,12 +70,12 @@ index 45cd1472ca5c8f5f0c0179c4cbad4d1cc7c3ba0a..8bef2b4ffd4231c7f42416ada1a87c72
  
              //external file from workshop
              if(!s.file.parent().equals(schematicDirectory)){
-@@ -600,7 +613,7 @@ public class Schematics implements Loadable{
+@@ -618,7 +631,7 @@ public class Schematics implements Loadable{
              for(int i = 0; i < total; i++){
                  Block block = blocks.get(stream.readByte());
                  int position = stream.readInt();
--                Object config = ver == 0 ? mapConfig(block, stream.readInt(), position) : TypeIO.readObject(Reads.get(stream));
-+                Object config = ver == 0 ? mapConfig(block, stream.readInt(), position) : TypeIO.readObject(new Reads(stream));
+-                Object config = ver == 0 ? mapConfig(block, stream.readInt(), position) : TypeIO.readObject(Reads.get(stream), false, mapper);
++                Object config = ver == 0 ? mapConfig(block, stream.readInt(), position) : TypeIO.readObject(new Reads(stream), false, mapper);
                  byte rotation = stream.readByte();
                  if(block != Blocks.air){
                      tiles.add(new Stile(block, Point2.x(position), Point2.y(position), config, rotation));

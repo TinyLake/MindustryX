@@ -17,21 +17,21 @@ Content-Transfer-Encoding: 8bit
  6 files changed, 60 insertions(+), 24 deletions(-)
 
 diff --git a/core/src/mindustry/editor/EditorTool.java b/core/src/mindustry/editor/EditorTool.java
-index 6848ae8f40bebb2e37d406413040065fd03c4da1..7831ad35b5432f89a0563438f2f9026b32d2ba2d 100644
+index d3b47efb6537ba234e8f5e741d57f7d5f93cd2e8..6509bc66758bc867419e39ad5c66efc6856b641a 100644
 --- a/core/src/mindustry/editor/EditorTool.java
 +++ b/core/src/mindustry/editor/EditorTool.java
-@@ -47,7 +47,7 @@ public enum EditorTool{
+@@ -48,7 +48,7 @@ public enum EditorTool{
+             });
          }
      },
-     //the "under liquid" rendering is too buggy to make public
--    pencil(KeyCode.b, "replace", "square", "drawteams"/*, "underliquid"*/){
+-    pencil(KeyCode.b, "replace", "square", "drawteams", "underliquid"){
 +    pencil(KeyCode.b, "replace", "square", "drawteams", "underliquid", "square2"){
          {
              edit = true;
              draggable = true;
-@@ -69,6 +69,9 @@ public enum EditorTool{
+@@ -70,6 +70,9 @@ public enum EditorTool{
                  editor.drawCircle(x, y, tile -> tile.setTeam(editor.drawTeam));
-             }else if(mode == 3){
+             }else if(mode == 3 && !(editor.drawBlock instanceof Floor f && f.isLiquid)){
                  editor.drawBlocks(x, y, false, true, tile -> tile.floor().isLiquid);
 +            }else if(mode == 4){
 +                editor.diamMode = true;
@@ -40,7 +40,7 @@ index 6848ae8f40bebb2e37d406413040065fd03c4da1..7831ad35b5432f89a0563438f2f9026b
  
          }
 diff --git a/core/src/mindustry/editor/MapEditor.java b/core/src/mindustry/editor/MapEditor.java
-index 95add660b26df30f18723a5c9be5b555fef449ab..7cb49bf0326db779eef7454f6a443f2d7c534f44 100644
+index 49912ba47184ace63bcaa97c3663c628cb52783e..a8132a4da59470425540e5194d60cc74a48ebc09 100644
 --- a/core/src/mindustry/editor/MapEditor.java
 +++ b/core/src/mindustry/editor/MapEditor.java
 @@ -28,7 +28,9 @@ public class MapEditor{
@@ -53,7 +53,7 @@ index 95add660b26df30f18723a5c9be5b555fef449ab..7cb49bf0326db779eef7454f6a443f2d
      public Block drawBlock = Blocks.stone;
      public Team drawTeam = Team.sharded;
  
-@@ -274,9 +276,10 @@ public class MapEditor{
+@@ -302,9 +304,10 @@ public class MapEditor{
      }
  
      public void drawSquare(int x, int y, Cons<Tile> drawer){
@@ -68,7 +68,7 @@ index 95add660b26df30f18723a5c9be5b555fef449ab..7cb49bf0326db779eef7454f6a443f2d
  
                  if(wx < 0 || wy < 0 || wx >= width() || wy >= height()){
 diff --git a/core/src/mindustry/editor/MapEditorDialog.java b/core/src/mindustry/editor/MapEditorDialog.java
-index 5e617806f47721e960ef91c4d2a929ad55f5900f..60f7faac47f251f4aa5c34c2c2165bb02be12699 100644
+index 5f648b9c7162fa64d48267bb73e2357ed674229f..c942d15445ad05b8f8f34d41601dbe57c173eb86 100644
 --- a/core/src/mindustry/editor/MapEditorDialog.java
 +++ b/core/src/mindustry/editor/MapEditorDialog.java
 @@ -31,6 +31,7 @@ import mindustry.world.blocks.environment.*;
@@ -128,7 +128,7 @@ index 5e617806f47721e960ef91c4d2a929ad55f5900f..60f7faac47f251f4aa5c34c2c2165bb0
                      for(int j = 0; j < MapEditor.brushSizes.length; j++){
                          if(MapEditor.brushSizes[j] == editor.brushSize){
                              slider.setValue(j);
-@@ -816,6 +828,7 @@ public class MapEditorDialog extends Dialog implements Disposable{
+@@ -826,6 +838,7 @@ public class MapEditorDialog extends Dialog implements Disposable{
          });
  
          int i = 0;
@@ -136,7 +136,7 @@ index 5e617806f47721e960ef91c4d2a929ad55f5900f..60f7faac47f251f4aa5c34c2c2165bb0
  
          for(Block block : blocksOut){
              TextureRegion region = block.uiIcon;
-@@ -834,9 +847,7 @@ public class MapEditorDialog extends Dialog implements Disposable{
+@@ -844,9 +857,7 @@ public class MapEditorDialog extends Dialog implements Disposable{
  
              if(i == 0) editor.drawBlock = block;
  

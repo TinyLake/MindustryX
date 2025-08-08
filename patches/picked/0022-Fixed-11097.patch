@@ -1,0 +1,22 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Anuken <arnukren@gmail.com>
+Date: Tue, 5 Aug 2025 20:07:44 +0200
+Subject: [PATCH] Fixed #11097
+
+---
+ core/src/mindustry/ai/types/FlyingFollowAI.java | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/core/src/mindustry/ai/types/FlyingFollowAI.java b/core/src/mindustry/ai/types/FlyingFollowAI.java
+index f870f136f3f8b537552666f43f7a6ccc9f651319..ab31802263f7b885a26efb861a6b305400bef06b 100644
+--- a/core/src/mindustry/ai/types/FlyingFollowAI.java
++++ b/core/src/mindustry/ai/types/FlyingFollowAI.java
+@@ -28,7 +28,7 @@ public class FlyingFollowAI extends FlyingAI{
+         }
+ 
+         if(timer.get(timerTarget3, 30f)){
+-            following = Units.closest(unit.team, unit.x, unit.y, Math.max(unit.type.range, 400f), u -> !u.dead() && u.type != unit.type, (u, tx, ty) -> -u.maxHealth + Mathf.dst2(u.x, u.y, tx, ty) / 6400f);
++            following = Units.closest(unit.team, unit.x, unit.y, Math.max(unit.type.range, 400f), u -> !u.dead() && !(u.controller() instanceof FlyingFollowAI) && u.type != unit.type, (u, tx, ty) -> -u.maxHealth + Mathf.dst2(u.x, u.y, tx, ty) / 6400f);
+         }
+     }
+ 

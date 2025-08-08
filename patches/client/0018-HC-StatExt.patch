@@ -203,7 +203,7 @@ index 50dfe94b013184f1d860cb6ab4ff2910df008180..1bb5af3a7f362f1df2a44732c7c59d03
              t.row();
              t.add("[lightgray]" + Stat.inaccuracy.localized() + ": [white]" + (int)inaccuracy + " " + StatUnit.degrees.localized());
 diff --git a/core/src/mindustry/world/Block.java b/core/src/mindustry/world/Block.java
-index a1a07a673666b7db6a613523abf24c76e144d244..c6b2ed15313fa29310e3dd71ca20b331423f9d28 100644
+index 4ea1a5197cc8f1aedf5d88597d4b2a8179f5e38d..ae7e96dc782548eea0731d0ebea8f06349a1fa58 100644
 --- a/core/src/mindustry/world/Block.java
 +++ b/core/src/mindustry/world/Block.java
 @@ -32,6 +32,7 @@ import mindustry.world.blocks.environment.*;

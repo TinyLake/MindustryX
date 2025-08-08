@@ -1,0 +1,36 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Anuken <arnukren@gmail.com>
+Date: Mon, 4 Aug 2025 15:35:28 +0200
+Subject: [PATCH] Fixed #11093
+
+---
+ core/src/mindustry/world/blocks/campaign/LandingPad.java | 9 ++-------
+ 1 file changed, 2 insertions(+), 7 deletions(-)
+
+diff --git a/core/src/mindustry/world/blocks/campaign/LandingPad.java b/core/src/mindustry/world/blocks/campaign/LandingPad.java
+index 2179627b6ec684c30595043d2dce456458b8ddd1..cb2bde6c453aa2e3828b2cf6c3a75ff312322b00 100644
+--- a/core/src/mindustry/world/blocks/campaign/LandingPad.java
++++ b/core/src/mindustry/world/blocks/campaign/LandingPad.java
+@@ -302,6 +302,8 @@ public class LandingPad extends Block{
+ 
+                     items.set(arriving, itemCapacity);
+                     if(!isFake()){
++                        //receiving items counts as "production" for now
++                        produced(arriving, itemCapacity);
+                         state.getSector().info.handleItemImport(arriving, itemCapacity);
+                     }
+ 
+@@ -339,13 +341,6 @@ public class LandingPad extends Block{
+             return team != state.rules.defaultTeam || !state.isCampaign();
+         }
+ 
+-        @Override
+-        public boolean canDump(Building to, Item item){
+-            //hack: canDump is only ever called right before item offload, so count the item as "produced" before that.
+-            produced(item);
+-            return true;
+-        }
+-
+         @Override
+         public void drawSelect(){
+             drawItemSelection(config);

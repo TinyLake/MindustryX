@@ -23,7 +23,7 @@ index 8990cb0200e7e19a0f3af54485e020cbe76cecc6..a64b7b36fdd74a29a3caae54a1f1a514
          assets.load(schematics);
  
 diff --git a/core/src/mindustry/Vars.java b/core/src/mindustry/Vars.java
-index 3176718bda1863bcfd2660ae76190bdd84ee1fca..f214835dfbcc80be9476a4caa50f6b4467cdffd3 100644
+index 66b582bc5c5bbf9c20a8b9c0a845a8c9bc18893b..398dd264efb2b4ef59daefd0241a221faf4732fa 100644
 --- a/core/src/mindustry/Vars.java
 +++ b/core/src/mindustry/Vars.java
 @@ -295,6 +295,7 @@ public class Vars implements Loadable{
@@ -35,7 +35,7 @@ index 3176718bda1863bcfd2660ae76190bdd84ee1fca..f214835dfbcc80be9476a4caa50f6b44
  
          if(loadLocales){
 diff --git a/core/src/mindustry/core/NetClient.java b/core/src/mindustry/core/NetClient.java
-index d4bf4d900113045c5f781f8a92ad3c65a9ac766d..cd80be66ce1459e9276f71edb98ef8afe81ff6d9 100644
+index 3b40344221b43f3315f04865c0aacd43b14f9712..943605680a6832247cea078373f25b6184e07957 100644
 --- a/core/src/mindustry/core/NetClient.java
 +++ b/core/src/mindustry/core/NetClient.java
 @@ -230,6 +230,8 @@ public class NetClient implements ApplicationListener{

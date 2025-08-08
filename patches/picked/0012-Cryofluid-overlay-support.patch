@@ -1,0 +1,22 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Anuken <arnukren@gmail.com>
+Date: Mon, 28 Jul 2025 00:05:30 -0400
+Subject: [PATCH] Cryofluid overlay support
+
+---
+ core/src/mindustry/content/Blocks.java | 2 ++
+ 1 file changed, 2 insertions(+)
+
+diff --git a/core/src/mindustry/content/Blocks.java b/core/src/mindustry/content/Blocks.java
+index f6bbd543679d543946b2562768b7c67d4460b56c..3dc41901d84ffff7b6295f901e19ca79eadc7996 100644
+--- a/core/src/mindustry/content/Blocks.java
++++ b/core/src/mindustry/content/Blocks.java
+@@ -288,6 +288,8 @@ public class Blocks{
+         }};
+ 
+         cryofluid = new Floor("pooled-cryofluid"){{
++            supportsOverlay = true;
++            overlayAlpha = 0.35f;
+             drownTime = 150f;
+             status = StatusEffects.freezing;
+             statusDuration = 240f;

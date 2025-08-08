@@ -50,7 +50,7 @@ index a4d60c3eec14d87c8310b146ff1550e8145dbf89..0c05a4deafb47f756f1f3e31e26e3d4c
      }
  }
 diff --git a/core/src/mindustry/world/Block.java b/core/src/mindustry/world/Block.java
-index c6b2ed15313fa29310e3dd71ca20b331423f9d28..4a4a33d610dda829a3140a7c86fe15a729742c30 100644
+index ae7e96dc782548eea0731d0ebea8f06349a1fa58..4aa72352d38d06c04ae5a87b77a3c3fbcc1db052 100644
 --- a/core/src/mindustry/world/Block.java
 +++ b/core/src/mindustry/world/Block.java
 @@ -33,6 +33,7 @@ import mindustry.world.blocks.power.*;
@@ -413,7 +413,7 @@ index 9b0ef63732d2cd574bf37f9f0a5fd0f3af378fd9..4c1065a12000cc5f9f4bb5a9fedda458
              () -> entity.productionEfficiency));
          }
 diff --git a/core/src/mindustry/world/blocks/production/BeamDrill.java b/core/src/mindustry/world/blocks/production/BeamDrill.java
-index a86e8509e23146c2f14e360588ad440d9d7d2417..ba5b4ddb20dc41ecd5e6119c3a347ba2a4d64a03 100644
+index 25b19302bfedc22cfcb523cc7558479d9fd1138e..29808e224cd14c8c1dfda6c4efc6c81823b41a33 100644
 --- a/core/src/mindustry/world/blocks/production/BeamDrill.java
 +++ b/core/src/mindustry/world/blocks/production/BeamDrill.java
 @@ -90,7 +90,7 @@ public class BeamDrill extends Block{

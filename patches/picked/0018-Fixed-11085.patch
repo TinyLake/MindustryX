@@ -1,0 +1,22 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Anuken <arnukren@gmail.com>
+Date: Fri, 1 Aug 2025 19:32:21 +0200
+Subject: [PATCH] Fixed #11085
+
+---
+ core/src/mindustry/logic/LVar.java | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/core/src/mindustry/logic/LVar.java b/core/src/mindustry/logic/LVar.java
+index ef3b36ef8b8d08a9d1a6880e9a70de4ea56b222c..d417fc882da26946522b63a040623b904937c4dc 100644
+--- a/core/src/mindustry/logic/LVar.java
++++ b/core/src/mindustry/logic/LVar.java
+@@ -107,7 +107,7 @@ public class LVar{
+         if(isobj){
+             objval = other.objval;
+         }else{
+-            numval = other.numval;
++            numval = invalid(other.numval) ? 0 : other.numval;
+         }
+     }
+ 

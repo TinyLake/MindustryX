@@ -1,0 +1,30 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Anuken <arnukren@gmail.com>
+Date: Sat, 26 Jul 2025 09:59:52 -0400
+Subject: [PATCH] Fixed #11065
+
+---
+ core/src/mindustry/entities/comp/BuildingComp.java | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
+
+diff --git a/core/src/mindustry/entities/comp/BuildingComp.java b/core/src/mindustry/entities/comp/BuildingComp.java
+index 3f92bc114d1e6728f11f0ce6bb62c4ccb0187d05..465f0189ebac2950af67acc2cbc18cc899424903 100644
+--- a/core/src/mindustry/entities/comp/BuildingComp.java
++++ b/core/src/mindustry/entities/comp/BuildingComp.java
+@@ -19,6 +19,7 @@ import mindustry.annotations.Annotations.*;
+ import mindustry.content.*;
+ import mindustry.core.*;
+ import mindustry.ctype.*;
++import mindustry.editor.*;
+ import mindustry.entities.*;
+ import mindustry.game.EventType.*;
+ import mindustry.game.*;
+@@ -602,7 +603,7 @@ abstract class BuildingComp implements Posc, Teamc, Healthc, Buildingc, Timerc,
+     public boolean allowUpdate(){
+         return team != Team.derelict && block.supportsEnv(state.rules.env) &&
+             //check if outside map limit (privileged blocks are exempt)
+-            (block.privileged || !state.rules.limitMapArea || !state.rules.disableOutsideArea || Rect.contains(state.rules.limitX, state.rules.limitY, state.rules.limitWidth, state.rules.limitHeight, tile.x, tile.y));
++            (tile instanceof EditorTile || block.privileged || !state.rules.limitMapArea || !state.rules.disableOutsideArea || Rect.contains(state.rules.limitX, state.rules.limitY, state.rules.limitWidth, state.rules.limitHeight, tile.x, tile.y));
+     }
+ 
+     public BlockStatus status(){

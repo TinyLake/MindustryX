@@ -52,10 +52,10 @@ index 83e89904261da9d0b108461113fb385a84b36117..d4c1e41dfd155d226fe3ba2a016c93ed
                  Draw.z(Layer.block);
  
 diff --git a/core/src/mindustry/input/InputHandler.java b/core/src/mindustry/input/InputHandler.java
-index 523ba91b87751ecbe92b248f4bfb16f3a00071ad..aa2b1c37705de735393e20946511af1778c76ae6 100644
+index f1b2a48aed59e4e0f8c1fd3db008dafd6ae0fbce..0b3ebfd8bedc1b74364e3c5ad3174854a0c931bf 100644
 --- a/core/src/mindustry/input/InputHandler.java
 +++ b/core/src/mindustry/input/InputHandler.java
-@@ -299,7 +299,7 @@ public abstract class InputHandler implements InputProcessor, GestureListener{
+@@ -300,7 +300,7 @@ public abstract class InputHandler implements InputProcessor, GestureListener{
  
                      //remove when other player command
                      if(!headless && player != Vars.player){

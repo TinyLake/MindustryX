@@ -53,10 +53,10 @@ index 1ef48b5018109fbf1ab14475c93ad4867a7fffbf..1b6076ffaa5b184f0743e421b2f013bd
  
      /** @return the last registered content with the specified name. Note that the content loader makes no attempt to resolve name conflicts. This method can be unreliable. */
 diff --git a/core/src/mindustry/core/NetClient.java b/core/src/mindustry/core/NetClient.java
-index c291772de8abcc7c63fb40486e65840536d0ddb1..70fff627cf7c30b109d50962bbce6f8bc7355743 100644
+index 357a275e66b9d04c809a8f0cecff71155593f8b5..f17ae0ea4abd48111b7dc58e32acfc4c17c5ecd4 100644
 --- a/core/src/mindustry/core/NetClient.java
 +++ b/core/src/mindustry/core/NetClient.java
-@@ -519,6 +519,8 @@ public class NetClient implements ApplicationListener{
+@@ -520,6 +520,8 @@ public class NetClient implements ApplicationListener{
  
      @Remote(variants = Variant.both, priority = PacketPriority.low, unreliable = true)
      public static void blockSnapshot(short amount, byte[] data){
@@ -66,7 +66,7 @@ index c291772de8abcc7c63fb40486e65840536d0ddb1..70fff627cf7c30b109d50962bbce6f8b
              netClient.byteStream.setBytes(data);
              DataInputStream input = netClient.dataStream;
 diff --git a/core/src/mindustry/io/TypeIO.java b/core/src/mindustry/io/TypeIO.java
-index f94486244c0356b0143ef7c04f08e9ad0e9b8c6d..d6806d619bfa5a1801d1e3ed1afaf7bff0366b7d 100644
+index 51fc5bdee1d7b743921174e183645b19a5550cb3..748b1c22dba8d59a404b05728322ebb61b860cd6 100644
 --- a/core/src/mindustry/io/TypeIO.java
 +++ b/core/src/mindustry/io/TypeIO.java
 @@ -26,6 +26,7 @@ import mindustry.type.*;
@@ -89,7 +89,7 @@ index f94486244c0356b0143ef7c04f08e9ad0e9b8c6d..d6806d619bfa5a1801d1e3ed1afaf7bf
          }else if(object instanceof IntSeq arr){
              write.b((byte)6);
              write.s((short)arr.size);
-@@ -390,6 +394,10 @@ public class TypeIO{
+@@ -392,6 +396,10 @@ public class TypeIO{
      }
  
      public static void writeBlock(Writes write, Block block){
@@ -100,7 +100,7 @@ index f94486244c0356b0143ef7c04f08e9ad0e9b8c6d..d6806d619bfa5a1801d1e3ed1afaf7bf
          write.s(block.id);
      }
  
-@@ -452,7 +460,7 @@ public class TypeIO{
+@@ -454,7 +462,7 @@ public class TypeIO{
          write.b(plan.breaking ? (byte)1 : 0);
          write.i(Point2.pack(plan.x, plan.y));
          if(!plan.breaking){

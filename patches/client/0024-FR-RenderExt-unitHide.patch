@@ -8,7 +8,7 @@ Subject: [PATCH] FR(RenderExt) unitHide
  1 file changed, 2 insertions(+), 1 deletion(-)
 
 diff --git a/core/src/mindustry/input/InputHandler.java b/core/src/mindustry/input/InputHandler.java
-index aa2b1c37705de735393e20946511af1778c76ae6..81fd772575d92f0e5e139bf98d9d5f2f40146b9e 100644
+index 0b3ebfd8bedc1b74364e3c5ad3174854a0c931bf..6a52833182f96b0c4d0f09b961cd3d3302164890 100644
 --- a/core/src/mindustry/input/InputHandler.java
 +++ b/core/src/mindustry/input/InputHandler.java
 @@ -42,6 +42,7 @@ import mindustry.world.blocks.payloads.*;
@@ -19,7 +19,7 @@ index aa2b1c37705de735393e20946511af1778c76ae6..81fd772575d92f0e5e139bf98d9d5f2f
  
  import java.util.*;
  
-@@ -1921,7 +1922,7 @@ public abstract class InputHandler implements InputProcessor, GestureListener{
+@@ -1936,7 +1937,7 @@ public abstract class InputHandler implements InputProcessor, GestureListener{
  
      public @Nullable Unit selectedUnit(){
          Unit unit = Units.closest(player.team(), Core.input.mouseWorld().x, Core.input.mouseWorld().y, 40f, u -> u.isAI() && u.playerControllable());
