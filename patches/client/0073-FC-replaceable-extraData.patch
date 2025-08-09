@@ -1,0 +1,71 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: MinRi2 <minri2@qq.com>
+Date: Sat, 9 Aug 2025 13:08:30 +0800
+Subject: [PATCH] =?UTF-8?q?FC:=20replaceable-extraData(=E6=9F=93=E8=89=B2?=
+ =?UTF-8?q?=E5=9C=B0=E6=9D=BF=E5=8F=AF=E8=A6=86=E7=9B=96)?=
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+---
+ core/src/mindustry/entities/comp/BuilderComp.java            | 5 +++--
+ .../mindustry/world/blocks/environment/CharacterOverlay.java | 1 +
+ .../src/mindustry/world/blocks/environment/ColoredFloor.java | 1 +
+ core/src/mindustry/world/blocks/environment/ColoredWall.java | 1 +
+ 4 files changed, 6 insertions(+), 2 deletions(-)
+
+diff --git a/core/src/mindustry/entities/comp/BuilderComp.java b/core/src/mindustry/entities/comp/BuilderComp.java
+index 5e0b9854c96861eba3e02c86d484fae9456f11c9..bbc846c08abf0e093745f1d4671d0ea570045b03 100644
+--- a/core/src/mindustry/entities/comp/BuilderComp.java
++++ b/core/src/mindustry/entities/comp/BuilderComp.java
+@@ -62,11 +62,12 @@ abstract class BuilderComp implements Posc, Statusc, Teamc, Rotc{
+                 BuildPlan plan = it.next();
+                 Tile tile = world.tile(plan.x, plan.y);
+                 boolean isSameDerelict = (tile != null && tile.build != null && tile.block() == plan.block && tile.build.tileX() == plan.x && tile.build.tileY() == plan.y && tile.team() == Team.derelict);
++                boolean ignoreTileData = !plan.block.saveData || (tile != null && plan.config != null && plan.block.getConfig(tile).equals(plan.config));
+                 if(tile == null || (plan.breaking && tile.block() == Blocks.air) || (!plan.breaking && ((tile.build != null && tile.build.rotation == plan.rotation && !isSameDerelict) || !plan.block.rotate) &&
+                     //the block must be the same, but not derelict and the same
+-                    ((tile.block() == plan.block && !isSameDerelict) ||
++                    ((tile.block() == plan.block && !isSameDerelict && ignoreTileData) ||
+                         //same floor or overlay
+-                        (plan.block != null && (plan.block.isOverlay() && plan.block == tile.overlay() || (plan.block.isFloor() && plan.block == tile.floor())))))){
++                        (plan.block != null && (plan.block.isOverlay() && plan.block == tile.overlay() && ignoreTileData || (plan.block.isFloor() && plan.block == tile.floor() && ignoreTileData)))))){
+ 
+                     it.remove();
+                 }
+diff --git a/core/src/mindustry/world/blocks/environment/CharacterOverlay.java b/core/src/mindustry/world/blocks/environment/CharacterOverlay.java
+index d95afed71964f6e4a3e71d0b21d4ed31188adae4..1c264ff1a1846b49a641effdfa84c03510ed0e7f 100644
+--- a/core/src/mindustry/world/blocks/environment/CharacterOverlay.java
++++ b/core/src/mindustry/world/blocks/environment/CharacterOverlay.java
+@@ -78,6 +78,7 @@ public class CharacterOverlay extends OverlayFloor{
+             data = i.byteValue();
+         }
+         tile.overlayData = CharOverlayData.get(data, (byte)rotation);
++        tile.recache();
+     }
+ 
+     public static byte charToData(char c){
+diff --git a/core/src/mindustry/world/blocks/environment/ColoredFloor.java b/core/src/mindustry/world/blocks/environment/ColoredFloor.java
+index b9d00de91a29bb9e4697ff4d0e3537a0c66eb8ed..9243de9df7633a09f0f238fae3750c39d7299b84 100644
+--- a/core/src/mindustry/world/blocks/environment/ColoredFloor.java
++++ b/core/src/mindustry/world/blocks/environment/ColoredFloor.java
+@@ -176,6 +176,7 @@ public class ColoredFloor extends Floor{
+     public void placeEnded(Tile tile, @Nullable Unit builder, int rotation, @Nullable Object config){
+         //config is assumed to be an integer RGBA color
+         if(config instanceof Integer i){
++            if(tile.extraData != i) tile.recache();
+             tile.extraData = i;
+         }
+     }
+diff --git a/core/src/mindustry/world/blocks/environment/ColoredWall.java b/core/src/mindustry/world/blocks/environment/ColoredWall.java
+index 4f6fcc23e3b48fffda132eabc6063c30ed46ff73..96eb14bc772241628f0f4fdf7c612171da8d27cf 100644
+--- a/core/src/mindustry/world/blocks/environment/ColoredWall.java
++++ b/core/src/mindustry/world/blocks/environment/ColoredWall.java
+@@ -60,6 +60,7 @@ public class ColoredWall extends StaticWall{
+     public void placeEnded(Tile tile, @Nullable Unit builder, int rotation, @Nullable Object config){
+         //config is assumed to be an integer RGBA color
+         if(config instanceof Integer i){
++            if(tile.extraData != i) tile.recache();
+             tile.extraData = i;
+         }
+     }
