@@ -9,7 +9,7 @@ Inspired by FOO client.
  1 file changed, 20 insertions(+), 7 deletions(-)
 
 diff --git a/core/src/mindustry/game/Schematics.java b/core/src/mindustry/game/Schematics.java
-index dcf738756bf6add50e8bf6f614cf5eb3a951404e..90f6758738e2d12e38837f9d13e74d096f69e3a9 100644
+index 3b45e8e2d123126e1cefb3226b4cc773c3e928a8..498e7441294b22eda29d3d30c5aefd4a4162894f 100644
 --- a/core/src/mindustry/game/Schematics.java
 +++ b/core/src/mindustry/game/Schematics.java
 @@ -38,6 +38,7 @@ import mindustry.world.meta.*;
@@ -70,7 +70,7 @@ index dcf738756bf6add50e8bf6f614cf5eb3a951404e..90f6758738e2d12e38837f9d13e74d09
  
              //external file from workshop
              if(!s.file.parent().equals(schematicDirectory)){
-@@ -618,7 +631,7 @@ public class Schematics implements Loadable{
+@@ -619,7 +632,7 @@ public class Schematics implements Loadable{
              for(int i = 0; i < total; i++){
                  Block block = blocks.get(stream.readByte());
                  int position = stream.readInt();

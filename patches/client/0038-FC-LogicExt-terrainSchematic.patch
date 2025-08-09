@@ -9,10 +9,10 @@ Content-Transfer-Encoding: 8bit
 
 ---
  .../mindustry/entities/comp/BuilderComp.java  |  3 +-
- core/src/mindustry/game/Schematics.java       | 36 +++++++++++++++----
- core/src/mindustry/input/MobileInput.java     | 11 ++----
+ core/src/mindustry/game/Schematics.java       | 37 ++++++++++++++++---
+ core/src/mindustry/input/MobileInput.java     | 11 +-----
  .../world/blocks/environment/Floor.java       |  1 +
- 4 files changed, 35 insertions(+), 16 deletions(-)
+ 4 files changed, 36 insertions(+), 16 deletions(-)
 
 diff --git a/core/src/mindustry/entities/comp/BuilderComp.java b/core/src/mindustry/entities/comp/BuilderComp.java
 index 3ab723995c40efde9ada16d0a6088e51ee07ca05..5e0b9854c96861eba3e02c86d484fae9456f11c9 100644
@@ -36,7 +36,7 @@ index 3ab723995c40efde9ada16d0a6088e51ee07ca05..5e0b9854c96861eba3e02c86d484fae9
          }
          Tile tile = world.tile(place.x, place.y);
 diff --git a/core/src/mindustry/game/Schematics.java b/core/src/mindustry/game/Schematics.java
-index 0899fe1c96d83b0b8be0835ffe792e9953f56f8f..dcf738756bf6add50e8bf6f614cf5eb3a951404e 100644
+index 0899fe1c96d83b0b8be0835ffe792e9953f56f8f..3b45e8e2d123126e1cefb3226b4cc773c3e928a8 100644
 --- a/core/src/mindustry/game/Schematics.java
 +++ b/core/src/mindustry/game/Schematics.java
 @@ -35,6 +35,7 @@ import mindustry.world.blocks.sandbox.*;
@@ -92,16 +92,16 @@ index 0899fe1c96d83b0b8be0835ffe792e9953f56f8f..dcf738756bf6add50e8bf6f614cf5eb3
 +            for(int cx = ox; cx <= ox2; cx++){
 +                for(int cy = oy; cy <= oy2; cy++){
 +                    Tile tile = world.tile(cx, cy);
-+                    tiles.add(new Stile(tile.floor(), tile.x - x, tile.y - y, null, (byte)0));
++                    tiles.add(new Stile(tile.floor(), tile.x - x, tile.y - y, tile.floor().getConfig(tile), (byte)0));
 +                    if(!tile.overlay().isAir())
-+                        tiles.add(new Stile(tile.overlay(), tile.x - x, tile.y - y, null, (byte)0));
++                        tiles.add(new Stile(tile.overlay(), tile.x - x, tile.y - y, tile.overlay().getConfig(tile), (byte)0));
 +                }
 +            }
 +        }
          int width = x2 - x + 1, height = y2 - y + 1;
          int offsetX = -x, offsetY = -y;
          IntSet counted = new IntSet();
-@@ -427,6 +442,15 @@ public class Schematics implements Loadable{
+@@ -427,6 +442,16 @@ public class Schematics implements Loadable{
                  }
              }
          }
@@ -109,8 +109,9 @@ index 0899fe1c96d83b0b8be0835ffe792e9953f56f8f..dcf738756bf6add50e8bf6f614cf5eb3
 +            for(int cx = ox; cx <= ox2; cx++){
 +                for(int cy = oy; cy <= oy2; cy++){
 +                    Tile tile = world.tile(cx, cy);
-+                    if(!tile.block().isAir() && (tile.build == null || counted.add(tile.build.pos())))
-+                        tiles.add(new Stile(tile.block(), tile.x - x, tile.y - y, null, (byte)0));
++                    Block block = tile.block();
++                    if(!block.isAir() && (tile.build == null || counted.add(tile.build.pos())))
++                        tiles.add(new Stile(block, tile.x - x, tile.y - y, block.getConfig(tile), (byte)0));
 +                }
 +            }
 +        }
