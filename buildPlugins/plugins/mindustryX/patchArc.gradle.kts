@@ -4,6 +4,7 @@ import javassist.ClassPool
 import javassist.CtClass
 import javassist.bytecode.Bytecode
 import javassist.bytecode.Descriptor
+import javassist.bytecode.Opcode
 import java.util.zip.ZipFile
 import java.util.zip.ZipOutputStream
 
@@ -17,18 +18,35 @@ abstract class PatchArc : TransformAction<TransformParameters.None> {
     @get:PathSensitive(PathSensitivity.NONE)
     abstract val inputArtifact: Provider<FileSystemLocation>
 
-    private val genDir = File("build/gen/patchedArc")
     private val transform = mapOf<String, CtClass.() -> Unit>(
         "arc.util.Http\$HttpRequest" to clz@{
             getDeclaredMethod("block").apply {
                 val code = Bytecode(methodInfo.constPool)
-                val desc = Descriptor.ofMethod(CtClass.voidType, arrayOf(this@clz))
                 code.addAload(0)
-                code.addInvokestatic("mindustryX.Hooks", "onHttp", desc)
+                code.addInvokestatic("mindustryX.Hooks", "onHttp", Descriptor.ofMethod(CtClass.voidType, arrayOf(this@clz)))
                 methodInfo.codeAttribute.iterator().insertEx(code.get())
                 methodInfo.rebuildStackMapIf6(classPool, classFile)
             }
-        }
+        },
+        "arc.graphics.g2d.Lines" to clz@{
+            val maxCriticVertices = 100
+            // Patch Lines.circleVertices to limit the number of vertices to maxCriticVertices
+            getDeclaredMethod("circleVertices").apply {
+                val code = Bytecode(methodInfo.constPool)
+                code.add(Opcode.BIPUSH, maxCriticVertices)
+                code.addInvokestatic("java.lang.Math", "min", "(II)I")
+
+                val returnPos = methodInfo.codeAttribute.iterator().run {
+                    while (hasNext()) {
+                        val pos = next()
+                        if (byteAt(pos) == Opcode.IRETURN) return@run pos
+                    }
+                    error("No return found in circleVertices")
+                }
+                methodInfo.codeAttribute.iterator().insertEx(returnPos, code.get())
+                methodInfo.rebuildStackMapIf6(classPool, classFile)
+            }
+        },
     )
 
     override fun transform(outputs: TransformOutputs) {
@@ -92,8 +110,11 @@ dependencies {
 
     val arcLib = api.dependencies.find { it.name == "arc-core" }
         ?: error("Can't find arc-core")
-    api.dependencies.remove(arcLib)
-    patchArc(arcLib as ExternalModuleDependency) {
-        isTransitive = false
+    if (arcLib.group!!.endsWith(".Arc")) {
+        //else it is a local project dependency, skip patch
+        api.dependencies.remove(arcLib)
+        patchArc(arcLib as ExternalModuleDependency) {
+            isTransitive = false
+        }
     }
 }
