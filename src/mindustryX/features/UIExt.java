@@ -23,17 +23,13 @@ import static mindustry.Vars.*;
 public class UIExt{
     public static TeamSelectDialog teamSelect;
     public static ModsRecommendDialog modsRecommend = new ModsRecommendDialog();
-    public static TeamsStatDisplay teamsStatDisplay;
     public static ArcMessageDialog arcMessageDialog = new ArcMessageDialog();
-    public static AdvanceToolTable advanceToolTable = new AdvanceToolTable();
     public static AdvanceBuildTool advanceBuildTool = new AdvanceBuildTool();
-    public static AuxiliaryTools auxiliaryTools = new AuxiliaryTools();
     public static WaveInfoDisplay waveInfoDisplay = new WaveInfoDisplay();
     public static NewCoreItemsDisplay coreItems = new NewCoreItemsDisplay();
 
     public static void init(){
         teamSelect = new TeamSelectDialog();
-        teamsStatDisplay = new TeamsStatDisplay();
 
         UIExtKt.init();
         Settings.addSettings();

@@ -13,6 +13,9 @@ import mindustry.Vars
 import mindustry.gen.Tex
 import mindustryX.features.ui.LogicSupport
 import mindustryX.features.ui.OverlayUI
+import mindustryX.features.ui.TeamsStatDisplay
+import mindustryX.features.ui.toolTable.AdvanceToolTable
+import mindustryX.features.ui.toolTable.AuxiliaryTools
 import mindustryX.features.ui.toolTable.NewToolTable
 
 object UIExtKt {
@@ -24,11 +27,11 @@ object UIExtKt {
 
         val inGameOnly = Prov { Vars.state.isGame }
         OverlayUI.registerWindow("debug", DebugUtil.metricTable())
-        OverlayUI.registerWindow("auxiliaryTools", UIExt.auxiliaryTools).availability = inGameOnly
+        OverlayUI.registerWindow("auxiliaryTools", AuxiliaryTools()).availability = inGameOnly
         OverlayUI.registerWindow("quickTool", NewToolTable).availability = inGameOnly
-        OverlayUI.registerWindow("mappingTool", UIExt.advanceToolTable).availability = inGameOnly
+        OverlayUI.registerWindow("mappingTool", AdvanceToolTable()).availability = inGameOnly
         OverlayUI.registerWindow("advanceBuildTool", UIExt.advanceBuildTool).availability = inGameOnly
-        OverlayUI.registerWindow("teamsStats", UIExt.teamsStatDisplay.wrapped()).availability = inGameOnly
+        OverlayUI.registerWindow("teamsStats", TeamsStatDisplay().wrapped()).availability = inGameOnly
     }
 
     @JvmStatic
