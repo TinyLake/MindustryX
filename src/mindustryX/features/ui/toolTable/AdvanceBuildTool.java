@@ -31,7 +31,6 @@ public class AdvanceBuildTool extends Table{
     BuildRange placement = BuildRange.player;
     Rect selection = new Rect();
     Block find = Blocks.worldProcessor;
-    boolean highlight = false;
 
     public Seq<Building> buildingSeq = new Seq<>();
     private final BuildTiles buildTiles = new BuildTiles();
@@ -49,7 +48,7 @@ public class AdvanceBuildTool extends Table{
                 Draw.color();
                 FuncX.drawText(selection.getCenter(Tmp.v1).scl(tilesize), "建造区域", Scl.scl(1.25f), Color.white);
             }
-            if(highlight && find != null){
+            if(placement == BuildRange.find && find != null){
                 Draw.z(Layer.blockBuilding + 1f);
                 Draw.color(Pal.negativeStat);
                 for(var it : buildingSeq){
@@ -72,8 +71,8 @@ public class AdvanceBuildTool extends Table{
             }
         });
         add().height(40);
-        button("", Styles.flatTogglet, () -> placement = BuildRange.global).checked((b) -> placement == BuildRange.global).tooltip("[cyan]全局检查").size(30f);
-        button("\uE818", Styles.flatTogglet, () -> {
+        button("", Styles.clearTogglet, () -> placement = BuildRange.global).checked((b) -> placement == BuildRange.global).tooltip("[cyan]全局检查").size(30f);
+        button("\uE818", Styles.clearTogglet, () -> {
             selection = control.input.lastSelection;
             if(selection.area() < 10f){
                 UIExt.announce("当前选定区域为空，请通过F规划区域");
@@ -81,14 +80,16 @@ public class AdvanceBuildTool extends Table{
             }
             placement = BuildRange.zone;
         }).checked((b) -> placement == BuildRange.zone).tooltip("[cyan]选择范围").size(30f);
-        button(Blocks.coreShard.emoji(), Styles.flatTogglet, () -> {
+        button(Blocks.coreShard.emoji(), Styles.clearTogglet, () -> {
             placement = BuildRange.team;
             rebuild();
         }).checked((b) -> placement == BuildRange.team).tooltip("[cyan]队伍区域").size(30f);
-        button(UnitTypes.gamma.emoji(), Styles.flatTogglet, () -> placement = BuildRange.player).checked((b) -> placement == BuildRange.player).tooltip("[cyan]玩家建造区").size(30f);
+        button(UnitTypes.gamma.emoji(), Styles.clearTogglet, () -> placement = BuildRange.player).checked((b) -> placement == BuildRange.player).tooltip("[cyan]玩家建造区").size(30f);
 
-        add().width(16);
-        button("", Styles.flatTogglet, () -> placement = BuildRange.find).update((b) -> {
+        var findButton = button("", Styles.clearTogglet, () -> {
+            if(find == Blocks.worldProcessor) showWorldProcessorInfo();
+            placement = BuildRange.find;
+        }).update((b) -> {
             buildingSeq.clear();
             if(find.privileged){
                 for(Team team : Team.all){
@@ -97,11 +98,11 @@ public class AdvanceBuildTool extends Table{
             }else{
                 buildingSeq.add(player.team().data().getBuildings(find));
             }
-            b.getLabel().setWrap(false);
             b.setText(find.emoji() + " " + buildingSeq.size);
             b.setChecked(placement == BuildRange.find);
-        }).height(30f).tooltip("查找方块");
-        button(String.valueOf(Iconc.settings), Styles.flatBordert, () -> {
+        }).height(30f).tooltip("查找方块").wrapLabel(false).get();
+        findButton.getLabelCell().padLeft(2f);
+        findButton.button(Icon.settingsSmall, Styles.clearTogglei, iconSmall, () -> {
             if(target == null){
                 UIExt.announce("[yellow]当前选中物品为空，请在物品栏选中建筑");
                 return;
@@ -109,14 +110,10 @@ public class AdvanceBuildTool extends Table{
             find = target;
             placement = BuildRange.find;
             rebuild();
-        }).size(30f).tooltip("设置目标");
-        button(String.valueOf(Iconc.eye), Styles.squareTogglet, () -> {
-            highlight = !highlight;
-            if(highlight && find == Blocks.worldProcessor) showWorldProcessorInfo();
-        }).checked((b) -> highlight).size(30).tooltip("高亮目标");
+        }).tooltip("设置目标").padRight(2f);
 
         add().width(16);
-        button("P", Styles.flatBordert, () -> {
+        button("P", Styles.cleart, () -> {
             if(target == null || player.dead()) return;
             if(placement == BuildRange.find){
                 replaceBlock(find, target);
