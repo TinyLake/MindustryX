@@ -75,11 +75,15 @@ public class Hooks implements ApplicationListener{
         if(Vars.ui != null){
             if(MarkerType.resolveMessage(message)){
             }else if(ArcOld.schematicShare.get() && message.contains("<ARC") && message.contains("<Schem>")){
-                String id = message.split("<Schem>")[1].split(" ")[0];
-                Http.get("https://pastebin.com/raw/" + id, r -> {
-                    String content = r.getResultAsString().replace(" ", "+");
-                    Core.app.post(() -> ui.schematics.readShare(content, sender));
-                });
+                try{
+                    String id = message.split("<Schem>")[1].split(" ")[1];
+                    Http.get("https://pastebin.com/raw/" + id, r -> {
+                        String content = r.getResultAsString().replace(" ", "+");
+                        Core.app.post(() -> ui.schematics.readShare(content, sender));
+                    });
+                }catch(Exception e){
+                    Log.err(e);
+                }
             }else{
                 try{
                     ArcMessageDialog.resolveMsg(message, sender);
