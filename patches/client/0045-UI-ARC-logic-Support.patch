@@ -299,7 +299,7 @@ index 350f1f3694d198f0f7d2f2ab842eab0c7f2ed93d..297e8646e67f29ad8b4bcde7efce4e53
                          }).size(130f, 50f).self(c -> tooltip(c, "lst." + example.name())).top().left();
  
 diff --git a/core/src/mindustry/world/blocks/logic/LogicBlock.java b/core/src/mindustry/world/blocks/logic/LogicBlock.java
-index fac800a84d4ea6e00295584133309b7bab9fed0d..9ca025febeda4c6c3abbb3815c298cf840c54a21 100644
+index fac800a84d4ea6e00295584133309b7bab9fed0d..5b875e0a1228180a64c4d9f6a98b9d96811c8898 100644
 --- a/core/src/mindustry/world/blocks/logic/LogicBlock.java
 +++ b/core/src/mindustry/world/blocks/logic/LogicBlock.java
 @@ -16,17 +16,21 @@ import arc.util.io.*;
@@ -370,7 +370,7 @@ index fac800a84d4ea6e00295584133309b7bab9fed0d..9ca025febeda4c6c3abbb3815c298cf8
 +
 +        @Override
 +        public boolean interactable(Team team){
-+            return super.interactable(team) || accessibleRead();
++            return super.interactable(team) || RenderExt.showOtherInfo;
          }
  
          //logic blocks cause write problems when picked up
