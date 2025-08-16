@@ -81,7 +81,7 @@ object AutoUpdate {
     fun getReleases(repo: String, result: (List<Release>) -> Unit) {
         Http.get("https://api.github.com/repos/$repo/releases")
             .timeout(30000)
-            .error { Log.warn("Fetch releases fail from $repo: $it");result(emptyList()) }
+            .error { Log.warn("Fetch releases fail from $repo: $it"); result(emptyList()) }
             .submit { res ->
                 val json = Jval.read(res.resultAsString)
                 val releases = json.asArray().map {
@@ -209,6 +209,10 @@ object AutoUpdate {
 
     private fun startDownload(asset: Release.Asset, endDownload: (Fi) -> Unit) {
         val file = Vars.bebuildDirectory.child(asset.name)
+        Vars.bebuildDirectory.list().filter { it.name() != asset.name }.forEach {
+            Log.info("Delete old update file: ${it.name()}")
+            it.delete()
+        }
 
         var progress = 0f
         var length = 0f
