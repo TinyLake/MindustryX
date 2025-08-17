@@ -104,7 +104,7 @@ way-zer <himc.wicp@gmail.com> on 2024/9/8
  core/src/mindustry/input/InputHandler.java    |  46 +++-
  core/src/mindustry/input/MobileInput.java     |   6 +-
  core/src/mindustry/logic/LExecutor.java       |  12 +-
- core/src/mindustry/type/UnitType.java         |  97 ++++++-
+ core/src/mindustry/type/UnitType.java         | 101 +++++++-
  core/src/mindustry/type/Weapon.java           |  19 ++
  core/src/mindustry/ui/Fonts.java              |   2 +-
  .../ui/dialogs/ContentInfoDialog.java         |  22 +-
@@ -120,7 +120,7 @@ way-zer <himc.wicp@gmail.com> on 2024/9/8
  .../mindustry/ui/fragments/MenuFragment.java  |  24 +-
  .../ui/fragments/PlacementFragment.java       | 164 ++++++++++--
  .../ui/fragments/PlayerListFragment.java      |  72 ++----
- 27 files changed, 1128 insertions(+), 148 deletions(-)
+ 27 files changed, 1132 insertions(+), 148 deletions(-)
 
 diff --git a/core/src/mindustry/editor/MapInfoDialog.java b/core/src/mindustry/editor/MapInfoDialog.java
 index ebc1f0b300d295e45333f1db38ea299c9658ec20..e7cba056743979206c84fc6d00472c2c44b565f6 100644
@@ -753,7 +753,7 @@ index 353ad72b8d6dbab84856aeed50606fe0ca6b1223..a9694566d66c229e9f67c02289a3054c
                  //TODO desync?
                  case mission -> state.rules.mission = text;
 diff --git a/core/src/mindustry/type/UnitType.java b/core/src/mindustry/type/UnitType.java
-index 7324bf31b5372f6a20f6f18317dadd97f5d7e43b..e2df7b89e9feb89ef9a51ef1092d2b43ce7279f1 100644
+index 7324bf31b5372f6a20f6f18317dadd97f5d7e43b..9cb64bbb3078c0f17b35ff182642527be8d0071c 100644
 --- a/core/src/mindustry/type/UnitType.java
 +++ b/core/src/mindustry/type/UnitType.java
 @@ -38,6 +38,7 @@ import mindustry.world.blocks.units.*;
@@ -826,7 +826,7 @@ index 7324bf31b5372f6a20f6f18317dadd97f5d7e43b..e2df7b89e9feb89ef9a51ef1092d2b43
                  bars.row();
  
                  var count = new float[]{-1};
-@@ -676,16 +706,51 @@ public class UnitType extends UnlockableContent implements Senseable{
+@@ -676,16 +706,55 @@ public class UnitType extends UnlockableContent implements Senseable{
                  }).growX().left().height(0f).pad(0f);
              }
          }).growX();
@@ -852,14 +852,18 @@ index 7324bf31b5372f6a20f6f18317dadd97f5d7e43b..e2df7b89e9feb89ef9a51ef1092d2b43
 +                tt.add("伤害");
 +                tt.add("攻速");
 +                tt.add("移速");
-+                tt.add("建速");
-+                tt.add("阻力");
-+                tt.add("装甲");
 +                tt.row();
 +                tt.add(FormatDefault.format(unit.healthMultiplier));
 +                tt.add(FormatDefault.format(unit.damageMultiplier));
 +                tt.add(FormatDefault.format(unit.reloadMultiplier));
 +                tt.add(FormatDefault.format(unit.speedMultiplier));
++            }).growX().row();
++            table.row().table(tt -> {
++                tt.defaults().pad(0, 8, 0, 8);
++                tt.add("建速");
++                tt.add("阻力");
++                tt.add("装甲");
++                tt.row();
 +                tt.add(FormatDefault.format(unit.buildSpeedMultiplier));
 +                tt.add(FormatDefault.format(unit.damageMultiplier));
 +                tt.add(FormatDefault.format(unit.armorOverride >= 0.0F ? unit.armorOverride : unit.armor));
@@ -884,7 +888,7 @@ index 7324bf31b5372f6a20f6f18317dadd97f5d7e43b..e2df7b89e9feb89ef9a51ef1092d2b43
              if(net.active() && ai.controller != null && ai.controller.lastAccessed != null){
                  table.row();
                  table.add(Core.bundle.format("lastaccessed", ai.controller.lastAccessed)).growX().wrap().left();
-@@ -696,6 +761,11 @@ public class UnitType extends UnlockableContent implements Senseable{
+@@ -696,6 +765,11 @@ public class UnitType extends UnlockableContent implements Senseable{
          }
  
          table.row();
@@ -896,7 +900,7 @@ index 7324bf31b5372f6a20f6f18317dadd97f5d7e43b..e2df7b89e9feb89ef9a51ef1092d2b43
      }
  
      /** @return whether this block supports a specific environment. */
-@@ -1638,12 +1708,15 @@ public class UnitType extends UnlockableContent implements Senseable{
+@@ -1638,12 +1712,15 @@ public class UnitType extends UnlockableContent implements Senseable{
              unit.y + Angles.trnsy(unit.rotation + 180f, itemOffsetY),
              size, size);
  
