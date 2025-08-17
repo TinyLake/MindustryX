@@ -212,8 +212,9 @@ object OverlayUI {
                 addListener(ResizeListener())
 
                 table { header ->
-                    header.add(data.title).minWidth(0f).ellipsis(true)
-                    header.add().growX()
+                    //Later set text, so preferredSize is not affected
+                    header.add("").update { it.setText(data.title); it.update(null) }
+                        .ellipsis(true).minWidth(0f).growX().labelAlign(Align.left)
 
                     header.touchable = Touchable.enabled
                     header.addListener(DragListener())
@@ -243,11 +244,16 @@ object OverlayUI {
                     setPosition(parent.getX(Align.center), parent.getY(Align.center), Align.center)
                     saveTableRect()
                 } else {
-                    val cell = add(table).size(rect.width / Scl.scl(), rect.height / Scl.scl()).grow()
-                    setPosition(rect.x - background.leftWidth, rect.y - background.bottomHeight)
-                    setSize(minWidth, minHeight)
-                    validate()
-                    cell.size(Float.NEGATIVE_INFINITY)
+                    //Set window position and size
+                    val cell = add(table).maxSize(rect.width / Scl.scl(), rect.height / Scl.scl())
+                    pack()
+                    setPosition(rect.x - table.x, rect.y - table.y)
+
+                    //allow for 'grow', 'grow' may update table. So keep window size, and layout again
+                    cell.grow().maxSize(Float.NEGATIVE_INFINITY)
+                    layout()
+
+                    saveTableRect()
                 }
 
                 addChild(object : Element() {

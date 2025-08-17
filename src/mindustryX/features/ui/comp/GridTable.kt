@@ -61,7 +61,7 @@ class GridTable : Table() {
 
     override fun getPrefWidth(): Float {
         return super.getMaxWidth().takeUnless { it == 0f }
-            ?: super.getPrefWidth().takeIf { it >= width }
+            ?: super.getPrefWidth().takeIf { it >= minWidth }
             ?: (cell.minWidth() * Mathf.ceil(Mathf.sqrt(cells.size * 4 / 3f)))
     }
 }
