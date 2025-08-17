@@ -565,7 +565,7 @@ index d267d7b07438552009e5260c779051390d815972..d1a216ff124249a70c93a26802b15491
              unit.lookAt(unit.prefRotation());
          }
 diff --git a/core/src/mindustry/input/InputHandler.java b/core/src/mindustry/input/InputHandler.java
-index 3934bd1436872b97b2971ff3040860eb36fd6621..f48c191f9e742600c003caa5db703af756419c8b 100644
+index 9dfb1a2db26cecb854016ef3cc186b9b464f9a25..328535bbc26c58dad941c3e1d0f9bddbd7d3bdd6 100644
 --- a/core/src/mindustry/input/InputHandler.java
 +++ b/core/src/mindustry/input/InputHandler.java
 @@ -38,6 +38,7 @@ import mindustry.world.*;
@@ -681,10 +681,10 @@ index 3934bd1436872b97b2971ff3040860eb36fd6621..f48c191f9e742600c003caa5db703af7
              return build;
          }
          return null;
-@@ -2055,6 +2092,9 @@ public abstract class InputHandler implements InputProcessor, GestureListener{
-     }
+@@ -2056,6 +2093,9 @@ public abstract class InputHandler implements InputProcessor, GestureListener{
  
      public boolean canShoot(){
+         if(player.dead()) return false;
 +        if(Core.settings.getBool("playerNeedShooting")){
 +            return block == null && !onConfigurable() && !isDroppingItem() && !commandMode;
 +        }

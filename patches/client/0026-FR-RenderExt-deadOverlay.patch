@@ -6,8 +6,8 @@ Subject: [PATCH] FR(RenderExt) deadOverlay
 ---
  core/src/mindustry/graphics/OverlayRenderer.java |  6 +++---
  core/src/mindustry/input/DesktopInput.java       | 15 ++++++++-------
- core/src/mindustry/input/InputHandler.java       |  1 +
- 3 files changed, 12 insertions(+), 10 deletions(-)
+ core/src/mindustry/input/InputHandler.java       |  2 ++
+ 3 files changed, 13 insertions(+), 10 deletions(-)
 
 diff --git a/core/src/mindustry/graphics/OverlayRenderer.java b/core/src/mindustry/graphics/OverlayRenderer.java
 index 0470ec54fed4b2aea4b9bfd0c6639ac034fc726d..4354963da51ef7ccefafec061635fced40457260 100644
@@ -111,10 +111,18 @@ index 311b6a123e3f4f41674dcd892a868fe9c76b7c58..d267d7b07438552009e5260c77905139
              if(mode == placing && block != null){ //touch up while placing, place everything in selection
                  if(input.keyDown(Binding.boost)){
 diff --git a/core/src/mindustry/input/InputHandler.java b/core/src/mindustry/input/InputHandler.java
-index 6a52833182f96b0c4d0f09b961cd3d3302164890..3934bd1436872b97b2971ff3040860eb36fd6621 100644
+index 6a52833182f96b0c4d0f09b961cd3d3302164890..9dfb1a2db26cecb854016ef3cc186b9b464f9a25 100644
 --- a/core/src/mindustry/input/InputHandler.java
 +++ b/core/src/mindustry/input/InputHandler.java
-@@ -2096,6 +2096,7 @@ public abstract class InputHandler implements InputProcessor, GestureListener{
+@@ -2055,6 +2055,7 @@ public abstract class InputHandler implements InputProcessor, GestureListener{
+     }
+ 
+     public boolean canShoot(){
++        if(player.dead()) return false;
+         return block == null && !onConfigurable() && !isDroppingItem() && !player.unit().activelyBuilding() &&
+         !(player.unit() instanceof Mechc && player.unit().isFlying()) && !player.unit().mining() && !commandMode;
+     }
+@@ -2096,6 +2097,7 @@ public abstract class InputHandler implements InputProcessor, GestureListener{
      }
  
      public void rebuildArea(int x1, int y1, int x2, int y2){
