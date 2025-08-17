@@ -287,7 +287,7 @@ object NewTransferScanMode {
     private class DirectionalUnloaderAdaptor(val build: Building) : BuildingAdaptor() {
         override fun getOutputs(): List<Building> = listOfNotNull(build.front())
         override fun activeInput(from: Building): Boolean = from.items != null && from.canUnload() && from == build.back()
-        override fun activeInputs(): List<Building> = listOfNotNull(build.back().takeIf { activeInput(it) })
+        override fun activeInputs(): List<Building> = listOfNotNull(build.back()?.takeIf { activeInput(it) })
     }
 
     private class BridgeAdaptor(val build: ItemBridge.ItemBridgeBuild) : BuildingAdaptor() {
