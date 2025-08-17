@@ -94,8 +94,9 @@ public class PicToMindustry{
     }
 
     private static void rebuilt(){
-        int scaledW = (int)(oriImage.getWidth() * scale), scaledH = (int)(oriImage.getHeight() * scale);
         tTable.clear();
+        if(oriImage == null) return;
+        int scaledW = (int)(oriImage.getWidth() * scale), scaledH = (int)(oriImage.getHeight() * scale);
         tTable.table(t -> {
             t.add("路径").color(Pal.accent).padRight(25f).padBottom(10f);
             t.button("\uE874", () -> Core.app.setClipboardText(originFile.absolutePath()));
