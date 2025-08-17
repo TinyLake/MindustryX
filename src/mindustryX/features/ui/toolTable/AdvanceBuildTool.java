@@ -73,7 +73,7 @@ public class AdvanceBuildTool extends Table{
             }
         });
         add().height(40);
-        button("", Styles.clearTogglet, () -> placement = BuildRange.global).checked((b) -> placement == BuildRange.global).tooltip("[cyan]全局检查").size(30f);
+        button("", Styles.clearTogglet, () -> placement = BuildRange.global).checked((b) -> placement == BuildRange.global).tooltip("全局检查").size(30f);
         button("\uE818", Styles.clearTogglet, () -> {
             selection = control.input.lastSelection;
             if(selection.area() < 10f){
@@ -81,12 +81,12 @@ public class AdvanceBuildTool extends Table{
                 return;
             }
             placement = BuildRange.zone;
-        }).checked((b) -> placement == BuildRange.zone).tooltip("[cyan]选择范围").size(30f);
+        }).checked((b) -> placement == BuildRange.zone).tooltip("选择范围").size(30f);
         button(Blocks.coreShard.emoji(), Styles.clearTogglet, () -> {
             placement = BuildRange.team;
             rebuild();
-        }).checked((b) -> placement == BuildRange.team).tooltip("[cyan]队伍区域").size(30f);
-        button(UnitTypes.gamma.emoji(), Styles.clearTogglet, () -> placement = BuildRange.player).checked((b) -> placement == BuildRange.player).tooltip("[cyan]玩家建造区").size(30f);
+        }).checked((b) -> placement == BuildRange.team).tooltip("队伍区域").size(30f);
+        button(UnitTypes.gamma.emoji(), Styles.clearTogglet, () -> placement = BuildRange.player).checked((b) -> placement == BuildRange.player).tooltip("玩家建造区").size(30f);
 
         var findButton = add(new TextButton("", Styles.clearTogglet)).update((b) -> {
             buildingSeq.clear();
@@ -110,7 +110,7 @@ public class AdvanceBuildTool extends Table{
                 searchIndex = searchIndex % buildingSeq.size;
                 control.input.panCamera(Tmp.v1.set(buildingSeq.get(searchIndex)));
                 searchIndex++;
-                UIExt.announce(Strings.format("[cyan]@[]/[cyan]@[] @@", searchIndex, buildingSeq.size, find.emoji(), find.localizedName));
+                UIExt.announce(Strings.format("@[grey]/[]@ @@", searchIndex, buildingSeq.size, find.emoji(), find.localizedName));
             }
         });
         findButton.getLabelCell().padLeft(2f);

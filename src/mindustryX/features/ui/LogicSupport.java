@@ -166,8 +166,8 @@ public class LogicSupport{
         for(var v : executor.vars){
             if(v.name.startsWith("___")) continue;
             varsTable.table(Tex.whitePane, table -> {
-                Label valueLabel = createCopiedLabel(arcVarsText(v), null, "[cyan]复制变量属性[white]\n@");
-                Label nameLabel = createCopiedLabel(v.name, null, "[cyan]复制变量名[white]\n@");
+                Label valueLabel = createCopiedLabel(arcVarsText(v), null, "复制变量属性\n@");
+                Label nameLabel = createCopiedLabel(v.name, null, "复制变量名\n@");
 
                 table.add(nameLabel).ellipsis(true).wrap().expand(3, 1).fill().get();
                 table.add(valueLabel).ellipsis(true).wrap().padLeft(16f).expand(2, 1).fill().get();
@@ -196,7 +196,7 @@ public class LogicSupport{
 
         varsTable.table(Tex.whitePane, table -> {
             Color color = Color.valueOf("#e600e6");
-            Label label = createCopiedLabel("", table, "[cyan]复制信息版[white]\n@");
+            Label label = createCopiedLabel("", table, "复制信息版\n@");
 
             table.setColor(color);
             table.add("@printbuffer").center().row();

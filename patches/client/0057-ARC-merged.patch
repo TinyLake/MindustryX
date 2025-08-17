@@ -104,7 +104,7 @@ way-zer <himc.wicp@gmail.com> on 2024/9/8
  core/src/mindustry/input/InputHandler.java    |  46 +++-
  core/src/mindustry/input/MobileInput.java     |   6 +-
  core/src/mindustry/logic/LExecutor.java       |  12 +-
- core/src/mindustry/type/UnitType.java         |  91 ++++++-
+ core/src/mindustry/type/UnitType.java         |  97 ++++++-
  core/src/mindustry/type/Weapon.java           |  19 ++
  core/src/mindustry/ui/Fonts.java              |   2 +-
  .../ui/dialogs/ContentInfoDialog.java         |  22 +-
@@ -120,7 +120,7 @@ way-zer <himc.wicp@gmail.com> on 2024/9/8
  .../mindustry/ui/fragments/MenuFragment.java  |  24 +-
  .../ui/fragments/PlacementFragment.java       | 164 ++++++++++--
  .../ui/fragments/PlayerListFragment.java      |  72 ++----
- 27 files changed, 1122 insertions(+), 148 deletions(-)
+ 27 files changed, 1128 insertions(+), 148 deletions(-)
 
 diff --git a/core/src/mindustry/editor/MapInfoDialog.java b/core/src/mindustry/editor/MapInfoDialog.java
 index ebc1f0b300d295e45333f1db38ea299c9658ec20..e7cba056743979206c84fc6d00472c2c44b565f6 100644
@@ -753,7 +753,7 @@ index 353ad72b8d6dbab84856aeed50606fe0ca6b1223..a9694566d66c229e9f67c02289a3054c
                  //TODO desync?
                  case mission -> state.rules.mission = text;
 diff --git a/core/src/mindustry/type/UnitType.java b/core/src/mindustry/type/UnitType.java
-index 7324bf31b5372f6a20f6f18317dadd97f5d7e43b..fabc92a77187a471bec1d70e464c5b71b61e4a16 100644
+index 7324bf31b5372f6a20f6f18317dadd97f5d7e43b..e2df7b89e9feb89ef9a51ef1092d2b43ce7279f1 100644
 --- a/core/src/mindustry/type/UnitType.java
 +++ b/core/src/mindustry/type/UnitType.java
 @@ -38,6 +38,7 @@ import mindustry.world.blocks.units.*;
@@ -826,7 +826,7 @@ index 7324bf31b5372f6a20f6f18317dadd97f5d7e43b..fabc92a77187a471bec1d70e464c5b71
                  bars.row();
  
                  var count = new float[]{-1};
-@@ -676,16 +706,45 @@ public class UnitType extends UnlockableContent implements Senseable{
+@@ -676,16 +706,51 @@ public class UnitType extends UnlockableContent implements Senseable{
                  }).growX().left().height(0f).pad(0f);
              }
          }).growX();
@@ -848,15 +848,21 @@ index 7324bf31b5372f6a20f6f18317dadd97f5d7e43b..fabc92a77187a471bec1d70e464c5b71
 +            });
 +            table.row().table(tt -> {
 +                tt.defaults().pad(0, 8, 0, 8);
-+                tt.add("[acid]血量");
-+                tt.add("[red]伤害");
-+                tt.add("[violet]攻速");
-+                tt.add("[cyan]移速");
++                tt.add("血量");
++                tt.add("伤害");
++                tt.add("攻速");
++                tt.add("移速");
++                tt.add("建速");
++                tt.add("阻力");
++                tt.add("装甲");
 +                tt.row();
 +                tt.add(FormatDefault.format(unit.healthMultiplier));
 +                tt.add(FormatDefault.format(unit.damageMultiplier));
 +                tt.add(FormatDefault.format(unit.reloadMultiplier));
 +                tt.add(FormatDefault.format(unit.speedMultiplier));
++                tt.add(FormatDefault.format(unit.buildSpeedMultiplier));
++                tt.add(FormatDefault.format(unit.damageMultiplier));
++                tt.add(FormatDefault.format(unit.armorOverride >= 0.0F ? unit.armorOverride : unit.armor));
 +            }).growX().row();
 +        }
  
@@ -878,7 +884,7 @@ index 7324bf31b5372f6a20f6f18317dadd97f5d7e43b..fabc92a77187a471bec1d70e464c5b71
              if(net.active() && ai.controller != null && ai.controller.lastAccessed != null){
                  table.row();
                  table.add(Core.bundle.format("lastaccessed", ai.controller.lastAccessed)).growX().wrap().left();
-@@ -696,6 +755,11 @@ public class UnitType extends UnlockableContent implements Senseable{
+@@ -696,6 +761,11 @@ public class UnitType extends UnlockableContent implements Senseable{
          }
  
          table.row();
@@ -890,7 +896,7 @@ index 7324bf31b5372f6a20f6f18317dadd97f5d7e43b..fabc92a77187a471bec1d70e464c5b71
      }
  
      /** @return whether this block supports a specific environment. */
-@@ -1638,12 +1702,15 @@ public class UnitType extends UnlockableContent implements Senseable{
+@@ -1638,12 +1708,15 @@ public class UnitType extends UnlockableContent implements Senseable{
              unit.y + Angles.trnsy(unit.rotation + 180f, itemOffsetY),
              size, size);
  
@@ -1012,7 +1018,7 @@ index e2100b2e502c13f2339b485694e297fa61ea89d8..f1d07ff0e8b009786b29f175e9cd9afa
          table.marginRight(30f);
          //TODO: some things (e.g. reconstructor requirements) are too long and screw up the layout
 diff --git a/core/src/mindustry/ui/dialogs/CustomRulesDialog.java b/core/src/mindustry/ui/dialogs/CustomRulesDialog.java
-index 0232e08526ed21bee9196e56f43eb59597e616ef..8a2ae09ae4e26dfd2725356893ff37f3009eb404 100644
+index 0232e08526ed21bee9196e56f43eb59597e616ef..afeba777044c1e3358fc8817b39bfc130d84dede 100644
 --- a/core/src/mindustry/ui/dialogs/CustomRulesDialog.java
 +++ b/core/src/mindustry/ui/dialogs/CustomRulesDialog.java
 @@ -3,6 +3,7 @@ package mindustry.ui.dialogs;
@@ -1247,7 +1253,7 @@ index 0232e08526ed21bee9196e56f43eb59597e616ef..8a2ae09ae4e26dfd2725356893ff37f3
                      cons.get(team);
                  }).pad(1f).checked(b -> prov.get() == team).size(60f).tooltip(team.coloredName()).with(i -> i.getStyle().imageUpColor = team.color);
              }
-+            t.button(Icon.add, Styles.squareTogglei, 38f, () -> UIExt.teamSelect.pickOne(cons, prov.get())).pad(1f).checked(b -> !Seq.with(Team.baseTeams).contains(prov.get())).size(60f).tooltip("[acid]更多队伍选择");
++            t.button(Icon.add, Styles.squareTogglei, 38f, () -> UIExt.teamSelect.pickOne(cons, prov.get())).pad(1f).checked(b -> !Seq.with(Team.baseTeams).contains(prov.get())).size(60f).tooltip("更多队伍选择");
          }).padTop(0).row();
      }
  
@@ -1433,7 +1439,7 @@ index f18bb45e7a053673c66657e900ce26d1a48da289..a7ef7798e0620411ae87a2bf6c11422e
                              }
                          }
 diff --git a/core/src/mindustry/ui/dialogs/SchematicsDialog.java b/core/src/mindustry/ui/dialogs/SchematicsDialog.java
-index fef8e21d771ccfd81cbc65a0bc62642ebf721952..a7acdc419bf88e63c98a88bb5ff8e7393f028c8c 100644
+index fef8e21d771ccfd81cbc65a0bc62642ebf721952..2ff1c1566a72ec7522ec7f23827256d038bb1171 100644
 --- a/core/src/mindustry/ui/dialogs/SchematicsDialog.java
 +++ b/core/src/mindustry/ui/dialogs/SchematicsDialog.java
 @@ -15,6 +15,8 @@ import arc.scene.ui.layout.*;
@@ -1472,8 +1478,8 @@ index fef8e21d771ccfd81cbc65a0bc62642ebf721952..a7acdc419bf88e63c98a88bb5ff8e739
          addCloseButton();
          buttons.button("@schematic.import", Icon.download, this::showImport);
 +        if (mobile) buttons.row();
-+        buttons.button("[cyan]蓝图档案馆", Icon.link, () -> UIExt.openURI("https://docs.qq.com/sheet/DVHNoS3lIcm1NbFFS"));
-+        buttons.button("[violet]转换器[white] " + Blocks.canvas.emoji() + Blocks.logicDisplay.emoji() + Blocks.sorter.emoji(), Icon.image, PicToMindustry::show);
++        buttons.button("蓝图档案馆", Icon.link, () -> UIExt.openURI("https://docs.qq.com/sheet/DVHNoS3lIcm1NbFFS"));
++        buttons.button("图片转换器" + Blocks.canvas.emoji() + Blocks.logicDisplay.emoji() + Blocks.sorter.emoji(), Icon.image, PicToMindustry::show);
          makeButtonOverlay();
          shown(this::setup);
          onResize(this::setup);
@@ -1543,7 +1549,7 @@ index fef8e21d771ccfd81cbc65a0bc62642ebf721952..a7acdc419bf88e63c98a88bb5ff8e739
 +                        ArcMessageDialog.share("[blue]<Schem>[]", " " + code.substring(code.lastIndexOf('/') + 1));
 +                    });
 +                }).marginLeft(12f).row();
-+                t.button("复制到剪切板[cyan](高级版，含介绍)", Icon.star, style, () -> {
++                t.button("复制到剪切板(高级版，含介绍)", Icon.star, style, () -> {
 +                    dialog.hide();
 +                    ArcMessageDialog.uploadPasteBin(schematics.writeBase64(s), code -> {
 +                        if(code == null) code = "x";
@@ -2171,7 +2177,7 @@ index 57f16a53a6910131be7d85122fcc6e5e31f0115c..d3cd081c0bcf10bf85b4f22e0697a815
      }
  
 diff --git a/core/src/mindustry/ui/fragments/PlacementFragment.java b/core/src/mindustry/ui/fragments/PlacementFragment.java
-index 2f78972b3e66133672bc9d5fa2ed531849829502..9e5446227c8d887991ad0097373818d89667684f 100644
+index 2f78972b3e66133672bc9d5fa2ed531849829502..5d5d4fe65b00e08b8d8a6c10edb273a3ebd375d8 100644
 --- a/core/src/mindustry/ui/fragments/PlacementFragment.java
 +++ b/core/src/mindustry/ui/fragments/PlacementFragment.java
 @@ -1,6 +1,7 @@
@@ -2453,13 +2459,13 @@ index 2f78972b3e66133672bc9d5fa2ed531849829502..9e5446227c8d887991ad0097373818d8
 +            b.clicked(KeyCode.mouseLeft, () -> {
 +                control.input.selectedUnits = control.input.selectedUnits.select(cons);
 +                Events.fire(Trigger.unitCommandChange);
-+                UIExt.announce("[cyan]arc控制器\n[acid]选择" + info + "！");
++                UIExt.announce("RTS控制器：选择" + info + "！");
 +            });
 +            //right click -> remove
 +            b.clicked(KeyCode.mouseRight, () -> {
 +                control.input.selectedUnits.removeAll(cons);
 +                Events.fire(Trigger.unitCommandChange);
-+                UIExt.announce("[cyan]arc控制器\n[orange]移除" + info + "！");
++                UIExt.announce("RTS控制器：移除" + info + "！");
 +            });
 +
 +            b.addListener(listener);

@@ -32,11 +32,11 @@ object NewToolTable : Table() {
         add(gridTable).growX().row()
         gridTable.defaults().size(Vars.iconLarge)
 
-        button("[cyan]信", "中央监控室") { UIExt.arcMessageDialog.show() }
-        button("[cyan]S", "同步一波") { Call.sendChatMessage("/sync") }
-        button("[cyan]观", "观察者模式") { Call.sendChatMessage("/ob") }
-        button("[cyan]版", "服务器信息版") { Call.sendChatMessage("/broad") }
-        toggle("[cyan]雾", "战争迷雾", { Vars.state.rules.fog }) {
+        button("信", "中央监控室") { UIExt.arcMessageDialog.show() }
+        button("S", "同步一波") { Call.sendChatMessage("/sync") }
+        button("观", "观察者模式") { Call.sendChatMessage("/ob") }
+        button("版", "服务器信息版") { Call.sendChatMessage("/broad") }
+        toggle("雾", "战争迷雾", { Vars.state.rules.fog }) {
             Vars.state.rules.fog = Vars.state.rules.fog xor true
         }.disabled { Vars.state.rules.pvp && Vars.player.team().id != 255 }
         button("[white]法", "法国军礼") {
@@ -44,12 +44,12 @@ object NewToolTable : Table() {
         }
         toggle("扫", "扫描模式", { RenderExt.transportScan.value }) { RenderExt.transportScan.toggle() }
 
-        toggle("[cyan]块", "建筑显示", { RenderExt.blockRenderLevel > 0 }) { RenderExt.blockRenderLevel0.cycle() }
-        toggle("[cyan]兵", "兵种显示", { !RenderExt.unitHide.value }) { RenderExt.unitHide.toggle() }
-        toggle("[cyan]弹", "子弹显示", { !RenderExt.noBulletShow.value }) { RenderExt.noBulletShow.toggle() }
-        toggle("[cyan]效", "特效显示", { Vars.renderer.enableEffects }) { Settings.toggle("effects") }
-        toggle("[cyan]墙", "墙体阴影显示", { Vars.enableDarkness }) { Vars.enableDarkness = !Vars.enableDarkness }
-        toggle("[cyan]${Iconc.map}", "小地图显示", { Core.settings.getBool("minimap") }) { Settings.toggle("minimap") }
+        toggle("块", "建筑显示", { RenderExt.blockRenderLevel > 0 }) { RenderExt.blockRenderLevel0.cycle() }
+        toggle("兵", "兵种显示", { !RenderExt.unitHide.value }) { RenderExt.unitHide.toggle() }
+        toggle("弹", "子弹显示", { !RenderExt.noBulletShow.value }) { RenderExt.noBulletShow.toggle() }
+        toggle("效", "特效显示", { Vars.renderer.enableEffects }) { Settings.toggle("effects") }
+        toggle("墙", "墙体阴影显示", { Vars.enableDarkness }) { Vars.enableDarkness = !Vars.enableDarkness }
+        toggle("${Iconc.map}", "小地图显示", { Core.settings.getBool("minimap") }) { Settings.toggle("minimap") }
         toggle("箱", "碰撞箱显示", { RenderExt.unitHitbox.value }) { RenderExt.unitHitbox.toggle() }
 
         button("${Iconc.blockRadar}", "雷达开关") { ArcRadar.mobileRadar = !ArcRadar.mobileRadar }.get().also {

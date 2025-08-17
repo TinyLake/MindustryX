@@ -38,24 +38,24 @@ class AdvanceToolTable : Table() {
         row().add("单位：")
         with(table().growX().get()) {
             defaults().size(Vars.iconMed).pad(4f)
-            button(Items.copper.emoji() + "[acid]+", Styles.cleart) {
+            button(Items.copper.emoji() + "+", Styles.cleart) {
                 val core = Vars.player.core() ?: return@button
                 for (item in Vars.content.items()) core.items[item] = core.storageCapacity
-            }.tooltip("[acid]填满核心的所有资源")
+            }.tooltip("填满核心的所有资源")
             button(Items.copper.emoji() + "[red]-", Styles.cleart) {
                 val core = Vars.player.core() ?: return@button
                 core.items.clear()
-            }.tooltip("[acid]清空核心的所有资源")
-            button(UnitTypes.gamma.emoji() + "[acid]+", Styles.cleart) {
+            }.tooltip("清空核心的所有资源")
+            button(UnitTypes.gamma.emoji() + "+", Styles.cleart) {
                 if (Vars.player.dead()) return@button
                 val data = copyIO { Payload.write(UnitPayload(Vars.player.unit()), it) }
                 val cloneUnit = Payload.read<UnitPayload>(data).unit
                 cloneUnit.resetController()
                 cloneUnit.set(Vars.player.x + Mathf.range(8f), Vars.player.y + Mathf.range(8f))
                 cloneUnit.add()
-            }.tooltip("[acid]克隆")
-            button(UnitTypes.gamma.emoji() + "[red]×", Styles.cleart) { if (!Vars.player.dead()) Vars.player.unit().kill() }.tooltip("[red]自杀")
-            button(Icon.waves, Styles.clearNonei) { factoryDialog.show() }.tooltip("[accent]单位工厂-X")
+            }.tooltip("克隆")
+            button(UnitTypes.gamma.emoji() + "[red]×", Styles.cleart) { if (!Vars.player.dead()) Vars.player.unit().kill() }.tooltip("自杀")
+            button(Icon.waves, Styles.clearNonei) { factoryDialog.show() }.tooltip("单位工厂-X")
         }
 
         row().add("队伍：")
@@ -65,9 +65,9 @@ class AdvanceToolTable : Table() {
                 button(String.format("[#%s]%s", team.color, team.localized()), Styles.flatToggleMenut) { Vars.player.team(team) }
                     .checked { Vars.player.team() === team }
             }
-            button("[violet]+", Styles.flatToggleMenut) { UIExt.teamSelect.pickOne({ team: Team? -> Vars.player.team(team) }, Vars.player.team()) }
+            button("+", Styles.flatToggleMenut) { UIExt.teamSelect.pickOne({ team: Team? -> Vars.player.team(team) }, Vars.player.team()) }
                 .checked { !Seq.with(*Team.baseTeams).contains(Vars.player.team()) }
-                .tooltip("[acid]更多队伍选择")
+                .tooltip("更多队伍选择")
         }
 
         row().add("建筑：")
@@ -77,7 +77,7 @@ class AdvanceToolTable : Table() {
                 .checked { LogicExt.worldCreator }.wrapLabel(false)
             button("解禁", Styles.flatToggleMenut) {
                 VarsX.allUnlocked.toggle()
-            }.checked { VarsX.allUnlocked.value }.tooltip("[acid]显示并允许建造所有物品").wrapLabel(false)
+            }.checked { VarsX.allUnlocked.value }.tooltip("显示并允许建造所有物品").wrapLabel(false)
             button("地形蓝图", Styles.flatToggleMenut) { LogicExt.terrainSchematic0.toggle() }
                 .checked { LogicExt.terrainSchematic }.wrapLabel(false)
             button("瞬间完成", Styles.cleart) {
@@ -99,7 +99,7 @@ class AdvanceToolTable : Table() {
             defaults().pad(4f)
             button(Iconc.map.toString(), Styles.cleart) { mapInfoDialog.show() }.width(40f)
             button("无限火力", Styles.flatToggleMenut) { Vars.player.team().rules().cheat = !Vars.player.team().rules().cheat }
-                .checked { Vars.player.team().rules().cheat }.tooltip("[acid]开关自己队的无限火力").wrapLabel(false)
+                .checked { Vars.player.team().rules().cheat }.tooltip("开关自己队的无限火力").wrapLabel(false)
             button("编辑器", Styles.flatToggleMenut) { Vars.state.rules.editor = !Vars.state.rules.editor }
                 .checked { Vars.state.rules.editor }.wrapLabel(false)
             button("沙盒", Styles.flatToggleMenut) { Vars.state.rules.infiniteResources = !Vars.state.rules.infiniteResources }
