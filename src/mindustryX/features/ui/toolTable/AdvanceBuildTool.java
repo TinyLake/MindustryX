@@ -5,6 +5,7 @@ import arc.func.*;
 import arc.graphics.*;
 import arc.graphics.g2d.*;
 import arc.math.geom.*;
+import arc.scene.ui.*;
 import arc.scene.ui.layout.*;
 import arc.struct.*;
 import arc.util.*;
@@ -34,6 +35,7 @@ public class AdvanceBuildTool extends Table{
 
     public Seq<Building> buildingSeq = new Seq<>();
     private final BuildTiles buildTiles = new BuildTiles();
+    private int searchIndex = 0;
 
 
     public AdvanceBuildTool(){
@@ -86,10 +88,7 @@ public class AdvanceBuildTool extends Table{
         }).checked((b) -> placement == BuildRange.team).tooltip("[cyan]队伍区域").size(30f);
         button(UnitTypes.gamma.emoji(), Styles.clearTogglet, () -> placement = BuildRange.player).checked((b) -> placement == BuildRange.player).tooltip("[cyan]玩家建造区").size(30f);
 
-        var findButton = button("", Styles.clearTogglet, () -> {
-            if(find == Blocks.worldProcessor) showWorldProcessorInfo();
-            placement = BuildRange.find;
-        }).update((b) -> {
+        var findButton = add(new TextButton("", Styles.clearTogglet)).update((b) -> {
             buildingSeq.clear();
             if(find.privileged){
                 for(Team team : Team.all){
@@ -101,6 +100,19 @@ public class AdvanceBuildTool extends Table{
             b.setText(find.emoji() + " " + buildingSeq.size);
             b.setChecked(placement == BuildRange.find);
         }).height(30f).tooltip("查找方块").wrapLabel(false).get();
+        findButton.clicked(() -> {
+            if(findButton.childrenPressed()) return;
+            if(placement != BuildRange.find){
+                placement = BuildRange.find;
+                if(find == Blocks.worldProcessor) showWorldProcessorInfo();
+            }else{
+                if(buildingSeq.isEmpty()) return;
+                searchIndex = searchIndex % buildingSeq.size;
+                control.input.panCamera(Tmp.v1.set(buildingSeq.get(searchIndex)));
+                searchIndex++;
+                UIExt.announce(Strings.format("[cyan]@[]/[cyan]@[] @@", searchIndex, buildingSeq.size, find.emoji(), find.localizedName));
+            }
+        });
         findButton.getLabelCell().padLeft(2f);
         findButton.button(Icon.settingsSmall, Styles.clearTogglei, iconSmall, () -> {
             if(target == null){
@@ -108,6 +120,7 @@ public class AdvanceBuildTool extends Table{
                 return;
             }
             find = target;
+            searchIndex = 0;
             placement = BuildRange.find;
             rebuild();
         }).tooltip("设置目标").padRight(2f);
