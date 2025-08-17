@@ -139,7 +139,7 @@ data class ReplayData(
         private fun DataInputStream.readVarShort(): Int {
             val high = readUnsignedShort()
             return if (high and 0x8000 != 0) {
-                val low = readUnsignedByte()
+                val low = readUnsignedShort()
                 ((high and 0x7FFF) shl 16) + low
             } else {
                 high

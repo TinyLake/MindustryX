@@ -13,6 +13,7 @@ import mindustry.net.Packets.*;
 import mindustry.ui.dialogs.*;
 import mindustryX.features.SettingsV2.*;
 
+import java.io.*;
 import java.util.*;
 
 import static mindustry.Vars.*;
@@ -118,10 +119,12 @@ public class ReplayController{
                         Thread.sleep(1);
                     Core.app.post(() -> net.handleClientReceived(packet));
                 }
-            }catch(Exception e){
-                //May EOF
+            }catch(EOFException e){
                 replaying = false;
-                Log.err(e);
+                showInfo();
+            }catch(Exception e){
+                replaying = false;
+                ui.showException("Replay Error", e);
             }finally{
                 stopPlay();
             }
