@@ -7,6 +7,7 @@ import arc.util.*;
 import mindustry.*;
 import mindustry.core.*;
 import mindustry.game.*;
+import mindustry.game.EventType.*;
 import mindustry.gen.*;
 import mindustry.net.*;
 import mindustry.net.Packets.*;
@@ -37,6 +38,7 @@ public class ReplayController{
                 stopPlay();
             }
         });
+        Events.on(ClientServerConnectEvent.class, (e) -> stopPlay());
         {
             Table buttons = Vars.ui.join.buttons;
             buttons.button("加载回放文件", Icon.file, () -> {
@@ -117,7 +119,15 @@ public class ReplayController{
                     Packet packet = reader.readPacket(info);
                     while(Time.time - startTime < info.getOffset())
                         Thread.sleep(1);
-                    Core.app.post(() -> net.handleClientReceived(packet));
+                    Core.app.post(() -> {
+                        if(!replaying) return;
+                        try{
+                            net.handleClientReceived(packet);
+                        }catch(Exception e){
+                            stopPlay();
+                            net.handleException(e);
+                        }
+                    });
                 }
             }catch(EOFException e){
                 replaying = false;
@@ -132,7 +142,13 @@ public class ReplayController{
     }
 
     public static void stopPlay(){
-        if(!replaying) return;
+        if(!replaying){
+            if(reader != null){
+                reader.close();
+                reader = null;
+            }
+            return;
+        }
         Log.infoTag("Replay", "stop");
         replaying = false;
         reader.close();
