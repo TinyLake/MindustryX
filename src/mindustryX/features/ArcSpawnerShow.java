@@ -29,7 +29,7 @@ public class ArcSpawnerShow{
     public static void update(boolean enabled){
         spawnerTable.clear();
         flyerTable.clear();
-        if(!enabled || !state.isPlaying()) return;
+        if(!enabled || !state.isPlaying() || state.wave < 1) return;
         WaveInfo thisWave = ArcWaveSpawner.getOrInit(state.wave - 1);
         for(Tile tile : spawner.getSpawns()){
             if(Mathf.dst(tile.worldx(), tile.worldy(), Core.input.mouseWorldX(), Core.input.mouseWorldY()) < state.rules.dropZoneRadius){
