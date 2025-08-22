@@ -5,6 +5,7 @@ import arc.util.*
 import arc.util.serialization.Jval
 import mindustry.Vars
 import mindustry.core.Version
+import mindustry.mod.Mods.LoadedMod
 import mindustry.net.CrashHandler
 import mindustryX.VarsX
 import java.security.MessageDigest
@@ -100,6 +101,11 @@ object MetricCollector {
         }
     }
 
+    private fun getModCause(e: Throwable): LoadedMod? {
+        e.cause?.let { getModCause(it) }?.let { return it }
+        return CrashHandler.getModCause(e)
+    }
+
     fun handleException(e: Throwable) {
         if (!enable.value || VarsX.devVersion) {
             Log.warn("MetricCollector: Exception occurred, but metrics collection is disabled.")
@@ -107,7 +113,7 @@ object MetricCollector {
         }
         val data = getBaseInfo().apply {
             put("cause", e.stackTraceToString())
-            CrashHandler.getModCause(e)?.let {
+            getModCause(e)?.let {
                 put("likelyCause", it.name)
             }
         }
@@ -115,7 +121,7 @@ object MetricCollector {
         postLog(data)
     }
 
-    fun waitPost(){
+    fun waitPost() {
         task?.join()
         task = null
     }
