@@ -199,7 +199,10 @@ object OverlayUI {
             visible { data.enabled && availability.get() && (open || data.value.pinned) }
             update {
                 if (!dragging) keepInStage()
-                if (data.changed()) rebuild()
+                if (data.changed()) {
+                    rebuild()
+                    data.changed()//ignore change by rebuild
+                }
             }
         }
 
