@@ -18,7 +18,7 @@ Content-Transfer-Encoding: 8bit
  6 files changed, 88 insertions(+), 8 deletions(-)
 
 diff --git a/core/src/mindustry/core/ContentLoader.java b/core/src/mindustry/core/ContentLoader.java
-index 1ef48b5018109fbf1ab14475c93ad4867a7fffbf..1b6076ffaa5b184f0743e421b2f013bd04d0a9ee 100644
+index b21f287e0dab8bfc6112548f440ff0a17576baa9..1183d8c7732b6588d290101f12050bd0d9525273 100644
 --- a/core/src/mindustry/core/ContentLoader.java
 +++ b/core/src/mindustry/core/ContentLoader.java
 @@ -33,6 +33,8 @@ public class ContentLoader{

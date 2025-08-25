@@ -50,7 +50,7 @@ index a4d60c3eec14d87c8310b146ff1550e8145dbf89..0c05a4deafb47f756f1f3e31e26e3d4c
      }
  }
 diff --git a/core/src/mindustry/world/Block.java b/core/src/mindustry/world/Block.java
-index ae7e96dc782548eea0731d0ebea8f06349a1fa58..4aa72352d38d06c04ae5a87b77a3c3fbcc1db052 100644
+index 899139af3cbcc95fa2d4b0d4be2e422ea6cf0ff1..82c470176e8c5465ab03c1c4c8a327c0ab65b43b 100644
 --- a/core/src/mindustry/world/Block.java
 +++ b/core/src/mindustry/world/Block.java
 @@ -33,6 +33,7 @@ import mindustry.world.blocks.power.*;
@@ -261,7 +261,7 @@ index 8748b91ed8a54cd400bd1953dbf64d9e8e20bc75..f8ae33745f7037b3120cac24095361a2
      }
  }
 diff --git a/core/src/mindustry/world/blocks/defense/turrets/Turret.java b/core/src/mindustry/world/blocks/defense/turrets/Turret.java
-index 693358e3cdab11aff7f95ce8f668894da834d5fe..497fd29e612ea915d894211b1020e83346be9e23 100644
+index 404b014484d5e1f6d0caaaa8e48baa3bc5287500..d78be36eed7b1e9d95889e07a1cc7004473690f6 100644
 --- a/core/src/mindustry/world/blocks/defense/turrets/Turret.java
 +++ b/core/src/mindustry/world/blocks/defense/turrets/Turret.java
 @@ -7,6 +7,7 @@ import arc.graphics.*;

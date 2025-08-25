@@ -53,7 +53,7 @@ index 2ff1c1566a72ec7522ec7f23827256d038bb1171..997a0dc494111a7ca26e8ead2f8dd57a
              if(!Mathf.zero(cons) || !Mathf.zero(prod)){
                  cont.table(t -> {
 diff --git a/core/src/mindustry/world/blocks/logic/LogicBlock.java b/core/src/mindustry/world/blocks/logic/LogicBlock.java
-index 5b875e0a1228180a64c4d9f6a98b9d96811c8898..08525774349991f26152e5faa36f4ccf29d49d31 100644
+index 26b6b77ef6c35d83f71aaea600ca4384eb1a2af7..be669ca102029ac84452ca572c505ff13a75c82a 100644
 --- a/core/src/mindustry/world/blocks/logic/LogicBlock.java
 +++ b/core/src/mindustry/world/blocks/logic/LogicBlock.java
 @@ -184,7 +184,7 @@ public class LogicBlock extends Block{

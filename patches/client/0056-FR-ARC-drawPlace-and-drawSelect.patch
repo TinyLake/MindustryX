@@ -14,7 +14,7 @@ Subject: [PATCH] FR: ARC drawPlace and drawSelect
  7 files changed, 87 insertions(+), 11 deletions(-)
 
 diff --git a/core/src/mindustry/world/blocks/ConstructBlock.java b/core/src/mindustry/world/blocks/ConstructBlock.java
-index fab1ac11715a9a4199a88ed43cc04da9e08ce647..9c023026313f34d8b905270ebe03a22e164037ac 100644
+index 21bbd541ae9a89eaa7a433eb8249b34068c25050..ea4e5a475aa4a7d5fb335fbb4da05559dd4bbc2a 100644
 --- a/core/src/mindustry/world/blocks/ConstructBlock.java
 +++ b/core/src/mindustry/world/blocks/ConstructBlock.java
 @@ -3,14 +3,17 @@ package mindustry.world.blocks;
@@ -176,7 +176,7 @@ index d9fc8ed8732a91815f2923fcdcad622e4c7a7789..3d310f4ddc7e2445aab3a8fc350d9c08
          indexer.eachBlock(player.team(), x * tilesize + offset, y * tilesize + offset, range, other -> other.block.canOverdrive, other -> Drawf.selected(other, Tmp.c1.set(baseColor).a(Mathf.absin(4f, 1f))));
      }
 diff --git a/core/src/mindustry/world/blocks/defense/turrets/Turret.java b/core/src/mindustry/world/blocks/defense/turrets/Turret.java
-index 497fd29e612ea915d894211b1020e83346be9e23..2ace1b5e1cea191b9914428968f51147d9407c5e 100644
+index d78be36eed7b1e9d95889e07a1cc7004473690f6..b441a856ec713793896cfd1bf7aee2093af76997 100644
 --- a/core/src/mindustry/world/blocks/defense/turrets/Turret.java
 +++ b/core/src/mindustry/world/blocks/defense/turrets/Turret.java
 @@ -28,6 +28,7 @@ import mindustry.ui.*;
@@ -268,7 +268,7 @@ index f7012546ce66d7e054a21bf10809b54974832827..33bcead34c228067ba30de99860f80e8
          returnItem = null;
          returnCount = 0;
 diff --git a/core/src/mindustry/world/blocks/storage/CoreBlock.java b/core/src/mindustry/world/blocks/storage/CoreBlock.java
-index 65d723da57920144c6ced3a35498ef5c253132b0..8a3ab1ad3013cc7d81c7e5edeb8b3367aa275f73 100644
+index 4c875d343967c46568ca4b9b896e025d5e1a084d..91230bf2f6a422bca0041c75fa5f79b469bf3b0f 100644
 --- a/core/src/mindustry/world/blocks/storage/CoreBlock.java
 +++ b/core/src/mindustry/world/blocks/storage/CoreBlock.java
 @@ -93,6 +93,7 @@ public class CoreBlock extends StorageBlock{

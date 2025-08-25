@@ -125,7 +125,7 @@ index be3d68cbc309505b39f4dbadcf62fa8cd1ab9d69..2f78972b3e66133672bc9d5fa2ed5318
      }
  
 diff --git a/core/src/mindustry/world/Block.java b/core/src/mindustry/world/Block.java
-index 4aa72352d38d06c04ae5a87b77a3c3fbcc1db052..3168e8bc339d7119176ac7686add40775b255e0e 100644
+index 82c470176e8c5465ab03c1c4c8a327c0ab65b43b..e2dff1928221ffe0f4568000388e2bd3d24e2b8e 100644
 --- a/core/src/mindustry/world/Block.java
 +++ b/core/src/mindustry/world/Block.java
 @@ -922,11 +922,11 @@ public class Block extends UnlockableContent implements Senseable{

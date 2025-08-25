@@ -91,10 +91,10 @@ index 11278ddac6ce2b35234acb31b43ea7e8c999592d..ed6785c5853a9a8096b2f48792c05b98
      private Seq<Team> activeTeams = new Seq<>(Team.class);
      /** Maps teams to a map of flagged tiles by flag. */
 diff --git a/core/src/mindustry/content/StatusEffects.java b/core/src/mindustry/content/StatusEffects.java
-index 1ccaabc80faeabf0acaf38ae371fcc1f98bd9750..c58b4ec28d39f53104fc4555646e4284917364cb 100644
+index 7e9466f2d629335317b2a706b376d33aab029923..51669a3c774069bdb5f3189a52fd938657aeb30e 100644
 --- a/core/src/mindustry/content/StatusEffects.java
 +++ b/core/src/mindustry/content/StatusEffects.java
-@@ -202,6 +202,7 @@ public class StatusEffects{
+@@ -206,6 +206,7 @@ public class StatusEffects{
  
          invincible = new StatusEffect("invincible"){{
              healthMultiplier = Float.POSITIVE_INFINITY;
@@ -103,10 +103,10 @@ index 1ccaabc80faeabf0acaf38ae371fcc1f98bd9750..c58b4ec28d39f53104fc4555646e4284
  
          dynamic = new StatusEffect("dynamic"){{
 diff --git a/core/src/mindustry/core/Control.java b/core/src/mindustry/core/Control.java
-index 7a2574ccadcad4495b7c1e1c265f47630d6fc0d3..56c3a614b3888dc4896ede5523fd6173f55b9a1b 100644
+index 90bf9be3c61bdea0b4dc9afc71484e4d546e5c4d..e1c9f30c84adae6829ef79610bb753a8908b00cf 100644
 --- a/core/src/mindustry/core/Control.java
 +++ b/core/src/mindustry/core/Control.java
-@@ -575,7 +575,8 @@ public class Control implements ApplicationListener, Loadable{
+@@ -587,7 +587,8 @@ public class Control implements ApplicationListener, Loadable{
                  BaseDialog dialog = new BaseDialog("@confirm");
                  dialog.setFillParent(true);
  
@@ -183,7 +183,7 @@ index 84eb1d70b908f0171a2201824043b088a2adb6d2..72316d3f95b80f51c11c6ad68fd87327
  
      public static int roundAmount(int number){
 diff --git a/core/src/mindustry/game/Schematics.java b/core/src/mindustry/game/Schematics.java
-index 12def3b98b7677fc1deefd0c6b01c3a739834672..0899fe1c96d83b0b8be0835ffe792e9953f56f8f 100644
+index a67ce3fa3988d70402f3efb1310472e54195e479..a295b46b9497ef0ffd73ea9db911924166eb885c 100644
 --- a/core/src/mindustry/game/Schematics.java
 +++ b/core/src/mindustry/game/Schematics.java
 @@ -99,7 +99,9 @@ public class Schematics implements Loadable{
@@ -197,7 +197,7 @@ index 12def3b98b7677fc1deefd0c6b01c3a739834672..0899fe1c96d83b0b8be0835ffe792e99
          }
      }
  
-@@ -545,7 +547,7 @@ public class Schematics implements Loadable{
+@@ -550,7 +552,7 @@ public class Schematics implements Loadable{
          try(DataInputStream stream = new DataInputStream(new InflaterInputStream(input))){
              short width = stream.readShort(), height = stream.readShort();
  
@@ -206,7 +206,7 @@ index 12def3b98b7677fc1deefd0c6b01c3a739834672..0899fe1c96d83b0b8be0835ffe792e99
  
              StringMap map = new StringMap();
              int tags = stream.readUnsignedByte();
-@@ -586,7 +588,7 @@ public class Schematics implements Loadable{
+@@ -591,7 +593,7 @@ public class Schematics implements Loadable{
  
              int total = stream.readInt();
  

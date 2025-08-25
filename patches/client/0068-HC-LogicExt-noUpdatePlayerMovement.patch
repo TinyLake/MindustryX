@@ -9,7 +9,7 @@ Subject: [PATCH] HC(LogicExt) noUpdatePlayerMovement
  2 files changed, 4 insertions(+), 3 deletions(-)
 
 diff --git a/core/src/mindustry/input/DesktopInput.java b/core/src/mindustry/input/DesktopInput.java
-index d1a216ff124249a70c93a26802b154910d5a106c..201fb2f5cac4620d71442e1678e27470742fa08c 100644
+index 3652c65cd86420f639f1cdebeda04250440a5121..f59123f5c297e162a6306f2c1bd6f6d1cd1ef32c 100644
 --- a/core/src/mindustry/input/DesktopInput.java
 +++ b/core/src/mindustry/input/DesktopInput.java
 @@ -433,7 +433,7 @@ public class DesktopInput extends InputHandler{
@@ -21,17 +21,17 @@ index d1a216ff124249a70c93a26802b154910d5a106c..201fb2f5cac4620d71442e1678e27470
  
              if(Core.input.keyTap(Binding.respawn)){
                  controlledType = null;
-@@ -871,7 +871,7 @@ public class DesktopInput extends InputHandler{
-             }
+@@ -492,7 +492,7 @@ public class DesktopInput extends InputHandler{
+             pollInputPlayer();
          }
  
 -        if(Core.input.keyRelease(Binding.select)){
 +        if(Core.input.keyRelease(Binding.select) && !LogicExt.noUpdatePlayerMovement){
              player.shooting = false;
          }
-     }
+ 
 diff --git a/core/src/mindustry/input/MobileInput.java b/core/src/mindustry/input/MobileInput.java
-index 1088b8d248565a3f57bcbd401aa6f93c6bc013e0..a9be5ce9e19d11501094d3ee2188a76e581e5d14 100644
+index d742f56346e0c9acccb339b09c18d73f0e441e0f..7fa4734fd992ec919e7590b6c28c713f9655041a 100644
 --- a/core/src/mindustry/input/MobileInput.java
 +++ b/core/src/mindustry/input/MobileInput.java
 @@ -24,6 +24,7 @@ import mindustry.type.*;

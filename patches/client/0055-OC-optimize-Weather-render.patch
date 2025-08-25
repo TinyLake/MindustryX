@@ -12,7 +12,7 @@ Content-Transfer-Encoding: 8bit
  1 file changed, 7 insertions(+), 14 deletions(-)
 
 diff --git a/core/src/mindustry/type/Weather.java b/core/src/mindustry/type/Weather.java
-index 0800964bca1566f490fd56c86ff0dea5aa958c97..7ba63171a6478587ef5566bee94f7d38bcc92236 100644
+index 4d77fd94a9d573c26e061b34d1bf4fba59eaebea..af8ee148157910a1a4e7ceb14ff623513691bab3 100644
 --- a/core/src/mindustry/type/Weather.java
 +++ b/core/src/mindustry/type/Weather.java
 @@ -120,11 +120,9 @@ public class Weather extends UnlockableContent{

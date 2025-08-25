@@ -8,7 +8,7 @@ Subject: [PATCH] H MetricCollector.handleException
  1 file changed, 5 insertions(+)
 
 diff --git a/core/src/mindustry/net/CrashHandler.java b/core/src/mindustry/net/CrashHandler.java
-index 1b52810d28edf893950f9609952e0f9a704e44da..f1c7c258da1d13921bfbd2c8415269c27c9bc59d 100644
+index 4e09ba0f8a8d218adaf03139e9d37a204aa3a405..3947c6fe65e965db2f1fb4c804bcfa0521126494 100644
 --- a/core/src/mindustry/net/CrashHandler.java
 +++ b/core/src/mindustry/net/CrashHandler.java
 @@ -9,6 +9,7 @@ import arc.util.io.*;

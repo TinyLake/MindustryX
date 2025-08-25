@@ -952,7 +952,7 @@ index b3f192bc75d3c1775179a7252c02f7ce0a39ff7e..b47e0569d82a8cc6331a1fe36952c206
 +}
 \ No newline at end of file
 diff --git a/gradle.properties b/gradle.properties
-index 60c1e38211f62d924b2cb9a316c47adabe502646..ce68da3f550af7495f8efe3d1f83ca72838cbcf0 100644
+index 5f4a9e6da3b7f5119f24c621e26ab1b258c5bb04..d980f7ced9a8b0d84fb7754e0b897afb03c6b26f 100644
 --- a/gradle.properties
 +++ b/gradle.properties
 @@ -1,5 +1,5 @@
@@ -966,8 +966,8 @@ index 60c1e38211f62d924b2cb9a316c47adabe502646..ce68da3f550af7495f8efe3d1f83ca72
  org.gradle.internal.http.socketTimeout=100000
  org.gradle.internal.http.connectionTimeout=100000
  android.enableR8.fullMode=false
--archash=071fdffaf2
-+archash=v150.1
+-archash=c93f3ff4cb
++archash=v151
 diff --git a/gradlew b/gradlew
 index 4f906e0c811fc9e230eb44819f509cd0627f2600..f3b75f3b0d4faeb4b1c8a02b5c47007e6efb7dcd 100755
 --- a/gradlew

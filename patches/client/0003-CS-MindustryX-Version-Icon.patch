@@ -173,13 +173,13 @@ index 5c8d619a5dde4f94abe0448277d25b605f321b13..c4dc0a63c9942f9bc0f6e4c93512544f
          }catch(Throwable e){
              handleCrash(e);
 diff --git a/gradle.properties b/gradle.properties
-index 98bffa5fb0f7c5c534d7ef404f174950386efeff..ad1fa1c3592fe93921a8f865372f8db39150b627 100644
+index 246c0c6136d66ac30d9728ee58091f2f70caf3d2..ce29505a75b607211852cc4aac87269137b86579 100644
 --- a/gradle.properties
 +++ b/gradle.properties
 @@ -27,3 +27,5 @@ org.gradle.internal.http.socketTimeout=100000
  org.gradle.internal.http.connectionTimeout=100000
  android.enableR8.fullMode=false
- archash=v150.1
+ archash=v151
 +
-+upstreamBuild=150.1
++upstreamBuild=151
 \ No newline at end of file

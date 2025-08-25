@@ -13,10 +13,10 @@ Content-Transfer-Encoding: 8bit
  2 files changed, 17 insertions(+), 2 deletions(-)
 
 diff --git a/core/src/mindustry/content/Blocks.java b/core/src/mindustry/content/Blocks.java
-index 3dc41901d84ffff7b6295f901e19ca79eadc7996..a9873ed71801bb756006ad9c58aadc4b283b1db6 100644
+index b25787fb5125440e93f61c96cd9021559dce9684..b776f8be7f2763a6360224a20f056166f0232365 100644
 --- a/core/src/mindustry/content/Blocks.java
 +++ b/core/src/mindustry/content/Blocks.java
-@@ -191,7 +191,6 @@ public class Blocks{
+@@ -195,7 +195,6 @@ public class Blocks{
          removeOre = new RemoveOre("remove-ore");
  
          cliff = new Cliff("cliff"){{

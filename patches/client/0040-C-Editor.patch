@@ -17,10 +17,10 @@ Content-Transfer-Encoding: 8bit
  6 files changed, 60 insertions(+), 24 deletions(-)
 
 diff --git a/core/src/mindustry/editor/EditorTool.java b/core/src/mindustry/editor/EditorTool.java
-index d3b47efb6537ba234e8f5e741d57f7d5f93cd2e8..6509bc66758bc867419e39ad5c66efc6856b641a 100644
+index d0f64dcdadac1aa942def14b7e19df5ae91a4d42..303834f87e052569c59e5ce6f711610cf8050c07 100644
 --- a/core/src/mindustry/editor/EditorTool.java
 +++ b/core/src/mindustry/editor/EditorTool.java
-@@ -48,7 +48,7 @@ public enum EditorTool{
+@@ -49,7 +49,7 @@ public enum EditorTool{
              });
          }
      },
@@ -29,7 +29,7 @@ index d3b47efb6537ba234e8f5e741d57f7d5f93cd2e8..6509bc66758bc867419e39ad5c66efc6
          {
              edit = true;
              draggable = true;
-@@ -70,6 +70,9 @@ public enum EditorTool{
+@@ -71,6 +71,9 @@ public enum EditorTool{
                  editor.drawCircle(x, y, tile -> tile.setTeam(editor.drawTeam));
              }else if(mode == 3 && !(editor.drawBlock instanceof Floor f && f.isLiquid)){
                  editor.drawBlocks(x, y, false, true, tile -> tile.floor().isLiquid);
@@ -40,7 +40,7 @@ index d3b47efb6537ba234e8f5e741d57f7d5f93cd2e8..6509bc66758bc867419e39ad5c66efc6
  
          }
 diff --git a/core/src/mindustry/editor/MapEditor.java b/core/src/mindustry/editor/MapEditor.java
-index 49912ba47184ace63bcaa97c3663c628cb52783e..a8132a4da59470425540e5194d60cc74a48ebc09 100644
+index 2d8217e9da3d193222af21abe00e3d3c46139ba5..d19bd35aac0cbf8bab38d78853b0faae3e99eed7 100644
 --- a/core/src/mindustry/editor/MapEditor.java
 +++ b/core/src/mindustry/editor/MapEditor.java
 @@ -28,7 +28,9 @@ public class MapEditor{

@@ -134,7 +134,7 @@ index 2bfd96ac4b9685bde38edee0d80be66380fdf6f2..cfd9503839daf8b4043827f2526d194e
          public void draw(){
              float pad = 5f;
 diff --git a/core/src/mindustry/logic/LExecutor.java b/core/src/mindustry/logic/LExecutor.java
-index ae4a1c8f0d28895875642ebd2903b9d5c3c3e483..353ad72b8d6dbab84856aeed50606fe0ca6b1223 100644
+index ab2bbe6fcc0af2ffd87ae4d83652fe340a7b6e51..198b5a97b2ce7f71b57d4dae58b0b1afc9bdf853 100644
 --- a/core/src/mindustry/logic/LExecutor.java
 +++ b/core/src/mindustry/logic/LExecutor.java
 @@ -515,6 +515,7 @@ public class LExecutor{
@@ -145,7 +145,7 @@ index ae4a1c8f0d28895875642ebd2903b9d5c3c3e483..353ad72b8d6dbab84856aeed50606fe0
  
                  if(type == LAccess.enabled){
                      if(p1.bool()){
-@@ -1250,7 +1251,7 @@ public class LExecutor{
+@@ -1249,7 +1250,7 @@ public class LExecutor{
          @Override
          public void run(LExecutor exec){
              if(headless) return;
@@ -299,7 +299,7 @@ index 350f1f3694d198f0f7d2f2ab842eab0c7f2ed93d..297e8646e67f29ad8b4bcde7efce4e53
                          }).size(130f, 50f).self(c -> tooltip(c, "lst." + example.name())).top().left();
  
 diff --git a/core/src/mindustry/world/blocks/logic/LogicBlock.java b/core/src/mindustry/world/blocks/logic/LogicBlock.java
-index fac800a84d4ea6e00295584133309b7bab9fed0d..5b875e0a1228180a64c4d9f6a98b9d96811c8898 100644
+index 56c91cefdaa8ed6d9944e79cf4a9f1629231afcb..26b6b77ef6c35d83f71aaea600ca4384eb1a2af7 100644
 --- a/core/src/mindustry/world/blocks/logic/LogicBlock.java
 +++ b/core/src/mindustry/world/blocks/logic/LogicBlock.java
 @@ -16,17 +16,21 @@ import arc.util.io.*;
@@ -471,7 +471,7 @@ index fac800a84d4ea6e00295584133309b7bab9fed0d..5b875e0a1228180a64c4d9f6a98b9d96
  
          public void showEditDialog(){
 diff --git a/core/src/mindustry/world/blocks/logic/MemoryBlock.java b/core/src/mindustry/world/blocks/logic/MemoryBlock.java
-index fe746076808f5826718bedf5190bc63bdf61d640..f0bafe9cc47d97d096b3121f993661ed8431f3e5 100644
+index 84a9b208bebcc2de36a311286883ed98910c2add..db65243121ae1c51069028982b3201b458bafb49 100644
 --- a/core/src/mindustry/world/blocks/logic/MemoryBlock.java
 +++ b/core/src/mindustry/world/blocks/logic/MemoryBlock.java
 @@ -1,12 +1,15 @@
@@ -499,7 +499,7 @@ index fe746076808f5826718bedf5190bc63bdf61d640..f0bafe9cc47d97d096b3121f993661ed
      }
  
      @Override
-@@ -103,6 +107,26 @@ public class MemoryBlock extends Block{
+@@ -104,6 +108,26 @@ public class MemoryBlock extends Block{
              }
          }
  

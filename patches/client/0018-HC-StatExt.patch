@@ -76,7 +76,7 @@ index 9032b4bf9bdcacd31826eb95fedc7781465cc87a..3af24a74e8322e52e3cce807b7d9d49d
  
      @Override
 diff --git a/core/src/mindustry/type/StatusEffect.java b/core/src/mindustry/type/StatusEffect.java
-index 05dc34595d11d67a878c5dbaef8340fe6becf3ce..423eece86780e56801cae15e5870bc258493366a 100644
+index cd996a1f0d54d4f3fe39145c8ef264069d0d4626..3424bca0272d68241935e0d33f66277fb5d22b0d 100644
 --- a/core/src/mindustry/type/StatusEffect.java
 +++ b/core/src/mindustry/type/StatusEffect.java
 @@ -13,6 +13,7 @@ import mindustry.gen.*;
@@ -87,7 +87,7 @@ index 05dc34595d11d67a878c5dbaef8340fe6becf3ce..423eece86780e56801cae15e5870bc25
  
  public class StatusEffect extends UnlockableContent{
      /** Damage dealt by the unit with the effect. */
-@@ -95,6 +96,7 @@ public class StatusEffect extends UnlockableContent{
+@@ -101,6 +102,7 @@ public class StatusEffect extends UnlockableContent{
          if(speedMultiplier != 1) stats.addMultModifier(Stat.speedMultiplier, speedMultiplier);
          if(reloadMultiplier != 1) stats.addMultModifier(Stat.reloadMultiplier, reloadMultiplier);
          if(buildSpeedMultiplier != 1) stats.addMultModifier(Stat.buildSpeedMultiplier, buildSpeedMultiplier);
@@ -96,7 +96,7 @@ index 05dc34595d11d67a878c5dbaef8340fe6becf3ce..423eece86780e56801cae15e5870bc25
          if(damage < 0) stats.add(Stat.healing, -damage * 60f, StatUnit.perSecond);
  
 diff --git a/core/src/mindustry/type/UnitType.java b/core/src/mindustry/type/UnitType.java
-index edb903a3310bedb0b4716dc550d7c192c4077253..7324bf31b5372f6a20f6f18317dadd97f5d7e43b 100644
+index ebe4b35ff002de0dc0b5d8faabfa5c2a4cfe44d4..3d6042da706bb5df8114ff6659482c6a4b6020f4 100644
 --- a/core/src/mindustry/type/UnitType.java
 +++ b/core/src/mindustry/type/UnitType.java
 @@ -37,6 +37,7 @@ import mindustry.world.blocks.payloads.*;
@@ -107,7 +107,7 @@ index edb903a3310bedb0b4716dc550d7c192c4077253..7324bf31b5372f6a20f6f18317dadd97
  
  import static arc.graphics.g2d.Draw.*;
  import static mindustry.Vars.*;
-@@ -736,29 +737,45 @@ public class UnitType extends UnlockableContent implements Senseable{
+@@ -740,29 +741,45 @@ public class UnitType extends UnlockableContent implements Senseable{
          stats.add(Stat.health, health);
          stats.add(Stat.armor, armor);
          stats.add(Stat.speed, speed * 60f / tilesize, StatUnit.tilesSecond);
@@ -159,7 +159,7 @@ index edb903a3310bedb0b4716dc550d7c192c4077253..7324bf31b5372f6a20f6f18317dadd97
          }
          if(buildSpeed > 0){
              stats.addPercent(Stat.buildSpeed, buildSpeed);
-@@ -777,6 +794,10 @@ public class UnitType extends UnlockableContent implements Senseable{
+@@ -781,6 +798,10 @@ public class UnitType extends UnlockableContent implements Senseable{
              stats.add(Stat.weapons, StatValues.weapons(this, weapons));
          }
  
@@ -170,7 +170,7 @@ index edb903a3310bedb0b4716dc550d7c192c4077253..7324bf31b5372f6a20f6f18317dadd97
          if(immunities.size > 0){
              var imm = immunities.toSeq().sort();
              //it's redundant to list wet for naval units
-@@ -844,6 +865,8 @@ public class UnitType extends UnlockableContent implements Senseable{
+@@ -848,6 +869,8 @@ public class UnitType extends UnlockableContent implements Senseable{
  
          allowLegStep = example instanceof Legsc || example instanceof Crawlc;
  
@@ -203,7 +203,7 @@ index 50dfe94b013184f1d860cb6ab4ff2910df008180..1bb5af3a7f362f1df2a44732c7c59d03
              t.row();
              t.add("[lightgray]" + Stat.inaccuracy.localized() + ": [white]" + (int)inaccuracy + " " + StatUnit.degrees.localized());
 diff --git a/core/src/mindustry/world/Block.java b/core/src/mindustry/world/Block.java
-index 4ea1a5197cc8f1aedf5d88597d4b2a8179f5e38d..ae7e96dc782548eea0731d0ebea8f06349a1fa58 100644
+index 7841f9fbbcc22e09888b81b09047dd65e95ed109..899139af3cbcc95fa2d4b0d4be2e422ea6cf0ff1 100644
 --- a/core/src/mindustry/world/Block.java
 +++ b/core/src/mindustry/world/Block.java
 @@ -32,6 +32,7 @@ import mindustry.world.blocks.environment.*;
@@ -520,7 +520,7 @@ index 416df5a20af4767cdfdc2646bce19468ad11cd28..239311eea91980f2c3e0facd6613b237
      public final String name;
      public final int id;
 diff --git a/core/src/mindustry/world/meta/StatValues.java b/core/src/mindustry/world/meta/StatValues.java
-index 886fa305abb4deb98f09bbe88a29bcea0356f090..9bff6d9bb9c9b2789ef294d943929b9046dbc2f3 100644
+index 8bad161976923e881cd9a6fe9ce00889f93669c7..dd8aa1da4245cebeb2b010da502d98359380064d 100644
 --- a/core/src/mindustry/world/meta/StatValues.java
 +++ b/core/src/mindustry/world/meta/StatValues.java
 @@ -25,6 +25,8 @@ import mindustry.ui.*;
