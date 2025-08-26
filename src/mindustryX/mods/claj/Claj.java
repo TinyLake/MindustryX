@@ -1,6 +1,8 @@
 package mindustryX.mods.claj;
 
+import arc.net.*;
 import arc.scene.ui.layout.*;
+import arc.util.*;
 import mindustry.*;
 import mindustry.gen.*;
 import mindustry.mod.*;
@@ -9,11 +11,24 @@ import mindustryX.mods.claj.dialogs.*;
 public class Claj extends Plugin{
     public JoinViaClajDialog joinViaClaj;
     public ManageRoomsDialog manageRooms;
+    public static NetListener serverListener = null;
+
+    private void initHandle(){
+        var provider = Reflect.get(Vars.net, "provider");
+        if(Vars.steam) provider = Reflect.get(provider, "provider"); // thanks
+
+        var server = Reflect.get(provider, "server");
+        serverListener = Reflect.get(server, "dispatchListener");
+    }
 
     @Override
     public void init(){
         if(Vars.headless) return;
-        ClajIntegration.load();
+        try{
+            initHandle();
+        }catch(Exception e){
+            Vars.ui.showException("[CLaj]获取serverListener失败", e);
+        }
         joinViaClaj = new JoinViaClajDialog();
         manageRooms = new ManageRoomsDialog();
 
