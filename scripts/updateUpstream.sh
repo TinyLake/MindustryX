@@ -6,7 +6,7 @@ function getRef() {
 
 refHEAD=$(cd .. && getRef HEAD work || exit 1)
 
-git fetch upstream "$1" || exit 1
+git fetch origin "$1" || exit 1
 refRemote=$(git rev-parse FETCH_HEAD || exit 1)
 
 if [ "$refHEAD" != "$refRemote" ]; then

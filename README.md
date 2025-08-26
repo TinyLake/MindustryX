@@ -9,10 +9,16 @@
 - 目前MDTX生态包括：客户端功能与优化，服务端优化，API拓展。
 
 ### 版本号规则
-前三位是发布日期，第四位是构件号。后面是编译分支
+正式版：`{month}.{code}`, `code` 是每个分支的编译序列码。例如  `2025.08.X15`
+预览版：`{date}.{code}-{branch}`，前三位是发布日期，第四位是构件号。后面是编译分支。例如`2024.05.25.238-client-wz`
 
-比如 `2024.05.25.238-client-wz` 对应 `{date}.{code}-{branch}`, `code` 是每个分支的编译序列码
-
+### 安装方式
+正式版在 [Releases](https://github.com/TinyLake/MindustryX/releases) 中下载对应平台的MDTX
+其中：
+* apk为安卓版
+* `desktop.jar`为桌面版，
+* `loader.jar`为Mod版 **[推荐]**  
+(可用原版启动，已支持pc,steam,android全平台)
 ### 发布类型
 * apk为安卓版
 * jar为桌面版
@@ -24,17 +30,25 @@
 
 详见 [MDTX wiki](https://github.com/TinyLake/MindustryX/wiki) 或者查阅 **[Patches](./patches)**
 
-### 安装方式
-在 [Releases](https://github.com/TinyLake/MindustryX/releases) 中下载对应平台的MDTX
 
 **Loader 需要作为mod导入游戏**
 
 ### 贡献代码
-1. 使用 `git clone --recursive https://github.com/TinyLake/MindustryX.git` 或者在 `clone` 后，执行 `git submodule init` 初始化mdt模块
-2. cd [`work/`](work) 并运行 `../scripts/applyPatches`
+1. 使用 `git clone --recursive https://github.com/TinyLake/MindustryX.git` 或者在 `clone` 后，执行 `git submodule update --init` 初始化`work`目录
+2. cd [`work/`](work) 并运行 `../scripts/applyPatches.sh`
 3. 在 [`work/`](work) 中提交你的代码
 4. 用 `../scripts/genPatches.sh` 生成 patch 文件.
 5. 在 MDTX 根目录里提交 patch 文件
+
+```shell
+  git clone --recursive https://github.com/TinyLake/MindustryX.git && cd MindustryX
+  git submodule update --init
+  cd work
+  bash ../scripts/applyPatches.sh
+  # Modifiy and commit inside work
+  bash ../scripts/genPatches.sh
+  # Commit outside work, and push. Then you could create PR.
+```
 
 有开发能力的可私聊WZ加入开发群
 
