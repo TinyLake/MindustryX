@@ -7,6 +7,7 @@ import mindustry.core.*;
 import mindustry.mod.*;
 import mindustry.mod.Mods.*;
 import mindustryX.*;
+import mindustryX.mods.claj.*;
 
 import static arc.Core.files;
 import static mindustry.Vars.modDirectory;
@@ -14,6 +15,7 @@ import static mindustry.Vars.modDirectory;
 public class InternalMods{
     public static Seq<LoadedMod> load(){
         Seq<LoadedMod> mods = new Seq<>();
+        mods.add(internalMod(meta("claj", "Claj联机", "1.1", "[#0096FF]xzxADIxzx cong重写 WayZer合并进MDTX"), new Claj()));
         mods.add(internalMod(meta("Kotlin", "Kotlin语言标准库", "1.9.20", "Jetbrains")));
         if(!VarsX.isLoader)
             mods.add(internalMod(meta("MindustryX", "MindustryX", VarsX.version, "")));
