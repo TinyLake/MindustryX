@@ -38,8 +38,6 @@ public class ArcMessageDialog extends BaseDialog{
         if(Core.settings.getInt("maxMsgRecorded") == 0) Core.settings.put("maxMsgRecorded", 500);
         maxMsgRecorded = Core.settings.getInt("maxMsgRecorded");
 
-        hiddenTypes.add(Type.serverTips);
-
         cont.add(chooseTable).fillX().row();
         chooseTable.background(Tex.pane);
         chooseTable.defaults().width(180f).left().padRight(4);
@@ -129,35 +127,14 @@ public class ArcMessageDialog extends BaseDialog{
         return builder.toString();
     }
 
-    private String getPlayerName(Msg msgElement){
-        int typeStart = msgElement.message.indexOf("[coral][");
-        int typeEnd = msgElement.message.indexOf("[coral]]");
-        if(typeStart == -1 || typeEnd == -1 || typeEnd <= typeStart){
-            return msgElement.msgType.name;
-        }
-
-        return msgElement.message.substring(typeStart + 20, typeEnd);
-    }
-
-    private String getPlayerMsg(Msg msgElement){
-        if(msgElement.msgType != Type.normal) return msgElement.message;
-        int typeStart = msgElement.message.indexOf("[coral][");
-        int typeEnd = msgElement.message.indexOf("[coral]]");
-        if(typeStart == -1 || typeEnd == -1 || typeEnd <= typeStart){
-            return msgElement.message;
-        }
-        return msgElement.message.substring(typeEnd + 9);
-    }
-
     public String formatTime(Date time){
         return new SimpleDateFormat("HH:mm:ss", Locale.US).format(time);
     }
 
     public static void resolveMsg(String message, @Nullable Player sender){
-        Type type = resolveMarkType(message);
-        if(type == null && sender != null) type = Type.chat;
-        if(type == null) type = resolveServerType(message);
-        if(type == null) type = Type.normal;
+        Type type;
+        if(message.contains("<ARC") && message.contains("<AT>")) type = Type.markPlayer;
+        else type = sender != null ? Type.chat : Type.serverMsg;
 
         new Msg(type, message, sender != null ? sender.name() : null, sender != null ? new Vec2(sender.x, sender.y) : null).add();
         if(type == Type.markPlayer){
@@ -166,32 +143,6 @@ public class ArcMessageDialog extends BaseDialog{
                 ui.announce("[gold]你被[white] " + sender.name + " [gold]戳了一下，请注意查看信息框哦~", 10);
             else ui.announce("[orange]你被戳了一下，请注意查看信息框哦~", 10);
         }
-    }
-
-    public static Type resolveMarkType(String message){
-        if(!message.contains("<ARC")) return null;
-        if(message.contains("标记了") && message.contains("Wave")) return Type.markWave;
-        if(message.contains("标记了") && message.contains("Content")) return Type.markContent;
-        if(message.contains("<AT>")) return Type.markPlayer;
-        return null;
-    }
-
-    private static final Seq<String> serverMsg = Seq.with("加入了服务器", "离开了服务器", "自动存档完成", "登录成功", "经验+", "[YELLOW]本局游戏时长:", "[YELLOW]单人快速投票", "[GREEN]回档成功",
-    "[YELLOW]PVP保护时间, 全力进攻吧", "[YELLOW]发起", "[YELLOW]你可以在投票结束前使用", "[GREEN]投票成功", "[GREEN]换图成功,当前地图",
-    "[RED]本地图禁用单位", "[RED]该地图限制空军,禁止进入敌方领空", "[yellow]本地图限制空军", "[YELLOW]火焰过多造成服务器卡顿,自动关闭火焰",
-    " [GREEN]====", "[RED]无效指令", "[RED]该技能", "切换成功",
-    "[violet][投票系统][]", "[coral][-]野生的", "[CYAN][+]野生的"   // xem相关
-    );
-
-    public static Type resolveServerType(String message){
-        if(message.contains("小贴士")) return Type.serverTips;
-        if(message.contains("[YELLOW][技能]")) return Type.serverSkill;
-        for(int i = 0; i < serverMsg.size; i++){
-            if(message.contains(serverMsg.get(i))){
-                return Type.serverMsg;
-            }
-        }
-        return null;
     }
 
     public void addMsg(Msg msg){
@@ -205,7 +156,7 @@ public class ArcMessageDialog extends BaseDialog{
                 tt.color.set(msg.msgType.color);
 
                 if(msg.msgType == Type.chat)
-                    tt.add(getPlayerName(msg)).style(Styles.outlineLabel).left().width(300f);
+                    tt.add(msg.sender != null ? msg.sender : msg.msgType.name).style(Styles.outlineLabel).left().width(300f);
                 else
                     tt.add(msg.msgType.name).style(Styles.outlineLabel).color(msg.msgType.color).left().width(300f);
 
@@ -236,7 +187,7 @@ public class ArcMessageDialog extends BaseDialog{
                 tt.left();
                 tt.marginLeft(4);
                 tt.setColor(msg.msgType.color);
-                tt.labelWrap(getPlayerMsg(msg)).growX();
+                tt.labelWrap(msg.message).growX();
             }).pad(4).padTop(2).growX().grow();
 
             t.marginBottom(7);
@@ -283,25 +234,19 @@ public class ArcMessageDialog extends BaseDialog{
     }
 
     public enum Type{
-        normal("消息", Color.gray),
+        chat("聊天", Color.gray),
+        serverMsg("服务器信息", Color.valueOf("#cefdce")),
 
-        chat("聊天", Color.valueOf("#778899")),
+        markLoc("标记~坐标", Color.valueOf("#7FFFD4")),
+        markPlayer("标记~玩家", Color.valueOf("#7FFFD4")),
+
         console("指令", Color.gold),
 
-        markLoc("标记", "坐标", Color.valueOf("#7FFFD4")),
-        markWave("标记", "波次", Color.valueOf("#7FFFD4")),
-        markContent("标记", "内容", Color.valueOf("#7FFFD4")),
-        markPlayer("标记", "玩家", Color.valueOf("#7FFFD4")),
+        logicNotify("逻辑~通报", Color.valueOf("#ffccff")),
+        logicAnnounce("逻辑~公告", Color.valueOf("#ffccff")),
 
-        serverTips("服务器", "小贴士", Color.valueOf("#98FB98")),
-        serverMsg("服务器", "信息", Color.valueOf("#cefdce")),
-        serverSkill("服务器", "技能", Color.valueOf("#e6ffcc")),
-
-        logicNotify("逻辑", "通报", Color.valueOf("#ffccff")),
-        logicAnnounce("逻辑", "公告", Color.valueOf("#ffccff")),
-
-        eventWorldLoad("事件", "载入地图", Color.valueOf("#ff9999")),
-        eventWave("事件", "波次", Color.valueOf("#ffcc99"));
+        eventWorldLoad("事件~载入地图", Color.valueOf("#ff9999")),
+        eventWave("事件~波次", Color.valueOf("#ffcc99"));
 
         public final String name;
         public final Color color;
@@ -309,10 +254,6 @@ public class ArcMessageDialog extends BaseDialog{
         Type(String name, Color color){
             this.name = name;
             this.color = color;
-        }
-
-        Type(String type, String subClass, Color color){
-            this(type + "~" + subClass, color);
         }
     }
 }
