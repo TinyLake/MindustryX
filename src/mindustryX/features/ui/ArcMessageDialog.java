@@ -84,12 +84,12 @@ public class ArcMessageDialog extends BaseDialog{
 
     public static void shareContent(UnlockableContent content, boolean description){
         StringBuilder builder = new StringBuilder();
-        builder.append("标记了").append(content.localizedName).append(content.emoji());
+        builder.append(content.localizedName).append(content.emoji());
         builder.append("(").append(content.name).append(")");
         if(content.description != null && description){
-            builder.append("。介绍: ").append(content.description);
+            builder.append(": ").append(content.description);
         }
-        ArcMessageDialog.share("Content", builder.toString());
+        UIExt.shareMessage(Iconc.info, builder.toString());
     }
 
     public static void uploadPasteBin(String content, Cons<String> callback){
@@ -133,7 +133,7 @@ public class ArcMessageDialog extends BaseDialog{
 
     public static void resolveMsg(String message, @Nullable Player sender){
         Type type;
-        if(message.contains("<ARC") && message.contains("<AT>")) type = Type.markPlayer;
+        if(message.contains("<AT>")) type = Type.markPlayer;
         else type = sender != null ? Type.chat : Type.serverMsg;
 
         new Msg(type, message, sender != null ? sender.name() : null, sender != null ? new Vec2(sender.x, sender.y) : null).add();
