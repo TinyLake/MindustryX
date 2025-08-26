@@ -17,7 +17,7 @@ Content-Transfer-Encoding: 8bit
  6 files changed, 60 insertions(+), 24 deletions(-)
 
 diff --git a/core/src/mindustry/editor/EditorTool.java b/core/src/mindustry/editor/EditorTool.java
-index d0f64dcdadac1aa942def14b7e19df5ae91a4d42..303834f87e052569c59e5ce6f711610cf8050c07 100644
+index eac257b3c5238a61b13afce11f26bdc3eb603d79..dde3985967815a41c6240c83d57755aafed2ca04 100644
 --- a/core/src/mindustry/editor/EditorTool.java
 +++ b/core/src/mindustry/editor/EditorTool.java
 @@ -49,7 +49,7 @@ public enum EditorTool{
@@ -40,10 +40,10 @@ index d0f64dcdadac1aa942def14b7e19df5ae91a4d42..303834f87e052569c59e5ce6f711610c
  
          }
 diff --git a/core/src/mindustry/editor/MapEditor.java b/core/src/mindustry/editor/MapEditor.java
-index 2d8217e9da3d193222af21abe00e3d3c46139ba5..d19bd35aac0cbf8bab38d78853b0faae3e99eed7 100644
+index f04bd1339d483254abe48c0ec9d493882d2eb8da..ce4c3eb85137146d4ee5ba1d76eb22ced0746c0c 100644
 --- a/core/src/mindustry/editor/MapEditor.java
 +++ b/core/src/mindustry/editor/MapEditor.java
-@@ -28,7 +28,9 @@ public class MapEditor{
+@@ -29,7 +29,9 @@ public class MapEditor{
      private boolean loading;
  
      public float brushSize = 1;
@@ -53,7 +53,7 @@ index 2d8217e9da3d193222af21abe00e3d3c46139ba5..d19bd35aac0cbf8bab38d78853b0faae
      public Block drawBlock = Blocks.stone;
      public Team drawTeam = Team.sharded;
  
-@@ -302,9 +304,10 @@ public class MapEditor{
+@@ -306,9 +308,10 @@ public class MapEditor{
      }
  
      public void drawSquare(int x, int y, Cons<Tile> drawer){

@@ -952,7 +952,7 @@ index b3f192bc75d3c1775179a7252c02f7ce0a39ff7e..b47e0569d82a8cc6331a1fe36952c206
 +}
 \ No newline at end of file
 diff --git a/gradle.properties b/gradle.properties
-index 5f4a9e6da3b7f5119f24c621e26ab1b258c5bb04..d980f7ced9a8b0d84fb7754e0b897afb03c6b26f 100644
+index 5f4a9e6da3b7f5119f24c621e26ab1b258c5bb04..eacf29cdefbae333443a0aee7cf3acc5e971fabd 100644
 --- a/gradle.properties
 +++ b/gradle.properties
 @@ -1,5 +1,5 @@
@@ -967,7 +967,7 @@ index 5f4a9e6da3b7f5119f24c621e26ab1b258c5bb04..d980f7ced9a8b0d84fb7754e0b897afb
  org.gradle.internal.http.connectionTimeout=100000
  android.enableR8.fullMode=false
 -archash=c93f3ff4cb
-+archash=v151
++archash=v151.1
 diff --git a/gradlew b/gradlew
 index 4f906e0c811fc9e230eb44819f509cd0627f2600..f3b75f3b0d4faeb4b1c8a02b5c47007e6efb7dcd 100755
 --- a/gradlew
@@ -1704,10 +1704,10 @@ index 6701a24f5fb261ed6ff21fc80d049577002861e0..95796a7bbfd10f0e2f8ef5b8b5c858ac
                      for(int j = 0; j < 4 - hex.length(); j++){
                          outBuffer.append('0')
 diff --git a/tools/src/mindustry/tools/Generators.java b/tools/src/mindustry/tools/Generators.java
-index bb22f32e1f97a19e789c7393e8ed722ffdf4d5ae..3709d177f55c636861ea8dd04c2c6a6267cf4076 100644
+index fbd79b58a3f6f63bc3d42b5e6a07b80fdfff1df7..a137994e81e658d9795ddcbcee52aacb10d7aabc 100644
 --- a/tools/src/mindustry/tools/Generators.java
 +++ b/tools/src/mindustry/tools/Generators.java
-@@ -446,7 +446,7 @@ public class Generators{
+@@ -448,7 +448,7 @@ public class Generators{
                  }
              }
  
