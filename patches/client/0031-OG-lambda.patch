@@ -107,7 +107,7 @@ index 63a1092317951398a758ea70497858c05e52f908..3f91f0f780076f7f0d7fcfe0ecea7c19
              if(target != null){
                  b.vel.setAngle(Angles.moveToward(b.rotation(), b.angleTo(target), homingPower * Time.delta * 50f));
 diff --git a/core/src/mindustry/graphics/LightRenderer.java b/core/src/mindustry/graphics/LightRenderer.java
-index c20e841ab3869ca8d6240bf844cc87ef12eee47f..ce21268ce53b1b622374457278d9468d50061790 100644
+index c20e841ab3869ca8d6240bf844cc87ef12eee47f..c4e410344800217c3adf2e2a0ea7635b6ffc4fc5 100644
 --- a/core/src/mindustry/graphics/LightRenderer.java
 +++ b/core/src/mindustry/graphics/LightRenderer.java
 @@ -8,6 +8,7 @@ import arc.math.*;
@@ -127,7 +127,7 @@ index c20e841ab3869ca8d6240bf844cc87ef12eee47f..ce21268ce53b1b622374457278d9468d
 -    private Seq<Runnable> lights = new Seq<>();
 -    private Seq<CircleLight> circles = new Seq<>(CircleLight.class);
 +    private final FrameBuffer buffer = new FrameBuffer();
-+    private final Seq<Runnable> lights = new Seq<>();
++    private final Seq<Runnable> lights = new Seq<>(Runnable.class);
 +    private final Seq<CircleLight> circles = new Seq<>(CircleLight.class);
      private int circleIndex = 0;
      private TextureRegion circleRegion;
