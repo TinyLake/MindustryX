@@ -135,13 +135,12 @@ public class LogicSupport{
                 table.add(valueLabel).ellipsis(true).wrap().padLeft(16f).expand(2, 1).fill().get();
 
                 final float[] heat = {1};
-                Color typeColor = arcVarsColor(v);
                 valueLabel.update(() -> {
                     if(refresh){
                         String text = arcVarsText(v);
                         if(!valueLabel.textEquals(text)){
                             heat[0] = 1;
-                            typeColor.set(arcVarsColor(v));
+                            nameLabel.setColor(arcVarsColor(v));
                             valueLabel.setText(text);
                         }
                     }
