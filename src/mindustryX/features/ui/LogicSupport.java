@@ -7,15 +7,16 @@ import arc.math.*;
 import arc.scene.*;
 import arc.scene.event.*;
 import arc.scene.ui.*;
-import arc.scene.ui.TextButton.*;
 import arc.scene.ui.layout.*;
-import arc.struct.*;
 import arc.util.*;
 import mindustry.core.GameState.*;
 import mindustry.gen.*;
+import mindustry.graphics.*;
 import mindustry.logic.*;
 import mindustry.logic.LExecutor.*;
 import mindustry.ui.*;
+import mindustry.ui.dialogs.*;
+import mindustry.world.blocks.logic.*;
 import mindustry.world.blocks.logic.LogicBlock.*;
 import mindustry.world.blocks.logic.MemoryBlock.*;
 import mindustryX.features.SettingsV2.*;
@@ -30,17 +31,13 @@ public class LogicSupport{
     public static final SliderPref memoryDecimal = new SliderPref("logicSupport.memoryDecimal", 0, 0, 8);
 
     private static float refreshTime = 15f;
-    private static final Table varsTable = new Table(), constTable = new Table();
-    private static Table mainTable;
+    private static final Table varsTable = new Table();
 
     private static boolean refresh;
     private static boolean autoRefresh = true;
 
-    // work dialog
-    private static LCanvas canvas;
+    private static @Nullable Runnable refreshExecutor;
     private static @Nullable LExecutor executor;
-    private static Cons<String> consumer = s -> {
-    };
 
     static{
         visible.addFallbackName("gameUI.logicSupport");
@@ -50,112 +47,77 @@ public class LogicSupport{
 
     public static void init(){
         LogicDialog logic = ui.logic;
+        if(Core.graphics.isPortrait()) visible.set(false);//default hide in portrait mode
+
+        Table main = new Table(Styles.grayPanel);
+        main.margin(4f);
+
+        main.add("逻辑辅助器[gold]X[]").style(Styles.outlineLabel).pad(8f).padBottom(12f).row();
+        main.fill(tt -> tt.top().right().button(Icon.cancel, Styles.clearNonei, iconMed, visible::toggle).tooltip("隐藏逻辑辅助器"));
+
+        main.table(LogicSupport::buildConfigTable).fillX().row();
+        main.pane(Styles.noBarPane, varsTable).minHeight(450f).fillX().scrollX(false).width(400f).padTop(8f);
+
+        Interval interval = new Interval();
+        main.update(() -> refresh = autoRefresh && interval.get(refreshTime));
+
 
         logic.fill(t -> {
-            t.left().name = "logicSupportX";
-
-            t.visibility = () -> !Core.graphics.isPortrait();
-
-            t.button(Icon.rightOpen, Styles.clearNonei, iconMed, visible::toggle).height(150f).visible(() -> !mainTable.visible);
-
-            t.fill(main -> {
-                mainTable = main;
-
-                main.marginLeft(16f);
-                main.left().name = "logicSupportX";
-                main.visible(visible::get);
-
-                main.table(LogicSupport::buildConfigTable).fillX().row();
-                main.table(cont -> {
-                    cont.top();
-
-                    varsTable.background(Styles.grayPanel);
-                    constTable.background(Styles.grayPanel);
-                    TextButtonStyle style = new TextButtonStyle(Styles.defaultt){{
-                        over = checked = Styles.grayPanel;
-                        up = Styles.black;
-                        down = Styles.black;
-                    }};
-
-                    ScrollPane pane = new ScrollPane(varsTable, Styles.noBarPane);
-                    cont.table(buttons -> {
-                        buttons.defaults().height(iconMed).growX();
-                        buttons.button("变量表", style, () -> {
-                            pane.setWidget(varsTable);
-                            varsTable.clearChildren();
-                        }).checked(b -> pane.getWidget() == varsTable);
-                        buttons.button("常量表", style, () -> {
-                            pane.setWidget(constTable); // 仅打开逻辑页面时重构
-                        }).checked(b -> pane.getWidget() == constTable);
-                    }).growX().row();
-                    cont.add(pane).minHeight(450f).fillX().scrollX(false).get();
-                }).width(400f).padTop(8f);
-
-                Interval interval = new Interval();
-                main.update(() -> {
-                    if(varsTable.hasParent() && !varsTable.hasChildren()) rebuildVarsTable();
-                    if(constTable.hasParent() && !constTable.hasChildren()) rebuildConstTable();
-                    refresh = autoRefresh && interval.get(refreshTime);
-                });
-            });
+            t.name = "logicSupportX-toggle";
+            t.visible(() -> !visible.get());
+            t.left().button(Icon.rightOpen, Styles.clearNonei, iconMed, visible::toggle).height(150f);
         });
 
-        logic.shown(() -> {
-            canvas = logic.canvas;
-            executor = Reflect.get(logic, "executor");
-            consumer = Reflect.get(logic, "consumer");
-
-            clearTables();
+        logic.fill(t -> {
+            t.name = "logicSupportX";
+            t.visibility = visible::get;
+            t.left().add(main).pad(4f);
         });
-
-//        logic.resized(() -> {
-//            if(mainTable.visible){
-//                rebuildVarsTable();
-//                rebuildLinkTable();
-//            }
-//        });
     }
 
-    private static void clearTables(){
-        varsTable.clearChildren();
-        constTable.clearChildren();
+    public static void build(LCanvas canvas, LExecutor executor, Cons<String> consumer){
+        LogicSupport.executor = executor;
+
+        rebuildVarsTable();
+
+        refreshExecutor = () -> {
+            consumer.get(canvas.save());
+            rebuildVarsTable();
+        };
     }
 
     private static void buildConfigTable(Table table){
-        table.background(Styles.black3);
-        table.table(t -> {
-            t.add("刷新间隔").padRight(5f).left();
-            TextField field = t.field((int)refreshTime + "", text -> refreshTime = Integer.parseInt(text)).width(100f).valid(Strings::canParsePositiveInt).maxTextLength(5).get();
-            t.slider(1, 60, 1, refreshTime, res -> {
-                refreshTime = res;
-                field.setText((int)res + "");
-            });
-        }).row();
-        table.table(t -> {
-            t.defaults().size(50f);
-            t.button(Icon.downloadSmall, Styles.cleari, () -> {
-                consumer.get(canvas.save());
-                clearTables();
+        table.defaults().size(iconLarge);
+        table.button(Icon.downloadSmall, Styles.cleari, () -> {
+            if(refreshExecutor != null){
+                refreshExecutor.run();
                 UIExt.announce("[orange]已更新编辑的逻辑！");
-            }).tooltip("更新编辑的逻辑");
-            t.button(Icon.eyeSmall, Styles.clearTogglei, () -> {
-                changeSplash.toggle();
-                String text = "[orange]已" + (changeSplash.get() ? "开启" : "关闭") + "变动闪烁";
-                UIExt.announce(text);
-            }).checked((b) -> changeSplash.get()).tooltip("变量变动闪烁");
-            t.button(Icon.refreshSmall, Styles.clearTogglei, () -> {
-                autoRefresh = !autoRefresh;
-                String text = "[orange]已" + (autoRefresh ? "开启" : "关闭") + "变量自动更新";
-                UIExt.announce(text);
-            }).checked((b) -> autoRefresh).tooltip("自动刷新变量");
-            t.button(Icon.pause, Styles.clearTogglei, () -> {
-                if(state.isPaused()) state.set(State.playing);
-                else state.set(State.paused);
-                String text = state.isPaused() ? "已暂停" : "已继续游戏";
-                UIExt.announce(text);
-            }).checked((b) -> state.isPaused()).tooltip("暂停逻辑(游戏)运行");
-            t.button(Icon.eyeOffSmall, Styles.cleari, visible::toggle).tooltip("隐藏逻辑辅助器");
-        });
+            }
+        }).tooltip("更新编辑的逻辑").disabled(b -> refreshExecutor == null);
+        table.button(Icon.eyeSmall, Styles.clearTogglei, () -> {
+            changeSplash.toggle();
+            String text = "[orange]已" + (changeSplash.get() ? "开启" : "关闭") + "变动闪烁";
+            UIExt.announce(text);
+        }).checked((b) -> changeSplash.get()).tooltip("变量变动闪烁");
+        table.button(Icon.refreshSmall, Styles.clearTogglei, () -> {
+            autoRefresh = !autoRefresh;
+            String text = "[orange]已" + (autoRefresh ? "开启" : "关闭") + "变量自动更新";
+            UIExt.announce(text);
+        }).checked((b) -> autoRefresh).tooltip("自动刷新变量");
+        table.button(Icon.pause, Styles.clearTogglei, () -> {
+            if(state.isPaused()) state.set(State.playing);
+            else state.set(State.paused);
+            String text = state.isPaused() ? "已暂停" : "已继续游戏";
+            UIExt.announce(text);
+        }).checked((b) -> state.isPaused()).tooltip("暂停逻辑(游戏)运行");
+
+        table.defaults().reset();
+        var slider = new Slider(1, 60, 1, false);
+        slider.setValue(refreshTime);
+        slider.moved((res) -> refreshTime = res);
+        var label = new Label(() -> "刷新间隔" + ((int)refreshTime));
+        label.touchable = Touchable.disabled;
+        table.stack(slider, label).padLeft(8f).growX();
     }
 
     private static void rebuildVarsTable(){
@@ -163,17 +125,17 @@ public class LogicSupport{
         if(executor == null) return;
         varsTable.defaults().padTop(10f).growX();
 
-        for(var v : executor.vars){
+        for(var v : executor.allVars){
             if(v.name.startsWith("___")) continue;
-            varsTable.table(Tex.whitePane, table -> {
-                Label valueLabel = createCopiedLabel(arcVarsText(v), null, "复制变量属性\n@");
-                Label nameLabel = createCopiedLabel(v.name, null, "复制变量名\n@");
+            varsTable.table(Tex.paneSolid, table -> {
+                Label nameLabel = createCopyableLabel(v.name, null, "复制变量名\n@");
+                Label valueLabel = createCopyableLabel(arcVarsText(v), null, "复制变量属性\n@");
 
-                table.add(nameLabel).ellipsis(true).wrap().expand(3, 1).fill().get();
+                table.add(nameLabel).color(arcVarsColor(v)).ellipsis(true).wrap().expand(3, 1).fill().get();
                 table.add(valueLabel).ellipsis(true).wrap().padLeft(16f).expand(2, 1).fill().get();
 
-                Color typeColor = arcVarsColor(v);
                 final float[] heat = {1};
+                Color typeColor = arcVarsColor(v);
                 valueLabel.update(() -> {
                     if(refresh){
                         String text = arcVarsText(v);
@@ -184,22 +146,15 @@ public class LogicSupport{
                         }
                     }
 
-                    if(changeSplash.get()){
-                        heat[0] = Mathf.lerpDelta(heat[0], 0, 0.1f);
-                        table.color.set(Tmp.c1.set(typeColor).lerp(Color.white, heat[0]));
-                    }else{
-                        table.color.set(typeColor);
-                    }
+                    table.color.set(splashColor(heat));
                 });
             }).row();
         }
 
-        varsTable.table(Tex.whitePane, table -> {
-            Color color = Color.valueOf("#e600e6");
-            Label label = createCopiedLabel("", table, "复制信息版\n@");
+        varsTable.table(Tex.paneSolid, table -> {
+            Label label = createCopyableLabel("", table, "复制信息版\n@");
 
-            table.setColor(color);
-            table.add("@printbuffer").center().row();
+            table.add("@printbuffer").color(Color.goldenrod).center().row();
             table.add(label).labelAlign(Align.topLeft).wrap().minHeight(150).growX();
 
             final float[] heat = {1};
@@ -212,62 +167,18 @@ public class LogicSupport{
                     }
                 }
 
-                if(changeSplash.get()){
-                    heat[0] = Mathf.lerpDelta(heat[0], 0, 0.1f);
-                    table.color.set(Tmp.c1.set(color).lerp(Color.white, heat[0]));
-                }else{
-                    table.color.set(color);
-                }
+                table.color.set(splashColor(heat));
             });
         }).fillX().row();
     }
 
-    private static void rebuildConstTable(){
-        constTable.top().clearChildren();
-
-        Seq<LVar> constVars = new Seq<>();
-        executor.build.updateCode(executor.build.code, true, assembler -> {
-            constVars.set(assembler.vars.values().toSeq().select(v -> v.constant));
-        });
-
-        Color color = Color.valueOf("#e600e6");
-        constTable.defaults().padTop(10f).growX();
-
-        for(LVar v : constVars){
-            if(v.name.startsWith("___")) continue;
-            if(v.isobj && v.obj() instanceof Building building && Structs.contains(executor.links, building)) continue;
-
-            constTable.table(Tex.whitePane, table -> {
-                table.setColor(color);
-
-                table.add(createCopiedLabel(v.name, null, "[cyan]复制常量名[white]\n@")).ellipsis(true).wrap().expand(3, 1).fill();
-                table.add(createCopiedLabel(arcVarsText(v), null, "[cyan]复制常量[white]\n@")).ellipsis(true).wrap().padLeft(16f).expand(2, 1).fill();
-            }).row();
-        }
-
-        int index = 0;
-        for(LogicLink link : executor.build.links){
-            if(link.valid){
-                int finalIndex = index;
-                constTable.table(Tex.whitePane, table -> {
-                    table.left().setColor(color);
-
-                    table.add(createCopiedLabel(link.name, null, "[cyan]复制链接建筑[white]\n@")).ellipsis(true).wrap().expand(3, 1).fill();
-                    table.table(indexTable -> {
-                        indexTable.left();
-
-                        indexTable.add("[");
-                        indexTable.add(createCopiedLabel("" + finalIndex, indexTable, "[cyan]复制链接索引[white]\n@")).labelAlign(Align.center).minWidth(24f);
-                        indexTable.add("]");
-                    }).padLeft(16f).expand(2, 1).fill();
-                }).row();
-
-                index++;
-            }
-        }
+    private static Color splashColor(float[] heat){
+        if(!changeSplash.get()) return Color.white;
+        heat[0] = Mathf.lerpDelta(heat[0], 0, 0.1f);
+        return Tmp.c1.set(Color.white).lerp(Color.yellow, heat[0]);
     }
 
-    private static Label createCopiedLabel(String text, @Nullable Element hitter, String hint){
+    private static Label createCopyableLabel(String text, @Nullable Element hitter, String hint){
         Label label = new Label(text);
         hitter = hitter == null ? label : hitter;
         hitter.touchable = Touchable.enabled;
@@ -285,8 +196,9 @@ public class LogicSupport{
 
     public static Color arcVarsColor(LVar s){
         if(s.constant && s.name.startsWith("@")) return Color.goldenrod;
-        else if(s.constant) return Color.valueOf("00cc7e");
-        else return LogicDialog.typeColor(s, new Color());
+        if(s.constant) return Pal.accent;
+        //More light as foreground
+        return LogicDialog.typeColor(s, Tmp.c1).lerp(Color.white, 0.5f);
     }
 
     public static void buildMemoryTools(Table table, MemoryBuild build){
@@ -302,7 +214,7 @@ public class LogicSupport{
             });
         }).row();
         buildMemoryPane(vars, build.memory);
-        table.pane(Styles.noBarPane, vars).maxHeight(500f).fillX().pad(4).get().setScrollingDisabledX(true);
+        table.pane(Styles.noBarPane, vars).touchable(Touchable.disabled).maxHeight(500f).fillX().pad(4).get().setScrollingDisabledX(true);
         vars.update(() -> {
             vars.getCells().each(cell -> {
                 if(cell.prefWidth() > cell.maxWidth()){
@@ -315,7 +227,7 @@ public class LogicSupport{
     }
 
     public static void buildMemoryPane(Table t, double[] memory){
-        Format format = new Format(LogicSupport.memoryDecimal.get(), true);
+        Format format = new Format(LogicSupport.memoryDecimal.get());
         for(int i = 0; i < memory.length; i++){
             int finalI = i;
             t.add("[" + i + "]").color(Color.lightGray).align(Align.left);
@@ -328,6 +240,92 @@ public class LogicSupport{
             if((i + 1) % LogicSupport.memoryColumns.get() == 0) t.row();
             else t.add("|").color(((i % LogicSupport.memoryColumns.get()) % 2 == 0) ? Color.cyan : Color.acid)
             .padLeft(12).padRight(12);
+        }
+    }
+
+    //region LogicBlock
+
+    private static boolean showVars = false;
+
+    public static void buildLogicTools(Table table, LogicBuild build){
+        var block = (LogicBlock)build.block;
+
+        table.setBackground(Styles.black3);
+        Table vars = new Table();
+        table.table(t -> {
+            t.defaults().size(40);
+            t.button(Icon.pencil, Styles.cleari, () -> {
+                if(!block.accessible())
+                    UIExt.announce("[yellow]当前无权编辑，仅供查阅");
+                build.showEditDialog();
+            });
+            t.button(Icon.info, Styles.cleari, () -> {
+                showVars = !showVars;
+                vars.clear();
+                if(showVars) buildLogicVarTable(vars, build.executor);
+            });
+            t.button(Icon.trash, Styles.cleari, () -> {
+                build.links.clear();
+                build.updateCode(build.code, true, null);
+            }).disabled(b -> net.client()).tooltip("重置所有链接");
+            t.button(Icon.paste, Styles.cleari, () -> showLogicCodePickDialog(block, build)).tooltip("从蓝图中选择代码");
+        });
+        table.row().pane(Styles.noBarPane, vars).pad(4).maxHeight(400f).touchable(Touchable.disabled).get().setScrollingDisabledX(true);
+        if(showVars) buildLogicVarTable(vars, build.executor);
+    }
+
+    private static void showLogicCodePickDialog(LogicBlock block, LogicBuild build){
+        var all = schematics.all().select(it -> it.tiles.contains(s -> s.block instanceof LogicBlock));
+        new BaseDialog("选择代码"){{
+            addCloseButton();
+            closeOnBack();
+            cont.add("TIP: 所有包含处理器的蓝图").row();
+            cont.pane(tt -> {
+                for(var schem : all){
+                    tt.button(schem.name(), () -> {
+                        var blocks = schem.tiles.select(s -> s.block instanceof LogicBlock);
+                        cont.clear();
+                        LogicBuild tmp = block.new LogicBuild();
+                        for(var block : blocks){
+                            tmp.readCompressed((byte[])block.config, false);
+                            String code = tmp.code;
+                            cont.button(block.block.emoji(), () -> {
+                                build.configure(block.config);
+                                hide();
+                            }).tooltip(Strings.truncate(code, 300, "\n...")).size(iconMed);
+                        }
+                        if(blocks.size == 1){
+                            cont.getChildren().pop().change();
+                        }
+                    }).growX().row();
+                }
+            }).growX().maxWidth(600f);
+        }}.show();
+    }
+
+    private static void buildLogicVarTable(Table table, LExecutor executor){
+        final var vars = executor.vars;
+        table.update(() -> {
+            if(vars != executor.vars){
+                table.clear();
+                buildLogicVarTable(table, executor);
+                return;
+            }
+            table.getCells().each(cell -> {
+                if(cell.prefWidth() > cell.maxWidth()){
+                    cell.width(cell.prefWidth());
+                    table.invalidateHierarchy();
+                }
+            });
+            if(table.needsLayout()) table.parent.parent.pack();
+        });
+
+        table.setColor(Color.lightGray);
+        for(var s : vars){
+            if(s.name.startsWith("___")) continue;
+            table.add(s.name).color(LogicSupport.arcVarsColor(s)).align(Align.left);
+            table.label(() -> LogicSupport.arcVarsText(s)).align(Align.right).labelAlign(Align.right);
+            table.row();
         }
     }
 }

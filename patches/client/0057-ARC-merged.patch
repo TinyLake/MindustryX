@@ -716,7 +716,7 @@ index aa52b73d3b1357bc20844080292bdd58ad3ff6b0..d742f56346e0c9acccb339b09c18d73f
          rect.grow(4f);
  
 diff --git a/core/src/mindustry/logic/LExecutor.java b/core/src/mindustry/logic/LExecutor.java
-index 198b5a97b2ce7f71b57d4dae58b0b1afc9bdf853..b774c1496061c8f8994af3c0fd2d262cebb340ef 100644
+index f00a3c15d2d5a06482c0a1ad0026080321e55738..2e88f5a980dd816fe834c7f80c32b8b61ccba2b7 100644
 --- a/core/src/mindustry/logic/LExecutor.java
 +++ b/core/src/mindustry/logic/LExecutor.java
 @@ -10,6 +10,7 @@ import arc.util.*;
@@ -735,7 +735,7 @@ index 198b5a97b2ce7f71b57d4dae58b0b1afc9bdf853..b774c1496061c8f8994af3c0fd2d262c
  
  import static mindustry.Vars.*;
  
-@@ -1699,8 +1701,14 @@ public class LExecutor{
+@@ -1703,8 +1705,14 @@ public class LExecutor{
              }
  
              switch(type){
