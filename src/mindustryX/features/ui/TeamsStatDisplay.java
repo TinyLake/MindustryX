@@ -154,15 +154,16 @@ public class TeamsStatDisplay extends Table{
     private void addTeamData(TextureRegion icon, String value){
         // 只显示一个数值
         image(icon).size(15, 15).left();
-        label(() -> "[#" + Pal.accent + "]" + value).align(Align.center).fontScale(fontScl).colspan(getColumns() - 1);
+        add(value).color(Pal.accent).align(Align.center).fontScale(fontScl).colspan(getColumns() - 1);
         row();
     }
 
-    private void addTeamData(TextureRegion icon, Func<TeamData, String> teamFunc){
+    private void addTeamData(TextureRegion icon, Func<TeamData, CharSequence> teamFunc){
         // 通用情况
         image(icon).size(15, 15).left();
         for(Teams.TeamData teamData : teams){
-            label(() -> "[#" + teamData.team.color + "]" + teamFunc.get(teamData))
+            label(() -> teamFunc.get(teamData))
+            .color(teamData.team.color)
             .padLeft(2).expandX().uniformX().fontScale(fontScl);
         }
         row();
