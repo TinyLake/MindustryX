@@ -63,8 +63,9 @@ public class ArcSpawnerShow{
                 if(curve > 0)
                     Lines.circle(tile.worldx(), tile.worldy(), state.rules.dropZoneRadius * Interp.pow3Out.apply(curve));
                 Lines.circle(tile.worldx(), tile.worldy(), state.rules.dropZoneRadius);
-                Lines.arc(tile.worldx(), tile.worldy(), state.rules.dropZoneRadius - 3f, state.wavetime / state.rules.waveSpacing, 90f);
-                float angle = Mathf.pi / 2 + state.wavetime / state.rules.waveSpacing * 2 * Mathf.pi;
+                float fraction = Mathf.clamp(state.wavetime / state.rules.waveSpacing);
+                Lines.arc(tile.worldx(), tile.worldy(), state.rules.dropZoneRadius - 3f, fraction, 90f);
+                float angle = Mathf.pi / 2 + fraction * 2 * Mathf.pi;
                 Draw.color(state.rules.waveTeam.color);
                 Fill.circle(tile.worldx() + state.rules.dropZoneRadius * Mathf.cos(angle), tile.worldy() + state.rules.dropZoneRadius * Mathf.sin(angle), 8f);
 
