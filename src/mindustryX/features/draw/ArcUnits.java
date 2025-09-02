@@ -56,8 +56,8 @@ public class ArcUnits{
             if(arcBuildInfo && unit.isLocal()) drawBuildRange(unit);
         }
         Draw.z(Draw.z() + 0.1f);
+        if(unitWeaponRange > 0) drawWeaponRange(unit);
         if(unit.team() == player.team() || RenderExt.showOtherInfo){
-            if(unitWeaponRange > 0) drawWeaponRange(unit);
             if(alwaysShowUnitRTSAi) drawRTSAI(unit);
             if(unitHealthBar) drawHealthBar(unit);
             if(unit.controller() instanceof LogicAI ai){
@@ -115,7 +115,7 @@ public class ArcUnits{
 
     private static void drawWeaponRange(Unit unit){
         if(unitWeaponRange == 0 || unitWeaponRangeAlpha == 0) return;
-        if(unitWeaponRange == 30){
+        if(unitWeaponRange == 30 * tilesize){
             drawWeaponRange(unit, unitWeaponRangeAlpha);
         }else if(unit.team != player.team()){
             boolean canHitPlayer = !player.dead() && player.unit().hittable() && (player.unit().isFlying() ? unit.type.targetAir : unit.type.targetGround)
