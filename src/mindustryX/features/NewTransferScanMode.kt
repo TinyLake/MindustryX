@@ -16,6 +16,7 @@ import mindustry.gen.Icon
 import mindustry.graphics.Drawf
 import mindustry.graphics.Layer
 import mindustry.graphics.Pal
+import mindustry.world.blocks.campaign.LandingPad
 import mindustry.world.blocks.distribution.*
 import mindustry.world.blocks.distribution.ArmoredConveyor.ArmoredConveyorBuild
 import mindustry.world.blocks.liquid.ArmoredConduit.ArmoredConduitBuild
@@ -23,11 +24,14 @@ import mindustry.world.blocks.liquid.Conduit
 import mindustry.world.blocks.liquid.LiquidBridge
 import mindustry.world.blocks.liquid.LiquidJunction
 import mindustry.world.blocks.liquid.LiquidRouter
-import mindustry.world.blocks.production.GenericCrafter
-import mindustry.world.blocks.production.Pump
+import mindustry.world.blocks.production.*
+import mindustry.world.blocks.sandbox.ItemSource
+import mindustry.world.blocks.sandbox.ItemVoid
 import mindustry.world.blocks.sandbox.LiquidSource
+import mindustry.world.blocks.sandbox.LiquidVoid
 import mindustry.world.blocks.storage.StorageBlock
 import mindustry.world.blocks.storage.Unloader
+import mindustry.world.blocks.units.UnitCargoUnloadPoint
 import mindustryX.features.func.drawText
 
 /**
@@ -216,9 +220,11 @@ object NewTransferScanMode {
         is LiquidJunction.LiquidJunctionBuild -> liquidOnly { JunctionAdaptor(build) }
         is DirectionLiquidBridge.DuctBridgeBuild -> liquidOnly { DirectionBridgeAdaptor(build) }
         is Pump.PumpBuild, is LiquidSource.LiquidSourceBuild -> liquidOnly { SourceAdaptor(build) }
+        is LiquidVoid.LiquidVoidBuild -> VoidAdaptor(build)
 
         is Conveyor.ConveyorBuild, is Duct.DuctBuild -> itemOnly { ConveyorAdaptor(build) }
-        is Router.RouterBuild, is Sorter.SorterBuild, is OverflowGate.OverflowGateBuild -> itemOnly { RouterAdaptor(build) }
+        is Router.RouterBuild -> itemOnly{ RouterAdaptor(build) }
+        is Sorter.SorterBuild, is OverflowGate.OverflowGateBuild -> itemOnly { InstantAdaptor(build) }
         is ItemBridge.ItemBridgeBuild -> itemOnly { BridgeAdaptor(build) }
         is StackConveyor.StackConveyorBuild -> itemOnly { StackConveyorAdaptor(build) }
         is Junction.JunctionBuild, is DuctJunction.DuctJunctionBuild -> itemOnly { JunctionAdaptor(build) }
@@ -227,6 +233,11 @@ object NewTransferScanMode {
         is DirectionalUnloader.DirectionalUnloaderBuild -> itemOnly { DirectionalUnloaderAdaptor(build) }
         is MassDriver.MassDriverBuild -> itemOnly { MassDriverAdaptor(build) }
         is OverflowDuct.OverflowDuctBuild, is DuctRouter.DuctRouterBuild -> itemOnly { RouterAdaptor(build) }
+        is ItemSource.ItemSourceBuild -> itemOnly { SourceAdaptor(build) }
+        is UnitCargoUnloadPoint.UnitCargoUnloadPointBuild -> itemOnly { SourceAdaptor(build) }
+        is LandingPad.LandingPadBuild -> itemOnly { SourceAdaptor(build) }
+        is Drill.DrillBuild, is BeamDrill.BeamDrillBuild, is WallCrafter.WallCrafterBuild -> itemOnly { SourceAdaptor(build) }
+        is ItemVoid.ItemVoidBuild -> VoidAdaptor(build)
 
         is GenericCrafter.GenericCrafterBuild -> GenericCrafterAdaptor(build)
         else -> DefaultAdaptor(build)
@@ -276,6 +287,13 @@ object NewTransferScanMode {
     private class RouterAdaptor(val build: Building) : BuildingAdaptor() {
         override fun getOutputs(): List<Building> = build.proximity.toList()
         override fun canInput(from: Building): Boolean = true
+    }
+
+    private class InstantAdaptor(val build: Building): BuildingAdaptor() {
+        override fun getOutputs(): List<Building> = build.proximity.toList()
+        override fun getOutputs(from: Building): List<Building> = if (from.block.instantTransfer) build.proximity.filter { !it.block.instantTransfer } else getOutputs()
+        override fun canInput(from: Building): Boolean = true
+        override fun canInput(from: Building, to: Building): Boolean = !(from.block.instantTransfer && to.block.instantTransfer)
     }
 
     private class UnloaderAdaptor(val build: Building) : BuildingAdaptor() {
@@ -392,7 +410,14 @@ object NewTransferScanMode {
         override fun getOutputs(): List<Building> = build.proximity.toList()
     }
 
-    private class DefaultAdaptor(val build: Building) : BuildingAdaptor() {
+    private class VoidAdaptor(build: Building): DefaultAdaptor(build) {
+        override fun canInput(from: Building): Boolean = when(type){
+            TransportType.ITEM -> build.block.acceptsItems && from.block.hasItems
+            TransportType.LIQUID -> build.block.hasLiquids && from.block.hasLiquids
+        }
+    }
+
+    private open class DefaultAdaptor(val build: Building) : BuildingAdaptor() {
         override fun canInput(from: Building): Boolean = when (type) {
             TransportType.ITEM -> build.block.hasItems && build.block.itemFilter.any { it }
             TransportType.LIQUID -> build.block.hasLiquids && build.block.liquidFilter.any { it }
