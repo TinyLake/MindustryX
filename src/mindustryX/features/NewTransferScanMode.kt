@@ -29,6 +29,7 @@ import mindustry.world.blocks.sandbox.ItemSource
 import mindustry.world.blocks.sandbox.ItemVoid
 import mindustry.world.blocks.sandbox.LiquidSource
 import mindustry.world.blocks.sandbox.LiquidVoid
+import mindustry.world.blocks.storage.CoreBlock
 import mindustry.world.blocks.storage.StorageBlock
 import mindustry.world.blocks.storage.Unloader
 import mindustry.world.blocks.units.UnitCargoUnloadPoint
@@ -220,7 +221,7 @@ object NewTransferScanMode {
         is LiquidJunction.LiquidJunctionBuild -> liquidOnly { JunctionAdaptor(build) }
         is DirectionLiquidBridge.DuctBridgeBuild -> liquidOnly { DirectionBridgeAdaptor(build) }
         is Pump.PumpBuild, is LiquidSource.LiquidSourceBuild -> liquidOnly { SourceAdaptor(build) }
-        is LiquidVoid.LiquidVoidBuild -> VoidAdaptor(build)
+        is LiquidVoid.LiquidVoidBuild -> liquidOnly { VoidAdaptor() }
 
         is Conveyor.ConveyorBuild, is Duct.DuctBuild -> itemOnly { ConveyorAdaptor(build) }
         is Router.RouterBuild -> itemOnly{ RouterAdaptor(build) }
@@ -237,9 +238,10 @@ object NewTransferScanMode {
         is UnitCargoUnloadPoint.UnitCargoUnloadPointBuild -> itemOnly { SourceAdaptor(build) }
         is LandingPad.LandingPadBuild -> itemOnly { SourceAdaptor(build) }
         is Drill.DrillBuild, is BeamDrill.BeamDrillBuild, is WallCrafter.WallCrafterBuild -> itemOnly { SourceAdaptor(build) }
-        is ItemVoid.ItemVoidBuild -> VoidAdaptor(build)
+        is ItemVoid.ItemVoidBuild, is CoreBlock.CoreBuild -> itemOnly { VoidAdaptor() }
 
         is GenericCrafter.GenericCrafterBuild -> GenericCrafterAdaptor(build)
+        is Incinerator.IncineratorBuild -> VoidAdaptor()
         else -> DefaultAdaptor(build)
     }
 
@@ -410,14 +412,11 @@ object NewTransferScanMode {
         override fun getOutputs(): List<Building> = build.proximity.toList()
     }
 
-    private class VoidAdaptor(build: Building): DefaultAdaptor(build) {
-        override fun canInput(from: Building): Boolean = when(type){
-            TransportType.ITEM -> build.block.acceptsItems && from.block.hasItems
-            TransportType.LIQUID -> build.block.hasLiquids && from.block.hasLiquids
-        }
+    private class VoidAdaptor: BuildingAdaptor() {
+        override fun canInput(from: Building): Boolean = true
     }
 
-    private open class DefaultAdaptor(val build: Building) : BuildingAdaptor() {
+    private class DefaultAdaptor(val build: Building) : BuildingAdaptor() {
         override fun canInput(from: Building): Boolean = when (type) {
             TransportType.ITEM -> build.block.hasItems && build.block.itemFilter.any { it }
             TransportType.LIQUID -> build.block.hasLiquids && build.block.liquidFilter.any { it }
