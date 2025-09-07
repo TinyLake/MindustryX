@@ -753,7 +753,7 @@ index f00a3c15d2d5a06482c0a1ad0026080321e55738..2e88f5a980dd816fe834c7f80c32b8b6
                  //TODO desync?
                  case mission -> state.rules.mission = text;
 diff --git a/core/src/mindustry/type/UnitType.java b/core/src/mindustry/type/UnitType.java
-index 3d6042da706bb5df8114ff6659482c6a4b6020f4..6ae6c2c41f782477abe395c4033991e6b1607ae5 100644
+index 3d6042da706bb5df8114ff6659482c6a4b6020f4..1ee9b561f207d9066e185c1a2147c221d9aa2b2e 100644
 --- a/core/src/mindustry/type/UnitType.java
 +++ b/core/src/mindustry/type/UnitType.java
 @@ -38,6 +38,7 @@ import mindustry.world.blocks.units.*;
@@ -865,7 +865,7 @@ index 3d6042da706bb5df8114ff6659482c6a4b6020f4..6ae6c2c41f782477abe395c4033991e6
 +                tt.add("装甲");
 +                tt.row();
 +                tt.add(FormatDefault.format(unit.buildSpeedMultiplier));
-+                tt.add(FormatDefault.format(unit.damageMultiplier));
++                tt.add(FormatDefault.format(unit.dragMultiplier));
 +                tt.add(FormatDefault.format(unit.armorOverride >= 0.0F ? unit.armorOverride : unit.armor));
 +            }).growX().row();
 +        }
