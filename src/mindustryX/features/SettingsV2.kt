@@ -70,7 +70,7 @@ object SettingsV2 {
         fun resetDefault() {
             value = def
             changedSet.clear()
-            Core.settings.remove(name)
+            persistentProvider.reset()
         }
 
         fun addFallback(provider: PersistentProvider<T>) {
@@ -89,12 +89,16 @@ object SettingsV2 {
         }
     }
 
-    open class Data<T>(name: String, def: T) : DataCore<T>(name, def) {
+    interface WithUI {
+        fun buildUI(table: Table)
+    }
+
+    open class Data<T>(name: String, def: T) : DataCore<T>(name, def), WithUI {
         val category: String get() = categoryOverride[name] ?: name.substringBefore('.', "")
         val title: String get() = Core.bundle.get("settingV2.${name}.name", name)
         val description: String? get() = Core.bundle.getOrNull("settingV2.${name}.description")
 
-        open fun buildUI(table: Table) {
+        override fun buildUI(table: Table) {
             table.table().fillX().padTop(3f).get().apply {
                 add(title).padRight(8f)
                 label { value.toString() }.ellipsis(true).color(Color.gray).labelAlign(Align.left).growX()
@@ -257,6 +261,19 @@ object SettingsV2 {
         lateInit.clear()
     }
 
+    class CategoryUI(val key: String) : WithUI {
+        val title: String = Core.bundle.get("settingV2.${key}.category", key)
+        val children = mutableListOf<WithUI>()
+
+        override fun buildUI(table: Table) {
+            if (key.isNotEmpty() && children.isNotEmpty()) {
+                table.add(title).color(Pal.accent).padTop(10f).padBottom(5f).center().row()
+                table.image().color(Pal.accent).growX().height(3f).padBottom(10f).row()
+            }
+            children.forEach { it.buildUI(table) }
+        }
+    }
+
     @JvmStatic
     @JvmOverloads
     fun buildSettingsTable(table: Table, settings: List<Data<*>> = ALL.values.filterIsInstance<Data<*>>()) {
@@ -269,18 +286,18 @@ object SettingsV2 {
         var settingSearch = ""
         fun rebuildContent() {
             contentTable.clearChildren()
-            settings.groupBy { it.category }.toSortedMap().forEach { (c, settings0) ->
-                val category = Core.bundle.get("settingV2.$c.category")
-                val categoryMatch = c.contains(settingSearch, ignoreCase = true) || category.contains(settingSearch, ignoreCase = true)
-                val filtered = if (categoryMatch) settings0 else settings0.filter {
-                    if ("@modified" in settingSearch) return@filter it.value != it.def
-                    it.name.contains(settingSearch, true) || it.title.contains(settingSearch, true)
+            val categories = mutableMapOf<String, CategoryUI>()
+            settings.forEach { setting ->
+                val category = categories.getOrPut(setting.category) { CategoryUI(setting.category) }
+                val match = category.key.contains(settingSearch, ignoreCase = true) || category.title.contains(settingSearch, ignoreCase = true)
+                        || ("@modified" in settingSearch && setting.value != setting.def)
+                        || setting.name.contains(settingSearch, true) || setting.title.contains(settingSearch, true)
+                if (match) {
+                    category.children.add(setting)
                 }
-                if (c.isNotEmpty() && filtered.isNotEmpty()) {
-                    contentTable.add(category).color(Pal.accent).padTop(10f).padBottom(5f).center().row()
-                    contentTable.image().color(Pal.accent).growX().height(3f).padBottom(10f).row()
-                }
-                filtered.forEach { it.buildUI(contentTable) }
+            }
+            categories.entries.sortedBy { it.key }.forEach {
+                it.value.buildUI(contentTable)
             }
         }
         searchTable.apply {
