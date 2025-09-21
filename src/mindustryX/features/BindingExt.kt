@@ -5,6 +5,7 @@ import arc.input.KeyBind
 import arc.input.KeyBind.KeybindValue
 import arc.input.KeyCode
 import mindustry.Vars
+import mindustry.input.Binding
 import mindustryX.features.ui.OverlayUI
 
 @Suppress("EnumEntryName")
@@ -23,7 +24,11 @@ enum class BindingExt(val default: KeybindValue = KeyCode.unset, val category: S
     toggle_block_render(KeyCode.unset, onTap = { RenderExt.blockRenderLevel0.cycle() }),
     focusLogicController(KeyCode.unset, onTap = { mindustryX.features.func.focusLogicController() }),
     placeRouterReplacement(KeyCode.shiftLeft),
-    overlayUI(KeyCode.z, onTap = { if (!Core.input.ctrl()) OverlayUI.toggle() }),
+    overlayUI(KeyCode.z, onTap = onTap@{
+        if (Core.input.keyTap(Binding.schematicFlipX) && !Vars.control.input.selectPlans.isEmpty)
+            return@onTap // avoid conflict with schematic flip
+        if (!Core.input.ctrl()) OverlayUI.toggle()
+    }),
     ;
 
     private val bind: KeyBind = KeyBind.add(name, default, category)
