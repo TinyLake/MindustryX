@@ -135,7 +135,7 @@ public class UnitFactoryDialog extends BaseDialog{
         if(Core.graphics.isPortrait()){
             cont.pane(Styles.noBarPane, main).growX();
         }else{
-            cont.add(main).growY();
+            cont.pane(Styles.noBarPane, main).fillY();
         }
 
         Table rightTable = new Table();
@@ -391,7 +391,7 @@ public class UnitFactoryDialog extends BaseDialog{
         if(itemCapacity == 0) return;
 
         itemTable.add("携带物品:");
-        itemTable.button(b -> b.image(() -> unit.hasItem() ? unit.item().uiIcon : Icon.none.getRegion()).size(48f).scaling(Scaling.fit).padLeft(8f), Styles.clearNonei, () -> ContentSelectDialog.once(content.items(), unit.item(), item -> unit.stack.item = item)).size(48f).padLeft(8f);
+        itemTable.button(b -> b.image(() -> unit.hasItem() ? unit.item().uiIcon : Icon.noneSmall.getRegion()).size(48f).scaling(Scaling.fit).padLeft(8f), Styles.clearNonei, () -> ContentSelectDialog.once(content.items(), unit.item(), item -> unit.stack.item = item)).size(48f).padLeft(8f);
 
         itemTable.field("" + unit.stack.amount, text -> unit.stack.amount = Mathf.clamp(Strings.parseInt(text), 0, itemCapacity))
         .update((it) -> it.setText("" + unit.stack.amount)).valid(Strings::canParsePositiveInt).padLeft(8f).expandX().left().width(80);

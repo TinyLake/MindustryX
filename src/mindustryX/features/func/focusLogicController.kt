@@ -3,19 +3,17 @@
 
 package mindustryX.features.func
 
-import arc.Core
 import arc.util.Tmp
 import mindustry.Vars
 import mindustry.ai.types.LogicAI
-import mindustry.entities.Units
+import mindustry.gen.Building
+import mindustry.gen.Unit
 import mindustryX.features.MarkerType
-import mindustryX.features.RenderExt
 
 fun focusLogicController() {
-    val mouse = Core.input.mouseWorld()
-    val logic = Units.closestOverlap(Vars.player.team(), mouse.x, mouse.y, 5f) { true }?.let { (it.controller() as? LogicAI)?.controller }
-        ?: (if (RenderExt.showOtherInfo) Units.closestEnemy(Vars.player.team(), mouse.x, mouse.y, 5f) { true }?.let { (it.controller() as? LogicAI)?.controller } else null)
-        ?: Core.input.mouseWorld().let { Vars.world.buildWorld(it.x, it.y)?.lastLogicController }
+    val hovered = Vars.ui.hudfrag.blockfrag.hovered()
+    val logic = (hovered as? Unit)?.let { (it.controller() as? LogicAI)?.controller }
+        ?: (hovered as? Building)?.lastLogicController
         ?: return
     Vars.control.input.panCamera(Tmp.v1.set(logic))
     MarkerType.mark.at(logic)
