@@ -11,6 +11,7 @@ import mindustry.gen.Unit
 import mindustryX.features.MarkerType
 
 fun focusLogicController() {
+    if (Vars.world.height() == 0) return//empty
     val hovered = Vars.ui.hudfrag.blockfrag.hovered()
     val logic = (hovered as? Unit)?.let { (it.controller() as? LogicAI)?.controller }
         ?: (hovered as? Building)?.lastLogicController
