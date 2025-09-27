@@ -13,9 +13,9 @@ Content-Transfer-Encoding: 8bit
  core/src/mindustry/core/NetClient.java     |  2 +
  core/src/mindustry/io/TypeIO.java          | 12 +++++-
  core/src/mindustry/net/Net.java            | 50 ++++++++++++++++++++--
- core/src/mindustry/net/NetworkIO.java      | 13 +++++-
+ core/src/mindustry/net/NetworkIO.java      | 28 +++++++++---
  core/src/mindustry/net/Packets.java        |  2 +-
- 6 files changed, 88 insertions(+), 8 deletions(-)
+ 6 files changed, 98 insertions(+), 13 deletions(-)
 
 diff --git a/core/src/mindustry/core/ContentLoader.java b/core/src/mindustry/core/ContentLoader.java
 index b21f287e0dab8bfc6112548f440ff0a17576baa9..1183d8c7732b6588d290101f12050bd0d9525273 100644
@@ -53,7 +53,7 @@ index b21f287e0dab8bfc6112548f440ff0a17576baa9..1183d8c7732b6588d290101f12050bd0
  
      /** @return the last registered content with the specified name. Note that the content loader makes no attempt to resolve name conflicts. This method can be unreliable. */
 diff --git a/core/src/mindustry/core/NetClient.java b/core/src/mindustry/core/NetClient.java
-index 3754beac0e217ca3f3714d27ae216f50e4e0c07a..f88b9074b012f063629fbc979bb9ac668f2357f2 100644
+index 3754beac0e217ca3f3714d27ae216f50e4e0c07a..5a9775f9fd8f655807c37917e20928bf601583a3 100644
 --- a/core/src/mindustry/core/NetClient.java
 +++ b/core/src/mindustry/core/NetClient.java
 @@ -522,6 +522,8 @@ public class NetClient implements ApplicationListener{
@@ -61,7 +61,7 @@ index 3754beac0e217ca3f3714d27ae216f50e4e0c07a..f88b9074b012f063629fbc979bb9ac66
      @Remote(variants = Variant.both, priority = PacketPriority.low, unreliable = true)
      public static void blockSnapshot(short amount, byte[] data){
 +        //MDTX: As `Block.id` and `Building.version()` is different, snapshot can't read correctly
-+        if(LogicExt.v146Mode) return;
++        if(LogicExt.contentsCompatibleMode) return;
          try{
              netClient.byteStream.setBytes(data);
              DataInputStream input = netClient.dataStream;
@@ -219,7 +219,7 @@ index 332f2e11d8575e0b70f3589e685c4beb5c7a9049..bb7c21c637cad2a9ca8b5074a4e438a8
          if(object instanceof StreamBegin b){
              streams.put(b.id, currentStream = new StreamBuilder(b));
 diff --git a/core/src/mindustry/net/NetworkIO.java b/core/src/mindustry/net/NetworkIO.java
-index 89a5e536fe62ed8d3dc04e291fb705167a06ed89..2a9481ee3cea1da06888cf2f35a23f0ea618758a 100644
+index 89a5e536fe62ed8d3dc04e291fb705167a06ed89..480ac66769d80b6c59be23732671ef917ad02c1e 100644
 --- a/core/src/mindustry/net/NetworkIO.java
 +++ b/core/src/mindustry/net/NetworkIO.java
 @@ -4,6 +4,7 @@ import arc.*;
@@ -259,13 +259,26 @@ index 89a5e536fe62ed8d3dc04e291fb705167a06ed89..2a9481ee3cea1da06888cf2f35a23f0e
              state.map = new Map(SaveIO.getSaveWriter().readStringMap(stream));
  
              state.wave = stream.readInt();
-@@ -86,11 +95,13 @@ public class NetworkIO{
-             SaveIO.getSaveWriter().readContentHeader(stream);
-             SaveIO.getSaveWriter().readMap(stream, world.context);
-             SaveIO.getSaveWriter().readTeamBlocks(stream);
+@@ -83,14 +92,21 @@ public class NetworkIO{
+             player.id = id;
+             player.add();
+ 
+-            SaveIO.getSaveWriter().readContentHeader(stream);
+-            SaveIO.getSaveWriter().readMap(stream, world.context);
+-            SaveIO.getSaveWriter().readTeamBlocks(stream);
+-            SaveIO.getSaveWriter().readMarkers(stream);
+-            SaveIO.getSaveWriter().readCustomChunks(stream);
++            var saveWriter = SaveIO.getSaveWriter();
++            //MDTX: Use ShortChunkSave version
++            if(LogicExt.mockProtocol < 152){
++                saveWriter = SaveIO.getSaveWriter(9);
++            }
++            saveWriter.readContentHeader(stream);
++            saveWriter.readMap(stream, world.context);
++            saveWriter.readTeamBlocks(stream);
 +            if(!LogicExt.v146Mode)
-             SaveIO.getSaveWriter().readMarkers(stream);
-             SaveIO.getSaveWriter().readCustomChunks(stream);
++                saveWriter.readMarkers(stream);
++            saveWriter.readCustomChunks(stream);
          }catch(IOException e){
              throw new RuntimeException(e);
          }finally{
