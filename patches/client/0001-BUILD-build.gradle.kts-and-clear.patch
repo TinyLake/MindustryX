@@ -220,13 +220,13 @@ index f1dc45aa74b149babea9cce2535ed7dca8d49a1f..3e1c585a3bde20afaafc255844d01ae3
 +}
 \ No newline at end of file
 diff --git a/android/proguard-rules.pro b/android/proguard-rules.pro
-index ebda968ae6947db76031a6d37bc74f049e2e3db4..6f53c442978ee6a880dfd05a81a69fde596a783b 100644
+index 532c10ea01dbacc5632c8a68f97885e1b1454089..315ef050c567d91f05910863c8c822a8b43eae57 100644
 --- a/android/proguard-rules.pro
 +++ b/android/proguard-rules.pro
-@@ -5,6 +5,10 @@
- -keep class net.jpountz.** { *; }
+@@ -6,6 +6,10 @@
  -keep class rhino.** { *; }
  -keep class com.android.dex.** { *; }
+ -keep class com.android.dx.** { *; }
 +-keep class mindustryX.** { *; }
 +-keep class kotlin.** { *; }
 +-keep class org.jetbrains.annotations.** { *; }
@@ -952,7 +952,7 @@ index b3f192bc75d3c1775179a7252c02f7ce0a39ff7e..b47e0569d82a8cc6331a1fe36952c206
 +}
 \ No newline at end of file
 diff --git a/gradle.properties b/gradle.properties
-index 5f4a9e6da3b7f5119f24c621e26ab1b258c5bb04..eacf29cdefbae333443a0aee7cf3acc5e971fabd 100644
+index 7213fa8e417c2a06d44483d882a8b64bc729cb19..de16468145b79cef0884ec61284f3c58422e5268 100644
 --- a/gradle.properties
 +++ b/gradle.properties
 @@ -1,5 +1,5 @@
@@ -966,8 +966,8 @@ index 5f4a9e6da3b7f5119f24c621e26ab1b258c5bb04..eacf29cdefbae333443a0aee7cf3acc5
  org.gradle.internal.http.socketTimeout=100000
  org.gradle.internal.http.connectionTimeout=100000
  android.enableR8.fullMode=false
--archash=c93f3ff4cb
-+archash=v151.1
+-archash=caf89c8fee
++archash=v152
 diff --git a/gradlew b/gradlew
 index 4f906e0c811fc9e230eb44819f509cd0627f2600..f3b75f3b0d4faeb4b1c8a02b5c47007e6efb7dcd 100755
 --- a/gradlew

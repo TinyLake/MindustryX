@@ -76,7 +76,7 @@ index 9032b4bf9bdcacd31826eb95fedc7781465cc87a..3af24a74e8322e52e3cce807b7d9d49d
  
      @Override
 diff --git a/core/src/mindustry/type/StatusEffect.java b/core/src/mindustry/type/StatusEffect.java
-index cd996a1f0d54d4f3fe39145c8ef264069d0d4626..3424bca0272d68241935e0d33f66277fb5d22b0d 100644
+index f4e0d3b9c6b33cf5fc64583a02544e3c87e8dc50..e0efab8dc1e5e40d6374ab5934756c7de6414494 100644
 --- a/core/src/mindustry/type/StatusEffect.java
 +++ b/core/src/mindustry/type/StatusEffect.java
 @@ -13,6 +13,7 @@ import mindustry.gen.*;
@@ -96,7 +96,7 @@ index cd996a1f0d54d4f3fe39145c8ef264069d0d4626..3424bca0272d68241935e0d33f66277f
          if(damage < 0) stats.add(Stat.healing, -damage * 60f, StatUnit.perSecond);
  
 diff --git a/core/src/mindustry/type/UnitType.java b/core/src/mindustry/type/UnitType.java
-index ebe4b35ff002de0dc0b5d8faabfa5c2a4cfe44d4..3d6042da706bb5df8114ff6659482c6a4b6020f4 100644
+index 36d811287764ce5e4e99e039130274e5f937e7d7..b0a92b903d022b612e07998eb3200fbbdca9b421 100644
 --- a/core/src/mindustry/type/UnitType.java
 +++ b/core/src/mindustry/type/UnitType.java
 @@ -37,6 +37,7 @@ import mindustry.world.blocks.payloads.*;
@@ -107,7 +107,7 @@ index ebe4b35ff002de0dc0b5d8faabfa5c2a4cfe44d4..3d6042da706bb5df8114ff6659482c6a
  
  import static arc.graphics.g2d.Draw.*;
  import static mindustry.Vars.*;
-@@ -740,29 +741,45 @@ public class UnitType extends UnlockableContent implements Senseable{
+@@ -742,6 +743,7 @@ public class UnitType extends UnlockableContent implements Senseable{
          stats.add(Stat.health, health);
          stats.add(Stat.armor, armor);
          stats.add(Stat.speed, speed * 60f / tilesize, StatUnit.tilesSecond);
@@ -115,6 +115,8 @@ index ebe4b35ff002de0dc0b5d8faabfa5c2a4cfe44d4..3d6042da706bb5df8114ff6659482c6a
          stats.add(Stat.size, StatValues.squared(hitSize / tilesize, StatUnit.blocks));
          stats.add(Stat.itemCapacity, itemCapacity);
          stats.add(Stat.range, Strings.autoFixed(maxRange / tilesize, 1), StatUnit.blocks);
+@@ -752,24 +754,39 @@ public class UnitType extends UnlockableContent implements Senseable{
+ 
          stats.add(Stat.targetsAir, targetAir);
          stats.add(Stat.targetsGround, targetGround);
 +        stats.add(StatExt.aiController,aiController.get().getClass().getSimpleName());
@@ -159,7 +161,7 @@ index ebe4b35ff002de0dc0b5d8faabfa5c2a4cfe44d4..3d6042da706bb5df8114ff6659482c6a
          }
          if(buildSpeed > 0){
              stats.addPercent(Stat.buildSpeed, buildSpeed);
-@@ -781,6 +798,10 @@ public class UnitType extends UnlockableContent implements Senseable{
+@@ -788,6 +805,10 @@ public class UnitType extends UnlockableContent implements Senseable{
              stats.add(Stat.weapons, StatValues.weapons(this, weapons));
          }
  
@@ -168,9 +170,9 @@ index ebe4b35ff002de0dc0b5d8faabfa5c2a4cfe44d4..3d6042da706bb5df8114ff6659482c6a
 +        }
 +
          if(immunities.size > 0){
-             var imm = immunities.toSeq().sort();
-             //it's redundant to list wet for naval units
-@@ -848,6 +869,8 @@ public class UnitType extends UnlockableContent implements Senseable{
+             stats.add(Stat.immunities, StatValues.statusEffects(immunities.toSeq().sort()));
+         }
+@@ -840,6 +861,8 @@ public class UnitType extends UnlockableContent implements Senseable{
  
          allowLegStep = example instanceof Legsc || example instanceof Crawlc;
  
@@ -203,7 +205,7 @@ index 50dfe94b013184f1d860cb6ab4ff2910df008180..1bb5af3a7f362f1df2a44732c7c59d03
              t.row();
              t.add("[lightgray]" + Stat.inaccuracy.localized() + ": [white]" + (int)inaccuracy + " " + StatUnit.degrees.localized());
 diff --git a/core/src/mindustry/world/Block.java b/core/src/mindustry/world/Block.java
-index 7841f9fbbcc22e09888b81b09047dd65e95ed109..899139af3cbcc95fa2d4b0d4be2e422ea6cf0ff1 100644
+index 00033dc64a3277516487e64ed7c284cb2cf819c2..04a06127024d2241030c217ae8d0cb00f4aa5c66 100644
 --- a/core/src/mindustry/world/Block.java
 +++ b/core/src/mindustry/world/Block.java
 @@ -32,6 +32,7 @@ import mindustry.world.blocks.environment.*;
@@ -214,7 +216,7 @@ index 7841f9fbbcc22e09888b81b09047dd65e95ed109..899139af3cbcc95fa2d4b0d4be2e422e
  
  import java.lang.reflect.*;
  import java.util.*;
-@@ -585,7 +586,7 @@ public class Block extends UnlockableContent implements Senseable{
+@@ -589,7 +590,7 @@ public class Block extends UnlockableContent implements Senseable{
              }
          }
  
@@ -223,7 +225,7 @@ index 7841f9fbbcc22e09888b81b09047dd65e95ed109..899139af3cbcc95fa2d4b0d4be2e422e
              stats.add(Stat.buildTime, buildTime / 60, StatUnit.seconds);
              stats.add(Stat.buildCost, StatValues.items(false, requirements));
          }
-@@ -597,6 +598,7 @@ public class Block extends UnlockableContent implements Senseable{
+@@ -601,6 +602,7 @@ public class Block extends UnlockableContent implements Senseable{
          for(var c : consumers){
              c.display(stats);
          }
@@ -462,7 +464,7 @@ index c2d52fcefd930ea36511420960086e0057647157..e77e03387f9e623aed7214ef34f02eee
                  if(++i % 4 == 0) c.row();
              }
 diff --git a/core/src/mindustry/world/meta/Stat.java b/core/src/mindustry/world/meta/Stat.java
-index b1257d6232977ca6baaa841b0483fe3d3d1f5871..4249bb2ca961dfbc20fa38fe5b1cc8f079bbc554 100644
+index 54b26149106e6bb8a07f341fab059021853012df..26fbb11f7a37cad9de3982eb4f9889154d7cc178 100644
 --- a/core/src/mindustry/world/meta/Stat.java
 +++ b/core/src/mindustry/world/meta/Stat.java
 @@ -25,17 +25,18 @@ public class Stat implements Comparable<Stat>{
@@ -520,7 +522,7 @@ index 416df5a20af4767cdfdc2646bce19468ad11cd28..239311eea91980f2c3e0facd6613b237
      public final String name;
      public final int id;
 diff --git a/core/src/mindustry/world/meta/StatValues.java b/core/src/mindustry/world/meta/StatValues.java
-index 8bad161976923e881cd9a6fe9ce00889f93669c7..dd8aa1da4245cebeb2b010da502d98359380064d 100644
+index ac1b5a740d2f7dbf44172e1ce137ae9345c64d1d..74dd2e93e964cff91fb36f1118a8bd692cf3b65a 100644
 --- a/core/src/mindustry/world/meta/StatValues.java
 +++ b/core/src/mindustry/world/meta/StatValues.java
 @@ -25,6 +25,8 @@ import mindustry.ui.*;
@@ -559,7 +561,7 @@ index 8bad161976923e881cd9a6fe9ce00889f93669c7..dd8aa1da4245cebeb2b010da502d9835
                      .with(s -> s.sort(f -> f.attributes.get(attr)));
  
                      if(blocks.any()){
-@@ -574,19 +587,30 @@ public class StatValues{
+@@ -578,19 +591,30 @@ public class StatValues{
          };
      }
  
@@ -597,7 +599,7 @@ index 8bad161976923e881cd9a6fe9ce00889f93669c7..dd8aa1da4245cebeb2b010da502d9835
                      }
                  }
              });
-@@ -635,7 +659,11 @@ public class StatValues{
+@@ -639,7 +663,11 @@ public class StatValues{
                          bt.row();
                      }
  
@@ -610,7 +612,7 @@ index 8bad161976923e881cd9a6fe9ce00889f93669c7..dd8aa1da4245cebeb2b010da502d9835
                          if(type.continuousDamage() > 0){
                              bt.add(Core.bundle.format("bullet.damage", type.continuousDamage()) + StatUnit.perSecond.localized());
                          }else{
-@@ -644,11 +672,11 @@ public class StatValues{
+@@ -648,11 +676,11 @@ public class StatValues{
                      }
  
                      if(type.buildingDamageMultiplier != 1){
@@ -624,7 +626,7 @@ index 8bad161976923e881cd9a6fe9ce00889f93669c7..dd8aa1da4245cebeb2b010da502d9835
                      }
  
                      if(type.shieldDamageMultiplier != 1){
-@@ -664,8 +692,7 @@ public class StatValues{
+@@ -668,8 +696,7 @@ public class StatValues{
                      }
  
                      if(!compact && !Mathf.equal(type.reloadMultiplier, 1f)){
@@ -634,7 +636,7 @@ index 8bad161976923e881cd9a6fe9ce00889f93669c7..dd8aa1da4245cebeb2b010da502d9835
                      }
  
                      if(type.knockback > 0){
-@@ -680,8 +707,24 @@ public class StatValues{
+@@ -684,8 +711,24 @@ public class StatValues{
                          sep(bt, Core.bundle.format("bullet.healamount", Strings.autoFixed(type.healAmount, 2)));
                      }
  
@@ -661,7 +663,7 @@ index 8bad161976923e881cd9a6fe9ce00889f93669c7..dd8aa1da4245cebeb2b010da502d9835
                      }
  
                      if(type.incendAmount > 0){
-@@ -689,11 +732,11 @@ public class StatValues{
+@@ -693,11 +736,11 @@ public class StatValues{
                      }
  
                      if(type.homingPower > 0.01f){
@@ -676,7 +678,7 @@ index 8bad161976923e881cd9a6fe9ce00889f93669c7..dd8aa1da4245cebeb2b010da502d9835
                      }
  
                      if(type.pierceArmor){
-@@ -722,39 +765,51 @@ public class StatValues{
+@@ -726,39 +769,51 @@ public class StatValues{
                      }
  
                      if(type.intervalBullet != null){
@@ -754,7 +756,7 @@ index 8bad161976923e881cd9a6fe9ce00889f93669c7..dd8aa1da4245cebeb2b010da502d9835
                      }
                  }).padLeft(5).padTop(5).padBottom(compact ? 0 : 5).growX().margin(compact ? 0 : 10);
                  table.row();
-@@ -762,12 +817,48 @@ public class StatValues{
+@@ -766,12 +821,48 @@ public class StatValues{
          };
      }
  

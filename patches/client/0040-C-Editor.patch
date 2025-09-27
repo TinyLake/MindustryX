@@ -10,11 +10,11 @@ Content-Transfer-Encoding: 8bit
 ---
  core/src/mindustry/editor/EditorTool.java     |  5 ++-
  core/src/mindustry/editor/MapEditor.java      |  9 ++++--
- .../src/mindustry/editor/MapEditorDialog.java | 29 +++++++++++------
+ .../src/mindustry/editor/MapEditorDialog.java | 28 +++++++++++-----
  .../src/mindustry/editor/MapResizeDialog.java |  4 +--
  core/src/mindustry/editor/MapView.java        | 32 +++++++++++++++----
  core/src/mindustry/ui/GridImage.java          |  5 +--
- 6 files changed, 60 insertions(+), 24 deletions(-)
+ 6 files changed, 60 insertions(+), 23 deletions(-)
 
 diff --git a/core/src/mindustry/editor/EditorTool.java b/core/src/mindustry/editor/EditorTool.java
 index eac257b3c5238a61b13afce11f26bdc3eb603d79..dde3985967815a41c6240c83d57755aafed2ca04 100644
@@ -40,7 +40,7 @@ index eac257b3c5238a61b13afce11f26bdc3eb603d79..dde3985967815a41c6240c83d57755aa
  
          }
 diff --git a/core/src/mindustry/editor/MapEditor.java b/core/src/mindustry/editor/MapEditor.java
-index f04bd1339d483254abe48c0ec9d493882d2eb8da..ce4c3eb85137146d4ee5ba1d76eb22ced0746c0c 100644
+index c2529b8c38ac57244517823aa73843cedec75602..b768477389731aefad275b3c6aa1760e20a4cc35 100644
 --- a/core/src/mindustry/editor/MapEditor.java
 +++ b/core/src/mindustry/editor/MapEditor.java
 @@ -29,7 +29,9 @@ public class MapEditor{
@@ -52,8 +52,8 @@ index f04bd1339d483254abe48c0ec9d493882d2eb8da..ce4c3eb85137146d4ee5ba1d76eb22ce
 +    public boolean diamMode; // only use in drawSquare now, set each time before draw
      public Block drawBlock = Blocks.stone;
      public Team drawTeam = Team.sharded;
- 
-@@ -306,9 +308,10 @@ public class MapEditor{
+     public boolean showTerrain = true, showFloor = true, showBuildings = true;
+@@ -287,9 +289,10 @@ public class MapEditor{
      }
  
      public void drawSquare(int x, int y, Cons<Tile> drawer){
@@ -68,7 +68,7 @@ index f04bd1339d483254abe48c0ec9d493882d2eb8da..ce4c3eb85137146d4ee5ba1d76eb22ce
  
                  if(wx < 0 || wy < 0 || wx >= width() || wy >= height()){
 diff --git a/core/src/mindustry/editor/MapEditorDialog.java b/core/src/mindustry/editor/MapEditorDialog.java
-index 5f648b9c7162fa64d48267bb73e2357ed674229f..c942d15445ad05b8f8f34d41601dbe57c173eb86 100644
+index 924e7b52da8fc05ba1e2a2181e621d89b38e7bb9..c042ec6f5eadf1ed2c7084410c20808049f8a373 100644
 --- a/core/src/mindustry/editor/MapEditorDialog.java
 +++ b/core/src/mindustry/editor/MapEditorDialog.java
 @@ -31,6 +31,7 @@ import mindustry.world.blocks.environment.*;
@@ -79,11 +79,10 @@ index 5f648b9c7162fa64d48267bb73e2357ed674229f..c942d15445ad05b8f8f34d41601dbe57
  
  import static mindustry.Vars.*;
  
-@@ -654,11 +655,7 @@ public class MapEditorDialog extends Dialog implements Disposable{
-                 .colspan(3).height(40).width(size * 3f + 3f).padBottom(3);
+@@ -652,10 +653,7 @@ public class MapEditorDialog extends Dialog implements Disposable{
  
-                 tools.row();
--
+                 tools.image(Tex.whiteui, Pal.gray).colspan(3).height(4f).width(size * 3f + 3f).row();
+ 
 -                ButtonGroup<ImageButton> teamgroup = new ButtonGroup<>();
 -
                  int i = 0;
@@ -91,7 +90,7 @@ index 5f648b9c7162fa64d48267bb73e2357ed674229f..c942d15445ad05b8f8f34d41601dbe57
                  for(Team team : Team.baseTeams){
                      ImageButton button = new ImageButton(Tex.whiteui, Styles.clearNoneTogglei);
                      button.margin(4f);
-@@ -666,19 +663,34 @@ public class MapEditorDialog extends Dialog implements Disposable{
+@@ -663,19 +661,34 @@ public class MapEditorDialog extends Dialog implements Disposable{
                      button.getStyle().imageUpColor = team.color;
                      button.clicked(() -> editor.drawTeam = team);
                      button.update(() -> button.setChecked(editor.drawTeam == team));
@@ -128,22 +127,22 @@ index 5f648b9c7162fa64d48267bb73e2357ed674229f..c942d15445ad05b8f8f34d41601dbe57
                      for(int j = 0; j < MapEditor.brushSizes.length; j++){
                          if(MapEditor.brushSizes[j] == editor.brushSize){
                              slider.setValue(j);
-@@ -826,6 +838,7 @@ public class MapEditorDialog extends Dialog implements Disposable{
+@@ -830,6 +843,7 @@ public class MapEditorDialog extends Dialog implements Disposable{
          });
  
          int i = 0;
-+        int preRow = mindustryX.VarsX.editorBrush.get();
++        int perRow = mindustryX.VarsX.editorBrush.get();
  
          for(Block block : blocksOut){
              TextureRegion region = block.uiIcon;
-@@ -844,9 +857,7 @@ public class MapEditorDialog extends Dialog implements Disposable{
+@@ -848,9 +862,7 @@ public class MapEditorDialog extends Dialog implements Disposable{
  
              if(i == 0) editor.drawBlock = block;
  
 -            int cols = mobile ? 4 : 6;
 -
 -            if(++i % cols == 0){
-+            if(++i % preRow == 0){
++            if(++i % perRow == 0){
                  blockSelection.row();
              }
          }

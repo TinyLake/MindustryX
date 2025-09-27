@@ -5,11 +5,11 @@ Subject: [PATCH] OC: Multithreading Schematics load
 
 Inspired by FOO client.
 ---
- core/src/mindustry/game/Schematics.java | 27 ++++++++++++++++++-------
- 1 file changed, 20 insertions(+), 7 deletions(-)
+ core/src/mindustry/game/Schematics.java | 25 +++++++++++++++++++------
+ 1 file changed, 19 insertions(+), 6 deletions(-)
 
 diff --git a/core/src/mindustry/game/Schematics.java b/core/src/mindustry/game/Schematics.java
-index c47e43215ceafb345bcb9151b1d845115ee318a2..e4d03d8a61f2cb218c5f65b16e304ff4ddaf77a3 100644
+index 82c93e03c4fc28e4ed8a150f460042b22bd7b4cc..4382301e5160e1c5b452e21dd16401a223981aee 100644
 --- a/core/src/mindustry/game/Schematics.java
 +++ b/core/src/mindustry/game/Schematics.java
 @@ -38,6 +38,7 @@ import mindustry.world.meta.*;
@@ -70,12 +70,3 @@ index c47e43215ceafb345bcb9151b1d845115ee318a2..e4d03d8a61f2cb218c5f65b16e304ff4
  
              //external file from workshop
              if(!s.file.parent().equals(schematicDirectory)){
-@@ -624,7 +637,7 @@ public class Schematics implements Loadable{
-             for(int i = 0; i < total; i++){
-                 Block block = blocks.get(stream.readByte());
-                 int position = stream.readInt();
--                Object config = ver == 0 ? mapConfig(block, stream.readInt(), position) : TypeIO.readObject(Reads.get(stream), false, mapper);
-+                Object config = ver == 0 ? mapConfig(block, stream.readInt(), position) : TypeIO.readObject(new Reads(stream), false, mapper);
-                 byte rotation = stream.readByte();
-                 if(block != Blocks.air){
-                     tiles.add(new Stile(block, Point2.x(position), Point2.y(position), config, rotation));

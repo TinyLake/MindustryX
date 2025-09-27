@@ -84,7 +84,7 @@ index 0881a8a6c843fe5c6bfd78cf5a0aeee834ccb769..39332d4d175d89e93c48ebb7b9532c7d
      }
      processResources.configure {
 diff --git a/core/src/mindustry/Vars.java b/core/src/mindustry/Vars.java
-index aab42f1018e5b080a83fd7b673d82157ca6cae0f..66b582bc5c5bbf9c20a8b9c0a845a8c9bc18893b 100644
+index 2bac555a8663203bcc74cf28d6aa6da6a0810d4b..e4066d7f0499464cab376fe54f20228bcee50e33 100644
 --- a/core/src/mindustry/Vars.java
 +++ b/core/src/mindustry/Vars.java
 @@ -86,7 +86,7 @@ public class Vars implements Loadable{
@@ -97,7 +97,7 @@ index aab42f1018e5b080a83fd7b673d82157ca6cae0f..66b582bc5c5bbf9c20a8b9c0a845a8c9
      public static final Seq<ServerGroup> defaultServers = Seq.with();
      /** cached server list - only used if defaultServers have not been fetched*/
 diff --git a/core/src/mindustry/core/NetClient.java b/core/src/mindustry/core/NetClient.java
-index 9e8536719322664674cb7a856b9da7d32a032558..3b40344221b43f3315f04865c0aacd43b14f9712 100644
+index 3d8202e4fdba3e426cfc01b649752fe906a18407..18fb394d8ee48773e6b9ab318a289f122cb36b45 100644
 --- a/core/src/mindustry/core/NetClient.java
 +++ b/core/src/mindustry/core/NetClient.java
 @@ -26,6 +26,7 @@ import mindustry.net.*;
@@ -108,7 +108,7 @@ index 9e8536719322664674cb7a856b9da7d32a032558..3b40344221b43f3315f04865c0aacd43
  
  import java.io.*;
  import java.util.*;
-@@ -143,6 +144,7 @@ public class NetClient implements ApplicationListener{
+@@ -144,6 +145,7 @@ public class NetClient implements ApplicationListener{
              Log.info("Received world data: @ bytes.", data.stream.available());
              NetworkIO.loadWorld(new InflaterInputStream(data.stream));
  
@@ -160,10 +160,10 @@ index 5b49342d67c5ee443ba789417f231b75d79ee1cb..89a5e536fe62ed8d3dc04e291fb70516
          buffer.put((byte)state.rules.mode().ordinal());
          buffer.putInt(netServer.admins.getPlayerLimit());
 diff --git a/desktop/src/mindustry/desktop/DesktopLauncher.java b/desktop/src/mindustry/desktop/DesktopLauncher.java
-index 5c8d619a5dde4f94abe0448277d25b605f321b13..c4dc0a63c9942f9bc0f6e4c93512544ffd016d5e 100644
+index 241e41e04bca5e67642d3ef533df4f4a7a08b80c..9eabc5f002a3715d90f963309e67d6bca8572d31 100644
 --- a/desktop/src/mindustry/desktop/DesktopLauncher.java
 +++ b/desktop/src/mindustry/desktop/DesktopLauncher.java
-@@ -82,7 +82,7 @@ public class DesktopLauncher extends ClientLauncher{
+@@ -103,7 +103,7 @@ public class DesktopLauncher extends ClientLauncher{
                          }
                      }
                  }
@@ -173,12 +173,12 @@ index 5c8d619a5dde4f94abe0448277d25b605f321b13..c4dc0a63c9942f9bc0f6e4c93512544f
          }catch(Throwable e){
              handleCrash(e);
 diff --git a/gradle.properties b/gradle.properties
-index 017c4958a9608faa55c2eec7d01c659b7a13893f..56dfef5beb62beb9c2d46f45dcb978d0022bef45 100644
+index 342d52056324afc782c9883e43298b3086a7463d..8598d74f7de57daea3277e54f48ea5ed1062462e 100644
 --- a/gradle.properties
 +++ b/gradle.properties
 @@ -27,3 +27,5 @@ org.gradle.internal.http.socketTimeout=100000
  org.gradle.internal.http.connectionTimeout=100000
  android.enableR8.fullMode=false
- archash=v151.1
+ archash=v152
 +
-+upstreamBuild=151.1
++upstreamBuild=152

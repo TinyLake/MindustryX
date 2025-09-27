@@ -156,7 +156,7 @@ index ebc1f0b300d295e45333f1db38ea299c9658ec20..e7cba056743979206c84fc6d00472c2c
                      hide();
                  }).marginLeft(10f);
 diff --git a/core/src/mindustry/entities/comp/BuildingComp.java b/core/src/mindustry/entities/comp/BuildingComp.java
-index fa7c3bb21bd97db1fb5c3d629f9c53af487060d0..0361f8a13eb86367f6c05d210fc63b41793e1f4a 100644
+index c04a9768f34ecdbeaac00978b1f4ae6e94633f03..096d0dcdf15be7972b849ea1762fe040e0eb0dc6 100644
 --- a/core/src/mindustry/entities/comp/BuildingComp.java
 +++ b/core/src/mindustry/entities/comp/BuildingComp.java
 @@ -41,6 +41,7 @@ import mindustry.world.blocks.power.*;
@@ -175,7 +175,7 @@ index fa7c3bb21bd97db1fb5c3d629f9c53af487060d0..0361f8a13eb86367f6c05d210fc63b41
  
      @Nullable PowerModule power;
      @Nullable ItemModule items;
-@@ -574,7 +576,7 @@ abstract class BuildingComp implements Posc, Teamc, Healthc, Buildingc, Timerc,
+@@ -589,7 +591,7 @@ abstract class BuildingComp implements Posc, Teamc, Healthc, Buildingc, Timerc,
      }
  
      public boolean interactable(Team team){
@@ -184,7 +184,7 @@ index fa7c3bb21bd97db1fb5c3d629f9c53af487060d0..0361f8a13eb86367f6c05d210fc63b41
      }
  
      public float timeScale(){
-@@ -1468,7 +1470,8 @@ abstract class BuildingComp implements Posc, Teamc, Healthc, Buildingc, Timerc,
+@@ -1489,7 +1491,8 @@ abstract class BuildingComp implements Posc, Teamc, Healthc, Buildingc, Timerc,
          //derelict team icon currently doesn't display
          return team == Team.derelict ?
              block.localizedName + "\n" + Core.bundle.get("block.derelict") :
@@ -194,7 +194,7 @@ index fa7c3bb21bd97db1fb5c3d629f9c53af487060d0..0361f8a13eb86367f6c05d210fc63b41
      }
  
      public TextureRegion getDisplayIcon(){
-@@ -1492,7 +1495,7 @@ abstract class BuildingComp implements Posc, Teamc, Healthc, Buildingc, Timerc,
+@@ -1513,7 +1516,7 @@ abstract class BuildingComp implements Posc, Teamc, Healthc, Buildingc, Timerc,
          table.row();
  
          //only display everything else if the team is the same
@@ -203,7 +203,7 @@ index fa7c3bb21bd97db1fb5c3d629f9c53af487060d0..0361f8a13eb86367f6c05d210fc63b41
              table.table(bars -> {
                  bars.defaults().growX().height(18f).pad(4);
  
-@@ -1593,6 +1596,15 @@ abstract class BuildingComp implements Posc, Teamc, Healthc, Buildingc, Timerc,
+@@ -1614,6 +1617,15 @@ abstract class BuildingComp implements Posc, Teamc, Healthc, Buildingc, Timerc,
              table.add(result).growX();
              table.row();
          }
@@ -402,10 +402,10 @@ index dde5886f6020aa1c372ac3346e81aab0c7fdedf7..793e1b23c43d7beb6677d8e29f6c9e22
          ItemSeq requirements = new ItemSeq();
  
 diff --git a/core/src/mindustry/graphics/BlockRenderer.java b/core/src/mindustry/graphics/BlockRenderer.java
-index 95e5a05a4f9e12738791f67a7bf80639f3d276ed..354ef89f1f34afb3c451d0565c3b59cbbcf4ae98 100644
+index e6bdd9e981d2bf87c91d4081f0f323e2171a5036..0bcfd50b251fb93edafa91df85206978fbee6bc8 100644
 --- a/core/src/mindustry/graphics/BlockRenderer.java
 +++ b/core/src/mindustry/graphics/BlockRenderer.java
-@@ -466,13 +466,18 @@ public class BlockRenderer{
+@@ -490,13 +490,18 @@ public class BlockRenderer{
                          Draw.z(Layer.block);
                      }
  
@@ -516,7 +516,7 @@ index 4354963da51ef7ccefafec061635fced40457260..1c2d34a69470d4f1f660c43b5b03180f
  
      public void checkApplySelection(Unit u){
 diff --git a/core/src/mindustry/input/DesktopInput.java b/core/src/mindustry/input/DesktopInput.java
-index 15a17140a98c205cf6d703f64f4a0531ff9c638d..3652c65cd86420f639f1cdebeda04250440a5121 100644
+index a8a29dc99bb52eec3ab5c85f336f5b14895a7868..eb32a3fc1ee7e603cb4f5a9a2b455dfc121f3bfd 100644
 --- a/core/src/mindustry/input/DesktopInput.java
 +++ b/core/src/mindustry/input/DesktopInput.java
 @@ -22,8 +22,10 @@ import mindustry.gen.*;
@@ -551,7 +551,7 @@ index 15a17140a98c205cf6d703f64f4a0531ff9c638d..3652c65cd86420f639f1cdebeda04250
              }).margin(6f);
          });
      }
-@@ -962,11 +971,10 @@ public class DesktopInput extends InputHandler{
+@@ -961,11 +970,10 @@ public class DesktopInput extends InputHandler{
              }
          }
  
@@ -565,7 +565,7 @@ index 15a17140a98c205cf6d703f64f4a0531ff9c638d..3652c65cd86420f639f1cdebeda04250
              unit.lookAt(unit.prefRotation());
          }
 diff --git a/core/src/mindustry/input/InputHandler.java b/core/src/mindustry/input/InputHandler.java
-index 993b2c0fcf21a497c6891b5e1e352e9a21982971..80ac71b8fec1cba3daba3b272c9c47a7515bbf2d 100644
+index a99c6713a1c7a93e83ecc2e9ab551121354f8838..3d87bb6dc89288f209a835d80f9ce702b6b5e5a2 100644
 --- a/core/src/mindustry/input/InputHandler.java
 +++ b/core/src/mindustry/input/InputHandler.java
 @@ -38,6 +38,7 @@ import mindustry.world.*;
@@ -584,7 +584,7 @@ index 993b2c0fcf21a497c6891b5e1e352e9a21982971..80ac71b8fec1cba3daba3b272c9c47a7
      private Seq<BuildPlan> plansOut = new Seq<>(BuildPlan.class);
      private QuadTree<BuildPlan> playerPlanTree = new QuadTree<>(new Rect());
  
-@@ -685,7 +687,7 @@ public abstract class InputHandler implements InputProcessor, GestureListener{
+@@ -687,7 +689,7 @@ public abstract class InputHandler implements InputProcessor, GestureListener{
              throw new ValidateException(player, "Player cannot control a building.");
          }
  
@@ -593,7 +593,7 @@ index 993b2c0fcf21a497c6891b5e1e352e9a21982971..80ac71b8fec1cba3daba3b272c9c47a7
              var before = player.unit();
  
              build.onControlSelect(player.unit());
-@@ -835,7 +837,7 @@ public abstract class InputHandler implements InputProcessor, GestureListener{
+@@ -837,7 +839,7 @@ public abstract class InputHandler implements InputProcessor, GestureListener{
      }
  
      public void update(){
@@ -602,7 +602,7 @@ index 993b2c0fcf21a497c6891b5e1e352e9a21982971..80ac71b8fec1cba3daba3b272c9c47a7
              spectating = null;
          }
  
-@@ -1071,6 +1073,8 @@ public abstract class InputHandler implements InputProcessor, GestureListener{
+@@ -1073,6 +1075,8 @@ public abstract class InputHandler implements InputProcessor, GestureListener{
                      attack = selectedEnemyUnit(target.x, target.y);
                  }
  
@@ -611,7 +611,7 @@ index 993b2c0fcf21a497c6891b5e1e352e9a21982971..80ac71b8fec1cba3daba3b272c9c47a7
                  int[] ids = new int[selectedUnits.size];
                  for(int i = 0; i < ids.length; i++){
                      ids[i] = selectedUnits.get(i).id;
-@@ -1347,6 +1351,11 @@ public abstract class InputHandler implements InputProcessor, GestureListener{
+@@ -1349,6 +1353,11 @@ public abstract class InputHandler implements InputProcessor, GestureListener{
          });
      }
  
@@ -623,7 +623,7 @@ index 993b2c0fcf21a497c6891b5e1e352e9a21982971..80ac71b8fec1cba3daba3b272c9c47a7
      public void rotatePlans(Seq<BuildPlan> plans, int direction){
          int ox = schemOriginX(), oy = schemOriginY();
  
-@@ -1382,6 +1391,20 @@ public abstract class InputHandler implements InputProcessor, GestureListener{
+@@ -1384,6 +1393,20 @@ public abstract class InputHandler implements InputProcessor, GestureListener{
              plan.x = World.toTile(wx - plan.block.offset) + ox;
              plan.y = World.toTile(wy - plan.block.offset) + oy;
              plan.rotation = plan.block.planRotation(Mathf.mod(plan.rotation + direction, 4));
@@ -644,7 +644,7 @@ index 993b2c0fcf21a497c6891b5e1e352e9a21982971..80ac71b8fec1cba3daba3b272c9c47a7
          });
      }
  
-@@ -1411,6 +1434,17 @@ public abstract class InputHandler implements InputProcessor, GestureListener{
+@@ -1413,6 +1436,17 @@ public abstract class InputHandler implements InputProcessor, GestureListener{
  
              //flip rotation
              plan.block.flipRotation(plan, x);
@@ -662,7 +662,7 @@ index 993b2c0fcf21a497c6891b5e1e352e9a21982971..80ac71b8fec1cba3daba3b272c9c47a7
          });
      }
  
-@@ -1584,6 +1618,9 @@ public abstract class InputHandler implements InputProcessor, GestureListener{
+@@ -1586,6 +1620,9 @@ public abstract class InputHandler implements InputProcessor, GestureListener{
              font.setUseIntegerPositions(ints);
              Draw.z(z);
          }
@@ -672,7 +672,7 @@ index 993b2c0fcf21a497c6891b5e1e352e9a21982971..80ac71b8fec1cba3daba3b272c9c47a7
      }
  
      protected void flushSelectPlans(Seq<BuildPlan> plans){
-@@ -1957,7 +1994,7 @@ public abstract class InputHandler implements InputProcessor, GestureListener{
+@@ -1959,7 +1996,7 @@ public abstract class InputHandler implements InputProcessor, GestureListener{
  
      public @Nullable Building selectedControlBuild(){
          Building build = world.buildWorld(Core.input.mouseWorld().x, Core.input.mouseWorld().y);
@@ -681,7 +681,7 @@ index 993b2c0fcf21a497c6891b5e1e352e9a21982971..80ac71b8fec1cba3daba3b272c9c47a7
              return build;
          }
          return null;
-@@ -2058,6 +2095,9 @@ public abstract class InputHandler implements InputProcessor, GestureListener{
+@@ -2060,6 +2097,9 @@ public abstract class InputHandler implements InputProcessor, GestureListener{
  
      public boolean canShoot(){
          if(player.dead()) return false;
@@ -692,7 +692,7 @@ index 993b2c0fcf21a497c6891b5e1e352e9a21982971..80ac71b8fec1cba3daba3b272c9c47a7
          !(player.unit() instanceof Mechc && player.unit().isFlying()) && !player.unit().mining() && !commandMode;
      }
 diff --git a/core/src/mindustry/input/MobileInput.java b/core/src/mindustry/input/MobileInput.java
-index aa52b73d3b1357bc20844080292bdd58ad3ff6b0..d742f56346e0c9acccb339b09c18d73f0e441e0f 100644
+index 6e550fbc73a7a65da33c24cdec0471edbb21ee5f..3188f7e969cb29f2595a25793db85ff0b4284a11 100644
 --- a/core/src/mindustry/input/MobileInput.java
 +++ b/core/src/mindustry/input/MobileInput.java
 @@ -334,7 +334,7 @@ public class MobileInput extends InputHandler implements GestureListener{
@@ -704,7 +704,7 @@ index aa52b73d3b1357bc20844080292bdd58ad3ff6b0..d742f56346e0c9acccb339b09c18d73f
              }).margin(4f);
          });
      }
-@@ -1038,6 +1038,10 @@ public class MobileInput extends InputHandler implements GestureListener{
+@@ -1041,6 +1041,10 @@ public class MobileInput extends InputHandler implements GestureListener{
              unit.vel.approachDelta(Vec2.ZERO, unit.speed() * type.accel / 2f);
          }
  
@@ -716,7 +716,7 @@ index aa52b73d3b1357bc20844080292bdd58ad3ff6b0..d742f56346e0c9acccb339b09c18d73f
          rect.grow(4f);
  
 diff --git a/core/src/mindustry/logic/LExecutor.java b/core/src/mindustry/logic/LExecutor.java
-index f00a3c15d2d5a06482c0a1ad0026080321e55738..2e88f5a980dd816fe834c7f80c32b8b61ccba2b7 100644
+index fd74b0dddeb91e8523c1eafe2dbb5150286f3968..551ca716d0396a210aa7251d139034cf6303e343 100644
 --- a/core/src/mindustry/logic/LExecutor.java
 +++ b/core/src/mindustry/logic/LExecutor.java
 @@ -10,6 +10,7 @@ import arc.util.*;
@@ -753,7 +753,7 @@ index f00a3c15d2d5a06482c0a1ad0026080321e55738..2e88f5a980dd816fe834c7f80c32b8b6
                  //TODO desync?
                  case mission -> state.rules.mission = text;
 diff --git a/core/src/mindustry/type/UnitType.java b/core/src/mindustry/type/UnitType.java
-index 3d6042da706bb5df8114ff6659482c6a4b6020f4..1ee9b561f207d9066e185c1a2147c221d9aa2b2e 100644
+index b0a92b903d022b612e07998eb3200fbbdca9b421..25332313636406f6b8308292b3c765c66e04fbe7 100644
 --- a/core/src/mindustry/type/UnitType.java
 +++ b/core/src/mindustry/type/UnitType.java
 @@ -38,6 +38,7 @@ import mindustry.world.blocks.units.*;
@@ -764,7 +764,7 @@ index 3d6042da706bb5df8114ff6659482c6a4b6020f4..1ee9b561f207d9066e185c1a2147c221
  
  import static arc.graphics.g2d.Draw.*;
  import static mindustry.Vars.*;
-@@ -647,19 +648,45 @@ public class UnitType extends UnlockableContent implements Senseable{
+@@ -649,19 +650,45 @@ public class UnitType extends UnlockableContent implements Senseable{
          table.table(t -> {
              t.left();
              t.add(new Image(uiIcon)).size(iconMed).scaling(Scaling.fit);
@@ -814,7 +814,7 @@ index 3d6042da706bb5df8114ff6659482c6a4b6020f4..1ee9b561f207d9066e185c1a2147c221
                  bars.row();
              }
  
-@@ -668,7 +695,10 @@ public class UnitType extends UnlockableContent implements Senseable{
+@@ -670,7 +697,10 @@ public class UnitType extends UnlockableContent implements Senseable{
              }
  
              if(payloadCapacity > 0 && unit instanceof Payloadc payload){
@@ -826,7 +826,7 @@ index 3d6042da706bb5df8114ff6659482c6a4b6020f4..1ee9b561f207d9066e185c1a2147c221
                  bars.row();
  
                  var count = new float[]{-1};
-@@ -680,16 +710,55 @@ public class UnitType extends UnlockableContent implements Senseable{
+@@ -682,16 +712,55 @@ public class UnitType extends UnlockableContent implements Senseable{
                  }).growX().left().height(0f).pad(0f);
              }
          }).growX();
@@ -888,7 +888,7 @@ index 3d6042da706bb5df8114ff6659482c6a4b6020f4..1ee9b561f207d9066e185c1a2147c221
              if(net.active() && ai.controller != null && ai.controller.lastAccessed != null){
                  table.row();
                  table.add(Core.bundle.format("lastaccessed", ai.controller.lastAccessed)).growX().wrap().left();
-@@ -700,6 +769,11 @@ public class UnitType extends UnlockableContent implements Senseable{
+@@ -702,6 +771,11 @@ public class UnitType extends UnlockableContent implements Senseable{
          }
  
          table.row();
@@ -900,7 +900,7 @@ index 3d6042da706bb5df8114ff6659482c6a4b6020f4..1ee9b561f207d9066e185c1a2147c221
      }
  
      /** @return whether this block supports a specific environment. */
-@@ -1641,12 +1715,15 @@ public class UnitType extends UnlockableContent implements Senseable{
+@@ -1636,12 +1710,15 @@ public class UnitType extends UnlockableContent implements Senseable{
              unit.y + Angles.trnsy(unit.rotation + 180f, itemOffsetY),
              size, size);
  
@@ -1339,7 +1339,7 @@ index e21b1191027ce69405b4b54d0d914ba112e5d380..788fe34b0434a99a9aa66869949f8083
      }
  
 diff --git a/core/src/mindustry/ui/dialogs/PlanetDialog.java b/core/src/mindustry/ui/dialogs/PlanetDialog.java
-index ddde346b071db7af8e2f17ef10abee42ce5bf621..6daba4ff04b3047a9802d65ba31561fbfe1adc77 100644
+index a6c99837b9d4c91ce7733b1e58eb71f1766f7414..6410a7f0819afc6588803d4778dae1fd835e609f 100644
 --- a/core/src/mindustry/ui/dialogs/PlanetDialog.java
 +++ b/core/src/mindustry/ui/dialogs/PlanetDialog.java
 @@ -38,6 +38,7 @@ import mindustry.type.Planet.*;
@@ -1374,7 +1374,7 @@ index ddde346b071db7af8e2f17ef10abee42ce5bf621..6daba4ff04b3047a9802d65ba31561fb
              addTech();
          }
      }
-@@ -569,6 +574,11 @@ public class PlanetDialog extends BaseDialog implements PlanetInterfaceRenderer{
+@@ -549,6 +554,11 @@ public class PlanetDialog extends BaseDialog implements PlanetInterfaceRenderer{
                          Draw.rect(icon, 0, 0, iw, iw * icon.height / icon.width);
                      });
                  }
@@ -1386,7 +1386,7 @@ index ddde346b071db7af8e2f17ef10abee42ce5bf621..6daba4ff04b3047a9802d65ba31561fb
              }
          }
  
-@@ -769,7 +779,7 @@ public class PlanetDialog extends BaseDialog implements PlanetInterfaceRenderer{
+@@ -749,7 +759,7 @@ public class PlanetDialog extends BaseDialog implements PlanetInterfaceRenderer{
  
              //sector notifications & search
              c.top().right();
@@ -1395,7 +1395,7 @@ index ddde346b071db7af8e2f17ef10abee42ce5bf621..6daba4ff04b3047a9802d65ba31561fb
  
              c.button(bundle.get("sectorlist") +
              (attacked == 0 ? "" : "\n[red]⚠[lightgray] " + bundle.format("sectorlist.attacked", "[red]" + attacked + "[]")),
-@@ -813,7 +823,7 @@ public class PlanetDialog extends BaseDialog implements PlanetInterfaceRenderer{
+@@ -793,7 +803,7 @@ public class PlanetDialog extends BaseDialog implements PlanetInterfaceRenderer{
  
              readd[0] = () -> {
                  con.clearChildren();
@@ -1404,7 +1404,7 @@ index ddde346b071db7af8e2f17ef10abee42ce5bf621..6daba4ff04b3047a9802d65ba31561fb
                      if(sec.hasBase() && (searchText.isEmpty() || sec.name().toLowerCase().contains(searchText.toLowerCase()))){
                          con.button(t -> {
                              t.marginRight(10f);
-@@ -834,6 +844,19 @@ public class PlanetDialog extends BaseDialog implements PlanetInterfaceRenderer{
+@@ -814,6 +824,19 @@ public class PlanetDialog extends BaseDialog implements PlanetInterfaceRenderer{
                                  String ic = sec.iconChar() == null ? "" : sec.iconChar() + " ";
  
                                  head.add(ic + sec.name()).growX().wrap();
@@ -1424,7 +1424,7 @@ index ddde346b071db7af8e2f17ef10abee42ce5bf621..6daba4ff04b3047a9802d65ba31561fb
                              }).growX().row();
  
                              if(sec.isAttacked()){
-@@ -1030,7 +1053,7 @@ public class PlanetDialog extends BaseDialog implements PlanetInterfaceRenderer{
+@@ -1010,7 +1033,7 @@ public class PlanetDialog extends BaseDialog implements PlanetInterfaceRenderer{
              if(total > 1){
                  t.image(item.uiIcon).padRight(3);
                  t.add(UI.formatAmount(total) + " " + Core.bundle.get("unit.perminute")).color(Color.lightGray).padRight(3);
@@ -1433,7 +1433,7 @@ index ddde346b071db7af8e2f17ef10abee42ce5bf621..6daba4ff04b3047a9802d65ba31561fb
                      t.row();
                  }
              }
-@@ -1110,7 +1133,7 @@ public class PlanetDialog extends BaseDialog implements PlanetInterfaceRenderer{
+@@ -1090,7 +1113,7 @@ public class PlanetDialog extends BaseDialog implements PlanetInterfaceRenderer{
                          for(ItemStack stack : items){
                              res.image(stack.item.uiIcon).padRight(3);
                              res.add(UI.formatAmount(Math.max(stack.amount, 0))).color(Color.lightGray);
@@ -1899,7 +1899,7 @@ index 3542163354070ac67c49b82dff6c72b374d4ca7d..ab9ad6c393cc401d13dbad7e62a78f87
          //special case for 'clear' command
          if(message.equals("clear")){
 diff --git a/core/src/mindustry/ui/fragments/HudFragment.java b/core/src/mindustry/ui/fragments/HudFragment.java
-index f381ffe0e8ac604ced529251bbd9f48b9a2d61e6..b77b42a4a6d1ed85e075d87ee3e82882d8222288 100644
+index be3053a481c86165e551da1fd554f8e7dfde77bf..de27e6892da3a9e9ca88c1de5396d41cdf8807f3 100644
 --- a/core/src/mindustry/ui/fragments/HudFragment.java
 +++ b/core/src/mindustry/ui/fragments/HudFragment.java
 @@ -29,9 +29,11 @@ import mindustry.net.Packets.*;

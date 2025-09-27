@@ -25,10 +25,10 @@ index 5656c695bed1168bcbaa1692403bfdb5898ea27d..3e54ed2e25b74f7f081c1cedb181fc65
      public MapObjectives objectives = new MapObjectives();
      /** Flags set by objectives. Used in world processors. */
 diff --git a/core/src/mindustry/io/SaveVersion.java b/core/src/mindustry/io/SaveVersion.java
-index 9ddb6519a2f60294ba725081be29ce34fa59aa7e..bc0e49452d1110865f1710dda504dd94056ad272 100644
+index 6e980a0aa79c7ae3f874a845e688a2932b3acc92..e5f566cc86074937c7df50d5919a084a3a8f39c9 100644
 --- a/core/src/mindustry/io/SaveVersion.java
 +++ b/core/src/mindustry/io/SaveVersion.java
-@@ -153,6 +153,7 @@ public abstract class SaveVersion extends SaveFileReader{
+@@ -147,6 +147,7 @@ public abstract class SaveVersion extends SaveFileReader{
          )));
      }
  
@@ -36,7 +36,7 @@ index 9ddb6519a2f60294ba725081be29ce34fa59aa7e..bc0e49452d1110865f1710dda504dd94
      public void readMeta(DataInput stream, WorldContext context) throws IOException{
          StringMap map = readStringMap(stream);
  
-@@ -172,6 +173,12 @@ public abstract class SaveVersion extends SaveFileReader{
+@@ -165,6 +166,12 @@ public abstract class SaveVersion extends SaveFileReader{
              }
          }
  

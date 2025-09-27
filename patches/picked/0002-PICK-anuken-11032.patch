@@ -8,7 +8,7 @@ Subject: [PATCH] PICK #anuken:11032
  1 file changed, 2 insertions(+), 2 deletions(-)
 
 diff --git a/core/assets/bundles/bundle_zh_CN.properties b/core/assets/bundles/bundle_zh_CN.properties
-index 2b76ec75a2254b3f4977b546d927c628bf526f00..e895af4277e280df2497bb25eb6e4fdabccb97a1 100644
+index 5a60184ab0a78b87d220d8e51cdf4941053ca359..31ca183128a328f4d849c52ec2c1a3369a1609e5 100644
 --- a/core/assets/bundles/bundle_zh_CN.properties
 +++ b/core/assets/bundles/bundle_zh_CN.properties
 @@ -375,7 +375,7 @@ command.enterPayload = 进入载荷建筑
@@ -20,7 +20,7 @@ index 2b76ec75a2254b3f4977b546d927c628bf526f00..e895af4277e280df2497bb25eb6e4fda
  stance.stop = 取消指令
  stance.shoot = 警戒\n[lightgray]自动攻击一定范围内的敌人
  stance.holdfire = 停火\n[lightgray]暂停自动攻击
-@@ -2635,7 +2635,7 @@ lenum.always = 无条件跳转
+@@ -2642,7 +2642,7 @@ lenum.always = 无条件跳转
  lenum.idiv = 整数除法，返回不带小数的商
  lenum.div = 除法，除以 0 时返回 [accent]null[]
  lenum.mod = 求除法的余数

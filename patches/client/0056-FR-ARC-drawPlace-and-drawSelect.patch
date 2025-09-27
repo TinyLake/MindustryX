@@ -176,10 +176,10 @@ index d9fc8ed8732a91815f2923fcdcad622e4c7a7789..3d310f4ddc7e2445aab3a8fc350d9c08
          indexer.eachBlock(player.team(), x * tilesize + offset, y * tilesize + offset, range, other -> other.block.canOverdrive, other -> Drawf.selected(other, Tmp.c1.set(baseColor).a(Mathf.absin(4f, 1f))));
      }
 diff --git a/core/src/mindustry/world/blocks/defense/turrets/Turret.java b/core/src/mindustry/world/blocks/defense/turrets/Turret.java
-index d78be36eed7b1e9d95889e07a1cc7004473690f6..b441a856ec713793896cfd1bf7aee2093af76997 100644
+index bbade89c6d751b6d62c9ecbe28aff02d155c72d6..d6b25721e775df99c0377bd77037fd2673835f28 100644
 --- a/core/src/mindustry/world/blocks/defense/turrets/Turret.java
 +++ b/core/src/mindustry/world/blocks/defense/turrets/Turret.java
-@@ -28,6 +28,7 @@ import mindustry.ui.*;
+@@ -29,6 +29,7 @@ import mindustry.ui.*;
  import mindustry.world.blocks.*;
  import mindustry.world.draw.*;
  import mindustry.world.meta.*;
@@ -187,7 +187,7 @@ index d78be36eed7b1e9d95889e07a1cc7004473690f6..b441a856ec713793896cfd1bf7aee209
  
  import static mindustry.Vars.*;
  
-@@ -235,6 +236,13 @@ public class Turret extends ReloadTurret{
+@@ -245,6 +246,13 @@ public class Turret extends ReloadTurret{
          if(drawMinRange){
              Drawf.dashCircle(x * tilesize + offset, y * tilesize + offset, minRange, Pal.placing);
          }
@@ -201,7 +201,7 @@ index d78be36eed7b1e9d95889e07a1cc7004473690f6..b441a856ec713793896cfd1bf7aee209
      }
  
      public static abstract class AmmoEntry{
-@@ -432,6 +440,17 @@ public class Turret extends ReloadTurret{
+@@ -456,6 +464,17 @@ public class Turret extends ReloadTurret{
              if(drawMinRange){
                  Drawf.dashCircle(x, y, minRange(), team.color);
              }

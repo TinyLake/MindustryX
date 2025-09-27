@@ -8,7 +8,7 @@ Subject: [PATCH] F.API: Add `LogicBlock.running`
  1 file changed, 5 insertions(+)
 
 diff --git a/core/src/mindustry/world/blocks/logic/LogicBlock.java b/core/src/mindustry/world/blocks/logic/LogicBlock.java
-index d0f1b12be5948a6850fffc36a4ca64694a62412d..84abd654e2783f980c0f4ca7928ae4959500c5f7 100644
+index 834919f4f3e7c7a83998961d846aa2a7da9cca5d..a9248b93182a686dc27f135de7dbafec0b505add 100644
 --- a/core/src/mindustry/world/blocks/logic/LogicBlock.java
 +++ b/core/src/mindustry/world/blocks/logic/LogicBlock.java
 @@ -24,6 +24,7 @@ import mindustry.ui.*;

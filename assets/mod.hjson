@@ -3,6 +3,6 @@ name: MindustryX
 author: WayZer
 main: mindustryX.loader.Main
 version: "1.0-dev"
-minGameVersion: "151.1"
+minGameVersion: "152"
 hidden: true
 dependencies: []

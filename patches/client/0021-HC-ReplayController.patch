@@ -18,7 +18,7 @@ way-zer <himc.wicp@gmail.com> on 2024/4/22 at 20:15
  3 files changed, 5 insertions(+), 1 deletion(-)
 
 diff --git a/core/src/mindustry/core/NetClient.java b/core/src/mindustry/core/NetClient.java
-index 943605680a6832247cea078373f25b6184e07957..0b3eaf2e4782c0582ef3966ca3ca639e9d4f23be 100644
+index f36458951469a544d20feda15f5973cf548dd9ac..89aa488065f4e1d4c1091a101215234ccac944d0 100644
 --- a/core/src/mindustry/core/NetClient.java
 +++ b/core/src/mindustry/core/NetClient.java
 @@ -27,6 +27,7 @@ import mindustry.net.Packets.*;
@@ -29,7 +29,7 @@ index 943605680a6832247cea078373f25b6184e07957..0b3eaf2e4782c0582ef3966ca3ca639e
  
  import java.io.*;
  import java.util.*;
-@@ -113,6 +114,7 @@ public class NetClient implements ApplicationListener{
+@@ -114,6 +115,7 @@ public class NetClient implements ApplicationListener{
                  return;
              }
  

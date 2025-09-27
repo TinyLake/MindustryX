@@ -8,10 +8,10 @@ Subject: [PATCH] OC: no MapPreviewLoader.setupLoaders
  1 file changed, 2 insertions(+), 1 deletion(-)
 
 diff --git a/core/src/mindustry/ClientLauncher.java b/core/src/mindustry/ClientLauncher.java
-index f19fa20cc0d6910a0fa3658092849e9e673f8659..6b69c2d175dd47163842f15d1e8148751d4f78e5 100644
+index 68fdba1c243ecb746155d6a5b92e70302813b50c..5b516809884113cd2571f9953d6d3bfe220fa96a 100644
 --- a/core/src/mindustry/ClientLauncher.java
 +++ b/core/src/mindustry/ClientLauncher.java
-@@ -147,7 +147,8 @@ public abstract class ClientLauncher extends ApplicationCore implements Platform
+@@ -152,7 +152,8 @@ public abstract class ClientLauncher extends ApplicationCore implements Platform
          assets.load("sprites/error.png", Texture.class);
          atlas = TextureAtlas.blankAtlas();
          Vars.net = new Net(platform.getNet());

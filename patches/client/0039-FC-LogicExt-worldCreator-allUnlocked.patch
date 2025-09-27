@@ -125,10 +125,10 @@ index be3d68cbc309505b39f4dbadcf62fa8cd1ab9d69..2f78972b3e66133672bc9d5fa2ed5318
      }
  
 diff --git a/core/src/mindustry/world/Block.java b/core/src/mindustry/world/Block.java
-index 82c470176e8c5465ab03c1c4c8a327c0ab65b43b..e2dff1928221ffe0f4568000388e2bd3d24e2b8e 100644
+index ed281d67995e959e13fda4bba3cbdc24f0dd8c66..86199a17b0164942847239950728dafc435e14d1 100644
 --- a/core/src/mindustry/world/Block.java
 +++ b/core/src/mindustry/world/Block.java
-@@ -922,11 +922,11 @@ public class Block extends UnlockableContent implements Senseable{
+@@ -926,11 +926,11 @@ public class Block extends UnlockableContent implements Senseable{
      }
  
      public boolean isVisible(){
@@ -143,7 +143,7 @@ index 82c470176e8c5465ab03c1c4c8a327c0ab65b43b..e2dff1928221ffe0f4568000388e2bd3
  
      @Override
 diff --git a/core/src/mindustry/world/Build.java b/core/src/mindustry/world/Build.java
-index 6948e6910e0cef504ac07db7edeaf12183faf9b5..a35ab3a3ce519bd0879d4ff3a28aa001cc30aed3 100644
+index 9de54662aec181ab0a63436d72e7edabea2b447a..c08da7ea39a3420787839e1f666865ffc228369a 100644
 --- a/core/src/mindustry/world/Build.java
 +++ b/core/src/mindustry/world/Build.java
 @@ -15,6 +15,7 @@ import mindustry.gen.*;
@@ -154,7 +154,7 @@ index 6948e6910e0cef504ac07db7edeaf12183faf9b5..a35ab3a3ce519bd0879d4ff3a28aa001
  
  import static mindustry.Vars.*;
  
-@@ -179,6 +180,10 @@ public class Build{
+@@ -174,6 +175,10 @@ public class Build{
  
      /** @return whether a tile can be placed at this location by this team. Ignores units at this location. */
      public static boolean validPlaceIgnoreUnits(Block type, Team team, int x, int y, int rotation, boolean checkVisible, boolean checkCoreRadius){
@@ -165,7 +165,7 @@ index 6948e6910e0cef504ac07db7edeaf12183faf9b5..a35ab3a3ce519bd0879d4ff3a28aa001
          //the wave team can build whatever they want as long as it's visible - banned blocks are not applicable
          if(type == null || (!state.rules.editor && (checkVisible && (!type.environmentBuildable() || (!type.isPlaceable() && !(state.rules.waves && team == state.rules.waveTeam && type.isVisible())))))){
              return false;
-@@ -306,6 +311,7 @@ public class Build{
+@@ -302,6 +307,7 @@ public class Build{
      /** @return whether the tile at this position is breakable by this team */
      public static boolean validBreak(Team team, int x, int y){
          Tile tile = world.tile(x, y);

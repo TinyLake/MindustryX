@@ -15,10 +15,10 @@ way-zer <himc.wicp@gmail.com> on 2024/7/21
  3 files changed, 8 insertions(+), 1 deletion(-)
 
 diff --git a/core/src/mindustry/ClientLauncher.java b/core/src/mindustry/ClientLauncher.java
-index beea309f225be8de3799089a87d1fdcb8e30ee5c..f19fa20cc0d6910a0fa3658092849e9e673f8659 100644
+index 161cd24bdd226072ba84fc4885845ba8cf201ed0..68fdba1c243ecb746155d6a5b92e70302813b50c 100644
 --- a/core/src/mindustry/ClientLauncher.java
 +++ b/core/src/mindustry/ClientLauncher.java
-@@ -80,7 +80,7 @@ public abstract class ClientLauncher extends ApplicationCore implements Platform
+@@ -85,7 +85,7 @@ public abstract class ClientLauncher extends ApplicationCore implements Platform
          });
  
          UI.loadColors();
@@ -56,7 +56,7 @@ index 3185bc131ae54ff5d97ac756a5dfd6e192b6f34b..759973559a05898da779baa8aa9d16eb
  
      /** @return whether the wave timer is paused due to enemies */
 diff --git a/core/src/mindustry/ui/fragments/HudFragment.java b/core/src/mindustry/ui/fragments/HudFragment.java
-index 538cbfa5c2cfad0f9dabc3221aca54d752e3113a..25f7df1af5aab85506d1044114c624ba27a0796a 100644
+index b741a6089a98b1380eda81e70a6d085eebe28b7d..aa484219270c08b55577dbeabe4516adf1a45cae 100644
 --- a/core/src/mindustry/ui/fragments/HudFragment.java
 +++ b/core/src/mindustry/ui/fragments/HudFragment.java
 @@ -31,6 +31,7 @@ import mindustry.ui.*;

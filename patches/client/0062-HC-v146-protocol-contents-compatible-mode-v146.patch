@@ -53,10 +53,10 @@ index b21f287e0dab8bfc6112548f440ff0a17576baa9..1183d8c7732b6588d290101f12050bd0
  
      /** @return the last registered content with the specified name. Note that the content loader makes no attempt to resolve name conflicts. This method can be unreliable. */
 diff --git a/core/src/mindustry/core/NetClient.java b/core/src/mindustry/core/NetClient.java
-index 357a275e66b9d04c809a8f0cecff71155593f8b5..f17ae0ea4abd48111b7dc58e32acfc4c17c5ecd4 100644
+index 3754beac0e217ca3f3714d27ae216f50e4e0c07a..f88b9074b012f063629fbc979bb9ac668f2357f2 100644
 --- a/core/src/mindustry/core/NetClient.java
 +++ b/core/src/mindustry/core/NetClient.java
-@@ -520,6 +520,8 @@ public class NetClient implements ApplicationListener{
+@@ -522,6 +522,8 @@ public class NetClient implements ApplicationListener{
  
      @Remote(variants = Variant.both, priority = PacketPriority.low, unreliable = true)
      public static void blockSnapshot(short amount, byte[] data){

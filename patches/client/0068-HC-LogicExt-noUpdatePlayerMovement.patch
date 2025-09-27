@@ -9,10 +9,10 @@ Subject: [PATCH] HC(LogicExt) noUpdatePlayerMovement
  2 files changed, 4 insertions(+), 3 deletions(-)
 
 diff --git a/core/src/mindustry/input/DesktopInput.java b/core/src/mindustry/input/DesktopInput.java
-index 3652c65cd86420f639f1cdebeda04250440a5121..f59123f5c297e162a6306f2c1bd6f6d1cd1ef32c 100644
+index eb32a3fc1ee7e603cb4f5a9a2b455dfc121f3bfd..3ebe1a9ef924f24e7b02b2075afbb180296f28d0 100644
 --- a/core/src/mindustry/input/DesktopInput.java
 +++ b/core/src/mindustry/input/DesktopInput.java
-@@ -433,7 +433,7 @@ public class DesktopInput extends InputHandler{
+@@ -432,7 +432,7 @@ public class DesktopInput extends InputHandler{
          }
  
          if(!player.dead() && !state.isPaused() && !scene.hasField() && !locked){
@@ -21,7 +21,7 @@ index 3652c65cd86420f639f1cdebeda04250440a5121..f59123f5c297e162a6306f2c1bd6f6d1
  
              if(Core.input.keyTap(Binding.respawn)){
                  controlledType = null;
-@@ -492,7 +492,7 @@ public class DesktopInput extends InputHandler{
+@@ -491,7 +491,7 @@ public class DesktopInput extends InputHandler{
              pollInputPlayer();
          }
  
@@ -31,7 +31,7 @@ index 3652c65cd86420f639f1cdebeda04250440a5121..f59123f5c297e162a6306f2c1bd6f6d1
          }
  
 diff --git a/core/src/mindustry/input/MobileInput.java b/core/src/mindustry/input/MobileInput.java
-index d742f56346e0c9acccb339b09c18d73f0e441e0f..7fa4734fd992ec919e7590b6c28c713f9655041a 100644
+index 3188f7e969cb29f2595a25793db85ff0b4284a11..efd03838db5ffc15768b50529c75b33d05f9e965 100644
 --- a/core/src/mindustry/input/MobileInput.java
 +++ b/core/src/mindustry/input/MobileInput.java
 @@ -24,6 +24,7 @@ import mindustry.type.*;
@@ -42,7 +42,7 @@ index d742f56346e0c9acccb339b09c18d73f0e441e0f..7fa4734fd992ec919e7590b6c28c713f
  
  import static arc.Core.*;
  import static mindustry.Vars.*;
-@@ -796,7 +797,7 @@ public class MobileInput extends InputHandler implements GestureListener{
+@@ -799,7 +800,7 @@ public class MobileInput extends InputHandler implements GestureListener{
          }
  
          if(!player.dead() && !state.isPaused() && !locked){

@@ -32,7 +32,7 @@ Content-Transfer-Encoding: 8bit
  21 files changed, 99 insertions(+), 58 deletions(-)
 
 diff --git a/core/src/mindustry/ClientLauncher.java b/core/src/mindustry/ClientLauncher.java
-index a64b7b36fdd74a29a3caae54a1f1a514039b891f..beea309f225be8de3799089a87d1fdcb8e30ee5c 100644
+index 99ae29c79de906a47e54f9c72555da0ee1ad5238..161cd24bdd226072ba84fc4885845ba8cf201ed0 100644
 --- a/core/src/mindustry/ClientLauncher.java
 +++ b/core/src/mindustry/ClientLauncher.java
 @@ -36,6 +36,10 @@ public abstract class ClientLauncher extends ApplicationCore implements Platform
@@ -46,7 +46,7 @@ index a64b7b36fdd74a29a3caae54a1f1a514039b891f..beea309f225be8de3799089a87d1fdcb
          if(dataDir != null){
              Core.settings.setDataDirectory(files.absolute(dataDir));
          }
-@@ -254,10 +258,14 @@ public abstract class ClientLauncher extends ApplicationCore implements Platform
+@@ -259,10 +263,14 @@ public abstract class ClientLauncher extends ApplicationCore implements Platform
          }
  
          if(limitFps){
@@ -62,7 +62,7 @@ index a64b7b36fdd74a29a3caae54a1f1a514039b891f..beea309f225be8de3799089a87d1fdcb
          }
  
 diff --git a/core/src/mindustry/Vars.java b/core/src/mindustry/Vars.java
-index 398dd264efb2b4ef59daefd0241a221faf4732fa..1f3fcd70da484838fed750e0db963c37e23c9c45 100644
+index 4b6eaeeb9469d7e2a96e82ab7446ab56a54bb0bc..f0d5808ef4a7ab1f069a4c337d2d84f283ed9def 100644
 --- a/core/src/mindustry/Vars.java
 +++ b/core/src/mindustry/Vars.java
 @@ -418,6 +418,11 @@ public class Vars implements Loadable{
@@ -103,10 +103,10 @@ index 7e9466f2d629335317b2a706b376d33aab029923..51669a3c774069bdb5f3189a52fd9386
  
          dynamic = new StatusEffect("dynamic"){{
 diff --git a/core/src/mindustry/core/Control.java b/core/src/mindustry/core/Control.java
-index 90bf9be3c61bdea0b4dc9afc71484e4d546e5c4d..e1c9f30c84adae6829ef79610bb753a8908b00cf 100644
+index 840f7f2e6ea29035d2fba537c1794b2faff1bf5e..5c5928c61800a2f4cb5b547cfe8ccf732cfe0c10 100644
 --- a/core/src/mindustry/core/Control.java
 +++ b/core/src/mindustry/core/Control.java
-@@ -587,7 +587,8 @@ public class Control implements ApplicationListener, Loadable{
+@@ -595,7 +595,8 @@ public class Control implements ApplicationListener, Loadable{
                  BaseDialog dialog = new BaseDialog("@confirm");
                  dialog.setFillParent(true);
  
@@ -117,10 +117,10 @@ index 90bf9be3c61bdea0b4dc9afc71484e4d546e5c4d..e1c9f30c84adae6829ef79610bb753a8
                      Core.settings.put("uiscale", 100);
                      Core.settings.put("uiscalechanged", false);
 diff --git a/core/src/mindustry/core/NetClient.java b/core/src/mindustry/core/NetClient.java
-index 0b3eaf2e4782c0582ef3966ca3ca639e9d4f23be..357a275e66b9d04c809a8f0cecff71155593f8b5 100644
+index 89aa488065f4e1d4c1091a101215234ccac944d0..3754beac0e217ca3f3714d27ae216f50e4e0c07a 100644
 --- a/core/src/mindustry/core/NetClient.java
 +++ b/core/src/mindustry/core/NetClient.java
-@@ -71,6 +71,10 @@ public class NetClient implements ApplicationListener{
+@@ -72,6 +72,10 @@ public class NetClient implements ApplicationListener{
      public NetClient(){
  
          net.handleClient(Connect.class, packet -> {
@@ -183,7 +183,7 @@ index 84eb1d70b908f0171a2201824043b088a2adb6d2..72316d3f95b80f51c11c6ad68fd87327
  
      public static int roundAmount(int number){
 diff --git a/core/src/mindustry/game/Schematics.java b/core/src/mindustry/game/Schematics.java
-index a67ce3fa3988d70402f3efb1310472e54195e479..a295b46b9497ef0ffd73ea9db911924166eb885c 100644
+index 2333f83d451cd664633dc38c9f7d2b0911962398..0ca9f1a37d3f46842a5d1212b0f633dd9de2ae48 100644
 --- a/core/src/mindustry/game/Schematics.java
 +++ b/core/src/mindustry/game/Schematics.java
 @@ -99,7 +99,9 @@ public class Schematics implements Loadable{
@@ -213,8 +213,8 @@ index a67ce3fa3988d70402f3efb1310472e54195e479..a295b46b9497ef0ffd73ea9db9119241
 -            if(total > 128 * 128) throw new IOException("Invalid schematic: Too many blocks.");
 +            if(maxSchematicSize != Integer.MAX_VALUE && total > Math.max(maxSchematicSize * maxSchematicSize, 128 * 128)) throw new IOException("Invalid schematic: Too many blocks.");
  
-             Seq<Stile> tiles = new Seq<>(total);
-             for(int i = 0; i < total; i++){
+             Reads read = new Reads(stream);
+ 
 diff --git a/core/src/mindustry/graphics/MinimapRenderer.java b/core/src/mindustry/graphics/MinimapRenderer.java
 index 1eb24a901b103493acd75da2d47c548a5255d487..e1513b06c05607e6315ad645071f72617b90e892 100644
 --- a/core/src/mindustry/graphics/MinimapRenderer.java
@@ -501,10 +501,10 @@ index 08c3cada1ce17bcabcf9a61fd1cf52a94a861d39..25b19302bfedc22cfcb523cc7558479d
              drawPlaceText(Core.bundle.get("bar.drilltierreq"), x, y, false);
          }
 diff --git a/desktop/src/mindustry/desktop/DesktopLauncher.java b/desktop/src/mindustry/desktop/DesktopLauncher.java
-index c4dc0a63c9942f9bc0f6e4c93512544ffd016d5e..a484082d822d8cf65e514aa57161062f939405a1 100644
+index 9eabc5f002a3715d90f963309e67d6bca8572d31..a9cd68755f8ec67c88a2f7f965a2b07461ab70ba 100644
 --- a/desktop/src/mindustry/desktop/DesktopLauncher.java
 +++ b/desktop/src/mindustry/desktop/DesktopLauncher.java
-@@ -24,6 +24,7 @@ import mindustry.net.*;
+@@ -25,6 +25,7 @@ import mindustry.net.*;
  import mindustry.net.Net.*;
  import mindustry.service.*;
  import mindustry.type.*;
@@ -512,7 +512,7 @@ index c4dc0a63c9942f9bc0f6e4c93512544ffd016d5e..a484082d822d8cf65e514aa57161062f
  
  import java.io.*;
  
-@@ -93,6 +94,20 @@ public class DesktopLauncher extends ClientLauncher{
+@@ -114,6 +115,20 @@ public class DesktopLauncher extends ClientLauncher{
          this.args = args;
  
          Version.init();
@@ -533,7 +533,7 @@ index c4dc0a63c9942f9bc0f6e4c93512544ffd016d5e..a484082d822d8cf65e514aa57161062f
          boolean useSteam = Version.modifier.contains("steam");
          testMobile = Seq.with(args).contains("-testMobile");
  
-@@ -121,7 +136,10 @@ public class DesktopLauncher extends ClientLauncher{
+@@ -142,7 +157,10 @@ public class DesktopLauncher extends ClientLauncher{
              });
  
              try{

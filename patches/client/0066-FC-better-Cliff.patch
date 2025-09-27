@@ -13,7 +13,7 @@ Content-Transfer-Encoding: 8bit
  2 files changed, 17 insertions(+), 2 deletions(-)
 
 diff --git a/core/src/mindustry/content/Blocks.java b/core/src/mindustry/content/Blocks.java
-index 9f840840fbeb484fb2097a143cea92adb09ad28f..51dee3b7128555a491b314f021bab684819295e4 100644
+index ae8f695ec088e24819d056a39df9478abb632218..752367e0e641a93080d2c4afc541c84ce66ff63a 100644
 --- a/core/src/mindustry/content/Blocks.java
 +++ b/core/src/mindustry/content/Blocks.java
 @@ -195,7 +195,6 @@ public class Blocks{
