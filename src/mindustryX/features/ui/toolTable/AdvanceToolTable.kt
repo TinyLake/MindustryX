@@ -115,9 +115,9 @@ class AdvanceToolTable : Table() {
 
     private inline fun copyIO(write: (Writes) -> Unit): Reads {
         val data = ByteArrayOutputStream().use {
-            write(Writes.get(DataOutputStream(it)))
+            write(Writes(DataOutputStream(it)))
             it.toByteArray()
         }
-        return Reads.get(DataInputStream(ByteArrayInputStream(data)))
+        return Reads(DataInputStream(ByteArrayInputStream(data)))
     }
 }
