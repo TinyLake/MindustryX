@@ -11,19 +11,19 @@ way-zer <himc.wicp@gmail.com> on 2024/6/9
  android/proguard-rules.pro                    |   4 +
  .../com/github/bsideup/jabel/Desugar.java     |  13 +
  .../javax.annotation.processing.Processor     |   6 +
- build.gradle                                  | 300 +++---------------
+ build.gradle                                  | 304 +++---------------
  core/build.gradle                             |   2 -
  core/build.gradle.kts                         |  66 ++++
  desktop/build.gradle                          | 166 +---------
  gradle.properties                             |   7 +-
- gradlew                                       | 284 ++++++++++-------
+ gradlew                                       | 284 +++++++++-------
  gradlew.bat                                   |  37 ++-
  ios/build.gradle                              |   2 +-
  server/build.gradle                           |  44 +--
  settings.gradle                               |  11 +-
  tools/build.gradle                            |  91 +++---
  tools/src/mindustry/tools/Generators.java     |   2 +-
- 17 files changed, 440 insertions(+), 699 deletions(-)
+ 17 files changed, 445 insertions(+), 698 deletions(-)
  create mode 100644 annotations/src/main/java/com/github/bsideup/jabel/Desugar.java
  create mode 100644 annotations/src/main/resources/META-INF/services/javax.annotation.processing.Processor
  delete mode 100644 core/build.gradle
@@ -265,7 +265,7 @@ index 0000000000000000000000000000000000000000..181b87c1d5f3755f16a01c0528d0a89f
 +mindustry.annotations.misc.LogicStatementProcessor
 +mindustry.annotations.remote.RemoteProcess
 diff --git a/build.gradle b/build.gradle
-index 48786c78c44affcf7fdb1c9e7a7d6281226d3677..add2673eef8e06004f1da89a4ec96977f25f204b 100644
+index 48786c78c44affcf7fdb1c9e7a7d6281226d3677..acfdc20cf3ecbfe27b360b16bb86e42aedaa568e 100644
 --- a/build.gradle
 +++ b/build.gradle
 @@ -1,30 +1,16 @@
@@ -435,7 +435,7 @@ index 48786c78c44affcf7fdb1c9e7a7d6281226d3677..add2673eef8e06004f1da89a4ec96977
      }
  
      repositories{
-@@ -186,49 +50,23 @@ allprojects{
+@@ -186,49 +50,29 @@ allprojects{
          maven{ url 'https://jitpack.io' }
      }
  
@@ -443,21 +443,26 @@ index 48786c78c44affcf7fdb1c9e7a7d6281226d3677..add2673eef8e06004f1da89a4ec96977
 -        doFirst{
 -            delete{
 -                delete "$rootDir/core/assets/cache"
--            }
 +    tasks.withType(JavaCompile).configureEach{
-+        sourceCompatibility = project.name != "annotations" ? JavaVersion.VERSION_17 : 8
-+        targetCompatibility = JavaVersion.VERSION_17
-+        if(project.name != "android" && project.name != "annotations" && project.name != "tools"){
++        if(project.name == "annotations"){
++            sourceCompatibility = 8
 +            targetCompatibility = 8
-+            options.release = 8
++            options.setFork(true)
++        }else{
++            sourceCompatibility = JavaVersion.VERSION_17
++            targetCompatibility = JavaVersion.VERSION_17
++            if(project.name != "android" && project.name != "tools"){
++                targetCompatibility = 8
++                options.release = 8
+             }
++            if(project.name == "core")
++                options.setFork(true)
          }
 -    }
 -
 -    tasks.withType(JavaCompile){
 -        targetCompatibility = 8
 -        sourceCompatibility = JavaVersion.VERSION_17
-+        if(project.name == "core" || project.name == "annotations")
-+            options.setFork(true)
          options.encoding = "UTF-8"
          options.compilerArgs += ["-Xlint:deprecation"]
 -        dependsOn clearCache
@@ -494,11 +499,11 @@ index 48786c78c44affcf7fdb1c9e7a7d6281226d3677..add2673eef8e06004f1da89a4ec96977
          options{
              addStringOption('Xdoclint:none', '-quiet')
              addStringOption('-release', '17')
-@@ -237,11 +75,10 @@ configure(subprojects - project(":annotations")){
+@@ -237,11 +81,10 @@ configure(subprojects - project(":annotations")){
      }
  }
  
-+if(findProject("desktop")!=null)
++if(findProject("desktop") != null)
  project(":desktop"){
      apply plugin: "java"
  
@@ -507,7 +512,7 @@ index 48786c78c44affcf7fdb1c9e7a7d6281226d3677..add2673eef8e06004f1da89a4ec96977
      dependencies{
          implementation project(":core")
          implementation arcModule("extensions:profiling")
-@@ -250,8 +87,6 @@ project(":desktop"){
+@@ -250,8 +93,6 @@ project(":desktop"){
          implementation arcModule("natives:natives-desktop")
          implementation arcModule("natives:natives-freetype-desktop")
  
@@ -516,7 +521,7 @@ index 48786c78c44affcf7fdb1c9e7a7d6281226d3677..add2673eef8e06004f1da89a4ec96977
          implementation "com.github.Anuken:steamworks4j:$steamworksVersion"
  
          implementation arcModule("backends:backend-sdl")
-@@ -271,17 +106,7 @@ project(":core"){
+@@ -271,17 +112,7 @@ project(":core"){
          }
      }
  
@@ -535,7 +540,7 @@ index 48786c78c44affcf7fdb1c9e7a7d6281226d3677..add2673eef8e06004f1da89a4ec96977
          doLast{
              def props = loadVersionProps()
              def androidVersion = props['androidBuildCode'].toInteger() - 2
-@@ -289,9 +114,9 @@ project(":core"){
+@@ -289,9 +120,9 @@ project(":core"){
              def notice = "[This is a truncated changelog, see Github for full notes]"
              def maxLength = 460
  
@@ -547,7 +552,7 @@ index 48786c78c44affcf7fdb1c9e7a7d6281226d3677..add2673eef8e06004f1da89a4ec96977
                  if(result.length() + line.length() + 1 < maxLength){
                      result += line + "\n"
                  }
-@@ -305,19 +130,7 @@ project(":core"){
+@@ -305,19 +136,7 @@ project(":core"){
          }
      }
  
@@ -568,7 +573,7 @@ index 48786c78c44affcf7fdb1c9e7a7d6281226d3677..add2673eef8e06004f1da89a4ec96977
          archiveClassifier = 'music'
          from files("assets"){
              include "music/*", "sounds/*"
-@@ -325,8 +138,6 @@ project(":core"){
+@@ -325,8 +144,6 @@ project(":core"){
      }
  
      dependencies{
@@ -577,7 +582,7 @@ index 48786c78c44affcf7fdb1c9e7a7d6281226d3677..add2673eef8e06004f1da89a4ec96977
          api "org.lz4:lz4-java:1.8.0"
          api arcModule("arc-core")
          api arcModule("extensions:flabel")
-@@ -336,33 +147,33 @@ project(":core"){
+@@ -336,33 +153,33 @@ project(":core"){
          api arcModule("extensions:arcnet")
          implementation arcModule("extensions:filedialogs")
          api "com.github.Anuken:rhino:$rhinoVersion"
@@ -630,7 +635,7 @@ index 48786c78c44affcf7fdb1c9e7a7d6281226d3677..add2673eef8e06004f1da89a4ec96977
          }
      }
  
-@@ -416,14 +227,19 @@ project(":tools"){
+@@ -416,14 +233,19 @@ project(":tools"){
      apply plugin: "java"
  
      dependencies{
@@ -652,18 +657,18 @@ index 48786c78c44affcf7fdb1c9e7a7d6281226d3677..add2673eef8e06004f1da89a4ec96977
      }
  }
  
-@@ -446,42 +262,16 @@ configure([":core", ":server"].collect{project(it)}){
+@@ -446,42 +268,16 @@ configure([":core", ":server"].collect{project(it)}){
          publications{
              maven(MavenPublication){
                  from components.java
 -                if(project.name == "core"){
 -                    artifact(tasks.named("assetsJar"))
 -                }
--            }
--        }
--    }
--}
--
+             }
+         }
+     }
+ }
+ 
 -task deployAll{
 -    task cleanDeployOutput{
 -        doFirst{
