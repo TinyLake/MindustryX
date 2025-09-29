@@ -6,10 +6,7 @@ import arc.files.Fi
 import arc.graphics.Color
 import arc.math.Mathf
 import arc.scene.ui.ScrollPane
-import arc.util.Align
-import arc.util.Http
-import arc.util.Log
-import arc.util.OS
+import arc.util.*
 import arc.util.io.Streams
 import arc.util.serialization.Jval
 import mindustry.Vars
@@ -31,9 +28,11 @@ object AutoUpdate {
     data class Release(val repo: String, val url: String, val tag: String, val version: String, val json: Jval) {
         data class Asset(val name: String, val url: String)
 
+        val description get() = Strings.stripColors(json.getString("body").orEmpty())!!
+
         fun matchCurrent(): Boolean {
             if (repo == VarsX.repo) return currentBranch == null
-            return tag == "$currentBranch-build" || json.getString("body", "").contains("REPLACE $currentBranch")
+            return tag == "$currentBranch-build" || description.contains("REPLACE $currentBranch")
         }
 
         fun findAsset(): Asset? {
@@ -94,7 +93,10 @@ object AutoUpdate {
     fun checkUpdate() {
         if (versions.isNotEmpty()) return
         getReleases(VarsX.repo) { versions0 ->
-            val versions = versions0.filter { it.tag == "v${it.version}" }//filter old release
+            val versions = versions0.filterNot {
+                //Old MDTX release like v146.001
+                it.version.isEmpty() || it.version.startsWith("v")
+            }
             getReleases(devRepo) { devVersions ->
                 this.versions = versions + devVersions
                 Core.app.post { fetchSuccess() }
@@ -113,7 +115,7 @@ object AutoUpdate {
 
         if (Vars.clientLoaded) return showDialog(newVersion)
         Events.on(EventType.ClientLoadEvent::class.java) {
-            Vars.ui.showConfirm("检测到新版MindustryX!\n打开更新列表?", ::showDialog)
+            showDialog()
         }
     }
 
@@ -130,9 +132,17 @@ object AutoUpdate {
                             dialog.hide()
                             showDialog(it)
                         }.left().expandX()
-                        button(Icon.infoCircle, Styles.clearNonei, Vars.iconSmall) {
+                        if (it.description.isNotEmpty())
+                            button(Icon.infoCircle, Styles.clearNonei, Vars.iconSmall) {
+                                UIExtKt.showFloatSettingsPanel {
+                                    pane { p ->
+                                        p.add(it.description).labelAlign(Align.left)
+                                    }.row()
+                                }
+                            }.tooltip("发布说明").padRight(16f)
+                        button(Icon.link, Styles.clearNonei, Vars.iconSmall) {
                             UIExt.openURI(it.url)
-                        }.tooltip("打开发布页面").padRight(16f).row()
+                        }.tooltip("打开发布页面").padRight(4f).row()
                     }
                 }
                 row()
@@ -141,7 +151,7 @@ object AutoUpdate {
             //width为整个Table最小宽度
             add("当前版本号: ${VarsX.version}").labelAlign(Align.center).width(500f).row()
             newVersion?.let {
-                add("新版本: ${it.version}").row()
+                add("[green]发现新版本[]: ${it.version}").row()
             }
             if (versions.isEmpty()) {
                 add("检查更新失败，请稍后再试").row()
@@ -254,6 +264,8 @@ object AutoUpdate {
             }
     }
 
+    /** 启动新jar，并替换旧jar内容。
+     * Copy from [BeControl]*/
     private fun installDesktopJar(file: Fi) {
         val fileDest = if (OS.hasProp("becopy")) Fi.get(OS.prop("becopy"))
         else Fi.get(BeControl::class.java.protectionDomain.codeSource.location.toURI().path)

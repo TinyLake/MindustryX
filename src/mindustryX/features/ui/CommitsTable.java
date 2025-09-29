@@ -69,9 +69,10 @@ public class CommitsTable extends Table{
         request.header("User-Agent", "MindustryX");
 
         request.error(e -> Core.app.post(() -> {
-            Vars.ui.showException(e);
+            Log.err("Failed to load commits: ", e);
             commitsTable.clearChildren();
-            commitsTable.add(new FLabel("@alphaLoadFailed")).style(Styles.outlineLabel).expand().center();
+            commitsTable.add(new FLabel("@alphaLoadFailed")).style(Styles.outlineLabel).expand().center().row();
+            commitsTable.add(e.toString()).style(Styles.outlineLabel).fillX().center().row();
         }));
         request.submit(resp -> {
             String result = resp.getResultAsString();
@@ -239,7 +240,7 @@ public class CommitsTable extends Table{
             }
         }
 
-        public static class GitUser {
+        public static class GitUser{
             public String name;
             public String email;
             public String date;
