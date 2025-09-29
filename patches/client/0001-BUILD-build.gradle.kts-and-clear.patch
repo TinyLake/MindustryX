@@ -7,7 +7,7 @@ clear and replce jabel(Support record)
 way-zer <himc.wicp@gmail.com> on 2024/6/9
 ---
  .gitignore                                    |   2 +-
- android/build.gradle                          | 103 ++----
+ android/build.gradle                          | 102 ++----
  android/proguard-rules.pro                    |   4 +
  .../com/github/bsideup/jabel/Desugar.java     |  13 +
  .../javax.annotation.processing.Processor     |   6 +
@@ -23,7 +23,7 @@ way-zer <himc.wicp@gmail.com> on 2024/6/9
  settings.gradle                               |  11 +-
  tools/build.gradle                            |  91 +++---
  tools/src/mindustry/tools/Generators.java     |   2 +-
- 17 files changed, 434 insertions(+), 695 deletions(-)
+ 17 files changed, 433 insertions(+), 695 deletions(-)
  create mode 100644 annotations/src/main/java/com/github/bsideup/jabel/Desugar.java
  create mode 100644 annotations/src/main/resources/META-INF/services/javax.annotation.processing.Processor
  delete mode 100644 core/build.gradle
@@ -50,7 +50,7 @@ index 5e3b7987ef4f776a0bc35dde58fb2c74f4acdb07..b5b2a237c2f5343aab2fb668337c2bc4
  /core/assets/locales
  /core/assets/cache/
 diff --git a/android/build.gradle b/android/build.gradle
-index f1dc45aa74b149babea9cce2535ed7dca8d49a1f..3e1c585a3bde20afaafc255844d01ae3e83724ec 100644
+index 6f349ef7b732d3530f409599c6e7cf1d7d102272..5fa9542a0f83fed0797f9a1c65803a7a7d085cb6 100644
 --- a/android/build.gradle
 +++ b/android/build.gradle
 @@ -1,45 +1,23 @@
@@ -89,10 +89,9 @@ index f1dc45aa74b149babea9cce2535ed7dca8d49a1f..3e1c585a3bde20afaafc255844d01ae3
  
  android{
 -    namespace = "io.anuke.mindustry"
--    buildToolsVersion = '34.0.0'
--    compileSdk = 34
+-    buildToolsVersion = '36.0.0'
 +    namespace = "com.github.tinylake.mindustryX"
-+    compileSdk = 35
+     compileSdk = 36
      sourceSets{
          main{
              manifest.srcFile 'AndroidManifest.xml'
@@ -105,7 +104,7 @@ index f1dc45aa74b149babea9cce2535ed7dca8d49a1f..3e1c585a3bde20afaafc255844d01ae3
              jniLibs.srcDirs = ['libs']
          }
  
-@@ -51,23 +29,23 @@ android{
+@@ -51,23 +29,22 @@ android{
      }
  
      defaultConfig{
@@ -116,8 +115,8 @@ index f1dc45aa74b149babea9cce2535ed7dca8d49a1f..3e1c585a3bde20afaafc255844d01ae3
          applicationId "io.anuke.mindustry"
 -        minSdkVersion 14
 +        minSdkVersion 21
-         targetSdkVersion 34
-         
+         targetSdkVersion 36
+-
          versionName versionNameResult
 -        versionCode = vcode
 +        versionCode = 1
@@ -136,7 +135,7 @@ index f1dc45aa74b149babea9cce2535ed7dca8d49a1f..3e1c585a3bde20afaafc255844d01ae3
      }
  
      compileOptions{
-@@ -96,7 +74,7 @@ android{
+@@ -96,7 +73,7 @@ android{
      }
  
      buildTypes{
@@ -145,7 +144,7 @@ index f1dc45aa74b149babea9cce2535ed7dca8d49a1f..3e1c585a3bde20afaafc255844d01ae3
              //TODO without these lines (r8 enabled), Mindustry crashes with missing default interface method errors.
              //WHY THE HELL ARE DEFAULT INTERFACES NOT BEING DESUGARED? WHY DID UPDATING AGP MAKE THIS HAPPEN?
              //When I ENABLE shrinking, r8 goes and REMOVES ALL DEFAULT INTERFACE CLASSES, which breaks mods. Why?
-@@ -104,12 +82,7 @@ android{
+@@ -104,12 +81,7 @@ android{
              minifyEnabled = true
              shrinkResources = true
              proguardFiles("proguard-rules.pro")
@@ -159,7 +158,7 @@ index f1dc45aa74b149babea9cce2535ed7dca8d49a1f..3e1c585a3bde20afaafc255844d01ae3
                  signingConfig signingConfigs.release
              }
          }
-@@ -121,39 +94,31 @@ dependencies{
+@@ -121,39 +93,31 @@ dependencies{
  
      implementation arcModule("backends:backend-android")
      implementation 'com.jakewharton.android.repackaged:dalvik-dx:9.0.0_r3'
@@ -952,7 +951,7 @@ index b3f192bc75d3c1775179a7252c02f7ce0a39ff7e..b47e0569d82a8cc6331a1fe36952c206
 +}
 \ No newline at end of file
 diff --git a/gradle.properties b/gradle.properties
-index 7213fa8e417c2a06d44483d882a8b64bc729cb19..de16468145b79cef0884ec61284f3c58422e5268 100644
+index 3d0287e2d7f10fabca1e0530a8b4978ac6632947..115ddf1a9de457bcaa7513d9c61113425cb68a72 100644
 --- a/gradle.properties
 +++ b/gradle.properties
 @@ -1,5 +1,5 @@
@@ -966,8 +965,8 @@ index 7213fa8e417c2a06d44483d882a8b64bc729cb19..de16468145b79cef0884ec61284f3c58
  org.gradle.internal.http.socketTimeout=100000
  org.gradle.internal.http.connectionTimeout=100000
  android.enableR8.fullMode=false
--archash=caf89c8fee
-+archash=v152
+-archash=8d3f84b3c5
++archash=v152.2
 diff --git a/gradlew b/gradlew
 index 4f906e0c811fc9e230eb44819f509cd0627f2600..f3b75f3b0d4faeb4b1c8a02b5c47007e6efb7dcd 100755
 --- a/gradlew

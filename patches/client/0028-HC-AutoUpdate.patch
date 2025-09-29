@@ -34,7 +34,7 @@ index 2b96a3f231a78f6edb51d9459a1cbbcdeaa6d68e..7172b63844e32b48537d1b53a4da7db6
  
                  self.copyTo(dest);
 diff --git a/core/src/mindustry/ui/fragments/MenuFragment.java b/core/src/mindustry/ui/fragments/MenuFragment.java
-index 8965e450b7761e5a160f8a3d5cbd5da0fa2249e8..57f16a53a6910131be7d85122fcc6e5e31f0115c 100644
+index 9f3cd2f37e05d573b755734225941d37a66c178c..15f167bd7ba2835e774271515e2ce424240c7b6a 100644
 --- a/core/src/mindustry/ui/fragments/MenuFragment.java
 +++ b/core/src/mindustry/ui/fragments/MenuFragment.java
 @@ -19,6 +19,7 @@ import mindustry.game.EventType.*;
@@ -58,7 +58,7 @@ index 8965e450b7761e5a160f8a3d5cbd5da0fa2249e8..57f16a53a6910131be7d85122fcc6e5e
  
          //info icon
          if(mobile){
-@@ -81,18 +82,6 @@ public class MenuFragment{
+@@ -96,18 +97,6 @@ public class MenuFragment{
                      Tex.paneTop.draw(0, 0, Core.graphics.getWidth(), Core.scene.marginBottom);
                  }
              });

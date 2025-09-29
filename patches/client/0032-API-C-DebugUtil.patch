@@ -28,7 +28,7 @@ index 161cd24bdd226072ba84fc4885845ba8cf201ed0..68fdba1c243ecb746155d6a5b92e7030
          assets.setLoader(Texture.class, "." + mapExtension, new MapPreviewLoader());
  
 diff --git a/core/src/mindustry/core/Logic.java b/core/src/mindustry/core/Logic.java
-index 3185bc131ae54ff5d97ac756a5dfd6e192b6f34b..759973559a05898da779baa8aa9d16eb14352ee9 100644
+index ae6c90c9238eeb3d50db73a491cea765a2e94079..12d3a6e250788b57f9f5c00e24b2ee42eb90f368 100644
 --- a/core/src/mindustry/core/Logic.java
 +++ b/core/src/mindustry/core/Logic.java
 @@ -20,6 +20,7 @@ import mindustry.type.Weather.*;
@@ -39,7 +39,7 @@ index 3185bc131ae54ff5d97ac756a5dfd6e192b6f34b..759973559a05898da779baa8aa9d16eb
  
  import java.util.*;
  
-@@ -424,6 +425,7 @@ public class Logic implements ApplicationListener{
+@@ -427,6 +428,7 @@ public class Logic implements ApplicationListener{
          PerfCounter.frame.end();
          PerfCounter.frame.begin();
  
@@ -47,7 +47,7 @@ index 3185bc131ae54ff5d97ac756a5dfd6e192b6f34b..759973559a05898da779baa8aa9d16eb
          Events.fire(Trigger.update);
          universe.updateGlobal();
  
-@@ -536,6 +538,7 @@ public class Logic implements ApplicationListener{
+@@ -539,6 +541,7 @@ public class Logic implements ApplicationListener{
          }else if(netServer.isWaitingForPlayers() && runStateCheck){
              checkGameState();
          }
@@ -56,7 +56,7 @@ index 3185bc131ae54ff5d97ac756a5dfd6e192b6f34b..759973559a05898da779baa8aa9d16eb
  
      /** @return whether the wave timer is paused due to enemies */
 diff --git a/core/src/mindustry/ui/fragments/HudFragment.java b/core/src/mindustry/ui/fragments/HudFragment.java
-index b741a6089a98b1380eda81e70a6d085eebe28b7d..aa484219270c08b55577dbeabe4516adf1a45cae 100644
+index d0b20fc5a1cf8c498a88d4f463bd9cad7478d458..89a3dd792d4f792b7930366624590427af78e903 100644
 --- a/core/src/mindustry/ui/fragments/HudFragment.java
 +++ b/core/src/mindustry/ui/fragments/HudFragment.java
 @@ -31,6 +31,7 @@ import mindustry.ui.*;
@@ -67,7 +67,7 @@ index b741a6089a98b1380eda81e70a6d085eebe28b7d..aa484219270c08b55577dbeabe4516ad
  
  import static mindustry.Vars.*;
  import static mindustry.gen.Tex.*;
-@@ -405,6 +406,9 @@ public class HudFragment{
+@@ -420,6 +421,9 @@ public class HudFragment{
  
                  info.label(() -> fps.get(Core.graphics.getFramesPerSecond())).left().style(Styles.outlineLabel).name("fps");
                  info.row();

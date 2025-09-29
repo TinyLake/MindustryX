@@ -169,7 +169,7 @@ index 6213a8a2a05f46c647a3deb3a2bbcf8be922b120..97c69dd2cfe25d81b94b7031fbd59196
  
              Tile other = world.tile(link);
 diff --git a/core/src/mindustry/world/blocks/distribution/Junction.java b/core/src/mindustry/world/blocks/distribution/Junction.java
-index cadd970ab157b93d2aa1667df2a8317085f51eaa..a40817685dd7154faeea00c432648f556a500c8e 100644
+index e0d6735be241f6fae1927d846f0d41c6f8d09366..f3b64ae8c101ad3d900ee008f3d27c6b1705b022 100644
 --- a/core/src/mindustry/world/blocks/distribution/Junction.java
 +++ b/core/src/mindustry/world/blocks/distribution/Junction.java
 @@ -1,11 +1,17 @@
@@ -190,7 +190,7 @@ index cadd970ab157b93d2aa1667df2a8317085f51eaa..a40817685dd7154faeea00c432648f55
  
  import static mindustry.Vars.*;
  
-@@ -89,6 +95,30 @@ public class Junction extends Block{
+@@ -88,6 +94,30 @@ public class Junction extends Block{
              return to != null && to.team == team;
          }
  

@@ -30,7 +30,7 @@ Subject: [PATCH] FR: ARC setBars
  23 files changed, 129 insertions(+), 39 deletions(-)
 
 diff --git a/core/src/mindustry/entities/abilities/ShieldArcAbility.java b/core/src/mindustry/entities/abilities/ShieldArcAbility.java
-index 21974c333080ad3fe7d1fe45deccfd65f06cf909..0eb519a680a8d28fa02cd60eb0453a968532c963 100644
+index a044466d27df28cdc59863289feb95ddbbc0305c..848653c43a94345d112a2657b0e4444525a61e98 100644
 --- a/core/src/mindustry/entities/abilities/ShieldArcAbility.java
 +++ b/core/src/mindustry/entities/abilities/ShieldArcAbility.java
 @@ -14,6 +14,7 @@ import mindustry.entities.*;
@@ -41,7 +41,7 @@ index 21974c333080ad3fe7d1fe45deccfd65f06cf909..0eb519a680a8d28fa02cd60eb0453a96
  
  public class ShieldArcAbility extends Ability{
      private static Unit paramUnit;
-@@ -206,6 +207,6 @@ public class ShieldArcAbility extends Ability{
+@@ -208,6 +209,6 @@ public class ShieldArcAbility extends Ability{
  
      @Override
      public void displayBars(Unit unit, Table bars){
@@ -261,7 +261,7 @@ index 8748b91ed8a54cd400bd1953dbf64d9e8e20bc75..f8ae33745f7037b3120cac24095361a2
      }
  }
 diff --git a/core/src/mindustry/world/blocks/defense/turrets/Turret.java b/core/src/mindustry/world/blocks/defense/turrets/Turret.java
-index 5601a6ac06c7b6196fe2ef31c5803c57ccbce4c1..bbade89c6d751b6d62c9ecbe28aff02d155c72d6 100644
+index bfb2396af05a766a67c554d4480e8b290fe65c32..9fdea6a1a7c443ec7d33783a88ae620dd8923a29 100644
 --- a/core/src/mindustry/world/blocks/defense/turrets/Turret.java
 +++ b/core/src/mindustry/world/blocks/defense/turrets/Turret.java
 @@ -7,6 +7,7 @@ import arc.graphics.*;
@@ -272,7 +272,7 @@ index 5601a6ac06c7b6196fe2ef31c5803c57ccbce4c1..bbade89c6d751b6d62c9ecbe28aff02d
  import arc.struct.*;
  import arc.util.*;
  import arc.util.io.*;
-@@ -800,6 +801,14 @@ public class Turret extends ReloadTurret{
+@@ -802,6 +803,14 @@ public class Turret extends ReloadTurret{
              rotation = oldRot;
              reloadCounter = oldReload;
          }

@@ -103,10 +103,10 @@ index 7e9466f2d629335317b2a706b376d33aab029923..51669a3c774069bdb5f3189a52fd9386
  
          dynamic = new StatusEffect("dynamic"){{
 diff --git a/core/src/mindustry/core/Control.java b/core/src/mindustry/core/Control.java
-index 840f7f2e6ea29035d2fba537c1794b2faff1bf5e..5c5928c61800a2f4cb5b547cfe8ccf732cfe0c10 100644
+index 252327a0f9ae7b514bdd90ca06a55b910243b942..5e0645ee95665ff8a727d783edcdcf77bd85a95b 100644
 --- a/core/src/mindustry/core/Control.java
 +++ b/core/src/mindustry/core/Control.java
-@@ -595,7 +595,8 @@ public class Control implements ApplicationListener, Loadable{
+@@ -598,7 +598,8 @@ public class Control implements ApplicationListener, Loadable{
                  BaseDialog dialog = new BaseDialog("@confirm");
                  dialog.setFillParent(true);
  

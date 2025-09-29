@@ -1899,7 +1899,7 @@ index 3542163354070ac67c49b82dff6c72b374d4ca7d..ab9ad6c393cc401d13dbad7e62a78f87
          //special case for 'clear' command
          if(message.equals("clear")){
 diff --git a/core/src/mindustry/ui/fragments/HudFragment.java b/core/src/mindustry/ui/fragments/HudFragment.java
-index be3053a481c86165e551da1fd554f8e7dfde77bf..de27e6892da3a9e9ca88c1de5396d41cdf8807f3 100644
+index e155bd9ef4cc71437b9a201840eaabe733d186e6..832f249b4f8341d7a5ea461e0c5dbc4e15a554be 100644
 --- a/core/src/mindustry/ui/fragments/HudFragment.java
 +++ b/core/src/mindustry/ui/fragments/HudFragment.java
 @@ -29,9 +29,11 @@ import mindustry.net.Packets.*;
@@ -1914,7 +1914,7 @@ index be3053a481c86165e551da1fd554f8e7dfde77bf..de27e6892da3a9e9ca88c1de5396d41c
  
  import static mindustry.Vars.*;
  import static mindustry.gen.Tex.*;
-@@ -336,6 +338,10 @@ public class HudFragment{
+@@ -351,6 +353,10 @@ public class HudFragment{
              wavesMain.top().left().name = "waves";
  
              wavesMain.table(s -> {
@@ -1925,7 +1925,7 @@ index be3053a481c86165e551da1fd554f8e7dfde77bf..de27e6892da3a9e9ca88c1de5396d41c
                  //wave info button with text
                  s.add(makeStatusTable()).grow().name("status");
  
-@@ -376,7 +382,7 @@ public class HudFragment{
+@@ -391,7 +397,7 @@ public class HudFragment{
                          button.getStyle().imageUpColor = team.color;
                          button.update(() -> button.setChecked(player.team() == team));
                      }
@@ -1934,7 +1934,7 @@ index be3053a481c86165e551da1fd554f8e7dfde77bf..de27e6892da3a9e9ca88c1de5396d41c
                      teams.button(Icon.downOpen, Styles.emptyi, () -> Core.settings.put("editor-blocks-shown", !Core.settings.getBool("editor-blocks-shown")))
                      .size(45f).update(m -> m.getStyle().imageUp = (Core.settings.getBool("editor-blocks-shown") ? Icon.upOpen : Icon.downOpen));
                  }).top().left().row();
-@@ -1005,6 +1011,164 @@ public class HudFragment{
+@@ -1020,6 +1026,164 @@ public class HudFragment{
          return table;
      }
  
@@ -2099,7 +2099,7 @@ index be3053a481c86165e551da1fd554f8e7dfde77bf..de27e6892da3a9e9ca88c1de5396d41c
      private void addInfoTable(Table table){
          table.name = "infotable";
          table.left();
-@@ -1054,7 +1218,7 @@ public class HudFragment{
+@@ -1069,7 +1233,7 @@ public class HudFragment{
      }
  
      private boolean canSkipWave(){
@@ -2109,7 +2109,7 @@ index be3053a481c86165e551da1fd554f8e7dfde77bf..de27e6892da3a9e9ca88c1de5396d41c
  
  }
 diff --git a/core/src/mindustry/ui/fragments/MenuFragment.java b/core/src/mindustry/ui/fragments/MenuFragment.java
-index 57f16a53a6910131be7d85122fcc6e5e31f0115c..d3cd081c0bcf10bf85b4f22e0697a8150c7e49bb 100644
+index 15f167bd7ba2835e774271515e2ce424240c7b6a..41683096ba3deb0e38dc79c454b2bbdef63b17e5 100644
 --- a/core/src/mindustry/ui/fragments/MenuFragment.java
 +++ b/core/src/mindustry/ui/fragments/MenuFragment.java
 @@ -45,7 +45,15 @@ public class MenuFragment{
@@ -2129,7 +2129,7 @@ index 57f16a53a6910131be7d85122fcc6e5e31f0115c..d3cd081c0bcf10bf85b4f22e0697a815
  
          parent.fill(c -> {
              c.pane(Styles.noBarPane, cont -> {
-@@ -84,6 +92,11 @@ public class MenuFragment{
+@@ -99,6 +107,11 @@ public class MenuFragment{
              });
          }
  
@@ -2141,7 +2141,7 @@ index 57f16a53a6910131be7d85122fcc6e5e31f0115c..d3cd081c0bcf10bf85b4f22e0697a815
          String versionText = ((Version.build == -1) ? "[#fc8140aa]" : "[#ffffffba]") + Version.combined();
          parent.fill((x, y, w, h) -> {
              TextureRegion logo = Core.atlas.find("logo");
-@@ -126,7 +139,7 @@ public class MenuFragment{
+@@ -141,7 +154,7 @@ public class MenuFragment{
              tools = new MobileButton(Icon.settings, "@settings", ui.settings::show),
              mods = new MobileButton(Icon.book, "@mods", ui.mods::show),
              exit = new MobileButton(Icon.exit, "@quit", () -> Core.app.exit()),
@@ -2150,7 +2150,7 @@ index 57f16a53a6910131be7d85122fcc6e5e31f0115c..d3cd081c0bcf10bf85b4f22e0697a815
  
          Seq<MobileButton> customs = customButtons.map(b -> new MobileButton(b.icon, b.text, b.runnable == null ? () -> {} : b.runnable));
  
-@@ -145,11 +158,12 @@ public class MenuFragment{
+@@ -160,11 +173,12 @@ public class MenuFragment{
              container.add(editor);
              container.add(tools);
              container.add(mods);
@@ -2164,7 +2164,7 @@ index 57f16a53a6910131be7d85122fcc6e5e31f0115c..d3cd081c0bcf10bf85b4f22e0697a815
          }else{
              container.marginTop(0f);
              container.add(play);
-@@ -162,12 +176,14 @@ public class MenuFragment{
+@@ -177,12 +191,14 @@ public class MenuFragment{
              container.add(tools);
              container.row();
              container.add(mods);

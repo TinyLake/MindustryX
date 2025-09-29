@@ -14,10 +14,10 @@ AuxiliaryTools, NewCoreItemsDisplay(新制核心资源显示), WaveInfoDisplay(�
  1 file changed, 27 insertions(+), 11 deletions(-)
 
 diff --git a/core/src/mindustry/ui/fragments/HudFragment.java b/core/src/mindustry/ui/fragments/HudFragment.java
-index aa484219270c08b55577dbeabe4516adf1a45cae..be3053a481c86165e551da1fd554f8e7dfde77bf 100644
+index 89a3dd792d4f792b7930366624590427af78e903..e155bd9ef4cc71437b9a201840eaabe733d186e6 100644
 --- a/core/src/mindustry/ui/fragments/HudFragment.java
 +++ b/core/src/mindustry/ui/fragments/HudFragment.java
-@@ -207,16 +207,21 @@ public class HudFragment{
+@@ -222,16 +222,21 @@ public class HudFragment{
              t.name = "minimap/position";
              t.visible(() -> Core.settings.getBool("minimap") && shown);
              //minimap
@@ -47,7 +47,7 @@ index aa484219270c08b55577dbeabe4516adf1a45cae..be3053a481c86165e551da1fd554f8e7
              t.top().right();
          });
  
-@@ -404,12 +409,19 @@ public class HudFragment{
+@@ -419,12 +424,19 @@ public class HudFragment{
                  IntFormat mem = new IntFormat("memory");
                  IntFormat memnative = new IntFormat("memory2");
  
@@ -67,7 +67,7 @@ index aa484219270c08b55577dbeabe4516adf1a45cae..be3053a481c86165e551da1fd554f8e7
                  if(android){
                      info.label(() -> memnative.get((int)(Core.app.getJavaHeap() / 1024 / 1024), (int)(Core.app.getNativeHeap() / 1024 / 1024))).left().style(Styles.outlineLabel).name("memory2");
                  }else{
-@@ -419,8 +431,8 @@ public class HudFragment{
+@@ -434,8 +446,8 @@ public class HudFragment{
  
                  info.label(() -> ping.get(netClient.getPing())).visible(net::client).left().style(Styles.outlineLabel).name("ping").row();
                  info.label(() -> tps.get(state.serverTps == -1 ? 60 : state.serverTps)).visible(net::client).left().style(Styles.outlineLabel).name("tps").row();
@@ -78,7 +78,7 @@ index aa484219270c08b55577dbeabe4516adf1a45cae..be3053a481c86165e551da1fd554f8e7
          });
  
          //core info
-@@ -439,7 +451,11 @@ public class HudFragment{
+@@ -454,7 +466,11 @@ public class HudFragment{
  
              t.table(c -> {
                  //core items

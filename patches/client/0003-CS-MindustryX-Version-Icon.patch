@@ -35,7 +35,7 @@ index b5b2a237c2f5343aab2fb668337c2bc47a45c1b8..308ff12c92a06e11c18b33f540098a0f
  /out/
  ios/libs/
 diff --git a/android/build.gradle b/android/build.gradle
-index 3e1c585a3bde20afaafc255844d01ae3e83724ec..b8f354dc147d4acbbe8be9b70da8c3b6a8fb3463 100644
+index 5fa9542a0f83fed0797f9a1c65803a7a7d085cb6..cc4c2b2c3f7e8fd4586e3c014366a842b7f454bf 100644
 --- a/android/build.gradle
 +++ b/android/build.gradle
 @@ -31,7 +31,7 @@ android{
@@ -45,8 +45,8 @@ index 3e1c585a3bde20afaafc255844d01ae3e83724ec..b8f354dc147d4acbbe8be9b70da8c3b6
 -        applicationId "io.anuke.mindustry"
 +        applicationId "com.github.tinylake.mindustryX"
          minSdkVersion 21
-         targetSdkVersion 34
-         
+         targetSdkVersion 36
+         versionName versionNameResult
 diff --git a/android/res/values/strings.xml b/android/res/values/strings.xml
 index d42ffe6d4a318ce558f1010eae46140f88ed5c99..bf44ead5c58abfb79c500e6daae30c3e7c322bed 100644
 --- a/android/res/values/strings.xml
@@ -173,12 +173,12 @@ index 241e41e04bca5e67642d3ef533df4f4a7a08b80c..9eabc5f002a3715d90f963309e67d6bc
          }catch(Throwable e){
              handleCrash(e);
 diff --git a/gradle.properties b/gradle.properties
-index 342d52056324afc782c9883e43298b3086a7463d..8598d74f7de57daea3277e54f48ea5ed1062462e 100644
+index c020cee7a1db066c7fed94111ffb09686a810677..32fc31995fb7f1ea1955d9dc3f7d69b4a9926b5c 100644
 --- a/gradle.properties
 +++ b/gradle.properties
 @@ -27,3 +27,5 @@ org.gradle.internal.http.socketTimeout=100000
  org.gradle.internal.http.connectionTimeout=100000
  android.enableR8.fullMode=false
- archash=v152
+ archash=v152.2
 +
-+upstreamBuild=152
++upstreamBuild=152.2
