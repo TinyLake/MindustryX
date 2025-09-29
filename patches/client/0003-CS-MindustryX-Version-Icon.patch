@@ -19,8 +19,7 @@ way-zer <himc.wicp@gmail.com> on 2024/9/8
  core/src/mindustry/core/Version.java               | 6 +++++-
  core/src/mindustry/net/NetworkIO.java              | 2 +-
  desktop/src/mindustry/desktop/DesktopLauncher.java | 2 +-
- gradle.properties                                  | 2 ++
- 11 files changed, 17 insertions(+), 8 deletions(-)
+ 10 files changed, 15 insertions(+), 8 deletions(-)
 
 diff --git a/.gitignore b/.gitignore
 index b5b2a237c2f5343aab2fb668337c2bc47a45c1b8..308ff12c92a06e11c18b33f540098a0f1347ab5e 100644
@@ -58,7 +57,7 @@ index d42ffe6d4a318ce558f1010eae46140f88ed5c99..bf44ead5c58abfb79c500e6daae30c3e
 +    <string name="app_name">MindustryX</string>
  </resources>
 diff --git a/build.gradle b/build.gradle
-index 1fa167562b8f864a1974a5332ebfebe16a5c84b5..ba4d2ad6b96c244e8a068412fa9547c4c77af4cc 100644
+index 104cfd330b0cd00d246684d71199127861addc1a..433cedb62f1a94f59e53e9e28ac6a714f9abc9ff 100644
 --- a/build.gradle
 +++ b/build.gradle
 @@ -22,7 +22,7 @@ allprojects{
@@ -172,13 +171,3 @@ index 241e41e04bca5e67642d3ef533df4f4a7a08b80c..9eabc5f002a3715d90f963309e67d6bc
              }});
          }catch(Throwable e){
              handleCrash(e);
-diff --git a/gradle.properties b/gradle.properties
-index c020cee7a1db066c7fed94111ffb09686a810677..32fc31995fb7f1ea1955d9dc3f7d69b4a9926b5c 100644
---- a/gradle.properties
-+++ b/gradle.properties
-@@ -27,3 +27,5 @@ org.gradle.internal.http.socketTimeout=100000
- org.gradle.internal.http.connectionTimeout=100000
- android.enableR8.fullMode=false
- archash=v152.2
-+
-+upstreamBuild=152.2

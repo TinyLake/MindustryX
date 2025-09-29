@@ -11,19 +11,19 @@ way-zer <himc.wicp@gmail.com> on 2024/6/9
  android/proguard-rules.pro                    |   4 +
  .../com/github/bsideup/jabel/Desugar.java     |  13 +
  .../javax.annotation.processing.Processor     |   6 +
- build.gradle                                  | 292 +++---------------
+ build.gradle                                  | 304 +++---------------
  core/build.gradle                             |   2 -
  core/build.gradle.kts                         |  66 ++++
  desktop/build.gradle                          | 166 +---------
- gradle.properties                             |   4 +-
- gradlew                                       | 284 ++++++++++-------
+ gradle.properties                             |   7 +-
+ gradlew                                       | 284 +++++++++-------
  gradlew.bat                                   |  37 ++-
  ios/build.gradle                              |   2 +-
  server/build.gradle                           |  44 +--
  settings.gradle                               |  11 +-
  tools/build.gradle                            |  91 +++---
  tools/src/mindustry/tools/Generators.java     |   2 +-
- 17 files changed, 433 insertions(+), 695 deletions(-)
+ 17 files changed, 444 insertions(+), 699 deletions(-)
  create mode 100644 annotations/src/main/java/com/github/bsideup/jabel/Desugar.java
  create mode 100644 annotations/src/main/resources/META-INF/services/javax.annotation.processing.Processor
  delete mode 100644 core/build.gradle
@@ -265,16 +265,17 @@ index 0000000000000000000000000000000000000000..181b87c1d5f3755f16a01c0528d0a89f
 +mindustry.annotations.misc.LogicStatementProcessor
 +mindustry.annotations.remote.RemoteProcess
 diff --git a/build.gradle b/build.gradle
-index 48786c78c44affcf7fdb1c9e7a7d6281226d3677..7e33be95fce8a45aae2af546b1c2950c6f1b38d0 100644
+index 48786c78c44affcf7fdb1c9e7a7d6281226d3677..4bf1cc3b313e3682a2d5a24d141101ab3cdb91b4 100644
 --- a/build.gradle
 +++ b/build.gradle
-@@ -1,5 +1,3 @@
+@@ -1,30 +1,16 @@
 -import java.text.SimpleDateFormat
 -
  buildscript{
      ext{
-         arcHash = property("archash")
-@@ -7,24 +5,12 @@ buildscript{
+-        arcHash = property("archash")
++        arcHash = findProperty("archash") ?: "v${property("upstreamBuild")}"
+ 
          localArc = !project.hasProperty("release") && new File(rootDir.parent, 'Arc').exists() && !project.hasProperty("noLocalArc")
  
          arcModule = { String name ->
@@ -580,12 +581,12 @@ index 48786c78c44affcf7fdb1c9e7a7d6281226d3677..7e33be95fce8a45aae2af546b1c2950c
          api "org.lz4:lz4-java:1.8.0"
          api arcModule("arc-core")
          api arcModule("extensions:flabel")
-@@ -336,33 +151,34 @@ project(":core"){
+@@ -336,33 +151,33 @@ project(":core"){
          api arcModule("extensions:arcnet")
          implementation arcModule("extensions:filedialogs")
          api "com.github.Anuken:rhino:$rhinoVersion"
 -        if(localArc && debugged()) api arcModule("extensions:recorder")
-         if(localArc) api arcModule(":extensions:packer")
+-        if(localArc) api arcModule(":extensions:packer")
  
 -        annotationProcessor 'com.github.Anuken:jabel:0.9.0'
 +//        compileOnly 'com.github.bsideup.jabel:jabel-javac-plugin:0.4.2'
@@ -633,18 +634,40 @@ index 48786c78c44affcf7fdb1c9e7a7d6281226d3677..7e33be95fce8a45aae2af546b1c2950c
          }
      }
  
-@@ -446,42 +262,16 @@ configure([":core", ":server"].collect{project(it)}){
+@@ -416,14 +231,19 @@ project(":tools"){
+     apply plugin: "java"
+ 
+     dependencies{
+-        implementation project(":core")
++        //MDTX: use upstream build for tools, avoid classpath change
++        implementation("com.github.Anuken.Mindustry:core:${property("upstreamBuild")}"){
++            transitive = false
++        }
++        implementation arcModule("arc-core")
++        implementation arcModule(":extensions:g3d")
++        implementation arcModule(":extensions:packer")
+ 
+         implementation arcModule("natives:natives-desktop")
+         implementation arcModule("natives:natives-freetype-desktop")
+         implementation arcModule("backends:backend-headless")
+ 
+         implementation("com.google.guava:guava:33.3.1-jre")
+-        annotationProcessor 'com.github.Anuken:jabel:0.9.0'
+     }
+ }
+ 
+@@ -446,42 +266,16 @@ configure([":core", ":server"].collect{project(it)}){
          publications{
              maven(MavenPublication){
                  from components.java
 -                if(project.name == "core"){
 -                    artifact(tasks.named("assetsJar"))
 -                }
-             }
-         }
-     }
- }
- 
+-            }
+-        }
+-    }
+-}
+-
 -task deployAll{
 -    task cleanDeployOutput{
 -        doFirst{
@@ -653,9 +676,9 @@ index 48786c78c44affcf7fdb1c9e7a7d6281226d3677..7e33be95fce8a45aae2af546b1c2950c
 -
 -            delete{
 -                delete "deploy/"
--            }
--        }
--    }
+             }
+         }
+     }
 -
 -    dependsOn cleanDeployOutput
 -    dependsOn "desktop:packrLinux64"
@@ -666,8 +689,8 @@ index 48786c78c44affcf7fdb1c9e7a7d6281226d3677..7e33be95fce8a45aae2af546b1c2950c
 -        dependsOn "server:deploy"
 -        dependsOn "android:deploy"
 -    }
--}
--
+ }
+ 
 -task resolveDependencies{
 +tasks.register('resolveDependencies'){
      doLast{
@@ -951,7 +974,7 @@ index b3f192bc75d3c1775179a7252c02f7ce0a39ff7e..b47e0569d82a8cc6331a1fe36952c206
 +}
 \ No newline at end of file
 diff --git a/gradle.properties b/gradle.properties
-index 3d0287e2d7f10fabca1e0530a8b4978ac6632947..115ddf1a9de457bcaa7513d9c61113425cb68a72 100644
+index 3d0287e2d7f10fabca1e0530a8b4978ac6632947..312429ff8b3a185a4d2a1a90dcf355e828dc9b39 100644
 --- a/gradle.properties
 +++ b/gradle.properties
 @@ -1,5 +1,5 @@
@@ -961,12 +984,15 @@ index 3d0287e2d7f10fabca1e0530a8b4978ac6632947..115ddf1a9de457bcaa7513d9c6111342
  --add-opens=jdk.compiler/com.sun.tools.javac.api=ALL-UNNAMED \
  --add-opens=jdk.compiler/com.sun.tools.javac.code=ALL-UNNAMED \
  --add-opens=jdk.compiler/com.sun.tools.javac.model=ALL-UNNAMED \
-@@ -26,4 +26,4 @@ org.gradle.caching=true
+@@ -26,4 +26,7 @@ org.gradle.caching=true
  org.gradle.internal.http.socketTimeout=100000
  org.gradle.internal.http.connectionTimeout=100000
  android.enableR8.fullMode=false
 -archash=8d3f84b3c5
-+archash=v152.2
++
++#MDTX: Use "v{upstreamBuild}" by default
++#archash=8d3f84b3c5
++upstreamBuild=152.2
 diff --git a/gradlew b/gradlew
 index 4f906e0c811fc9e230eb44819f509cd0627f2600..f3b75f3b0d4faeb4b1c8a02b5c47007e6efb7dcd 100755
 --- a/gradlew
