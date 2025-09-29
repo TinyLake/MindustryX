@@ -11,19 +11,19 @@ way-zer <himc.wicp@gmail.com> on 2024/6/9
  android/proguard-rules.pro                    |   4 +
  .../com/github/bsideup/jabel/Desugar.java     |  13 +
  .../javax.annotation.processing.Processor     |   6 +
- build.gradle                                  | 304 +++---------------
+ build.gradle                                  | 300 +++---------------
  core/build.gradle                             |   2 -
  core/build.gradle.kts                         |  66 ++++
  desktop/build.gradle                          | 166 +---------
  gradle.properties                             |   7 +-
- gradlew                                       | 284 +++++++++-------
+ gradlew                                       | 284 ++++++++++-------
  gradlew.bat                                   |  37 ++-
  ios/build.gradle                              |   2 +-
  server/build.gradle                           |  44 +--
  settings.gradle                               |  11 +-
  tools/build.gradle                            |  91 +++---
  tools/src/mindustry/tools/Generators.java     |   2 +-
- 17 files changed, 444 insertions(+), 699 deletions(-)
+ 17 files changed, 440 insertions(+), 699 deletions(-)
  create mode 100644 annotations/src/main/java/com/github/bsideup/jabel/Desugar.java
  create mode 100644 annotations/src/main/resources/META-INF/services/javax.annotation.processing.Processor
  delete mode 100644 core/build.gradle
@@ -265,7 +265,7 @@ index 0000000000000000000000000000000000000000..181b87c1d5f3755f16a01c0528d0a89f
 +mindustry.annotations.misc.LogicStatementProcessor
 +mindustry.annotations.remote.RemoteProcess
 diff --git a/build.gradle b/build.gradle
-index 48786c78c44affcf7fdb1c9e7a7d6281226d3677..4bf1cc3b313e3682a2d5a24d141101ab3cdb91b4 100644
+index 48786c78c44affcf7fdb1c9e7a7d6281226d3677..add2673eef8e06004f1da89a4ec96977f25f204b 100644
 --- a/build.gradle
 +++ b/build.gradle
 @@ -1,30 +1,16 @@
@@ -435,7 +435,7 @@ index 48786c78c44affcf7fdb1c9e7a7d6281226d3677..4bf1cc3b313e3682a2d5a24d141101ab
      }
  
      repositories{
-@@ -186,49 +50,27 @@ allprojects{
+@@ -186,49 +50,23 @@ allprojects{
          maven{ url 'https://jitpack.io' }
      }
  
@@ -444,22 +444,18 @@ index 48786c78c44affcf7fdb1c9e7a7d6281226d3677..4bf1cc3b313e3682a2d5a24d141101ab
 -            delete{
 -                delete "$rootDir/core/assets/cache"
 -            }
--        }
++    tasks.withType(JavaCompile).configureEach{
++        sourceCompatibility = project.name != "annotations" ? JavaVersion.VERSION_17 : 8
++        targetCompatibility = JavaVersion.VERSION_17
++        if(project.name != "android" && project.name != "annotations" && project.name != "tools"){
++            targetCompatibility = 8
++            options.release = 8
+         }
 -    }
 -
 -    tasks.withType(JavaCompile){
-+    tasks.withType(JavaCompile).configureEach{
-         targetCompatibility = 8
+-        targetCompatibility = 8
 -        sourceCompatibility = JavaVersion.VERSION_17
-+        if(project.name == "annotations"){
-+            sourceCompatibility = 8
-+            options.setFork(true)
-+        }else{
-+            sourceCompatibility = JavaVersion.VERSION_17
-+        }
-+        sourceCompatibility = project.name != "annotations" ? JavaVersion.VERSION_17 : 8
-+        if(project.name != "android" && project.name != "annotations")
-+            options.release = 8
 +        if(project.name == "core" || project.name == "annotations")
 +            options.setFork(true)
          options.encoding = "UTF-8"
@@ -498,7 +494,7 @@ index 48786c78c44affcf7fdb1c9e7a7d6281226d3677..4bf1cc3b313e3682a2d5a24d141101ab
          options{
              addStringOption('Xdoclint:none', '-quiet')
              addStringOption('-release', '17')
-@@ -237,11 +79,10 @@ configure(subprojects - project(":annotations")){
+@@ -237,11 +75,10 @@ configure(subprojects - project(":annotations")){
      }
  }
  
@@ -511,7 +507,7 @@ index 48786c78c44affcf7fdb1c9e7a7d6281226d3677..4bf1cc3b313e3682a2d5a24d141101ab
      dependencies{
          implementation project(":core")
          implementation arcModule("extensions:profiling")
-@@ -250,8 +91,6 @@ project(":desktop"){
+@@ -250,8 +87,6 @@ project(":desktop"){
          implementation arcModule("natives:natives-desktop")
          implementation arcModule("natives:natives-freetype-desktop")
  
@@ -520,7 +516,7 @@ index 48786c78c44affcf7fdb1c9e7a7d6281226d3677..4bf1cc3b313e3682a2d5a24d141101ab
          implementation "com.github.Anuken:steamworks4j:$steamworksVersion"
  
          implementation arcModule("backends:backend-sdl")
-@@ -271,17 +110,7 @@ project(":core"){
+@@ -271,17 +106,7 @@ project(":core"){
          }
      }
  
@@ -539,7 +535,7 @@ index 48786c78c44affcf7fdb1c9e7a7d6281226d3677..4bf1cc3b313e3682a2d5a24d141101ab
          doLast{
              def props = loadVersionProps()
              def androidVersion = props['androidBuildCode'].toInteger() - 2
-@@ -289,9 +118,9 @@ project(":core"){
+@@ -289,9 +114,9 @@ project(":core"){
              def notice = "[This is a truncated changelog, see Github for full notes]"
              def maxLength = 460
  
@@ -551,7 +547,7 @@ index 48786c78c44affcf7fdb1c9e7a7d6281226d3677..4bf1cc3b313e3682a2d5a24d141101ab
                  if(result.length() + line.length() + 1 < maxLength){
                      result += line + "\n"
                  }
-@@ -305,19 +134,7 @@ project(":core"){
+@@ -305,19 +130,7 @@ project(":core"){
          }
      }
  
@@ -572,7 +568,7 @@ index 48786c78c44affcf7fdb1c9e7a7d6281226d3677..4bf1cc3b313e3682a2d5a24d141101ab
          archiveClassifier = 'music'
          from files("assets"){
              include "music/*", "sounds/*"
-@@ -325,8 +142,6 @@ project(":core"){
+@@ -325,8 +138,6 @@ project(":core"){
      }
  
      dependencies{
@@ -581,7 +577,7 @@ index 48786c78c44affcf7fdb1c9e7a7d6281226d3677..4bf1cc3b313e3682a2d5a24d141101ab
          api "org.lz4:lz4-java:1.8.0"
          api arcModule("arc-core")
          api arcModule("extensions:flabel")
-@@ -336,33 +151,33 @@ project(":core"){
+@@ -336,33 +147,33 @@ project(":core"){
          api arcModule("extensions:arcnet")
          implementation arcModule("extensions:filedialogs")
          api "com.github.Anuken:rhino:$rhinoVersion"
@@ -634,7 +630,7 @@ index 48786c78c44affcf7fdb1c9e7a7d6281226d3677..4bf1cc3b313e3682a2d5a24d141101ab
          }
      }
  
-@@ -416,14 +231,19 @@ project(":tools"){
+@@ -416,14 +227,19 @@ project(":tools"){
      apply plugin: "java"
  
      dependencies{
@@ -656,7 +652,7 @@ index 48786c78c44affcf7fdb1c9e7a7d6281226d3677..4bf1cc3b313e3682a2d5a24d141101ab
      }
  }
  
-@@ -446,42 +266,16 @@ configure([":core", ":server"].collect{project(it)}){
+@@ -446,42 +262,16 @@ configure([":core", ":server"].collect{project(it)}){
          publications{
              maven(MavenPublication){
                  from components.java
