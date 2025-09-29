@@ -677,9 +677,9 @@ index 48786c78c44affcf7fdb1c9e7a7d6281226d3677..acfdc20cf3ecbfe27b360b16bb86e42a
 -
 -            delete{
 -                delete "deploy/"
-             }
-         }
-     }
+-            }
+-        }
+-    }
 -
 -    dependsOn cleanDeployOutput
 -    dependsOn "desktop:packrLinux64"
@@ -690,8 +690,8 @@ index 48786c78c44affcf7fdb1c9e7a7d6281226d3677..acfdc20cf3ecbfe27b360b16bb86e42a
 -        dependsOn "server:deploy"
 -        dependsOn "android:deploy"
 -    }
- }
- 
+-}
+-
 -task resolveDependencies{
 +tasks.register('resolveDependencies'){
      doLast{
