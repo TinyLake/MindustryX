@@ -125,56 +125,43 @@ public class UnitFactoryDialog extends BaseDialog{
     }
 
     private void rebuild(){
-        Table main = new Table();
-
         float rightWidth = Math.min(Core.scene.getWidth() * (Core.scene.getWidth() > 700 ? 0.6f : 0.9f) / Scl.scl(), 700);
 
-        cont.clearChildren();
-        main.defaults().growX().expandY().top();
-
-        if(Core.graphics.isPortrait()){
-            cont.pane(Styles.noBarPane, main).growX();
-        }else{
-            cont.pane(Styles.noBarPane, main).fillY();
-        }
-
         Table rightTable = new Table();
-
         rightTable.top();
         rightTable.defaults().growX();
 
         rightTable.add(infoTable).row();
-
-        rightTable.defaults().padTop(12f);
-
-        rightTable.add(posTable).row();
-        rightTable.add(countTable).row();
-        rightTable.table(randDstTable -> {
-            randDstTable.add("生成范围：");
-            randDstTable.field(Strings.autoFixed(unitRandDst, 3), text -> unitRandDst = Float.parseFloat(text)).valid(Strings::canParsePositiveFloat).tooltip("在目标点附近的这个范围内随机生成").maxTextLength(6).padLeft(4f);
-            randDstTable.add("格").expandX().left();
+        rightTable.add().height(8f).row();
+        rightTable.table(Tex.pane, settings -> {
+            settings.left().defaults().fillX().padTop(8f);
+            settings.add(posTable).padTop(0f).row();
+            settings.add(countTable).row();
+            settings.table(randDstTable -> {
+                randDstTable.add("生成范围：");
+                randDstTable.field(Strings.autoFixed(unitRandDst, 3), text -> unitRandDst = Float.parseFloat(text)).valid(Strings::canParsePositiveFloat).tooltip("在目标点附近的这个范围内随机生成").maxTextLength(6).padLeft(4f);
+                randDstTable.add("格").expandX().left();
+            }).row();
+            settings.add(itemTable).row();
+            settings.add(propertiesTable).row();
+            settings.add(teamTable).row();
         }).row();
-        rightTable.add(itemTable).row();
-        rightTable.add(propertiesTable).row();
+        rightTable.add().height(8f).row();
+        rightTable.add(effectTable).row();
+        rightTable.add().height(8f).row();
+        rightTable.add(payloadTable).row();
 
-        rightTable.add(teamTable).row();
 
-        rightTable.table(bottomTable -> {
-            bottomTable.left();
-            bottomTable.defaults().height(350f).grow();
+        Table main = cont;
+        main.clearChildren();
 
-            bottomTable.add(effectTable).row();
+        Cell<?> unitPropsTable, selectionCell;
 
-            bottomTable.defaults().padTop(16f);
-            bottomTable.add(payloadTable);
-        }).padTop(8f).fillY();
-
-        Cell<?> unitPropsTable, selectionCell = main.add(selection);
-
+        main.defaults().top();
+        selectionCell = main.add(selection);
         if(Core.graphics.isPortrait()){
             main.row();
         }
-
         unitPropsTable = main.add(rightTable);
 
         if(Core.graphics.isPortrait()){
@@ -243,10 +230,8 @@ public class UnitFactoryDialog extends BaseDialog{
             });
         }).color(Pal.gray).fillX().row();
 
-        selection.pane(Styles.noBarPane, unitSelectTable).scrollX(false).padLeft(8).padRight(8).grow();
+        selection.add(unitSelectTable).padLeft(8).padRight(8).grow().row();
         Core.app.post(() -> rebuildSelectTable(selected, unitSelectTable));
-
-        selection.row();
     }
 
     private void rebuildSelectTable(UnitStack stack, Table table){
@@ -505,7 +490,7 @@ public class UnitFactoryDialog extends BaseDialog{
 
             leftTable.row();
 
-            leftTable.pane(Styles.noBarPane, selection -> {
+            leftTable.table(selection -> {
                 int i = 0;
                 for(StatusEffect effect : content.statusEffects()){
                     Cell<ImageButton> cell = selection.button(new TextureRegionDrawable(effect.uiIcon), Styles.cleari, 32f, () -> {
@@ -527,7 +512,7 @@ public class UnitFactoryDialog extends BaseDialog{
             }).pad(8f).fill().right();
         }).growY();
 
-        effectTable.pane(Styles.noBarPane, settingTable).grow();
+        effectTable.add(settingTable).grow();
 
         rebuildInfo.run();
         rebuildEffectSettingTable(unitStatus, settingTable, rebuildInfo);
@@ -750,11 +735,11 @@ public class UnitFactoryDialog extends BaseDialog{
             bottomTable.left();
             bottomTable.defaults().grow().uniformY();
 
-            bottomTable.table(effectTable -> rebuildEffectsTable(unit, effectTable)).row();
+            bottomTable.table(effectTable -> rebuildEffectsTable(unit, effectTable)).fillX().row();
 
             bottomTable.defaults().padTop(16f);
-            bottomTable.table(payloadTable -> rebuildPayloadTable(unit, payloadTable));
-        }).padTop(8f).fillY();
+            bottomTable.table(payloadTable -> rebuildPayloadTable(unit, payloadTable)).fillX();
+        }).padTop(8f).growY();
 
         dialog.addCloseButton();
         dialog.buttons.button("重置", Icon.refresh, () -> {
