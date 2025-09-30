@@ -7,7 +7,6 @@ import arc.util.Log
 import arc.util.OS
 import arc.util.serialization.Jval
 import mindustry.Vars
-import mindustry.core.Version
 import mindustryX.features.SettingsV2.CheckPref
 import mindustryX.features.SettingsV2.SliderPref
 
@@ -36,7 +35,6 @@ object VarsX {
         }
         this.version = version
         devVersion = version.endsWith("-dev")
-        Version.mdtXBuild = version
     }
 
     //此处存储所有需要在features外使用的设置项。

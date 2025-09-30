@@ -112,7 +112,7 @@ way-zer <himc.wicp@gmail.com> on 2024/9/8
  .../mindustry/ui/dialogs/DatabaseDialog.java  |   3 +-
  .../mindustry/ui/dialogs/PausedDialog.java    |  12 +-
  .../mindustry/ui/dialogs/PlanetDialog.java    |  31 ++-
- .../ui/dialogs/SchematicsDialog.java          | 237 +++++++++++++++++-
+ .../ui/dialogs/SchematicsDialog.java          | 238 +++++++++++++++++-
  .../ui/dialogs/SettingsMenuDialog.java        |  24 +-
  .../mindustry/ui/fragments/ChatFragment.java  |   9 +-
  .../ui/fragments/ConsoleFragment.java         |   3 +
@@ -120,7 +120,7 @@ way-zer <himc.wicp@gmail.com> on 2024/9/8
  .../mindustry/ui/fragments/MenuFragment.java  |  24 +-
  .../ui/fragments/PlacementFragment.java       | 164 ++++++++++--
  .../ui/fragments/PlayerListFragment.java      |  72 ++----
- 27 files changed, 1132 insertions(+), 148 deletions(-)
+ 27 files changed, 1133 insertions(+), 148 deletions(-)
 
 diff --git a/core/src/mindustry/editor/MapInfoDialog.java b/core/src/mindustry/editor/MapInfoDialog.java
 index ebc1f0b300d295e45333f1db38ea299c9658ec20..e7cba056743979206c84fc6d00472c2c44b565f6 100644
@@ -1443,7 +1443,7 @@ index a6c99837b9d4c91ce7733b1e58eb71f1766f7414..6410a7f0819afc6588803d4778dae1fd
                              }
                          }
 diff --git a/core/src/mindustry/ui/dialogs/SchematicsDialog.java b/core/src/mindustry/ui/dialogs/SchematicsDialog.java
-index fef8e21d771ccfd81cbc65a0bc62642ebf721952..2ff1c1566a72ec7522ec7f23827256d038bb1171 100644
+index fef8e21d771ccfd81cbc65a0bc62642ebf721952..0e33621ee47a4a9fe475cc038974363b2a237cca 100644
 --- a/core/src/mindustry/ui/dialogs/SchematicsDialog.java
 +++ b/core/src/mindustry/ui/dialogs/SchematicsDialog.java
 @@ -15,6 +15,8 @@ import arc.scene.ui.layout.*;
@@ -1455,19 +1455,20 @@ index fef8e21d771ccfd81cbc65a0bc62642ebf721952..2ff1c1566a72ec7522ec7f23827256d0
  import mindustry.ctype.*;
  import mindustry.game.*;
  import mindustry.gen.*;
-@@ -22,6 +24,11 @@ import mindustry.graphics.*;
+@@ -22,6 +24,12 @@ import mindustry.graphics.*;
  import mindustry.input.*;
  import mindustry.type.*;
  import mindustry.ui.*;
 +import mindustry.world.*;
 +import mindustry.world.blocks.production.*;
 +import mindustry.world.meta.*;
++import mindustryX.*;
 +import mindustryX.features.*;
 +import mindustryX.features.ui.*;
  
  import java.util.regex.*;
  
-@@ -38,6 +45,9 @@ public class SchematicsDialog extends BaseDialog{
+@@ -38,6 +46,9 @@ public class SchematicsDialog extends BaseDialog{
      private Seq<String> tags, selectedTags = new Seq<>();
      private boolean checkedTags;
  
@@ -1477,7 +1478,7 @@ index fef8e21d771ccfd81cbc65a0bc62642ebf721952..2ff1c1566a72ec7522ec7f23827256d0
      public SchematicsDialog(){
          super("@schematics");
          Core.assets.load("sprites/schematic-background.png", Texture.class).loaded = t -> t.setWrap(TextureWrap.repeat);
-@@ -47,6 +57,9 @@ public class SchematicsDialog extends BaseDialog{
+@@ -47,6 +58,9 @@ public class SchematicsDialog extends BaseDialog{
          shouldPause = true;
          addCloseButton();
          buttons.button("@schematic.import", Icon.download, this::showImport);
@@ -1487,7 +1488,7 @@ index fef8e21d771ccfd81cbc65a0bc62642ebf721952..2ff1c1566a72ec7522ec7f23827256d0
          makeButtonOverlay();
          shown(this::setup);
          onResize(this::setup);
-@@ -110,6 +123,30 @@ public class SchematicsDialog extends BaseDialog{
+@@ -110,6 +124,30 @@ public class SchematicsDialog extends BaseDialog{
              in.button(Icon.pencilSmall, this::showAllTags).size(tagh).pad(2).tooltip("@schematic.edittags");
          }).height(tagh).fillX();
  
@@ -1518,7 +1519,7 @@ index fef8e21d771ccfd81cbc65a0bc62642ebf721952..2ff1c1566a72ec7522ec7f23827256d0
          cont.row();
  
          cont.pane(t -> {
-@@ -140,6 +177,10 @@ public class SchematicsDialog extends BaseDialog{
+@@ -140,6 +178,10 @@ public class SchematicsDialog extends BaseDialog{
                      if(selectedTags.any() && !s.labels.containsAll(selectedTags)) continue;
                      //make sure search fits
                      if(!search.isEmpty() && !ignoreSymbols.matcher(s.name().toLowerCase()).replaceAll("").contains(searchString)) continue;
@@ -1529,7 +1530,7 @@ index fef8e21d771ccfd81cbc65a0bc62642ebf721952..2ff1c1566a72ec7522ec7f23827256d0
                      if(firstSchematic == null) firstSchematic = s;
  
                      Button[] sel = {null};
-@@ -212,6 +253,11 @@ public class SchematicsDialog extends BaseDialog{
+@@ -212,6 +254,11 @@ public class SchematicsDialog extends BaseDialog{
  
              rebuildPane.run();
          }).grow().scrollX(false);
@@ -1541,7 +1542,7 @@ index fef8e21d771ccfd81cbc65a0bc62642ebf721952..2ff1c1566a72ec7522ec7f23827256d0
      }
  
      public void showInfo(Schematic schematic){
-@@ -291,6 +337,20 @@ public class SchematicsDialog extends BaseDialog{
+@@ -291,6 +338,20 @@ public class SchematicsDialog extends BaseDialog{
                  t.button("@schematic.exportfile", Icon.export, style, () -> {
                      dialog.hide();
                      platform.export(s.name(), schematicExtension, file -> Schematics.write(s, file));
@@ -1562,13 +1563,13 @@ index fef8e21d771ccfd81cbc65a0bc62642ebf721952..2ff1c1566a72ec7522ec7f23827256d0
                  }).marginLeft(12f);
              });
          });
-@@ -299,6 +359,48 @@ public class SchematicsDialog extends BaseDialog{
+@@ -299,6 +360,48 @@ public class SchematicsDialog extends BaseDialog{
          dialog.show();
      }
  
 +    private void arcSendClipBroadMsg(Schematic schem, String link){
 +        StringBuilder s = new StringBuilder();
-+        s.append("这是一条来自 MDTX-").append(Version.mdtXBuild).append("的分享记录\n");
++        s.append("这是一条来自 MDTX-").append(VarsX.version).append("的分享记录\n");
 +        s.append("蓝图名：").append(schem.name()).append("\n");
 +        s.append("分享者：").append(player.name).append("\n");
 +        s.append("蓝图造价：");
@@ -1611,7 +1612,7 @@ index fef8e21d771ccfd81cbc65a0bc62642ebf721952..2ff1c1566a72ec7522ec7f23827256d0
      public void showEdit(Schematic s){
          new BaseDialog("@schematic.edit"){{
              setFillParent(true);
-@@ -376,6 +478,7 @@ public class SchematicsDialog extends BaseDialog{
+@@ -376,6 +479,7 @@ public class SchematicsDialog extends BaseDialog{
      }
  
      void addTag(Schematic s, String tag){
@@ -1619,7 +1620,7 @@ index fef8e21d771ccfd81cbc65a0bc62642ebf721952..2ff1c1566a72ec7522ec7f23827256d0
          s.labels.add(tag);
          s.save();
          tagsChanged();
-@@ -579,6 +682,11 @@ public class SchematicsDialog extends BaseDialog{
+@@ -579,6 +683,11 @@ public class SchematicsDialog extends BaseDialog{
                      t.button("@schematic.texttag", Icon.add, () -> showNewTag(res -> rebuild[0].run())).wrapLabel(false).get().getLabelCell().padLeft(5);
                      t.button("@schematic.icontag", Icon.add, () -> showNewIconTag(res -> rebuild[0].run())).wrapLabel(false).get().getLabelCell().padLeft(5);
                  });
@@ -1631,7 +1632,7 @@ index fef8e21d771ccfd81cbc65a0bc62642ebf721952..2ff1c1566a72ec7522ec7f23827256d0
  
              };
  
-@@ -587,6 +695,102 @@ public class SchematicsDialog extends BaseDialog{
+@@ -587,6 +696,102 @@ public class SchematicsDialog extends BaseDialog{
          dialog.show();
      }
  
@@ -1734,7 +1735,7 @@ index fef8e21d771ccfd81cbc65a0bc62642ebf721952..2ff1c1566a72ec7522ec7f23827256d0
      void buildTags(Schematic schem, Table t){
          buildTags(schem, t, true);
      }
-@@ -800,13 +1004,44 @@ public class SchematicsDialog extends BaseDialog{
+@@ -800,13 +1005,44 @@ public class SchematicsDialog extends BaseDialog{
                      }
                  });
              }
@@ -1899,22 +1900,23 @@ index 3542163354070ac67c49b82dff6c72b374d4ca7d..ab9ad6c393cc401d13dbad7e62a78f87
          //special case for 'clear' command
          if(message.equals("clear")){
 diff --git a/core/src/mindustry/ui/fragments/HudFragment.java b/core/src/mindustry/ui/fragments/HudFragment.java
-index e155bd9ef4cc71437b9a201840eaabe733d186e6..832f249b4f8341d7a5ea461e0c5dbc4e15a554be 100644
+index 40f358b312ef1b8707692e76a4add72774009a91..218e2bdf499cb2adfa738c9b782b144432d12f75 100644
 --- a/core/src/mindustry/ui/fragments/HudFragment.java
 +++ b/core/src/mindustry/ui/fragments/HudFragment.java
-@@ -29,9 +29,11 @@ import mindustry.net.Packets.*;
+@@ -29,10 +29,12 @@ import mindustry.net.Packets.*;
  import mindustry.type.*;
  import mindustry.ui.*;
  import mindustry.world.*;
 +import mindustry.world.blocks.defense.turrets.*;
  import mindustry.world.blocks.environment.*;
  import mindustry.world.meta.*;
+ import mindustryX.*;
  import mindustryX.features.*;
 +import mindustryX.features.ui.*;
  
  import static mindustry.Vars.*;
  import static mindustry.gen.Tex.*;
-@@ -351,6 +353,10 @@ public class HudFragment{
+@@ -352,6 +354,10 @@ public class HudFragment{
              wavesMain.top().left().name = "waves";
  
              wavesMain.table(s -> {
@@ -1925,7 +1927,7 @@ index e155bd9ef4cc71437b9a201840eaabe733d186e6..832f249b4f8341d7a5ea461e0c5dbc4e
                  //wave info button with text
                  s.add(makeStatusTable()).grow().name("status");
  
-@@ -391,7 +397,7 @@ public class HudFragment{
+@@ -392,7 +398,7 @@ public class HudFragment{
                          button.getStyle().imageUpColor = team.color;
                          button.update(() -> button.setChecked(player.team() == team));
                      }
@@ -1934,7 +1936,7 @@ index e155bd9ef4cc71437b9a201840eaabe733d186e6..832f249b4f8341d7a5ea461e0c5dbc4e
                      teams.button(Icon.downOpen, Styles.emptyi, () -> Core.settings.put("editor-blocks-shown", !Core.settings.getBool("editor-blocks-shown")))
                      .size(45f).update(m -> m.getStyle().imageUp = (Core.settings.getBool("editor-blocks-shown") ? Icon.upOpen : Icon.downOpen));
                  }).top().left().row();
-@@ -1020,6 +1026,164 @@ public class HudFragment{
+@@ -1021,6 +1027,164 @@ public class HudFragment{
          return table;
      }
  
@@ -2099,7 +2101,7 @@ index e155bd9ef4cc71437b9a201840eaabe733d186e6..832f249b4f8341d7a5ea461e0c5dbc4e
      private void addInfoTable(Table table){
          table.name = "infotable";
          table.left();
-@@ -1069,7 +1233,7 @@ public class HudFragment{
+@@ -1070,7 +1234,7 @@ public class HudFragment{
      }
  
      private boolean canSkipWave(){

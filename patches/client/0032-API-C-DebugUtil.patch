@@ -11,8 +11,8 @@ way-zer <himc.wicp@gmail.com> on 2024/7/21
 ---
  core/src/mindustry/ClientLauncher.java           | 2 +-
  core/src/mindustry/core/Logic.java               | 3 +++
- core/src/mindustry/ui/fragments/HudFragment.java | 4 ++++
- 3 files changed, 8 insertions(+), 1 deletion(-)
+ core/src/mindustry/ui/fragments/HudFragment.java | 5 +++++
+ 3 files changed, 9 insertions(+), 1 deletion(-)
 
 diff --git a/core/src/mindustry/ClientLauncher.java b/core/src/mindustry/ClientLauncher.java
 index 161cd24bdd226072ba84fc4885845ba8cf201ed0..68fdba1c243ecb746155d6a5b92e70302813b50c 100644
@@ -56,18 +56,19 @@ index ae6c90c9238eeb3d50db73a491cea765a2e94079..12d3a6e250788b57f9f5c00e24b2ee42
  
      /** @return whether the wave timer is paused due to enemies */
 diff --git a/core/src/mindustry/ui/fragments/HudFragment.java b/core/src/mindustry/ui/fragments/HudFragment.java
-index d0b20fc5a1cf8c498a88d4f463bd9cad7478d458..89a3dd792d4f792b7930366624590427af78e903 100644
+index d0b20fc5a1cf8c498a88d4f463bd9cad7478d458..a2aa1970b127df12cdc50ed0d4c2e1c4fe9cb183 100644
 --- a/core/src/mindustry/ui/fragments/HudFragment.java
 +++ b/core/src/mindustry/ui/fragments/HudFragment.java
-@@ -31,6 +31,7 @@ import mindustry.ui.*;
+@@ -31,6 +31,8 @@ import mindustry.ui.*;
  import mindustry.world.*;
  import mindustry.world.blocks.environment.*;
  import mindustry.world.meta.*;
++import mindustryX.*;
 +import mindustryX.features.*;
  
  import static mindustry.Vars.*;
  import static mindustry.gen.Tex.*;
-@@ -420,6 +421,9 @@ public class HudFragment{
+@@ -420,6 +422,9 @@ public class HudFragment{
  
                  info.label(() -> fps.get(Core.graphics.getFramesPerSecond())).left().style(Styles.outlineLabel).name("fps");
                  info.row();

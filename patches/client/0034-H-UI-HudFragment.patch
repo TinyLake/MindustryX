@@ -14,10 +14,10 @@ AuxiliaryTools, NewCoreItemsDisplay(新制核心资源显示), WaveInfoDisplay(�
  1 file changed, 27 insertions(+), 11 deletions(-)
 
 diff --git a/core/src/mindustry/ui/fragments/HudFragment.java b/core/src/mindustry/ui/fragments/HudFragment.java
-index 89a3dd792d4f792b7930366624590427af78e903..e155bd9ef4cc71437b9a201840eaabe733d186e6 100644
+index a2aa1970b127df12cdc50ed0d4c2e1c4fe9cb183..40f358b312ef1b8707692e76a4add72774009a91 100644
 --- a/core/src/mindustry/ui/fragments/HudFragment.java
 +++ b/core/src/mindustry/ui/fragments/HudFragment.java
-@@ -222,16 +222,21 @@ public class HudFragment{
+@@ -223,16 +223,21 @@ public class HudFragment{
              t.name = "minimap/position";
              t.visible(() -> Core.settings.getBool("minimap") && shown);
              //minimap
@@ -47,11 +47,11 @@ index 89a3dd792d4f792b7930366624590427af78e903..e155bd9ef4cc71437b9a201840eaabe7
              t.top().right();
          });
  
-@@ -419,12 +424,19 @@ public class HudFragment{
+@@ -420,12 +425,19 @@ public class HudFragment{
                  IntFormat mem = new IntFormat("memory");
                  IntFormat memnative = new IntFormat("memory2");
  
-+                info.add("MDTX~"+ Version.mdtXBuild).color(Pal.accent).left();
++                info.add(VarsX.version).color(Pal.accent).left();
 +                info.row();
                  info.label(() -> fps.get(Core.graphics.getFramesPerSecond())).left().style(Styles.outlineLabel).name("fps");
                  info.row();
@@ -67,7 +67,7 @@ index 89a3dd792d4f792b7930366624590427af78e903..e155bd9ef4cc71437b9a201840eaabe7
                  if(android){
                      info.label(() -> memnative.get((int)(Core.app.getJavaHeap() / 1024 / 1024), (int)(Core.app.getNativeHeap() / 1024 / 1024))).left().style(Styles.outlineLabel).name("memory2");
                  }else{
-@@ -434,8 +446,8 @@ public class HudFragment{
+@@ -435,8 +447,8 @@ public class HudFragment{
  
                  info.label(() -> ping.get(netClient.getPing())).visible(net::client).left().style(Styles.outlineLabel).name("ping").row();
                  info.label(() -> tps.get(state.serverTps == -1 ? 60 : state.serverTps)).visible(net::client).left().style(Styles.outlineLabel).name("tps").row();
@@ -78,7 +78,7 @@ index 89a3dd792d4f792b7930366624590427af78e903..e155bd9ef4cc71437b9a201840eaabe7
          });
  
          //core info
-@@ -454,7 +466,11 @@ public class HudFragment{
+@@ -455,7 +467,11 @@ public class HudFragment{
  
              t.table(c -> {
                  //core items
