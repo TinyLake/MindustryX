@@ -154,23 +154,12 @@ public class UnitFactoryDialog extends BaseDialog{
 
         Table main = cont;
         main.clearChildren();
-
-        Cell<?> unitPropsTable, selectionCell;
-
-        main.defaults().top();
-        selectionCell = main.add(selection);
         if(Core.graphics.isPortrait()){
-            main.row();
-        }
-        unitPropsTable = main.add(rightTable);
-
-        if(Core.graphics.isPortrait()){
-            selectionCell.maxHeight(10 * 64f);
-            selectionCell.padBottom(8f);
+            main.add(selection).growX().row();
+            main.add(rightTable).padTop(8f).growX().row();
         }else{
-            selectionCell.padRight(8f);
-            selectionCell.width(rightWidth * 0.6f).growY();
-            unitPropsTable.width(rightWidth).growY();
+            main.add(selection).width(rightWidth * 0.6f).growY();
+            main.add(rightTable).padLeft(8f).width(rightWidth).growY().row();
         }
 
         Core.app.post(this::rebuildUnitSelection);
