@@ -4,6 +4,7 @@ import java.net.*;
 import java.util.*;
 
 interface LoaderPlatform{
+    /** Run method in a normal classloader(not ModClassloader), including mod and parent. */
     void withSafeClassloader(String method);
 
     ClassLoader createClassloader();

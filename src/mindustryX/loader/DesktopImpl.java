@@ -15,7 +15,9 @@ public class DesktopImpl implements LoaderPlatform{
     public void withSafeClassloader(String method){
         URL file = ((URLClassLoader)Main.class.getClassLoader()).getURLs()[0];
         ClassLoader parent = Core.class.getClassLoader();
-        try(var classLoader = new URLClassLoader(new URL[]{file}, parent)){
+        try{
+            //note: we don't close this classloader, as maybe asynchronous tasks are still running
+            var classLoader = new URLClassLoader(new URL[]{file}, parent);
             Reflect.invoke(classLoader.loadClass(Main.class.getName()), method);
         }catch(Exception e){
             throw new RuntimeException(e);
