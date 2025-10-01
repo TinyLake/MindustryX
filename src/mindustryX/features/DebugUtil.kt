@@ -4,9 +4,11 @@ import arc.Events
 import arc.scene.event.Touchable
 import arc.scene.ui.layout.Table
 import arc.util.Align
+import mindustry.Vars
 import mindustry.core.PerfCounter
 import mindustry.game.EventType
 import mindustry.gen.Tex
+import mindustry.ui.Styles
 
 object DebugUtil {
     @JvmField
@@ -44,12 +46,17 @@ object DebugUtil {
     @JvmStatic
     fun metricTable(): Table = Table(Tex.pane).apply {
         left()
-        check("Render Debug") { renderDebug = it }.checked { renderDebug }.row()
         label { "Draw: $lastDrawRequests" }.fillX().labelAlign(Align.left).touchable(Touchable.disabled).row()
         label { "Vertices: $lastVertices" }.fillX().labelAlign(Align.left).touchable(Touchable.disabled).row()
         label { "Texture: $lastSwitchTexture" }.fillX().labelAlign(Align.left).touchable(Touchable.disabled).row()
         label { "Flush: $lastFlushCount" }.fillX().labelAlign(Align.left).touchable(Touchable.disabled).row()
         image().update { DebugUtil.reset() }.row()
+        table { t ->
+            t.left().defaults().size(32f).pad(4f)
+            t.button("D", Styles.logicTogglet) { renderDebug = !renderDebug }.checked { renderDebug }.tooltip("Render Debug")
+            if (!Vars.mobile)
+                t.button("M", Styles.logicTogglet) { Vars.mobile = !Vars.mobile }.checked { Vars.mobile }.tooltip("Mock Mobile")
+        }.fillX()
     }
 
     @JvmStatic
