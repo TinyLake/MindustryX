@@ -12,7 +12,7 @@ public class LogicExt{
     public static boolean invertMapClick = false;
     public static boolean noUpdatePlayerMovement = false;
     /** protocol to mock, for compatible to force join servers. */
-    public static int mockProtocol = Integer.MAX_VALUE;
+    public static int mockProtocol; /* = Version.build */
     /** Use contentsMapping from server, for compatibility when build version is not same. */
     public static boolean contentsCompatibleMode = false;
     public static boolean v146Mode = false;
@@ -39,7 +39,7 @@ public class LogicExt{
             worldCreator = worldCreator0.get();
             terrainSchematic = terrainSchematic0.get();
             invertMapClick = invertMapClick0.get();
-            mockProtocol = ConnectPacket.clientVersion > 0 ? ConnectPacket.clientVersion : Integer.MAX_VALUE;
+            mockProtocol = ConnectPacket.clientVersion > 0 ? ConnectPacket.clientVersion : Version.build;
             v146Mode = mockProtocol == 146;
             contentsCompatibleMode = mockProtocol != Version.build;
         });
