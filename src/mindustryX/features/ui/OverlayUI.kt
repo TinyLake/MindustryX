@@ -11,6 +11,7 @@ import arc.input.KeyCode
 import arc.math.geom.Rect
 import arc.math.geom.Vec2
 import arc.scene.Element
+import arc.scene.Scene
 import arc.scene.event.InputEvent
 import arc.scene.event.InputListener
 import arc.scene.event.Touchable
@@ -36,7 +37,12 @@ object OverlayUI {
     data class WindowData(
         val enabled: Boolean = false,
         val pinned: Boolean = false,
+        @Deprecated("use center,size,constraintX,constraintY replaced")
         val rect: Rect? = null,
+        val center: Vec2? = null,
+        val size: Vec2? = null,
+        val constraintX: AdsorptionSystem.Constraint? = null,
+        val constraintY: AdsorptionSystem.Constraint? = null,
     )
 
     class WindowSetting(name: String) : SettingsV2.Data<WindowData>(name, WindowData()) {
@@ -62,15 +68,31 @@ object OverlayUI {
                 button(Icon.lockSmall, myToggleI, Vars.iconSmall) {
                     set(value.copy(pinned = !value.pinned))
                 }.padRight(4f).checked { value.pinned }
+                val builder = StringBuilder()
                 label {
-                    val rect = value.rect ?: return@label "[grey][UNUSED]"
-                    "[${rect.x.roundToInt()},${rect.y.roundToInt()} - ${rect.width.roundToInt()}x${rect.height.roundToInt()}]"
+                    builder.clear()
+                    val center = value.center ?: return@label "[grey][UNUSED]"
+                    builder.append("[${center.x.roundToInt()},${center.y.roundToInt()}]")
+                    value.size?.let {
+                        builder.append("[${it.x.roundToInt()}x${it.y.roundToInt()}]")
+                    }
+                    builder
                 }
 
                 add().growX()
                 addTools()
             }
             table.row()
+            value.constraintX?.let {
+                table.label {
+                    "X: ${it.type.name} to [${it.target}]"
+                }.padLeft(64f).left().row()
+            }
+            value.constraintY?.let {
+                table.label {
+                    "Y: ${it.type.name} to [${it.target}]"
+                }.padLeft(64f).left().row()
+            }
         }
 
         var enabled: Boolean
@@ -92,7 +114,7 @@ object OverlayUI {
             override fun touchDown(event: InputEvent, x: Float, y: Float, pointer: Int, button: KeyCode?): Boolean {
                 if (Core.app.isMobile && pointer != 0) return false
                 offset.set(event.stageX, event.stageY).sub(this@Window.x, this@Window.y)
-                dragging = true
+                state = State.Dragging
 
                 toFront()
                 return true
@@ -106,8 +128,7 @@ object OverlayUI {
 
             override fun touchUp(event: InputEvent?, x: Float, y: Float, pointer: Int, button: KeyCode?) {
                 if (Core.app.isMobile && pointer != 0) return
-                dragging = false
-                saveTableRect()
+                state = State.EndDrag
             }
         }
 
@@ -158,7 +179,7 @@ object OverlayUI {
 
             override fun touchUp(event: InputEvent?, x: Float, y: Float, pointer: Int, button: KeyCode?) {
                 if (Core.app.isMobile && pointer != 0) return
-                saveTableRect()
+                endResize()
             }
         }
 
@@ -183,27 +204,86 @@ object OverlayUI {
 
             override fun touchUp(event: InputEvent?, x: Float, y: Float, pointer: Int, button: KeyCode?) {
                 if (Core.app.isMobile && pointer != 0) return
-                saveTableRect()
+                endResize()
             }
+        }
+
+        enum class State {
+            Stable, Dragging, EndDrag
         }
 
         val data = WindowSetting("overlayUI.$name")
         private val paneBg = Tex.pane
-        private var dragging = false
+        private var state = State.Stable
 
         var availability: Prov<Boolean> = Prov { true }
         val settings = mutableListOf<SettingsV2.Data<*>>(data)
+        private val adsorption = AdsorptionSystem.Point(name)
 
         init {
             this.name = name
             visible { data.enabled && availability.get() && (open || data.value.pinned) }
-            update {
-                if (!dragging) keepInStage()
-                if (data.changed()) {
-                    rebuild()
-                    data.changed()//ignore change by rebuild
-                }
+        }
+
+        override fun act(delta: Float) {
+            super.act(delta)
+            if (!data.enabled) return
+
+            updateData()
+            if (data.changed()) {
+                rebuild()
+                data.changed()//ignore change by rebuild
             }
+
+            width = width.coerceAtMost(Core.scene.width)
+            height = height.coerceAtMost(Core.scene.height)
+            if (state == State.Stable) {
+                data.value.center?.let { setPosition(it.x, it.y, Align.center) }
+            }
+            keepInStage()
+
+            //Sync AdsorptionSystem
+            adsorption.apply {
+                reset(x, y, width, height)
+                if (state == State.Stable) {
+                    data.value.constraintX?.let {
+                        apply(AdsorptionSystem.Axis.X, it)
+                    }
+                    data.value.constraintY?.let {
+                        apply(AdsorptionSystem.Axis.Y, it)
+                    }
+                } else {
+                    val (constraintX, constraintY) = findBestConstraints()
+                    constraintX?.let { apply(AdsorptionSystem.Axis.X, it) }
+                    constraintY?.let { apply(AdsorptionSystem.Axis.Y, it) }
+                }
+                setPosition(rect.x, rect.y)
+            }
+
+            //Save Drag Result
+            if (state == State.EndDrag) {
+                state = State.Stable
+                val center = Vec2(table.getX(Align.center), table.getY(Align.center))
+                localToParentCoordinates(center)
+                val (constraintX, constraintY) = adsorption.findBestConstraints()
+                data.set(data.value.copy(center = center, constraintX = constraintX, constraintY = constraintY))
+            }
+        }
+
+        override fun setScene(stage: Scene?) {
+            super.setScene(stage)
+        }
+
+        private fun updateData() {
+            @Suppress("DEPRECATION")
+            data.value.rect?.let { old ->
+                val center = old.getCenter(Vec2())
+                val size = old.getSize(Vec2())
+                data.set(data.value.copy(center = center, size = size, rect = null))
+                Align.left
+            }
+            if (data.value.center == null)
+                data.set(data.value.copy(center = Vec2(parent.width / 2, parent.height / 2)))
         }
 
         fun rebuild() {
@@ -240,24 +320,16 @@ object OverlayUI {
                     }
                 }.fillX().row()
 
-                val rect = data.value.rect
-                if (rect == null) {
-                    add(table).grow()
-                    pack()
-                    setPosition(parent.getX(Align.center), parent.getY(Align.center), Align.center)
-                    saveTableRect()
-                } else {
-                    //Set window position and size
-                    val cell = add(table).maxSize(rect.width / Scl.scl(), rect.height / Scl.scl())
-                    pack()
-                    setPosition(rect.x - table.x, rect.y - table.y)
-
-                    //allow for 'grow', 'grow' may update table. So keep window size, and layout again
-                    cell.grow().maxSize(Float.NEGATIVE_INFINITY)
-                    layout()
-
-                    saveTableRect()
+                //Set window position and size
+                val cell = add(table)
+                data.value.size?.let {
+                    cell.maxSize(it.x, it.y)
                 }
+                pack()
+
+                //allow for 'grow', 'grow' may update table. So keep window size, and layout again
+                cell.grow().maxSize(Float.NEGATIVE_INFINITY)
+                layout()
 
                 addChild(object : Element() {
                     override fun act(delta: Float) {
@@ -280,9 +352,7 @@ object OverlayUI {
                 background = null
                 touchable = Touchable.childrenOnly
                 add(table).grow()
-                data.value.rect?.let { rect ->
-                    setBounds(rect.x, rect.y, rect.width, rect.height)
-                }
+                data.value.size?.let { setSize(it.x, it.y) }
             }
         }
 
@@ -304,19 +374,10 @@ object OverlayUI {
             setSize(width + delta.x, height + delta.y)
         }
 
-        fun saveTableRect() {
+        fun endResize() {
             if (parent == null) return
-            keepInStage()
             validate()
-
-            val pos = localToParentCoordinates(Tmp.v1.set(table.x, table.y))
-            val rect = Rect(pos.x, pos.y, table.width, table.height)
-            //自动贴边处理
-            if (getX(Align.left) == 0f) rect.x = 0f
-            if (getX(Align.right) == parent.width) rect.x = parent.width - rect.width
-            if (getY(Align.bottom) == 0f) rect.y = 0f
-            if (getY(Align.top) == parent.height) rect.y = parent.height - rect.height
-            data.set(data.value.copy(rect = rect))
+            data.set(data.value.copy(size = Vec2(table.width / Scl.scl(), table.height / Scl.scl())))
         }
     }
 
