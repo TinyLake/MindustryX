@@ -14,11 +14,11 @@ class GridTable : Table() {
     private val elementsTmp = mutableListOf<Element>()
     private val cell: Cell<Element> = defaults()!! //readonly
     private var columnsInvalid = true
+    private var visibleChanged = false
 
     override fun act(delta: Float) {
         super.act(delta)
-        val children = this.children.asIterable()
-        val visibleChanged = children.count { it.visible } != cells.size || cells.any { it.get()?.visible != true }
+        visibleChanged = children.asIterable().count { it.visible } != cells.size || cells.any { it.get()?.visible != true }
         if (visibleChanged) invalidate()
     }
 
@@ -39,9 +39,9 @@ class GridTable : Table() {
                 ?: children.firstOrNull { it.visible }?.minWidth
                 ?: Float.MAX_VALUE
             val cellWidth = cellMinWidth + Reflect.get<Float>(cell, "padLeft")
-            Mathf.floor(width / cellWidth).coerceIn(1, children.count { it.visible })
+            Mathf.floor(width / cellWidth).coerceAtMost(children.count { it.visible })
         }
-        if (columns == newColumns) return
+        if (!visibleChanged && columns == newColumns) return
 
         elementsTmp += children //Can't use children.begin, as clearChildren() use it internally.
         clearChildren()
@@ -51,7 +51,7 @@ class GridTable : Table() {
             else {
                 add(it).set(cell)
                 i++
-                if (i % newColumns == 0) row()
+                if (newColumns > 0 && i % newColumns == 0) row()
             }
         }
         elementsTmp.clear()
