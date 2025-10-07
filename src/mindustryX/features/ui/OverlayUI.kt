@@ -11,7 +11,6 @@ import arc.input.KeyCode
 import arc.math.geom.Rect
 import arc.math.geom.Vec2
 import arc.scene.Element
-import arc.scene.Scene
 import arc.scene.event.InputEvent
 import arc.scene.event.InputListener
 import arc.scene.event.Touchable
@@ -31,6 +30,7 @@ import mindustryX.features.SettingsV2
 import mindustryX.features.SettingsV2.CheckPref
 import mindustryX.features.SettingsV2.PersistentProvider
 import mindustryX.features.UIExtKt
+import mindustryX.features.ui.AdsorptionSystem.Axis
 import kotlin.math.roundToInt
 
 object OverlayUI {
@@ -218,11 +218,15 @@ object OverlayUI {
 
         var availability: Prov<Boolean> = Prov { true }
         val settings = mutableListOf<SettingsV2.Data<*>>(data)
-        private val adsorption = AdsorptionSystem.Point(name)
+        private val adsorption = AdsorptionSystem.Element(name)
 
         init {
             this.name = name
-            visible { data.enabled && availability.get() && (open || data.value.pinned) }
+        }
+
+        override fun updateVisibility() {
+            visible = data.enabled && availability.get() && (open || data.value.pinned)
+            if (!visible) adsorption.remove()
         }
 
         override fun act(delta: Float) {
@@ -246,16 +250,18 @@ object OverlayUI {
             adsorption.apply {
                 reset(x, y, width, height)
                 if (state == State.Stable) {
-                    data.value.constraintX?.let {
-                        apply(AdsorptionSystem.Axis.X, it)
-                    }
-                    data.value.constraintY?.let {
-                        apply(AdsorptionSystem.Axis.Y, it)
-                    }
+                    data.value.constraintX?.let { applyConstraint(it) }
+                    data.value.constraintY?.let { applyConstraint(it) }
                 } else {
                     val (constraintX, constraintY) = findBestConstraints()
-                    constraintX?.let { apply(AdsorptionSystem.Axis.X, it) }
-                    constraintY?.let { apply(AdsorptionSystem.Axis.Y, it) }
+                    constraintX?.let {
+                        applyConstraint(it)
+                        constraintDrawTask.add(it)
+                    }
+                    constraintY?.let {
+                        applyConstraint(it)
+                        constraintDrawTask.add(it)
+                    }
                 }
                 setPosition(rect.x, rect.y)
             }
@@ -268,10 +274,6 @@ object OverlayUI {
                 val (constraintX, constraintY) = adsorption.findBestConstraints()
                 data.set(data.value.copy(center = center, constraintX = constraintX, constraintY = constraintY))
             }
-        }
-
-        override fun setScene(stage: Scene?) {
-            super.setScene(stage)
         }
 
         private fun updateData() {
@@ -386,6 +388,7 @@ object OverlayUI {
         private set
     val windows: List<Window>
         get() = group.children.filterIsInstance<Window>()
+    private val constraintDrawTask = mutableListOf<AdsorptionSystem.Constraint>()
 
     private val group = WidgetGroup().apply {
         name = "overlayUI"
@@ -440,6 +443,32 @@ object OverlayUI {
             t.left().name = "toggle"
             t.button(Icon.settings, Vars.iconMed) { toggle() }
             t.visible { showOverlayButton.value }
+        }
+
+        fill { _, _, _, _ ->
+            Draw.color(Color.red)
+            Lines.stroke(4f * Scl.scl())
+            constraintDrawTask.forEach { c ->
+                c.targetPoint?.rect?.let { Lines.rect(it) }
+            }
+
+            Draw.color(Color.yellow)
+            Lines.stroke(2f * Scl.scl())
+            constraintDrawTask.forEach { c ->
+                val target = c.targetPoint ?: return@forEach
+                val tar = target.computeAnchor(c.axis, c.type.targetAnchor)
+                if (c.axis == Axis.X) {
+                    Lines.dashLine(tar, 0f, tar, Core.scene.height, 64)
+                } else {
+                    Lines.dashLine(0f, tar, Core.scene.width, tar, 64)
+                }
+            }
+            Draw.reset()
+
+            constraintDrawTask.clear()
+        }.apply {
+            name = "draw-Constant"
+            update { toFront() }
         }
     }
 

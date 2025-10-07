@@ -6,6 +6,25 @@ import arc.math.geom.Rect
 import mindustry.game.EventType
 import kotlin.math.abs
 
+/**
+ * Central coordinator for managing rectangular element adsorption logic.
+ *
+ * The AdsorptionSystem handles constraint-based positioning of rectangular frames,
+ * allowing each frame to snap, align, or attach to others based on defined anchor relationships.
+ * It supports axis-specific constraints (X and Y), enforces single constraint per axis,
+ * and resolves positions dynamically to maintain layout consistency.
+ *
+ * Key responsibilities include:
+ * - Managing frame registration and constraint resolution
+ * - Preventing circular or conflicting adsorption chains
+ * - Providing anchor-based coordinate computation
+ * - Supporting serialization and layout persistence
+ *
+ * This system is designed to be extensible for UI layout engines, graphical editors,
+ * or any environment requiring dynamic spatial alignment between rectangular entities.
+ *
+ * @author WayZer
+ */
 object AdsorptionSystem {
     enum class Axis { X, Y }
     enum class Anchor {
@@ -21,16 +40,20 @@ object AdsorptionSystem {
         AttachLeading(Anchor.Trailing, Anchor.Leading),
     }
 
-    data class Constraint(val target: String, val type: ConstraintType) {
+    data class Constraint(val axis: Axis, val target: String, val type: ConstraintType) {
         @Suppress("unused")//For Json
-        private constructor() : this("", ConstraintType.AlignLeading)
+        private constructor() : this(Axis.X, "", ConstraintType.AlignLeading)
+
+        val targetPoint get() = all[target]
     }
 
-    class Point(val name: String, val rect: Rect = Rect()) {
-        val dependencies = mutableSetOf<Point>()
+    class Element(val name: String) {
+        val rect: Rect = Rect()
+        val dependencies = mutableSetOf<Element>()
 
         fun reset(x: Float, y: Float, width: Float, height: Float) {
             rect.set(x, y, width, height)
+            all[name] = this
             dependencies.clear()
         }
 
@@ -50,24 +73,24 @@ object AdsorptionSystem {
             }
         }
 
-        fun apply(axis: Axis, constraint: Constraint) {
-            val target = all[constraint.target] ?: return
+        fun applyConstraint(constraint: Constraint) {
+            val target = constraint.targetPoint ?: return
             dependencies.add(target)
-            val cur = computeAnchor(axis, constraint.type.sourceAnchor)
-            val tar = target.computeAnchor(axis, constraint.type.targetAnchor)
+            val cur = computeAnchor(constraint.axis, constraint.type.sourceAnchor)
+            val tar = target.computeAnchor(constraint.axis, constraint.type.targetAnchor)
             val delta = tar - cur
-            if (axis == Axis.X) {
+            if (constraint.axis == Axis.X) {
                 rect.x += delta
             } else {
                 rect.y += delta
             }
         }
 
-        fun findBestConstraint(target: Point, axis: Axis): Pair<Constraint, Float>? {
+        fun findBestConstraint(target: Element, axis: Axis): Pair<Constraint, Float>? {
             return ConstraintType.entries.map { it to abs(computeAnchor(axis, it.sourceAnchor) - target.computeAnchor(axis, it.targetAnchor)) }
                 .filter { it.second < 16f }
                 .minByOrNull { it.second }
-                ?.let { Constraint(target.name, it.first) to it.second }
+                ?.let { Constraint(axis, target.name, it.first) to it.second }
         }
 
         fun findBestConstraints(): Pair<Constraint?, Constraint?> {
@@ -77,26 +100,23 @@ object AdsorptionSystem {
         }
 
 
-        init {
-            all[name] = this
-        }
-
         fun remove() {
             if (all[name] == this)
                 all.remove(name)
         }
     }
 
-    val all = mutableMapOf<String, Point>()
-    val scene = Point("scene", Rect(0f, 0f, Core.scene.width, Core.scene.height)).apply {
+    val all = mutableMapOf<String, Element>()
+    val scene = Element("scene").apply {
+        reset(0f, 0f, Core.scene.width, Core.scene.height)
         Events.on(EventType.ResizeEvent::class.java) { _ ->
             rect.setSize(Core.scene.width, Core.scene.height)
         }
     }
 
-    private fun filterCandidates(forPoint: Point): List<Point> {
+    private fun filterCandidates(forPoint: Element): List<Element> {
         // 构造反向依赖图：谁依赖了谁
-        val reverseDeps = mutableMapOf<Point, MutableList<Point>>()
+        val reverseDeps = mutableMapOf<Element, MutableList<Element>>()
         for (point in all.values) {
             for (dep in point.dependencies) {
                 reverseDeps.getOrPut(dep) { mutableListOf() }.add(point)
@@ -104,8 +124,8 @@ object AdsorptionSystem {
         }
 
         // 从 forPoint 出发，找出所有依赖它的节点
-        val excluded = mutableSetOf<Point>()
-        fun dfs(current: Point) {
+        val excluded = mutableSetOf<Element>()
+        fun dfs(current: Element) {
             if (!excluded.add(current)) return
             reverseDeps[current]?.forEach { dfs(it) }
         }
