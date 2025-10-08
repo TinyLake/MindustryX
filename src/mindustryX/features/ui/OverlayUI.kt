@@ -282,7 +282,6 @@ object OverlayUI {
                 val center = old.getCenter(Vec2())
                 val size = old.getSize(Vec2())
                 data.set(data.value.copy(center = center, size = size, rect = null))
-                Align.left
             }
             if (data.value.center == null)
                 data.set(data.value.copy(center = Vec2(parent.width / 2, parent.height / 2)))
@@ -325,7 +324,7 @@ object OverlayUI {
                 //Set window position and size
                 val cell = add(table)
                 data.value.size?.let {
-                    cell.maxSize(it.x, it.y)
+                    cell.maxSize(it.x / Scl.scl(), it.y / Scl.scl())
                 }
                 pack()
 
@@ -378,8 +377,13 @@ object OverlayUI {
 
         fun endResize() {
             if (parent == null) return
-            validate()
-            data.set(data.value.copy(size = Vec2(table.width / Scl.scl(), table.height / Scl.scl())))
+
+            //Repack table to fit content
+            getCell(table)?.maxSize(table.width / Scl.scl(), table.height / Scl.scl())
+            invalidate()
+            pack()
+
+            data.set(data.value.copy(size = Vec2(table.width, table.height)))
         }
     }
 
