@@ -112,15 +112,15 @@ way-zer <himc.wicp@gmail.com> on 2024/9/8
  .../mindustry/ui/dialogs/DatabaseDialog.java  |   3 +-
  .../mindustry/ui/dialogs/PausedDialog.java    |  12 +-
  .../mindustry/ui/dialogs/PlanetDialog.java    |  31 ++-
- .../ui/dialogs/SchematicsDialog.java          | 238 +++++++++++++++++-
+ .../ui/dialogs/SchematicsDialog.java          | 240 +++++++++++++++++-
  .../ui/dialogs/SettingsMenuDialog.java        |  24 +-
  .../mindustry/ui/fragments/ChatFragment.java  |   9 +-
  .../ui/fragments/ConsoleFragment.java         |   3 +
- .../mindustry/ui/fragments/HudFragment.java   | 168 ++++++++++++-
+ .../mindustry/ui/fragments/HudFragment.java   | 168 +++++++++++-
  .../mindustry/ui/fragments/MenuFragment.java  |  24 +-
  .../ui/fragments/PlacementFragment.java       | 164 ++++++++++--
  .../ui/fragments/PlayerListFragment.java      |  72 ++----
- 27 files changed, 1133 insertions(+), 148 deletions(-)
+ 27 files changed, 1135 insertions(+), 148 deletions(-)
 
 diff --git a/core/src/mindustry/editor/MapInfoDialog.java b/core/src/mindustry/editor/MapInfoDialog.java
 index ebc1f0b300d295e45333f1db38ea299c9658ec20..e7cba056743979206c84fc6d00472c2c44b565f6 100644
@@ -156,7 +156,7 @@ index ebc1f0b300d295e45333f1db38ea299c9658ec20..e7cba056743979206c84fc6d00472c2c
                      hide();
                  }).marginLeft(10f);
 diff --git a/core/src/mindustry/entities/comp/BuildingComp.java b/core/src/mindustry/entities/comp/BuildingComp.java
-index c04a9768f34ecdbeaac00978b1f4ae6e94633f03..1bf19eaf04bed622a7fa8cc89e58372de62702b1 100644
+index c04a9768f34ecdbeaac00978b1f4ae6e94633f03..096d0dcdf15be7972b849ea1762fe040e0eb0dc6 100644
 --- a/core/src/mindustry/entities/comp/BuildingComp.java
 +++ b/core/src/mindustry/entities/comp/BuildingComp.java
 @@ -41,6 +41,7 @@ import mindustry.world.blocks.power.*;
@@ -189,8 +189,8 @@ index c04a9768f34ecdbeaac00978b1f4ae6e94633f03..1bf19eaf04bed622a7fa8cc89e58372d
          return team == Team.derelict ?
              block.localizedName + "\n" + Core.bundle.get("block.derelict") :
 -            block.localizedName + (team == player.team() || team.emoji.isEmpty() ? "" : " " + team.emoji);
-+                "[#" + team.color + "]" + Strings.stripColors(block.localizedName) + (team == player.team() || team.emoji.isEmpty() ? "" : " " + team.emoji)
-+                + (team.id > 5 ? "[" + team.id + "]" : "");
++                "[#" + team.color + "]" + Strings.stripColors(block.localizedName) + (team == player.team() || team.emoji.isEmpty() ? "" : " " + team.emoji
++                + (team.id > 5 ? "[" + team.id + "]" : ""));
      }
  
      public TextureRegion getDisplayIcon(){
@@ -1443,7 +1443,7 @@ index a6c99837b9d4c91ce7733b1e58eb71f1766f7414..6410a7f0819afc6588803d4778dae1fd
                              }
                          }
 diff --git a/core/src/mindustry/ui/dialogs/SchematicsDialog.java b/core/src/mindustry/ui/dialogs/SchematicsDialog.java
-index fef8e21d771ccfd81cbc65a0bc62642ebf721952..0e33621ee47a4a9fe475cc038974363b2a237cca 100644
+index fef8e21d771ccfd81cbc65a0bc62642ebf721952..06ad54d370d3af90ab6e366155b18c8e825c50ca 100644
 --- a/core/src/mindustry/ui/dialogs/SchematicsDialog.java
 +++ b/core/src/mindustry/ui/dialogs/SchematicsDialog.java
 @@ -15,6 +15,8 @@ import arc.scene.ui.layout.*;
@@ -1632,7 +1632,7 @@ index fef8e21d771ccfd81cbc65a0bc62642ebf721952..0e33621ee47a4a9fe475cc038974363b
  
              };
  
-@@ -587,6 +696,102 @@ public class SchematicsDialog extends BaseDialog{
+@@ -587,6 +696,104 @@ public class SchematicsDialog extends BaseDialog{
          dialog.show();
      }
  
@@ -1726,8 +1726,10 @@ index fef8e21d771ccfd81cbc65a0bc62642ebf721952..0e33621ee47a4a9fe475cc038974363b
 +        for(ItemStack item : s.requirements()){
 +            if(!UIExt.coreItems.hadItem(item.item)) return false;
 +        }
-+        for(Block block : state.rules.bannedBlocks){
-+            if(s.containsBlock(block)) return false;
++        for(var tile : s.tiles){
++            Block block = tile.block;
++            if(!block.isPlaceable()) return false;
++            if(state.rules.bannedBlocks.contains(block)) return false;
 +        }
 +        return true;
 +    }
@@ -1735,7 +1737,7 @@ index fef8e21d771ccfd81cbc65a0bc62642ebf721952..0e33621ee47a4a9fe475cc038974363b
      void buildTags(Schematic schem, Table t){
          buildTags(schem, t, true);
      }
-@@ -800,13 +1005,44 @@ public class SchematicsDialog extends BaseDialog{
+@@ -800,13 +1007,44 @@ public class SchematicsDialog extends BaseDialog{
                      }
                  });
              }
