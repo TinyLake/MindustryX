@@ -18,9 +18,11 @@ import arc.scene.ui.ImageButton
 import arc.scene.ui.ImageButton.ImageButtonStyle
 import arc.scene.ui.TextButton
 import arc.scene.ui.layout.Scl
+import arc.scene.ui.layout.Stack
 import arc.scene.ui.layout.Table
 import arc.scene.ui.layout.WidgetGroup
 import arc.util.Align
+import arc.util.Log
 import arc.util.Tmp
 import mindustry.Vars
 import mindustry.gen.Icon
@@ -269,8 +271,7 @@ object OverlayUI {
             //Save Drag Result
             if (state == State.EndDrag) {
                 state = State.Stable
-                val center = Vec2(table.getX(Align.center), table.getY(Align.center))
-                localToParentCoordinates(center)
+                val center = Vec2(getX(Align.center), getY(Align.center))
                 val (constraintX, constraintY) = adsorption.findBestConstraints()
                 data.set(data.value.copy(center = center, constraintX = constraintX, constraintY = constraintY))
             }
@@ -474,6 +475,43 @@ object OverlayUI {
             name = "draw-Constant"
             update { toFront() }
         }
+
+        //LogicUpdate
+        Vars.ui.hudGroup.find<Element?>("minimap")?.parent?.let { minimapParent ->
+            AdsorptionSystem.addDynamic("minimapFrag") {
+                if (UIExtKt.isVisible(minimapParent)) {
+                    rectForElements(minimapParent.children)?.let {
+                        reset(it.x, it.y, it.width, it.height)
+                    }
+                }
+            }
+        } ?: Log.warn("[OverlayUI] cannot find 'minimap' for adsorption")
+        Vars.ui.hudGroup.find<Stack>("waves/editor")?.let { stack ->
+            AdsorptionSystem.addDynamic("statusFrag") {
+                val element = stack.children.firstOrNull { it.visible }
+                if (element != null && UIExtKt.isVisible(element) && element is Table) {
+                    rectForElements(element.children)?.let {
+                        reset(it.x, it.y, it.width, it.height)
+                    }
+                }
+            }
+        } ?: Log.warn("[OverlayUI] cannot init 'statusFrag' for adsorption")
+        update {
+            AdsorptionSystem.update()
+        }
+    }
+
+    private fun rectForElements(elements: Iterable<Element>): Rect? {
+        val iter = elements.iterator()
+        if (!iter.hasNext()) return null
+        val r = iter.next().run {
+            Tmp.r1.set(x, y, width, height)
+        }
+        while (iter.hasNext()) {
+            val it = iter.next()
+            r.merge(Tmp.r2.set(it.x, it.y, it.width, it.height))
+        }
+        return r
     }
 
     fun registerWindow(name: String, table: Table): Window {

@@ -1,9 +1,7 @@
 package mindustryX.features.ui
 
 import arc.Core
-import arc.Events
 import arc.math.geom.Rect
-import mindustry.game.EventType
 import kotlin.math.abs
 
 /**
@@ -26,6 +24,8 @@ import kotlin.math.abs
  * @author WayZer
  */
 object AdsorptionSystem {
+    const val ADSORPTION_DISTANCE = 16f
+
     enum class Axis { X, Y }
     enum class Anchor {
         Leading, Center, Trailing
@@ -50,8 +50,10 @@ object AdsorptionSystem {
     class Element(val name: String) {
         val rect: Rect = Rect()
         val dependencies = mutableSetOf<Element>()
+        var lastUpdate = 0L
 
         fun reset(x: Float, y: Float, width: Float, height: Float) {
+            lastUpdate = Core.graphics.frameId
             rect.set(x, y, width, height)
             all[name] = this
             dependencies.clear()
@@ -88,7 +90,7 @@ object AdsorptionSystem {
 
         fun findBestConstraint(target: Element, axis: Axis): Pair<Constraint, Float>? {
             return ConstraintType.entries.map { it to abs(computeAnchor(axis, it.sourceAnchor) - target.computeAnchor(axis, it.targetAnchor)) }
-                .filter { it.second < 16f }
+                .filter { it.second < ADSORPTION_DISTANCE }
                 .minByOrNull { it.second }
                 ?.let { Constraint(axis, target.name, it.first) to it.second }
         }
@@ -107,11 +109,24 @@ object AdsorptionSystem {
     }
 
     val all = mutableMapOf<String, Element>()
+    val updaters = mutableListOf<Runnable>()
+
     val scene = Element("scene").apply {
-        reset(0f, 0f, Core.scene.width, Core.scene.height)
-        Events.on(EventType.ResizeEvent::class.java) { _ ->
-            rect.setSize(Core.scene.width, Core.scene.height)
+        updaters.add {
+            reset(0f, 0f, Core.scene.width, Core.scene.height)
         }
+    }
+    val placementRect = Element("placementRect")
+
+    fun addDynamic(name: String, updater: Element.() -> Unit) {
+        val elem = Element(name)
+        updaters += Runnable {
+            elem.updater()
+        }
+    }
+
+    fun update() {
+        updaters.forEach { it.run() }
     }
 
     private fun filterCandidates(forPoint: Element): List<Element> {
@@ -131,6 +146,13 @@ object AdsorptionSystem {
         }
 
         dfs(forPoint)
-        return all.values.filter { it !in excluded }
+
+        // 只考虑相邻吸附
+        val around = Rect.tmp.set(forPoint.rect).grow(2 * ADSORPTION_DISTANCE)
+        return all.values.filter {
+            it.lastUpdate == Core.graphics.frameId
+                    && around.overlaps(it.rect)
+                    && it !in excluded
+        }
     }
 }

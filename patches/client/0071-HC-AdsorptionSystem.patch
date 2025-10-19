@@ -1,0 +1,21 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: way-zer <himc.wicp@gmail.com>
+Date: Sun, 19 Oct 2025 15:12:56 +0800
+Subject: [PATCH] HC: AdsorptionSystem
+
+---
+ core/src/mindustry/ui/fragments/PlacementFragment.java | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/core/src/mindustry/ui/fragments/PlacementFragment.java b/core/src/mindustry/ui/fragments/PlacementFragment.java
+index 5d5d4fe65b00e08b8d8a6c10edb273a3ebd375d8..4ea4e88c911d1698f7c066c82093f3e694c1bd73 100644
+--- a/core/src/mindustry/ui/fragments/PlacementFragment.java
++++ b/core/src/mindustry/ui/fragments/PlacementFragment.java
+@@ -828,6 +828,7 @@ public class PlacementFragment{
+                     if(!control.input.commandMode && gridUpdate(control.input)){
+                         rebuildCategory.run();
+                     }
++                    AdsorptionSystem.INSTANCE.getPlacementRect().reset(frame.x, frame.y, frame.getWidth(), frame.getHeight());
+                 });
+             });
+         });

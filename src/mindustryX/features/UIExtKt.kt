@@ -59,4 +59,14 @@ object UIExtKt {
         table.keepInStage()
         Core.scene.setScrollFocus(table)
     }
+
+    fun isVisible(element: Element): Boolean {
+        if (element.scene == null) return false
+        var current: Element? = element
+        while (current != null) {
+            if (!current.visible) return false
+            current = current.parent
+        }
+        return true
+    }
 }
