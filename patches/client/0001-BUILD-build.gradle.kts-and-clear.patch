@@ -265,7 +265,7 @@ index 0000000000000000000000000000000000000000..181b87c1d5f3755f16a01c0528d0a89f
 +mindustry.annotations.misc.LogicStatementProcessor
 +mindustry.annotations.remote.RemoteProcess
 diff --git a/build.gradle b/build.gradle
-index 48786c78c44affcf7fdb1c9e7a7d6281226d3677..acfdc20cf3ecbfe27b360b16bb86e42aedaa568e 100644
+index 48786c78c44affcf7fdb1c9e7a7d6281226d3677..b98a1a516279f582662ccf043f43b85488da522d 100644
 --- a/build.gradle
 +++ b/build.gradle
 @@ -1,30 +1,16 @@
@@ -641,7 +641,7 @@ index 48786c78c44affcf7fdb1c9e7a7d6281226d3677..acfdc20cf3ecbfe27b360b16bb86e42a
      dependencies{
 -        implementation project(":core")
 +        //MDTX: use upstream build for tools, avoid classpath change
-+        implementation("com.github.Anuken.Mindustry:core:${property("upstreamBuild")}"){
++        implementation("com.github.Anuken.Mindustry:core:v${property("upstreamBuild")}"){
 +            transitive = false
 +        }
 +        implementation arcModule("arc-core")

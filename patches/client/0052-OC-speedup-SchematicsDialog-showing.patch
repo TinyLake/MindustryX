@@ -9,7 +9,7 @@ Subject: [PATCH] OC: speedup SchematicsDialog showing.
  2 files changed, 5 insertions(+), 2 deletions(-)
 
 diff --git a/build.gradle b/build.gradle
-index fa5af55c45dac7e9c644973a93676cc6b66c563d..644fd596d20f5ba582d7239a57cb00c9e2b2e525 100644
+index 0709f29fcd55f105557eab83f0e5b77ce10c2f5c..42fc756626e5a3de07bb9312e0a0fd3eca792bd3 100644
 --- a/build.gradle
 +++ b/build.gradle
 @@ -147,7 +147,7 @@ project(":core"){
