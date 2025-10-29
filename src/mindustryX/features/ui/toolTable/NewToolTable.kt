@@ -5,11 +5,15 @@ import arc.Events
 import arc.graphics.Colors
 import arc.scene.style.Drawable
 import arc.scene.ui.Dialog
+import arc.scene.ui.TextField
 import arc.scene.ui.layout.Scl
 import arc.scene.ui.layout.Table
 import arc.struct.ObjectIntMap
+import arc.util.Strings
 import mindustry.Vars
 import mindustry.content.Blocks
+import mindustry.ctype.MappableContent
+import mindustry.ctype.UnlockableContent
 import mindustry.game.EventType.WorldLoadEvent
 import mindustry.gen.Call
 import mindustry.gen.Icon
@@ -235,7 +239,21 @@ object NewToolTable : Table() {
 
     private fun uiTableDialog() = BaseDialog("UI图标大全").apply {
         cont.defaults().maxWidth(800f)
-        val sField = cont.field("") { }.fillX().get()
+        var query = ""
+        val sField = TextField()
+        if(!Vars.mobile) sField.requestKeyboard()
+        cont.table().growX().get().apply{
+            image(Icon.zoom).size(48f);
+            field(query){ query = it }.pad(8f).grow().colspan(2).update{ if(!it.hasKeyboard()) it.text = query }
+            button(Icon.cancelSmall, Styles.cleari){ query = "" }.padLeft(16f).size(32f)
+            row()
+            add("暂存区").color(Pal.lightishGray).padRight(16f)
+            add(sField).growX().get()
+            button(Icon.copySmall, Styles.cleari){
+                Core.app.clipboardText = sField.text
+            }.padLeft(16f).size(32f)
+            button(Icon.cancelSmall, Styles.cleari){ sField.clearText() }.padLeft(16f).size(32f)
+        }
         cont.row()
         Table().apply {
             defaults().minWidth(1f)
@@ -249,7 +267,7 @@ object NewToolTable : Table() {
                     button("[#$value]$key", Styles.cleart) {
                         Core.app.clipboardText = "[#$value]"
                         sField.appendText("[#$value]")
-                    }.tooltip(key)
+                    }.tooltip(key).visible { Strings.matches(query, key) }
                 }
             }.also { add(it).growX().row() }
 
@@ -257,12 +275,16 @@ object NewToolTable : Table() {
             image().color(Pal.accent).fillX().row()
             GridTable().apply {
                 defaults().size(Vars.iconLarge)
-                for (it in Fonts.stringIcons) {
-                    val icon = it.value
+
+                val keys = mutableSetOf<String>()
+                Vars.content.each { if(it is MappableContent && Fonts.stringIcons.containsKey(it.name)) keys.add(it.name) }
+                keys.addAll(Fonts.stringIcons.keys())
+                for(key in keys){
+                    val icon = Fonts.stringIcons[key]
                     button(icon, Styles.cleart) {
                         Core.app.clipboardText = icon
                         sField.appendText(icon)
-                    }.tooltip(it.key)
+                    }.tooltip(key).visible { Strings.matches(query, key) }.get().label.setFontScale(1.75f)
                 }
             }.also { add(it).growX().row() }
 
@@ -272,10 +294,11 @@ object NewToolTable : Table() {
                 defaults().size(Vars.iconLarge)
                 for (it in Iconc.codes) {
                     val icon = it.value.toChar().toString()
+                    val key = it.key
                     button(icon, Styles.cleart) {
                         Core.app.clipboardText = icon
                         sField.appendText(icon)
-                    }.tooltip(it.key)
+                    }.tooltip(key).visible { Strings.matches(query, key) }.get().label.setFontScale(1.75f)
                 }
             }.also { add(it).growX().row() }
         }.also { cont.pane(it).apply { get().isScrollingDisabledX = true }.growX().row() }
