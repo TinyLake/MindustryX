@@ -29,16 +29,16 @@ MinRi2 <2275045670@qq.com>
 * 清除链接建筑时更新逻辑代码
 MinRi2 <2275045670@qq.com> on 2025/5/3
 ---
- core/src/mindustry/logic/LCanvas.java         | 48 ++++++++++++++++++-
+ core/src/mindustry/logic/LCanvas.java         | 50 +++++++++++++++++--
  core/src/mindustry/logic/LExecutor.java       |  7 ++-
- core/src/mindustry/logic/LStatements.java     | 27 +++++++++++
- core/src/mindustry/logic/LogicDialog.java     | 19 ++++++--
+ core/src/mindustry/logic/LStatements.java     | 27 ++++++++++
+ core/src/mindustry/logic/LogicDialog.java     | 19 +++++--
  .../world/blocks/logic/LogicBlock.java        | 39 +++++++++++----
  .../world/blocks/logic/MemoryBlock.java       | 26 +++++++++-
- 6 files changed, 149 insertions(+), 17 deletions(-)
+ 6 files changed, 150 insertions(+), 18 deletions(-)
 
 diff --git a/core/src/mindustry/logic/LCanvas.java b/core/src/mindustry/logic/LCanvas.java
-index 8d5edd0bcc16b65b4f7d1683925c9dd847bb7f0d..ac2376da44bec0dab0cdba90c6443d1232855234 100644
+index 8d5edd0bcc16b65b4f7d1683925c9dd847bb7f0d..173a9a01830b0126ffb124beb2777f80ae808c94 100644
 --- a/core/src/mindustry/logic/LCanvas.java
 +++ b/core/src/mindustry/logic/LCanvas.java
 @@ -18,6 +18,9 @@ import mindustry.gen.*;
@@ -60,7 +60,14 @@ index 8d5edd0bcc16b65b4f7d1683925c9dd847bb7f0d..ac2376da44bec0dab0cdba90c6443d12
      }
  
      public static void tooltip(Cell<?> cell, String key){
-@@ -444,11 +447,13 @@ public class LCanvas extends Table{
+@@ -438,17 +441,19 @@ public class LCanvas extends Table{
+                 addressLabel = t.add(index + "").style(Styles.outlineLabel).color(color).padRight(8).get();
+ 
+                 //taken from foo's client
+-                t.button(Icon.add, Styles.logici, () -> Vars.ui.logic.showAddDialog(statements.insertPosition + 1))
++                t.button(Icon.add, Styles.logici, () -> Vars.ui.logic.showAddDialog(index))
+                 .disabled(b -> canvas.statements.getChildren().size >= LExecutor.maxInstructions).size(24f).padRight(6);
+ 
                  t.button(Icon.copy, Styles.logici, () -> {
                  }).size(24f).padRight(6).get().tapped(this::copy);
  
