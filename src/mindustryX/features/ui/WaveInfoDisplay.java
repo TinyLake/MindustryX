@@ -2,7 +2,6 @@ package mindustryX.features.ui;
 
 import arc.*;
 import arc.scene.*;
-import arc.scene.event.*;
 import arc.scene.style.*;
 import arc.scene.ui.*;
 import arc.scene.ui.layout.*;
@@ -15,20 +14,14 @@ import mindustry.gen.*;
 import mindustry.ui.*;
 import mindustry.ui.dialogs.*;
 import mindustryX.features.*;
-import mindustryX.features.SettingsV2.*;
 
 import static mindustry.Vars.*;
 
 public class WaveInfoDisplay extends Table{
-    public static SettingsV2.Data<Boolean> enable = new CheckPref("gameUI.newWaveInfoDisplay", true);
     public static final float fontScl = 0.8f;
     private int waveOffset = 0;
     private final WaveInfoDialog waveInfoDialog = new WaveInfoDialog();
     private final Table waveInfo;
-
-    static{
-        enable.addFallbackName("newWaveInfoDisplay");
-    }
 
     public WaveInfoDisplay(){
         super(Tex.pane);
@@ -57,13 +50,6 @@ public class WaveInfoDisplay extends Table{
                 setWaveOffset(0);
             })).tooltip("强制跳波").disabled((b) -> net.client());
 
-            buttons.button(Icon.settingsSmall, Styles.clearNonei, iconMed, () -> UIExtKt.showFloatSettingsPanel(table -> {
-                for(var it : UIExt.coreItems.settings){
-                    it.buildUI(table);
-                }
-            })).tooltip("配置资源显示");
-            buttons.button(Icon.eyeOffSmall, Styles.clearNonei, iconMed, () -> enable.set(false)).tooltip("隐藏波次显示");
-
             buttons.add().growX();
             buttons.add("♐>");
             buttons.button(Icon.wavesSmall, Styles.clearNonei, iconMed, () -> shareWaveInfo(state.wave + waveOffset)).tooltip("分享波次信息");
@@ -89,7 +75,24 @@ public class WaveInfoDisplay extends Table{
             public float getPrefWidth(){
                 return 0f;
             }
-        }).growX();
+
+            @Override
+            public float getMinHeight(){
+                return getPrefHeight();
+            }
+        }).growX().fillY().row();
+
+        add(new Element(){
+            @Override
+            public float getMinWidth(){
+                return 0;
+            }
+
+            @Override
+            public float getPrefWidth(){
+                return width;//prefer keep width
+            }
+        }).fillX().row();
     }
 
     public void shareWaveInfo(int wave){
@@ -108,15 +111,6 @@ public class WaveInfoDisplay extends Table{
 
         builder.append(ArcMessageDialog.getWaveInfo(wave));
         UIExt.shareMessage(Iconc.waves, builder.toString());
-    }
-
-    public Element wrapped(){
-        var ret = new Table();
-        ret.collapser(UIExt.coreItems, () -> UIExt.coreItems.enable.get()).touchable(Touchable.disabled).growX().row();
-        ret.add().height(4).row();
-        ret.collapser(this, () -> enable.getValue()).growX().row();
-        ret.collapser(tt -> tt.button(Icon.downOpen, Styles.emptyi, () -> enable.set(true)), () -> !enable.getValue()).center().row();
-        return ret;
     }
 
     private void setWaveOffsetDialog(){

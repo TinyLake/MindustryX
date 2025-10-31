@@ -25,7 +25,6 @@ public class UIExt{
     public static ModsRecommendDialog modsRecommend = new ModsRecommendDialog();
     public static ArcMessageDialog arcMessageDialog = new ArcMessageDialog();
     public static AdvanceBuildTool advanceBuildTool = new AdvanceBuildTool();
-    public static WaveInfoDisplay waveInfoDisplay = new WaveInfoDisplay();
     public static NewCoreItemsDisplay coreItems = new NewCoreItemsDisplay();
 
     public static void init(){

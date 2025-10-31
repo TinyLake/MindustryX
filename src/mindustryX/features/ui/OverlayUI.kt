@@ -218,6 +218,7 @@ object OverlayUI {
         private val paneBg = Tex.pane
         private var state = State.Stable
 
+        var autoHeight = false
         var availability: Prov<Boolean> = Prov { true }
         val settings = mutableListOf<SettingsV2.Data<*>>(data)
         private val adsorption = AdsorptionSystem.Element(name)
@@ -240,6 +241,8 @@ object OverlayUI {
                 rebuild()
                 data.changed()//ignore change by rebuild
             }
+
+            if (autoHeight && state == State.Stable && prefHeight != height) height = prefHeight
 
             width = width.coerceAtMost(Core.scene.width)
             height = height.coerceAtMost(Core.scene.height)

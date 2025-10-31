@@ -46,17 +46,11 @@ public class NewCoreItemsDisplay extends Table{
     private final ItemSeq planItems = new ItemSeq();
     private final ObjectIntMap<Block> planCounter = new ObjectIntMap<>();
 
-    public final SettingsV2.Data<Boolean> enable = new CheckPref("coreItems.enable", true);//Origin Setting
-    private final SettingsV2.Data<Integer> columns = new SettingsV2.SliderPref("coreItems.columns", 5, 4, 15);
     private final SettingsV2.Data<Boolean> showItem = new CheckPref("coreItems.showItem", true);
     private final SettingsV2.Data<Boolean> showUnit = new CheckPref("coreItems.showUnit", true);
     private final SettingsV2.Data<Boolean> showPlan = new CheckPref("coreItems.showPlan", true);
     private final SettingsV2.Data<Boolean> showPower = new CheckPref("coreItems.showPower", true);
-    final List<Data<?>> settings = CollectionsKt.listOf(enable, columns, showItem, showUnit, showPlan, showPower);
-
-    {
-        enable.addFallbackName("coreitems");
-    }
+    public final List<Data<?>> settings = CollectionsKt.listOf(showItem, showUnit, showPlan, showPower);
 
     public NewCoreItemsDisplay(){
         itemDelta = new int[content.items().size];
@@ -75,24 +69,21 @@ public class NewCoreItemsDisplay extends Table{
     }
 
     private void setup(){
-        collapser(powerTable = new Table(Styles.black3), showPower::getValue).growX().row();
-        collapser(itemsTable = new Table(Styles.black3), showItem::getValue).growX().row();
-        collapser(unitsTable = new Table(Styles.black3), showUnit::getValue).growX().row();
+        collapser(powerTable = new Table(Styles.black3), showPower::getValue).with(it->it.setEnforceMinSize(true)).growX().row();
+        collapser(itemsTable = new GridTable(), showItem::getValue).with(it->it.setEnforceMinSize(true)).growX().row();
+        collapser(unitsTable = new GridTable(), showUnit::getValue).with(it->it.setEnforceMinSize(true)).growX().row();
 
         var emptyLine = row().add();
-        row().collapser(plansTable = new Table(Styles.black3), showPlan::getValue).growX().row();
+        row().collapser(plansTable = new GridTable(), showPlan::getValue).with(it->it.setEnforceMinSize(true)).growX().row();
 
+        itemsTable.background(Styles.black3);
+        unitsTable.background(Styles.black3);
+        plansTable.background(Styles.black3);
         update(() -> {
             var newHeight = plansTable.hasChildren() ? 12f : 0f;
             if(emptyLine.maxHeight() != newHeight){
                 emptyLine.height(newHeight);
                 emptyLine.getTable().invalidate();
-            }
-
-            if(this.columns.changed()){
-                rebuildItems();
-                rebuildUnits();
-                rebuildPlans();
             }
         });
 
@@ -224,19 +215,19 @@ public class NewCoreItemsDisplay extends Table{
                 continue;
             }
 
-            itemsTable.stack(
-            new Table(t ->
-            t.image(item.uiIcon).size(iconMed - 4).scaling(Scaling.fit).pad(2f)
-            .tooltip(tooltip -> tooltip.background(Styles.black6).margin(4f).add(item.localizedName).style(Styles.outlineLabel))
-            ),
-            new Table(t -> t.label(() -> {
-                int update = itemDelta[item.id];
-                if(update == 0) return "";
-                return (update < 0 ? "[red]" : "[green]+") + UI.formatAmount(update);
-            }).fontScale(0.85f)).top().left()
-            );
-
             itemsTable.table(amountTable -> {
+                amountTable.stack(
+                new Table(t ->
+                t.image(item.uiIcon).size(iconMed - 4).scaling(Scaling.fit).pad(2f)
+                .tooltip(tooltip -> tooltip.background(Styles.black6).margin(4f).add(item.localizedName).style(Styles.outlineLabel))
+                ),
+                new Table(t -> t.label(() -> {
+                    int update = itemDelta[item.id];
+                    if(update == 0) return "";
+                    return (update < 0 ? "[red]" : "[green]+") + UI.formatAmount(update);
+                }).fontScale(0.85f)).top().left()
+                );
+
                 amountTable.defaults().expand().left();
 
                 Label amountLabel = amountTable.add("").growY().get();
@@ -272,30 +263,22 @@ public class NewCoreItemsDisplay extends Table{
                     amountLabel.setText(UI.formatAmount(amount));
                 });
             }).minWidth(MIN_WIDTH).left();
-
-            if(++i % columns.getValue() == 0){
-                itemsTable.row();
-            }
         }
     }
 
     private void rebuildUnits(){
         unitsTable.clearChildren();
 
-        int i = 0;
         for(UnitType unit : content.units()){
-            if(usedUnits.contains(unit)){
-                unitsTable.image(unit.uiIcon).size(iconSmall).scaling(Scaling.fit).pad(2f)
+            if(!usedUnits.contains(unit)) continue;
+            unitsTable.table(tt -> {
+                tt.image(unit.uiIcon).size(iconSmall).scaling(Scaling.fit).pad(2f)
                 .tooltip(t -> t.background(Styles.black6).margin(4f).add(unit.localizedName).style(Styles.outlineLabel));
-                unitsTable.label(() -> {
+                tt.label(() -> {
                     int typeCount = player.team().data().countType(unit);
                     return (typeCount == Units.getCap(player.team()) ? "[stat]" : "") + typeCount;
                 }).minWidth(MIN_WIDTH).left();
-
-                if(++i % columns.getValue() == 0){
-                    unitsTable.row();
-                }
-            }
+            });
         }
     }
 
@@ -323,7 +306,6 @@ public class NewCoreItemsDisplay extends Table{
 
         plansTable.clearChildren();
         if(planCounter.isEmpty()) return;
-        int i = 0;
         for(Block block : content.blocks()){
             int count = planCounter.get(block, 0);
             if(count == 0 || block.category == Category.distribution && block.size < 3
@@ -331,12 +313,10 @@ public class NewCoreItemsDisplay extends Table{
             || block instanceof PowerNode
             || block instanceof BeamNode) continue;
 
-            plansTable.image(block.uiIcon).size(iconSmall).scaling(Scaling.fit).pad(2f);
-            plansTable.label(() -> (count > 0 ? "[green]+" : "[red]") + count).minWidth(MIN_WIDTH).left();
-
-            if(++i % columns.getValue() == 0){
-                plansTable.row();
-            }
+            plansTable.table(t -> {
+                t.image(block.uiIcon).size(iconSmall).scaling(Scaling.fit).pad(2f);
+                t.label(() -> (count > 0 ? "[green]+" : "[red]") + count).minWidth(MIN_WIDTH).left();
+            });
         }
     }
 

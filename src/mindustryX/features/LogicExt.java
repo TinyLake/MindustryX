@@ -10,6 +10,7 @@ public class LogicExt{
     public static boolean worldCreator = false;
     public static boolean terrainSchematic = false;
     public static boolean invertMapClick = false;
+    /** Disable player control in InputHandler */
     public static boolean noUpdatePlayerMovement = false;
     /** protocol to mock, for compatible to force join servers. */
     public static int mockProtocol; /* = Version.build */

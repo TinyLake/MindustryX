@@ -14,6 +14,7 @@ import mindustry.gen.Tex
 import mindustryX.features.ui.LogicSupport
 import mindustryX.features.ui.OverlayUI
 import mindustryX.features.ui.TeamsStatDisplay
+import mindustryX.features.ui.WaveInfoDisplay
 import mindustryX.features.ui.toolTable.AdvanceToolTable
 import mindustryX.features.ui.toolTable.AuxiliaryTools
 import mindustryX.features.ui.toolTable.NewToolTable
@@ -28,10 +29,22 @@ object UIExtKt {
         val inGameOnly = Prov { Vars.state.isGame }
         OverlayUI.registerWindow("debug", DebugUtil.metricTable())
         OverlayUI.registerWindow("auxiliaryTools", AuxiliaryTools()).availability = inGameOnly
-        OverlayUI.registerWindow("quickTool", NewToolTable).availability = inGameOnly
+        OverlayUI.registerWindow("quickTool", NewToolTable).apply {
+            availability = inGameOnly
+            settings.add(NewToolTable.customButtons)
+        }
         OverlayUI.registerWindow("mappingTool", AdvanceToolTable()).availability = inGameOnly
         OverlayUI.registerWindow("advanceBuildTool", UIExt.advanceBuildTool).availability = inGameOnly
-        OverlayUI.registerWindow("teamsStats", TeamsStatDisplay().wrapped()).availability = inGameOnly
+        OverlayUI.registerWindow("teamsStats", TeamsStatDisplay().wrapped()).apply {
+            autoHeight = true
+            availability = inGameOnly
+        }
+        OverlayUI.registerWindow("coreItems", UIExt.coreItems).apply {
+            autoHeight = true
+            availability = inGameOnly
+            settings.addAll(UIExt.coreItems.settings)
+        }
+        OverlayUI.registerWindow("waveInfo", WaveInfoDisplay()).availability = inGameOnly
     }
 
     @JvmStatic
@@ -39,7 +52,7 @@ object UIExtKt {
 
     @JvmStatic
     fun showFloatSettingsPanel(builder: Table.() -> Unit) {
-        val mouse = Core.input.mouse()
+        val mouse = Core.input.mouse().cpy()
         val table = Table(Tex.pane).apply {
             builder.invoke(this)
             button("@close") { this.remove() }.fillX()
@@ -52,12 +65,14 @@ object UIExtKt {
             })
         }
         Core.scene.add(table)
-        table.pack()
-        if (table.width > Core.scene.width * 0.8) table.width = Core.scene.width * 0.8f
-        if (table.height > Core.scene.height * 0.8) table.height = Core.scene.height * 0.8f
-        table.setPosition(mouse.x, mouse.y, Align.center)
-        table.keepInStage()
-        Core.scene.setScrollFocus(table)
+        table.update {
+            table.pack()
+            if (table.width > Core.scene.width * 0.8) table.width = Core.scene.width * 0.8f
+            if (table.height > Core.scene.height * 0.8) table.height = Core.scene.height * 0.8f
+            table.setPosition(mouse.x, mouse.y, Align.center)
+            table.keepInStage()
+            Core.scene.setScrollFocus(table)
+        }
     }
 
     fun isVisible(element: Element): Boolean {
