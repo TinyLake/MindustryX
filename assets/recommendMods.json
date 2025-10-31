@@ -11,7 +11,7 @@
     },
     {
       "repo": "way-zer/contentstweaker",
-      "reason": "ContentsTweaker(CT)允许地图调整内容、添加UI等"
+      "reason": "[yellow]弃用，原版已支持[]ContentsTweaker(CT)允许地图调整内容、添加UI等"
     },
     {
       "repo": "blackdeluxecat/mapfilterext",
