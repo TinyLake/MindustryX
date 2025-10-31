@@ -8,7 +8,7 @@ Subject: [PATCH] H MetricCollector.handleException
  1 file changed, 5 insertions(+)
 
 diff --git a/core/src/mindustry/net/CrashHandler.java b/core/src/mindustry/net/CrashHandler.java
-index 1f8e3372cda0c61476659fc8d3723bc60def7488..fb8f08bbc7aa55ce90043eadb308d4576835dd31 100644
+index 16e0456c23a999db056f7645ce25dfa737653b34..63ab8bf826b11a2b7713bff8c9706b9548c4e74e 100644
 --- a/core/src/mindustry/net/CrashHandler.java
 +++ b/core/src/mindustry/net/CrashHandler.java
 @@ -9,6 +9,7 @@ import arc.util.io.*;
@@ -28,7 +28,7 @@ index 1f8e3372cda0c61476659fc8d3723bc60def7488..fb8f08bbc7aa55ce90043eadb308d457
          String error = writeException(exception);
          LoadedMod cause = getModCause(exception);
  
-@@ -48,6 +51,7 @@ public class CrashHandler{
+@@ -49,6 +52,7 @@ public class CrashHandler{
          try{
              Core.settings.getDataDirectory().child("crashes").child("crash_" + System.currentTimeMillis() + ".txt")
              .writeString(createReport(exception));
@@ -36,7 +36,7 @@ index 1f8e3372cda0c61476659fc8d3723bc60def7488..fb8f08bbc7aa55ce90043eadb308d457
          }catch(Throwable ignored){
          }
      }
-@@ -112,6 +116,7 @@ public class CrashHandler{
+@@ -113,6 +117,7 @@ public class CrashHandler{
              death.printStackTrace();
          }
  

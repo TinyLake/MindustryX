@@ -13,12 +13,12 @@ Content-Transfer-Encoding: 8bit
  core/src/mindustry/core/NetClient.java     |  2 +
  core/src/mindustry/io/TypeIO.java          | 12 +++++-
  core/src/mindustry/net/Net.java            | 50 ++++++++++++++++++++--
- core/src/mindustry/net/NetworkIO.java      | 28 +++++++++---
+ core/src/mindustry/net/NetworkIO.java      | 32 +++++++++++---
  core/src/mindustry/net/Packets.java        |  2 +-
- 6 files changed, 98 insertions(+), 13 deletions(-)
+ 6 files changed, 101 insertions(+), 14 deletions(-)
 
 diff --git a/core/src/mindustry/core/ContentLoader.java b/core/src/mindustry/core/ContentLoader.java
-index b21f287e0dab8bfc6112548f440ff0a17576baa9..1183d8c7732b6588d290101f12050bd0d9525273 100644
+index b7415388c7427601ff9ec6c5bf85f5ae9cffa2ea..df7a39ed93ec5049d2ce6c932cea4a1c7c37ed2e 100644
 --- a/core/src/mindustry/core/ContentLoader.java
 +++ b/core/src/mindustry/core/ContentLoader.java
 @@ -33,6 +33,8 @@ public class ContentLoader{
@@ -30,7 +30,7 @@ index b21f287e0dab8bfc6112548f440ff0a17576baa9..1183d8c7732b6588d290101f12050bd0
      public ContentLoader(){
          for(ContentType type : ContentType.all){
              contentMap[type.ordinal()] = new Seq<>();
-@@ -194,6 +196,21 @@ public class ContentLoader{
+@@ -208,6 +210,21 @@ public class ContentLoader{
  
      public void setTemporaryMapper(MappableContent[][] temporaryMapper){
          this.temporaryMapper = temporaryMapper;
@@ -219,7 +219,7 @@ index 332f2e11d8575e0b70f3589e685c4beb5c7a9049..bb7c21c637cad2a9ca8b5074a4e438a8
          if(object instanceof StreamBegin b){
              streams.put(b.id, currentStream = new StreamBuilder(b));
 diff --git a/core/src/mindustry/net/NetworkIO.java b/core/src/mindustry/net/NetworkIO.java
-index 89a5e536fe62ed8d3dc04e291fb705167a06ed89..480ac66769d80b6c59be23732671ef917ad02c1e 100644
+index 6ff7fc477c68e159e5c65bce0a015ec1690b3692..1b8b11dcd257d0006493dee7de7a7b2ef7224dc3 100644
 --- a/core/src/mindustry/net/NetworkIO.java
 +++ b/core/src/mindustry/net/NetworkIO.java
 @@ -4,6 +4,7 @@ import arc.*;
@@ -238,7 +238,7 @@ index 89a5e536fe62ed8d3dc04e291fb705167a06ed89..480ac66769d80b6c59be23732671ef91
  
  import java.io.*;
  import java.nio.*;
-@@ -60,12 +62,19 @@ public class NetworkIO{
+@@ -61,12 +63,19 @@ public class NetworkIO{
          }
      }
  
@@ -259,11 +259,12 @@ index 89a5e536fe62ed8d3dc04e291fb705167a06ed89..480ac66769d80b6c59be23732671ef91
              state.map = new Map(SaveIO.getSaveWriter().readStringMap(stream));
  
              state.wave = stream.readInt();
-@@ -83,14 +92,21 @@ public class NetworkIO{
+@@ -84,15 +93,24 @@ public class NetworkIO{
              player.id = id;
              player.add();
  
 -            SaveIO.getSaveWriter().readContentHeader(stream);
+-            SaveIO.getSaveWriter().readContentPatches(stream);
 -            SaveIO.getSaveWriter().readMap(stream, world.context);
 -            SaveIO.getSaveWriter().readTeamBlocks(stream);
 -            SaveIO.getSaveWriter().readMarkers(stream);
@@ -274,6 +275,9 @@ index 89a5e536fe62ed8d3dc04e291fb705167a06ed89..480ac66769d80b6c59be23732671ef91
 +                saveWriter = SaveIO.getSaveWriter(9);
 +            }
 +            saveWriter.readContentHeader(stream);
++            //MDTX: Use ShortChunkSave version
++            if(LogicExt.mockProtocol >= 153)
++                saveWriter.readContentPatches(stream);
 +            saveWriter.readMap(stream, world.context);
 +            saveWriter.readTeamBlocks(stream);
 +            if(!LogicExt.v146Mode)

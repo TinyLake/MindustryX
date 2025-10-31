@@ -50,10 +50,10 @@ index a044466d27df28cdc59863289feb95ddbbc0305c..848653c43a94345d112a2657b0e44445
      }
  }
 diff --git a/core/src/mindustry/world/Block.java b/core/src/mindustry/world/Block.java
-index 04a06127024d2241030c217ae8d0cb00f4aa5c66..ed281d67995e959e13fda4bba3cbdc24f0dd8c66 100644
+index a65806cede0b836214b203445b71ae435c687af8..6a49123882594e26c61a88a4713353df4d5541ae 100644
 --- a/core/src/mindustry/world/Block.java
 +++ b/core/src/mindustry/world/Block.java
-@@ -33,6 +33,7 @@ import mindustry.world.blocks.power.*;
+@@ -34,6 +34,7 @@ import mindustry.world.blocks.power.*;
  import mindustry.world.consumers.*;
  import mindustry.world.meta.*;
  import mindustryX.features.*;
@@ -61,7 +61,7 @@ index 04a06127024d2241030c217ae8d0cb00f4aa5c66..ed281d67995e959e13fda4bba3cbdc24
  
  import java.lang.reflect.*;
  import java.util.*;
-@@ -623,7 +624,7 @@ public class Block extends UnlockableContent implements Senseable{
+@@ -638,7 +639,7 @@ public class Block extends UnlockableContent implements Senseable{
  
      public void addLiquidBar(Liquid liq){
          addBar("liquid-" + liq.name, entity -> !liq.unlockedNow() ? null : new Bar(
@@ -70,7 +70,7 @@ index 04a06127024d2241030c217ae8d0cb00f4aa5c66..ed281d67995e959e13fda4bba3cbdc24
              liq::barColor,
              () -> entity.liquids.get(liq) / liquidCapacity
          ));
-@@ -631,15 +632,19 @@ public class Block extends UnlockableContent implements Senseable{
+@@ -646,15 +647,19 @@ public class Block extends UnlockableContent implements Senseable{
  
      /** Adds a liquid bar that dynamically displays a liquid type. */
      public <T extends Building> void addLiquidBar(Func<T, Liquid> current){
@@ -95,7 +95,7 @@ index 04a06127024d2241030c217ae8d0cb00f4aa5c66..ed281d67995e959e13fda4bba3cbdc24
  
          if(consPower != null){
              boolean buffered = consPower.buffered;
-@@ -647,7 +652,11 @@ public class Block extends UnlockableContent implements Senseable{
+@@ -662,7 +667,11 @@ public class Block extends UnlockableContent implements Senseable{
  
              addBar("power", entity -> new Bar(
                  () -> buffered ? Core.bundle.format("bar.poweramount", Float.isNaN(entity.power.status * capacity) ? "<ERROR>" : UI.formatAmount((int)(entity.power.status * capacity))) :
@@ -205,7 +205,7 @@ index 53c0889446bda2891a6417c435ff255953447b92..2d2e5e04d9105714a828cda022f84687
          public float shield = shieldHealth, shieldRadius = 0f;
          public float breakTimer;
 diff --git a/core/src/mindustry/world/blocks/defense/turrets/ItemTurret.java b/core/src/mindustry/world/blocks/defense/turrets/ItemTurret.java
-index 51c07de96f6214aed028845c388ac306461fbe1c..59dd7e060664c7c7be5d0819947586bd36095197 100644
+index 684e5deeb40af81d86f9bfe92ea82b5536824f78..383768a7f652cea043710a8e4a28b6a0debed6c7 100644
 --- a/core/src/mindustry/world/blocks/defense/turrets/ItemTurret.java
 +++ b/core/src/mindustry/world/blocks/defense/turrets/ItemTurret.java
 @@ -16,6 +16,7 @@ import mindustry.type.*;
@@ -261,7 +261,7 @@ index 8748b91ed8a54cd400bd1953dbf64d9e8e20bc75..f8ae33745f7037b3120cac24095361a2
      }
  }
 diff --git a/core/src/mindustry/world/blocks/defense/turrets/Turret.java b/core/src/mindustry/world/blocks/defense/turrets/Turret.java
-index bfb2396af05a766a67c554d4480e8b290fe65c32..9fdea6a1a7c443ec7d33783a88ae620dd8923a29 100644
+index 105be42df54b8382f8a5aec447535ae2808ff4c6..e8178ffaa9a22d14734c5cdef045a2ee8bb79ad6 100644
 --- a/core/src/mindustry/world/blocks/defense/turrets/Turret.java
 +++ b/core/src/mindustry/world/blocks/defense/turrets/Turret.java
 @@ -7,6 +7,7 @@ import arc.graphics.*;
@@ -272,7 +272,7 @@ index bfb2396af05a766a67c554d4480e8b290fe65c32..9fdea6a1a7c443ec7d33783a88ae620d
  import arc.struct.*;
  import arc.util.*;
  import arc.util.io.*;
-@@ -802,6 +803,14 @@ public class Turret extends ReloadTurret{
+@@ -803,6 +804,14 @@ public class Turret extends ReloadTurret{
              rotation = oldRot;
              reloadCounter = oldReload;
          }
@@ -413,10 +413,10 @@ index 9b0ef63732d2cd574bf37f9f0a5fd0f3af378fd9..4c1065a12000cc5f9f4bb5a9fedda458
              () -> entity.productionEfficiency));
          }
 diff --git a/core/src/mindustry/world/blocks/production/BeamDrill.java b/core/src/mindustry/world/blocks/production/BeamDrill.java
-index 25b19302bfedc22cfcb523cc7558479d9fd1138e..29808e224cd14c8c1dfda6c4efc6c81823b41a33 100644
+index 6b686fa3b4579ae183cf957efdaf89a9fab13dba..afdf9f4aef1c656a7d0e8176ced645100b1d1865 100644
 --- a/core/src/mindustry/world/blocks/production/BeamDrill.java
 +++ b/core/src/mindustry/world/blocks/production/BeamDrill.java
-@@ -90,7 +90,7 @@ public class BeamDrill extends Block{
+@@ -91,7 +91,7 @@ public class BeamDrill extends Block{
          super.setBars();
  
          addBar("drillspeed", (BeamDrillBuild e) ->
@@ -426,7 +426,7 @@ index 25b19302bfedc22cfcb523cc7558479d9fd1138e..29808e224cd14c8c1dfda6c4efc6c818
  
      @Override
 diff --git a/core/src/mindustry/world/blocks/production/GenericCrafter.java b/core/src/mindustry/world/blocks/production/GenericCrafter.java
-index cd7a7e469b80213696e2274c5fa9417f295fa358..085055dc4651360183045d91b680b86d97681551 100644
+index 62fbe3538fead5aca087551179319cebcf603728..d48996a0aa2318cffc9b141b3f96b16ea04a438e 100644
 --- a/core/src/mindustry/world/blocks/production/GenericCrafter.java
 +++ b/core/src/mindustry/world/blocks/production/GenericCrafter.java
 @@ -1,5 +1,6 @@
@@ -436,9 +436,9 @@ index cd7a7e469b80213696e2274c5fa9417f295fa358..085055dc4651360183045d91b680b86d
  import arc.graphics.g2d.*;
  import arc.math.*;
  import arc.math.geom.*;
-@@ -12,11 +13,14 @@ import mindustry.entities.units.*;
- import mindustry.gen.*;
+@@ -13,11 +14,14 @@ import mindustry.gen.*;
  import mindustry.logic.*;
+ import mindustry.mod.*;
  import mindustry.type.*;
 +import mindustry.graphics.*;
 +import mindustry.ui.*;
@@ -451,7 +451,7 @@ index cd7a7e469b80213696e2274c5fa9417f295fa358..085055dc4651360183045d91b680b86d
  
  import static mindustry.Vars.*;
  
-@@ -359,5 +363,15 @@ public class GenericCrafter extends Block{
+@@ -361,5 +365,15 @@ public class GenericCrafter extends Block{
              warmup = read.f();
              if(legacyReadWarmup) read.f();
          }
@@ -491,10 +491,10 @@ index 5af67c37c74871553a35e9b5ff9757869072b6da..8c7ef00a68c89b1b82d8a1dbfbf63ad6
              () -> entity.heat / heatRequirement));
      }
 diff --git a/core/src/mindustry/world/blocks/production/WallCrafter.java b/core/src/mindustry/world/blocks/production/WallCrafter.java
-index 9c7096721267af470e8fbe93f41d34a2b2c2da34..ba550c90e3e263aa4de52b64547e202ae51f01c5 100644
+index bc3dfb0ae7cf2935cf44d5e4070e716ee8adb305..02195874d688b4843a392b6ddf44c68e57422620 100644
 --- a/core/src/mindustry/world/blocks/production/WallCrafter.java
 +++ b/core/src/mindustry/world/blocks/production/WallCrafter.java
-@@ -68,7 +68,7 @@ public class WallCrafter extends Block{
+@@ -69,7 +69,7 @@ public class WallCrafter extends Block{
          super.setBars();
  
          addBar("drillspeed", (WallCrafterBuild e) ->
@@ -522,7 +522,7 @@ index 224539af1ec0a6c643959a6950fa096d783160ea..a211f5046439079a487a3b7a8a356245
      public void drawPlanConfig(BuildPlan plan, Eachable<BuildPlan> list){
          drawPlanConfigCenter(plan, plan.config, "center", true);
 diff --git a/core/src/mindustry/world/blocks/units/Reconstructor.java b/core/src/mindustry/world/blocks/units/Reconstructor.java
-index b406048a326242c193ef06b05d3e1eac28eb088f..0528e1f7e989e380cc54fd1402e86ad27dd122e1 100644
+index 2ae3d9009513a79af91cc2e659ce137e5652aac5..45db6b4752fdce67eff7c580d4188ad91537e1aa 100644
 --- a/core/src/mindustry/world/blocks/units/Reconstructor.java
 +++ b/core/src/mindustry/world/blocks/units/Reconstructor.java
 @@ -62,7 +62,11 @@ public class Reconstructor extends UnitBlock{
@@ -539,7 +539,7 @@ index b406048a326242c193ef06b05d3e1eac28eb088f..0528e1f7e989e380cc54fd1402e86ad2
          new Bar(
              () -> e.unit() == null ? "[lightgray]" + Iconc.cancel :
 diff --git a/core/src/mindustry/world/blocks/units/UnitAssembler.java b/core/src/mindustry/world/blocks/units/UnitAssembler.java
-index 18ecf45979e8740c115de44b4cf117845d9d9f3c..212a881d108893c3e08c7907b7d4812656c46707 100644
+index 8fca9282e2504023e06aa3753358bb493f5bb7de..01bcefc7ac9100c497c96d814ec7019acb12045a 100644
 --- a/core/src/mindustry/world/blocks/units/UnitAssembler.java
 +++ b/core/src/mindustry/world/blocks/units/UnitAssembler.java
 @@ -115,6 +115,10 @@ public class UnitAssembler extends PayloadBlock{
@@ -554,10 +554,10 @@ index 18ecf45979e8740c115de44b4cf117845d9d9f3c..212a881d108893c3e08c7907b7d48126
          addBar("units", (UnitAssemblerBuild e) ->
              new Bar(() ->
 diff --git a/core/src/mindustry/world/blocks/units/UnitFactory.java b/core/src/mindustry/world/blocks/units/UnitFactory.java
-index 86ea2b87e6d8e5d04babf4c151488e86b496498d..12ddfd9c337e89abc248fea3548b030557594206 100644
+index 2ce911b2c0e0c91d24b670c40650537f8ab5f8bf..753b48cbd9620c1ccc9b71562edf845820b195e0 100644
 --- a/core/src/mindustry/world/blocks/units/UnitFactory.java
 +++ b/core/src/mindustry/world/blocks/units/UnitFactory.java
-@@ -96,7 +96,9 @@ public class UnitFactory extends UnitBlock{
+@@ -106,7 +106,9 @@ public class UnitFactory extends UnitBlock{
      @Override
      public void setBars(){
          super.setBars();

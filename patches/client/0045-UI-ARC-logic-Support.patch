@@ -29,16 +29,16 @@ MinRi2 <2275045670@qq.com>
 * 清除链接建筑时更新逻辑代码
 MinRi2 <2275045670@qq.com> on 2025/5/3
 ---
- core/src/mindustry/logic/LCanvas.java         | 59 +++++++++++++++++--
+ core/src/mindustry/logic/LCanvas.java         | 48 ++++++++++++++++++-
  core/src/mindustry/logic/LExecutor.java       |  7 ++-
- core/src/mindustry/logic/LStatements.java     | 27 +++++++++
- core/src/mindustry/logic/LogicDialog.java     | 29 +++++++--
- .../world/blocks/logic/LogicBlock.java        | 39 ++++++++----
- .../world/blocks/logic/MemoryBlock.java       | 26 +++++++-
- 6 files changed, 166 insertions(+), 21 deletions(-)
+ core/src/mindustry/logic/LStatements.java     | 27 +++++++++++
+ core/src/mindustry/logic/LogicDialog.java     | 19 ++++++--
+ .../world/blocks/logic/LogicBlock.java        | 39 +++++++++++----
+ .../world/blocks/logic/MemoryBlock.java       | 26 +++++++++-
+ 6 files changed, 149 insertions(+), 17 deletions(-)
 
 diff --git a/core/src/mindustry/logic/LCanvas.java b/core/src/mindustry/logic/LCanvas.java
-index 2bfd96ac4b9685bde38edee0d80be66380fdf6f2..cfd9503839daf8b4043827f2526d194ed5a3ed65 100644
+index 8d5edd0bcc16b65b4f7d1683925c9dd847bb7f0d..ac2376da44bec0dab0cdba90c6443d1232855234 100644
 --- a/core/src/mindustry/logic/LCanvas.java
 +++ b/core/src/mindustry/logic/LCanvas.java
 @@ -18,6 +18,9 @@ import mindustry.gen.*;
@@ -60,24 +60,12 @@ index 2bfd96ac4b9685bde38edee0d80be66380fdf6f2..cfd9503839daf8b4043827f2526d194e
      }
  
      public static void tooltip(Cell<?> cell, String key){
-@@ -433,14 +436,23 @@ public class LCanvas extends Table{
+@@ -444,11 +447,13 @@ public class LCanvas extends Table{
+                 t.button(Icon.copy, Styles.logici, () -> {
+                 }).size(24f).padRight(6).get().tapped(this::copy);
  
-                 addressLabel = t.add(index + "").style(Styles.outlineLabel).color(color).padRight(8).get();
- 
--                t.button(Icon.copy, Styles.logici, () -> {
--                }).size(24f).padRight(6).get().tapped(this::copy);
-+                t.button(Icon.add, Styles.logici, () -> LogicDialog.showAddStatement(privileged, (it) -> {
-+                    statements.addChildAfter(this, new StatementElem(it));
-+                    statements.updateJumpHeights = true;
-+                })).size(24f).padRight(6)
-+                .get().tapped(()->{});//no drag
++                t.button(st instanceof PrintStatement ? Icon.fileText : Icon.pencil, Styles.logici, this::toggleComment).size(24f).padRight(6);
 +
-+                t.button(Icon.copy, Styles.logici, this::copy).size(24f).padRight(6)
-+                .get().tapped(()->{});
-+
-+                t.button(st instanceof PrintStatement ? Icon.fileText : Icon.pencil, Styles.logici, this::toggleComment).size(24f).padRight(6)
-+                .get().tapped(()->{});
- 
                  t.button(Icon.cancel, Styles.logici, () -> {
                      remove();
                      dragging = null;
@@ -87,7 +75,7 @@ index 2bfd96ac4b9685bde38edee0d80be66380fdf6f2..cfd9503839daf8b4043827f2526d194e
  
                  t.addListener(new InputListener(){
                      float lastx, lasty;
-@@ -519,6 +531,45 @@ public class LCanvas extends Table{
+@@ -529,6 +534,45 @@ public class LCanvas extends Table{
              }
          }
  
@@ -134,7 +122,7 @@ index 2bfd96ac4b9685bde38edee0d80be66380fdf6f2..cfd9503839daf8b4043827f2526d194e
          public void draw(){
              float pad = 5f;
 diff --git a/core/src/mindustry/logic/LExecutor.java b/core/src/mindustry/logic/LExecutor.java
-index 15223f206189359a43b965100330f2eee3d783bf..fd74b0dddeb91e8523c1eafe2dbb5150286f3968 100644
+index 5d4a6f15df697d934584092daa082f5c29578a8d..18f5973f08ffe7ca262f6e4187d9ab530331e887 100644
 --- a/core/src/mindustry/logic/LExecutor.java
 +++ b/core/src/mindustry/logic/LExecutor.java
 @@ -44,6 +44,9 @@ public class LExecutor{
@@ -225,7 +213,7 @@ index 2d3a22342e4f6cfaa8524bcd9762898ecb1df52d..4d8c89b530ff5e341646faf858ef9619
  
              String name = name();
 diff --git a/core/src/mindustry/logic/LogicDialog.java b/core/src/mindustry/logic/LogicDialog.java
-index 350f1f3694d198f0f7d2f2ab842eab0c7f2ed93d..0b9939cc6c0a2f38cb06608f821412c38485b1ac 100644
+index 38211fd1ab47dbc60f7c3871284e79c595de4e6c..6c1b8a57d7206ec6d9f5909613ebf202b29931aa 100644
 --- a/core/src/mindustry/logic/LogicDialog.java
 +++ b/core/src/mindustry/logic/LogicDialog.java
 @@ -19,6 +19,8 @@ import mindustry.logic.LStatements.*;
@@ -237,11 +225,8 @@ index 350f1f3694d198f0f7d2f2ab842eab0c7f2ed93d..0b9939cc6c0a2f38cb06608f821412c3
  
  import java.util.*;
  
-@@ -29,9 +31,10 @@ public class LogicDialog extends BaseDialog{
-     public LCanvas canvas;
-     Cons<String> consumer = s -> {};
+@@ -31,7 +33,7 @@ public class LogicDialog extends BaseDialog{
      boolean privileged;
-+
      @Nullable LExecutor executor;
      GlobalVarsDialog globalsDialog = new GlobalVarsDialog();
 -    boolean wasRows, wasPortrait, forceRestart;
@@ -249,7 +234,7 @@ index 350f1f3694d198f0f7d2f2ab842eab0c7f2ed93d..0b9939cc6c0a2f38cb06608f821412c3
  
      public LogicDialog(){
          super("logic");
-@@ -48,7 +51,12 @@ public class LogicDialog extends BaseDialog{
+@@ -48,7 +50,12 @@ public class LogicDialog extends BaseDialog{
              wasRows = LCanvas.useRows();
              wasPortrait = Core.graphics.isPortrait();
          });
@@ -263,7 +248,7 @@ index 350f1f3694d198f0f7d2f2ab842eab0c7f2ed93d..0b9939cc6c0a2f38cb06608f821412c3
          onResize(() -> {
              if(wasRows != LCanvas.useRows() || wasPortrait != Core.graphics.isPortrait()){
                  setup();
-@@ -149,7 +157,12 @@ public class LogicDialog extends BaseDialog{
+@@ -149,7 +156,12 @@ public class LogicDialog extends BaseDialog{
                          dialog.hide();
                          hide();
                      }).marginLeft(12f);
@@ -277,37 +262,7 @@ index 350f1f3694d198f0f7d2f2ab842eab0c7f2ed93d..0b9939cc6c0a2f38cb06608f821412c3
                  });
              });
  
-@@ -254,6 +267,11 @@ public class LogicDialog extends BaseDialog{
-     }
- 
-     public void showAddDialog(){
-+        showAddStatement(privileged, (t) -> canvas.add(t));
-+    }
-+
-+    @MindustryXApi
-+    public static void showAddStatement(boolean privileged, Cons<LStatement> cons){
-         BaseDialog dialog = new BaseDialog("@add");
-         dialog.cont.table(table -> {
-             String[] searchText = {""};
-@@ -278,7 +296,7 @@ public class LogicDialog extends BaseDialog{
- 
-                     search.keyDown(KeyCode.enter, () -> {
-                         if(!searchText[0].isEmpty() && matched[0] != null){
--                            canvas.add((LStatement)matched[0].get());
-+                            cons.get((LStatement)matched[0].get());
-                             dialog.hide();
-                         }
-                     });
-@@ -326,7 +344,7 @@ public class LogicDialog extends BaseDialog{
-                         style.font = Fonts.outline;
- 
-                         cat.button(example.name(), style, () -> {
--                            canvas.add(prov.get());
-+                            cons.get(prov.get());
-                             dialog.hide();
-                         }).size(130f, 50f).self(c -> tooltip(c, "lst." + example.name())).top().left();
- 
-@@ -360,6 +378,7 @@ public class LogicDialog extends BaseDialog{
+@@ -364,6 +376,7 @@ public class LogicDialog extends BaseDialog{
              }
          };
  

@@ -8,7 +8,7 @@ Subject: [PATCH] FIX.C: NPE in StackConveyorBuild.draw
  1 file changed, 1 insertion(+), 1 deletion(-)
 
 diff --git a/core/src/mindustry/world/blocks/distribution/StackConveyor.java b/core/src/mindustry/world/blocks/distribution/StackConveyor.java
-index 2b4ea7ec1e4d42ec6e2035d61070fa1f175b6c79..7c82a2bcd4725ba78f49c3fbefe2663ca498e2d2 100644
+index 7a4fda7b75839f8402b6e9d9216836d6f0574b37..59957945c76eba2b64b0c34bd20d9c2226d787be 100644
 --- a/core/src/mindustry/world/blocks/distribution/StackConveyor.java
 +++ b/core/src/mindustry/world/blocks/distribution/StackConveyor.java
 @@ -141,7 +141,7 @@ public class StackConveyor extends Block implements Autotiler{

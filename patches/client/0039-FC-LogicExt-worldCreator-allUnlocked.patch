@@ -17,10 +17,10 @@ Content-Transfer-Encoding: 8bit
  6 files changed, 30 insertions(+), 8 deletions(-)
 
 diff --git a/core/src/mindustry/ctype/UnlockableContent.java b/core/src/mindustry/ctype/UnlockableContent.java
-index 1a2407026f64bc000b59cd63d5a67708aeac95b2..86d53f8e0bcb68fc8f357c3605d550ce0875dd2e 100644
+index 46823a4c1a60787e11691f74a2a66a5bc2d0b8a7..38ce9fd9ff789751fd68df0889d9bb5d5288613d 100644
 --- a/core/src/mindustry/ctype/UnlockableContent.java
 +++ b/core/src/mindustry/ctype/UnlockableContent.java
-@@ -17,6 +17,7 @@ import mindustry.graphics.MultiPacker.*;
+@@ -18,6 +18,7 @@ import mindustry.mod.*;
  import mindustry.type.*;
  import mindustry.ui.*;
  import mindustry.world.meta.*;
@@ -28,7 +28,7 @@ index 1a2407026f64bc000b59cd63d5a67708aeac95b2..86d53f8e0bcb68fc8f357c3605d550ce
  
  import static mindustry.Vars.*;
  
-@@ -229,7 +230,7 @@ public abstract class UnlockableContent extends MappableContent{
+@@ -242,7 +243,7 @@ public abstract class UnlockableContent extends MappableContent{
      }
  
      public boolean unlockedNowHost(){
@@ -37,7 +37,7 @@ index 1a2407026f64bc000b59cd63d5a67708aeac95b2..86d53f8e0bcb68fc8f357c3605d550ce
      }
  
      /** @return in multiplayer, whether this is unlocked for the host player, otherwise, whether it is unlocked for the local player (same as unlocked()) */
-@@ -241,7 +242,7 @@ public abstract class UnlockableContent extends MappableContent{
+@@ -254,7 +255,7 @@ public abstract class UnlockableContent extends MappableContent{
  
      /** @return whether this content is unlocked, or the player is in a custom (non-campaign) game. */
      public boolean unlockedNow(){
@@ -125,10 +125,10 @@ index be3d68cbc309505b39f4dbadcf62fa8cd1ab9d69..2f78972b3e66133672bc9d5fa2ed5318
      }
  
 diff --git a/core/src/mindustry/world/Block.java b/core/src/mindustry/world/Block.java
-index ed281d67995e959e13fda4bba3cbdc24f0dd8c66..86199a17b0164942847239950728dafc435e14d1 100644
+index 6a49123882594e26c61a88a4713353df4d5541ae..e738888c08c4099c0a1ab2f9a89453b8c9c53067 100644
 --- a/core/src/mindustry/world/Block.java
 +++ b/core/src/mindustry/world/Block.java
-@@ -926,11 +926,11 @@ public class Block extends UnlockableContent implements Senseable{
+@@ -948,11 +948,11 @@ public class Block extends UnlockableContent implements Senseable{
      }
  
      public boolean isVisible(){
@@ -143,7 +143,7 @@ index ed281d67995e959e13fda4bba3cbdc24f0dd8c66..86199a17b0164942847239950728dafc
  
      @Override
 diff --git a/core/src/mindustry/world/Build.java b/core/src/mindustry/world/Build.java
-index db70f50a96607dadc5ef5f08ee4a9cac6134f4d8..7c3e63260ca09dfe51f8aec52edab0392afd6b37 100644
+index 228331d06f8bece1e9b1ed81475b6d6f27a09cde..996c572eb3277f4531bc0d1b7fd0e4bc56b3df81 100644
 --- a/core/src/mindustry/world/Build.java
 +++ b/core/src/mindustry/world/Build.java
 @@ -15,6 +15,7 @@ import mindustry.gen.*;
@@ -154,7 +154,7 @@ index db70f50a96607dadc5ef5f08ee4a9cac6134f4d8..7c3e63260ca09dfe51f8aec52edab039
  
  import static mindustry.Vars.*;
  
-@@ -175,6 +176,10 @@ public class Build{
+@@ -179,6 +180,10 @@ public class Build{
  
      /** @return whether a tile can be placed at this location by this team. Ignores units at this location. */
      public static boolean validPlaceIgnoreUnits(Block type, Team team, int x, int y, int rotation, boolean checkVisible, boolean checkCoreRadius){
@@ -165,7 +165,7 @@ index db70f50a96607dadc5ef5f08ee4a9cac6134f4d8..7c3e63260ca09dfe51f8aec52edab039
          //the wave team can build whatever they want as long as it's visible - banned blocks are not applicable
          if(type == null || (!state.rules.editor && (checkVisible && (!type.environmentBuildable() || (!type.isPlaceable() && !(state.rules.waves && team == state.rules.waveTeam && type.isVisible())))))){
              return false;
-@@ -303,6 +308,7 @@ public class Build{
+@@ -307,6 +312,7 @@ public class Build{
      /** @return whether the tile at this position is breakable by this team */
      public static boolean validBreak(Team team, int x, int y){
          Tile tile = world.tile(x, y);

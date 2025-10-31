@@ -11,19 +11,19 @@ way-zer <himc.wicp@gmail.com> on 2024/6/9
  android/proguard-rules.pro                    |   4 +
  .../com/github/bsideup/jabel/Desugar.java     |  13 +
  .../javax.annotation.processing.Processor     |   6 +
- build.gradle                                  | 304 +++---------------
+ build.gradle                                  | 310 +++---------------
  core/build.gradle                             |   2 -
  core/build.gradle.kts                         |  66 ++++
  desktop/build.gradle                          | 166 +---------
- gradle.properties                             |   7 +-
- gradlew                                       | 284 +++++++++-------
+ gradle.properties                             |   5 +-
+ gradlew                                       | 284 ++++++++++------
  gradlew.bat                                   |  37 ++-
  ios/build.gradle                              |   2 +-
  server/build.gradle                           |  44 +--
  settings.gradle                               |  11 +-
- tools/build.gradle                            |  91 +++---
+ tools/build.gradle                            |  91 ++---
  tools/src/mindustry/tools/Generators.java     |   2 +-
- 17 files changed, 445 insertions(+), 698 deletions(-)
+ 17 files changed, 444 insertions(+), 703 deletions(-)
  create mode 100644 annotations/src/main/java/com/github/bsideup/jabel/Desugar.java
  create mode 100644 annotations/src/main/resources/META-INF/services/javax.annotation.processing.Processor
  delete mode 100644 core/build.gradle
@@ -265,7 +265,7 @@ index 0000000000000000000000000000000000000000..181b87c1d5f3755f16a01c0528d0a89f
 +mindustry.annotations.misc.LogicStatementProcessor
 +mindustry.annotations.remote.RemoteProcess
 diff --git a/build.gradle b/build.gradle
-index 48786c78c44affcf7fdb1c9e7a7d6281226d3677..b98a1a516279f582662ccf043f43b85488da522d 100644
+index 7451103b575e19f627542878ab9465a161025c11..ce079fc683727a04c06e7a7f757d3ce68d83e4e0 100644
 --- a/build.gradle
 +++ b/build.gradle
 @@ -1,30 +1,16 @@
@@ -489,7 +489,7 @@ index 48786c78c44affcf7fdb1c9e7a7d6281226d3677..b98a1a516279f582662ccf043f43b854
  }
  
  //compile with java 8 compatibility for everything except the annotation project
- configure(subprojects - project(":annotations")){
+ configure(subprojects - project(":annotations") - project(":tests")){
 -    tasks.withType(JavaCompile){
 -        options.compilerArgs.addAll(['--release', '8'])
 -    }
@@ -499,7 +499,7 @@ index 48786c78c44affcf7fdb1c9e7a7d6281226d3677..b98a1a516279f582662ccf043f43b854
          options{
              addStringOption('Xdoclint:none', '-quiet')
              addStringOption('-release', '17')
-@@ -237,11 +81,10 @@ configure(subprojects - project(":annotations")){
+@@ -237,11 +81,10 @@ configure(subprojects - project(":annotations") - project(":tests")){
      }
  }
  
@@ -635,7 +635,20 @@ index 48786c78c44affcf7fdb1c9e7a7d6281226d3677..b98a1a516279f582662ccf043f43b854
          }
      }
  
-@@ -416,14 +233,19 @@ project(":tools"){
+@@ -400,12 +217,6 @@ project(":tests"){
+         testRuntimeOnly "org.junit.jupiter:junit-jupiter-engine:5.7.1"
+     }
+ 
+-    tasks.withType(JavaCompile){
+-        targetCompatibility = JavaVersion.VERSION_17
+-        sourceCompatibility = JavaVersion.VERSION_17
+-        options.compilerArgs.addAll(['--release', '17'])
+-    }
+-
+     test{
+         //fork every test so mods don't interact with each other
+         forkEvery = 1
+@@ -422,14 +233,19 @@ project(":tools"){
      apply plugin: "java"
  
      dependencies{
@@ -657,18 +670,18 @@ index 48786c78c44affcf7fdb1c9e7a7d6281226d3677..b98a1a516279f582662ccf043f43b854
      }
  }
  
-@@ -446,42 +268,16 @@ configure([":core", ":server"].collect{project(it)}){
+@@ -452,42 +268,16 @@ configure([":core", ":server"].collect{project(it)}){
          publications{
              maven(MavenPublication){
                  from components.java
 -                if(project.name == "core"){
 -                    artifact(tasks.named("assetsJar"))
 -                }
-             }
-         }
-     }
- }
- 
+-            }
+-        }
+-    }
+-}
+-
 -task deployAll{
 -    task cleanDeployOutput{
 -        doFirst{
@@ -677,9 +690,9 @@ index 48786c78c44affcf7fdb1c9e7a7d6281226d3677..b98a1a516279f582662ccf043f43b854
 -
 -            delete{
 -                delete "deploy/"
--            }
--        }
--    }
+             }
+         }
+     }
 -
 -    dependsOn cleanDeployOutput
 -    dependsOn "desktop:packrLinux64"
@@ -690,8 +703,8 @@ index 48786c78c44affcf7fdb1c9e7a7d6281226d3677..b98a1a516279f582662ccf043f43b854
 -        dependsOn "server:deploy"
 -        dependsOn "android:deploy"
 -    }
--}
--
+ }
+ 
 -task resolveDependencies{
 +tasks.register('resolveDependencies'){
      doLast{
@@ -975,25 +988,18 @@ index b3f192bc75d3c1775179a7252c02f7ce0a39ff7e..b47e0569d82a8cc6331a1fe36952c206
 +}
 \ No newline at end of file
 diff --git a/gradle.properties b/gradle.properties
-index 3d0287e2d7f10fabca1e0530a8b4978ac6632947..312429ff8b3a185a4d2a1a90dcf355e828dc9b39 100644
+index cbf61d9303d95dbca7a3c51ba7d6e27203a9fd59..7fa4af3755cf9bf7ac8b6142aafbc1a113b3bfef 100644
 --- a/gradle.properties
 +++ b/gradle.properties
-@@ -1,5 +1,5 @@
- org.gradle.daemon=true
--org.gradle.jvmargs=-Xms256m -Xmx1024m --illegal-access=permit \
-+org.gradle.jvmargs=-Xms256m -Xmx2g --illegal-access=permit \
- --add-opens=jdk.compiler/com.sun.tools.javac.api=ALL-UNNAMED \
- --add-opens=jdk.compiler/com.sun.tools.javac.code=ALL-UNNAMED \
- --add-opens=jdk.compiler/com.sun.tools.javac.model=ALL-UNNAMED \
 @@ -26,4 +26,7 @@ org.gradle.caching=true
  org.gradle.internal.http.socketTimeout=100000
  org.gradle.internal.http.connectionTimeout=100000
  android.enableR8.fullMode=false
--archash=8d3f84b3c5
+-archash=75fffa01c8
 +
 +#MDTX: Use "v{upstreamBuild}" by default
-+#archash=8d3f84b3c5
-+upstreamBuild=152.2
++#archash=75fffa01c8
++upstreamBuild=153
 diff --git a/gradlew b/gradlew
 index 4f906e0c811fc9e230eb44819f509cd0627f2600..f3b75f3b0d4faeb4b1c8a02b5c47007e6efb7dcd 100755
 --- a/gradlew
@@ -1433,10 +1439,10 @@ index 107acd32c4e687021ef32db511e8a206129b88ec..9d21a21834d5195c278ba17baec3115b
  :mainEnd
  if "%OS%"=="Windows_NT" endlocal
 diff --git a/ios/build.gradle b/ios/build.gradle
-index 71fafd875bfa1397b6a58a1a5c34e9d8e5097df4..fc05725a5c30262b0061492c27b2b1deae577b55 100644
+index 9a9fe1cadd13b07f05f7a1fb4326ccc9190292c1..1634ced2973e7690ac6fcb665ddf5265998002f4 100644
 --- a/ios/build.gradle
 +++ b/ios/build.gradle
-@@ -77,7 +77,7 @@ task deploy{
+@@ -76,7 +76,7 @@ tasks.register('deploy'){
  }
  
  //must pack before deployment, as iOS never has the latest sprites.

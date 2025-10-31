@@ -4,14 +4,14 @@ Date: Thu, 24 Jul 2025 19:59:53 +0800
 Subject: [PATCH] PICK #anuken:11032
 
 ---
- core/assets/bundles/bundle_zh_CN.properties | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ core/assets/bundles/bundle_zh_CN.properties | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
 diff --git a/core/assets/bundles/bundle_zh_CN.properties b/core/assets/bundles/bundle_zh_CN.properties
-index ed1a64c5c9e90b5cc9e979111ebab1c7a4ab8a90..e018b2f2a5e4df930efe97238cb5f94b7abb334d 100644
+index 36b48154d81d17aa77e7b71b4fd8d990a1e90b8c..cbfc9a6f847cb94ed6d30b6e397f58c0e193a1a5 100644
 --- a/core/assets/bundles/bundle_zh_CN.properties
 +++ b/core/assets/bundles/bundle_zh_CN.properties
-@@ -375,7 +375,7 @@ command.enterPayload = 进入载荷建筑
+@@ -376,7 +376,7 @@ command.enterPayload = 进入载荷建筑
  command.loadUnits = 拾取单位
  command.loadBlocks = 拾取建筑
  command.unloadPayload = 卸载载荷
@@ -20,12 +20,3 @@ index ed1a64c5c9e90b5cc9e979111ebab1c7a4ab8a90..e018b2f2a5e4df930efe97238cb5f94b
  stance.stop = 取消指令
  stance.shoot = 警戒\n[lightgray]自动攻击一定范围内的敌人
  stance.holdfire = 停火\n[lightgray]暂停自动攻击
-@@ -2644,7 +2644,7 @@ lenum.always = 无条件跳转
- lenum.idiv = 整数除法，返回不带小数的商
- lenum.div = 除法，除以 0 时返回 [accent]null[]
- lenum.mod = 求除法的余数
--lenum.emod = 取模，结果总是正数
-+lenum.emod = 取模，结果与除数符号一致
- lenum.equal = 相等。转换参数类型后进行比较\n与数字进行比较时，null 转换为 0 ，非 null 对象转换为 1
- lenum.notequal = 不相等。转换参数类型后进行比较
- lenum.strictequal = 严格相等。不转换参数类型\n可用于准确检查 [accent]null[] 对象

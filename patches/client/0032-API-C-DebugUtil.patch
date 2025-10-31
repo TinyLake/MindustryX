@@ -15,7 +15,7 @@ way-zer <himc.wicp@gmail.com> on 2024/7/21
  3 files changed, 9 insertions(+), 1 deletion(-)
 
 diff --git a/core/src/mindustry/ClientLauncher.java b/core/src/mindustry/ClientLauncher.java
-index 161cd24bdd226072ba84fc4885845ba8cf201ed0..68fdba1c243ecb746155d6a5b92e70302813b50c 100644
+index 15b5a48b9cf1ebbadb16b3902071e47eeda3067f..8db0e9c54d688f0bfe50fbea22ecfca6a3084f84 100644
 --- a/core/src/mindustry/ClientLauncher.java
 +++ b/core/src/mindustry/ClientLauncher.java
 @@ -85,7 +85,7 @@ public abstract class ClientLauncher extends ApplicationCore implements Platform
@@ -28,7 +28,7 @@ index 161cd24bdd226072ba84fc4885845ba8cf201ed0..68fdba1c243ecb746155d6a5b92e7030
          assets.setLoader(Texture.class, "." + mapExtension, new MapPreviewLoader());
  
 diff --git a/core/src/mindustry/core/Logic.java b/core/src/mindustry/core/Logic.java
-index ae6c90c9238eeb3d50db73a491cea765a2e94079..12d3a6e250788b57f9f5c00e24b2ee42eb90f368 100644
+index ed955e4857a0b197f048314b671fc5d1bc8b6e3e..9aba9a725321046a1fa98a42231b712e747f74ab 100644
 --- a/core/src/mindustry/core/Logic.java
 +++ b/core/src/mindustry/core/Logic.java
 @@ -20,6 +20,7 @@ import mindustry.type.Weather.*;
@@ -39,7 +39,7 @@ index ae6c90c9238eeb3d50db73a491cea765a2e94079..12d3a6e250788b57f9f5c00e24b2ee42
  
  import java.util.*;
  
-@@ -427,6 +428,7 @@ public class Logic implements ApplicationListener{
+@@ -428,6 +429,7 @@ public class Logic implements ApplicationListener{
          PerfCounter.frame.end();
          PerfCounter.frame.begin();
  
@@ -47,7 +47,7 @@ index ae6c90c9238eeb3d50db73a491cea765a2e94079..12d3a6e250788b57f9f5c00e24b2ee42
          Events.fire(Trigger.update);
          universe.updateGlobal();
  
-@@ -539,6 +541,7 @@ public class Logic implements ApplicationListener{
+@@ -540,6 +542,7 @@ public class Logic implements ApplicationListener{
          }else if(netServer.isWaitingForPlayers() && runStateCheck){
              checkGameState();
          }

@@ -12,7 +12,7 @@ Content-Transfer-Encoding: 8bit
  1 file changed, 13 insertions(+)
 
 diff --git a/core/src/mindustry/input/InputHandler.java b/core/src/mindustry/input/InputHandler.java
-index 3d87bb6dc89288f209a835d80f9ce702b6b5e5a2..5f68fba201a88c50e27ba8da56dfacd69df9645e 100644
+index 25da640ceff64d4de0f2a8f68f90fb4cd8ec0255..68578615b4da2030b3144aab53046ba29d69e60d 100644
 --- a/core/src/mindustry/input/InputHandler.java
 +++ b/core/src/mindustry/input/InputHandler.java
 @@ -1772,6 +1772,18 @@ public abstract class InputHandler implements InputProcessor, GestureListener{

@@ -32,7 +32,7 @@ Content-Transfer-Encoding: 8bit
  21 files changed, 99 insertions(+), 58 deletions(-)
 
 diff --git a/core/src/mindustry/ClientLauncher.java b/core/src/mindustry/ClientLauncher.java
-index 99ae29c79de906a47e54f9c72555da0ee1ad5238..161cd24bdd226072ba84fc4885845ba8cf201ed0 100644
+index 545354aeae9c9fda1adccf72b683bf520108e561..15b5a48b9cf1ebbadb16b3902071e47eeda3067f 100644
 --- a/core/src/mindustry/ClientLauncher.java
 +++ b/core/src/mindustry/ClientLauncher.java
 @@ -36,6 +36,10 @@ public abstract class ClientLauncher extends ApplicationCore implements Platform
@@ -62,10 +62,10 @@ index 99ae29c79de906a47e54f9c72555da0ee1ad5238..161cd24bdd226072ba84fc4885845ba8
          }
  
 diff --git a/core/src/mindustry/Vars.java b/core/src/mindustry/Vars.java
-index 4b6eaeeb9469d7e2a96e82ab7446ab56a54bb0bc..f0d5808ef4a7ab1f069a4c337d2d84f283ed9def 100644
+index d03b17d2c047fc4acb84844d4a717826badda13a..23ae69e96eabdd97ea78751b81f3c62f06690f96 100644
 --- a/core/src/mindustry/Vars.java
 +++ b/core/src/mindustry/Vars.java
-@@ -418,6 +418,11 @@ public class Vars implements Loadable{
+@@ -420,6 +420,11 @@ public class Vars implements Loadable{
                  if(!headless && (ui == null || ui.consolefrag == null)){
                      logBuffer.add(result);
                  }else if(!headless){
@@ -103,10 +103,10 @@ index 7e9466f2d629335317b2a706b376d33aab029923..51669a3c774069bdb5f3189a52fd9386
  
          dynamic = new StatusEffect("dynamic"){{
 diff --git a/core/src/mindustry/core/Control.java b/core/src/mindustry/core/Control.java
-index 252327a0f9ae7b514bdd90ca06a55b910243b942..5e0645ee95665ff8a727d783edcdcf77bd85a95b 100644
+index 3a26a8d43faf03c02d17c46cd867a098a3df1056..8c1ce1e5526a8a1a2e79b10ff8a5c86d01be0efa 100644
 --- a/core/src/mindustry/core/Control.java
 +++ b/core/src/mindustry/core/Control.java
-@@ -598,7 +598,8 @@ public class Control implements ApplicationListener, Loadable{
+@@ -601,7 +601,8 @@ public class Control implements ApplicationListener, Loadable{
                  BaseDialog dialog = new BaseDialog("@confirm");
                  dialog.setFillParent(true);
  
@@ -145,19 +145,19 @@ index c3619bccaab8ca76f327e97c1e274d07c7575ab5..6da44d18e3c38f8a3010cf7075a2932a
          if(Mathf.equal(camerascale, dest, 0.001f)) camerascale = dest;
          unitLaserOpacity = settings.getInt("unitlaseropacity") / 100f;
 diff --git a/core/src/mindustry/core/UI.java b/core/src/mindustry/core/UI.java
-index 84eb1d70b908f0171a2201824043b088a2adb6d2..72316d3f95b80f51c11c6ad68fd87327e517824a 100644
+index 58f4dfa5abae13d0b43fc9779118bdc600ade3b1..5a31173c374cecfd732fe267ed55a805245f7bdb 100644
 --- a/core/src/mindustry/core/UI.java
 +++ b/core/src/mindustry/core/UI.java
-@@ -602,7 +602,7 @@ public class UI implements ApplicationListener, Loadable{
-             t.setPosition(Core.graphics.getWidth()/2f, Core.graphics.getHeight()/2f, Align.center);
-             t.toFront();
+@@ -607,7 +607,7 @@ public class UI implements ApplicationListener, Loadable{
+                 t.remove();
+             }
          });
 -        t.actions(Actions.fadeOut(duration, Interp.pow4In), Actions.remove());
 +        t.actions(Actions.fadeOut(Math.min(duration,30f), Interp.pow4In), Actions.remove());
          t.pack();
          t.act(0.1f);
          Core.scene.add(t);
-@@ -741,23 +741,7 @@ public class UI implements ApplicationListener, Loadable{
+@@ -746,23 +746,7 @@ public class UI implements ApplicationListener, Loadable{
      }
  
      public static String formatAmount(long number){
@@ -216,7 +216,7 @@ index 2333f83d451cd664633dc38c9f7d2b0911962398..0ca9f1a37d3f46842a5d1212b0f633dd
              Reads read = new Reads(stream);
  
 diff --git a/core/src/mindustry/graphics/MinimapRenderer.java b/core/src/mindustry/graphics/MinimapRenderer.java
-index 1eb24a901b103493acd75da2d47c548a5255d487..e1513b06c05607e6315ad645071f72617b90e892 100644
+index 80892c624209e6f7e788c5c96b80f1f83a10d809..9101c36aaa4919cd52e1cd3bfb1bfab281076f3d 100644
 --- a/core/src/mindustry/graphics/MinimapRenderer.java
 +++ b/core/src/mindustry/graphics/MinimapRenderer.java
 @@ -102,7 +102,8 @@ public class MinimapRenderer{
@@ -318,10 +318,10 @@ index e56d2f43cc0dbea91986edefd29189327d409bb6..e26fecde81717004b5561c53dc43ae28
  
      void rebind(KeyBind bind, KeyCode newKey){
 diff --git a/core/src/mindustry/ui/dialogs/SettingsMenuDialog.java b/core/src/mindustry/ui/dialogs/SettingsMenuDialog.java
-index 7395d57a3c349a0db43ea3537af1611db612695d..9dc95e87f853ba94653cc6e3f36f0d0c23eed507 100644
+index 7949471868168ce97170f6550ce2949c7590506b..6e0bd9f94bd41137ddc69bae8beb7727d12ac6c0 100644
 --- a/core/src/mindustry/ui/dialogs/SettingsMenuDialog.java
 +++ b/core/src/mindustry/ui/dialogs/SettingsMenuDialog.java
-@@ -397,14 +397,14 @@ public class SettingsMenuDialog extends BaseDialog{
+@@ -408,14 +408,14 @@ public class SettingsMenuDialog extends BaseDialog{
          graphics.sliderPref("unitlaseropacity", 100, 0, 100, 5, s -> s + "%");
          graphics.sliderPref("bridgeopacity", 100, 0, 100, 5, s -> s + "%");
  
@@ -478,10 +478,10 @@ index cbe6d64d52f66d38be69a897a9a1a2f5b928e631..c5fe7f0080fea29764ebd94f576f1f98
  
          @Override
 diff --git a/core/src/mindustry/world/blocks/production/BeamDrill.java b/core/src/mindustry/world/blocks/production/BeamDrill.java
-index 08c3cada1ce17bcabcf9a61fd1cf52a94a861d39..25b19302bfedc22cfcb523cc7558479d9fd1138e 100644
+index 5e126478f0ad41d545cb6a7b280b96f4d4381bd1..6b686fa3b4579ae183cf957efdaf89a9fab13dba 100644
 --- a/core/src/mindustry/world/blocks/production/BeamDrill.java
 +++ b/core/src/mindustry/world/blocks/production/BeamDrill.java
-@@ -181,14 +181,10 @@ public class BeamDrill extends Block{
+@@ -182,14 +182,10 @@ public class BeamDrill extends Block{
          }
  
          if(item != null){
@@ -501,7 +501,7 @@ index 08c3cada1ce17bcabcf9a61fd1cf52a94a861d39..25b19302bfedc22cfcb523cc7558479d
              drawPlaceText(Core.bundle.get("bar.drilltierreq"), x, y, false);
          }
 diff --git a/desktop/src/mindustry/desktop/DesktopLauncher.java b/desktop/src/mindustry/desktop/DesktopLauncher.java
-index 9eabc5f002a3715d90f963309e67d6bca8572d31..a9cd68755f8ec67c88a2f7f965a2b07461ab70ba 100644
+index d15cfcaab94f3cdca42524b627f3064be16ea67d..8857138974023b123eebda8d8140c3c24bcf51e1 100644
 --- a/desktop/src/mindustry/desktop/DesktopLauncher.java
 +++ b/desktop/src/mindustry/desktop/DesktopLauncher.java
 @@ -25,6 +25,7 @@ import mindustry.net.*;

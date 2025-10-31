@@ -93,7 +93,7 @@ way-zer <himc.wicp@gmail.com> on 2024/7/28
 * 更改开雾功能实现
 way-zer <himc.wicp@gmail.com> on 2024/9/8
 ---
- core/src/mindustry/editor/MapInfoDialog.java  |   9 +-
+ core/src/mindustry/editor/MapInfoDialog.java  |   7 +-
  .../mindustry/entities/comp/BuildingComp.java |  18 +-
  .../mindustry/entities/comp/ShieldComp.java   |  10 +
  .../mindustry/entities/comp/StatusComp.java   |   3 +
@@ -120,25 +120,23 @@ way-zer <himc.wicp@gmail.com> on 2024/9/8
  .../mindustry/ui/fragments/MenuFragment.java  |  24 +-
  .../ui/fragments/PlacementFragment.java       | 164 ++++++++++--
  .../ui/fragments/PlayerListFragment.java      |  72 ++----
- 27 files changed, 1135 insertions(+), 148 deletions(-)
+ 27 files changed, 1134 insertions(+), 147 deletions(-)
 
 diff --git a/core/src/mindustry/editor/MapInfoDialog.java b/core/src/mindustry/editor/MapInfoDialog.java
-index ebc1f0b300d295e45333f1db38ea299c9658ec20..e7cba056743979206c84fc6d00472c2c44b565f6 100644
+index b4f56d136b632aae1841fcfb6f745018d40b9199..6e38c85a35901a80d632191502f10063066e8e2e 100644
 --- a/core/src/mindustry/editor/MapInfoDialog.java
 +++ b/core/src/mindustry/editor/MapInfoDialog.java
-@@ -32,8 +32,9 @@ public class MapInfoDialog extends BaseDialog{
+@@ -33,7 +33,8 @@ public class MapInfoDialog extends BaseDialog{
      private void setup(){
          cont.clear();
  
 -        ObjectMap<String, String> tags = editor.tags;
--        
 +        //MDTX: allow edit in game
 +        ObjectMap<String, String> tags = state.isGame() ? state.map.tags : editor.tags;
-+
+ 
          cont.pane(t -> {
              t.add("@editor.mapname").padRight(8).left();
-             t.defaults().padTop(15);
-@@ -84,14 +85,14 @@ public class MapInfoDialog extends BaseDialog{
+@@ -85,14 +86,14 @@ public class MapInfoDialog extends BaseDialog{
  
                  r.button("@editor.generation", Icon.terrain, style, () -> {
                      //randomize so they're not all the same seed
@@ -156,7 +154,7 @@ index ebc1f0b300d295e45333f1db38ea299c9658ec20..e7cba056743979206c84fc6d00472c2c
                      hide();
                  }).marginLeft(10f);
 diff --git a/core/src/mindustry/entities/comp/BuildingComp.java b/core/src/mindustry/entities/comp/BuildingComp.java
-index c04a9768f34ecdbeaac00978b1f4ae6e94633f03..096d0dcdf15be7972b849ea1762fe040e0eb0dc6 100644
+index de140f690ddffabc6675c801aa13c4c25ebd09ea..9bba985106e3176b0c6befdef6447b38698d928d 100644
 --- a/core/src/mindustry/entities/comp/BuildingComp.java
 +++ b/core/src/mindustry/entities/comp/BuildingComp.java
 @@ -41,6 +41,7 @@ import mindustry.world.blocks.power.*;
@@ -184,7 +182,7 @@ index c04a9768f34ecdbeaac00978b1f4ae6e94633f03..096d0dcdf15be7972b849ea1762fe040
      }
  
      public float timeScale(){
-@@ -1489,7 +1491,8 @@ abstract class BuildingComp implements Posc, Teamc, Healthc, Buildingc, Timerc,
+@@ -1493,7 +1495,8 @@ abstract class BuildingComp implements Posc, Teamc, Healthc, Buildingc, Timerc,
          //derelict team icon currently doesn't display
          return team == Team.derelict ?
              block.localizedName + "\n" + Core.bundle.get("block.derelict") :
@@ -194,7 +192,7 @@ index c04a9768f34ecdbeaac00978b1f4ae6e94633f03..096d0dcdf15be7972b849ea1762fe040
      }
  
      public TextureRegion getDisplayIcon(){
-@@ -1513,7 +1516,7 @@ abstract class BuildingComp implements Posc, Teamc, Healthc, Buildingc, Timerc,
+@@ -1517,7 +1520,7 @@ abstract class BuildingComp implements Posc, Teamc, Healthc, Buildingc, Timerc,
          table.row();
  
          //only display everything else if the team is the same
@@ -203,7 +201,7 @@ index c04a9768f34ecdbeaac00978b1f4ae6e94633f03..096d0dcdf15be7972b849ea1762fe040
              table.table(bars -> {
                  bars.defaults().growX().height(18f).pad(4);
  
-@@ -1614,6 +1617,15 @@ abstract class BuildingComp implements Posc, Teamc, Healthc, Buildingc, Timerc,
+@@ -1618,6 +1621,15 @@ abstract class BuildingComp implements Posc, Teamc, Healthc, Buildingc, Timerc,
              table.add(result).growX();
              table.row();
          }
@@ -402,10 +400,10 @@ index dde5886f6020aa1c372ac3346e81aab0c7fdedf7..793e1b23c43d7beb6677d8e29f6c9e22
          ItemSeq requirements = new ItemSeq();
  
 diff --git a/core/src/mindustry/graphics/BlockRenderer.java b/core/src/mindustry/graphics/BlockRenderer.java
-index e6bdd9e981d2bf87c91d4081f0f323e2171a5036..0bcfd50b251fb93edafa91df85206978fbee6bc8 100644
+index 431e5dbb413935fb8a2b06298db04dff37e99c73..6c3a997238977abc7a4bbf71a59de9aac4aa8b05 100644
 --- a/core/src/mindustry/graphics/BlockRenderer.java
 +++ b/core/src/mindustry/graphics/BlockRenderer.java
-@@ -490,13 +490,18 @@ public class BlockRenderer{
+@@ -491,13 +491,18 @@ public class BlockRenderer{
                          Draw.z(Layer.block);
                      }
  
@@ -431,7 +429,7 @@ index e6bdd9e981d2bf87c91d4081f0f323e2171a5036..0bcfd50b251fb93edafa91df85206978
                  }
                  Draw.reset();
 diff --git a/core/src/mindustry/graphics/OverlayRenderer.java b/core/src/mindustry/graphics/OverlayRenderer.java
-index 4354963da51ef7ccefafec061635fced40457260..1c2d34a69470d4f1f660c43b5b03180f3124e86a 100644
+index 63d61152b5444d9c2be8fc7173d47efb225ce906..8ccaa122efba7649df5871ffe8e8274921a3ec53 100644
 --- a/core/src/mindustry/graphics/OverlayRenderer.java
 +++ b/core/src/mindustry/graphics/OverlayRenderer.java
 @@ -17,6 +17,7 @@ import mindustry.gen.*;
@@ -565,7 +563,7 @@ index a8a29dc99bb52eec3ab5c85f336f5b14895a7868..eb32a3fc1ee7e603cb4f5a9a2b455dfc
              unit.lookAt(unit.prefRotation());
          }
 diff --git a/core/src/mindustry/input/InputHandler.java b/core/src/mindustry/input/InputHandler.java
-index a99c6713a1c7a93e83ecc2e9ab551121354f8838..3d87bb6dc89288f209a835d80f9ce702b6b5e5a2 100644
+index fbbaa8df29b8d8b965d13636b5fe8c03f57b0c01..25da640ceff64d4de0f2a8f68f90fb4cd8ec0255 100644
 --- a/core/src/mindustry/input/InputHandler.java
 +++ b/core/src/mindustry/input/InputHandler.java
 @@ -38,6 +38,7 @@ import mindustry.world.*;
@@ -692,7 +690,7 @@ index a99c6713a1c7a93e83ecc2e9ab551121354f8838..3d87bb6dc89288f209a835d80f9ce702
          !(player.unit() instanceof Mechc && player.unit().isFlying()) && !player.unit().mining() && !commandMode;
      }
 diff --git a/core/src/mindustry/input/MobileInput.java b/core/src/mindustry/input/MobileInput.java
-index 6e550fbc73a7a65da33c24cdec0471edbb21ee5f..3188f7e969cb29f2595a25793db85ff0b4284a11 100644
+index c96d1a87087cae47c3dd2223b22f004ee472f888..b4fb89e867754a37d1cf007b5f3db3c146a2557b 100644
 --- a/core/src/mindustry/input/MobileInput.java
 +++ b/core/src/mindustry/input/MobileInput.java
 @@ -334,7 +334,7 @@ public class MobileInput extends InputHandler implements GestureListener{
@@ -704,7 +702,7 @@ index 6e550fbc73a7a65da33c24cdec0471edbb21ee5f..3188f7e969cb29f2595a25793db85ff0
              }).margin(4f);
          });
      }
-@@ -1041,6 +1041,10 @@ public class MobileInput extends InputHandler implements GestureListener{
+@@ -1040,6 +1040,10 @@ public class MobileInput extends InputHandler implements GestureListener{
              unit.vel.approachDelta(Vec2.ZERO, unit.speed() * type.accel / 2f);
          }
  
@@ -716,7 +714,7 @@ index 6e550fbc73a7a65da33c24cdec0471edbb21ee5f..3188f7e969cb29f2595a25793db85ff0
          rect.grow(4f);
  
 diff --git a/core/src/mindustry/logic/LExecutor.java b/core/src/mindustry/logic/LExecutor.java
-index fd74b0dddeb91e8523c1eafe2dbb5150286f3968..551ca716d0396a210aa7251d139034cf6303e343 100644
+index 18f5973f08ffe7ca262f6e4187d9ab530331e887..6ef6d5b2c04a7544c8ade2c028b1d5efd189ebf8 100644
 --- a/core/src/mindustry/logic/LExecutor.java
 +++ b/core/src/mindustry/logic/LExecutor.java
 @@ -10,6 +10,7 @@ import arc.util.*;
@@ -753,7 +751,7 @@ index fd74b0dddeb91e8523c1eafe2dbb5150286f3968..551ca716d0396a210aa7251d139034cf
                  //TODO desync?
                  case mission -> state.rules.mission = text;
 diff --git a/core/src/mindustry/type/UnitType.java b/core/src/mindustry/type/UnitType.java
-index b0a92b903d022b612e07998eb3200fbbdca9b421..25332313636406f6b8308292b3c765c66e04fbe7 100644
+index 79974b68d3a2040900c005e5bf38f1a6e8c856a0..d4bb0b8ea607f80b81176474bd97f9d44f352c25 100644
 --- a/core/src/mindustry/type/UnitType.java
 +++ b/core/src/mindustry/type/UnitType.java
 @@ -38,6 +38,7 @@ import mindustry.world.blocks.units.*;
@@ -900,7 +898,7 @@ index b0a92b903d022b612e07998eb3200fbbdca9b421..25332313636406f6b8308292b3c765c6
      }
  
      /** @return whether this block supports a specific environment. */
-@@ -1636,12 +1710,15 @@ public class UnitType extends UnlockableContent implements Senseable{
+@@ -1652,12 +1726,15 @@ public class UnitType extends UnlockableContent implements Senseable{
              unit.y + Angles.trnsy(unit.rotation + 180f, itemOffsetY),
              size, size);
  
@@ -918,7 +916,7 @@ index b0a92b903d022b612e07998eb3200fbbdca9b421..25332313636406f6b8308292b3c765c6
  
              Draw.reset();
 diff --git a/core/src/mindustry/type/Weapon.java b/core/src/mindustry/type/Weapon.java
-index 5d19ab5fe98f282f1d97dcfd73190a6d433e475a..9ce9718e77c9a354736fc2fea69e8ded91dd683d 100644
+index 89379103de6e5f450a363bb2df5600ba2ceafc9e..78cb7deb90f8f87aca0e5936221a10644a80bc95 100644
 --- a/core/src/mindustry/type/Weapon.java
 +++ b/core/src/mindustry/type/Weapon.java
 @@ -22,6 +22,8 @@ import mindustry.entities.units.*;
@@ -955,7 +953,7 @@ index 5d19ab5fe98f282f1d97dcfd73190a6d433e475a..9ce9718e77c9a354736fc2fea69e8ded
      }
  
 diff --git a/core/src/mindustry/ui/Fonts.java b/core/src/mindustry/ui/Fonts.java
-index c784bbf56e85194f93a9e11ef2486a9eb0fd5077..c5b66ef07e3272c376342fe939af28029ae02295 100644
+index 1de3876c6adec0c03a3f477e242aaeac0550b138..380ab33b18be21881c60fadeaacf3507832972cf 100644
 --- a/core/src/mindustry/ui/Fonts.java
 +++ b/core/src/mindustry/ui/Fonts.java
 @@ -30,7 +30,7 @@ public class Fonts{
@@ -966,23 +964,24 @@ index c784bbf56e85194f93a9e11ef2486a9eb0fd5077..c5b66ef07e3272c376342fe939af2802
 +    public static ObjectMap<String, String> stringIcons = new ObjectMap<>();
      private static ObjectMap<String, TextureRegion> largeIcons = new ObjectMap<>();
  
-     public static Font def, outline, icon, iconLarge, tech, logic;
+     public static Font def, outline, icon, iconLarge, tech, logic, monospace;
 diff --git a/core/src/mindustry/ui/dialogs/ContentInfoDialog.java b/core/src/mindustry/ui/dialogs/ContentInfoDialog.java
-index e2100b2e502c13f2339b485694e297fa61ea89d8..f1d07ff0e8b009786b29f175e9cd9afa75d8e3df 100644
+index d19bebacb06f9d6a2c8453a0ff0f59764dc2cfb4..90c116c938eedc6ac5aa17a4c51adc06fddc978e 100644
 --- a/core/src/mindustry/ui/dialogs/ContentInfoDialog.java
 +++ b/core/src/mindustry/ui/dialogs/ContentInfoDialog.java
-@@ -9,8 +9,10 @@ import arc.util.*;
+@@ -9,9 +9,11 @@ import arc.util.*;
  import mindustry.ctype.*;
  import mindustry.gen.*;
  import mindustry.graphics.*;
 +import mindustry.ui.Styles;
  import mindustry.input.*;
+ import mindustry.ui.*;
  import mindustry.world.meta.*;
 +import mindustryX.features.ui.*;
  
  import static arc.Core.*;
  import static mindustry.Vars.*;
-@@ -39,8 +41,9 @@ public class ContentInfoDialog extends BaseDialog{
+@@ -40,8 +42,9 @@ public class ContentInfoDialog extends BaseDialog{
          content.checkStats();
  
          table.table(title1 -> {
@@ -994,7 +993,7 @@ index e2100b2e502c13f2339b485694e297fa61ea89d8..f1d07ff0e8b009786b29f175e9cd9afa
          });
  
          table.row();
-@@ -89,12 +92,25 @@ public class ContentInfoDialog extends BaseDialog{
+@@ -90,7 +93,7 @@ public class ContentInfoDialog extends BaseDialog{
          }
  
          if(content.details != null){
@@ -1002,6 +1001,8 @@ index e2100b2e502c13f2339b485694e297fa61ea89d8..f1d07ff0e8b009786b29f175e9cd9afa
 +            table.add("[gray]" + content.details ).pad(6).padTop(20).width(400f).wrap().fillX();
              table.row();
          }
+ 
+@@ -105,6 +108,19 @@ public class ContentInfoDialog extends BaseDialog{
  
          content.displayExtra(table);
  
@@ -1302,10 +1303,10 @@ index e9daeae7c7ec493624d313ec540ab8c0c53e710c..74b96cd09f6a7224b25b32d9b9bc05ae
  
                      if((++count) % cols == 0){
 diff --git a/core/src/mindustry/ui/dialogs/PausedDialog.java b/core/src/mindustry/ui/dialogs/PausedDialog.java
-index e21b1191027ce69405b4b54d0d914ba112e5d380..788fe34b0434a99a9aa66869949f80837869765e 100644
+index 8c8b7c49668a1adb90aa0d018c18f66ed6deeb6e..a2b23b5b4e281d8512e32d3439bd9d32fd6e62a6 100644
 --- a/core/src/mindustry/ui/dialogs/PausedDialog.java
 +++ b/core/src/mindustry/ui/dialogs/PausedDialog.java
-@@ -62,7 +62,7 @@ public class PausedDialog extends BaseDialog{
+@@ -63,7 +63,7 @@ public class PausedDialog extends BaseDialog{
              cont.button("@back", Icon.left, this::hide).name("back");
              cont.button("@settings", Icon.settings, ui.settings::show).name("settings");
  
@@ -1314,7 +1315,7 @@ index e21b1191027ce69405b4b54d0d914ba112e5d380..788fe34b0434a99a9aa66869949f8083
                  cont.row();
                  cont.button("@savegame", Icon.save, save::show);
                  cont.button("@loadgame", Icon.upload, load::show).disabled(b -> net.active());
-@@ -89,6 +89,10 @@ public class PausedDialog extends BaseDialog{
+@@ -90,6 +90,10 @@ public class PausedDialog extends BaseDialog{
  
              cont.row();
  
@@ -1325,7 +1326,7 @@ index e21b1191027ce69405b4b54d0d914ba112e5d380..788fe34b0434a99a9aa66869949f8083
              cont.button("@quit", Icon.exit, this::showQuitConfirm).colspan(2).width(dw + 10f).update(s -> s.setText(control.saves.getCurrent() != null && control.saves.getCurrent().isAutosave() ? "@save.quit" : "@quit"));
  
          }else{
-@@ -121,6 +125,12 @@ public class PausedDialog extends BaseDialog{
+@@ -132,6 +136,12 @@ public class PausedDialog extends BaseDialog{
                  s.setText(control.saves.getCurrent() != null && control.saves.getCurrent().isAutosave() ? "@save.quit" : "@quit");
                  s.getLabelCell().growX().wrap();
              });
@@ -1339,7 +1340,7 @@ index e21b1191027ce69405b4b54d0d914ba112e5d380..788fe34b0434a99a9aa66869949f8083
      }
  
 diff --git a/core/src/mindustry/ui/dialogs/PlanetDialog.java b/core/src/mindustry/ui/dialogs/PlanetDialog.java
-index a6c99837b9d4c91ce7733b1e58eb71f1766f7414..6410a7f0819afc6588803d4778dae1fd835e609f 100644
+index 1914a48cef09823901b7957e3ffcd7b0829b5181..b9c87fef0a8bcef60a425d22e9dcd971261037af 100644
 --- a/core/src/mindustry/ui/dialogs/PlanetDialog.java
 +++ b/core/src/mindustry/ui/dialogs/PlanetDialog.java
 @@ -38,6 +38,7 @@ import mindustry.type.Planet.*;
@@ -1433,7 +1434,7 @@ index a6c99837b9d4c91ce7733b1e58eb71f1766f7414..6410a7f0819afc6588803d4778dae1fd
                      t.row();
                  }
              }
-@@ -1090,7 +1113,7 @@ public class PlanetDialog extends BaseDialog implements PlanetInterfaceRenderer{
+@@ -1094,7 +1117,7 @@ public class PlanetDialog extends BaseDialog implements PlanetInterfaceRenderer{
                          for(ItemStack stack : items){
                              res.image(stack.item.uiIcon).padRight(3);
                              res.add(UI.formatAmount(Math.max(stack.amount, 0))).color(Color.lightGray);
@@ -1784,7 +1785,7 @@ index fef8e21d771ccfd81cbc65a0bc62642ebf721952..06ad54d370d3af90ab6e366155b18c8e
          }
      }
 diff --git a/core/src/mindustry/ui/dialogs/SettingsMenuDialog.java b/core/src/mindustry/ui/dialogs/SettingsMenuDialog.java
-index 9dc95e87f853ba94653cc6e3f36f0d0c23eed507..7d89611da6e01513220f371703b740cead511a75 100644
+index 6e0bd9f94bd41137ddc69bae8beb7727d12ac6c0..2ab0dd207537b56873e71412a3862d209f0f43e9 100644
 --- a/core/src/mindustry/ui/dialogs/SettingsMenuDialog.java
 +++ b/core/src/mindustry/ui/dialogs/SettingsMenuDialog.java
 @@ -303,8 +303,8 @@ public class SettingsMenuDialog extends BaseDialog{
@@ -1825,7 +1826,7 @@ index 9dc95e87f853ba94653cc6e3f36f0d0c23eed507..7d89611da6e01513220f371703b740ce
  
          int[] lastUiScale = {settings.getInt("uiscale", 100)};
  
-@@ -465,6 +463,8 @@ public class SettingsMenuDialog extends BaseDialog{
+@@ -476,6 +474,8 @@ public class SettingsMenuDialog extends BaseDialog{
          graphics.checkPref("destroyedblocks", true);
          graphics.checkPref("blockstatus", false);
          graphics.checkPref("playerchat", true);
@@ -1834,7 +1835,7 @@ index 9dc95e87f853ba94653cc6e3f36f0d0c23eed507..7d89611da6e01513220f371703b740ce
          if(!mobile){
              graphics.checkPref("coreitems", true);
          }
-@@ -474,12 +474,12 @@ public class SettingsMenuDialog extends BaseDialog{
+@@ -485,12 +485,12 @@ public class SettingsMenuDialog extends BaseDialog{
              graphics.checkPref("detach-camera", false);
          }
          graphics.checkPref("position", false);
@@ -2113,7 +2114,7 @@ index 40f358b312ef1b8707692e76a4add72774009a91..218e2bdf499cb2adfa738c9b782b1444
  
  }
 diff --git a/core/src/mindustry/ui/fragments/MenuFragment.java b/core/src/mindustry/ui/fragments/MenuFragment.java
-index 15f167bd7ba2835e774271515e2ce424240c7b6a..41683096ba3deb0e38dc79c454b2bbdef63b17e5 100644
+index 90c843267ba9c3c59413a658c9777198296514f5..ef94d7797a159263ea5da2f2d1e445a8287cb959 100644
 --- a/core/src/mindustry/ui/fragments/MenuFragment.java
 +++ b/core/src/mindustry/ui/fragments/MenuFragment.java
 @@ -45,7 +45,15 @@ public class MenuFragment{
@@ -2133,8 +2134,8 @@ index 15f167bd7ba2835e774271515e2ce424240c7b6a..41683096ba3deb0e38dc79c454b2bbde
  
          parent.fill(c -> {
              c.pane(Styles.noBarPane, cont -> {
-@@ -99,6 +107,11 @@ public class MenuFragment{
-             });
+@@ -97,6 +105,11 @@ public class MenuFragment{
+             }}, ui.about::show).size(84, 45).name("info"));
          }
  
 +        parent.fill(c -> c.bottom().left().table(t -> {
@@ -2145,7 +2146,7 @@ index 15f167bd7ba2835e774271515e2ce424240c7b6a..41683096ba3deb0e38dc79c454b2bbde
          String versionText = ((Version.build == -1) ? "[#fc8140aa]" : "[#ffffffba]") + Version.combined();
          parent.fill((x, y, w, h) -> {
              TextureRegion logo = Core.atlas.find("logo");
-@@ -141,7 +154,7 @@ public class MenuFragment{
+@@ -139,7 +152,7 @@ public class MenuFragment{
              tools = new MobileButton(Icon.settings, "@settings", ui.settings::show),
              mods = new MobileButton(Icon.book, "@mods", ui.mods::show),
              exit = new MobileButton(Icon.exit, "@quit", () -> Core.app.exit()),
@@ -2154,7 +2155,7 @@ index 15f167bd7ba2835e774271515e2ce424240c7b6a..41683096ba3deb0e38dc79c454b2bbde
  
          Seq<MobileButton> customs = customButtons.map(b -> new MobileButton(b.icon, b.text, b.runnable == null ? () -> {} : b.runnable));
  
-@@ -160,11 +173,12 @@ public class MenuFragment{
+@@ -158,11 +171,12 @@ public class MenuFragment{
              container.add(editor);
              container.add(tools);
              container.add(mods);
@@ -2168,7 +2169,7 @@ index 15f167bd7ba2835e774271515e2ce424240c7b6a..41683096ba3deb0e38dc79c454b2bbde
          }else{
              container.marginTop(0f);
              container.add(play);
-@@ -177,12 +191,14 @@ public class MenuFragment{
+@@ -175,12 +189,14 @@ public class MenuFragment{
              container.add(tools);
              container.row();
              container.add(mods);

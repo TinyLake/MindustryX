@@ -8,10 +8,10 @@ Subject: [PATCH] H.API: InternalMods
  1 file changed, 5 insertions(+), 1 deletion(-)
 
 diff --git a/core/src/mindustry/mod/Mods.java b/core/src/mindustry/mod/Mods.java
-index 677d479cd1636375fceecd7781d4274e3194986d..5b4991fb30a0280e8c13ebcdfd200142c0281904 100644
+index aef65e50ec4abb3dde4c05c50edac894b7e65a2f..cb09da9efe978449c75fafef9abe25e68b89b326 100644
 --- a/core/src/mindustry/mod/Mods.java
 +++ b/core/src/mindustry/mod/Mods.java
-@@ -154,6 +154,10 @@ public class Mods implements Loadable{
+@@ -153,6 +153,10 @@ public class Mods implements Loadable{
          eachEnabled(mod -> {
              Seq<Fi> sprites = mod.root.child("sprites").findAll(f -> f.extension().equals("png"));
              Seq<Fi> overrides = mod.root.child("sprites-override").findAll(f -> f.extension().equals("png"));
@@ -20,9 +20,9 @@ index 677d479cd1636375fceecd7781d4274e3194986d..5b4991fb30a0280e8c13ebcdfd200142
 +                overrides = mindustryX.features.InternalMods.spritesOverride();
 +            }
  
-             packSprites(sprites, mod, true, tasks);
-             packSprites(overrides, mod, false, tasks);
-@@ -470,7 +474,7 @@ public class Mods implements Loadable{
+             packSprites(packer, sprites, mod, true, tasks, textureResize);
+             packSprites(packer, overrides, mod, false, tasks, textureResize);
+@@ -489,7 +493,7 @@ public class Mods implements Loadable{
      /** Loads all mods from the folder, but does not call any methods on them.*/
      public void load(){
          var candidates = new Seq<Fi>();

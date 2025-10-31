@@ -57,7 +57,7 @@ index 0000000000000000000000000000000000000000..54e235c5590f4dd65fe4b989d67b82da
 +</paths>
 \ No newline at end of file
 diff --git a/android/src/mindustry/android/AndroidLauncher.java b/android/src/mindustry/android/AndroidLauncher.java
-index e6809bec45c7686a68c309ae03acbaf5eaa64282..4a1241e2b1c6b75a6316535258e45e03b3d2edef 100644
+index 3d40d5136f44bf3a7518c833b5d5f2964cee6a39..91a30636e9c60bd2dbfb2a4ec05a1c7a3d954bbe 100644
 --- a/android/src/mindustry/android/AndroidLauncher.java
 +++ b/android/src/mindustry/android/AndroidLauncher.java
 @@ -20,6 +20,7 @@ import mindustry.game.Saves.*;

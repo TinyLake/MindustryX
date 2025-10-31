@@ -14,7 +14,7 @@ Subject: [PATCH] FR: ARC drawPlace and drawSelect
  7 files changed, 87 insertions(+), 11 deletions(-)
 
 diff --git a/core/src/mindustry/world/blocks/ConstructBlock.java b/core/src/mindustry/world/blocks/ConstructBlock.java
-index f42779711077b7a1c46d7f434b7066872001e7ee..e50d7123abf5e19bcdd598ade02835cc2bd80599 100644
+index e1b32968431b17e706f8e7be4aa995c6c03a7d0e..50868b83dc0c88b0a24eb9dcd59e3e05a1d5dc6f 100644
 --- a/core/src/mindustry/world/blocks/ConstructBlock.java
 +++ b/core/src/mindustry/world/blocks/ConstructBlock.java
 @@ -3,14 +3,17 @@ package mindustry.world.blocks;
@@ -43,7 +43,7 @@ index f42779711077b7a1c46d7f434b7066872001e7ee..e50d7123abf5e19bcdd598ade02835cc
  
  import java.util.*;
  
-@@ -129,7 +133,7 @@ public class ConstructBlock extends Block{
+@@ -132,7 +136,7 @@ public class ConstructBlock extends Block{
      static float calcPitch(boolean up){
          if(Time.timeSinceMillis(lastTime) < 16 * 30){
              lastTime = Time.millis();
@@ -52,7 +52,7 @@ index f42779711077b7a1c46d7f434b7066872001e7ee..e50d7123abf5e19bcdd598ade02835cc
              if(pitchSeq > 30){
                  pitchSeq = 0;
              }
-@@ -172,6 +176,40 @@ public class ConstructBlock extends Block{
+@@ -175,6 +179,40 @@ public class ConstructBlock extends Block{
          private @Nullable float[] totalAccumulator;
          private @Nullable int[] itemsLeft;
  
@@ -93,7 +93,7 @@ index f42779711077b7a1c46d7f434b7066872001e7ee..e50d7123abf5e19bcdd598ade02835cc
          @Override
          public String getDisplayName(){
              return Core.bundle.format("block.constructing", current.localizedName);
-@@ -250,7 +288,7 @@ public class ConstructBlock extends Block{
+@@ -253,7 +291,7 @@ public class ConstructBlock extends Block{
  
                      Draw.rect(region, x, y, current.rotate && (noOverrides || current.regionRotated2 == i || current.regionRotated1 == i) ? rotdeg() + current.visualRotationOffset : 0);
                      Draw.flush();
@@ -176,7 +176,7 @@ index d9fc8ed8732a91815f2923fcdcad622e4c7a7789..3d310f4ddc7e2445aab3a8fc350d9c08
          indexer.eachBlock(player.team(), x * tilesize + offset, y * tilesize + offset, range, other -> other.block.canOverdrive, other -> Drawf.selected(other, Tmp.c1.set(baseColor).a(Mathf.absin(4f, 1f))));
      }
 diff --git a/core/src/mindustry/world/blocks/defense/turrets/Turret.java b/core/src/mindustry/world/blocks/defense/turrets/Turret.java
-index 9fdea6a1a7c443ec7d33783a88ae620dd8923a29..5a87c7339971e0d86e8dd153ef445c7249ecc3f4 100644
+index e8178ffaa9a22d14734c5cdef045a2ee8bb79ad6..c6c29036f850071a82d3eae9743e3aaa995b0d4a 100644
 --- a/core/src/mindustry/world/blocks/defense/turrets/Turret.java
 +++ b/core/src/mindustry/world/blocks/defense/turrets/Turret.java
 @@ -30,6 +30,7 @@ import mindustry.world.*;
@@ -187,7 +187,7 @@ index 9fdea6a1a7c443ec7d33783a88ae620dd8923a29..5a87c7339971e0d86e8dd153ef445c72
  
  import static mindustry.Vars.*;
  
-@@ -248,6 +249,13 @@ public class Turret extends ReloadTurret{
+@@ -249,6 +250,13 @@ public class Turret extends ReloadTurret{
          if(drawMinRange){
              Drawf.dashCircle(x * tilesize + offset, y * tilesize + offset, minRange, Pal.placing);
          }
@@ -201,7 +201,7 @@ index 9fdea6a1a7c443ec7d33783a88ae620dd8923a29..5a87c7339971e0d86e8dd153ef445c72
      }
  
      public static abstract class AmmoEntry{
-@@ -453,6 +461,17 @@ public class Turret extends ReloadTurret{
+@@ -454,6 +462,17 @@ public class Turret extends ReloadTurret{
              if(drawMinRange){
                  Drawf.dashCircle(x, y, minRange(), team.color);
              }
@@ -268,10 +268,10 @@ index f7012546ce66d7e054a21bf10809b54974832827..33bcead34c228067ba30de99860f80e8
          returnItem = null;
          returnCount = 0;
 diff --git a/core/src/mindustry/world/blocks/storage/CoreBlock.java b/core/src/mindustry/world/blocks/storage/CoreBlock.java
-index 4c875d343967c46568ca4b9b896e025d5e1a084d..91230bf2f6a422bca0041c75fa5f79b469bf3b0f 100644
+index 5db4e352c73285446cde2e0a68525f5c4a816aec..6c8da668da828de997ef8bf4bd9bc424324c3f30 100644
 --- a/core/src/mindustry/world/blocks/storage/CoreBlock.java
 +++ b/core/src/mindustry/world/blocks/storage/CoreBlock.java
-@@ -93,6 +93,7 @@ public class CoreBlock extends StorageBlock{
+@@ -94,6 +94,7 @@ public class CoreBlock extends StorageBlock{
          player.set(core);
  
          if(!net.client()){

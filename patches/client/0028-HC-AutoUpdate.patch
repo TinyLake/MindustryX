@@ -34,7 +34,7 @@ index 2b96a3f231a78f6edb51d9459a1cbbcdeaa6d68e..7172b63844e32b48537d1b53a4da7db6
  
                  self.copyTo(dest);
 diff --git a/core/src/mindustry/ui/fragments/MenuFragment.java b/core/src/mindustry/ui/fragments/MenuFragment.java
-index 9f3cd2f37e05d573b755734225941d37a66c178c..15f167bd7ba2835e774271515e2ce424240c7b6a 100644
+index 6918efaf97843415b3002beabcc1a4a9e0ea8a02..90c843267ba9c3c59413a658c9777198296514f5 100644
 --- a/core/src/mindustry/ui/fragments/MenuFragment.java
 +++ b/core/src/mindustry/ui/fragments/MenuFragment.java
 @@ -19,6 +19,7 @@ import mindustry.game.EventType.*;
@@ -58,10 +58,10 @@ index 9f3cd2f37e05d573b755734225941d37a66c178c..15f167bd7ba2835e774271515e2ce424
  
          //info icon
          if(mobile){
-@@ -96,18 +97,6 @@ public class MenuFragment{
-                     Tex.paneTop.draw(0, 0, Core.graphics.getWidth(), Core.scene.marginBottom);
-                 }
-             });
+@@ -94,18 +95,6 @@ public class MenuFragment{
+                 fontColor = Color.white;
+                 up = infoBanner;
+             }}, ui.about::show).size(84, 45).name("info"));
 -        }else if(becontrol.active()){
 -            parent.fill(c -> c.bottom().right().button("@be.check", Icon.refresh, () -> {
 -                ui.loadfrag.show();
