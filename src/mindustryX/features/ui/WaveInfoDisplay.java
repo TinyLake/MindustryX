@@ -1,7 +1,6 @@
 package mindustryX.features.ui;
 
 import arc.*;
-import arc.scene.*;
 import arc.scene.style.*;
 import arc.scene.ui.*;
 import arc.scene.ui.layout.*;
@@ -82,17 +81,7 @@ public class WaveInfoDisplay extends Table{
             }
         }).growX().fillY().row();
 
-        add(new Element(){
-            @Override
-            public float getMinWidth(){
-                return 0;
-            }
-
-            @Override
-            public float getPrefWidth(){
-                return width;//prefer keep width
-            }
-        }).fillX().row();
+        add(new OverlayUI.PreferAnyWidth()).fillX().row();
     }
 
     public void shareWaveInfo(int wave){

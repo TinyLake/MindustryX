@@ -383,12 +383,15 @@ object OverlayUI {
             if (parent == null) return
 
             //Repack table to fit content
-            getCell(table)?.maxSize(table.width / Scl.scl(), table.height / Scl.scl())
-            invalidate()
             pack()
 
             data.set(data.value.copy(size = Vec2(table.width, table.height)))
         }
+    }
+
+    class PreferAnyWidth : Element() {
+        override fun getMinWidth(): Float = 0f
+        override fun getPrefWidth(): Float = width
     }
 
     private val showOverlayButton: CheckPref = CheckPref("gameUI.overlayButton", true)

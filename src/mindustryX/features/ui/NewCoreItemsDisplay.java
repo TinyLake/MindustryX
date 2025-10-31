@@ -32,7 +32,7 @@ import static mindustry.Vars.*;
 
 //moved from mindustry.arcModule.ui.RCoreItemsDisplay
 public class NewCoreItemsDisplay extends Table{
-    public static final float MIN_WIDTH = 64f;
+    public static final float COLUMN_WIDTH = 96f;
 
     private Table itemsTable, unitsTable, plansTable, powerTable;
 
@@ -60,24 +60,38 @@ public class NewCoreItemsDisplay extends Table{
             usedUnits.clear();
             Arrays.fill(itemDelta, 0);
             Arrays.fill(lastItemAmount, 0);
-            itemsTable.clearChildren();
-            unitsTable.clearChildren();
             plansTable.clearChildren();
         });
 
         setup();
     }
 
+    static class MyCollapser extends Collapser{
+        Table table;
+
+        MyCollapser(Table table, Data<Boolean> visible){
+            super(table, !visible.get());
+            this.table = table;
+            setCollapsed(() -> !visible.get());
+        }
+
+        @Override
+        public float getMinWidth(){
+            return isCollapsed() ? 0 : this.table.getMinWidth();
+        }
+    }
+
     private void setup(){
-        collapser(powerTable = new Table(Styles.black3), showPower::getValue).with(it->it.setEnforceMinSize(true)).growX().row();
-        collapser(itemsTable = new GridTable(), showItem::getValue).with(it->it.setEnforceMinSize(true)).growX().row();
-        collapser(unitsTable = new GridTable(), showUnit::getValue).with(it->it.setEnforceMinSize(true)).growX().row();
+        add(new OverlayUI.PreferAnyWidth()).fillX().row();
+        add(new MyCollapser(powerTable = new Table(Styles.black3), showPower)).growX().row();
+        add(new MyCollapser(itemsTable = new GridTable(), showItem)).growX().row();
+        add(new MyCollapser(unitsTable = new GridTable(), showUnit)).growX().row();
 
         var emptyLine = row().add();
-        row().collapser(plansTable = new GridTable(), showPlan::getValue).with(it->it.setEnforceMinSize(true)).growX().row();
+        row().add(new MyCollapser(plansTable = new GridTable(), showPlan)).growX().row();
 
-        itemsTable.background(Styles.black3);
-        unitsTable.background(Styles.black3);
+        buildItems();
+        buildUnits();
         plansTable.background(Styles.black3);
         update(() -> {
             var newHeight = plansTable.hasChildren() ? 12f : 0f;
@@ -87,17 +101,6 @@ public class NewCoreItemsDisplay extends Table{
             }
         });
 
-        itemsTable.update(() -> {
-            updateItemMeans();
-            if(content.items().contains(item -> player.team().items().get(item) > 0 && usedItems.add(item))){
-                rebuildItems();
-            }
-        });
-        unitsTable.update(() -> {
-            if(content.units().contains(unit -> player.team().data().countType(unit) > 0 && usedUnits.add(unit))){
-                rebuildUnits();
-            }
-        });
         plansTable.update(() -> {
             if(timer.get(1, 10f)){
                 rebuildPlans();
@@ -205,17 +208,14 @@ public class NewCoreItemsDisplay extends Table{
         }
     }
 
-    private void rebuildItems(){
-        itemsTable.clearChildren();
-        if(player.team().core() == null) return;
+    private void buildItems(){
+        itemsTable.update(this::updateItemMeans);
 
-        int i = 0;
+        itemsTable.background(Styles.black3);
+        itemsTable.defaults().width(COLUMN_WIDTH);
         for(Item item : content.items()){
-            if(!usedItems.contains(item)){
-                continue;
-            }
-
             itemsTable.table(amountTable -> {
+                amountTable.visible(() -> usedItems.contains(item));
                 amountTable.stack(
                 new Table(t ->
                 t.image(item.uiIcon).size(iconMed - 4).scaling(Scaling.fit).pad(2f)
@@ -262,22 +262,22 @@ public class NewCoreItemsDisplay extends Table{
                     amountLabel.setColor(amountColor);
                     amountLabel.setText(UI.formatAmount(amount));
                 });
-            }).minWidth(MIN_WIDTH).left();
+            }).expandX().left();
         }
     }
 
-    private void rebuildUnits(){
-        unitsTable.clearChildren();
-
+    private void buildUnits(){
+        unitsTable.background(Styles.black3);
+        unitsTable.defaults().width(COLUMN_WIDTH);
         for(UnitType unit : content.units()){
-            if(!usedUnits.contains(unit)) continue;
             unitsTable.table(tt -> {
+                tt.visible(() -> usedUnits.contains(unit) || player.team().data().countType(unit) > 0 && usedUnits.add(unit));
                 tt.image(unit.uiIcon).size(iconSmall).scaling(Scaling.fit).pad(2f)
                 .tooltip(t -> t.background(Styles.black6).margin(4f).add(unit.localizedName).style(Styles.outlineLabel));
                 tt.label(() -> {
                     int typeCount = player.team().data().countType(unit);
                     return (typeCount == Units.getCap(player.team()) ? "[stat]" : "") + typeCount;
-                }).minWidth(MIN_WIDTH).left();
+                }).expandX().left();
             });
         }
     }
@@ -306,6 +306,7 @@ public class NewCoreItemsDisplay extends Table{
 
         plansTable.clearChildren();
         if(planCounter.isEmpty()) return;
+        plansTable.defaults().width(COLUMN_WIDTH);
         for(Block block : content.blocks()){
             int count = planCounter.get(block, 0);
             if(count == 0 || block.category == Category.distribution && block.size < 3
@@ -315,7 +316,7 @@ public class NewCoreItemsDisplay extends Table{
 
             plansTable.table(t -> {
                 t.image(block.uiIcon).size(iconSmall).scaling(Scaling.fit).pad(2f);
-                t.label(() -> (count > 0 ? "[green]+" : "[red]") + count).minWidth(MIN_WIDTH).left();
+                t.label(() -> (count > 0 ? "[green]+" : "[red]") + count).expandX().left();
             });
         }
     }
