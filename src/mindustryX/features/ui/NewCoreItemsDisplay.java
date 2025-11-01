@@ -209,7 +209,14 @@ public class NewCoreItemsDisplay extends Table{
     }
 
     private void buildItems(){
-        itemsTable.update(this::updateItemMeans);
+        itemsTable.update(() -> {
+            updateItemMeans();
+            for(Item item : content.items()){
+                if(player.team().items().get(item) > 0){
+                    usedItems.add(item);
+                }
+            }
+        });
 
         itemsTable.background(Styles.black3);
         itemsTable.defaults().width(COLUMN_WIDTH);
@@ -229,10 +236,11 @@ public class NewCoreItemsDisplay extends Table{
                 );
 
                 amountTable.defaults().expand().left();
+                Table right = amountTable.table().get();
 
-                Label amountLabel = amountTable.add("").growY().get();
-                amountTable.row();
-                var planLabel = amountTable.add("").fontScale(0.6f).height(0.01f);
+                Label amountLabel = right.add("").growY().get();
+                right.row();
+                var planLabel = right.add("").fontScale(0.6f).height(0.01f);
 
                 amountTable.update(() -> {
                     int planAmount = planItems.get(item);
@@ -269,6 +277,13 @@ public class NewCoreItemsDisplay extends Table{
     private void buildUnits(){
         unitsTable.background(Styles.black3);
         unitsTable.defaults().width(COLUMN_WIDTH);
+        unitsTable.update(() -> {
+            for(UnitType type : content.units()){
+                if(player.team().data().countType(type) > 0){
+                    usedUnits.add(type);
+                }
+            }
+        });
         for(UnitType unit : content.units()){
             unitsTable.table(tt -> {
                 tt.visible(() -> usedUnits.contains(unit) || player.team().data().countType(unit) > 0 && usedUnits.add(unit));
