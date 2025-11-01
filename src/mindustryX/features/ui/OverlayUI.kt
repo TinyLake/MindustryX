@@ -8,6 +8,7 @@ import arc.graphics.Color
 import arc.graphics.g2d.Draw
 import arc.graphics.g2d.Lines
 import arc.input.KeyCode
+import arc.math.Mathf
 import arc.math.geom.Rect
 import arc.math.geom.Vec2
 import arc.scene.Element
@@ -23,6 +24,7 @@ import arc.scene.ui.layout.Table
 import arc.scene.ui.layout.WidgetGroup
 import arc.util.Align
 import arc.util.Log
+import arc.util.Strings
 import arc.util.Tmp
 import mindustry.Vars
 import mindustry.gen.Icon
@@ -45,6 +47,7 @@ object OverlayUI {
         val size: Vec2? = null,
         val constraintX: AdsorptionSystem.Constraint? = null,
         val constraintY: AdsorptionSystem.Constraint? = null,
+        val scale: Float = 1f
     )
 
     class WindowSetting(name: String) : SettingsV2.Data<WindowData>(name, WindowData()) {
@@ -60,16 +63,6 @@ object OverlayUI {
                 image(Icon.list).padRight(4f)
                 add(title).width(148f).padRight(8f)
 
-                val myToggleI = ImageButtonStyle(Styles.clearNonei).apply {
-                    imageUpColor = Color.darkGray
-                    imageCheckedColor = Color.white
-                }
-                button(Icon.eyeSmall, myToggleI, Vars.iconSmall) {
-                    set(value.copy(enabled = !value.enabled))
-                }.padRight(4f).checked { value.enabled }
-                button(Icon.lockSmall, myToggleI, Vars.iconSmall) {
-                    set(value.copy(pinned = !value.pinned))
-                }.padRight(4f).checked { value.pinned }
                 val builder = StringBuilder()
                 label {
                     builder.clear()
@@ -79,22 +72,47 @@ object OverlayUI {
                         builder.append("[${it.x.roundToInt()}x${it.y.roundToInt()}]")
                     }
                     builder
-                }
+                }.expandX().left()
 
-                add().growX()
+                val myToggleI = ImageButtonStyle(Styles.clearNonei).apply {
+                    imageUpColor = Color.darkGray
+                    imageCheckedColor = Color.white
+                }
+                button(Icon.eyeSmall, myToggleI, Vars.iconSmall) {
+                    set(value.copy(enabled = !value.enabled))
+                }.tooltip("开关").padRight(4f).checked { value.enabled }
+                button(Icon.lockSmall, myToggleI, Vars.iconSmall) {
+                    set(value.copy(pinned = !value.pinned))
+                }.tooltip("锁定").padRight(4f).checked { value.pinned }
+                button(Icon.resizeSmall, myToggleI, Vars.iconSmall) {
+                    UIExtKt.showFloatSettingsPanel {
+                        label { "缩放: x" + Strings.fixed(value.scale, 1) }.center().row()
+                        slider(0.2f, 3f, 0.1f, value.scale) {
+                            set(value.copy(scale = it))
+                        }.update { it.value = value.scale }.width(200f)
+                        button(Icon.undo, Styles.clearNonei) {
+                            set(value.copy(scale = 1f))
+                        }.disabled { Mathf.equal(value.scale, 1f) }.padTop(4f)
+                        row()
+                    }
+                }.tooltip("缩放").padRight(4f).checked { !Mathf.equal(value.scale, 1f) }
                 addTools()
+
+                row()
+                value.constraintX?.let {
+                    add()
+                    label {
+                        "X: ${it.type.name} to [${it.target}]"
+                    }.colspan(columns - 1).left().row()
+                }
+                value.constraintY?.let {
+                    add()
+                    label {
+                        "Y: ${it.type.name} to [${it.target}]"
+                    }.colspan(columns - 1).left().row()
+                }
             }
             table.row()
-            value.constraintX?.let {
-                table.label {
-                    "X: ${it.type.name} to [${it.target}]"
-                }.padLeft(64f).left().row()
-            }
-            value.constraintY?.let {
-                table.label {
-                    "Y: ${it.type.name} to [${it.target}]"
-                }.padLeft(64f).left().row()
-            }
         }
 
         var enabled: Boolean
@@ -125,7 +143,9 @@ object OverlayUI {
             override fun touchDragged(event: InputEvent, x: Float, y: Float, pointer: Int) {
                 if (Core.app.isMobile && pointer != 0) return
                 setPosition(event.stageX - offset.x, event.stageY - offset.y)
+                applyScale()
                 keepInStage()
+                unapplyScale()
             }
 
             override fun touchUp(event: InputEvent?, x: Float, y: Float, pointer: Int, button: KeyCode?) {
@@ -244,6 +264,8 @@ object OverlayUI {
 
             if (autoHeight && state == State.Stable && prefHeight != height) height = prefHeight
 
+            applyScale() //before any position/size operation
+
             width = width.coerceAtMost(Core.scene.width)
             height = height.coerceAtMost(Core.scene.height)
             if (state == State.Stable) {
@@ -278,6 +300,8 @@ object OverlayUI {
                 val (constraintX, constraintY) = adsorption.findBestConstraints()
                 data.set(data.value.copy(center = center, constraintX = constraintX, constraintY = constraintY))
             }
+
+            unapplyScale()
         }
 
         private fun updateData() {
@@ -386,6 +410,30 @@ object OverlayUI {
             pack()
 
             data.set(data.value.copy(size = Vec2(table.width, table.height)))
+        }
+
+        //Apply scale to x,y,width,height, and reset scale to 1
+        //Note: center position is preserved when applying/unapplying scale
+
+        private fun applyScale() {
+            val scale = data.value.scale
+            x = (x + width / 2) - (width * scale) / 2
+            y = (y + height / 2) - (height * scale) / 2
+            width *= scale
+            height *= scale
+            setScale(1f)
+        }
+
+        private fun unapplyScale() {
+            val scale = data.value.scale
+            x = (x + width / 2) - (width / scale) / 2
+            y = (y + height / 2) - (height / scale) / 2
+            width /= scale
+            height /= scale
+
+            transform = scale != 1f
+            setScale(scale)
+            setOrigin(width / 2, height / 2)
         }
     }
 
