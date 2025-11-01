@@ -3,6 +3,7 @@ package mindustryX.features.ui;
 import arc.*;
 import arc.graphics.*;
 import arc.math.*;
+import arc.scene.event.*;
 import arc.scene.style.*;
 import arc.scene.ui.*;
 import arc.scene.ui.layout.*;
@@ -82,6 +83,7 @@ public class NewCoreItemsDisplay extends Table{
     }
 
     private void setup(){
+        touchable = Touchable.disabled;
         add(new OverlayUI.PreferAnyWidth()).fillX().row();
         add(new MyCollapser(powerTable = new Table(Styles.black3), showPower)).growX().row();
         add(new MyCollapser(itemsTable = new GridTable(), showItem)).growX().row();
@@ -209,20 +211,13 @@ public class NewCoreItemsDisplay extends Table{
     }
 
     private void buildItems(){
-        itemsTable.update(() -> {
-            updateItemMeans();
-            for(Item item : content.items()){
-                if(player.team().items().get(item) > 0){
-                    usedItems.add(item);
-                }
-            }
-        });
+        itemsTable.update(this::updateItemMeans);
 
         itemsTable.background(Styles.black3);
         itemsTable.defaults().width(COLUMN_WIDTH);
         for(Item item : content.items()){
             itemsTable.table(amountTable -> {
-                amountTable.visible(() -> usedItems.contains(item));
+                amountTable.visible(() -> usedItems.contains(item) || player.team().items().get(item) > 0 && usedItems.add(item));
                 amountTable.stack(
                 new Table(t ->
                 t.image(item.uiIcon).size(iconMed - 4).scaling(Scaling.fit).pad(2f)
@@ -277,13 +272,6 @@ public class NewCoreItemsDisplay extends Table{
     private void buildUnits(){
         unitsTable.background(Styles.black3);
         unitsTable.defaults().width(COLUMN_WIDTH);
-        unitsTable.update(() -> {
-            for(UnitType type : content.units()){
-                if(player.team().data().countType(type) > 0){
-                    usedUnits.add(type);
-                }
-            }
-        });
         for(UnitType unit : content.units()){
             unitsTable.table(tt -> {
                 tt.visible(() -> usedUnits.contains(unit) || player.team().data().countType(unit) > 0 && usedUnits.add(unit));
