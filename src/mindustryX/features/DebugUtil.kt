@@ -9,6 +9,7 @@ import mindustry.core.PerfCounter
 import mindustry.game.EventType
 import mindustry.gen.Tex
 import mindustry.ui.Styles
+import mindustryX.features.func.exportBlockData
 
 object DebugUtil {
     @JvmField
@@ -56,6 +57,7 @@ object DebugUtil {
             t.button("D", Styles.logicTogglet) { renderDebug = !renderDebug }.checked { renderDebug }.tooltip("Render Debug")
             if (!Vars.mobile)
                 t.button("M", Styles.logicTogglet) { Vars.mobile = !Vars.mobile }.checked { Vars.mobile }.tooltip("Mock Mobile")
+            t.button("E", Styles.cleart) { exportBlockData() }.tooltip("Export Block Data")
         }.fillX()
     }
 

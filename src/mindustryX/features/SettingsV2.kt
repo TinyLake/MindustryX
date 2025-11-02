@@ -90,7 +90,7 @@ object SettingsV2 {
     }
 
     interface WithUI {
-        fun buildUI(table: Table)
+        fun buildUI(): Table
     }
 
     open class Data<T>(name: String, def: T) : DataCore<T>(name, def), WithUI {
@@ -98,13 +98,10 @@ object SettingsV2 {
         val title: String get() = Core.bundle.get("settingV2.${name}.name", name)
         val description: String? get() = Core.bundle.getOrNull("settingV2.${name}.description")
 
-        override fun buildUI(table: Table) {
-            table.table().fillX().padTop(3f).get().apply {
-                add(title).padRight(8f)
-                label { value.toString() }.ellipsis(true).color(Color.gray).labelAlign(Align.left).growX()
-                addTools()
-            }
-            table.row()
+        override fun buildUI() = Table().apply {
+            add(title).padRight(8f)
+            label { value.toString() }.ellipsis(true).color(Color.gray).labelAlign(Align.left).growX()
+            addTools()
         }
 
         protected fun Table.addTools() {
@@ -174,12 +171,10 @@ object SettingsV2 {
             return box
         }
 
-        override fun buildUI(table: Table) {
-            table.table().fillX().get().apply {
-                add(uiElement()).left().expandX().padTop(3f)
-                addTools()
-            }
-            table.row()
+        override fun buildUI() = Table().apply {
+            add(uiElement())
+            add().expandX()
+            addTools()
         }
     }
 
@@ -202,12 +197,9 @@ object SettingsV2 {
             return Stack(elem, content)
         }
 
-        override fun buildUI(table: Table) {
-            table.table().fillX().padTop(4f).get().apply {
-                add(uiElement()).minWidth(220f).growX()
-                addTools()
-            }
-            table.row()
+        override fun buildUI() = Table().apply {
+            add(uiElement()).minWidth(220f).growX()
+            addTools()
         }
     }
 
@@ -217,38 +209,30 @@ object SettingsV2 {
         }
     }
 
-    open class TextPref @JvmOverloads constructor(name: String, def: String = "") : Data<String>(name, def) {
+    class TextPref @JvmOverloads constructor(name: String, def: String = "", val prefRows: Int = 1) : Data<String>(name, def) {
         override fun set(value: String) {
             super.set(value.trim())
         }
 
-        override fun buildUI(table: Table) {
-            val elem = TextField(value)
-            elem.changed { set(elem.text) }
-            elem.update { if (!elem.hasKeyboard()) elem.text = value }
-
-            table.table().fillX().padTop(3f).get().apply {
-                add(title).padRight(8f)
-                add(elem).growX()
-                addTools()
+        fun uiElement(): Element {
+            val elem = if (prefRows <= 1) TextField("") else TextArea("").apply {
+                setPrefRows(prefRows.toFloat())
             }
-            table.row()
-        }
-    }
-
-    class TextAreaPref @JvmOverloads constructor(name: String, def: String = "") : TextPref(name, def) {
-        override fun buildUI(table: Table) {
-            val elem = TextArea("")
-            elem.setPrefRows(5f)
             elem.changed { set(elem.text) }
             elem.update { if (!elem.hasKeyboard()) elem.text = value }
+            return elem
+        }
 
-            table.table().fillX().padTop(3f).get().apply {
+        override fun buildUI() = Table().apply {
+            if (prefRows > 1) {
                 add(title).left().expandX()
                 addTools()
-                row().add(elem).colspan(columns).growX()
+                row().add(uiElement()).colspan(columns).growX()
+            } else {
+                add(title).padRight(8f)
+                add(uiElement()).growX()
+                addTools()
             }
-            table.row()
         }
     }
 
@@ -265,12 +249,14 @@ object SettingsV2 {
         val title: String = Core.bundle.get("settingV2.${key}.category", key)
         val children = mutableListOf<WithUI>()
 
-        override fun buildUI(table: Table) {
-            if (key.isNotEmpty() && children.isNotEmpty()) {
-                table.add(title).color(Pal.accent).padTop(10f).padBottom(5f).center().row()
-                table.image().color(Pal.accent).growX().height(3f).padBottom(10f).row()
+        override fun buildUI() = Table().apply {
+            if (key.isNotEmpty() && this@CategoryUI.children.isNotEmpty()) {
+                add(title).color(Pal.accent).padTop(10f).padBottom(5f).center().row()
+                image().color(Pal.accent).growX().height(3f).padBottom(10f).row()
             }
-            children.forEach { it.buildUI(table) }
+            this@CategoryUI.children.forEach {
+                add(it.buildUI()).growX().padBottom(4f).row()
+            }
         }
     }
 
@@ -297,7 +283,7 @@ object SettingsV2 {
                 }
             }
             categories.entries.sortedBy { it.key }.forEach {
-                it.value.buildUI(contentTable)
+                contentTable.add(it.value.buildUI()).growX().padBottom(8f).row()
             }
         }
         searchTable.apply {
@@ -326,7 +312,9 @@ object SettingsV2 {
             override fun clicked(event: InputEvent, x: Float, y: Float) {
                 if (Core.input.keyDown(KeyCode.shiftLeft) || Time.timeSinceMillis(startTime) > 500) {
                     UIExtKt.showFloatSettingsPanel {
-                        settings.forEach { it.buildUI(this) }
+                        settings.forEach {
+                            add(it.buildUI()).growX().padBottom(4f).row()
+                        }
                     }
                 } else {
                     if (button.isDisabled) return

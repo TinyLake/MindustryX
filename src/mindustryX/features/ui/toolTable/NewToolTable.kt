@@ -13,7 +13,6 @@ import arc.util.Strings
 import mindustry.Vars
 import mindustry.content.Blocks
 import mindustry.ctype.MappableContent
-import mindustry.ctype.UnlockableContent
 import mindustry.game.EventType.WorldLoadEvent
 import mindustry.gen.Call
 import mindustry.gen.Icon
@@ -156,9 +155,9 @@ object NewToolTable : Table() {
             addFallback(OldCustomButtonSettings())
         }
 
-        override fun buildUI(table: Table) {
+        override fun buildUI() = Table().let { table ->
             var shown = false
-            table.button(title) { shown = !shown }.fillX().height(55f).padBottom(2f).get().apply {
+            table.button(title) { shown = !shown }.growX().height(55f).padBottom(2f).get().apply {
                 imageDraw { if (shown) Icon.downOpen else Icon.upOpen }.size(Vars.iconMed)
                 cells.reverse()
                 update { isChecked = shown }
@@ -169,7 +168,7 @@ object NewToolTable : Table() {
                 update {
                     if (changed()) clearChildren()
                     if (hasChildren()) return@update
-                    add("序号");add("显示名");add("消息(@js 开头为脚本)");row()
+                    add("序号"); add("显示名"); add("消息(@js 开头为脚本)"); row()
                     value.forEachIndexed { i, d ->
                         var tmp = d
                         add(i.toString()).padRight(4f)
@@ -188,7 +187,7 @@ object NewToolTable : Table() {
                     }.colspan(columns).fillX().row()
                     add("[yellow]添加新指令前，请先保存编辑的指令").colspan(columns).center().padTop(-4f).row()
                 }
-            }) { shown }.fillX()
+            }) { shown }.growX()
             table.row()
         }
     }
@@ -241,18 +240,18 @@ object NewToolTable : Table() {
         cont.defaults().maxWidth(800f)
         var query = ""
         val sField = TextField()
-        if(!Vars.mobile) sField.requestKeyboard()
-        cont.table().growX().get().apply{
+        if (!Vars.mobile) sField.requestKeyboard()
+        cont.table().growX().get().apply {
             image(Icon.zoom).size(48f);
-            field(query){ query = it }.pad(8f).grow().colspan(2).update{ if(!it.hasKeyboard()) it.text = query }
-            button(Icon.cancelSmall, Styles.cleari){ query = "" }.padLeft(16f).size(32f)
+            field(query) { query = it }.pad(8f).grow().colspan(2).update { if (!it.hasKeyboard()) it.text = query }
+            button(Icon.cancelSmall, Styles.cleari) { query = "" }.padLeft(16f).size(32f)
             row()
             add("暂存区").color(Pal.lightishGray).padRight(16f)
             add(sField).growX().get()
-            button(Icon.copySmall, Styles.cleari){
+            button(Icon.copySmall, Styles.cleari) {
                 Core.app.clipboardText = sField.text
             }.padLeft(16f).size(32f)
-            button(Icon.cancelSmall, Styles.cleari){ sField.clearText() }.padLeft(16f).size(32f)
+            button(Icon.cancelSmall, Styles.cleari) { sField.clearText() }.padLeft(16f).size(32f)
         }
         cont.row()
         Table().apply {
@@ -277,9 +276,9 @@ object NewToolTable : Table() {
                 defaults().size(Vars.iconLarge)
 
                 val keys = mutableSetOf<String>()
-                Vars.content.each { if(it is MappableContent && Fonts.stringIcons.containsKey(it.name)) keys.add(it.name) }
+                Vars.content.each { if (it is MappableContent && Fonts.stringIcons.containsKey(it.name)) keys.add(it.name) }
                 keys.addAll(Fonts.stringIcons.keys())
-                for(key in keys){
+                for (key in keys) {
                     val icon = Fonts.stringIcons[key]
                     button(icon, Styles.cleart) {
                         Core.app.clipboardText = icon
