@@ -113,6 +113,11 @@ object MetricCollector {
         }
         val data = getBaseInfo().apply {
             put("cause", e.stackTraceToString())
+            put("state", Jval.newObject().apply {
+                put("frameId", Core.graphics?.frameId ?: 0)
+                put("state", Vars.state?.state?.toString())
+                put("currentMod", Vars.content?.transformName("")?.removeSuffix("-"))
+            })
             getModCause(e)?.let {
                 put("likelyCause", it.name)
             }
