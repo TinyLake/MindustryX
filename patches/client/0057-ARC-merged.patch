@@ -154,7 +154,7 @@ index b4f56d136b632aae1841fcfb6f745018d40b9199..6e38c85a35901a80d632191502f10063
                      hide();
                  }).marginLeft(10f);
 diff --git a/core/src/mindustry/entities/comp/BuildingComp.java b/core/src/mindustry/entities/comp/BuildingComp.java
-index de140f690ddffabc6675c801aa13c4c25ebd09ea..9bba985106e3176b0c6befdef6447b38698d928d 100644
+index de140f690ddffabc6675c801aa13c4c25ebd09ea..025ec8b865ddc0ddf5b3c1a38855e299596daf1e 100644
 --- a/core/src/mindustry/entities/comp/BuildingComp.java
 +++ b/core/src/mindustry/entities/comp/BuildingComp.java
 @@ -41,6 +41,7 @@ import mindustry.world.blocks.power.*;
@@ -187,8 +187,8 @@ index de140f690ddffabc6675c801aa13c4c25ebd09ea..9bba985106e3176b0c6befdef6447b38
          return team == Team.derelict ?
              block.localizedName + "\n" + Core.bundle.get("block.derelict") :
 -            block.localizedName + (team == player.team() || team.emoji.isEmpty() ? "" : " " + team.emoji);
-+                "[#" + team.color + "]" + Strings.stripColors(block.localizedName) + (team == player.team() || team.emoji.isEmpty() ? "" : " " + team.emoji
-+                + (team.id > 5 ? "[" + team.id + "]" : ""));
++                "[#" + team.color + "]" + Strings.stripColors(block.localizedName) + (team == player.team() || team.emoji.isEmpty() ? "" : " " + team.emoji)
++                + (team.id > 5 ? "[" + team.id + "]" : "");
      }
  
      public TextureRegion getDisplayIcon(){
