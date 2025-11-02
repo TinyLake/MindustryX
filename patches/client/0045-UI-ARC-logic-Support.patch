@@ -38,7 +38,7 @@ MinRi2 <2275045670@qq.com> on 2025/5/3
  6 files changed, 150 insertions(+), 18 deletions(-)
 
 diff --git a/core/src/mindustry/logic/LCanvas.java b/core/src/mindustry/logic/LCanvas.java
-index 8d5edd0bcc16b65b4f7d1683925c9dd847bb7f0d..173a9a01830b0126ffb124beb2777f80ae808c94 100644
+index 8d5edd0bcc16b65b4f7d1683925c9dd847bb7f0d..39f29b027fe979cea410e52b2b8cd695d1c60211 100644
 --- a/core/src/mindustry/logic/LCanvas.java
 +++ b/core/src/mindustry/logic/LCanvas.java
 @@ -18,6 +18,9 @@ import mindustry.gen.*;
@@ -65,7 +65,7 @@ index 8d5edd0bcc16b65b4f7d1683925c9dd847bb7f0d..173a9a01830b0126ffb124beb2777f80
  
                  //taken from foo's client
 -                t.button(Icon.add, Styles.logici, () -> Vars.ui.logic.showAddDialog(statements.insertPosition + 1))
-+                t.button(Icon.add, Styles.logici, () -> Vars.ui.logic.showAddDialog(index))
++                t.button(Icon.add, Styles.logici, () -> Vars.ui.logic.showAddDialog(index + 1))
                  .disabled(b -> canvas.statements.getChildren().size >= LExecutor.maxInstructions).size(24f).padRight(6);
  
                  t.button(Icon.copy, Styles.logici, () -> {

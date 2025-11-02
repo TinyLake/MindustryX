@@ -20,6 +20,7 @@ Content-Transfer-Encoding: 8bit
  .../mindustry/graphics/MinimapRenderer.java   |  6 ++++--
  core/src/mindustry/ui/dialogs/JoinDialog.java | 19 ++++++++++--------
  .../mindustry/ui/dialogs/KeybindDialog.java   | 12 +++++++----
+ .../mindustry/ui/dialogs/PausedDialog.java    |  3 ++-
  .../ui/dialogs/SettingsMenuDialog.java        |  4 ++--
  .../ui/fragments/BlockInventoryFragment.java  |  2 +-
  .../mindustry/ui/fragments/ChatFragment.java  |  7 +++++--
@@ -29,7 +30,7 @@ Content-Transfer-Encoding: 8bit
  .../world/blocks/distribution/Router.java     |  3 ++-
  .../world/blocks/production/BeamDrill.java    | 12 ++++-------
  .../mindustry/desktop/DesktopLauncher.java    | 20 ++++++++++++++++++-
- 21 files changed, 99 insertions(+), 58 deletions(-)
+ 22 files changed, 101 insertions(+), 59 deletions(-)
 
 diff --git a/core/src/mindustry/ClientLauncher.java b/core/src/mindustry/ClientLauncher.java
 index 545354aeae9c9fda1adccf72b683bf520108e561..15b5a48b9cf1ebbadb16b3902071e47eeda3067f 100644
@@ -317,6 +318,20 @@ index e56d2f43cc0dbea91986edefd29189327d409bb6..e26fecde81717004b5561c53dc43ae28
      }
  
      void rebind(KeyBind bind, KeyCode newKey){
+diff --git a/core/src/mindustry/ui/dialogs/PausedDialog.java b/core/src/mindustry/ui/dialogs/PausedDialog.java
+index 8c8b7c49668a1adb90aa0d018c18f66ed6deeb6e..3e0cca2191e2fd062b96af031a6b2af5ba80e224 100644
+--- a/core/src/mindustry/ui/dialogs/PausedDialog.java
++++ b/core/src/mindustry/ui/dialogs/PausedDialog.java
+@@ -163,7 +163,8 @@ public class PausedDialog extends BaseDialog{
+         boolean wasClient = net.client();
+         if(net.client()) netClient.disconnectQuietly();
+ 
+-        if(state.isEditor() && !wasClient){
++        //MDTX: isEditor may set by AdvancedTools, causing Crash.
++        if(state.isEditor() && !wasClient && state.map.name().equals("Editor Playtesting")){
+             ui.editor.resumeEditing();
+             return;
+         }else if(checkPlaytest()){
 diff --git a/core/src/mindustry/ui/dialogs/SettingsMenuDialog.java b/core/src/mindustry/ui/dialogs/SettingsMenuDialog.java
 index 7949471868168ce97170f6550ce2949c7590506b..6e0bd9f94bd41137ddc69bae8beb7727d12ac6c0 100644
 --- a/core/src/mindustry/ui/dialogs/SettingsMenuDialog.java

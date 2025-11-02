@@ -1303,7 +1303,7 @@ index e9daeae7c7ec493624d313ec540ab8c0c53e710c..74b96cd09f6a7224b25b32d9b9bc05ae
  
                      if((++count) % cols == 0){
 diff --git a/core/src/mindustry/ui/dialogs/PausedDialog.java b/core/src/mindustry/ui/dialogs/PausedDialog.java
-index 8c8b7c49668a1adb90aa0d018c18f66ed6deeb6e..a2b23b5b4e281d8512e32d3439bd9d32fd6e62a6 100644
+index 3e0cca2191e2fd062b96af031a6b2af5ba80e224..7a91c9eb1c90142831ea71c54e694d4633e1f208 100644
 --- a/core/src/mindustry/ui/dialogs/PausedDialog.java
 +++ b/core/src/mindustry/ui/dialogs/PausedDialog.java
 @@ -63,7 +63,7 @@ public class PausedDialog extends BaseDialog{
