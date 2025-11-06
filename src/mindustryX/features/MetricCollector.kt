@@ -15,6 +15,8 @@ import kotlin.uuid.Uuid
 
 object MetricCollector {
     private val enable = SettingsV2.CheckPref("collectMetrics", true)
+    private val lastTime = SettingsV2.PersistentProvider.Arc<Long>("MetricCollector.lastPost")
+    private val lastCrashMod = SettingsV2.PersistentProvider.Arc<String>("MetricCollector.lastCrashMod")
     private var task: Thread? = null
 
     private fun postLog(data: Jval) {
@@ -111,6 +113,13 @@ object MetricCollector {
             Log.warn("MetricCollector: Exception occurred, but metrics collection is disabled.")
             return
         }
+        val likelyCause = getModCause(e)?.name
+        if (likelyCause != null && lastCrashMod.get() == likelyCause) {
+            Log.warn("MetricCollector: Exception occurred, but likely cause mod '${likelyCause}' has already been reported.")
+            return
+        } else {
+            lastCrashMod.setOrReset(likelyCause)
+        }
         val data = getBaseInfo().apply {
             put("cause", e.stackTraceToString())
             put("state", Jval.newObject().apply {
@@ -118,8 +127,8 @@ object MetricCollector {
                 put("state", Vars.state?.state?.toString())
                 put("currentMod", Vars.content?.transformName("")?.removeSuffix("-"))
             })
-            getModCause(e)?.let {
-                put("likelyCause", it.name)
+            likelyCause?.let {
+                put("likelyCause", it)
             }
         }
         Log.err("MetricCollector: Posting exception data: $e")
@@ -133,12 +142,12 @@ object MetricCollector {
 
     fun onLaunch() {
         if (!enable.value) return
-        val last = Core.settings.getLong("MetricCollector.lastPost")
+        val last = lastTime.get() ?: 0L
         if (Time.timeSinceMillis(last) < 24 * 60 * 60 * 1000) {
             Log.infoTag("MetricCollector", "Skip posting metrics.")
             return
         }
         postLog(getBaseInfo())
-        Core.settings.put("MetricCollector.lastPost", Time.millis())
+        lastTime.set(Time.millis())
     }
 }

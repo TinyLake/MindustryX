@@ -118,6 +118,10 @@ object SettingsV2 {
         fun reset()
         interface Savable<T> : PersistentProvider<T> {
             fun set(value: T)
+
+            fun setOrReset(value: T?) {
+                if (value == null) reset() else set(value)
+            }
         }
 
         data object Noop : PersistentProvider<Nothing> {
