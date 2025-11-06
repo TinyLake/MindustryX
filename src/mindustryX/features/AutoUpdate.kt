@@ -29,9 +29,14 @@ object AutoUpdate {
         data class Asset(val name: String, val url: String)
 
         val description get() = Strings.stripColors(json.getString("body").orEmpty())!!
+        val preRelease get() = json.getBool("prerelease", false)
+
+        val isRelease get() = repo == VarsX.repo && !preRelease
 
         fun matchCurrent(): Boolean {
-            if (repo == VarsX.repo) return currentBranch == null
+            if (isRelease) return currentBranch == null
+            //main repo's pre-release matching any branch
+            if (repo == VarsX.repo && preRelease && currentBranch != null) return true
             return tag == "$currentBranch-build" || description.contains("REPLACE $currentBranch")
         }
 
@@ -160,11 +165,11 @@ object AutoUpdate {
 
             image().fillX().height(2f).row()
             add("正式版").row()
-            buildVersionList(versions.filter { it.repo == VarsX.repo })
+            buildVersionList(versions.filter { it.isRelease })
 
             image().fillX().height(2f).row()
             add("预览版(更新更快,新功能体验,BUG修复)").row()
-            buildVersionList(versions.filter { it.repo == devRepo })
+            buildVersionList(versions.filter { !it.isRelease })
 
             image().fillX().height(2f).row()
             if (version == null) {
