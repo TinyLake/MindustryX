@@ -751,7 +751,7 @@ index 18f5973f08ffe7ca262f6e4187d9ab530331e887..6ef6d5b2c04a7544c8ade2c028b1d5ef
                  //TODO desync?
                  case mission -> state.rules.mission = text;
 diff --git a/core/src/mindustry/type/UnitType.java b/core/src/mindustry/type/UnitType.java
-index 79974b68d3a2040900c005e5bf38f1a6e8c856a0..d4bb0b8ea607f80b81176474bd97f9d44f352c25 100644
+index 79974b68d3a2040900c005e5bf38f1a6e8c856a0..74fb06cc63b4bb7391996bdb630e878b081b8201 100644
 --- a/core/src/mindustry/type/UnitType.java
 +++ b/core/src/mindustry/type/UnitType.java
 @@ -38,6 +38,7 @@ import mindustry.world.blocks.units.*;
@@ -839,7 +839,7 @@ index 79974b68d3a2040900c005e5bf38f1a6e8c856a0..d4bb0b8ea607f80b81176474bd97f9d4
 +                    }),
 +                    new Table(tt -> {
 +                        tt.left().bottom();
-+                        tt.add(entry.effect.permanent || entry.time > Time.toHours * 10f ? "Inf" : UI.formatTime(entry.time)).style(Styles.outlineLabel);
++                        tt.label(() -> entry.effect.permanent || entry.time > Time.toHours * 10f ? "Inf" : UI.formatTime(entry.time)).style(Styles.outlineLabel);
 +                        tt.pack();
 +                    })).padLeft(8f);
 +                }
