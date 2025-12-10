@@ -29,8 +29,8 @@ way-zer <himc.wicp@gmail.com> on 2024/5/4 at 22:17
  .../consumers/ConsumePayloadDynamic.java      |   2 +-
  core/src/mindustry/world/meta/Stat.java       |  21 +-
  core/src/mindustry/world/meta/StatCat.java    |   5 +-
- core/src/mindustry/world/meta/StatValues.java | 179 +++++++++++++-----
- 21 files changed, 246 insertions(+), 71 deletions(-)
+ core/src/mindustry/world/meta/StatValues.java | 186 +++++++++++++-----
+ 21 files changed, 249 insertions(+), 75 deletions(-)
 
 diff --git a/core/src/mindustry/type/Item.java b/core/src/mindustry/type/Item.java
 index 3ba4dc9de5a10c39e4e0257e854dabd7434e7b6d..ffac65db1338a457df5189565f554d80cc076500 100644
@@ -522,7 +522,7 @@ index 416df5a20af4767cdfdc2646bce19468ad11cd28..239311eea91980f2c3e0facd6613b237
      public final String name;
      public final int id;
 diff --git a/core/src/mindustry/world/meta/StatValues.java b/core/src/mindustry/world/meta/StatValues.java
-index ac1b5a740d2f7dbf44172e1ce137ae9345c64d1d..74dd2e93e964cff91fb36f1118a8bd692cf3b65a 100644
+index ac1b5a740d2f7dbf44172e1ce137ae9345c64d1d..c7e415bb91ceee885ed4acf1dc9c9830a858069d 100644
 --- a/core/src/mindustry/world/meta/StatValues.java
 +++ b/core/src/mindustry/world/meta/StatValues.java
 @@ -25,6 +25,8 @@ import mindustry.ui.*;
@@ -561,7 +561,21 @@ index ac1b5a740d2f7dbf44172e1ce137ae9345c64d1d..74dd2e93e964cff91fb36f1118a8bd69
                      .with(s -> s.sort(f -> f.attributes.get(attr)));
  
                      if(blocks.any()){
-@@ -578,19 +591,30 @@ public class StatValues{
+@@ -423,10 +436,9 @@ public class StatValues{
+                             info.add(block.localizedName).left().row();
+                             info.add(block.itemDrop.emoji()).with(l -> withTooltip(l, block.itemDrop)).left();
+                         }).grow();
+-                        if(multipliers != null){
+-                            b.add(Strings.autoFixed(60f / (Math.max(drillTime + drillMultiplier * block.itemDrop.hardness, drillTime) / multipliers.get(block.itemDrop, 1f)) * size, 2) + StatUnit.perSecond.localized())
+-                            .right().pad(10f).padRight(15f).color(Color.lightGray);
+-                        }
++                        float multiplier = multipliers == null ? 1f : multipliers.get(block.itemDrop, 1f);
++                        b.add(Strings.autoFixed(60f / (Math.max(drillTime + drillMultiplier * block.itemDrop.hardness, drillTime) / multiplier) * size, 2) + StatUnit.perSecond.localized())
++                        .right().pad(10f).padRight(15f).color(Color.lightGray);
+                     }).growX().pad(5);
+                     if(++i % 2 == 0) c.row();
+                 }
+@@ -578,19 +590,30 @@ public class StatValues{
          };
      }
  
@@ -599,7 +613,7 @@ index ac1b5a740d2f7dbf44172e1ce137ae9345c64d1d..74dd2e93e964cff91fb36f1118a8bd69
                      }
                  }
              });
-@@ -639,7 +663,11 @@ public class StatValues{
+@@ -639,7 +662,11 @@ public class StatValues{
                          bt.row();
                      }
  
@@ -612,7 +626,7 @@ index ac1b5a740d2f7dbf44172e1ce137ae9345c64d1d..74dd2e93e964cff91fb36f1118a8bd69
                          if(type.continuousDamage() > 0){
                              bt.add(Core.bundle.format("bullet.damage", type.continuousDamage()) + StatUnit.perSecond.localized());
                          }else{
-@@ -648,11 +676,11 @@ public class StatValues{
+@@ -648,11 +675,11 @@ public class StatValues{
                      }
  
                      if(type.buildingDamageMultiplier != 1){
@@ -626,7 +640,7 @@ index ac1b5a740d2f7dbf44172e1ce137ae9345c64d1d..74dd2e93e964cff91fb36f1118a8bd69
                      }
  
                      if(type.shieldDamageMultiplier != 1){
-@@ -668,8 +696,7 @@ public class StatValues{
+@@ -668,8 +695,7 @@ public class StatValues{
                      }
  
                      if(!compact && !Mathf.equal(type.reloadMultiplier, 1f)){
@@ -636,7 +650,7 @@ index ac1b5a740d2f7dbf44172e1ce137ae9345c64d1d..74dd2e93e964cff91fb36f1118a8bd69
                      }
  
                      if(type.knockback > 0){
-@@ -684,8 +711,24 @@ public class StatValues{
+@@ -684,8 +710,24 @@ public class StatValues{
                          sep(bt, Core.bundle.format("bullet.healamount", Strings.autoFixed(type.healAmount, 2)));
                      }
  
@@ -663,7 +677,7 @@ index ac1b5a740d2f7dbf44172e1ce137ae9345c64d1d..74dd2e93e964cff91fb36f1118a8bd69
                      }
  
                      if(type.incendAmount > 0){
-@@ -693,11 +736,11 @@ public class StatValues{
+@@ -693,11 +735,11 @@ public class StatValues{
                      }
  
                      if(type.homingPower > 0.01f){
@@ -678,7 +692,7 @@ index ac1b5a740d2f7dbf44172e1ce137ae9345c64d1d..74dd2e93e964cff91fb36f1118a8bd69
                      }
  
                      if(type.pierceArmor){
-@@ -726,39 +769,51 @@ public class StatValues{
+@@ -726,39 +768,51 @@ public class StatValues{
                      }
  
                      if(type.intervalBullet != null){
@@ -756,7 +770,7 @@ index ac1b5a740d2f7dbf44172e1ce137ae9345c64d1d..74dd2e93e964cff91fb36f1118a8bd69
                      }
                  }).padLeft(5).padTop(5).padBottom(compact ? 0 : 5).growX().margin(compact ? 0 : 10);
                  table.row();
-@@ -766,12 +821,48 @@ public class StatValues{
+@@ -766,12 +820,48 @@ public class StatValues{
          };
      }
  
