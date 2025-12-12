@@ -1,0 +1,33 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: way-zer <himc.wicp@gmail.com>
+Date: Fri, 12 Dec 2025 14:49:28 +0800
+Subject: [PATCH] API: Http.onBeforeRequest
+
+---
+ arc-core/src/arc/util/Http.java | 6 ++++++
+ 1 file changed, 6 insertions(+)
+
+diff --git a/arc-core/src/arc/util/Http.java b/arc-core/src/arc/util/Http.java
+index 5be2d92ebc01f37351cc60c2b5c6f9296dabbc5b..e15e644138b4e7ea07ad0d3d483fcb8b640a7a00 100644
+--- a/arc-core/src/arc/util/Http.java
++++ b/arc-core/src/arc/util/Http.java
+@@ -157,6 +157,8 @@ public class Http{
+ 
+     }
+ 
++    public static Cons<HttpRequest> onBeforeRequest;
++
+     public static class HttpRequest{
+         public HttpMethod method = HttpMethod.GET;
+         /** The URL to send this request to.*/
+@@ -247,6 +249,10 @@ public class Http{
+                 return;
+             }
+ 
++            if(onBeforeRequest != null){
++                onBeforeRequest.get(this);
++            }
++
+             try{
+                 URL url;
+ 

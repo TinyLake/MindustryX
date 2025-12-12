@@ -57,7 +57,7 @@ index d42ffe6d4a318ce558f1010eae46140f88ed5c99..bf44ead5c58abfb79c500e6daae30c3e
 +    <string name="app_name">MindustryX</string>
  </resources>
 diff --git a/build.gradle b/build.gradle
-index d13234407cfe51c8c548bb093144a17357796e2d..a1cb72bf4c841ec4a51e97df5cf5ae84346dfab3 100644
+index 64613ffc087fe1aa23475acb08e5cc35758b77a0..34ef37eb7dca3ecfbd2bbd9622f7515148a08ed0 100644
 --- a/build.gradle
 +++ b/build.gradle
 @@ -22,7 +22,7 @@ allprojects{

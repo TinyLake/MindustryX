@@ -265,7 +265,7 @@ index 0000000000000000000000000000000000000000..181b87c1d5f3755f16a01c0528d0a89f
 +mindustry.annotations.misc.LogicStatementProcessor
 +mindustry.annotations.remote.RemoteProcess
 diff --git a/build.gradle b/build.gradle
-index 7451103b575e19f627542878ab9465a161025c11..ce079fc683727a04c06e7a7f757d3ce68d83e4e0 100644
+index 7451103b575e19f627542878ab9465a161025c11..37324d81079ec26a197a1fc66e52ebe8b6752f81 100644
 --- a/build.gradle
 +++ b/build.gradle
 @@ -1,30 +1,16 @@
@@ -279,7 +279,7 @@ index 7451103b575e19f627542878ab9465a161025c11..ce079fc683727a04c06e7a7f757d3ce6
          localArc = !project.hasProperty("release") && new File(rootDir.parent, 'Arc').exists() && !project.hasProperty("noLocalArc")
  
          arcModule = { String name ->
-+            def useLocalArc = localArc && !name.startsWith("native")
++            def useLocalArc = localArc
              //skip to last submodule
              name = name.substring(name.lastIndexOf(':') + 1)
 -            return "com.github.Anuken${localArc ? "" : ".Arc"}:$name:$arcHash"
