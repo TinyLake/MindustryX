@@ -2,3 +2,7 @@
 	path = work
 	url = https://github.com/Anuken/Mindustry
     ignore = all
+[submodule "Arc"]
+	path = Arc
+	url = https://github.com/Anuken/Arc
+    ignore = all
