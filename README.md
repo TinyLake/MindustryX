@@ -34,19 +34,20 @@
 **Loader 需要作为mod导入游戏**
 
 ### 贡献代码
-1. 使用 `git clone --recursive https://github.com/TinyLake/MindustryX.git` 或者在 `clone` 后，执行 `git submodule update --init` 初始化`work`目录
-2. cd [`work/`](work) 并运行 `../scripts/applyPatches.sh`
-3. 在 [`work/`](work) 中提交你的代码
-4. 用 `../scripts/genPatches.sh` 生成 patch 文件.
-5. 在 MDTX 根目录里提交 patch 文件
+1. 初始化项目:
+    * 克隆使用 recursive 选项: `git clone --recursive https://github.com/TinyLake/MindustryX.git`    
+    * 或者在项目目录，执行 `git submodule update --init`
+2. 应用 Patch 文件: 在 MDTX 根目录运行 `./scripts/applyPatches.sh`
+3. 修改并提交: 在 [`work/`](work) 中提交你的代码
+4. 生成 Patch 文件: 在根目录运行 `./scripts/genPatches.sh`
+5. 在 MDTX 根目录里提交 Patch 文件
 
 ```shell
   git clone --recursive https://github.com/TinyLake/MindustryX.git && cd MindustryX
   git submodule update --init
-  cd work
-  bash ../scripts/applyPatches.sh
+  bash ./scripts/applyPatches.sh
   # Modifiy and commit inside work
-  bash ../scripts/genPatches.sh
+  bash ./scripts/genPatches.sh
   # Commit outside work, and push. Then you could create PR.
 ```
 
