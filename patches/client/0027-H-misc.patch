@@ -11,6 +11,7 @@ Content-Transfer-Encoding: 8bit
  core/src/mindustry/ClientLauncher.java        |  8 ++++++++
  core/src/mindustry/Vars.java                  |  5 +++++
  core/src/mindustry/ai/BlockIndexer.java       |  2 +-
+ core/src/mindustry/content/Blocks.java        |  2 ++
  core/src/mindustry/content/StatusEffects.java |  1 +
  core/src/mindustry/core/Control.java          |  3 ++-
  core/src/mindustry/core/NetClient.java        |  4 ++++
@@ -30,7 +31,7 @@ Content-Transfer-Encoding: 8bit
  .../world/blocks/distribution/Router.java     |  3 ++-
  .../world/blocks/production/BeamDrill.java    | 12 ++++-------
  .../mindustry/desktop/DesktopLauncher.java    | 20 ++++++++++++++++++-
- 22 files changed, 101 insertions(+), 59 deletions(-)
+ 23 files changed, 103 insertions(+), 59 deletions(-)
 
 diff --git a/core/src/mindustry/ClientLauncher.java b/core/src/mindustry/ClientLauncher.java
 index 545354aeae9c9fda1adccf72b683bf520108e561..15b5a48b9cf1ebbadb16b3902071e47eeda3067f 100644
@@ -91,6 +92,26 @@ index 11278ddac6ce2b35234acb31b43ea7e8c999592d..ed6785c5853a9a8096b2f48792c05b98
      /** Stores teams that are present here as tiles. */
      private Seq<Team> activeTeams = new Seq<>(Team.class);
      /** Maps teams to a map of flagged tiles by flag. */
+diff --git a/core/src/mindustry/content/Blocks.java b/core/src/mindustry/content/Blocks.java
+index ae8f695ec088e24819d056a39df9478abb632218..fd62d2cbf3ff3c46d027228a6b25fc2a07ccdf18 100644
+--- a/core/src/mindustry/content/Blocks.java
++++ b/core/src/mindustry/content/Blocks.java
+@@ -2099,6 +2099,7 @@ public class Blocks{
+             speed = 74f;
+             arrowSpacing = 6f;
+             bufferCapacity = 14;
++            allowConfigInventory = true; //MDTX: config inventory for bridge
+         }};
+ 
+         phaseConveyor = new ItemBridge("phase-conveyor"){{
+@@ -2111,6 +2112,7 @@ public class Blocks{
+             pulse = true;
+             envEnabled |= Env.space;
+             consumePower(0.30f);
++            allowConfigInventory = true; //MDTX: config inventory for bridge
+         }};
+ 
+         sorter = new Sorter("sorter"){{
 diff --git a/core/src/mindustry/content/StatusEffects.java b/core/src/mindustry/content/StatusEffects.java
 index 7e9466f2d629335317b2a706b376d33aab029923..51669a3c774069bdb5f3189a52fd938657aeb30e 100644
 --- a/core/src/mindustry/content/StatusEffects.java
