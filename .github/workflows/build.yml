@@ -41,8 +41,8 @@ jobs:
           keystore_alias: MindustryX
         run: |
           git submodule update --init --depth=10
+          ./scripts/applyPatches.sh
           cd work
-          ../scripts/applyPatches.sh
           gradle -Pbuildversion=${RELEASE_VERSION} --parallel \
             desktop:dist server:dist core:genLoaderModAll android:assembleRelease 
           

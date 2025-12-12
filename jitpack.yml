@@ -7,6 +7,6 @@ install:
 #  - cd work/ && git fetch origin v145.1 && git reset --hard FETCH_HEAD && cd ..
   - git config --global user.email "ci@noreply.example.com"
   - git config --global user.name "jitpack"
-  - cd work/ && bash ../scripts/applyPatches.sh
-  - ./gradlew publishToMavenLocal
+  - bash scripts/applyPatches.sh
+  - cd work/ && ./gradlew publishToMavenLocal
   - echo -n > gradle.properties #zero out gradle.properties
