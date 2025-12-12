@@ -30,8 +30,9 @@ Content-Transfer-Encoding: 8bit
  .../mindustry/world/blocks/defense/Radar.java |  9 +++++++++
  .../world/blocks/distribution/Router.java     |  3 ++-
  .../world/blocks/production/BeamDrill.java    | 12 ++++-------
+ .../world/blocks/units/Reconstructor.java     | 12 ++++-------
  .../mindustry/desktop/DesktopLauncher.java    | 20 ++++++++++++++++++-
- 23 files changed, 103 insertions(+), 59 deletions(-)
+ 24 files changed, 107 insertions(+), 67 deletions(-)
 
 diff --git a/core/src/mindustry/ClientLauncher.java b/core/src/mindustry/ClientLauncher.java
 index 545354aeae9c9fda1adccf72b683bf520108e561..15b5a48b9cf1ebbadb16b3902071e47eeda3067f 100644
@@ -536,6 +537,48 @@ index 5e126478f0ad41d545cb6a7b280b96f4d4381bd1..6b686fa3b4579ae183cf957efdaf89a9
          }else if(invalidItem != null){
              drawPlaceText(Core.bundle.get("bar.drilltierreq"), x, y, false);
          }
+diff --git a/core/src/mindustry/world/blocks/units/Reconstructor.java b/core/src/mindustry/world/blocks/units/Reconstructor.java
+index 2ae3d9009513a79af91cc2e659ce137e5652aac5..ad4cf0972941bf9b75d6bdb99060e8ac8349fd66 100644
+--- a/core/src/mindustry/world/blocks/units/Reconstructor.java
++++ b/core/src/mindustry/world/blocks/units/Reconstructor.java
+@@ -174,7 +174,7 @@ public class Reconstructor extends UnitBlock{
+ 
+         public boolean canSetCommand(){
+             var output = unit();
+-            return output != null && output.commands.size > 1 && output.allowChangeCommands;
++            return output == null || (output.commands.size > 1 && output.allowChangeCommands);
+         }
+ 
+         @Override
+@@ -191,25 +191,21 @@ public class Reconstructor extends UnitBlock{
+         public void buildConfiguration(Table table){
+             var unit = unit();
+ 
+-            if(unit == null){
+-                deselect();
+-                return;
+-            }
+-
+             var group = new ButtonGroup<ImageButton>();
+             group.setMinCheckCount(0);
+             int i = 0, columns = 4;
+ 
+             table.background(Styles.black6);
+ 
+-            var list = unit().commands;
++            //MDTX: allow client to preset the command.
++            var list = unit == null ? Vars.content.unitCommands() : unit.commands;
+             for(var item : list){
+                 ImageButton button = table.button(item.getIcon(), Styles.clearNoneTogglei, 40f, () -> {
+                     configure(item);
+                     deselect();
+                 }).tooltip(item.localized()).group(group).get();
+ 
+-                button.update(() -> button.setChecked(command == item || (command == null && unit.defaultCommand == item)));
++                button.update(() -> button.setChecked(command == item || (command == null && unit != null && unit.defaultCommand == item)));
+ 
+                 if(++i % columns == 0){
+                     table.row();
 diff --git a/desktop/src/mindustry/desktop/DesktopLauncher.java b/desktop/src/mindustry/desktop/DesktopLauncher.java
 index d15cfcaab94f3cdca42524b627f3064be16ea67d..8857138974023b123eebda8d8140c3c24bcf51e1 100644
 --- a/desktop/src/mindustry/desktop/DesktopLauncher.java

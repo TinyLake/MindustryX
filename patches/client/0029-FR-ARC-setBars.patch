@@ -522,7 +522,7 @@ index 224539af1ec0a6c643959a6950fa096d783160ea..a211f5046439079a487a3b7a8a356245
      public void drawPlanConfig(BuildPlan plan, Eachable<BuildPlan> list){
          drawPlanConfigCenter(plan, plan.config, "center", true);
 diff --git a/core/src/mindustry/world/blocks/units/Reconstructor.java b/core/src/mindustry/world/blocks/units/Reconstructor.java
-index 2ae3d9009513a79af91cc2e659ce137e5652aac5..45db6b4752fdce67eff7c580d4188ad91537e1aa 100644
+index ad4cf0972941bf9b75d6bdb99060e8ac8349fd66..d26f79485a0a38cf7dc20004066d9a5948d27eaa 100644
 --- a/core/src/mindustry/world/blocks/units/Reconstructor.java
 +++ b/core/src/mindustry/world/blocks/units/Reconstructor.java
 @@ -62,7 +62,11 @@ public class Reconstructor extends UnitBlock{
