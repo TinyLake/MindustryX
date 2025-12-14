@@ -4,23 +4,9 @@ Date: Sat, 3 Aug 2024 20:59:46 +0800
 Subject: [PATCH] OC: speedup SchematicsDialog showing.
 
 ---
- build.gradle                                        | 2 +-
  core/src/mindustry/ui/dialogs/SchematicsDialog.java | 5 ++++-
- 2 files changed, 5 insertions(+), 2 deletions(-)
+ 1 file changed, 4 insertions(+), 1 deletion(-)
 
-diff --git a/build.gradle b/build.gradle
-index 34ef37eb7dca3ecfbd2bbd9622f7515148a08ed0..34cbc910d6794ba0a110004db81bcf55061171ad 100644
---- a/build.gradle
-+++ b/build.gradle
-@@ -147,7 +147,7 @@ project(":core"){
-         api "org.lz4:lz4-java:1.8.0"
-         api arcModule("arc-core")
-         api arcModule("extensions:flabel")
--        api arcModule("extensions:freetype")
-+        api "com.github.way-zer.Arc:freetype:fe9f23ae08"
-         api arcModule("extensions:g3d")
-         api arcModule("extensions:fx")
-         api arcModule("extensions:arcnet")
 diff --git a/core/src/mindustry/ui/dialogs/SchematicsDialog.java b/core/src/mindustry/ui/dialogs/SchematicsDialog.java
 index 508ec2a6c99e96b56f2cc76aa98afbf004636b06..fef8e21d771ccfd81cbc65a0bc62642ebf721952 100644
 --- a/core/src/mindustry/ui/dialogs/SchematicsDialog.java
