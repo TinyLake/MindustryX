@@ -1,6 +1,7 @@
 package mindustryX
 
 plugins {
+    java
     id("mindustryX.loaderMod")
 }
 
