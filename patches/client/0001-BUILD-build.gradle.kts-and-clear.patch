@@ -7,7 +7,7 @@ clear and replce jabel(Support record)
 way-zer <himc.wicp@gmail.com> on 2024/6/9
 ---
  .gitignore                                    |   2 +-
- android/build.gradle                          | 102 ++----
+ android/build.gradle                          | 104 ++----
  android/proguard-rules.pro                    |   4 +
  .../com/github/bsideup/jabel/Desugar.java     |  13 +
  .../javax.annotation.processing.Processor     |   6 +
@@ -23,7 +23,7 @@ way-zer <himc.wicp@gmail.com> on 2024/6/9
  settings.gradle                               |  11 +-
  tools/build.gradle                            |  91 ++---
  tools/src/mindustry/tools/Generators.java     |   2 +-
- 17 files changed, 444 insertions(+), 703 deletions(-)
+ 17 files changed, 445 insertions(+), 704 deletions(-)
  create mode 100644 annotations/src/main/java/com/github/bsideup/jabel/Desugar.java
  create mode 100644 annotations/src/main/resources/META-INF/services/javax.annotation.processing.Processor
  delete mode 100644 core/build.gradle
@@ -50,7 +50,7 @@ index 5e3b7987ef4f776a0bc35dde58fb2c74f4acdb07..b5b2a237c2f5343aab2fb668337c2bc4
  /core/assets/locales
  /core/assets/cache/
 diff --git a/android/build.gradle b/android/build.gradle
-index 6f349ef7b732d3530f409599c6e7cf1d7d102272..c137afc95971cf09511978851034fa043ae1b258 100644
+index 6f349ef7b732d3530f409599c6e7cf1d7d102272..bc19e36c8af53b9b091c4fa96b12f8fd9c6fa237 100644
 --- a/android/build.gradle
 +++ b/android/build.gradle
 @@ -1,45 +1,23 @@
@@ -187,10 +187,11 @@ index 6f349ef7b732d3530f409599c6e7cf1d7d102272..c137afc95971cf09511978851034fa04
 -            into file("libs/")
 -            include "**"
 -        }
+-    }
 +tasks.register('copyAndroidNatives', Copy){
-+    from(configurations.natives.collect{ it.isFile() ? zipTree(it) : it }){
-+        exclude("META-INF/**")
-     }
++    dependsOn configurations.natives
++    from configurations.natives.files.collect{ zipTree(it) }
++    exclude("META-INF/**")
 +    into file("libs/")
  }
  
