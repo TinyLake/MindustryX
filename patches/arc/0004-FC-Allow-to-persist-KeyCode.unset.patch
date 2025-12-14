@@ -1,0 +1,44 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: way-zer <himc.wicp@gmail.com>
+Date: Sun, 14 Dec 2025 22:51:14 +0800
+Subject: [PATCH] FC: Allow to persist KeyCode.unset.
+
+---
+ arc-core/src/arc/input/KeyBind.java | 10 +++++-----
+ arc-core/src/arc/input/KeyCode.java |  1 +
+ 2 files changed, 6 insertions(+), 5 deletions(-)
+
+diff --git a/arc-core/src/arc/input/KeyBind.java b/arc-core/src/arc/input/KeyBind.java
+index fe2570133e9560a855e72b2bdbe15d207bdc7eb2..e62d626a07bd61ada7fee19547355f5ee36cc7b9 100644
+--- a/arc-core/src/arc/input/KeyBind.java
++++ b/arc-core/src/arc/input/KeyBind.java
+@@ -69,12 +69,12 @@ public class KeyBind{
+         Axis loaded;
+         String name = settingsKey();
+         if(settings.getBool(name + "-single", true)){
+-            KeyCode key = KeyCode.byOrdinal(settings.getInt(name + "-key", KeyCode.unset.ordinal()));
+-            loaded = key == KeyCode.unset ? null : new Axis(key);
++            KeyCode key = KeyCode.byOrdinal(settings.getInt(name + "-key", KeyCode.useDefault.ordinal()));
++            loaded = key == KeyCode.useDefault ? null : new Axis(key);
+         }else{
+-            KeyCode min = KeyCode.byOrdinal(settings.getInt(name + "-min", KeyCode.unset.ordinal()));
+-            KeyCode max = KeyCode.byOrdinal(settings.getInt(name + "-max", KeyCode.unset.ordinal()));
+-            loaded = min == KeyCode.unset || max == KeyCode.unset ? null : new Axis(min, max);
++            KeyCode min = KeyCode.byOrdinal(settings.getInt(name + "-min", KeyCode.useDefault.ordinal()));
++            KeyCode max = KeyCode.byOrdinal(settings.getInt(name + "-max", KeyCode.useDefault.ordinal()));
++            loaded = min == KeyCode.useDefault || max == KeyCode.useDefault ? null : new Axis(min, max);
+         }
+ 
+         if(loaded != null){
+diff --git a/arc-core/src/arc/input/KeyCode.java b/arc-core/src/arc/input/KeyCode.java
+index 9ce212150be80dd1f086f1e0ac86be1ac9ac3988..49f14e3b5ee17310aebc254d58f240d259552fe2 100644
+--- a/arc-core/src/arc/input/KeyCode.java
++++ b/arc-core/src/arc/input/KeyCode.java
+@@ -193,6 +193,7 @@ public enum KeyCode implements KeybindValue{
+     f11(KeyType.key, "F11"),
+     f12(KeyType.key, "F12"),
+     unset(KeyType.key, "Unset"),
++    useDefault(KeyType.key, "useDefault"), //MDTX: special keycode representing the default keybind, not persisted
+     application(KeyType.key, "Application"),
+     asterisk(KeyType.key, "*"),
+     capsLock(KeyType.key, "Caps Lock"),
