@@ -1,7 +1,6 @@
 package mindustryX
 
 plugins {
-    id("mindustryX.patchArc")
     id("mindustryX.loaderMod")
 }
 

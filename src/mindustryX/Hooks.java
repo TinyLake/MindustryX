@@ -8,7 +8,6 @@ import mindustry.game.EventType.*;
 import mindustry.gen.*;
 import mindustry.mod.*;
 import mindustryX.features.*;
-import mindustryX.features.Settings;
 import mindustryX.features.ui.*;
 
 import java.net.*;
@@ -31,6 +30,11 @@ public class Hooks implements ApplicationListener{
             Events.on(ClientLoadEvent.class, (e) -> {
                 ui.showInfo("Java版本过低，不受支持(" + OS.javaVersion + ")。请使用Java 17或更高版本运行MindustryX。\n[grey]该警告不存在设置，请更新Java版本。");
             });
+        }
+        try{
+            Http.onBeforeRequest = Hooks::onHttp;
+        }catch(NoSuchFieldError e){
+            Log.warn("Failed to set Http.onBeforeRequest " + e.toString());
         }
     }
 

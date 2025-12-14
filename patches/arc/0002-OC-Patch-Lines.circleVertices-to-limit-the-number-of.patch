@@ -1,0 +1,33 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: way-zer <himc.wicp@gmail.com>
+Date: Sun, 14 Dec 2025 22:19:35 +0800
+Subject: [PATCH] OC: Patch Lines.circleVertices to limit the number of
+ vertices to maxCriticVertices
+
+---
+ arc-core/src/arc/graphics/g2d/Lines.java | 5 ++++-
+ 1 file changed, 4 insertions(+), 1 deletion(-)
+
+diff --git a/arc-core/src/arc/graphics/g2d/Lines.java b/arc-core/src/arc/graphics/g2d/Lines.java
+index 2c7b33e186559d26cd94069c5be3d8d6dbe201b8..2b93c4a388a0fbaea7612ba23c1854a53debd296 100644
+--- a/arc-core/src/arc/graphics/g2d/Lines.java
++++ b/arc-core/src/arc/graphics/g2d/Lines.java
+@@ -15,6 +15,7 @@ public class Lines{
+     private static FloatSeq floatBuilder = new FloatSeq(20);
+     private static boolean building;
+     private static float circlePrecision = 0.4f;
++    public static int MAX_CIRCLE_VERTICES = 100;
+ 
+     /** Set the vertices used for drawing a line circle. */
+     public static void setCirclePrecision(float amount){
+@@ -22,7 +23,9 @@ public class Lines{
+     }
+ 
+     public static int circleVertices(float rad){
+-        return 11 + (int)(rad * circlePrecision);
++        int ret = 11 + (int)(rad * circlePrecision);
++        //MDTX: cap at 100 vertices
++        return Math.min(ret, MAX_CIRCLE_VERTICES);
+     }
+ 
+     public static void lineAngle(float x, float y, float angle, float length, boolean cap){
