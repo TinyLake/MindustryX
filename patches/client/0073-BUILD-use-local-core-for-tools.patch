@@ -1,0 +1,32 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: way-zer <himc.wicp@gmail.com>
+Date: Thu, 18 Dec 2025 00:28:16 +0800
+Subject: [PATCH] =?UTF-8?q?BUILD=20use=20local=20core=20for=20tools.=20(?=
+ =?UTF-8?q?=E4=B8=B4=E6=97=B6)?=
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+---
+ build.gradle | 8 +++++---
+ 1 file changed, 5 insertions(+), 3 deletions(-)
+
+diff --git a/build.gradle b/build.gradle
+index 34ef37eb7dca3ecfbd2bbd9622f7515148a08ed0..99cccd4082524d928f0d1e779fec08b50c842af7 100644
+--- a/build.gradle
++++ b/build.gradle
+@@ -228,9 +228,11 @@ project(":tools"){
+ 
+     dependencies{
+         //MDTX: use upstream build for tools, avoid classpath change
+-        implementation("com.github.Anuken.Mindustry:core:v${property("upstreamBuild")}"){
+-            transitive = false
+-        }
++//        implementation("com.github.Anuken.Mindustry:core:v${property("upstreamBuild")}"){
++//            transitive = false
++//        }
++        //TODO temporarily use local core until upstream available
++        implementation project(":core")
+         implementation arcModule("arc-core")
+         implementation arcModule(":extensions:g3d")
+         implementation arcModule(":extensions:packer")
