@@ -29,16 +29,16 @@ MinRi2 <2275045670@qq.com>
 * 清除链接建筑时更新逻辑代码
 MinRi2 <2275045670@qq.com> on 2025/5/3
 ---
- core/src/mindustry/logic/LCanvas.java         | 50 +++++++++++++++++--
+ core/src/mindustry/logic/LCanvas.java         | 48 ++++++++++++++++++-
  core/src/mindustry/logic/LExecutor.java       |  7 ++-
- core/src/mindustry/logic/LStatements.java     | 27 ++++++++++
- core/src/mindustry/logic/LogicDialog.java     | 19 +++++--
+ core/src/mindustry/logic/LStatements.java     | 27 +++++++++++
+ core/src/mindustry/logic/LogicDialog.java     | 19 ++++++--
  .../world/blocks/logic/LogicBlock.java        | 39 +++++++++++----
  .../world/blocks/logic/MemoryBlock.java       | 26 +++++++++-
- 6 files changed, 150 insertions(+), 18 deletions(-)
+ 6 files changed, 149 insertions(+), 17 deletions(-)
 
 diff --git a/core/src/mindustry/logic/LCanvas.java b/core/src/mindustry/logic/LCanvas.java
-index 8d5edd0bcc16b65b4f7d1683925c9dd847bb7f0d..39f29b027fe979cea410e52b2b8cd695d1c60211 100644
+index 74fb32ff56eec0fcf565cb7cf7aedf1335c978cc..39f29b027fe979cea410e52b2b8cd695d1c60211 100644
 --- a/core/src/mindustry/logic/LCanvas.java
 +++ b/core/src/mindustry/logic/LCanvas.java
 @@ -18,6 +18,9 @@ import mindustry.gen.*;
@@ -60,14 +60,7 @@ index 8d5edd0bcc16b65b4f7d1683925c9dd847bb7f0d..39f29b027fe979cea410e52b2b8cd695
      }
  
      public static void tooltip(Cell<?> cell, String key){
-@@ -438,17 +441,19 @@ public class LCanvas extends Table{
-                 addressLabel = t.add(index + "").style(Styles.outlineLabel).color(color).padRight(8).get();
- 
-                 //taken from foo's client
--                t.button(Icon.add, Styles.logici, () -> Vars.ui.logic.showAddDialog(statements.insertPosition + 1))
-+                t.button(Icon.add, Styles.logici, () -> Vars.ui.logic.showAddDialog(index + 1))
-                 .disabled(b -> canvas.statements.getChildren().size >= LExecutor.maxInstructions).size(24f).padRight(6);
- 
+@@ -444,11 +447,13 @@ public class LCanvas extends Table{
                  t.button(Icon.copy, Styles.logici, () -> {
                  }).size(24f).padRight(6).get().tapped(this::copy);
  
@@ -129,7 +122,7 @@ index 8d5edd0bcc16b65b4f7d1683925c9dd847bb7f0d..39f29b027fe979cea410e52b2b8cd695
          public void draw(){
              float pad = 5f;
 diff --git a/core/src/mindustry/logic/LExecutor.java b/core/src/mindustry/logic/LExecutor.java
-index 5d4a6f15df697d934584092daa082f5c29578a8d..18f5973f08ffe7ca262f6e4187d9ab530331e887 100644
+index f036bad977cb5ab2d7b8e166d48bea85af061472..9b5bb99b46a2a66838adfebcf875e6e9b94927c0 100644
 --- a/core/src/mindustry/logic/LExecutor.java
 +++ b/core/src/mindustry/logic/LExecutor.java
 @@ -44,6 +44,9 @@ public class LExecutor{
@@ -278,7 +271,7 @@ index 38211fd1ab47dbc60f7c3871284e79c595de4e6c..6c1b8a57d7206ec6d9f5909613ebf202
      }
  }
 diff --git a/core/src/mindustry/world/blocks/logic/LogicBlock.java b/core/src/mindustry/world/blocks/logic/LogicBlock.java
-index 155815d7d6cf2de3f183b86df966eb19e870270f..0219bb1af380b39b8697e3dd0f31417271616b04 100644
+index 2a8175d97b75b28648f96f62afbc5eebd6976f4c..e9e0f4f58deaff0e2ba46fdc84ec0378c12af01e 100644
 --- a/core/src/mindustry/world/blocks/logic/LogicBlock.java
 +++ b/core/src/mindustry/world/blocks/logic/LogicBlock.java
 @@ -16,17 +16,21 @@ import arc.util.io.*;
@@ -303,7 +296,7 @@ index 155815d7d6cf2de3f183b86df966eb19e870270f..0219bb1af380b39b8697e3dd0f314172
  
  import java.io.*;
  import java.util.zip.*;
-@@ -105,11 +109,15 @@ public class LogicBlock extends Block{
+@@ -107,11 +111,15 @@ public class LogicBlock extends Block{
  
      @Override
      public boolean checkForceDark(Tile tile){
@@ -321,7 +314,7 @@ index 155815d7d6cf2de3f183b86df966eb19e870270f..0219bb1af380b39b8697e3dd0f314172
      }
  
      @Override
-@@ -416,7 +424,7 @@ public class LogicBlock extends Block{
+@@ -422,7 +430,7 @@ public class LogicBlock extends Block{
  
          @Override
          public boolean displayable(){
@@ -330,7 +323,7 @@ index 155815d7d6cf2de3f183b86df966eb19e870270f..0219bb1af380b39b8697e3dd0f314172
          }
  
          @Override
-@@ -439,7 +447,12 @@ public class LogicBlock extends Block{
+@@ -445,7 +453,12 @@ public class LogicBlock extends Block{
  
          @Override
          public Cursor getCursor(){
@@ -344,7 +337,7 @@ index 155815d7d6cf2de3f183b86df966eb19e870270f..0219bb1af380b39b8697e3dd0f314172
          }
  
          //logic blocks cause write problems when picked up
-@@ -598,24 +611,30 @@ public class LogicBlock extends Block{
+@@ -604,24 +617,30 @@ public class LogicBlock extends Block{
              }
  
              for(LogicLink l : links){
@@ -379,7 +372,7 @@ index 155815d7d6cf2de3f183b86df966eb19e870270f..0219bb1af380b39b8697e3dd0f314172
  
              Groups.unit.each(u -> u.controller() instanceof LogicAI ai && ai.controller == this, unit -> {
                  Drawf.square(unit.x, unit.y, unit.hitSize, unit.rotation + 45);
-@@ -662,12 +681,12 @@ public class LogicBlock extends Block{
+@@ -668,12 +687,12 @@ public class LogicBlock extends Block{
  
          @Override
          public boolean shouldShowConfigure(Player player){

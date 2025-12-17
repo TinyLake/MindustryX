@@ -9,7 +9,7 @@ Subject: [PATCH] FIX.G: compatibility for old mixed tech
  2 files changed, 12 insertions(+)
 
 diff --git a/core/src/mindustry/game/Rules.java b/core/src/mindustry/game/Rules.java
-index 5656c695bed1168bcbaa1692403bfdb5898ea27d..3e54ed2e25b74f7f081c1cedb181fc6506225ce5 100644
+index a268020da13d1755619fdc6060903cdca9a27fff..d9d6568c172eced20a51fecbd4764b2ffd66e3f1 100644
 --- a/core/src/mindustry/game/Rules.java
 +++ b/core/src/mindustry/game/Rules.java
 @@ -166,6 +166,11 @@ public class Rules{
@@ -25,7 +25,7 @@ index 5656c695bed1168bcbaa1692403bfdb5898ea27d..3e54ed2e25b74f7f081c1cedb181fc65
      public MapObjectives objectives = new MapObjectives();
      /** Flags set by objectives. Used in world processors. */
 diff --git a/core/src/mindustry/io/SaveVersion.java b/core/src/mindustry/io/SaveVersion.java
-index 6973da00fc623e70201b7cd7f586661136127133..1dbf0bc2e2bbc2fc14d389abb8e929d6e4b7a243 100644
+index f35061dfd8f6a012fda59dfcad3d90c82b82d253..40eddef2676cb8b9b8f1f4092b04f6b8c56e5a81 100644
 --- a/core/src/mindustry/io/SaveVersion.java
 +++ b/core/src/mindustry/io/SaveVersion.java
 @@ -150,6 +150,7 @@ public abstract class SaveVersion extends SaveFileReader{

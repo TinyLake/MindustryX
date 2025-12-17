@@ -14,10 +14,10 @@ Content-Transfer-Encoding: 8bit
  3 files changed, 18 insertions(+), 22 deletions(-)
 
 diff --git a/core/src/mindustry/ClientLauncher.java b/core/src/mindustry/ClientLauncher.java
-index fefd27d5d0c267eba146859889809fd16f7fad90..c233b9373d907f2ee8ca8b95dfbdd077993b4c53 100644
+index 3db82e7f8a67f9f4a8ec04bbd50691ba8d5e0203..4b2e47a600e2a0d040bafac68fde4fad7016a37d 100644
 --- a/core/src/mindustry/ClientLauncher.java
 +++ b/core/src/mindustry/ClientLauncher.java
-@@ -161,10 +161,8 @@ public abstract class ClientLauncher extends ApplicationCore implements Platform
+@@ -165,10 +165,8 @@ public abstract class ClientLauncher extends ApplicationCore implements Platform
  
          assets.load(new Vars());
  
@@ -29,7 +29,7 @@ index fefd27d5d0c267eba146859889809fd16f7fad90..c233b9373d907f2ee8ca8b95dfbdd077
          assets.loadRun("maps", Map.class, () -> maps.loadPreviews());
  
          Musics.load();
-@@ -179,11 +177,11 @@ public abstract class ClientLauncher extends ApplicationCore implements Platform
+@@ -183,11 +181,11 @@ public abstract class ClientLauncher extends ApplicationCore implements Platform
          });
  
          assets.load(mods);
@@ -43,7 +43,7 @@ index fefd27d5d0c267eba146859889809fd16f7fad90..c233b9373d907f2ee8ca8b95dfbdd077
          add(netServer = new NetServer());
          add(netClient = new NetClient());
 diff --git a/core/src/mindustry/core/UI.java b/core/src/mindustry/core/UI.java
-index 5a31173c374cecfd732fe267ed55a805245f7bdb..996cab34eceac3244226f2e65b2f4bbffb7d6bef 100644
+index a62f8737b3037c8c25c34a84e22369cb0e434473..9a3763d18ea8fe6ad194887daac47c42984d4589 100644
 --- a/core/src/mindustry/core/UI.java
 +++ b/core/src/mindustry/core/UI.java
 @@ -85,10 +85,6 @@ public class UI implements ApplicationListener, Loadable{

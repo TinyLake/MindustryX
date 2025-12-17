@@ -15,10 +15,10 @@ way-zer <himc.wicp@gmail.com> on 2024/7/21
  3 files changed, 9 insertions(+), 1 deletion(-)
 
 diff --git a/core/src/mindustry/ClientLauncher.java b/core/src/mindustry/ClientLauncher.java
-index 15b5a48b9cf1ebbadb16b3902071e47eeda3067f..8db0e9c54d688f0bfe50fbea22ecfca6a3084f84 100644
+index 03945cddb87fc0c8fb583f126dde24fa60427e0c..d1f56e112a9ab9b4acf82d6a0211db94b0f5d659 100644
 --- a/core/src/mindustry/ClientLauncher.java
 +++ b/core/src/mindustry/ClientLauncher.java
-@@ -85,7 +85,7 @@ public abstract class ClientLauncher extends ApplicationCore implements Platform
+@@ -89,7 +89,7 @@ public abstract class ClientLauncher extends ApplicationCore implements Platform
          });
  
          UI.loadColors();
@@ -28,7 +28,7 @@ index 15b5a48b9cf1ebbadb16b3902071e47eeda3067f..8db0e9c54d688f0bfe50fbea22ecfca6
          assets.setLoader(Texture.class, "." + mapExtension, new MapPreviewLoader());
  
 diff --git a/core/src/mindustry/core/Logic.java b/core/src/mindustry/core/Logic.java
-index ed955e4857a0b197f048314b671fc5d1bc8b6e3e..9aba9a725321046a1fa98a42231b712e747f74ab 100644
+index fc26751e2084eb02d1c3af39a09049268f670e48..3a17afbcf780bac3954ccea414d5c51077106853 100644
 --- a/core/src/mindustry/core/Logic.java
 +++ b/core/src/mindustry/core/Logic.java
 @@ -20,6 +20,7 @@ import mindustry.type.Weather.*;
@@ -39,7 +39,7 @@ index ed955e4857a0b197f048314b671fc5d1bc8b6e3e..9aba9a725321046a1fa98a42231b712e
  
  import java.util.*;
  
-@@ -428,6 +429,7 @@ public class Logic implements ApplicationListener{
+@@ -400,6 +401,7 @@ public class Logic implements ApplicationListener{
          PerfCounter.frame.end();
          PerfCounter.frame.begin();
  
@@ -47,7 +47,7 @@ index ed955e4857a0b197f048314b671fc5d1bc8b6e3e..9aba9a725321046a1fa98a42231b712e
          Events.fire(Trigger.update);
          universe.updateGlobal();
  
-@@ -540,6 +542,7 @@ public class Logic implements ApplicationListener{
+@@ -512,6 +514,7 @@ public class Logic implements ApplicationListener{
          }else if(netServer.isWaitingForPlayers() && runStateCheck){
              checkGameState();
          }
@@ -56,7 +56,7 @@ index ed955e4857a0b197f048314b671fc5d1bc8b6e3e..9aba9a725321046a1fa98a42231b712e
  
      /** @return whether the wave timer is paused due to enemies */
 diff --git a/core/src/mindustry/ui/fragments/HudFragment.java b/core/src/mindustry/ui/fragments/HudFragment.java
-index d0b20fc5a1cf8c498a88d4f463bd9cad7478d458..a2aa1970b127df12cdc50ed0d4c2e1c4fe9cb183 100644
+index 3bb78bab55e4180a95829fb32f0ac3d66c5a1bcb..3cf7581a3720140b16fa5793c01e71e4481ab616 100644
 --- a/core/src/mindustry/ui/fragments/HudFragment.java
 +++ b/core/src/mindustry/ui/fragments/HudFragment.java
 @@ -31,6 +31,8 @@ import mindustry.ui.*;

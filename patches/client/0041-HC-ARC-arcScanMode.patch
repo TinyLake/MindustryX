@@ -32,10 +32,10 @@ index 97c69dd2cfe25d81b94b7031fbd5919672f0b8cf..c6a77a0f45c062d49994bb760785f417
  }
 \ No newline at end of file
 diff --git a/core/src/mindustry/world/blocks/distribution/MassDriver.java b/core/src/mindustry/world/blocks/distribution/MassDriver.java
-index f79d55042a03d57a0370f3c31c71c044f4e55353..9000db2408e3c6b967fec508ba5726e328eb6c63 100644
+index 98699090447e0dfbe23c96ae470fad1f1815d81b..6a62f51d38469df08c3479246750c840bcd7b592 100644
 --- a/core/src/mindustry/world/blocks/distribution/MassDriver.java
 +++ b/core/src/mindustry/world/blocks/distribution/MassDriver.java
-@@ -335,6 +335,9 @@ public class MassDriver extends Block{
+@@ -338,6 +338,9 @@ public class MassDriver extends Block{
              return other instanceof MassDriverBuild entity && other.isValid() && other.efficiency > 0 && entity.block == block && entity.link == pos() && within(other, range);
          }
  

@@ -8,7 +8,7 @@ Subject: [PATCH] PICK #anuken:11032
  1 file changed, 1 insertion(+), 1 deletion(-)
 
 diff --git a/core/assets/bundles/bundle_zh_CN.properties b/core/assets/bundles/bundle_zh_CN.properties
-index 36b48154d81d17aa77e7b71b4fd8d990a1e90b8c..cbfc9a6f847cb94ed6d30b6e397f58c0e193a1a5 100644
+index c3c1b887bf2c6c1ddee33d72e7e0980a472489ec..3e1116eb7f6a69152672a7b94510591950ae3bc1 100644
 --- a/core/assets/bundles/bundle_zh_CN.properties
 +++ b/core/assets/bundles/bundle_zh_CN.properties
 @@ -376,7 +376,7 @@ command.enterPayload = 进入载荷建筑
