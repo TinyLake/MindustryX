@@ -101,7 +101,7 @@ way-zer <himc.wicp@gmail.com> on 2024/9/8
  .../src/mindustry/graphics/BlockRenderer.java |  17 +-
  .../mindustry/graphics/OverlayRenderer.java   |  36 ++-
  core/src/mindustry/input/DesktopInput.java    |  12 +-
- core/src/mindustry/input/InputHandler.java    |  46 +++-
+ core/src/mindustry/input/InputHandler.java    |  47 +++-
  core/src/mindustry/input/MobileInput.java     |   6 +-
  core/src/mindustry/logic/LExecutor.java       |  12 +-
  core/src/mindustry/type/UnitType.java         | 101 +++++++-
@@ -120,7 +120,7 @@ way-zer <himc.wicp@gmail.com> on 2024/9/8
  .../mindustry/ui/fragments/MenuFragment.java  |  24 +-
  .../ui/fragments/PlacementFragment.java       | 164 ++++++++++--
  .../ui/fragments/PlayerListFragment.java      |  72 ++----
- 27 files changed, 1134 insertions(+), 147 deletions(-)
+ 27 files changed, 1135 insertions(+), 147 deletions(-)
 
 diff --git a/core/src/mindustry/editor/MapInfoDialog.java b/core/src/mindustry/editor/MapInfoDialog.java
 index b4f56d136b632aae1841fcfb6f745018d40b9199..6e38c85a35901a80d632191502f10063066e8e2e 100644
@@ -563,18 +563,21 @@ index 1b398a99d5c870f091da5cbe6f0a7dd44803301d..0ce0831bd0e9e1bacd402ae15f7e8bb6
              unit.lookAt(unit.prefRotation());
          }
 diff --git a/core/src/mindustry/input/InputHandler.java b/core/src/mindustry/input/InputHandler.java
-index f698eec753ba47b99460527e320c34e5d0007714..23b9e9d31e7a1c6cee2ee5f5e5275b3150c953cb 100644
+index f698eec753ba47b99460527e320c34e5d0007714..b0758aa09ddc6b4351ede08bf4ef565a33f611dd 100644
 --- a/core/src/mindustry/input/InputHandler.java
 +++ b/core/src/mindustry/input/InputHandler.java
-@@ -38,6 +38,7 @@ import mindustry.world.*;
+@@ -38,8 +38,10 @@ import mindustry.world.*;
  import mindustry.world.blocks.ConstructBlock.*;
  import mindustry.world.blocks.*;
  import mindustry.world.blocks.distribution.*;
 +import mindustry.world.blocks.logic.*;
  import mindustry.world.blocks.payloads.*;
  import mindustry.world.blocks.storage.*;
++import mindustry.world.blocks.storage.CoreBlock.*;
  import mindustry.world.meta.*;
-@@ -116,6 +117,7 @@ public abstract class InputHandler implements InputProcessor, GestureListener{
+ import mindustryX.features.*;
+ 
+@@ -116,6 +118,7 @@ public abstract class InputHandler implements InputProcessor, GestureListener{
      /** Groups of units saved to different hotkeys */
      public IntSeq[] controlGroups = new IntSeq[controlGroupBindings.length];
  
@@ -582,7 +585,7 @@ index f698eec753ba47b99460527e320c34e5d0007714..23b9e9d31e7a1c6cee2ee5f5e5275b31
      private Seq<BuildPlan> plansOut = new Seq<>(BuildPlan.class);
      private QuadTree<BuildPlan> playerPlanTree = new QuadTree<>(new Rect());
  
-@@ -732,7 +734,7 @@ public abstract class InputHandler implements InputProcessor, GestureListener{
+@@ -732,7 +735,7 @@ public abstract class InputHandler implements InputProcessor, GestureListener{
              throw new ValidateException(player, "Player cannot control a building.");
          }
  
@@ -591,7 +594,7 @@ index f698eec753ba47b99460527e320c34e5d0007714..23b9e9d31e7a1c6cee2ee5f5e5275b31
              var before = player.unit();
  
              build.onControlSelect(player.unit());
-@@ -893,7 +895,7 @@ public abstract class InputHandler implements InputProcessor, GestureListener{
+@@ -893,7 +896,7 @@ public abstract class InputHandler implements InputProcessor, GestureListener{
      }
  
      public void update(){
@@ -600,7 +603,7 @@ index f698eec753ba47b99460527e320c34e5d0007714..23b9e9d31e7a1c6cee2ee5f5e5275b31
              spectating = null;
          }
  
-@@ -1125,6 +1127,8 @@ public abstract class InputHandler implements InputProcessor, GestureListener{
+@@ -1125,6 +1128,8 @@ public abstract class InputHandler implements InputProcessor, GestureListener{
                      attack = selectedEnemyUnit(target.x, target.y);
                  }
  
@@ -609,7 +612,7 @@ index f698eec753ba47b99460527e320c34e5d0007714..23b9e9d31e7a1c6cee2ee5f5e5275b31
                  int[] ids = new int[selectedUnits.size];
                  for(int i = 0; i < ids.length; i++){
                      ids[i] = selectedUnits.get(i).id;
-@@ -1414,6 +1418,11 @@ public abstract class InputHandler implements InputProcessor, GestureListener{
+@@ -1414,6 +1419,11 @@ public abstract class InputHandler implements InputProcessor, GestureListener{
          });
      }
  
@@ -621,7 +624,7 @@ index f698eec753ba47b99460527e320c34e5d0007714..23b9e9d31e7a1c6cee2ee5f5e5275b31
      public void rotatePlans(Seq<BuildPlan> plans, int direction){
          int ox = schemOriginX(), oy = schemOriginY();
  
-@@ -1449,6 +1458,20 @@ public abstract class InputHandler implements InputProcessor, GestureListener{
+@@ -1449,6 +1459,20 @@ public abstract class InputHandler implements InputProcessor, GestureListener{
              plan.x = World.toTile(wx - plan.block.offset) + ox;
              plan.y = World.toTile(wy - plan.block.offset) + oy;
              plan.rotation = plan.block.planRotation(Mathf.mod(plan.rotation + direction, 4));
@@ -642,7 +645,7 @@ index f698eec753ba47b99460527e320c34e5d0007714..23b9e9d31e7a1c6cee2ee5f5e5275b31
          });
      }
  
-@@ -1478,6 +1501,17 @@ public abstract class InputHandler implements InputProcessor, GestureListener{
+@@ -1478,6 +1502,17 @@ public abstract class InputHandler implements InputProcessor, GestureListener{
  
              //flip rotation
              plan.block.flipRotation(plan, x);
@@ -660,7 +663,7 @@ index f698eec753ba47b99460527e320c34e5d0007714..23b9e9d31e7a1c6cee2ee5f5e5275b31
          });
      }
  
-@@ -1651,6 +1685,9 @@ public abstract class InputHandler implements InputProcessor, GestureListener{
+@@ -1651,6 +1686,9 @@ public abstract class InputHandler implements InputProcessor, GestureListener{
              font.setUseIntegerPositions(ints);
              Draw.z(z);
          }
@@ -670,7 +673,7 @@ index f698eec753ba47b99460527e320c34e5d0007714..23b9e9d31e7a1c6cee2ee5f5e5275b31
      }
  
      protected void flushSelectPlans(Seq<BuildPlan> plans){
-@@ -2024,7 +2061,7 @@ public abstract class InputHandler implements InputProcessor, GestureListener{
+@@ -2024,7 +2062,7 @@ public abstract class InputHandler implements InputProcessor, GestureListener{
  
      public @Nullable Building selectedControlBuild(){
          Building build = world.buildWorld(Core.input.mouseWorld().x, Core.input.mouseWorld().y);
@@ -679,7 +682,7 @@ index f698eec753ba47b99460527e320c34e5d0007714..23b9e9d31e7a1c6cee2ee5f5e5275b31
              return build;
          }
          return null;
-@@ -2125,6 +2162,9 @@ public abstract class InputHandler implements InputProcessor, GestureListener{
+@@ -2125,6 +2163,9 @@ public abstract class InputHandler implements InputProcessor, GestureListener{
  
      public boolean canShoot(){
          if(player.dead()) return false;
