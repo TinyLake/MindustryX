@@ -31,5 +31,5 @@ echo "Work $refHEAD -> $refRemote"
 git add --force Arc work && git commit -m "Update HEAD -> $upstreamRef($refRemote)"
 
 echo "Rebuilding patches"
-../scripts/applyPatches.sh
+./scripts/applyPatches.sh
 echo "After resolve conflict, run '../scripts/genPatches.sh'"
