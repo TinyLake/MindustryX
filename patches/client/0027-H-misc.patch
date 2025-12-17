@@ -35,10 +35,10 @@ Content-Transfer-Encoding: 8bit
  24 files changed, 107 insertions(+), 67 deletions(-)
 
 diff --git a/core/src/mindustry/ClientLauncher.java b/core/src/mindustry/ClientLauncher.java
-index 545354aeae9c9fda1adccf72b683bf520108e561..15b5a48b9cf1ebbadb16b3902071e47eeda3067f 100644
+index 4145f77e4680b962aa3ed89e414095ad71ecdb46..03945cddb87fc0c8fb583f126dde24fa60427e0c 100644
 --- a/core/src/mindustry/ClientLauncher.java
 +++ b/core/src/mindustry/ClientLauncher.java
-@@ -36,6 +36,10 @@ public abstract class ClientLauncher extends ApplicationCore implements Platform
+@@ -37,6 +37,10 @@ public abstract class ClientLauncher extends ApplicationCore implements Platform
      @Override
      public void setup(){
          String dataDir = System.getProperty("mindustry.data.dir", OS.env("MINDUSTRY_DATA_DIR"));
@@ -49,7 +49,7 @@ index 545354aeae9c9fda1adccf72b683bf520108e561..15b5a48b9cf1ebbadb16b3902071e47e
          if(dataDir != null){
              Core.settings.setDataDirectory(files.absolute(dataDir));
          }
-@@ -259,10 +263,14 @@ public abstract class ClientLauncher extends ApplicationCore implements Platform
+@@ -264,10 +268,14 @@ public abstract class ClientLauncher extends ApplicationCore implements Platform
          }
  
          if(limitFps){
@@ -65,7 +65,7 @@ index 545354aeae9c9fda1adccf72b683bf520108e561..15b5a48b9cf1ebbadb16b3902071e47e
          }
  
 diff --git a/core/src/mindustry/Vars.java b/core/src/mindustry/Vars.java
-index d03b17d2c047fc4acb84844d4a717826badda13a..23ae69e96eabdd97ea78751b81f3c62f06690f96 100644
+index 6cfdb336864850ca18305ca9c7c84657deca2256..13334a3373a36f1b99b3db66088932f5ff6579b1 100644
 --- a/core/src/mindustry/Vars.java
 +++ b/core/src/mindustry/Vars.java
 @@ -420,6 +420,11 @@ public class Vars implements Loadable{
@@ -94,10 +94,10 @@ index 11278ddac6ce2b35234acb31b43ea7e8c999592d..ed6785c5853a9a8096b2f48792c05b98
      private Seq<Team> activeTeams = new Seq<>(Team.class);
      /** Maps teams to a map of flagged tiles by flag. */
 diff --git a/core/src/mindustry/content/Blocks.java b/core/src/mindustry/content/Blocks.java
-index ae8f695ec088e24819d056a39df9478abb632218..fd62d2cbf3ff3c46d027228a6b25fc2a07ccdf18 100644
+index b6b6787d47111b109240d58ed0aff5b616830542..ba9ade4c06bc846c5d3e955cca662a081f999531 100644
 --- a/core/src/mindustry/content/Blocks.java
 +++ b/core/src/mindustry/content/Blocks.java
-@@ -2099,6 +2099,7 @@ public class Blocks{
+@@ -2113,6 +2113,7 @@ public class Blocks{
              speed = 74f;
              arrowSpacing = 6f;
              bufferCapacity = 14;
@@ -105,7 +105,7 @@ index ae8f695ec088e24819d056a39df9478abb632218..fd62d2cbf3ff3c46d027228a6b25fc2a
          }};
  
          phaseConveyor = new ItemBridge("phase-conveyor"){{
-@@ -2111,6 +2112,7 @@ public class Blocks{
+@@ -2125,6 +2126,7 @@ public class Blocks{
              pulse = true;
              envEnabled |= Env.space;
              consumePower(0.30f);
@@ -126,10 +126,10 @@ index 7e9466f2d629335317b2a706b376d33aab029923..51669a3c774069bdb5f3189a52fd9386
  
          dynamic = new StatusEffect("dynamic"){{
 diff --git a/core/src/mindustry/core/Control.java b/core/src/mindustry/core/Control.java
-index 3a26a8d43faf03c02d17c46cd867a098a3df1056..8c1ce1e5526a8a1a2e79b10ff8a5c86d01be0efa 100644
+index b47359f11124b09334d3f3d108a18da2dfd57daf..3985cd03a36d24c55f465822eed6d12074e56094 100644
 --- a/core/src/mindustry/core/Control.java
 +++ b/core/src/mindustry/core/Control.java
-@@ -601,7 +601,8 @@ public class Control implements ApplicationListener, Loadable{
+@@ -603,7 +603,8 @@ public class Control implements ApplicationListener, Loadable{
                  BaseDialog dialog = new BaseDialog("@confirm");
                  dialog.setFillParent(true);
  
@@ -140,7 +140,7 @@ index 3a26a8d43faf03c02d17c46cd867a098a3df1056..8c1ce1e5526a8a1a2e79b10ff8a5c86d
                      Core.settings.put("uiscale", 100);
                      Core.settings.put("uiscalechanged", false);
 diff --git a/core/src/mindustry/core/NetClient.java b/core/src/mindustry/core/NetClient.java
-index 89aa488065f4e1d4c1091a101215234ccac944d0..3754beac0e217ca3f3714d27ae216f50e4e0c07a 100644
+index 77e23fff3efb2bc6d4ed8ca01086716823d3c869..61ef7a6ae1a82d078d4eb1d91a06215d5b191a57 100644
 --- a/core/src/mindustry/core/NetClient.java
 +++ b/core/src/mindustry/core/NetClient.java
 @@ -72,6 +72,10 @@ public class NetClient implements ApplicationListener{
@@ -155,10 +155,10 @@ index 89aa488065f4e1d4c1091a101215234ccac944d0..3754beac0e217ca3f3714d27ae216f50
  
              player.admin = false;
 diff --git a/core/src/mindustry/core/Renderer.java b/core/src/mindustry/core/Renderer.java
-index c3619bccaab8ca76f327e97c1e274d07c7575ab5..6da44d18e3c38f8a3010cf7075a2932a1ef8a270 100644
+index 0c6d636cd64c9d1dd782d3eb46d840414b56e27f..e5453c4567d808e40ea5039b57d8ed83f854f2f7 100644
 --- a/core/src/mindustry/core/Renderer.java
 +++ b/core/src/mindustry/core/Renderer.java
-@@ -161,7 +161,7 @@ public class Renderer implements ApplicationListener{
+@@ -160,7 +160,7 @@ public class Renderer implements ApplicationListener{
              baseTarget = Mathf.lerp(minZoom, maxZoom, control.input.logicCutsceneZoom);
          }
  
@@ -168,7 +168,7 @@ index c3619bccaab8ca76f327e97c1e274d07c7575ab5..6da44d18e3c38f8a3010cf7075a2932a
          if(Mathf.equal(camerascale, dest, 0.001f)) camerascale = dest;
          unitLaserOpacity = settings.getInt("unitlaseropacity") / 100f;
 diff --git a/core/src/mindustry/core/UI.java b/core/src/mindustry/core/UI.java
-index 58f4dfa5abae13d0b43fc9779118bdc600ade3b1..5a31173c374cecfd732fe267ed55a805245f7bdb 100644
+index daaa194524f5d1afad10f2c3b0731e8ae68da124..a62f8737b3037c8c25c34a84e22369cb0e434473 100644
 --- a/core/src/mindustry/core/UI.java
 +++ b/core/src/mindustry/core/UI.java
 @@ -607,7 +607,7 @@ public class UI implements ApplicationListener, Loadable{
@@ -428,7 +428,7 @@ index add50b5864c311b66d4278e684a4e0260170139f..6202aadb499174630a04c0210e7390a0
          team("/t"),
          admin("/a", player::admin)
 diff --git a/core/src/mindustry/ui/fragments/PlacementFragment.java b/core/src/mindustry/ui/fragments/PlacementFragment.java
-index eb8baf410b6a31211fddd2cb50ff0c5d8c8d286e..be3d68cbc309505b39f4dbadcf62fa8cd1ab9d69 100644
+index 7df456cb0c2465507c2faa8fe6f4ca8eee7b0425..60cedfaecdb8a85dcfccc30ca090aa48e3463350 100644
 --- a/core/src/mindustry/ui/fragments/PlacementFragment.java
 +++ b/core/src/mindustry/ui/fragments/PlacementFragment.java
 @@ -756,10 +756,8 @@ public class PlacementFragment{
@@ -515,7 +515,7 @@ index cbe6d64d52f66d38be69a897a9a1a2f5b928e631..c5fe7f0080fea29764ebd94f576f1f98
  
          @Override
 diff --git a/core/src/mindustry/world/blocks/production/BeamDrill.java b/core/src/mindustry/world/blocks/production/BeamDrill.java
-index 5e126478f0ad41d545cb6a7b280b96f4d4381bd1..6b686fa3b4579ae183cf957efdaf89a9fab13dba 100644
+index a142f890eaf5c8252a04201c8485ecb0e260d3f6..129cb657b956704d134573bb6b160c4fa7402069 100644
 --- a/core/src/mindustry/world/blocks/production/BeamDrill.java
 +++ b/core/src/mindustry/world/blocks/production/BeamDrill.java
 @@ -182,14 +182,10 @@ public class BeamDrill extends Block{
@@ -538,10 +538,10 @@ index 5e126478f0ad41d545cb6a7b280b96f4d4381bd1..6b686fa3b4579ae183cf957efdaf89a9
              drawPlaceText(Core.bundle.get("bar.drilltierreq"), x, y, false);
          }
 diff --git a/core/src/mindustry/world/blocks/units/Reconstructor.java b/core/src/mindustry/world/blocks/units/Reconstructor.java
-index 2ae3d9009513a79af91cc2e659ce137e5652aac5..ad4cf0972941bf9b75d6bdb99060e8ac8349fd66 100644
+index ef917ff030d1ca22e952530ca0df86133fcc48f5..db59ca748daedb56acc5f0968ec8f7bf9f1f6c32 100644
 --- a/core/src/mindustry/world/blocks/units/Reconstructor.java
 +++ b/core/src/mindustry/world/blocks/units/Reconstructor.java
-@@ -174,7 +174,7 @@ public class Reconstructor extends UnitBlock{
+@@ -178,7 +178,7 @@ public class Reconstructor extends UnitBlock{
  
          public boolean canSetCommand(){
              var output = unit();
@@ -550,7 +550,7 @@ index 2ae3d9009513a79af91cc2e659ce137e5652aac5..ad4cf0972941bf9b75d6bdb99060e8ac
          }
  
          @Override
-@@ -191,25 +191,21 @@ public class Reconstructor extends UnitBlock{
+@@ -195,25 +195,21 @@ public class Reconstructor extends UnitBlock{
          public void buildConfiguration(Table table){
              var unit = unit();
  
@@ -580,7 +580,7 @@ index 2ae3d9009513a79af91cc2e659ce137e5652aac5..ad4cf0972941bf9b75d6bdb99060e8ac
                  if(++i % columns == 0){
                      table.row();
 diff --git a/desktop/src/mindustry/desktop/DesktopLauncher.java b/desktop/src/mindustry/desktop/DesktopLauncher.java
-index d15cfcaab94f3cdca42524b627f3064be16ea67d..8857138974023b123eebda8d8140c3c24bcf51e1 100644
+index a500476f5a69ce40b8a543827d6c9722c94afeaa..9389c0217f99d5a09e3c4ea628e13f0ec69c7c67 100644
 --- a/desktop/src/mindustry/desktop/DesktopLauncher.java
 +++ b/desktop/src/mindustry/desktop/DesktopLauncher.java
 @@ -25,6 +25,7 @@ import mindustry.net.*;
@@ -591,7 +591,7 @@ index d15cfcaab94f3cdca42524b627f3064be16ea67d..8857138974023b123eebda8d8140c3c2
  
  import java.io.*;
  
-@@ -114,6 +115,20 @@ public class DesktopLauncher extends ClientLauncher{
+@@ -111,6 +112,20 @@ public class DesktopLauncher extends ClientLauncher{
          this.args = args;
  
          Version.init();
@@ -610,9 +610,9 @@ index d15cfcaab94f3cdca42524b627f3064be16ea67d..8857138974023b123eebda8d8140c3c2
 +            }
 +        }
          boolean useSteam = Version.modifier.contains("steam");
-         testMobile = Seq.with(args).contains("-testMobile");
  
-@@ -142,7 +157,10 @@ public class DesktopLauncher extends ClientLauncher{
+         if(useDiscord){
+@@ -140,7 +155,10 @@ public class DesktopLauncher extends ClientLauncher{
              });
  
              try{

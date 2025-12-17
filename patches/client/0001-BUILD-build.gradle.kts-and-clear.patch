@@ -7,7 +7,7 @@ clear and replce jabel(Support record)
 way-zer <himc.wicp@gmail.com> on 2024/6/9
 ---
  .gitignore                                    |   2 +-
- android/build.gradle                          | 104 ++----
+ android/build.gradle                          | 103 ++----
  android/proguard-rules.pro                    |   4 +
  .../com/github/bsideup/jabel/Desugar.java     |  13 +
  .../javax.annotation.processing.Processor     |   6 +
@@ -23,7 +23,7 @@ way-zer <himc.wicp@gmail.com> on 2024/6/9
  settings.gradle                               |  11 +-
  tools/build.gradle                            |  91 ++---
  tools/src/mindustry/tools/Generators.java     |   2 +-
- 17 files changed, 445 insertions(+), 704 deletions(-)
+ 17 files changed, 445 insertions(+), 703 deletions(-)
  create mode 100644 annotations/src/main/java/com/github/bsideup/jabel/Desugar.java
  create mode 100644 annotations/src/main/resources/META-INF/services/javax.annotation.processing.Processor
  delete mode 100644 core/build.gradle
@@ -50,7 +50,7 @@ index 5e3b7987ef4f776a0bc35dde58fb2c74f4acdb07..b5b2a237c2f5343aab2fb668337c2bc4
  /core/assets/locales
  /core/assets/cache/
 diff --git a/android/build.gradle b/android/build.gradle
-index 6f349ef7b732d3530f409599c6e7cf1d7d102272..bc19e36c8af53b9b091c4fa96b12f8fd9c6fa237 100644
+index c6349e291620b214ee740f156cd9b0514387125b..bc19e36c8af53b9b091c4fa96b12f8fd9c6fa237 100644
 --- a/android/build.gradle
 +++ b/android/build.gradle
 @@ -1,45 +1,23 @@
@@ -158,7 +158,7 @@ index 6f349ef7b732d3530f409599c6e7cf1d7d102272..bc19e36c8af53b9b091c4fa96b12f8fd
                  signingConfig signingConfigs.release
              }
          }
-@@ -121,39 +93,31 @@ dependencies{
+@@ -121,38 +93,31 @@ dependencies{
  
      implementation arcModule("backends:backend-android")
      implementation 'com.jakewharton.android.repackaged:dalvik-dx:9.0.0_r3'
@@ -167,11 +167,10 @@ index 6f349ef7b732d3530f409599c6e7cf1d7d102272..bc19e36c8af53b9b091c4fa96b12f8fd
 -    natives "com.github.Anuken.Arc:natives-android:$arcHash"
 -    natives "com.github.Anuken.Arc:natives-freetype-android:$arcHash"
 -
--    def version;
--    def highestVersion;
+-    def version, highestVersion
 -    new File((String)findSdkDir(), "/platforms").eachFileMatch ~/android-\d+/, {
--        version = it.name.find(/\d+/).toInteger();
--        highestVersion = version > highestVersion ? version : highestVersion;
+-        version = it.name.find(/\d+/).toInteger()
+-        highestVersion = version > highestVersion ? version : highestVersion
 -    }
 -
 -    def sdkFile = new File((String)findSdkDir(), "/platforms/android-${highestVersion}/android.jar")
@@ -989,18 +988,18 @@ index b3f192bc75d3c1775179a7252c02f7ce0a39ff7e..b47e0569d82a8cc6331a1fe36952c206
 +}
 \ No newline at end of file
 diff --git a/gradle.properties b/gradle.properties
-index cbf61d9303d95dbca7a3c51ba7d6e27203a9fd59..7fa4af3755cf9bf7ac8b6142aafbc1a113b3bfef 100644
+index 56c98db055d76802cd2f1519687c1649c95c5849..45e7846c1d8b407e118a5cd95d2b42e9f734415a 100644
 --- a/gradle.properties
 +++ b/gradle.properties
 @@ -26,4 +26,7 @@ org.gradle.caching=true
  org.gradle.internal.http.socketTimeout=100000
  org.gradle.internal.http.connectionTimeout=100000
  android.enableR8.fullMode=false
--archash=75fffa01c8
+-archash=46c0956944
 +
 +#MDTX: Use "v{upstreamBuild}" by default
 +#archash=75fffa01c8
-+upstreamBuild=153
++upstreamBuild=154
 diff --git a/gradlew b/gradlew
 index 4f906e0c811fc9e230eb44819f509cd0627f2600..f3b75f3b0d4faeb4b1c8a02b5c47007e6efb7dcd 100755
 --- a/gradlew

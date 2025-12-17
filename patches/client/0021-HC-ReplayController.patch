@@ -18,7 +18,7 @@ way-zer <himc.wicp@gmail.com> on 2024/4/22 at 20:15
  3 files changed, 5 insertions(+), 1 deletion(-)
 
 diff --git a/core/src/mindustry/core/NetClient.java b/core/src/mindustry/core/NetClient.java
-index f36458951469a544d20feda15f5973cf548dd9ac..89aa488065f4e1d4c1091a101215234ccac944d0 100644
+index a961d0953d07bd427d6071efe6b526ce22b12505..77e23fff3efb2bc6d4ed8ca01086716823d3c869 100644
 --- a/core/src/mindustry/core/NetClient.java
 +++ b/core/src/mindustry/core/NetClient.java
 @@ -27,6 +27,7 @@ import mindustry.net.Packets.*;
@@ -38,7 +38,7 @@ index f36458951469a544d20feda15f5973cf548dd9ac..89aa488065f4e1d4c1091a101215234c
          });
  
 diff --git a/core/src/mindustry/io/TypeIO.java b/core/src/mindustry/io/TypeIO.java
-index 638175c4933fec1675da619274ed98659f2101d1..51fc5bdee1d7b743921174e183645b19a5550cb3 100644
+index 2664dbf6c33792dbfb65261486a3c9983c7776d0..9dce3a88534d6f6f609c0c26b98287b84902f5db 100644
 --- a/core/src/mindustry/io/TypeIO.java
 +++ b/core/src/mindustry/io/TypeIO.java
 @@ -318,7 +318,7 @@ public class TypeIO{
