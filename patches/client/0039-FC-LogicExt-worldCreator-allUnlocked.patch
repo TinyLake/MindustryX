@@ -82,7 +82,7 @@ index 663110a852d5b63e5da40ee62dac10a3a329852b..e9daeae7c7ec493624d313ec540ab8c0
      }
  }
 diff --git a/core/src/mindustry/ui/fragments/PlacementFragment.java b/core/src/mindustry/ui/fragments/PlacementFragment.java
-index be3d68cbc309505b39f4dbadcf62fa8cd1ab9d69..2f78972b3e66133672bc9d5fa2ed531849829502 100644
+index 60cedfaecdb8a85dcfccc30ca090aa48e3463350..01ba50f19dcae39176f8dde2be5391777131826c 100644
 --- a/core/src/mindustry/ui/fragments/PlacementFragment.java
 +++ b/core/src/mindustry/ui/fragments/PlacementFragment.java
 @@ -26,8 +26,10 @@ import mindustry.input.*;
@@ -125,10 +125,10 @@ index be3d68cbc309505b39f4dbadcf62fa8cd1ab9d69..2f78972b3e66133672bc9d5fa2ed5318
      }
  
 diff --git a/core/src/mindustry/world/Block.java b/core/src/mindustry/world/Block.java
-index 6a49123882594e26c61a88a4713353df4d5541ae..e738888c08c4099c0a1ab2f9a89453b8c9c53067 100644
+index c460d7626efd3873a80292aee02f3ff76061e0f0..6913b2098c5782697046d92547f43492d65f8a1a 100644
 --- a/core/src/mindustry/world/Block.java
 +++ b/core/src/mindustry/world/Block.java
-@@ -948,11 +948,11 @@ public class Block extends UnlockableContent implements Senseable{
+@@ -955,11 +955,11 @@ public class Block extends UnlockableContent implements Senseable{
      }
  
      public boolean isVisible(){
@@ -143,7 +143,7 @@ index 6a49123882594e26c61a88a4713353df4d5541ae..e738888c08c4099c0a1ab2f9a89453b8
  
      @Override
 diff --git a/core/src/mindustry/world/Build.java b/core/src/mindustry/world/Build.java
-index 228331d06f8bece1e9b1ed81475b6d6f27a09cde..996c572eb3277f4531bc0d1b7fd0e4bc56b3df81 100644
+index 0959de0176f2fb6b04358c61263ce3e210baec28..1c9d5b6b7ef78e3728d305217b1a328b726b182c 100644
 --- a/core/src/mindustry/world/Build.java
 +++ b/core/src/mindustry/world/Build.java
 @@ -15,6 +15,7 @@ import mindustry.gen.*;
@@ -154,7 +154,7 @@ index 228331d06f8bece1e9b1ed81475b6d6f27a09cde..996c572eb3277f4531bc0d1b7fd0e4bc
  
  import static mindustry.Vars.*;
  
-@@ -179,6 +180,10 @@ public class Build{
+@@ -180,6 +181,10 @@ public class Build{
  
      /** @return whether a tile can be placed at this location by this team. Ignores units at this location. */
      public static boolean validPlaceIgnoreUnits(Block type, Team team, int x, int y, int rotation, boolean checkVisible, boolean checkCoreRadius){
@@ -165,7 +165,7 @@ index 228331d06f8bece1e9b1ed81475b6d6f27a09cde..996c572eb3277f4531bc0d1b7fd0e4bc
          //the wave team can build whatever they want as long as it's visible - banned blocks are not applicable
          if(type == null || (!state.rules.editor && (checkVisible && (!type.environmentBuildable() || (!type.isPlaceable() && !(state.rules.waves && team == state.rules.waveTeam && type.isVisible())))))){
              return false;
-@@ -307,6 +312,7 @@ public class Build{
+@@ -308,6 +313,7 @@ public class Build{
      /** @return whether the tile at this position is breakable by this team */
      public static boolean validBreak(Team team, int x, int y){
          Tile tile = world.tile(x, y);

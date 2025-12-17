@@ -11,10 +11,10 @@ Subject: [PATCH] FR(RenderExt) blockRenderLevel
  4 files changed, 11 insertions(+), 6 deletions(-)
 
 diff --git a/core/src/mindustry/core/Renderer.java b/core/src/mindustry/core/Renderer.java
-index f1905078aeefde5367737d7609bfc6122eda9c72..c3619bccaab8ca76f327e97c1e274d07c7575ab5 100644
+index 3c23eebbc063bf002e087cb07cfc4191137ea829..0c6d636cd64c9d1dd782d3eb46d840414b56e27f 100644
 --- a/core/src/mindustry/core/Renderer.java
 +++ b/core/src/mindustry/core/Renderer.java
-@@ -333,7 +333,8 @@ public class Renderer implements ApplicationListener{
+@@ -332,7 +332,8 @@ public class Renderer implements ApplicationListener{
  
          Draw.draw(Layer.background, this::drawBackground);
          Draw.draw(Layer.floor, blocks.floor::drawFloor);
@@ -24,7 +24,7 @@ index f1905078aeefde5367737d7609bfc6122eda9c72..c3619bccaab8ca76f327e97c1e274d07
          Draw.draw(Layer.block - 0.09f, () -> {
              blocks.floor.beginDraw();
              blocks.floor.drawLayer(CacheLayer.walls);
-@@ -418,7 +419,8 @@ public class Renderer implements ApplicationListener{
+@@ -417,7 +418,8 @@ public class Renderer implements ApplicationListener{
          }
  
          Events.fire(Trigger.drawOver);
@@ -35,10 +35,10 @@ index f1905078aeefde5367737d7609bfc6122eda9c72..c3619bccaab8ca76f327e97c1e274d07
          Groups.draw.draw(RenderExt::onGroupDraw);
  
 diff --git a/core/src/mindustry/graphics/BlockRenderer.java b/core/src/mindustry/graphics/BlockRenderer.java
-index 3f85ddcc74fcab88e097dc691cb317d80be2a616..431e5dbb413935fb8a2b06298db04dff37e99c73 100644
+index 4c3ec8b90f4e01f20f66eaaf6560350295625344..89248d96c9ae9f7e27da374717861cfd103da3c6 100644
 --- a/core/src/mindustry/graphics/BlockRenderer.java
 +++ b/core/src/mindustry/graphics/BlockRenderer.java
-@@ -387,7 +387,7 @@ public class BlockRenderer{
+@@ -404,7 +404,7 @@ public class BlockRenderer{
          }
  
  
@@ -48,7 +48,7 @@ index 3f85ddcc74fcab88e097dc691cb317d80be2a616..431e5dbb413935fb8a2b06298db04dff
          }
  
 diff --git a/core/src/mindustry/world/blocks/production/Drill.java b/core/src/mindustry/world/blocks/production/Drill.java
-index 752850896341a1feb641f909ccfdea2e905bffed..f7012546ce66d7e054a21bf10809b54974832827 100644
+index f2d5f800daa701c0eb968b583306ae77ee211f91..6a8fda59df1ad725be56cd3d577b1ce06beddb32 100644
 --- a/core/src/mindustry/world/blocks/production/Drill.java
 +++ b/core/src/mindustry/world/blocks/production/Drill.java
 @@ -307,7 +307,7 @@ public class Drill extends Block{
@@ -70,7 +70,7 @@ index 752850896341a1feb641f909ccfdea2e905bffed..f7012546ce66d7e054a21bf10809b549
          }
  
 diff --git a/core/src/mindustry/world/blocks/production/GenericCrafter.java b/core/src/mindustry/world/blocks/production/GenericCrafter.java
-index 4bdd25d7b48bfa5d6911dae0ca1bdef2c875c164..62fbe3538fead5aca087551179319cebcf603728 100644
+index 8599a7881b1d4bc3ab788c3a531845502179b748..85edf348646875db7a9f024330ecf208ac4f2010 100644
 --- a/core/src/mindustry/world/blocks/production/GenericCrafter.java
 +++ b/core/src/mindustry/world/blocks/production/GenericCrafter.java
 @@ -17,6 +17,7 @@ import mindustry.world.*;

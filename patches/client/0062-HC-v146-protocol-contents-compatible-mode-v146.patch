@@ -53,7 +53,7 @@ index b7415388c7427601ff9ec6c5bf85f5ae9cffa2ea..df7a39ed93ec5049d2ce6c932cea4a1c
  
      /** @return the last registered content with the specified name. Note that the content loader makes no attempt to resolve name conflicts. This method can be unreliable. */
 diff --git a/core/src/mindustry/core/NetClient.java b/core/src/mindustry/core/NetClient.java
-index 3754beac0e217ca3f3714d27ae216f50e4e0c07a..5a9775f9fd8f655807c37917e20928bf601583a3 100644
+index 61ef7a6ae1a82d078d4eb1d91a06215d5b191a57..4ff530335dc094b433063f06b466cc754efd8e71 100644
 --- a/core/src/mindustry/core/NetClient.java
 +++ b/core/src/mindustry/core/NetClient.java
 @@ -522,6 +522,8 @@ public class NetClient implements ApplicationListener{
@@ -66,7 +66,7 @@ index 3754beac0e217ca3f3714d27ae216f50e4e0c07a..5a9775f9fd8f655807c37917e20928bf
              netClient.byteStream.setBytes(data);
              DataInputStream input = netClient.dataStream;
 diff --git a/core/src/mindustry/io/TypeIO.java b/core/src/mindustry/io/TypeIO.java
-index 51fc5bdee1d7b743921174e183645b19a5550cb3..748b1c22dba8d59a404b05728322ebb61b860cd6 100644
+index 9dce3a88534d6f6f609c0c26b98287b84902f5db..ff9e1318add68c7c6c4bd16d4b859baea11b9580 100644
 --- a/core/src/mindustry/io/TypeIO.java
 +++ b/core/src/mindustry/io/TypeIO.java
 @@ -26,6 +26,7 @@ import mindustry.type.*;

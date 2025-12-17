@@ -83,7 +83,7 @@ index 0881a8a6c843fe5c6bfd78cf5a0aeee834ccb769..39332d4d175d89e93c48ebb7b9532c7d
      }
      processResources.configure {
 diff --git a/core/src/mindustry/Vars.java b/core/src/mindustry/Vars.java
-index 742579eecde7d3eb20e2fe5c286cd9c4ef7fdd7f..122ea64d08a60179e71803e38499721f4c33fdcf 100644
+index 9a03daa0b2a40dbc312ab15ef010389cb73f5454..0feaca687e2e961b4f23192f4a57d46bb9dbc914 100644
 --- a/core/src/mindustry/Vars.java
 +++ b/core/src/mindustry/Vars.java
 @@ -88,7 +88,7 @@ public class Vars implements Loadable{
@@ -96,7 +96,7 @@ index 742579eecde7d3eb20e2fe5c286cd9c4ef7fdd7f..122ea64d08a60179e71803e38499721f
      public static final Seq<ServerGroup> defaultServers = Seq.with();
      /** cached server list - only used if defaultServers have not been fetched*/
 diff --git a/core/src/mindustry/core/NetClient.java b/core/src/mindustry/core/NetClient.java
-index 3d8202e4fdba3e426cfc01b649752fe906a18407..18fb394d8ee48773e6b9ab318a289f122cb36b45 100644
+index c584a92125f104485547eb009544ee940b4576d1..934708b28f4b735ea2311c144315225986daa1e8 100644
 --- a/core/src/mindustry/core/NetClient.java
 +++ b/core/src/mindustry/core/NetClient.java
 @@ -26,6 +26,7 @@ import mindustry.net.*;
@@ -150,10 +150,10 @@ index 68df216c746714ab9c7a62600fea54edec6c3259..6ff7fc477c68e159e5c65bce0a015ec1
          buffer.put((byte)state.rules.mode().ordinal());
          buffer.putInt(netServer.admins.getPlayerLimit());
 diff --git a/desktop/src/mindustry/desktop/DesktopLauncher.java b/desktop/src/mindustry/desktop/DesktopLauncher.java
-index e20a4208c48930f667b6a23dd37516d80b552e9d..d15cfcaab94f3cdca42524b627f3064be16ea67d 100644
+index cb0e8b1524d258dc9c18beef31c91407f64a5673..a500476f5a69ce40b8a543827d6c9722c94afeaa 100644
 --- a/desktop/src/mindustry/desktop/DesktopLauncher.java
 +++ b/desktop/src/mindustry/desktop/DesktopLauncher.java
-@@ -103,7 +103,7 @@ public class DesktopLauncher extends ClientLauncher{
+@@ -100,7 +100,7 @@ public class DesktopLauncher extends ClientLauncher{
                          }
                      }
                  }
