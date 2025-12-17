@@ -9,13 +9,14 @@ Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 
 ---
- core/src/mindustry/core/ContentLoader.java | 17 ++++++++
- core/src/mindustry/core/NetClient.java     |  2 +
- core/src/mindustry/io/TypeIO.java          | 12 +++++-
- core/src/mindustry/net/Net.java            | 50 ++++++++++++++++++++--
- core/src/mindustry/net/NetworkIO.java      | 32 +++++++++++---
- core/src/mindustry/net/Packets.java        |  2 +-
- 6 files changed, 101 insertions(+), 14 deletions(-)
+ core/src/mindustry/core/ContentLoader.java    | 17 ++++++++++
+ core/src/mindustry/core/NetClient.java        |  2 ++
+ core/src/mindustry/io/TypeIO.java             | 12 +++++--
+ core/src/mindustry/net/Net.java               | 34 ++++++++++++++++---
+ core/src/mindustry/net/NetworkIO.java         | 32 +++++++++++++----
+ core/src/mindustry/net/Packets.java           |  2 +-
+ core/src/mindustry/ui/dialogs/JoinDialog.java |  2 +-
+ 7 files changed, 85 insertions(+), 16 deletions(-)
 
 diff --git a/core/src/mindustry/core/ContentLoader.java b/core/src/mindustry/core/ContentLoader.java
 index b7415388c7427601ff9ec6c5bf85f5ae9cffa2ea..df7a39ed93ec5049d2ce6c932cea4a1c7c37ed2e 100644
@@ -110,7 +111,7 @@ index 9dce3a88534d6f6f609c0c26b98287b84902f5db..ff9e1318add68c7c6c4bd16d4b859bae
              boolean writePlan = !headless || !net.server();
              write.b(writePlan ? 1 : 0); //always has config
 diff --git a/core/src/mindustry/net/Net.java b/core/src/mindustry/net/Net.java
-index 332f2e11d8575e0b70f3589e685c4beb5c7a9049..bb7c21c637cad2a9ca8b5074a4e438a82140ba00 100644
+index 332f2e11d8575e0b70f3589e685c4beb5c7a9049..cb76e9e2a90af2d54aa5668def238828a236c876 100644
 --- a/core/src/mindustry/net/Net.java
 +++ b/core/src/mindustry/net/Net.java
 @@ -1,6 +1,7 @@
@@ -121,7 +122,15 @@ index 332f2e11d8575e0b70f3589e685c4beb5c7a9049..bb7c21c637cad2a9ca8b5074a4e438a8
  import arc.func.*;
  import arc.net.*;
  import arc.net.Server.*;
-@@ -17,9 +18,8 @@ import net.jpountz.lz4.*;
+@@ -10,6 +11,7 @@ import mindustry.game.EventType.*;
+ import mindustry.gen.*;
+ import mindustry.net.Packets.*;
+ import mindustry.net.Streamable.*;
++import mindustryX.*;
+ import mindustryX.events.*;
+ import mindustryX.features.*;
+ import net.jpountz.lz4.*;
+@@ -17,9 +19,8 @@ import net.jpountz.lz4.*;
  import java.io.*;
  import java.nio.*;
  import java.nio.channels.*;
@@ -132,70 +141,46 @@ index 332f2e11d8575e0b70f3589e685c4beb5c7a9049..bb7c21c637cad2a9ca8b5074a4e438a8
  import static mindustry.Vars.*;
  
  @SuppressWarnings("unchecked")
-@@ -28,6 +28,11 @@ public class Net{
-     private static Seq<Class<? extends Packet>> packetClasses = new Seq<>();
-     private static ObjectIntMap<Class<?>> packetToId = new ObjectIntMap<>();
- 
-+    private static boolean mappingLoaded = false;
-+    private static Seq<String> oldMappings = new Seq<>();
-+    private static ObjectIntMap<String> oldPacketToId = new ObjectIntMap<>();
-+    private static IntIntMap oldIdMappings = new IntIntMap();
-+
-     private boolean server;
-     private boolean active;
-     private boolean clientLoaded;
-@@ -50,6 +55,30 @@ public class Net{
+@@ -50,6 +51,14 @@ public class Net{
          Call.registerPackets();
      }
  
-+    private static void initV146PacketsMapping(){
-+        if(mappingLoaded) return;
-+        mappingLoaded = true;
-+        Log.info("Initializing v146 packets mapping...");
-+        Fi fi = Core.files != null ? Core.files.internal("packetsV146.txt") : new Fi("packetsV146.txt", Files.FileType.internal);
-+        oldMappings.addAll(fi.readString().replace("\r", "").split("\n"));
-+        for(String name : oldMappings){
-+            oldPacketToId.put(name, oldPacketToId.size);
-+        }
-+        for(Class<? extends Packet> packetClass : packetClasses){
-+            var oldId = oldPacketToId.get(packetClass.getSimpleName(), -1);
-+            if(oldId != -1){
-+                oldIdMappings.put(oldId, packetToId.get(packetClass));
-+            }else{
-+                Log.warn("New packet type: " + packetClass.getSimpleName());
-+            }
-+        }
-+        for(int i = 0; i < oldMappings.size; i++){
-+            if(!oldIdMappings.containsKey(i))
-+                Log.warn("Deleted packet: " + oldMappings.get(i));
-+        }
-+        Log.info("== End load v146 packets mapping ==");
++    private static final ProtocolMap v146ProtocolMap = new ProtocolMap("v146");
++    private static final ProtocolMap v153ProtocolMap = new ProtocolMap("v153");
++
++    @MindustryXApi
++    public static Seq<Class<? extends Packet>> allPacketClasses(){
++        return packetClasses;
 +    }
 +
      /** Registers a new packet type for serialization. */
      public static <T extends Packet> void registerPacket(Prov<T> cons){
          packetProvs.add(cons);
-@@ -59,12 +88,18 @@ public class Net{
+@@ -59,13 +68,21 @@ public class Net{
      }
  
      public static byte getPacketId(Packet packet){
 -        int id = packetToId.get(packet.getClass(), -1);
-+        if(LogicExt.v146Mode) initV146PacketsMapping();
-+        int id = LogicExt.v146Mode ? oldPacketToId.get(packet.getClass().getSimpleName(), -1) : packetToId.get(packet.getClass(), -1);
++        int id = LogicExt.v146Mode ? v146ProtocolMap.getId(packet) :
++        LogicExt.mockProtocol <= 153 ? v153ProtocolMap.getId(packet) :
++        packetToId.get(packet.getClass(), -1);
          if(id == -1) throw new ArcRuntimeException("Unknown packet type: " + packet.getClass());
          return (byte)id;
      }
  
      public static <T extends Packet> T newPacket(byte id){
+-        return ((Prov<T>)packetProvs.get(id & 0xff)).get();
++        int id2 = id & 0xff;
 +        if(LogicExt.v146Mode){
-+            initV146PacketsMapping();
-+            int id2 = oldIdMappings.get(id & 0xff, -1);
-+            return ((Prov<T>)packetProvs.get(id2)).get();
++            id2 = v146ProtocolMap.mapId(id2);
++        }else if(LogicExt.mockProtocol <= 153){
++            id2 = v153ProtocolMap.mapId(id2);
 +        }
-         return ((Prov<T>)packetProvs.get(id & 0xff)).get();
++        return ((Prov<T>)packetProvs.get(id2)).get();
      }
  
-@@ -199,6 +234,7 @@ public class Net{
+     public Net(NetProvider provider){
+@@ -199,6 +216,7 @@ public class Net{
      }
  
      public void disconnect(){
@@ -203,7 +188,7 @@ index 332f2e11d8575e0b70f3589e685c4beb5c7a9049..bb7c21c637cad2a9ca8b5074a4e438a8
          if(active && !server){
              Log.info("Disconnecting.");
          }
-@@ -268,7 +304,13 @@ public class Net{
+@@ -268,7 +286,13 @@ public class Net{
       * Call to handle a packet being received for the client.
       */
      public void handleClientReceived(Packet object){
@@ -303,3 +288,16 @@ index 1b445b3ff268b1d626cf9ba84797560c04e9bb0a..8f91b6abf01af158cb8b2c81d10b55b3
              TypeIO.writeString(buffer, name);
              TypeIO.writeString(buffer, locale);
              TypeIO.writeString(buffer, usid);
+diff --git a/core/src/mindustry/ui/dialogs/JoinDialog.java b/core/src/mindustry/ui/dialogs/JoinDialog.java
+index cf2251dfa5bb7b927ee0301cad5d18a73161a934..4b988a8ef9783fda17807c1368eeb11d64418035 100644
+--- a/core/src/mindustry/ui/dialogs/JoinDialog.java
++++ b/core/src/mindustry/ui/dialogs/JoinDialog.java
+@@ -642,7 +642,7 @@ public class JoinDialog extends BaseDialog{
+                 title.setAlignment(Align.center);
+                 cont.add(Core.bundle.format("server.versions", Version.build, version)).row();
+                 cont.row();
+-                cont.add("[gold]MDTX[]: 目标版本可能兼容，你可以选择伪装版本强制加入。\n如果出现[red]网络错误[]或其他问题，表示无法兼容。").row();
++                cont.add("@forceJoin.tips").row();
+                 cont.pack();
+                 buttons.button("强制加入", () -> {
+                     hide();
