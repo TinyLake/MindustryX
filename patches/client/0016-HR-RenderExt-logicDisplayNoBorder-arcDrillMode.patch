@@ -46,7 +46,7 @@ index 393378f44078e3d914eec8246f2302249dcc1d0b..49efb020afda2f66b59825119b3359ad
                  }
              });
 diff --git a/core/src/mindustry/world/blocks/production/Drill.java b/core/src/mindustry/world/blocks/production/Drill.java
-index c2b3d62fbfcfae3cf0777216d80c56e3bdfb2d6d..f2d5f800daa701c0eb968b583306ae77ee211f91 100644
+index 8c00eb03c4ce89f63a06f64444aeb5b3fcba6a93..d2ff9c0ad19f3fc20f5e2b36d6bd4b77e60b4b95 100644
 --- a/core/src/mindustry/world/blocks/production/Drill.java
 +++ b/core/src/mindustry/world/blocks/production/Drill.java
 @@ -21,6 +21,7 @@ import mindustry.world.*;
@@ -57,7 +57,7 @@ index c2b3d62fbfcfae3cf0777216d80c56e3bdfb2d6d..f2d5f800daa701c0eb968b583306ae77
  
  import static mindustry.Vars.*;
  
-@@ -261,6 +262,7 @@ public class Drill extends Block{
+@@ -260,6 +261,7 @@ public class Drill extends Block{
  
          @Override
          public void drawSelect(){

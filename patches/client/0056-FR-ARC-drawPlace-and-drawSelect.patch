@@ -176,7 +176,7 @@ index 31b67b7837d1c1b6c4c3ec00982478b5e4709bae..76f9b2cedb83d84b444a0860b8821826
          indexer.eachBlock(player.team(), x * tilesize + offset, y * tilesize + offset, range, other -> other.block.canOverdrive, other -> Drawf.selected(other, Tmp.c1.set(baseColor).a(Mathf.absin(4f, 1f))));
      }
 diff --git a/core/src/mindustry/world/blocks/defense/turrets/Turret.java b/core/src/mindustry/world/blocks/defense/turrets/Turret.java
-index 66cb4c14e6055d44afbe1f504e8b481cee973938..020c1a3e24e727a1bdb4d02a522fa949a46631b6 100644
+index 1f9c3372281c492303c91b6ca49a44f26ef8d5fd..1853e3468c71a8cedab9c010fa6bc81bfea9103d 100644
 --- a/core/src/mindustry/world/blocks/defense/turrets/Turret.java
 +++ b/core/src/mindustry/world/blocks/defense/turrets/Turret.java
 @@ -30,6 +30,7 @@ import mindustry.world.*;
@@ -187,7 +187,7 @@ index 66cb4c14e6055d44afbe1f504e8b481cee973938..020c1a3e24e727a1bdb4d02a522fa949
  
  import static mindustry.Vars.*;
  
-@@ -251,6 +252,13 @@ public class Turret extends ReloadTurret{
+@@ -250,6 +251,13 @@ public class Turret extends ReloadTurret{
          if(drawMinRange){
              Drawf.dashCircle(x * tilesize + offset, y * tilesize + offset, minRange, Pal.placing);
          }
@@ -201,7 +201,7 @@ index 66cb4c14e6055d44afbe1f504e8b481cee973938..020c1a3e24e727a1bdb4d02a522fa949
      }
  
      public static abstract class AmmoEntry{
-@@ -456,6 +464,17 @@ public class Turret extends ReloadTurret{
+@@ -455,6 +463,17 @@ public class Turret extends ReloadTurret{
              if(drawMinRange){
                  Drawf.dashCircle(x, y, minRange(), team.color);
              }
@@ -220,10 +220,10 @@ index 66cb4c14e6055d44afbe1f504e8b481cee973938..020c1a3e24e727a1bdb4d02a522fa949
  
          @Override
 diff --git a/core/src/mindustry/world/blocks/production/Drill.java b/core/src/mindustry/world/blocks/production/Drill.java
-index 6a8fda59df1ad725be56cd3d577b1ce06beddb32..2ccc2c8108c09c7ace3a06ad16f6b5bdb848868d 100644
+index 8c80702229e246a30efb7c3ca42d59200facb4ce..6043840864448258a27e9aa782c1001d64c41d1e 100644
 --- a/core/src/mindustry/world/blocks/production/Drill.java
 +++ b/core/src/mindustry/world/blocks/production/Drill.java
-@@ -148,12 +148,13 @@ public class Drill extends Block{
+@@ -147,12 +147,13 @@ public class Drill extends Block{
          countOre(tile);
  
          if(returnItem != null){
@@ -243,7 +243,7 @@ index 6a8fda59df1ad725be56cd3d577b1ce06beddb32..2ccc2c8108c09c7ace3a06ad16f6b5bd
  
              if(drawMineItem){
                  Draw.color(returnItem.color);
-@@ -164,7 +165,10 @@ public class Drill extends Block{
+@@ -163,7 +164,10 @@ public class Drill extends Block{
              Tile to = tile.getLinkedTilesAs(this, tempTiles).find(t -> t.drop() != null && (t.drop().hardness > tier || (blockedItems != null && blockedItems.contains(t.drop()))));
              Item item = to == null ? null : to.drop();
              if(item != null){
@@ -255,7 +255,7 @@ index 6a8fda59df1ad725be56cd3d577b1ce06beddb32..2ccc2c8108c09c7ace3a06ad16f6b5bd
              }
          }
      }
-@@ -197,6 +201,11 @@ public class Drill extends Block{
+@@ -196,6 +200,11 @@ public class Drill extends Block{
          return new TextureRegion[]{region, rotatorRegion, topRegion};
      }
  
