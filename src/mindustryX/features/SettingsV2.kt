@@ -39,8 +39,8 @@ object SettingsV2 {
         open val value: T get() = _value
         fun get(): T = value //for java usage
         open fun set(value: T) {
-            if (value == this.value) return
-            this._value = value
+            if (value == _value) return
+            _value = value
             notifyChanged()
         }
 
