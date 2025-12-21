@@ -73,26 +73,25 @@ tasks {
     }
 
     val genLoaderModDex by registering(Exec::class) {
-        outputs.cacheIf { true }
         dependsOn(genLoaderMod, distTask)
-        inputs.files(files(genLoaderMod))
+        val library = distTask.get().outputs.files.singleFile
+        val inFile = genLoaderMod.get().outputs.files.singleFile
+
+        inputs.files(inFile)
         val outFile = temporaryDir.resolve("classes.dex")
         outputs.file(outFile)
+        outputs.cacheIf { true }
 
-        commandLine(provider {
-            val library = distTask.get().outputs.files.singleFile
-            val inFile = genLoaderMod.get().outputs.files.singleFile
-            val sdkRoot = System.getenv("ANDROID_HOME") ?: System.getenv("ANDROID_SDK_ROOT")
-            if (sdkRoot == null || !File(sdkRoot).exists()) throw GradleException("No valid Android SDK found. Ensure that ANDROID_HOME is set to your Android SDK directory.")
+        val sdkRoot = System.getenv("ANDROID_HOME") ?: System.getenv("ANDROID_SDK_ROOT")
+        if (sdkRoot == null || !File(sdkRoot).exists()) throw GradleException("No valid Android SDK found. Ensure that ANDROID_HOME is set to your Android SDK directory.")
 
-            val d8Tool = File("$sdkRoot/build-tools/").listFiles()?.sortedDescending()
-                ?.flatMap { dir -> (dir.listFiles().orEmpty()).filter { it.name.startsWith("d8") } }?.firstOrNull()
-                ?: throw GradleException("No d8 found. Ensure that you have an Android platform installed.")
-            val platformRoot = File("$sdkRoot/platforms/").listFiles()?.sortedDescending()?.firstOrNull { it.resolve("android.jar").exists() }
-                ?: throw GradleException("No android.jar found. Ensure that you have an Android platform installed.")
-            "$d8Tool --lib ${platformRoot.resolve("android.jar")} --classpath $library --min-api 14 --output $temporaryDir $inFile".split(" ")
-        })
-        workingDir(provider { genLoaderMod.get().outputs.files.singleFile.parentFile })
+        val d8Tool = File("$sdkRoot/build-tools/").listFiles()?.sortedDescending()
+            ?.flatMap { dir -> (dir.listFiles().orEmpty()).filter { it.name.startsWith("d8") } }?.firstOrNull()
+            ?: throw GradleException("No d8 found. Ensure that you have an Android platform installed.")
+        val platformRoot = File("$sdkRoot/platforms/").listFiles()?.sortedDescending()?.firstOrNull { it.resolve("android.jar").exists() }
+            ?: throw GradleException("No android.jar found. Ensure that you have an Android platform installed.")
+        commandLine("$d8Tool --lib ${platformRoot.resolve("android.jar")} --classpath $library --min-api 14 --output $temporaryDir $inFile".split(" "))
+        workingDir(inFile.parentFile)
         standardOutput = System.out
         errorOutput = System.err
 
