@@ -6,12 +6,6 @@ import com.android.tools.smali.dexlib2.rewriter.DexRewriter
 import com.android.tools.smali.dexlib2.rewriter.Rewriter
 import com.android.tools.smali.dexlib2.rewriter.RewriterModule
 import com.android.tools.smali.dexlib2.rewriter.Rewriters
-import org.gradle.api.GradleException
-import org.gradle.api.tasks.bundling.Zip
-import org.gradle.kotlin.dsl.getValue
-import org.gradle.kotlin.dsl.provideDelegate
-import org.gradle.kotlin.dsl.registering
-import java.io.File
 import java.util.zip.ZipEntry
 import java.util.zip.ZipFile
 import java.util.zip.ZipOutputStream
@@ -78,13 +72,14 @@ tasks {
         }
     }
 
-    val genLoaderModDex by registering {
+    val genLoaderModDex by registering(Exec::class) {
         outputs.cacheIf { true }
         dependsOn(genLoaderMod, distTask)
         inputs.files(files(genLoaderMod))
         val outFile = temporaryDir.resolve("classes.dex")
         outputs.file(outFile)
-        doLast {
+
+        commandLine(provider {
             val library = distTask.get().outputs.files.singleFile
             val inFile = genLoaderMod.get().outputs.files.singleFile
             val sdkRoot = System.getenv("ANDROID_HOME") ?: System.getenv("ANDROID_SDK_ROOT")
@@ -95,14 +90,11 @@ tasks {
                 ?: throw GradleException("No d8 found. Ensure that you have an Android platform installed.")
             val platformRoot = File("$sdkRoot/platforms/").listFiles()?.sortedDescending()?.firstOrNull { it.resolve("android.jar").exists() }
                 ?: throw GradleException("No android.jar found. Ensure that you have an Android platform installed.")
-
-            exec {
-                commandLine("$d8Tool --lib ${platformRoot.resolve("android.jar")} --classpath $library --min-api 14 --output $temporaryDir $inFile".split(" "))
-                workingDir(inFile.parentFile)
-                standardOutput = System.out
-                errorOutput = System.err
-            }.assertNormalExitValue()
-        }
+            "$d8Tool --lib ${platformRoot.resolve("android.jar")} --classpath $library --min-api 14 --output $temporaryDir $inFile".split(" ")
+        })
+        workingDir(provider { genLoaderMod.get().outputs.files.singleFile.parentFile })
+        standardOutput = System.out
+        errorOutput = System.err
 
         //fix ExternalSyntheticLambda
         doLast {

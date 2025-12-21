@@ -7,13 +7,13 @@ clear and replce jabel(Support record)
 way-zer <himc.wicp@gmail.com> on 2024/6/9
 ---
  .gitignore                                    |   2 +-
- android/build.gradle                          | 103 ++----
+ android/build.gradle                          | 111 +++----
  android/proguard-rules.pro                    |   4 +
  .../com/github/bsideup/jabel/Desugar.java     |  13 +
  .../javax.annotation.processing.Processor     |   6 +
  build.gradle                                  | 311 +++---------------
  core/build.gradle                             |   2 -
- core/build.gradle.kts                         |  66 ++++
+ core/build.gradle.kts                         |  67 ++++
  desktop/build.gradle                          | 166 +---------
  gradle.properties                             |   5 +-
  gradlew                                       | 284 ++++++++++------
@@ -23,7 +23,7 @@ way-zer <himc.wicp@gmail.com> on 2024/6/9
  settings.gradle                               |  11 +-
  tools/build.gradle                            |  91 ++---
  tools/src/mindustry/tools/Generators.java     |   2 +-
- 17 files changed, 445 insertions(+), 704 deletions(-)
+ 17 files changed, 450 insertions(+), 708 deletions(-)
  create mode 100644 annotations/src/main/java/com/github/bsideup/jabel/Desugar.java
  create mode 100644 annotations/src/main/resources/META-INF/services/javax.annotation.processing.Processor
  delete mode 100644 core/build.gradle
@@ -50,7 +50,7 @@ index 5e3b7987ef4f776a0bc35dde58fb2c74f4acdb07..b5b2a237c2f5343aab2fb668337c2bc4
  /core/assets/locales
  /core/assets/cache/
 diff --git a/android/build.gradle b/android/build.gradle
-index c6349e291620b214ee740f156cd9b0514387125b..bc19e36c8af53b9b091c4fa96b12f8fd9c6fa237 100644
+index c6349e291620b214ee740f156cd9b0514387125b..b549d190f372b36ed37f41879957fa898568aa71 100644
 --- a/android/build.gradle
 +++ b/android/build.gradle
 @@ -1,45 +1,23 @@
@@ -135,6 +135,21 @@ index c6349e291620b214ee740f156cd9b0514387125b..bc19e36c8af53b9b091c4fa96b12f8fd
      }
  
      compileOptions{
+@@ -80,10 +57,10 @@ android{
+     signingConfigs{
+         release{
+             if(project.hasProperty("RELEASE_STORE_FILE")){
+-                storeFile file(RELEASE_STORE_FILE)
+-                storePassword RELEASE_STORE_PASSWORD
+-                keyAlias RELEASE_KEY_ALIAS
+-                keyPassword RELEASE_KEY_PASSWORD
++                storeFile = file(RELEASE_STORE_FILE)
++                storePassword = RELEASE_STORE_PASSWORD
++                keyAlias = RELEASE_KEY_ALIAS
++                keyPassword = RELEASE_KEY_PASSWORD
+             }else if(System.getenv("CI") == "true"){
+                 storeFile = file("../../bekeystore.jks")
+                 storePassword = System.getenv("keystore_password")
 @@ -96,7 +73,7 @@ android{
      }
  
@@ -727,11 +742,12 @@ index f7f291ef1ab71577313759a7e9fdfd3c1e0833dc..00000000000000000000000000000000
 \ No newline at end of file
 diff --git a/core/build.gradle.kts b/core/build.gradle.kts
 new file mode 100644
-index 0000000000000000000000000000000000000000..988cebaf5948bff23a01a6bdca87f99d4012ef9c
+index 0000000000000000000000000000000000000000..712c4750377c079ec77bfea24bd889db58090b98
 --- /dev/null
 +++ b/core/build.gradle.kts
-@@ -0,0 +1,66 @@
+@@ -0,0 +1,67 @@
 +import org.gradle.jvm.tasks.Jar
++import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 +import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 +
 +plugins {
@@ -745,8 +761,8 @@ index 0000000000000000000000000000000000000000..988cebaf5948bff23a01a6bdca87f99d
 +
 +tasks {
 +    withType<KotlinCompile>().configureEach {
-+        kotlinOptions {
-+            jvmTarget = "1.8"
++        compilerOptions {
++            jvmTarget.set(JvmTarget.JVM_1_8)
 +        }
 +    }
 +

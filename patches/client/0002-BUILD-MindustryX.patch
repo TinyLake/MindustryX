@@ -35,10 +35,10 @@ index 37324d81079ec26a197a1fc66e52ebe8b6752f81..64613ffc087fe1aa23475acb08e5cc35
      jar{
          exclude("mindustry/entities/comp/**")
 diff --git a/core/build.gradle.kts b/core/build.gradle.kts
-index 988cebaf5948bff23a01a6bdca87f99d4012ef9c..0881a8a6c843fe5c6bfd78cf5a0aeee834ccb769 100644
+index 712c4750377c079ec77bfea24bd889db58090b98..441b4366206a21f8a5eedc433dd55b00de6a15d8 100644
 --- a/core/build.gradle.kts
 +++ b/core/build.gradle.kts
-@@ -4,6 +4,7 @@ import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
+@@ -5,6 +5,7 @@ import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
  plugins {
      java
      kotlin("jvm")

@@ -34,7 +34,7 @@ index b5b2a237c2f5343aab2fb668337c2bc47a45c1b8..308ff12c92a06e11c18b33f540098a0f
  /out/
  ios/libs/
 diff --git a/android/build.gradle b/android/build.gradle
-index bc19e36c8af53b9b091c4fa96b12f8fd9c6fa237..8288ba56c0455895430ba94517c9a1e45961d6eb 100644
+index b549d190f372b36ed37f41879957fa898568aa71..e667c61032a4ce65dc0ad3067fcd5aac12ceb9b2 100644
 --- a/android/build.gradle
 +++ b/android/build.gradle
 @@ -31,7 +31,7 @@ android{
@@ -70,10 +70,10 @@ index 64613ffc087fe1aa23475acb08e5cc35758b77a0..34ef37eb7dca3ecfbd2bbd9622f75151
      ext{
          versionNumber = '8'
 diff --git a/core/build.gradle.kts b/core/build.gradle.kts
-index 0881a8a6c843fe5c6bfd78cf5a0aeee834ccb769..39332d4d175d89e93c48ebb7b9532c7dc17d77fd 100644
+index 441b4366206a21f8a5eedc433dd55b00de6a15d8..bc63d9ae23cffccb96877410c70b646fc7a3c299 100644
 --- a/core/build.gradle.kts
 +++ b/core/build.gradle.kts
-@@ -47,7 +47,7 @@ tasks {
+@@ -48,7 +48,7 @@ tasks {
          property("type", findProperty("versionType") ?: "official")
          property("modifier", findProperty("versionModifier") ?: "release")
          property("number", '7')

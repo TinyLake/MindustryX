@@ -1,0 +1,533 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: way-zer <himc.wicp@gmail.com>
+Date: Sun, 21 Dec 2025 14:10:29 +0800
+Subject: [PATCH] fixup! BUILD build.gradle.kts and clear
+
+---
+ arc-core/build.gradle               |  40 +++---
+ backends/backend-sdl/build.gradle   |  21 +--
+ build.gradle                        |  15 +--
+ extensions/box2d/build.gradle       | 191 ++++++++++++++--------------
+ extensions/filedialogs/build.gradle |  19 ++-
+ extensions/freetype/build.gradle    |  23 ++--
+ settings.gradle                     |   2 -
+ 7 files changed, 147 insertions(+), 164 deletions(-)
+
+diff --git a/arc-core/build.gradle b/arc-core/build.gradle
+index ca6244fa6ad6db164a8281c003fbaa3b67eeab6f..a807c3df03a26ee7c3275ae988b7620a88554427 100644
+--- a/arc-core/build.gradle
++++ b/arc-core/build.gradle
+@@ -1,3 +1,7 @@
++plugins {
++    id "com.badlogicgames.jnigen.jnigen-gradle"
++}
++
+ sourceSets.main.java.srcDirs = ["src"]
+ sourceSets.test.java.srcDirs = ["test"]
+ sourceSets.test.resources.srcDirs = ["test/resources"]
+@@ -56,8 +60,6 @@ test{
+     }
+ }
+ 
+-apply plugin: "com.badlogicgames.gdx.gdx-jnigen"
+-
+ file("jni").mkdir()
+ 
+ jnigen{
+@@ -69,42 +71,40 @@ jnigen{
+         headerDirs += ["soloud/include"]
+         cppIncludes = ["*.cpp", "soloud/src/core/**", "soloud/src/audiosource/wav/**", "soloud/src/filter/**"]
+         cIncludes = ["*.c", "soloud/src/core/**", "soloud/src/audiosource/wav/**", "soloud/src/filter/**"]
+-        cppFlags = "-DSOLOUD_MAX_VOICE_COUNT=100 " + cppFlags
++        cppFlags += ["-DSOLOUD_MAX_VOICE_COUNT=100"]
+     }
+-    add(Linux, x64){
++    addLinux(x64, x86){
+         cppIncludes += ["soloud/src/backend/miniaudio/*.cpp"]
+-        cppFlags = "-DWITH_MINIAUDIO " + cppFlags
++        cppFlags += ["-DWITH_MINIAUDIO"]
+         libraries += " -lpthread -lrt -lm -ldl"
+     }
+-    add(Windows, x32){
++    addWindows(x32, x86){
+         cppIncludes += ["soloud/src/backend/miniaudio/*.cpp"]
+-        cppFlags = "-msse -DWITH_MINIAUDIO " + cppFlags
++        cppFlags += ["-DWITH_MINIAUDIO"]
+     }
+-    add(Windows, x64){
++    addWindows(x64, x86){
+         cppIncludes += ["soloud/src/backend/miniaudio/*.cpp"]
+-        cppFlags = "-msse -DWITH_MINIAUDIO " + cppFlags
++        cppFlags += ["-DWITH_MINIAUDIO"]
+     }
+-    add(Android){
++    addAndroid(){
+         linkerFlags += " -llog -lOpenSLES -Wl,-z,max-page-size=0x4000"
+         cppIncludes += ["soloud/src/backend/opensles/*.cpp"]
+-        cppFlags = "-DWITH_OPENSLES " + cppFlags
++        cppFlags += ["-DWITH_OPENSLES"]
+     }
+-    add(MacOsX, x64){
++    addMac(x64, x86){
+         cppIncludes += ["soloud/src/backend/coreaudio/*.mm"]
+-        cppFlags = "-std=c++11 -DWITH_COREAUDIO " + cppFlags
++        cppFlags += ["-std=c++11","-DWITH_COREAUDIO"]
+         libraries += "-Wl,-framework,CoreAudio -Wl,-framework,AudioToolbox"
+     }
+-    add(MacOsX, x64, ARM){
++    addMac(x64, ARM){
+         cppIncludes += ["soloud/src/backend/coreaudio/*.mm"]
+-        cppFlags = "-std=c++11 -DWITH_COREAUDIO " + cppFlags.replace("x86_64", "arm64")
+-        cFlags = cFlags.replace("x86_64", "arm64")
++        cppFlags += ["-std=c++11", "-DWITH_COREAUDIO"]
+         libraries += "-Wl,-framework,CoreAudio -Wl,-framework,AudioToolbox"
+-        linkerFlags = linkerFlags.replace("x86_64", "arm64")
+     }
+-    add(IOS){
++    addIOS(){
+         headerDirs += ["iosgl"]
+         cppIncludes += ["soloud/src/backend/coreaudio/*.mm", "iosgl/**"]
+-        cppFlags = "-stdlib=libc++ -std=c++11 -DWITH_COREAUDIO " + cppFlags
++        cppFlags += ["-stdlib=libc++", "-std=c++11", "-DWITH_COREAUDIO"]
+         libraries += "-Wl,-framework,CoreAudio -Wl,-framework,AudioToolbox"
+         linkerFlags += " -undefined dynamic_lookup "
+     }
+@@ -181,7 +181,7 @@ tasks.register('postJni'){
+     }
+ }
+ 
+-jnigenBuild.finalizedBy postJni
++jnigenBuildHost.finalizedBy postJni
+ 
+ getTasksByName("jnigen", true).each{
+     it.dependsOn preJni
+diff --git a/backends/backend-sdl/build.gradle b/backends/backend-sdl/build.gradle
+index 03cc3ff3e25943bb91ccd21c4896b69036250d4f..0762e8ecf983105f61d0aae84c97230b65d197e0 100644
+--- a/backends/backend-sdl/build.gradle
++++ b/backends/backend-sdl/build.gradle
+@@ -1,13 +1,14 @@
++plugins {
++    id "com.badlogicgames.jnigen.jnigen-gradle"
++}
++
+ sourceSets.main.java.srcDirs = ["src"]
+ sourceSets.main.resources.srcDirs = ["libs/linux64", "libs/macosx64","libs/windows32", "libs/windows64", "libs/openal"]
+ 
+ dependencies {
+-    testImplementation libraries.jnigen
+     testImplementation aproj(":arc-core")
+ }
+ 
+-apply plugin: "com.badlogicgames.gdx.gdx-jnigen"
+-
+ file("jni").mkdir()
+ 
+ task preJni{
+@@ -79,7 +80,7 @@ jnigen{
+         cIncludes = ["*.c", "glew-2.2.0/src/glew.c"]
+         headerDirs += ["glew-2.2.0/include"]
+     }
+-    add(Linux, x64){
++    addLinux(x64, x86){
+         cppFlags += " " + execCmd("sdl2-config --cflags")
+         cFlags = cppFlags
+         //NOTE: for this to statically link properly, you need to add -L/path/to/folder/with/custom/libSDL2.a
+@@ -88,27 +89,27 @@ jnigen{
+         libraries = execCmd("sdl2-config --libs") + " -Wl,-Bdynamic -lGL "
+         linkerFlags = "-shared -m64"
+     }
+-    add(Windows, x64){
++    addWindows(x64, x86){
+         def path = "SDL2-$sdlVersion/x86_64-w64-mingw32"
+         def root = "$rootDir/backends/backend-sdl/jni"
+         headerDirs += (String[])["$path/include/SDL2"]
+         cppFlags += " " + execCmd("sh $root/$path/bin/sdl2-config --cflags")
+         cFlags = cppFlags
+         libraries = execCmd("sh $root/$path/bin/sdl2-config --static-libs") + " -lopengl32"
+-        linkerFlags += " -L $root/$path/lib"
++        linkerFlags += (String[])["-L", "$root/$path/lib"]
+     }
+-    add(Windows, x32){
++    addWindows(x32, x86){
+         def path = "SDL2-$sdlVersion/i686-w64-mingw32"
+         def root = "$rootDir/backends/backend-sdl/jni"
+         headerDirs +=  (String[])["$path/include/SDL2"]
+         cppFlags += " " + execCmd("sh $root/$path/bin/sdl2-config --cflags")
+         cFlags = cppFlags
+         libraries = execCmd("sh $root/$path/bin/sdl2-config --static-libs") + " -lopengl32"
+-        linkerFlags += " -L $root/$path/lib"
++        linkerFlags += (String[])["-L", "$root/$path/lib"]
+     }
+ 
+     if(System.getProperty("os.arch") != "aarch64"){
+-        add(MacOsX, x64){
++        addMac(x64, x86){
+             cppFlags = cFlags= execCmd("sdl2-config --cflags") + " -c -Wall -O2 -arch x86_64 -DFIXED_POINT -fmessage-length=0 -fPIC -mmacosx-version-min=10.9 -stdlib=libc++"
+             linkerFlags = "-shared -arch x86_64 -mmacosx-version-min=10.9 -stdlib=libc++"
+             libraries = "/usr/local/lib/libSDL2.a -lm -liconv -Wl,-framework,CoreAudio -Wl,-framework,CoreHaptics -Wl,-weak_framework,GameController -Wl,-framework,OpenGL,-weak_framework,AudioToolbox -Wl,-framework,ForceFeedback -lobjc -Wl,-framework,CoreVideo -Wl,-framework,Cocoa -Wl,-framework,Carbon -Wl,-framework,IOKit -Wl,-weak_framework,QuartzCore -Wl,-weak_framework,Metal /usr/local/lib/libGLEW.a"
+@@ -116,7 +117,7 @@ jnigen{
+     }else{
+ 
+         //doesn't work on CI, have to use native M1
+-        add(MacOsX, x64, ARM){
++        addMac(x64, ARM){
+             cppFlags = cFlags = execCmd("sdl2-config --cflags") + " -c -Wall -O2 -arch arm64 -DFIXED_POINT -fmessage-length=0 -fPIC -mmacosx-version-min=10.9 -stdlib=libc++"
+             linkerFlags = "-shared -arch arm64 -mmacosx-version-min=10.9 -stdlib=libc++"
+             //execCmd("sdl2-config --static-libs") + " -Wl,-framework,OpenGL"
+diff --git a/build.gradle b/build.gradle
+index 4ed27f652fe859acd0c00db3ff2c859997e13560..1b9e5fc16ede96fff6545afb3ec32f44d4642e07 100644
+--- a/build.gradle
++++ b/build.gradle
+@@ -1,5 +1,6 @@
+ plugins {
+     id "de.undercouch.download" version "5.0.1"
++    id "com.badlogicgames.jnigen.jnigen-gradle" version "3.1.1" apply false
+ }
+ 
+ ext{
+@@ -9,8 +10,6 @@ ext{
+ 
+ versions.robovm = "2.3.24"
+ versions.junit = "4.11"
+-//TODO: upgrade to 3.1.1 and finally get rid of the disease that is ant
+-versions.jnigen = "2.5.1"
+ 
+ libraries.robovm = [
+     "com.mobidevelop.robovm:robovm-rt:${versions.robovm}",
+@@ -31,18 +30,6 @@ allprojects{
+     group = 'com.github.Anuken'
+     version = '1.0'
+ 
+-    buildscript{
+-        repositories{
+-            mavenCentral()
+-            google()
+-            maven{ url 'https://jitpack.io' }
+-        }
+-
+-        dependencies{
+-            classpath "com.github.libgdx.gdx-jnigen:gdx-jnigen-gradle:$versions.jnigen"
+-        }
+-    }
+-
+     repositories{
+         mavenCentral()
+         google()
+diff --git a/extensions/box2d/build.gradle b/extensions/box2d/build.gradle
+index 30e224bbc951c2be384ed24ad42949b8365fb3ae..58434aab1f6913ea52b261165db908f7950f6c6a 100644
+--- a/extensions/box2d/build.gradle
++++ b/extensions/box2d/build.gradle
+@@ -1,11 +1,9 @@
+-import com.badlogic.gdx.jnigen.*
+-
+-buildscript{
+-    dependencies{
+-        classpath libraries.jnigen
+-    }
++plugins {
++    id "com.badlogicgames.jnigen.jnigen-gradle"
+ }
+ 
++import com.badlogic.gdx.jnigen.*
++
+ task deleteJniFolder(type: Delete) {
+     delete "jni"
+     delete "docs"
+@@ -13,95 +11,96 @@ task deleteJniFolder(type: Delete) {
+ 
+ clean.dependsOn(deleteJniFolder)
+ 
+-task box2dNatives(dependsOn: [classes, deleteJniFolder]){
+-    doLast{
+-        def root = "$project.rootDir/extensions/box2d"
+-        def jnidir = "$root/jni"
+-        def libdir = "$root/libs"
+-
+-        //copy files manually because javah and/or jnigen is braindead
+-        copy{
+-            from "$rootDir/arc-core/build/classes/java/main"
+-            into "$root/build/classes/java/main"
+-            include "**"
+-        }
+-
+-        new NativeCodeGenerator().generate("$root/src", "$root/build/classes/java/main", jnidir, null, null)
+-
+-        //download box2d
+-        "curl https://raw.githubusercontent.com/Anuken/anuken.github.io/master/files/Box2D.zip -L -o $jnidir/Box2D.zip".execute().waitFor()
+-        //unzip box2d
+-        "unzip $jnidir/Box2D.zip -d $jnidir".execute()
+-
+-        BuildTarget[] targets = [
+-            BuildTarget.newDefaultTarget(BuildTarget.TargetOs.Windows, false),
+-            BuildTarget.newDefaultTarget(BuildTarget.TargetOs.Windows, true),
+-            BuildTarget.newDefaultTarget(BuildTarget.TargetOs.Linux, true),
+-            BuildTarget.newDefaultTarget(BuildTarget.TargetOs.Android, false),
+-            BuildTarget.newDefaultTarget(BuildTarget.TargetOs.MacOsX, true),
+-            BuildTarget.newDefaultTarget(BuildTarget.TargetOs.IOS, false)
+-        ] as BuildTarget[]
+-
+-        targets.each{
+-            if(it.os == BuildTarget.TargetOs.MacOsX){
+-                it.cppFlags = "-c -Wall -O2 -arch x86_64 -DFIXED_POINT -fmessage-length=0 -fPIC -mmacosx-version-min=10.7 -stdlib=libc++"
+-                it.linkerFlags = "-shared -arch x86_64 -mmacosx-version-min=10.7 -stdlib=libc++ -framework CoreServices -framework Carbon"
+-            }
+-        }
+-
+-        def matches = { String path, List<String> pattern ->
+-            return pattern.find{ path.contains(it) } != null
+-        }
+-
+-        new AntScriptGenerator().generate(new BuildConfig("arc-box2d", "$root/build", "libs/", jnidir), targets)
+-
+-        //copy custom makefile
+-        file("$jnidir/Android.mk").bytes = file("$jnidir/../Android.mk").bytes
+-
+-        //overwrite incorrect application mkfile
+-        new File("$jnidir/Application.mk").text = "APP_ABI := all\nAPP_PLATFORM := android-16"
+-
+-        for(BuildTarget target : targets){
+-            if((target.os == BuildTarget.TargetOs.IOS || target.os == BuildTarget.TargetOs.MacOsX) != System.getProperty("os.name").toLowerCase().contains("mac")) continue
+-
+-            String buildFileName = "build-" + target.os.toString().toLowerCase() + (target.is64Bit ? "64" : "32") + ".xml"
+-            BuildExecutor.executeAnt("$jnidir/" + buildFileName, "-Dhas-compiler=true -Drelease=true clean postcompile")
+-        }
+-
+-        new File(libdir).eachFileRecurse{ file ->
+-            if(!file.path.contains("ios") && !file.path.contains("mac")){
+-                "strip ${file.absolutePath}".execute().waitFor()
+-            }
+-        }
+-
+-        new File(libdir).eachFileRecurse{ target ->
+-            if(!target.isDirectory() && matches(target.path, ["windows", "mac", "linux"])){
+-                file("../../natives/natives-box2d-desktop/libs").mkdirs()
+-                file("../../natives/natives-box2d-desktop/libs/$target.name").bytes = target.bytes
+-            }else if(!target.isDirectory() && target.path.contains("ios")){
+-                file("../../natives/natives-box2d-ios/libs").mkdirs()
+-                file("../../natives/natives-box2d-ios/libs/$target.name").bytes = target.bytes
+-            }
+-        }
+-
+-        copy{
+-            include{ file -> matches(file.path, ["arm", "x86"]) && !file.path.contains("ios") }
+-            from "libs/"
+-            into "../../natives/natives-box2d-android/libs/"
+-        }
+-
+-
+-        //cleanup
+-        delete{ delete "libs" }
+-        delete{ delete "obj" }
+-        delete{ delete "out" }
+-        delete{ delete "jni" }
+-
+-        //delete extra garbage, not sure why it even exists
+-        delete{
+-            delete "../../libs"
+-        }
+-    }
+-}
++// TODO fix this
++//task box2dNatives(dependsOn: [classes, deleteJniFolder]){
++//    doLast{
++//        def root = "$project.rootDir/extensions/box2d"
++//        def jnidir = "$root/jni"
++//        def libdir = "$root/libs"
++//
++//        //copy files manually because javah and/or jnigen is braindead
++//        copy{
++//            from "$rootDir/arc-core/build/classes/java/main"
++//            into "$root/build/classes/java/main"
++//            include "**"
++//        }
++//
++//        new NativeCodeGenerator().generate("$root/src", "$root/build/classes/java/main", jnidir, null, null)
++//
++//        //download box2d
++//        "curl https://raw.githubusercontent.com/Anuken/anuken.github.io/master/files/Box2D.zip -L -o $jnidir/Box2D.zip".execute().waitFor()
++//        //unzip box2d
++//        "unzip $jnidir/Box2D.zip -d $jnidir".execute()
++//
++//        BuildTarget[] targets = [
++//            BuildTarget.newDefaultTarget(BuildTarget.TargetOs.Windows, false),
++//            BuildTarget.newDefaultTarget(BuildTarget.TargetOs.Windows, true),
++//            BuildTarget.newDefaultTarget(BuildTarget.TargetOs.Linux, true),
++//            BuildTarget.newDefaultTarget(BuildTarget.TargetOs.Android, false),
++//            BuildTarget.newDefaultTarget(BuildTarget.TargetOs.MacOsX, true),
++//            BuildTarget.newDefaultTarget(BuildTarget.TargetOs.IOS, false)
++//        ] as BuildTarget[]
++//
++//        targets.each{
++//            if(it.os == BuildTarget.TargetOs.MacOsX){
++//                it.cppFlags = "-c -Wall -O2 -arch x86_64 -DFIXED_POINT -fmessage-length=0 -fPIC -mmacosx-version-min=10.7 -stdlib=libc++"
++//                it.linkerFlags = "-shared -arch x86_64 -mmacosx-version-min=10.7 -stdlib=libc++ -framework CoreServices -framework Carbon"
++//            }
++//        }
++//
++//        def matches = { String path, List<String> pattern ->
++//            return pattern.find{ path.contains(it) } != null
++//        }
++//
++//        new AntScriptGenerator().generate(new BuildConfig("arc-box2d", "$root/build", "libs/", jnidir), targets)
++//
++//        //copy custom makefile
++//        file("$jnidir/Android.mk").bytes = file("$jnidir/../Android.mk").bytes
++//
++//        //overwrite incorrect application mkfile
++//        new File("$jnidir/Application.mk").text = "APP_ABI := all\nAPP_PLATFORM := android-16"
++//
++//        for(BuildTarget target : targets){
++//            if((target.os == BuildTarget.TargetOs.IOS || target.os == BuildTarget.TargetOs.MacOsX) != System.getProperty("os.name").toLowerCase().contains("mac")) continue
++//
++//            String buildFileName = "build-" + target.os.toString().toLowerCase() + (target.is64Bit ? "64" : "32") + ".xml"
++//            BuildExecutor.executeAnt("$jnidir/" + buildFileName, "-Dhas-compiler=true -Drelease=true clean postcompile")
++//        }
++//
++//        new File(libdir).eachFileRecurse{ file ->
++//            if(!file.path.contains("ios") && !file.path.contains("mac")){
++//                "strip ${file.absolutePath}".execute().waitFor()
++//            }
++//        }
++//
++//        new File(libdir).eachFileRecurse{ target ->
++//            if(!target.isDirectory() && matches(target.path, ["windows", "mac", "linux"])){
++//                file("../../natives/natives-box2d-desktop/libs").mkdirs()
++//                file("../../natives/natives-box2d-desktop/libs/$target.name").bytes = target.bytes
++//            }else if(!target.isDirectory() && target.path.contains("ios")){
++//                file("../../natives/natives-box2d-ios/libs").mkdirs()
++//                file("../../natives/natives-box2d-ios/libs/$target.name").bytes = target.bytes
++//            }
++//        }
++//
++//        copy{
++//            include{ file -> matches(file.path, ["arm", "x86"]) && !file.path.contains("ios") }
++//            from "libs/"
++//            into "../../natives/natives-box2d-android/libs/"
++//        }
++//
++//
++//        //cleanup
++//        delete{ delete "libs" }
++//        delete{ delete "obj" }
++//        delete{ delete "out" }
++//        delete{ delete "jni" }
++//
++//        //delete extra garbage, not sure why it even exists
++//        delete{
++//            delete "../../libs"
++//        }
++//    }
++//}
+ 
+ 
+diff --git a/extensions/filedialogs/build.gradle b/extensions/filedialogs/build.gradle
+index 3467e5d7530be26abd06c02a2aa7163df1ab7b38..07fc952e2dfdb120dbfd22fab5e0cb97e6727361 100644
+--- a/extensions/filedialogs/build.gradle
++++ b/extensions/filedialogs/build.gradle
+@@ -1,4 +1,6 @@
+-apply plugin: "com.badlogicgames.gdx.gdx-jnigen"
++plugins {
++    id "com.badlogicgames.jnigen.jnigen-gradle"
++}
+ 
+ file("jni").mkdir()
+ 
+@@ -11,18 +13,15 @@ jnigen{
+         //headerDirs += ["$fdir/"]
+         cIncludes = ["tinyfiledialogs.c"]
+     }
+-    add(Windows, x32){
++    addWindows(x32, x86){
+         libraries = " -lcomdlg32 -lole32"
+     }
+-    add(Windows, x64){
++    addWindows(x64, x86){
+         libraries = " -lcomdlg32 -lole32"
+     }
+-    add(Linux, x64)
+-    add(MacOsX, x64)
+-    add(MacOsX, x64, ARM){
+-        cFlags = cppFlags = cppFlags.replace("x86_64", "arm64")
+-        linkerFlags = linkerFlags.replace("x86_64", "arm64")
+-    }
++    addLinux(x64, x86)
++    addMac(x64, x86)
++    addMac(x64, ARM)
+ }
+ 
+ task preJni{
+@@ -54,7 +53,7 @@ task postJni{
+ }
+ 
+ preJni.dependsOn "compileJava"
+-jnigenBuild.finalizedBy postJni
++jnigenBuildHost.finalizedBy postJni
+ 
+ getTasksByName("jnigen", true).each{
+     it.dependsOn preJni
+diff --git a/extensions/freetype/build.gradle b/extensions/freetype/build.gradle
+index 8dc6fe2966372785c83544647fcdb8392c7c9c87..ea7f39bb394da750ae6b5725c1ffc6af632678fa 100644
+--- a/extensions/freetype/build.gradle
++++ b/extensions/freetype/build.gradle
+@@ -1,4 +1,6 @@
+-apply plugin: "com.badlogicgames.gdx.gdx-jnigen"
++plugins {
++    id "com.badlogicgames.jnigen.jnigen-gradle"
++}
+ 
+ file("jni").mkdir()
+ 
+@@ -32,18 +34,15 @@ jnigen{
+         cFlags += " -DFT2_BUILD_LIBRARY"
+         cppFlags += " -DFT2_BUILD_LIBRARY"
+     }
+-    add(Windows, x32)
+-    add(Windows, x64)
+-    add(Linux, x64)
+-    add(MacOsX, x64)
+-    add(MacOsX, x64, ARM){
+-        cFlags = cppFlags = cppFlags.replace("x86_64", "arm64")
+-        linkerFlags = linkerFlags.replace("x86_64", "arm64")
+-    }
+-    add(Android){
++    addWindows(x32, x86)
++    addWindows(x64, x86)
++    addLinux(x64, x86)
++    addMac(x64, x86)
++    addMac(x64, ARM)
++    addAndroid(){
+         linkerFlags += " -Wl,-z,max-page-size=0x4000"
+     }
+-    add(IOS)
++    addIOS()
+ }
+ 
+ task preJni{
+@@ -106,7 +105,7 @@ task postJni{
+ }
+ 
+ preJni.dependsOn "compileJava"
+-jnigenBuild.finalizedBy postJni
++jnigenBuildHost.finalizedBy postJni
+ 
+ getTasksByName("jnigen", true).each{
+     it.dependsOn preJni
+diff --git a/settings.gradle b/settings.gradle
+index fdfec89ead02dafacd6e8846c76afdc4ae27c6d9..7a6311271239397bad31d3278d5772cbbba50a52 100644
+--- a/settings.gradle
++++ b/settings.gradle
+@@ -23,14 +23,12 @@ include ":backends:backend-robovm"
+ include ":natives"
+ include ":natives:natives-desktop"
+ include ":natives:natives-android"
+-include ":natives:natives-ios"
+ include ":natives:natives-freetype-desktop"
+ include ":natives:natives-freetype-android"
+ include ":natives:natives-freetype-ios"
+ include ":natives:natives-box2d-desktop"
+ include ":natives:natives-box2d-android"
+ include ":natives:natives-box2d-ios"
+-include ":natives:natives-freetype-ios"
+ include ":natives:natives-filedialogs"
+ 
+ rootProject.name = "arc"
