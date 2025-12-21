@@ -7,23 +7,23 @@ clear and replce jabel(Support record)
 way-zer <himc.wicp@gmail.com> on 2024/6/9
 ---
  .gitignore                                    |   2 +-
- android/build.gradle                          | 111 +++----
+ android/build.gradle                          | 113 +++---
  android/proguard-rules.pro                    |   4 +
  .../com/github/bsideup/jabel/Desugar.java     |  13 +
  .../javax.annotation.processing.Processor     |   6 +
- build.gradle                                  | 311 +++---------------
+ build.gradle                                  | 321 +++---------------
  core/build.gradle                             |   2 -
  core/build.gradle.kts                         |  67 ++++
- desktop/build.gradle                          | 166 +---------
+ desktop/build.gradle                          | 166 +--------
  gradle.properties                             |   5 +-
  gradlew                                       | 284 ++++++++++------
- gradlew.bat                                   |  37 ++-
+ gradlew.bat                                   |  37 +-
  ios/build.gradle                              |   2 +-
  server/build.gradle                           |  44 +--
  settings.gradle                               |  11 +-
  tools/build.gradle                            |  91 ++---
  tools/src/mindustry/tools/Generators.java     |   2 +-
- 17 files changed, 450 insertions(+), 708 deletions(-)
+ 17 files changed, 456 insertions(+), 714 deletions(-)
  create mode 100644 annotations/src/main/java/com/github/bsideup/jabel/Desugar.java
  create mode 100644 annotations/src/main/resources/META-INF/services/javax.annotation.processing.Processor
  delete mode 100644 core/build.gradle
@@ -50,7 +50,7 @@ index 5e3b7987ef4f776a0bc35dde58fb2c74f4acdb07..b5b2a237c2f5343aab2fb668337c2bc4
  /core/assets/locales
  /core/assets/cache/
 diff --git a/android/build.gradle b/android/build.gradle
-index c6349e291620b214ee740f156cd9b0514387125b..b549d190f372b36ed37f41879957fa898568aa71 100644
+index c6349e291620b214ee740f156cd9b0514387125b..262147eec096507847d05c5b2a77d6e6442b8761 100644
 --- a/android/build.gradle
 +++ b/android/build.gradle
 @@ -1,45 +1,23 @@
@@ -84,7 +84,7 @@ index c6349e291620b214ee740f156cd9b0514387125b..b549d190f372b36ed37f41879957fa89
 -    from "build/outputs/apk/release/android-release.apk"
 -    into "../deploy/"
 -    rename("android-release.apk", "${generateDeployName('android')}.apk")
-+    maven{ url "https://dl.google.com/dl/android/maven2/" }
++    maven{ url = "https://dl.google.com/dl/android/maven2/" }
  }
  
  android{
@@ -120,7 +120,7 @@ index c6349e291620b214ee740f156cd9b0514387125b..b549d190f372b36ed37f41879957fa89
          versionName versionNameResult
 -        versionCode = vcode
 +        versionCode = 1
-+        multiDexEnabled true
++        multiDexEnabled = true
  
          if(project.hasProperty("release")){
 +            Properties props = loadVersionProps()
@@ -159,7 +159,7 @@ index c6349e291620b214ee740f156cd9b0514387125b..b549d190f372b36ed37f41879957fa89
              //TODO without these lines (r8 enabled), Mindustry crashes with missing default interface method errors.
              //WHY THE HELL ARE DEFAULT INTERFACES NOT BEING DESUGARED? WHY DID UPDATING AGP MAKE THIS HAPPEN?
              //When I ENABLE shrinking, r8 goes and REMOVES ALL DEFAULT INTERFACE CLASSES, which breaks mods. Why?
-@@ -104,12 +81,7 @@ android{
+@@ -104,13 +81,8 @@ android{
              minifyEnabled = true
              shrinkResources = true
              proguardFiles("proguard-rules.pro")
@@ -169,10 +169,12 @@ index c6349e291620b214ee740f156cd9b0514387125b..b549d190f372b36ed37f41879957fa89
 -    if(project.hasProperty("RELEASE_STORE_FILE") || System.getenv("CI") == "true"){
 -        buildTypes{
 -            release{
+-                signingConfig signingConfigs.release
 +            if(project.hasProperty("RELEASE_STORE_FILE") || System.getenv("CI") == "true"){
-                 signingConfig signingConfigs.release
++                signingConfig = signingConfigs.release
              }
          }
+     }
 @@ -121,38 +93,31 @@ dependencies{
  
      implementation arcModule("backends:backend-android")
@@ -280,7 +282,7 @@ index 0000000000000000000000000000000000000000..181b87c1d5f3755f16a01c0528d0a89f
 +mindustry.annotations.misc.LogicStatementProcessor
 +mindustry.annotations.remote.RemoteProcess
 diff --git a/build.gradle b/build.gradle
-index 48b650d414c84abca94c5d66d7748d2aca48eec5..37324d81079ec26a197a1fc66e52ebe8b6752f81 100644
+index 48b650d414c84abca94c5d66d7748d2aca48eec5..d478ea7835502eca45a5fe5c43b51a7754215919 100644
 --- a/build.gradle
 +++ b/build.gradle
 @@ -1,30 +1,16 @@
@@ -317,7 +319,7 @@ index 48b650d414c84abca94c5d66d7748d2aca48eec5..37324d81079ec26a197a1fc66e52ebe8
  }
  
  plugins{
-@@ -50,132 +36,10 @@ allprojects{
+@@ -50,185 +36,43 @@ allprojects{
              return new Properties().with{p -> p.load(file('../core/assets/version.properties').newReader()); return p }
          }
  
@@ -450,14 +452,22 @@ index 48b650d414c84abca94c5d66d7748d2aca48eec5..37324d81079ec26a197a1fc66e52ebe8
      }
  
      repositories{
-@@ -186,49 +50,29 @@ allprojects{
-         maven{ url 'https://jitpack.io' }
-     }
- 
+         mavenLocal()
+         mavenCentral()
+-        maven{ url "https://oss.sonatype.org/content/repositories/snapshots/" }
+-        maven{ url "https://oss.sonatype.org/content/repositories/releases/" }
+-        maven{ url 'https://jitpack.io' }
+-    }
+-
 -    task clearCache{
 -        doFirst{
 -            delete{
 -                delete "$rootDir/core/assets/cache"
++        maven{ url = "https://oss.sonatype.org/content/repositories/snapshots/" }
++        maven{ url = "https://oss.sonatype.org/content/repositories/releases/" }
++        maven{ url = 'https://jitpack.io' }
++    }
++
 +    tasks.withType(JavaCompile).configureEach{
 +        if(project.name == "annotations"){
 +            sourceCompatibility = 8
@@ -1561,13 +1571,13 @@ index b18346f65206aa9ddce3857083b40ce0c4001f53..1f526ce26a1f12e125de9fe8887ae355
  def hasSdk = System.getenv("ANDROID_HOME") != null
  
 diff --git a/tools/build.gradle b/tools/build.gradle
-index 6701a24f5fb261ed6ff21fc80d049577002861e0..7bc43257dd2c02dbea281c1a207bd123a4218409 100644
+index 6701a24f5fb261ed6ff21fc80d049577002861e0..0d5899f3b5d763f2882f339f690834f7d43671ff 100644
 --- a/tools/build.gradle
 +++ b/tools/build.gradle
 @@ -1,3 +1,13 @@
 +buildscript{
 +    repositories{
-+        maven{ url 'https://jitpack.io' }
++        maven{ url = 'https://jitpack.io' }
 +    }
 +    dependencies{
 +        classpath arcModule(":extensions:packer")
@@ -1697,7 +1707,7 @@ index 6701a24f5fb261ed6ff21fc80d049577002861e0..7bc43257dd2c02dbea281c1a207bd123
      }
  }
 +tasks.register('pack', Copy){
-+    destinationDir(new File(rootDir, "core/assets/sprites/"))
++    destinationDir = new File(rootDir, "core/assets/sprites/")
 +    from(files(doPack))
 +}
  

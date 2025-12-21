@@ -1,17 +1,17 @@
 From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
 From: way-zer <himc.wicp@gmail.com>
 Date: Sun, 21 Dec 2025 14:10:29 +0800
-Subject: [PATCH] fixup! BUILD build.gradle.kts and clear
+Subject: [PATCH] BUILD upgrade jnigen to v3.1.1 (WIP)
 
 ---
  arc-core/build.gradle               |  40 +++---
  backends/backend-sdl/build.gradle   |  21 +--
- build.gradle                        |  15 +--
+ build.gradle                        |  17 +--
  extensions/box2d/build.gradle       | 191 ++++++++++++++--------------
  extensions/filedialogs/build.gradle |  19 ++-
  extensions/freetype/build.gradle    |  23 ++--
  settings.gradle                     |   2 -
- 7 files changed, 147 insertions(+), 164 deletions(-)
+ 7 files changed, 148 insertions(+), 165 deletions(-)
 
 diff --git a/arc-core/build.gradle b/arc-core/build.gradle
 index ca6244fa6ad6db164a8281c003fbaa3b67eeab6f..a807c3df03a26ee7c3275ae988b7620a88554427 100644
@@ -175,7 +175,7 @@ index 03cc3ff3e25943bb91ccd21c4896b69036250d4f..0762e8ecf983105f61d0aae84c97230b
              linkerFlags = "-shared -arch arm64 -mmacosx-version-min=10.9 -stdlib=libc++"
              //execCmd("sdl2-config --static-libs") + " -Wl,-framework,OpenGL"
 diff --git a/build.gradle b/build.gradle
-index 4ed27f652fe859acd0c00db3ff2c859997e13560..1b9e5fc16ede96fff6545afb3ec32f44d4642e07 100644
+index 4ed27f652fe859acd0c00db3ff2c859997e13560..90d8a70e90cdc69634639229eaac3ef7d7899abd 100644
 --- a/build.gradle
 +++ b/build.gradle
 @@ -1,5 +1,6 @@
@@ -194,7 +194,7 @@ index 4ed27f652fe859acd0c00db3ff2c859997e13560..1b9e5fc16ede96fff6545afb3ec32f44
  
  libraries.robovm = [
      "com.mobidevelop.robovm:robovm-rt:${versions.robovm}",
-@@ -31,18 +30,6 @@ allprojects{
+@@ -31,22 +30,10 @@ allprojects{
      group = 'com.github.Anuken'
      version = '1.0'
  
@@ -213,6 +213,11 @@ index 4ed27f652fe859acd0c00db3ff2c859997e13560..1b9e5fc16ede96fff6545afb3ec32f44
      repositories{
          mavenCentral()
          google()
+-        maven{ url 'https://jitpack.io' }
++        maven{ url = 'https://jitpack.io' }
+     }
+ 
+     ext.aproj = { String module ->
 diff --git a/extensions/box2d/build.gradle b/extensions/box2d/build.gradle
 index 30e224bbc951c2be384ed24ad42949b8365fb3ae..58434aab1f6913ea52b261165db908f7950f6c6a 100644
 --- a/extensions/box2d/build.gradle

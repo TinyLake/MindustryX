@@ -34,7 +34,7 @@ index b5b2a237c2f5343aab2fb668337c2bc47a45c1b8..308ff12c92a06e11c18b33f540098a0f
  /out/
  ios/libs/
 diff --git a/android/build.gradle b/android/build.gradle
-index b549d190f372b36ed37f41879957fa898568aa71..e667c61032a4ce65dc0ad3067fcd5aac12ceb9b2 100644
+index 262147eec096507847d05c5b2a77d6e6442b8761..b18b0fcfcc734077e68dc0307f1194a09a4ceb81 100644
 --- a/android/build.gradle
 +++ b/android/build.gradle
 @@ -31,7 +31,7 @@ android{
@@ -57,7 +57,7 @@ index d42ffe6d4a318ce558f1010eae46140f88ed5c99..bf44ead5c58abfb79c500e6daae30c3e
 +    <string name="app_name">MindustryX</string>
  </resources>
 diff --git a/build.gradle b/build.gradle
-index 64613ffc087fe1aa23475acb08e5cc35758b77a0..34ef37eb7dca3ecfbd2bbd9622f7515148a08ed0 100644
+index 3c26c3d991a5ae3900d21c9d219ea0c4347ccbac..362e006d23e39eb3eb4b1351dd640efb42d88297 100644
 --- a/build.gradle
 +++ b/build.gradle
 @@ -22,7 +22,7 @@ allprojects{
