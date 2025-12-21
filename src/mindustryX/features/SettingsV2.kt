@@ -31,69 +31,92 @@ import java.io.DataOutputStream
  */
 
 object SettingsV2 {
-    //headless Data
-    open class DataCore<T>(val name: String, val def: T) {
-        var persistentProvider: PersistentProvider<T> = PersistentProvider.Arc(name)
-        var value: T = def
-            get() {
-                if (!init) {
-                    persistentProvider.get()?.let { field = it }
-                    init = true
-                }
-                return field
-            }
-            private set
-
-        private var init = false
+    open class ReactiveCore<T>(def: T) {
+        private var _value: T = def
+        private val listeners = mutableListOf<(T) -> Unit>()
         private val changedSet = mutableSetOf<String>()
 
+        open val value: T get() = _value
         fun get(): T = value //for java usage
         open fun set(value: T) {
             if (value == this.value) return
-            this.value = value
-            (persistentProvider as? PersistentProvider.Savable)?.set(value)
-            changedSet.clear()
+            this._value = value
+            notifyChanged()
         }
 
+
+        fun notifyChanged() {
+            value?.let { v ->
+                listeners.forEach { it.invoke(v) }
+            }
+        }
+
+        /** Notify Style changes */
+        fun addListener(listener: (T) -> Unit) {
+            listeners.add(listener)
+        }
+
+        /** Poll Style changes */
+        @JvmOverloads
+        fun changed(name: String = "DEFAULT"): Boolean {
+            return changedSet.add(name)
+        }
+    }
+
+    interface UIBuilder {
+        fun buildUI(): Table
+    }
+
+    open class Data<T>(val name: String, val def: T) : ReactiveCore<T>(def), UIBuilder {
+        private var init = false
+        var persistentProvider: PersistentProvider<T> = PersistentProvider.Arc(name)
+
+        override val value: T
+            get() {
+                if (!init) {
+                    persistentProvider.get()?.let { super.set(it) }
+                    init = true
+                }
+                return super.value
+            }
+
         init {
+            addListener { (persistentProvider as? PersistentProvider.Savable)?.set(value) }
             if (name in ALL)
                 Log.warn("Settings initialized!: $name")
             @Suppress("LeakingThis")
             ALL[name] = this
         }
 
-        @JvmOverloads
-        fun changed(name: String = "DEFAULT"): Boolean {
-            return changedSet.add(name)
-        }
-
+        val modified get() = value != def
         fun resetDefault() {
-            value = def
-            changedSet.clear()
+            set(def)
             persistentProvider.reset()
         }
 
         fun addFallback(provider: PersistentProvider<T>) {
-            if (value == def) {
+            if (!modified) {
                 set(provider.get() ?: def)
             }
-            provider.reset()
+            (provider as? PersistentProvider.Savable)?.reset()
         }
 
         fun addFallbackName(name: String) {
-            if (Core.settings == null) {
-                lateInit.add { addFallbackName(name) }
-                return
+            mayLaterInit {
+                addFallback(PersistentProvider.Arc(name))
             }
-            addFallback(PersistentProvider.Arc(name))
         }
-    }
 
-    interface WithUI {
-        fun buildUI(): Table
-    }
+        private inline fun mayLaterInit(crossinline action: () -> Unit) {
+            if (Core.settings == null) {
+                lateInit.add { action.invoke() }
+            } else {
+                action.invoke()
+            }
+        }
 
-    open class Data<T>(name: String, def: T) : DataCore<T>(name, def), WithUI {
+        // UI fields
+
         val category: String get() = categoryOverride[name] ?: name.substringBefore('.', "")
         val title: String get() = Core.bundle.get("settingV2.${name}.name", name)
         val description: String? get() = Core.bundle.getOrNull("settingV2.${name}.description")
@@ -109,7 +132,7 @@ object SettingsV2 {
             button(Icon.info, Styles.clearNonei) { Vars.ui.showInfo(help) }.tooltip(help ?: "@none")
                 .fillY().padLeft(8f).disabled { help == null }
             button(Icon.undo, Styles.clearNonei) { resetDefault() }.tooltip("@settingV2.reset")
-                .fillY().disabled { value == def }
+                .fillY().disabled { !modified }
         }
     }
 
@@ -126,7 +149,7 @@ object SettingsV2 {
 
         data object Noop : PersistentProvider<Nothing> {
             override fun get(): Nothing? = null
-            override fun reset() = Unit
+            override fun reset() {}
         }
 
         class Arc<T>(val name: String) : PersistentProvider<T>, Savable<T> {
@@ -240,7 +263,7 @@ object SettingsV2 {
         }
     }
 
-    val ALL = LinkedHashMap<String, DataCore<*>>()
+    val ALL = LinkedHashMap<String, Data<*>>()
     val categoryOverride = mutableMapOf<String, String>()
     private val lateInit = mutableListOf<() -> Unit>()
 
@@ -249,9 +272,9 @@ object SettingsV2 {
         lateInit.clear()
     }
 
-    class CategoryUI(val key: String) : WithUI {
+    class CategoryUI(val key: String) : UIBuilder {
         val title: String = Core.bundle.get("settingV2.${key}.category", key)
-        val children = mutableListOf<WithUI>()
+        val children = mutableListOf<UIBuilder>()
 
         override fun buildUI() = Table().apply {
             if (key.isNotEmpty() && this@CategoryUI.children.isNotEmpty()) {
@@ -266,7 +289,7 @@ object SettingsV2 {
 
     @JvmStatic
     @JvmOverloads
-    fun buildSettingsTable(table: Table, settings: List<Data<*>> = ALL.values.filterIsInstance<Data<*>>()) {
+    fun buildSettingsTable(table: Table, settings: List<Data<*>> = ALL.values.toList()) {
         table.clearChildren()
         val searchTable = table.table().growX().get()
         table.row()
@@ -274,14 +297,16 @@ object SettingsV2 {
         table.row()
 
         var settingSearch = ""
+        var onlyModified = false
         fun rebuildContent() {
             contentTable.clearChildren()
             val categories = mutableMapOf<String, CategoryUI>()
             settings.forEach { setting ->
                 val category = categories.getOrPut(setting.category) { CategoryUI(setting.category) }
-                val match = category.key.contains(settingSearch, ignoreCase = true) || category.title.contains(settingSearch, ignoreCase = true)
-                        || ("@modified" in settingSearch && setting.value != setting.def)
-                        || setting.name.contains(settingSearch, true) || setting.title.contains(settingSearch, true)
+                val match = (!onlyModified || setting.modified) && (
+                        category.key.contains(settingSearch, ignoreCase = true) || category.title.contains(settingSearch, ignoreCase = true)
+                                || setting.name.contains(settingSearch, true) || setting.title.contains(settingSearch, true)
+                        )
                 if (match) {
                     category.children.add(setting)
                 }
@@ -296,6 +321,10 @@ object SettingsV2 {
                 settingSearch = it
                 rebuildContent()
             }.growX()
+            button(Icon.filter, Styles.squareTogglei, Vars.iconMed) {
+                onlyModified = !onlyModified
+                rebuildContent()
+            }.checked { onlyModified }.tooltip("@settingV2.onlyModified")
         }
         rebuildContent()
     }
