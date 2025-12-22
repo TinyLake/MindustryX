@@ -182,7 +182,7 @@ index 010a7c02682f89bfcfc61916494a4eab9f5aee2f..cef9350f355b73ae9fed0181dfa7d396
          if(example instanceof WaterMovec || example instanceof WaterCrawlc){
              naval = true;
 diff --git a/core/src/mindustry/type/Weapon.java b/core/src/mindustry/type/Weapon.java
-index 2e9996ea241183f7331349503992e90b2df24b78..77f9b402bff7d3166ff4d4a4da46f34b00523ccd 100644
+index 6f5083be8a94e06bc8b085e12e14aec9f654bfff..69137f5ce00244689cb36ca9bc322a468760c8cb 100644
 --- a/core/src/mindustry/type/Weapon.java
 +++ b/core/src/mindustry/type/Weapon.java
 @@ -173,6 +173,18 @@ public class Weapon implements Cloneable{
@@ -205,7 +205,7 @@ index 2e9996ea241183f7331349503992e90b2df24b78..77f9b402bff7d3166ff4d4a4da46f34b
              t.row();
              t.add("[lightgray]" + Stat.inaccuracy.localized() + ": [white]" + (int)inaccuracy + " " + StatUnit.degrees.localized());
 diff --git a/core/src/mindustry/world/Block.java b/core/src/mindustry/world/Block.java
-index 133cb377c5505b206a580c2bf51289d45a927a59..87dd6df638db1cd5c89fe2f8894d28f00a427196 100644
+index 26f1a576b0f734cc11230aaeab9e9b6df3bcf98f..900f9668d79afad7b9d6b75656ea430fedc991af 100644
 --- a/core/src/mindustry/world/Block.java
 +++ b/core/src/mindustry/world/Block.java
 @@ -33,6 +33,7 @@ import mindustry.world.blocks.environment.*;

@@ -125,7 +125,7 @@ index 60cedfaecdb8a85dcfccc30ca090aa48e3463350..01ba50f19dcae39176f8dde2be539177
      }
  
 diff --git a/core/src/mindustry/world/Block.java b/core/src/mindustry/world/Block.java
-index dbddd0d95e0c3b799acb5497587002cc1e2245a3..c8c8b19e35fa557311557d030cbc2445cb5de3d4 100644
+index 74d4e982edd390695353be76a6ead91f1b968735..c7042416d7ebc6dc24aebf563ec70b53258a92de 100644
 --- a/core/src/mindustry/world/Block.java
 +++ b/core/src/mindustry/world/Block.java
 @@ -955,11 +955,11 @@ public class Block extends UnlockableContent implements Senseable{
@@ -143,7 +143,7 @@ index dbddd0d95e0c3b799acb5497587002cc1e2245a3..c8c8b19e35fa557311557d030cbc2445
  
      @Override
 diff --git a/core/src/mindustry/world/Build.java b/core/src/mindustry/world/Build.java
-index 0959de0176f2fb6b04358c61263ce3e210baec28..1c9d5b6b7ef78e3728d305217b1a328b726b182c 100644
+index 29325166665bef59573d5bb5fbbbc0ab6cfc39ad..f0fc4b4ebb7f79d29daf18ab7c304dde89eb1fce 100644
 --- a/core/src/mindustry/world/Build.java
 +++ b/core/src/mindustry/world/Build.java
 @@ -15,6 +15,7 @@ import mindustry.gen.*;
@@ -165,7 +165,7 @@ index 0959de0176f2fb6b04358c61263ce3e210baec28..1c9d5b6b7ef78e3728d305217b1a328b
          //the wave team can build whatever they want as long as it's visible - banned blocks are not applicable
          if(type == null || (!state.rules.editor && (checkVisible && (!type.environmentBuildable() || (!type.isPlaceable() && !(state.rules.waves && team == state.rules.waveTeam && type.isVisible())))))){
              return false;
-@@ -308,6 +313,7 @@ public class Build{
+@@ -312,6 +317,7 @@ public class Build{
      /** @return whether the tile at this position is breakable by this team */
      public static boolean validBreak(Team team, int x, int y){
          Tile tile = world.tile(x, y);

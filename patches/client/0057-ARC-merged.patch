@@ -429,7 +429,7 @@ index 89248d96c9ae9f7e27da374717861cfd103da3c6..a89c404bb2997586c844dcb453f01ecf
                  }
                  Draw.reset();
 diff --git a/core/src/mindustry/graphics/OverlayRenderer.java b/core/src/mindustry/graphics/OverlayRenderer.java
-index 63d61152b5444d9c2be8fc7173d47efb225ce906..8ccaa122efba7649df5871ffe8e8274921a3ec53 100644
+index 4615b0d9382ead0bfab195af00b4ee5a71c04e1f..8919e7297623351066faa1cc4f187aad5605fe37 100644
 --- a/core/src/mindustry/graphics/OverlayRenderer.java
 +++ b/core/src/mindustry/graphics/OverlayRenderer.java
 @@ -17,6 +17,7 @@ import mindustry.gen.*;
@@ -440,10 +440,10 @@ index 63d61152b5444d9c2be8fc7173d47efb225ce906..8ccaa122efba7649df5871ffe8e82749
  
  import static mindustry.Vars.*;
  
-@@ -180,9 +181,18 @@ public class OverlayRenderer{
+@@ -184,9 +185,18 @@ public class OverlayRenderer{
                      //it must be clear that there is a core here.
                      float br = state.rules.buildRadius(core.team);
-                     if(/*core.wasVisible && */Core.camera.bounds(Tmp.r1).overlaps(Tmp.r2.setCentered(core.x, core.y, br * 2f))){
+                     if(/*core.wasVisible && */br > 0f && Core.camera.bounds(Tmp.r1).overlaps(Tmp.r2.setCentered(core.x, core.y, br * 2f))){
 -                        Draw.color(Color.darkGray);
 -                        Lines.circle(core.x, core.y - 2,br);
 -                        Draw.color(Pal.accent, core.team.color, 0.5f + Mathf.absin(Time.time, 10f, 0.5f));
@@ -455,14 +455,14 @@ index 63d61152b5444d9c2be8fc7173d47efb225ce906..8ccaa122efba7649df5871ffe8e82749
 +                });
 +                player.team().cores().each(core -> {
 +                    float br = state.rules.buildRadius(core.team);
-+                    if(state.rules.pvp && Core.camera.bounds(Tmp.r1).overlaps(Tmp.r2.setCentered(core.x, core.y, state.rules.enemyCoreBuildRadius * 2f))){
++                    if(br > 0f && state.rules.pvp && Core.camera.bounds(Tmp.r1).overlaps(Tmp.r2.setCentered(core.x, core.y, state.rules.enemyCoreBuildRadius * 2f))){
 +                        Draw.color(Color.darkGray, 0.4f);
 +                        Lines.circle(core.x, core.y - 2, br);
 +                        Draw.color(Pal.accent, core.team.color, 0.0f + Mathf.absin(Time.time, 10f, 0.5f));
                          Lines.circle(core.x, core.y, br);
                      }
                  });
-@@ -208,12 +218,14 @@ public class OverlayRenderer{
+@@ -212,12 +222,14 @@ public class OverlayRenderer{
              Vec2 vec = Core.input.mouseWorld(input.getMouseX(), input.getMouseY());
              Building build = world.buildWorld(vec.x, vec.y);
  
@@ -479,7 +479,7 @@ index 63d61152b5444d9c2be8fc7173d47efb225ce906..8ccaa122efba7649df5871ffe8e82749
                  if(Core.input.keyDown(Binding.rotatePlaced) && build.block.rotate && build.block.quickRotate && build.interactable(player.team())){
                      control.input.drawArrow(build.block, build.tileX(), build.tileY(), build.rotation, true);
                      Draw.color(Pal.accent, 0.3f + Mathf.absin(4f, 0.2f));
-@@ -225,12 +237,22 @@ public class OverlayRenderer{
+@@ -229,12 +241,22 @@ public class OverlayRenderer{
  
          input.drawOverSelect();
  
@@ -502,7 +502,7 @@ index 63d61152b5444d9c2be8fc7173d47efb225ce906..8ccaa122efba7649df5871ffe8e82749
          }
  
          //draw selection overlay when dropping item
-@@ -259,6 +281,10 @@ public class OverlayRenderer{
+@@ -263,6 +285,10 @@ public class OverlayRenderer{
                  }
              }
          }
@@ -717,7 +717,7 @@ index b68b2ecad371b3263340c6df19d8c842c247ccdb..aadb4f131566ff7c54e4a3605af046f7
          rect.grow(4f);
  
 diff --git a/core/src/mindustry/logic/LExecutor.java b/core/src/mindustry/logic/LExecutor.java
-index 9b5bb99b46a2a66838adfebcf875e6e9b94927c0..25f71435fe57e464b9db38ef034b04ccced23e44 100644
+index 7fcdd08fe98b0de48c0a83e1e4c1877760160b21..205285fad97466ab5ac639ecca4c898b05080e0f 100644
 --- a/core/src/mindustry/logic/LExecutor.java
 +++ b/core/src/mindustry/logic/LExecutor.java
 @@ -10,6 +10,7 @@ import arc.util.*;
@@ -736,7 +736,7 @@ index 9b5bb99b46a2a66838adfebcf875e6e9b94927c0..25f71435fe57e464b9db38ef034b04cc
  
  import static mindustry.Vars.*;
  
-@@ -1703,8 +1705,14 @@ public class LExecutor{
+@@ -1718,8 +1720,14 @@ public class LExecutor{
              }
  
              switch(type){
@@ -919,7 +919,7 @@ index cef9350f355b73ae9fed0181dfa7d396676646b2..5a767c40bad3cefbf286a93b4d33e23c
  
              Draw.reset();
 diff --git a/core/src/mindustry/type/Weapon.java b/core/src/mindustry/type/Weapon.java
-index 5d873ce987d9121a63610989366f215402c53b9a..dfedfd9b978917731c83a5fd4b35db8b9e2c1c20 100644
+index ffe886839cae012a3075411f13c70e032fca9717..0fe2757c95b4504f24eb7c1c91791aea810ce93b 100644
 --- a/core/src/mindustry/type/Weapon.java
 +++ b/core/src/mindustry/type/Weapon.java
 @@ -23,6 +23,8 @@ import mindustry.entities.units.*;
@@ -1026,7 +1026,7 @@ index d19bebacb06f9d6a2c8453a0ff0f59764dc2cfb4..90c116c938eedc6ac5aa17a4c51adc06
          table.marginRight(30f);
          //TODO: some things (e.g. reconstructor requirements) are too long and screw up the layout
 diff --git a/core/src/mindustry/ui/dialogs/CustomRulesDialog.java b/core/src/mindustry/ui/dialogs/CustomRulesDialog.java
-index fe6111b484f9f833d7f1d6ebbc996871b2b9d380..69eb6448aad5b630c36da5916259cb822ba3a0e3 100644
+index 14cbaa5f624e29d8974d7b82116e01b11ba4abab..e0aa16ea9aab8310037779dc28387d04274af331 100644
 --- a/core/src/mindustry/ui/dialogs/CustomRulesDialog.java
 +++ b/core/src/mindustry/ui/dialogs/CustomRulesDialog.java
 @@ -3,6 +3,7 @@ package mindustry.ui.dialogs;
@@ -1111,7 +1111,7 @@ index fe6111b484f9f833d7f1d6ebbc996871b2b9d380..69eb6448aad5b630c36da5916259cb82
          check("@rules.hidebannedblocks", b -> rules.hideBannedBlocks = b, () -> rules.hideBannedBlocks);
          check("@bannedblocks.whitelist", b -> rules.blockWhitelist = b, () -> rules.blockWhitelist);
  
-@@ -219,6 +229,7 @@ public class CustomRulesDialog extends BaseDialog{
+@@ -218,6 +228,7 @@ public class CustomRulesDialog extends BaseDialog{
          check("@rules.explosions", b -> rules.damageExplosions = b, () -> rules.damageExplosions);
          check("@rules.fire", b -> rules.fire = b, () -> rules.fire);
          check("@rules.fog", b -> rules.fog = b, () -> rules.fog);
@@ -1119,7 +1119,7 @@ index fe6111b484f9f833d7f1d6ebbc996871b2b9d380..69eb6448aad5b630c36da5916259cb82
          check("@rules.lighting", b -> rules.lighting = b, () -> rules.lighting);
  
          check("@rules.limitarea", b -> rules.limitMapArea = b, () -> rules.limitMapArea, () -> !state.isGame());
-@@ -240,11 +251,47 @@ public class CustomRulesDialog extends BaseDialog{
+@@ -239,11 +250,47 @@ public class CustomRulesDialog extends BaseDialog{
                  b.add("@rules.ambientlight");
              }, () -> ui.picker.show(rules.ambientLight, rules.ambientLight::set)).left().width(250f).row();
          }
@@ -1167,7 +1167,7 @@ index fe6111b484f9f833d7f1d6ebbc996871b2b9d380..69eb6448aad5b630c36da5916259cb82
  
          category("planet");
          if(Core.bundle.get("rules.title.planet").toLowerCase().contains(ruleSearch)){
-@@ -255,10 +302,10 @@ public class CustomRulesDialog extends BaseDialog{
+@@ -254,10 +301,10 @@ public class CustomRulesDialog extends BaseDialog{
  
                  t.defaults().size(140f, 50f);
  
@@ -1182,7 +1182,7 @@ index fe6111b484f9f833d7f1d6ebbc996871b2b9d380..69eb6448aad5b630c36da5916259cb82
  
                      if(t.getChildren().size % 3 == 0){
                          t.row();
-@@ -278,10 +325,29 @@ public class CustomRulesDialog extends BaseDialog{
+@@ -277,10 +324,29 @@ public class CustomRulesDialog extends BaseDialog{
          if(showRuleEditRule){
              check("@rules.allowedit", b -> rules.allowEditRules = b, () -> rules.allowEditRules);
          }
@@ -1213,7 +1213,7 @@ index fe6111b484f9f833d7f1d6ebbc996871b2b9d380..69eb6448aad5b630c36da5916259cb82
              boolean[] shown = {false};
              Table wasCurrent = current;
  
-@@ -298,6 +364,10 @@ public class CustomRulesDialog extends BaseDialog{
+@@ -297,6 +363,10 @@ public class CustomRulesDialog extends BaseDialog{
                  current = c;
                  TeamRule teams = rules.teams.get(team);
  
@@ -1224,7 +1224,7 @@ index fe6111b484f9f833d7f1d6ebbc996871b2b9d380..69eb6448aad5b630c36da5916259cb82
                  number("@rules.blockhealthmultiplier", f -> teams.blockHealthMultiplier = f, () -> teams.blockHealthMultiplier);
                  number("@rules.blockdamagemultiplier", f -> teams.blockDamageMultiplier = f, () -> teams.blockDamageMultiplier);
  
-@@ -333,6 +403,32 @@ public class CustomRulesDialog extends BaseDialog{
+@@ -334,6 +404,32 @@ public class CustomRulesDialog extends BaseDialog{
              }, () -> shown[0]).left().growX().row();
          }
  
@@ -1257,7 +1257,7 @@ index fe6111b484f9f833d7f1d6ebbc996871b2b9d380..69eb6448aad5b630c36da5916259cb82
          additionalSetup.each(Runnable::run);
  
          for(var i = 0; i < categories.size; i++){
-@@ -367,6 +463,7 @@ public class CustomRulesDialog extends BaseDialog{
+@@ -368,6 +464,7 @@ public class CustomRulesDialog extends BaseDialog{
                      cons.get(team);
                  }).pad(1f).checked(b -> prov.get() == team).size(60f).tooltip(team.coloredName()).with(i -> i.getStyle().imageUpColor = team.color);
              }
@@ -1265,7 +1265,7 @@ index fe6111b484f9f833d7f1d6ebbc996871b2b9d380..69eb6448aad5b630c36da5916259cb82
          }).padTop(0).row();
      }
  
-@@ -399,7 +496,7 @@ public class CustomRulesDialog extends BaseDialog{
+@@ -400,7 +497,7 @@ public class CustomRulesDialog extends BaseDialog{
              t.field((prov.get()) + "", s -> cons.get(Strings.parseInt(s)))
                  .update(a -> a.setDisabled(!condition.get()))
                  .padRight(100f)
@@ -1274,7 +1274,7 @@ index fe6111b484f9f833d7f1d6ebbc996871b2b9d380..69eb6448aad5b630c36da5916259cb82
          }).padTop(0);
          ruleInfo(cell, text);
          current.row();
-@@ -414,7 +511,8 @@ public class CustomRulesDialog extends BaseDialog{
+@@ -415,7 +512,8 @@ public class CustomRulesDialog extends BaseDialog{
              t.field((integer ? (int)prov.get() : prov.get()) + "", s -> cons.get(Strings.parseFloat(s)))
              .padRight(50f)
              .update(a -> a.setDisabled(!condition.get()))

@@ -8,7 +8,7 @@ Subject: [PATCH] H.API: InternalMods
  1 file changed, 5 insertions(+), 1 deletion(-)
 
 diff --git a/core/src/mindustry/mod/Mods.java b/core/src/mindustry/mod/Mods.java
-index aef65e50ec4abb3dde4c05c50edac894b7e65a2f..cb09da9efe978449c75fafef9abe25e68b89b326 100644
+index 766eae0f6f0bd09688424d967f41c8ae9cc638a5..fe2e89fd58994eb650158b9b7e6e254d9d70f570 100644
 --- a/core/src/mindustry/mod/Mods.java
 +++ b/core/src/mindustry/mod/Mods.java
 @@ -153,6 +153,10 @@ public class Mods implements Loadable{
@@ -20,9 +20,9 @@ index aef65e50ec4abb3dde4c05c50edac894b7e65a2f..cb09da9efe978449c75fafef9abe25e6
 +                overrides = mindustryX.features.InternalMods.spritesOverride();
 +            }
  
-             packSprites(packer, sprites, mod, true, tasks, textureResize);
-             packSprites(packer, overrides, mod, false, tasks, textureResize);
-@@ -489,7 +493,7 @@ public class Mods implements Loadable{
+             if(sprites.isEmpty() && overrides.isEmpty()) return;
+ 
+@@ -493,7 +497,7 @@ public class Mods implements Loadable{
      /** Loads all mods from the folder, but does not call any methods on them.*/
      public void load(){
          var candidates = new Seq<Fi>();

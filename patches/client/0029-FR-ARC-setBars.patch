@@ -50,7 +50,7 @@ index 3dffd2c93e07ae1cde20b485c2fef51dead1d219..09885dd6157f9cff4d780833dddd39a7
      }
  }
 diff --git a/core/src/mindustry/world/Block.java b/core/src/mindustry/world/Block.java
-index 87dd6df638db1cd5c89fe2f8894d28f00a427196..dbddd0d95e0c3b799acb5497587002cc1e2245a3 100644
+index 900f9668d79afad7b9d6b75656ea430fedc991af..74d4e982edd390695353be76a6ead91f1b968735 100644
 --- a/core/src/mindustry/world/Block.java
 +++ b/core/src/mindustry/world/Block.java
 @@ -34,6 +34,7 @@ import mindustry.world.blocks.power.*;
@@ -261,7 +261,7 @@ index 8748b91ed8a54cd400bd1953dbf64d9e8e20bc75..f8ae33745f7037b3120cac24095361a2
      }
  }
 diff --git a/core/src/mindustry/world/blocks/defense/turrets/Turret.java b/core/src/mindustry/world/blocks/defense/turrets/Turret.java
-index 0b007ba2db337b7471ba84cff1c92a6fb675cc94..1f9c3372281c492303c91b6ca49a44f26ef8d5fd 100644
+index 29e9ae1c66728dd19b8a490d636bc3a2439ca406..9ad3785d6508c05e997c32f130d159c10b6c38e0 100644
 --- a/core/src/mindustry/world/blocks/defense/turrets/Turret.java
 +++ b/core/src/mindustry/world/blocks/defense/turrets/Turret.java
 @@ -7,6 +7,7 @@ import arc.graphics.*;
@@ -272,7 +272,7 @@ index 0b007ba2db337b7471ba84cff1c92a6fb675cc94..1f9c3372281c492303c91b6ca49a44f2
  import arc.struct.*;
  import arc.util.*;
  import arc.util.io.*;
-@@ -814,6 +815,14 @@ public class Turret extends ReloadTurret{
+@@ -815,6 +816,14 @@ public class Turret extends ReloadTurret{
              rotation = oldRot;
              reloadCounter = oldReload;
          }

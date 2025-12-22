@@ -176,7 +176,7 @@ index 31b67b7837d1c1b6c4c3ec00982478b5e4709bae..76f9b2cedb83d84b444a0860b8821826
          indexer.eachBlock(player.team(), x * tilesize + offset, y * tilesize + offset, range, other -> other.block.canOverdrive, other -> Drawf.selected(other, Tmp.c1.set(baseColor).a(Mathf.absin(4f, 1f))));
      }
 diff --git a/core/src/mindustry/world/blocks/defense/turrets/Turret.java b/core/src/mindustry/world/blocks/defense/turrets/Turret.java
-index 1f9c3372281c492303c91b6ca49a44f26ef8d5fd..1853e3468c71a8cedab9c010fa6bc81bfea9103d 100644
+index 9ad3785d6508c05e997c32f130d159c10b6c38e0..ee65e19d87bac912a52d02fb75b9e76b0424f63e 100644
 --- a/core/src/mindustry/world/blocks/defense/turrets/Turret.java
 +++ b/core/src/mindustry/world/blocks/defense/turrets/Turret.java
 @@ -30,6 +30,7 @@ import mindustry.world.*;
@@ -187,7 +187,7 @@ index 1f9c3372281c492303c91b6ca49a44f26ef8d5fd..1853e3468c71a8cedab9c010fa6bc81b
  
  import static mindustry.Vars.*;
  
-@@ -250,6 +251,13 @@ public class Turret extends ReloadTurret{
+@@ -251,6 +252,13 @@ public class Turret extends ReloadTurret{
          if(drawMinRange){
              Drawf.dashCircle(x * tilesize + offset, y * tilesize + offset, minRange, Pal.placing);
          }
@@ -201,7 +201,7 @@ index 1f9c3372281c492303c91b6ca49a44f26ef8d5fd..1853e3468c71a8cedab9c010fa6bc81b
      }
  
      public static abstract class AmmoEntry{
-@@ -455,6 +463,17 @@ public class Turret extends ReloadTurret{
+@@ -456,6 +464,17 @@ public class Turret extends ReloadTurret{
              if(drawMinRange){
                  Drawf.dashCircle(x, y, minRange(), team.color);
              }
@@ -268,7 +268,7 @@ index 8c80702229e246a30efb7c3ca42d59200facb4ce..6043840864448258a27e9aa782c1001d
          returnItem = null;
          returnCount = 0;
 diff --git a/core/src/mindustry/world/blocks/storage/CoreBlock.java b/core/src/mindustry/world/blocks/storage/CoreBlock.java
-index f43ae7a278326214c0675c726e5db9c2e1b5125a..d63409710b136950309ac2bad6bfee1fbc9a350f 100644
+index a11be3c21fbce3cbc257de1645fbdbf6855664db..8e7ca3b1b04dcb9dd95dd7e33b07c6dfc40eed16 100644
 --- a/core/src/mindustry/world/blocks/storage/CoreBlock.java
 +++ b/core/src/mindustry/world/blocks/storage/CoreBlock.java
 @@ -100,6 +100,7 @@ public class CoreBlock extends StorageBlock{

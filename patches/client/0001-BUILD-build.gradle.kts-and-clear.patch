@@ -282,7 +282,7 @@ index 0000000000000000000000000000000000000000..181b87c1d5f3755f16a01c0528d0a89f
 +mindustry.annotations.misc.LogicStatementProcessor
 +mindustry.annotations.remote.RemoteProcess
 diff --git a/build.gradle b/build.gradle
-index 48b650d414c84abca94c5d66d7748d2aca48eec5..d478ea7835502eca45a5fe5c43b51a7754215919 100644
+index 6ee53a65c20d99251f942ca03362fa1d2ff5bfec..bcda66480a44e8889cea29eaec390e35e74c2d58 100644
 --- a/build.gradle
 +++ b/build.gradle
 @@ -1,30 +1,16 @@
@@ -1015,7 +1015,7 @@ index b3f192bc75d3c1775179a7252c02f7ce0a39ff7e..b47e0569d82a8cc6331a1fe36952c206
 +}
 \ No newline at end of file
 diff --git a/gradle.properties b/gradle.properties
-index 892210f5956cc3f370bf8fadc6e8e081b0acee9c..fa4a3e953c95d6615ed3517b5a48c7c4b5d2d775 100644
+index 892210f5956cc3f370bf8fadc6e8e081b0acee9c..48a5ef58c5d9f708ea3f208cd3cc8cb154454cb0 100644
 --- a/gradle.properties
 +++ b/gradle.properties
 @@ -26,4 +26,7 @@ org.gradle.caching=true
@@ -1026,7 +1026,7 @@ index 892210f5956cc3f370bf8fadc6e8e081b0acee9c..fa4a3e953c95d6615ed3517b5a48c7c4
 +
 +#MDTX: Use "v{upstreamBuild}" by default
 +#archash=ec5df18e54
-+upstreamBuild=154.2
++upstreamBuild=154.3
 diff --git a/gradlew b/gradlew
 index 4f906e0c811fc9e230eb44819f509cd0627f2600..f3b75f3b0d4faeb4b1c8a02b5c47007e6efb7dcd 100755
 --- a/gradlew
