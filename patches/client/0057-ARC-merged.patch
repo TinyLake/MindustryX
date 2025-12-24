@@ -2189,7 +2189,7 @@ index 90c843267ba9c3c59413a658c9777198296514f5..ef94d7797a159263ea5da2f2d1e445a8
      }
  
 diff --git a/core/src/mindustry/ui/fragments/PlacementFragment.java b/core/src/mindustry/ui/fragments/PlacementFragment.java
-index 01ba50f19dcae39176f8dde2be5391777131826c..8ad70c526f6d1e9d2bc1b1e55e28df307dd00df9 100644
+index 01ba50f19dcae39176f8dde2be5391777131826c..e37b35d706ab164ff95a9359367c250514605370 100644
 --- a/core/src/mindustry/ui/fragments/PlacementFragment.java
 +++ b/core/src/mindustry/ui/fragments/PlacementFragment.java
 @@ -1,6 +1,7 @@
@@ -2290,18 +2290,18 @@ index 01ba50f19dcae39176f8dde2be5391777131826c..8ad70c526f6d1e9d2bc1b1e55e28df30
 +                                t.left();
 +                                t.defaults().left();
 +                                t.image(hoverTile.floor().uiIcon).size(iconSmall).padRight(4);
-+                                t.add(hoverTile.floor().localizedName).ellipsis(true).width(64f);
++                                t.add(hoverTile.floor().localizedName).ellipsis(true).wrap().growX();
 +                                if(hoverTile.block() != Blocks.air){
 +                                    t.add(" | ");
 +                                    t.image(hoverTile.block().uiIcon).size(iconSmall).padRight(4);
-+                                    t.add(hoverTile.block().localizedName).color(hoverTile.build == null ? Color.white : hoverTile.build.team.color).ellipsis(true).width(64f);
++                                    t.add(hoverTile.block().localizedName).color(hoverTile.build == null ? Color.white : hoverTile.build.team.color).ellipsis(true).wrap().growX();
 +                                }
 +                                if(hoverTile.overlay() != Blocks.air){
 +                                    t.add(" | ");
 +                                    t.image(hoverTile.overlay().uiIcon).size(iconSmall).padRight(4);
-+                                    t.add(hoverTile.overlay().localizedName).ellipsis(true).width(64f);
++                                    t.add(hoverTile.overlay().localizedName).ellipsis(true).wrap().growX();
 +                                }
-+                            }).padTop(8).left();
++                            }).growX().padTop(8).left();
                          }
                      });
                  }).colspan(3).fillX().visible(this::hasInfoBox).touchable(Touchable.enabled).row();
