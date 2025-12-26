@@ -30,21 +30,25 @@ object UIExtKt {
         OverlayUI.registerWindow("debug", DebugUtil.metricTable())
         OverlayUI.registerWindow("auxiliaryTools", AuxiliaryTools()).availability = inGameOnly
         OverlayUI.registerWindow("quickTool", NewToolTable).apply {
+            resizable = true
             availability = inGameOnly
             settings.add(NewToolTable.customButtons)
         }
         OverlayUI.registerWindow("mappingTool", AdvanceToolTable()).availability = inGameOnly
         OverlayUI.registerWindow("advanceBuildTool", UIExt.advanceBuildTool).availability = inGameOnly
         OverlayUI.registerWindow("teamsStats", TeamsStatDisplay().wrapped()).apply {
-            autoHeight = true
             availability = inGameOnly
         }
         OverlayUI.registerWindow("coreItems", UIExt.coreItems).apply {
             autoHeight = true
+            resizable = true
             availability = inGameOnly
             settings.addAll(UIExt.coreItems.settings)
         }
-        OverlayUI.registerWindow("waveInfo", WaveInfoDisplay()).availability = inGameOnly
+        OverlayUI.registerWindow("waveInfo", WaveInfoDisplay()).apply {
+            resizable = true
+            availability = inGameOnly
+        }
     }
 
     @JvmStatic

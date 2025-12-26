@@ -29,6 +29,7 @@ import arc.util.Tmp
 import mindustry.Vars
 import mindustry.gen.Icon
 import mindustry.gen.Tex
+import mindustry.graphics.Pal
 import mindustry.ui.Styles
 import mindustryX.features.SettingsV2
 import mindustryX.features.SettingsV2.CheckPref
@@ -59,7 +60,7 @@ object OverlayUI {
         }
 
         override fun buildUI() = Table().apply {
-            image(Icon.list).padRight(4f)
+            image(Icon.listSmall).color(Color.lightGray).padRight(4f)
             add(title).width(148f).padRight(8f)
 
             val builder = StringBuilder()
@@ -74,8 +75,9 @@ object OverlayUI {
             }.expandX().left()
 
             val myToggleI = ImageButtonStyle(Styles.clearNonei).apply {
-                imageUpColor = Color.darkGray
-                imageCheckedColor = Color.white
+                imageUpColor = Color.white
+                imageCheckedColor = Pal.accent
+                imageDisabledColor = Color.darkGray
             }
             button(Icon.eyeSmall, myToggleI, Vars.iconSmall) {
                 set(value.copy(enabled = !value.enabled))
@@ -236,6 +238,7 @@ object OverlayUI {
         private var state = State.Stable
 
         var autoHeight = false
+        var resizable = false
         var availability: Prov<Boolean> = Prov { true }
         val settings = mutableListOf<SettingsV2.Data<*>>(data)
         private val adsorption = AdsorptionSystem.Element(name)
@@ -259,7 +262,10 @@ object OverlayUI {
                 data.changed()//ignore change by rebuild
             }
 
-            if (autoHeight && state == State.Stable && prefHeight != height) height = prefHeight
+            if (state == State.Stable) {
+                if (!resizable) setSize(prefWidth, prefHeight)
+                else if (autoHeight && prefHeight != height) height = prefHeight
+            }
 
             applyScale() //before any position/size operation
 
@@ -310,6 +316,9 @@ object OverlayUI {
             }
             if (data.value.center == null)
                 data.set(data.value.copy(center = Vec2(parent.width / 2, parent.height / 2)))
+            if (!resizable && data.value.size != null) {
+                data.set(data.value.copy(size = null))
+            }
         }
 
         fun rebuild() {
@@ -318,7 +327,8 @@ object OverlayUI {
                 //编辑模式
                 background = paneBg
                 touchable = Touchable.enabled
-                addListener(ResizeListener())
+                if (resizable)
+                    addListener(ResizeListener())
 
                 table { header ->
                     //Later set text, so preferredSize is not affected
@@ -369,10 +379,11 @@ object OverlayUI {
                     }
                 })
 
-                addChild(ImageButton(Icon.resize).apply {
-                    setSize(Vars.iconMed)
-                    addListener(FixedResizeListener(Align.left or Align.bottom))
-                })
+                if (resizable)
+                    addChild(ImageButton(Icon.resize).apply {
+                        setSize(Vars.iconMed)
+                        addListener(FixedResizeListener(Align.left or Align.bottom))
+                    })
             } else {
                 //预览模式, 作为Group使用
                 background = null
