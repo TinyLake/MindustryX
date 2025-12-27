@@ -62,6 +62,8 @@ object MetricCollector {
             put("cpuCores", OS.cores)
             put("memory", Runtime.getRuntime().maxMemory())//B
             put("isLoader", VarsX.isLoader)
+            put("isHeadless", Vars.headless)
+            put("glVersion", Core.graphics?.glVersion?.toString())
         }
     }
 
