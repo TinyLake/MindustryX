@@ -4,11 +4,44 @@ Date: Thu, 3 Jul 2025 22:45:51 +0800
 Subject: [PATCH] H MetricCollector.handleException
 
 ---
- core/src/mindustry/net/CrashHandler.java | 5 +++++
- 1 file changed, 5 insertions(+)
+ core/src/mindustry/mod/Mods.java         | 14 ++++++++++----
+ core/src/mindustry/net/CrashHandler.java | 16 ++++++++++++++++
+ 2 files changed, 26 insertions(+), 4 deletions(-)
 
+diff --git a/core/src/mindustry/mod/Mods.java b/core/src/mindustry/mod/Mods.java
+index fe2e89fd58994eb650158b9b7e6e254d9d70f570..6995ddd5cc49e67ee4f1eba26c2b00318cc6c1b7 100644
+--- a/core/src/mindustry/mod/Mods.java
++++ b/core/src/mindustry/mod/Mods.java
+@@ -23,6 +23,7 @@ import mindustry.graphics.MultiPacker.*;
+ import mindustry.mod.ContentParser.*;
+ import mindustry.type.*;
+ import mindustry.ui.*;
++import mindustryX.features.MetricCollector.*;
+ 
+ import java.io.*;
+ import java.util.*;
+@@ -306,10 +307,15 @@ public class Mods implements Loadable{
+         for(Seq<Content> arr : content.getContentMap()){
+             arr.each(c -> {
+                 if(c instanceof UnlockableContent u && c.minfo.mod != null){
+-                    u.load();
+-                    u.loadIcon();
+-                    if(u.generateIcons && !c.minfo.mod.meta.pregenerated){
+-                        u.createIcons(packer);
++                    try{
++                        u.load();
++                        u.loadIcon();
++                        if(u.generateIcons && !c.minfo.mod.meta.pregenerated){
++                            u.createIcons(packer);
++                        }
++                    }catch(RuntimeException e){
++                        //MDTX: wrap and rethrow exception with mod details
++                        throw new ModRelatedException(c.minfo.mod, "Failed to generate icons for content " + c + ".", e);
+                     }
+                 }
+             });
 diff --git a/core/src/mindustry/net/CrashHandler.java b/core/src/mindustry/net/CrashHandler.java
-index 16e0456c23a999db056f7645ce25dfa737653b34..63ab8bf826b11a2b7713bff8c9706b9548c4e74e 100644
+index 16e0456c23a999db056f7645ce25dfa737653b34..ec89d0e1330573cb3e7dddad9881b018e9e62351 100644
 --- a/core/src/mindustry/net/CrashHandler.java
 +++ b/core/src/mindustry/net/CrashHandler.java
 @@ -9,6 +9,7 @@ import arc.util.io.*;
@@ -44,3 +77,21 @@ index 16e0456c23a999db056f7645ce25dfa737653b34..63ab8bf826b11a2b7713bff8c9706b95
          System.exit(1);
      }
  
+@@ -122,6 +127,17 @@ public class CrashHandler{
+         try{
+             for(var element : e.getStackTrace()){
+                 String name = element.getClassName();
++                //MDTX: match based on classloader
++                try{
++                    ClassLoader classLoader = mods.mainLoader().loadClass(name).getClassLoader();
++                    if(classLoader == CrashHandler.class.getClassLoader()) continue;
++                    for(var mod : mods.list()){
++                        if(mod.loader != null && mod.loader == classLoader){
++                            return mod;
++                        }
++                    }
++                }catch(ClassNotFoundException|NullPointerException ignored){
++                }
+                 if(!name.matches("(mindustry|arc|java|javax|sun|jdk)\\..*")){
+                     for(var mod : mods.list()){
+                         if(mod.meta.main != null && getMatches(mod.meta.main, name) > 0){

@@ -14,6 +14,9 @@ import kotlin.uuid.ExperimentalUuidApi
 import kotlin.uuid.Uuid
 
 object MetricCollector {
+    class ModRelatedException(val mod: LoadedMod, message: String, cause: Throwable? = null) :
+        RuntimeException("Exception related to mod '${mod.name}': $message", cause)
+
     private val enable = SettingsV2.CheckPref("collectMetrics", true)
     private val lastTime = SettingsV2.PersistentProvider.Arc<Long>("MetricCollector.lastPost")
     private val lastCrashMod = SettingsV2.PersistentProvider.Arc<String>("MetricCollector.lastCrashMod")
@@ -104,6 +107,7 @@ object MetricCollector {
     }
 
     private fun getModCause(e: Throwable): LoadedMod? {
+        if (e is ModRelatedException) return e.mod
         e.cause?.let { getModCause(it) }?.let { return it }
         return CrashHandler.getModCause(e)
     }
