@@ -29,9 +29,8 @@ jobs:
         run: |
           git config --global user.email "ci@noreply.example.com"
           git config --global user.name "github_actions"
-          echo "RELEASE_TAG=${GITHUB_REF_NAME}-build" >> $GITHUB_ENV
-          echo "RELEASE_TAG=${GITHUB_REF_NAME}-build"
-          echo "RELEASE_VERSION=$(date +'%Y.%m.%d').B${GITHUB_RUN_NUMBER}" >> $GITHUB_ENV
+          echo "RELEASE_TAG=prerelease-$(date +'%Y.%m.%d').B${GITHUB_RUN_NUMBER}" | tee -a $GITHUB_ENV
+          echo "RELEASE_VERSION=$(date +'%Y.%m.%d').B${GITHUB_RUN_NUMBER}" | tee -a $GITHUB_ENV
           
           echo "${{ secrets.KEYSTORE_BASE64 }}" | openssl enc -d -base64 -in - -out bekeystore.jks
       - name: Build
