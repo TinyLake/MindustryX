@@ -144,8 +144,8 @@ public class CommitsTable extends Table{
 
             left.table(bottom -> {
                 bottom.defaults().left();
-                bottom.image(getAvatar(author.login, author.avatar_url)).pad(8f).size(Vars.iconMed);
-                bottom.add(author.login).style(Styles.outlineLabel).color(Pal.lightishGray).padLeft(4f);
+                bottom.image(author != null ? getAvatar(author.login, author.avatar_url) : NOT_FOUND).pad(8f).size(Vars.iconMed);
+                bottom.add(author != null ? author.login : "???").style(Styles.outlineLabel).color(Pal.lightishGray).padLeft(4f);
             });
         });
 
