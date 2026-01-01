@@ -1,0 +1,26 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: way-zer <himc.wicp@gmail.com>
+Date: Thu, 1 Jan 2026 21:48:34 +0800
+Subject: [PATCH] FC: Check main thread when creating UI Element
+
+---
+ arc-core/src/arc/scene/Element.java | 6 ++++++
+ 1 file changed, 6 insertions(+)
+
+diff --git a/arc-core/src/arc/scene/Element.java b/arc-core/src/arc/scene/Element.java
+index 9535d7081e2b8b9d6a826f501988bbe224c5c23b..976bb94dc887fa87efa470e8f4764d5bda7a65b4 100644
+--- a/arc-core/src/arc/scene/Element.java
++++ b/arc-core/src/arc/scene/Element.java
+@@ -46,6 +46,12 @@ public class Element{
+     private boolean layoutEnabled = true;
+     private Runnable update;
+ 
++    public Element(){
++        if(Core.app != null && !Core.app.isOnMainThread()){
++            Log.err(new RuntimeException("UI should be created in main Thread"));
++        }
++    }
++
+     /** Draws the element. Does nothing by default. */
+     public void draw(){
+         validate();
