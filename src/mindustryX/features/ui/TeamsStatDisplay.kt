@@ -5,6 +5,7 @@ import arc.func.Boolf
 import arc.func.Floatf
 import arc.graphics.g2d.TextureRegion
 import arc.scene.event.Touchable
+import arc.scene.ui.Button
 import arc.scene.ui.layout.Table
 import arc.struct.Seq
 import arc.util.Align
@@ -75,21 +76,27 @@ class TeamsStatDisplay : Table() {
     private fun openAddTeamDialog(onSelected: (Teams.TeamData) -> Unit) {
         BaseDialog("添加队伍").apply {
             Vars.state.teams.active.forEach { team ->
-                cont.button({ t ->
-                    t.image().color(team.team.color).size(Vars.iconMed).padRight(8f)
-                    t.add(team.team.coloredName())
-                    t.add().growX()
-                    t.image(Blocks.coreFoundation.uiIcon).size(Vars.iconSmall).padRight(4f)
-                    t.label { team.cores.size.toString() }
-
-                    t.row()
-                    t.image().grow().colspan(t.columns).row()
-
+                cont.add(Button().apply {
+                    add(Table().apply {
+                        image().color(team.team.color).size(Vars.iconMed)
+                        add().width(16f)
+                        add(team.team.coloredName())
+                        add("#"+team.team.id).color(team.team.color)
+                        add().growX()
+                        image(Blocks.coreFoundation.uiIcon).size(Vars.iconSmall).padRight(4f)
+                        label { team.cores.size.toString() }
+                    }).growX().row()
+                    image().growX().row()
                     team.players.forEach {
-                        t.image(it.unit()?.type?.uiIcon).size(Vars.iconMed).padRight(32f)
-                        t.label { it.plainName() }.labelAlign(Align.left).fillX().colspan(t.columns - 1).row()
+                        add(Table().apply {
+                            image(it.unit()?.type?.uiIcon).size(Vars.iconMed)
+                            add().width(16f)
+                            label { it.plainName() }.left().expandX()
+                        }).fillX().row()
                     }
-                }) { onSelected(team) }.disabled { team in teams }.growX().maxWidth(800f).row()
+                    clicked { onSelected(team) }
+                    setDisabled { team in teams }
+                }).growX().maxWidth(800f).row()
             }
             addCloseButton()
         }.show()
