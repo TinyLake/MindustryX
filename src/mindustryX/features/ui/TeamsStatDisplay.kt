@@ -1,171 +1,195 @@
-package mindustryX.features.ui;
+package mindustryX.features.ui
 
-import arc.*;
-import arc.func.*;
-import arc.graphics.g2d.*;
-import arc.scene.event.*;
-import arc.scene.ui.layout.*;
-import arc.struct.*;
-import arc.util.*;
-import mindustry.*;
-import mindustry.content.*;
-import mindustry.core.*;
-import mindustry.game.*;
-import mindustry.game.Teams.*;
-import mindustry.gen.*;
-import mindustry.graphics.*;
-import mindustry.type.*;
-import mindustryX.features.*;
-
-import static mindustry.Vars.*;
-import static mindustry.ui.Styles.*;
+import arc.Events
+import arc.func.Boolf
+import arc.func.Floatf
+import arc.graphics.g2d.TextureRegion
+import arc.scene.event.Touchable
+import arc.scene.ui.layout.Table
+import arc.struct.Seq
+import arc.util.Align
+import arc.util.Interval
+import mindustry.Vars
+import mindustry.content.Blocks
+import mindustry.content.UnitTypes
+import mindustry.core.UI
+import mindustry.game.EventType
+import mindustry.game.Teams
+import mindustry.gen.Icon
+import mindustry.graphics.Pal
+import mindustry.ui.Styles
+import mindustry.ui.dialogs.BaseDialog
+import mindustryX.features.ui.FormatDefault.format
 
 //moved from mindustry.arcModule.ui.OtherCoreItemDisplay
-public class TeamsStatDisplay extends Table{
-    private final float fontScl = 0.8f;
-    private final Interval timer = new Interval();
+class TeamsStatDisplay : Table() {
+    private val timer = Interval()
+    private val teams = Seq<Teams.TeamData>()
+    private var showStat = true
+    private var showItem = true
+    private var showUnit = true
 
-    public final Seq<Teams.TeamData> teams = new Seq<>();
-    public final Seq<Team> manualDeleted = new Seq<>();
-    private boolean showStat = true, showItem = true, showUnit = true;
 
+    init {
+        background(Styles.black6)
+        update {
+            if (timer.get(120f)) rebuild()
+        }
 
-    public TeamsStatDisplay(){
-        background(black6);
-        update(() -> {
-            if(timer.get(120f)) rebuild();
-        });
-
-        Events.on(EventType.ResetEvent.class, e -> {
-            manualDeleted.clear();
-            teams.clear();
-            clearChildren();
-        });
+        Events.on(EventType.ResetEvent::class.java) { _ ->
+            teams.clear()
+            clearChildren()
+        }
     }
 
-    public Table wrapped(){
-        Table table = new Table();
+    fun wrapped(): Table {
+        val table = Table()
 
-        table.button("编辑队伍", flatBordert, () -> UIExt.teamSelect.select(team -> teams.contains(team.data()), team -> {
-            manualDeleted.remove(team);
-            if(teams.contains(team.data())){
-                teams.remove(team.data());
-                manualDeleted.add(team);
-            }else teams.add(team.data());
-            rebuild();
-        })).fillX().row();
-        table.add(this).growX().touchable(Touchable.disabled).row();
-        table.table(buttons -> {
-            buttons.defaults().size(40);
-            buttons.button(Blocks.worldProcessor.emoji(), flatTogglet, () -> {
-                showStat = !showStat;
-                rebuild();
-            }).checked(a -> showStat);
-            buttons.button(content.items().get(0).emoji(), flatTogglet, () -> {
-                showItem = !showItem;
-                rebuild();
-            }).checked(a -> showItem);
-            buttons.button(UnitTypes.mono.emoji(), flatTogglet, () -> {
-                showUnit = !showUnit;
-                rebuild();
-            }).checked(a -> showUnit);
-        }).row();
+        table.add(this).growX().touchable(Touchable.childrenOnly).row()
+        table.table { buttons ->
+            buttons.defaults().size(40f)
+            buttons.button(Icon.addSmall, Styles.flati) {
+                openAddTeamDialog {
+                    if (teams.contains(it)) return@openAddTeamDialog
+                    teams.add(it)
+                    rebuild()
+                }
+            }
+            buttons.button(Blocks.worldProcessor.emoji(), Styles.flatTogglet) {
+                showStat = !showStat
+                rebuild()
+            }.checked { _ -> showStat }
+            buttons.button(Vars.content.items().get(0).emoji(), Styles.flatTogglet) {
+                showItem = !showItem
+                rebuild()
+            }.checked { _ -> showItem }
+            buttons.button(UnitTypes.mono.emoji(), Styles.flatTogglet) {
+                showUnit = !showUnit
+                rebuild()
+            }.checked { _ -> showUnit }
+        }.row()
 
-        return table;
+        return table
     }
 
-    private void rebuild(){
-        Vars.state.teams.getActive().each(teams::addUnique);
-        if(state.rules.waveTimer) teams.addUnique(state.rules.waveTeam.data());
-        teams.removeAll(it -> manualDeleted.contains(it.team));
-        teams.sort(teamData -> -teamData.cores.size);
+    private fun openAddTeamDialog(onSelected: (Teams.TeamData) -> Unit) {
+        BaseDialog("添加队伍").apply {
+            Vars.state.teams.active.forEach { team ->
+                cont.button({ t ->
+                    t.image().color(team.team.color).size(Vars.iconMed).padRight(8f)
+                    t.add(team.team.coloredName())
+                    t.add().growX()
+                    t.image(Blocks.coreFoundation.uiIcon).size(Vars.iconSmall).padRight(4f)
+                    t.label { team.cores.size.toString() }
 
-        clearChildren();
+                    t.row()
+                    t.image().grow().colspan(t.columns).row()
+
+                    team.players.forEach {
+                        t.image(it.unit()?.type?.uiIcon).size(Vars.iconMed).padRight(32f)
+                        t.label { it.plainName() }.labelAlign(Align.left).fillX().colspan(t.columns - 1).row()
+                    }
+                }) { onSelected(team) }.disabled { team in teams }.growX().maxWidth(800f).row()
+            }
+            addCloseButton()
+        }.show()
+    }
+
+    private fun rebuild() {
+        if (teams.isEmpty) {
+            Vars.state.teams.getActive().forEach { teams.addUnique(it) }
+            if (Vars.state.rules.waveTimer) teams.addUnique(Vars.state.rules.waveTeam.data())
+        }
+        teams.sort { it.cores.size.toFloat() }
+
+        clearChildren()
         //name + cores + units
-        addTeamData(Icon.players.getRegion(), team -> team.team.id < 6 ? team.team.localized() : String.valueOf(team.team.id));
-        addTeamData(Blocks.coreNucleus.uiIcon, team -> UI.formatAmount(team.cores.size));
-        addTeamData(UnitTypes.mono.uiIcon, team -> UI.formatAmount(team.units.size));
-        addTeamData(UnitTypes.gamma.uiIcon, team -> String.valueOf(team.players.size));
+        i(Icon.players.region); stat { if (it.team.id < 6) it.team.localized() else it.team.id.toString() }
+        i(Blocks.coreNucleus.uiIcon); stat { UI.formatAmount(it.cores.size.toLong()) }
+        i(UnitTypes.mono.uiIcon); stat { UI.formatAmount(it.units.size.toLong()) }
+        i(UnitTypes.gamma.uiIcon); stat { it.players.size.toString() }
+        i(Icon.eyeSmall.region); teams.forEach {
+            button(Icon.eyeOffSmall, Styles.clearNonei) {
+                teams.remove(it)
+                rebuild()
+            }
+        }; row()
 
-        if(showStat){
-            image().color(Pal.accent).fillX().height(1).colspan(999).padTop(3).padBottom(3).row();
-            addTeamDataCheckB(Blocks.siliconSmelter.uiIcon, team -> team.team.rules().cheat);
-            addTeamDataCheck(Blocks.arc.uiIcon, team -> state.rules.blockDamage(team.team));
-            addTeamDataCheck(Blocks.titaniumWall.uiIcon, team -> state.rules.blockHealth(team.team));
-            addTeamDataCheck(Blocks.buildTower.uiIcon, team -> state.rules.buildSpeed(team.team));
-            addTeamDataCheck(UnitTypes.corvus.uiIcon, team -> state.rules.unitDamage(team.team));
-            addTeamDataCheck(UnitTypes.oct.uiIcon, team -> state.rules.unitHealth(team.team));
-            addTeamDataCheck(UnitTypes.zenith.uiIcon, team -> state.rules.unitCrashDamage(team.team));
-            addTeamDataCheck(Blocks.tetrativeReconstructor.uiIcon, team -> state.rules.unitBuildSpeed(team.team));
-            addTeamDataCheck(Blocks.basicAssemblerModule.uiIcon, team -> state.rules.unitCost(team.team));
+        if (showStat) {
+            image().color(Pal.accent).fillX().height(1f).colspan(999).padTop(3f).padBottom(3f).row()
+            addTeamDataB(Blocks.siliconSmelter.uiIcon) { it.team.rules().cheat }
+            addTeamDataF(Blocks.arc.uiIcon) { Vars.state.rules.blockDamage(it.team) }
+            addTeamDataF(Blocks.titaniumWall.uiIcon) { Vars.state.rules.blockHealth(it.team) }
+            addTeamDataF(Blocks.buildTower.uiIcon) { Vars.state.rules.buildSpeed(it.team) }
+            addTeamDataF(UnitTypes.corvus.uiIcon) { Vars.state.rules.unitDamage(it.team) }
+            addTeamDataF(UnitTypes.oct.uiIcon) { Vars.state.rules.unitHealth(it.team) }
+            addTeamDataF(UnitTypes.zenith.uiIcon) { Vars.state.rules.unitCrashDamage(it.team) }
+            addTeamDataF(Blocks.tetrativeReconstructor.uiIcon) { Vars.state.rules.unitBuildSpeed(it.team) }
+            addTeamDataF(Blocks.basicAssemblerModule.uiIcon) { Vars.state.rules.unitCost(it.team) }
         }
 
-        if(showItem){
-            image().color(Pal.accent).fillX().height(1).colspan(999).padTop(3).padBottom(3).row();
-            for(Item item : content.items()){
-                boolean show = false;
-                for(Teams.TeamData team : teams){
-                    if(team.hasCore() && team.core().items.get(item) > 0)
-                        show = true;
-                }
-                if(show){
-                    addTeamData(item.uiIcon, team -> (team.hasCore() && team.core().items.get(item) > 0) ? UI.formatAmount(team.core().items.get(item)) : "-");
+        if (showItem) {
+            image().color(Pal.accent).fillX().height(1f).colspan(999).padTop(3f).padBottom(3f).row()
+            for (item in Vars.content.items()) {
+                if (teams.all { t -> t.core().let { it == null || it.items[item] == 0 } }) continue
+                i(item.uiIcon); stat {
+                    if (it.hasCore() && it.core().items.get(item) > 0) UI.formatAmount(it.core().items.get(item).toLong()) else "-"
                 }
             }
         }
 
-        if(showUnit){
-            image().color(Pal.accent).fillX().height(1).colspan(999).padTop(3).padBottom(3).row();
-            for(UnitType unit : content.units()){
-                boolean show = false;
-                for(Teams.TeamData team : teams){
-                    if(team.countType(unit) > 0)
-                        show = true;
-                }
-                if(show){
-                    addTeamData(unit.uiIcon, team -> team.countType(unit) > 0 ? String.valueOf(team.countType(unit)) : "-");
-                }
+        if (showUnit) {
+            image().color(Pal.accent).fillX().height(1f).colspan(999).padTop(3f).padBottom(3f).row()
+            for (unit in Vars.content.units()) {
+                if (teams.all { it.countType(unit) == 0 }) continue
+                i(unit.uiIcon); stat { if (it.countType(unit) > 0) it.countType(unit).toString() else "-" }
             }
         }
     }
 
-    private void addTeamDataCheck(TextureRegion icon, Floatf<TeamData> checked){
-        if(teams.isEmpty() || teams.allMatch(it -> checked.get(it) == 1f)) return;
+    private fun addTeamDataF(icon: TextureRegion, f: Floatf<Teams.TeamData>) {
+        if (teams.isEmpty || teams.allMatch { f.get(it) == 1f }) return
+        i(icon)
         //check allSame
-        float value = checked.get(teams.get(0));
-        if(teams.allMatch(it -> checked.get(it) == value)){
-            addTeamData(icon, FormatDefault.format(value));
-            return;
+        val value = f.get(teams.get(0))
+        if (teams.allMatch { f.get(it) == value }) {
+            stat(format(value))
+            return
         }
-        addTeamData(icon, team -> FormatDefault.format(checked.get(team)));
+        stat { format(f.get(it)) }
     }
 
-    private void addTeamDataCheckB(TextureRegion icon, Boolf<TeamData> checked){
-        if(teams.isEmpty() || teams.allMatch(it -> !checked.get(it))) return;
+    private fun addTeamDataB(icon: TextureRegion, checked: Boolf<Teams.TeamData>) {
+        if (teams.isEmpty || teams.allMatch { !checked.get(it) }) return
+        i(icon)
         //check allSame
-        boolean value = checked.get(teams.get(0));
-        if(teams.allMatch(it -> checked.get(it) == value)){
-            addTeamData(icon, value ? "+" : "x");
-            return;
+        val value = checked.get(teams.get(0))
+        if (teams.allMatch { checked.get(it) == value }) {
+            stat(if (value) "+" else "x")
+            return
         }
-        addTeamData(icon, team -> checked.get(team) ? "+" : "×");
+        stat { if (checked.get(it)) "+" else "×" }
     }
 
-    private void addTeamData(TextureRegion icon, String value){
-        // 只显示一个数值
-        image(icon).size(15, 15).left();
-        add(value).color(Pal.accent).align(Align.center).fontScale(fontScl).colspan(getColumns() - 1);
-        row();
+    fun i(icon: TextureRegion) {
+        image(icon).size(15f, 15f).left()
     }
 
-    private void addTeamData(TextureRegion icon, Func<TeamData, CharSequence> teamFunc){
-        // 通用情况
-        image(icon).size(15, 15).left();
-        for(Teams.TeamData teamData : teams){
-            label(() -> teamFunc.get(teamData))
-            .color(teamData.team.color)
-            .padLeft(2).expandX().uniformX().fontScale(fontScl);
+    private fun stat(value: String) {
+        add(value).color(Pal.accent).align(Align.center).fontScale(fontScl).colspan(columns - 1)
+        row()
+    }
+
+    private inline fun stat(crossinline f: (Teams.TeamData) -> CharSequence) {
+        for (teamData in teams) {
+            label { f(teamData) }
+                .color(teamData.team.color)
+                .padLeft(2f).expandX().uniformX().fontScale(fontScl)
         }
-        row();
+        row()
+    }
+
+    companion object {
+        private const val fontScl = 0.8f
     }
 }
