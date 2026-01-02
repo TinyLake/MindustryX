@@ -79,20 +79,7 @@ public class RenderExt{
 
 
     static{
-        var internal = new PersistentProvider.Arc<Boolean>("bulletShow");
-        noBulletShow.addFallback(new PersistentProvider<>(){
-            @Override
-            public Boolean get(){
-                if(internal.get() == null) return null;
-                //noinspection DataFlowIssue
-                return !internal.get();
-            }
-
-            @Override
-            public void reset(){
-                internal.reset();
-            }
-        });
+        noBulletShow.addFallback(SettingsV2.INSTANCE.map(new PersistentProvider.Arc<Boolean>("bulletShow"), it -> !it));
         unitHitbox.addFallbackName("unithitbox");
         unitHitbox.addFallbackName("payloadpreview");
 

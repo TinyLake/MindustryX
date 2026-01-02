@@ -95,16 +95,16 @@ object SettingsV2 {
         }
 
         fun addFallback(provider: PersistentProvider<T>) {
-            if (!modified) {
-                set(provider.get() ?: def)
+            mayLaterInit {
+                if (!modified) {
+                    set(provider.get() ?: def)
+                }
+                (provider as? PersistentProvider.Savable)?.reset()
             }
-            (provider as? PersistentProvider.Savable)?.reset()
         }
 
         fun addFallbackName(name: String) {
-            mayLaterInit {
-                addFallback(PersistentProvider.Arc(name))
-            }
+            addFallback(PersistentProvider.Arc(name))
         }
 
         private inline fun mayLaterInit(crossinline action: () -> Unit) {
@@ -183,6 +183,11 @@ object SettingsV2 {
                 base.reset()
             }
         }
+    }
+
+    fun <T, R> PersistentProvider<T>.map(mapper: (T) -> R): PersistentProvider<R> = object : PersistentProvider<R> {
+        override fun get(): R? = this@map.get()?.let(mapper)
+        override fun reset() = this@map.reset()
     }
 
     class CheckPref @JvmOverloads constructor(name: String, def: Boolean = false) : Data<Boolean>(name, def) {
