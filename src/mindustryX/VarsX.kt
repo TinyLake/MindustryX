@@ -65,9 +65,6 @@ object VarsX {
     val allUnlocked = CheckPref("allUnlocked")
 
     @JvmField
-    val editorBrush = SliderPref("editorBrush", 6, 3, 13)
-
-    @JvmField
     val noPlayerHitBox = CheckPref("noPlayerHitBox")
 
     @JvmField

@@ -68,7 +68,7 @@ index c2529b8c38ac57244517823aa73843cedec75602..b768477389731aefad275b3c6aa1760e
  
                  if(wx < 0 || wy < 0 || wx >= width() || wy >= height()){
 diff --git a/core/src/mindustry/editor/MapEditorDialog.java b/core/src/mindustry/editor/MapEditorDialog.java
-index 49fe8dddaf6a14d47a6a8aec28ea16798f253ee7..7ea4386deba40523f2d5dc6f3f7af4bc0e98baa1 100644
+index 49fe8dddaf6a14d47a6a8aec28ea16798f253ee7..0910b33d4b97886c5c6333b0235794e89f32da8f 100644
 --- a/core/src/mindustry/editor/MapEditorDialog.java
 +++ b/core/src/mindustry/editor/MapEditorDialog.java
 @@ -31,6 +31,7 @@ import mindustry.world.blocks.environment.*;
@@ -131,7 +131,7 @@ index 49fe8dddaf6a14d47a6a8aec28ea16798f253ee7..7ea4386deba40523f2d5dc6f3f7af4bc
          });
  
          int i = 0;
-+        int perRow = mindustryX.VarsX.editorBrush.get();
++        int perRow = mobile ? 4 : 6 + mindustryX.VarsX.additionInventoryColumns.get();
  
          for(Block block : blocksOut){
              TextureRegion region = block.uiIcon;
