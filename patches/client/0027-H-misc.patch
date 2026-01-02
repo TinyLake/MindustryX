@@ -31,8 +31,7 @@ Content-Transfer-Encoding: 8bit
  .../world/blocks/distribution/Router.java     |  3 ++-
  .../world/blocks/production/BeamDrill.java    | 12 ++++-------
  .../world/blocks/units/Reconstructor.java     | 12 ++++-------
- .../mindustry/desktop/DesktopLauncher.java    | 20 ++++++++++++++++++-
- 24 files changed, 107 insertions(+), 67 deletions(-)
+ 23 files changed, 88 insertions(+), 66 deletions(-)
 
 diff --git a/core/src/mindustry/ClientLauncher.java b/core/src/mindustry/ClientLauncher.java
 index 4145f77e4680b962aa3ed89e414095ad71ecdb46..03945cddb87fc0c8fb583f126dde24fa60427e0c 100644
@@ -579,48 +578,3 @@ index ef917ff030d1ca22e952530ca0df86133fcc48f5..db59ca748daedb56acc5f0968ec8f7bf
  
                  if(++i % columns == 0){
                      table.row();
-diff --git a/desktop/src/mindustry/desktop/DesktopLauncher.java b/desktop/src/mindustry/desktop/DesktopLauncher.java
-index a500476f5a69ce40b8a543827d6c9722c94afeaa..9389c0217f99d5a09e3c4ea628e13f0ec69c7c67 100644
---- a/desktop/src/mindustry/desktop/DesktopLauncher.java
-+++ b/desktop/src/mindustry/desktop/DesktopLauncher.java
-@@ -25,6 +25,7 @@ import mindustry.net.*;
- import mindustry.net.Net.*;
- import mindustry.service.*;
- import mindustry.type.*;
-+import mindustryX.*;
- 
- import java.io.*;
- 
-@@ -111,6 +112,20 @@ public class DesktopLauncher extends ClientLauncher{
-         this.args = args;
- 
-         Version.init();
-+        //MDTX, auto discover steam
-+        String steamJar = null;
-+        if(!OS.isAndroid && !OS.isIos){
-+            if(new Fi("saves").exists() || new Fi("steam_appid.txt").exists()){
-+                if(new Fi("addon_steam.jar").exists()){
-+                    //exists in the addon
-+                    steamJar = "addon_steam.jar";
-+                    Version.modifier = "steam";
-+                }else if(new Fi("steamworks4j.dll", FileType.classpath).exists()){
-+                    //already in the classpath
-+                    Version.modifier = "steam";
-+                }
-+            }
-+        }
-         boolean useSteam = Version.modifier.contains("steam");
- 
-         if(useDiscord){
-@@ -140,7 +155,10 @@ public class DesktopLauncher extends ClientLauncher{
-             });
- 
-             try{
--                SteamAPI.loadLibraries();
-+                //MDTX use arc.SharedLibraryLoader
-+                new SharedLibraryLoader(steamJar).load("steam_api");
-+                new SharedLibraryLoader(steamJar).load("steamworks4j");
-+                SteamAPI.skipLoadLibraries();
- 
-                 if(!SteamAPI.init()){
-                     loadError = true;
