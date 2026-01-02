@@ -7,8 +7,10 @@ import arc.util.Log
 import arc.util.OS
 import arc.util.serialization.Jval
 import mindustry.Vars
+import mindustryX.features.SettingsV2
 import mindustryX.features.SettingsV2.CheckPref
 import mindustryX.features.SettingsV2.SliderPref
+import mindustryX.features.SettingsV2.map
 
 object VarsX {
     const val repo = "TinyLake/MindustryX"
@@ -41,7 +43,11 @@ object VarsX {
     // 使用时使用全限定名，避免在patch中使用import
 
     @JvmField
-    val blockInventoryWidth = SliderPref("blockInventoryWidth", 3, 3, 16)
+    val additionInventoryColumns = SliderPref("additionInventoryColumns", 0, 0, 12).apply {
+        addFallback(SettingsV2.PersistentProvider.Arc<Int>("blockInventoryWidth").map {
+            it - 3
+        })
+    }
 
     @JvmField
     val minimapSize = SliderPref("minimapSize", 140, 40, 400, 10)

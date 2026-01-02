@@ -174,7 +174,7 @@ index 29325166665bef59573d5bb5fbbbc0ab6cfc39ad..f0fc4b4ebb7f79d29daf18ab7c304dde
      }
  }
 diff --git a/core/src/mindustry/world/blocks/ItemSelection.java b/core/src/mindustry/world/blocks/ItemSelection.java
-index bee9056df6ef4b96d48803ce67e89580026d85a4..e5ad711ae78d455e687c7c29f5e475847dd2e601 100644
+index eafa13692bc52e2b49722d836e39286caeced785..1724b4dc97b7b8a12d568091a31658c8d991b8e9 100644
 --- a/core/src/mindustry/world/blocks/ItemSelection.java
 +++ b/core/src/mindustry/world/blocks/ItemSelection.java
 @@ -12,6 +12,7 @@ import mindustry.ctype.*;
@@ -185,7 +185,7 @@ index bee9056df6ef4b96d48803ce67e89580026d85a4..e5ad711ae78d455e687c7c29f5e47584
  
  import static mindustry.Vars.*;
  
-@@ -67,7 +68,7 @@ public class ItemSelection{
+@@ -66,7 +67,7 @@ public class ItemSelection{
  
              Seq<T> list = items.select(u -> (text.isEmpty() || u.localizedName.toLowerCase().contains(text.toLowerCase())));
              for(T item : list){

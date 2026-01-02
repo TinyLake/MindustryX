@@ -1,0 +1,22 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: way-zer <himc.wicp@gmail.com>
+Date: Fri, 2 Jan 2026 19:29:59 +0800
+Subject: [PATCH] fixup! HC: additionInventoryColumns
+
+---
+ core/src/mindustry/ui/fragments/BlockInventoryFragment.java | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/core/src/mindustry/ui/fragments/BlockInventoryFragment.java b/core/src/mindustry/ui/fragments/BlockInventoryFragment.java
+index 4ce4b546c2b70337d986a9af8e05795471e752da..1813ec8b471e48d3a24cea87be5990c8ff2dea13 100644
+--- a/core/src/mindustry/ui/fragments/BlockInventoryFragment.java
++++ b/core/src/mindustry/ui/fragments/BlockInventoryFragment.java
+@@ -146,7 +146,7 @@ public class BlockInventoryFragment{
+             }
+         });
+ 
+-        int cols = 3 + mindustryX.VarsX.blockInventoryWidth.get();
++        int cols = 3 + mindustryX.VarsX.additionInventoryColumns.get();
+         int row = 0;
+ 
+         table.margin(4f);

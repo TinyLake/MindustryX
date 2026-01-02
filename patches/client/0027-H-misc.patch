@@ -23,15 +23,12 @@ Content-Transfer-Encoding: 8bit
  .../mindustry/ui/dialogs/KeybindDialog.java   | 12 +++++++----
  .../mindustry/ui/dialogs/PausedDialog.java    |  3 ++-
  .../ui/dialogs/SettingsMenuDialog.java        |  4 ++--
- .../ui/fragments/BlockInventoryFragment.java  |  2 +-
  .../mindustry/ui/fragments/ChatFragment.java  |  7 +++++--
  .../ui/fragments/PlacementFragment.java       |  6 ++----
- .../mindustry/world/blocks/ItemSelection.java |  4 +++-
  .../mindustry/world/blocks/defense/Radar.java |  9 +++++++++
  .../world/blocks/distribution/Router.java     |  3 ++-
- .../world/blocks/production/BeamDrill.java    | 12 ++++-------
  .../world/blocks/units/Reconstructor.java     | 12 ++++-------
- 23 files changed, 88 insertions(+), 66 deletions(-)
+ 20 files changed, 80 insertions(+), 56 deletions(-)
 
 diff --git a/core/src/mindustry/ClientLauncher.java b/core/src/mindustry/ClientLauncher.java
 index 4145f77e4680b962aa3ed89e414095ad71ecdb46..03945cddb87fc0c8fb583f126dde24fa60427e0c 100644
@@ -374,19 +371,6 @@ index 7949471868168ce97170f6550ce2949c7590506b..6e0bd9f94bd41137ddc69bae8beb7727
              if(ui.settings != null){
                  Core.settings.put("minzoomingamemultiplier", (float)s / 100.0f);
              }
-diff --git a/core/src/mindustry/ui/fragments/BlockInventoryFragment.java b/core/src/mindustry/ui/fragments/BlockInventoryFragment.java
-index 54a36cde6eee102c9c8f3bfd5e4c76a2f4d0f1e1..aec055c4c4325560d922e19c196a73ae29fc28fc 100644
---- a/core/src/mindustry/ui/fragments/BlockInventoryFragment.java
-+++ b/core/src/mindustry/ui/fragments/BlockInventoryFragment.java
-@@ -138,7 +138,7 @@ public class BlockInventoryFragment{
-             }
-         });
- 
--        int cols = 3;
-+        int cols = mindustryX.VarsX.blockInventoryWidth.get();
-         int row = 0;
- 
-         table.margin(4f);
 diff --git a/core/src/mindustry/ui/fragments/ChatFragment.java b/core/src/mindustry/ui/fragments/ChatFragment.java
 index add50b5864c311b66d4278e684a4e0260170139f..6202aadb499174630a04c0210e7390a0af4f6a42 100644
 --- a/core/src/mindustry/ui/fragments/ChatFragment.java
@@ -443,29 +427,6 @@ index 7df456cb0c2465507c2faa8fe6f4ca8eee7b0425..60cedfaecdb8a85dcfccc30ca090aa48
  
          //check for a unit
          Unit unit = Units.closestOverlap(player.team(), Core.input.mouseWorldX(), Core.input.mouseWorldY(), 5f, u -> !u.isLocal() && u.displayable());
-diff --git a/core/src/mindustry/world/blocks/ItemSelection.java b/core/src/mindustry/world/blocks/ItemSelection.java
-index 6bbe2ba127c5f3126bd7c42badea0a1d86d15db3..bee9056df6ef4b96d48803ce67e89580026d85a4 100644
---- a/core/src/mindustry/world/blocks/ItemSelection.java
-+++ b/core/src/mindustry/world/blocks/ItemSelection.java
-@@ -54,7 +54,9 @@ public class ItemSelection{
-         cont.defaults().size(40);
- 
-         if(search != null) search.clearText();
-+        columns = mindustryX.VarsX.blockInventoryWidth.get();
- 
-+        int finalColumns = columns;
-         Runnable rebuild = () -> {
-             group.clear();
-             cont.clearChildren();
-@@ -74,7 +76,7 @@ public class ItemSelection{
-                 button.getStyle().imageUp = new TextureRegionDrawable(item.uiIcon);
-                 button.update(() -> button.setChecked(holder.get() == item));
- 
--                if(i++ % columns == (columns - 1)){
-+                if(i++ % finalColumns == (finalColumns - 1)){
-                     cont.row();
-                     rowCount++;
-                 }
 diff --git a/core/src/mindustry/world/blocks/defense/Radar.java b/core/src/mindustry/world/blocks/defense/Radar.java
 index e24a3368d190f64fdaf002130a76f4799834c9a5..0811c4520865cff648084cbc743a141367a103c5 100644
 --- a/core/src/mindustry/world/blocks/defense/Radar.java
@@ -513,29 +474,6 @@ index cbe6d64d52f66d38be69a897a9a1a2f5b928e631..c5fe7f0080fea29764ebd94f576f1f98
          }
  
          @Override
-diff --git a/core/src/mindustry/world/blocks/production/BeamDrill.java b/core/src/mindustry/world/blocks/production/BeamDrill.java
-index a142f890eaf5c8252a04201c8485ecb0e260d3f6..129cb657b956704d134573bb6b160c4fa7402069 100644
---- a/core/src/mindustry/world/blocks/production/BeamDrill.java
-+++ b/core/src/mindustry/world/blocks/production/BeamDrill.java
-@@ -182,14 +182,10 @@ public class BeamDrill extends Block{
-         }
- 
-         if(item != null){
--            float width = drawPlaceText(Core.bundle.formatFloat("bar.drillspeed", 60f / getDrillTime(item) * count, 2), x, y, valid);
--            if(!multiple){
--                float dx = x * tilesize + offset - width/2f - 4f, dy = y * tilesize + offset + size * tilesize / 2f + 5, s = iconSmall / 4f;
--                Draw.mixcol(Color.darkGray, 1f);
--                Draw.rect(item.fullIcon, dx, dy - 1, s, s);
--                Draw.reset();
--                Draw.rect(item.fullIcon, dx, dy, s, s);
--            }
-+            //MDTX 增加加液速度显示
-+            float speed = 60f / getDrillTime(item) * count;
-+            String msg = Strings.format("@ [white]@@[] @[white]([cyan]@[])", Iconc.production, item.emoji(), item.localizedName, Strings.autoFixed(speed, 2), Strings.autoFixed(speed * optionalBoostIntensity, 2));
-+            drawPlaceText(msg, x, y, valid);
-         }else if(invalidItem != null){
-             drawPlaceText(Core.bundle.get("bar.drilltierreq"), x, y, false);
-         }
 diff --git a/core/src/mindustry/world/blocks/units/Reconstructor.java b/core/src/mindustry/world/blocks/units/Reconstructor.java
 index ef917ff030d1ca22e952530ca0df86133fcc48f5..db59ca748daedb56acc5f0968ec8f7bf9f1f6c32 100644
 --- a/core/src/mindustry/world/blocks/units/Reconstructor.java

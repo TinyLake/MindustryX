@@ -1,0 +1,78 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: way-zer <himc.wicp@gmail.com>
+Date: Sun, 18 Feb 2024 15:58:00 +0800
+Subject: [PATCH] HC: additionInventoryColumns
+
+---
+ core/src/mindustry/ui/dialogs/PlanetDialog.java             | 6 ++++--
+ core/src/mindustry/ui/fragments/BlockInventoryFragment.java | 2 +-
+ core/src/mindustry/world/blocks/ItemSelection.java          | 3 ++-
+ 3 files changed, 7 insertions(+), 4 deletions(-)
+
+diff --git a/core/src/mindustry/ui/dialogs/PlanetDialog.java b/core/src/mindustry/ui/dialogs/PlanetDialog.java
+index 9ea968aa912875fba796b853ef71dc08450968ed..1b4bbdb2e44b130e2b8fef9751da7a41eb787a5e 100644
+--- a/core/src/mindustry/ui/dialogs/PlanetDialog.java
++++ b/core/src/mindustry/ui/dialogs/PlanetDialog.java
+@@ -1012,6 +1012,7 @@ public class PlanetDialog extends BaseDialog implements PlanetInterfaceRenderer{
+         Table t = new Table().left();
+ 
+         int i = 0;
++        int columns = 3 + mindustryX.VarsX.additionInventoryColumns.get();
+         for(var item : content.items()){
+             var stat = stats.get(item);
+             if(stat == null) continue;
+@@ -1019,7 +1020,7 @@ public class PlanetDialog extends BaseDialog implements PlanetInterfaceRenderer{
+             if(total > 1){
+                 t.image(item.uiIcon).padRight(3);
+                 t.add(UI.formatAmount(total) + " " + Core.bundle.get("unit.perminute")).color(Color.lightGray).padRight(3);
+-                if(++i % 3 == 0){
++                if(++i % columns == 0){
+                     t.row();
+                 }
+             }
+@@ -1106,10 +1107,11 @@ public class PlanetDialog extends BaseDialog implements PlanetInterfaceRenderer{
+                     t.table(res -> {
+ 
+                         int i = 0;
++                        int columns = 4 + mindustryX.VarsX.additionInventoryColumns.get();
+                         for(ItemStack stack : items){
+                             res.image(stack.item.uiIcon).padRight(3);
+                             res.add(UI.formatAmount(Math.max(stack.amount, 0))).color(Color.lightGray);
+-                            if(++i % 4 == 0){
++                            if(++i % columns == 0){
+                                 res.row();
+                             }
+                         }
+diff --git a/core/src/mindustry/ui/fragments/BlockInventoryFragment.java b/core/src/mindustry/ui/fragments/BlockInventoryFragment.java
+index 54a36cde6eee102c9c8f3bfd5e4c76a2f4d0f1e1..5758f6e2ed41f227ac5fea4e8e4b7dcfd2ba02ff 100644
+--- a/core/src/mindustry/ui/fragments/BlockInventoryFragment.java
++++ b/core/src/mindustry/ui/fragments/BlockInventoryFragment.java
+@@ -138,7 +138,7 @@ public class BlockInventoryFragment{
+             }
+         });
+ 
+-        int cols = 3;
++        int cols = 3 + mindustryX.VarsX.blockInventoryWidth.get();
+         int row = 0;
+ 
+         table.margin(4f);
+diff --git a/core/src/mindustry/world/blocks/ItemSelection.java b/core/src/mindustry/world/blocks/ItemSelection.java
+index 6bbe2ba127c5f3126bd7c42badea0a1d86d15db3..eafa13692bc52e2b49722d836e39286caeced785 100644
+--- a/core/src/mindustry/world/blocks/ItemSelection.java
++++ b/core/src/mindustry/world/blocks/ItemSelection.java
+@@ -47,13 +47,14 @@ public class ItemSelection{
+         buildTable(null, table, items, holder, consumer, true, rows, columns);
+     }
+ 
+-    public static <T extends UnlockableContent> void buildTable(@Nullable Block block, Table table, Seq<T> items, Prov<T> holder, Cons<T> consumer, boolean closeSelect, int rows, int columns){
++    public static <T extends UnlockableContent> void buildTable(@Nullable Block block, Table table, Seq<T> items, Prov<T> holder, Cons<T> consumer, boolean closeSelect, int rows, int columns0){
+         ButtonGroup<ImageButton> group = new ButtonGroup<>();
+         group.setMinCheckCount(0);
+         Table cont = new Table().top();
+         cont.defaults().size(40);
+ 
+         if(search != null) search.clearText();
++        int columns = columns0 + mindustryX.VarsX.additionInventoryColumns.get();
+ 
+         Runnable rebuild = () -> {
+             group.clear();

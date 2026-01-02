@@ -111,7 +111,7 @@ way-zer <himc.wicp@gmail.com> on 2024/9/8
  .../ui/dialogs/CustomRulesDialog.java         | 116 ++++++++-
  .../mindustry/ui/dialogs/DatabaseDialog.java  |   3 +-
  .../mindustry/ui/dialogs/PausedDialog.java    |  12 +-
- .../mindustry/ui/dialogs/PlanetDialog.java    |  31 ++-
+ .../mindustry/ui/dialogs/PlanetDialog.java    |  27 +-
  .../ui/dialogs/SchematicsDialog.java          | 240 +++++++++++++++++-
  .../ui/dialogs/SettingsMenuDialog.java        |  24 +-
  .../mindustry/ui/fragments/ChatFragment.java  |   9 +-
@@ -120,7 +120,7 @@ way-zer <himc.wicp@gmail.com> on 2024/9/8
  .../mindustry/ui/fragments/MenuFragment.java  |  24 +-
  .../ui/fragments/PlacementFragment.java       | 164 ++++++++++--
  .../ui/fragments/PlayerListFragment.java      |  72 ++----
- 27 files changed, 1135 insertions(+), 147 deletions(-)
+ 27 files changed, 1133 insertions(+), 145 deletions(-)
 
 diff --git a/core/src/mindustry/editor/MapInfoDialog.java b/core/src/mindustry/editor/MapInfoDialog.java
 index b4f56d136b632aae1841fcfb6f745018d40b9199..6e38c85a35901a80d632191502f10063066e8e2e 100644
@@ -1343,7 +1343,7 @@ index 3e0cca2191e2fd062b96af031a6b2af5ba80e224..7a91c9eb1c90142831ea71c54e694d46
      }
  
 diff --git a/core/src/mindustry/ui/dialogs/PlanetDialog.java b/core/src/mindustry/ui/dialogs/PlanetDialog.java
-index 9ea968aa912875fba796b853ef71dc08450968ed..e17cc3ab591c6c9fff6aa352330c284b75328ceb 100644
+index 1b4bbdb2e44b130e2b8fef9751da7a41eb787a5e..2216f954c48cda2f0b732921491231d0c36821fb 100644
 --- a/core/src/mindustry/ui/dialogs/PlanetDialog.java
 +++ b/core/src/mindustry/ui/dialogs/PlanetDialog.java
 @@ -38,6 +38,7 @@ import mindustry.type.Planet.*;
@@ -1428,24 +1428,6 @@ index 9ea968aa912875fba796b853ef71dc08450968ed..e17cc3ab591c6c9fff6aa352330c284b
                              }).growX().row();
  
                              if(sec.isAttacked()){
-@@ -1019,7 +1042,7 @@ public class PlanetDialog extends BaseDialog implements PlanetInterfaceRenderer{
-             if(total > 1){
-                 t.image(item.uiIcon).padRight(3);
-                 t.add(UI.formatAmount(total) + " " + Core.bundle.get("unit.perminute")).color(Color.lightGray).padRight(3);
--                if(++i % 3 == 0){
-+                if(++i % mindustryX.VarsX.blockInventoryWidth.get() == 0){
-                     t.row();
-                 }
-             }
-@@ -1109,7 +1132,7 @@ public class PlanetDialog extends BaseDialog implements PlanetInterfaceRenderer{
-                         for(ItemStack stack : items){
-                             res.image(stack.item.uiIcon).padRight(3);
-                             res.add(UI.formatAmount(Math.max(stack.amount, 0))).color(Color.lightGray);
--                            if(++i % 4 == 0){
-+                            if(++i % mindustryX.VarsX.blockInventoryWidth.get() == 0){
-                                 res.row();
-                             }
-                         }
 diff --git a/core/src/mindustry/ui/dialogs/SchematicsDialog.java b/core/src/mindustry/ui/dialogs/SchematicsDialog.java
 index fef8e21d771ccfd81cbc65a0bc62642ebf721952..06ad54d370d3af90ab6e366155b18c8e825c50ca 100644
 --- a/core/src/mindustry/ui/dialogs/SchematicsDialog.java

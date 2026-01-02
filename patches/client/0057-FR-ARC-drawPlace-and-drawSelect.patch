@@ -9,9 +9,10 @@ Subject: [PATCH] FR: ARC drawPlace and drawSelect
  .../world/blocks/defense/MendProjector.java   |  5 ++-
  .../blocks/defense/OverdriveProjector.java    |  6 ++-
  .../world/blocks/defense/turrets/Turret.java  | 19 +++++++++
+ .../world/blocks/production/BeamDrill.java    | 12 ++----
  .../world/blocks/production/Drill.java        | 23 ++++++----
  .../world/blocks/storage/CoreBlock.java       |  1 +
- 7 files changed, 87 insertions(+), 11 deletions(-)
+ 8 files changed, 91 insertions(+), 19 deletions(-)
 
 diff --git a/core/src/mindustry/world/blocks/ConstructBlock.java b/core/src/mindustry/world/blocks/ConstructBlock.java
 index 68a5475d19fbc1593fa2f19d0dff46fe0bee8739..1da8aabd8874232fdf18f9f42e81c8296022a6a1 100644
@@ -219,6 +220,29 @@ index 9ad3785d6508c05e997c32f130d159c10b6c38e0..ee65e19d87bac912a52d02fb75b9e76b
          }
  
          @Override
+diff --git a/core/src/mindustry/world/blocks/production/BeamDrill.java b/core/src/mindustry/world/blocks/production/BeamDrill.java
+index 2fdaf89d8bfafa089c5a6de09115ec81f0d35d06..2c2882cf82b66d37706fb5283b7b1b83effacf94 100644
+--- a/core/src/mindustry/world/blocks/production/BeamDrill.java
++++ b/core/src/mindustry/world/blocks/production/BeamDrill.java
+@@ -182,14 +182,10 @@ public class BeamDrill extends Block{
+         }
+ 
+         if(item != null){
+-            float width = drawPlaceText(Core.bundle.formatFloat("bar.drillspeed", 60f / getDrillTime(item) * count, 2), x, y, valid);
+-            if(!multiple){
+-                float dx = x * tilesize + offset - width/2f - 4f, dy = y * tilesize + offset + size * tilesize / 2f + 5, s = iconSmall / 4f;
+-                Draw.mixcol(Color.darkGray, 1f);
+-                Draw.rect(item.fullIcon, dx, dy - 1, s, s);
+-                Draw.reset();
+-                Draw.rect(item.fullIcon, dx, dy, s, s);
+-            }
++            //MDTX 增加加液速度显示
++            float speed = 60f / getDrillTime(item) * count;
++            String msg = Strings.format("@ [white]@@[] @[white]([cyan]@[])", Iconc.production, item.emoji(), item.localizedName, Strings.autoFixed(speed, 2), Strings.autoFixed(speed * optionalBoostIntensity, 2));
++            drawPlaceText(msg, x, y, valid);
+         }else if(invalidItem != null){
+             drawPlaceText(Core.bundle.get("bar.drilltierreq"), x, y, false);
+         }
 diff --git a/core/src/mindustry/world/blocks/production/Drill.java b/core/src/mindustry/world/blocks/production/Drill.java
 index 8c80702229e246a30efb7c3ca42d59200facb4ce..6043840864448258a27e9aa782c1001d64c41d1e 100644
 --- a/core/src/mindustry/world/blocks/production/Drill.java
