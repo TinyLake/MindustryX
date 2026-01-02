@@ -39,7 +39,7 @@ class GridTable : Table() {
                 ?: children.firstOrNull { it.visible }?.minWidth
                 ?: Float.MAX_VALUE
             val cellWidth = cellMinWidth + Reflect.get<Float>(cell, "padLeft")
-            Mathf.floor(width / cellWidth).coerceAtMost(children.count { it.visible })
+            maxOf(1, Mathf.floor(width / cellWidth).coerceAtMost(children.count { it.visible }))
         }
         if (!visibleChanged && columns == newColumns) return
 
