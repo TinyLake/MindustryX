@@ -49,6 +49,11 @@ object UIExtKt {
             resizable = true
             availability = inGameOnly
         }
+        OverlayUI.registerWindow("controlGroup", UIExt.controlGroup).apply {
+            autoHeight = true
+            resizable = true
+            availability = inGameOnly
+        }
     }
 
     @JvmStatic

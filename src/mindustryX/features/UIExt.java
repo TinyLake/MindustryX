@@ -26,6 +26,7 @@ public class UIExt{
     public static ArcMessageDialog arcMessageDialog = new ArcMessageDialog();
     public static AdvanceBuildTool advanceBuildTool = new AdvanceBuildTool();
     public static NewCoreItemsDisplay coreItems = new NewCoreItemsDisplay();
+    public static ControlGroupTable controlGroup = new ControlGroupTable();
 
     public static void init(){
         teamSelect = new TeamSelectDialog();
