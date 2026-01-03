@@ -222,6 +222,7 @@ public class ControlGroupTable extends Table{
     private static Vec2 getCenter(ControlGroupModel model, Vec2 out){
         out.setZero();
         int size = model.units.size;
+        if(size == 0) return out;
         for(Unit unit : model.units){
             out.add(unit.x / size, unit.y / size);
         }
