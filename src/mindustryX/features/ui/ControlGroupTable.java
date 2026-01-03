@@ -194,7 +194,7 @@ public class ControlGroupTable extends Table{
 
             // hit feedback
             image.setColor(Color.white);
-            btn.update(() -> {
+            image.update(() -> {
                 if(model.isHit(type)){
                     image.clearActions();
                     image.actions(Actions.color(hitColor, 0.1f), Actions.color(Color.white, 0.3f));
