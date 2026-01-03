@@ -1,8 +1,10 @@
 package mindustryX.features.ui;
 
 import arc.*;
+import arc.graphics.*;
 import arc.input.*;
 import arc.math.geom.*;
+import arc.scene.actions.*;
 import arc.scene.event.*;
 import arc.scene.ui.*;
 import arc.scene.ui.layout.*;
@@ -22,12 +24,13 @@ import mindustryX.features.ui.comp.*;
 import java.util.*;
 
 public class ControlGroupTable extends Table{
+    private static final Color hitColor = Color.white.cpy().lerp(Pal.remove, 0.5f);
+
     private ControlGroupModel[] models;
 
     public ControlGroupTable(){
         background(Styles.black3);
 
-        Events.on(ControlGroupChangeEvent.class, e -> updateControlGroup());
         Events.on(SaveLoadEvent.class, e -> {
             updateControlGroup();
         });
@@ -36,6 +39,24 @@ public class ControlGroupTable extends Table{
             if(models != null){
                 for(ControlGroupModel model : models){
                     model.updateSelected(Vars.control.input.selectedUnits);
+                }
+            }
+        });
+
+        Events.on(HealthChangedEvent.class, e -> {
+            if(models != null && e.amount > 0 && e.entity instanceof Unit unit && unit.team == Vars.player.team()){
+                for(ControlGroupModel model : models){
+                    if(model.units.contains(unit)){
+                        model.hitUnit(unit.type);
+                    }
+                }
+            }
+        });
+
+        update(() -> {
+            if(models != null){
+                for(ControlGroupModel model : models){
+                    model.update();
                 }
             }
         });
@@ -79,8 +100,7 @@ public class ControlGroupTable extends Table{
 
         int keyIndex = 1;
         for(ControlGroupModel model : models){
-            int finalI = keyIndex;
-            keyIndex++;
+            int finalI = keyIndex++;
 
             top.button("" + finalI, Styles.cleart, () -> {
                 for(Unit unit : Vars.control.input.selectedUnits){
@@ -91,8 +111,6 @@ public class ControlGroupTable extends Table{
                         if(otherModel != model) otherModel.removeUnit(unit);
                     }
                 }
-
-                model.updateSelected(Vars.control.input.selectedUnits);
             }).get().getLabel().setStyle(Styles.outlineLabel);
 
             Table modelTable = bottom.table().grow().get();
@@ -110,11 +128,10 @@ public class ControlGroupTable extends Table{
                     desktopInput.panning = true;
                     Core.camera.position.set(getCenter(model, Tmp.v1));
                 }
-            }).padTop(finalI != 1 ? 4f : 0f).grow().get();
+            }).padTop(finalI != 1 ? 4f : 0f).grow();
 
             // float layout
-            modelTable.addChild(new Table(buttons -> {
-                buttons.setFillParent(true);
+            modelTable.fill(buttons -> {
                 buttons.right();
                 buttons.defaults().growY().padLeft(8f);
 
@@ -131,7 +148,7 @@ public class ControlGroupTable extends Table{
                         model.appendUnit(unit);
                     }
                 }).size(Vars.iconMed);
-            }));
+            });
         }
 
         row();
@@ -145,14 +162,14 @@ public class ControlGroupTable extends Table{
             int amount = model.count(type);
             if(amount == 0) continue;
 
+            Image image = new Image(type.uiIcon);
             Button btn = table.button(unitTable -> {
-                unitTable.image(type.uiIcon).scaling(Scaling.fit).size(Vars.iconMed);
+                unitTable.add(image).scaling(Scaling.fit).size(Vars.iconMed);
 
-                unitTable.addChild(new Table(t -> {
-                    t.setFillParent(true);
+                unitTable.fill(t -> {
                     t.right().bottom();
-                    t.label(() -> model.countSelect(type) + "/" + amount).style(Styles.outlineLabel).fontScale(0.8f);
-                }));
+                    t.label(() -> model.countSelect(type) + "/" + amount).style(Styles.outlineLabel).fontScale(0.75f);
+                });
             }, Styles.clearNoneTogglei, () -> {})
             .checked(b -> model.countSelect(type) > 0).padLeft(8f).padRight(8f).tooltip(type.localizedName).get();
 
@@ -174,16 +191,25 @@ public class ControlGroupTable extends Table{
                     }
                 }
             });
+
+            // hit feedback
+            image.setColor(Color.white);
+            btn.update(() -> {
+                if(model.isHit(type)){
+                    image.clearActions();
+                    image.actions(Actions.color(hitColor, 0.1f), Actions.color(Color.white, 0.3f));
+                    model.consumeHit(type);
+                }
+            });
         }
 
         table.update(() -> {
-            model.updateInvalid();
             if(model.changed()){
-                Core.app.post(() -> {
-                    table.clearChildren();
-                    setupUnitsTable(table, model);
-                });
-                model.consume();
+                model.consumeChanged();
+                model.updateSelected(Vars.control.input.selectedUnits);
+
+                table.clearChildren();
+                setupUnitsTable(table, model);
             }
         });
     }
@@ -195,13 +221,9 @@ public class ControlGroupTable extends Table{
 
     private static Vec2 getCenter(ControlGroupModel model, Vec2 out){
         out.setZero();
-        float totalMass = 0f;
+        int size = model.units.size;
         for(Unit unit : model.units){
-            totalMass += unit.mass();
-        }
-
-        for(Unit unit : model.units){
-            out.add(unit.x * unit.mass() / totalMass, unit.y * unit.mass() / totalMass);
+            out.add(unit.x / size, unit.y / size);
         }
         return out;
     }
@@ -210,14 +232,18 @@ public class ControlGroupTable extends Table{
         public final ObjectSet<Unit> units = new ObjectSet<>();
         private final ObjectIntMap<UnitType> counter = new ObjectIntMap<>();
         private final ObjectIntMap<UnitType> selectCounter = new ObjectIntMap<>();
+        private final Bits hitMap = new Bits(Vars.content.units().size);
 
         private IntSeq groupID;
 
+        private int lastGroupSize = -1;
         private boolean dirty;
 
         public void clear(){
             units.clear();
             counter.clear();
+            selectCounter.clear();
+            hitMap.clear();
             if(groupID != null) groupID.clear();
 
             dirty = false;
@@ -227,7 +253,7 @@ public class ControlGroupTable extends Table{
             return dirty;
         }
 
-        public void consume(){
+        public void consumeChanged(){
             dirty = false;
         }
 
@@ -240,6 +266,7 @@ public class ControlGroupTable extends Table{
 
             units.clear();
             counter.clear();
+            lastGroupSize = groupID.size;
             dirty = true;
 
             for(int i = 0; i < groupID.size; i++){
@@ -288,7 +315,26 @@ public class ControlGroupTable extends Table{
             return selectCounter.get(type);
         }
 
-        public void updateInvalid(){
+        public boolean isHit(UnitType type){
+            return hitMap.get(type.id);
+        }
+
+        public void hitUnit(UnitType type){
+            hitMap.set(type.id);
+        }
+
+        public void consumeHit(UnitType type){
+            hitMap.clear(type.id);
+        }
+
+        public void update(){
+            // check size changed
+            if(lastGroupSize != groupID.size){
+                setUnits(groupID);
+                return;
+            }
+
+            // check invalid
             Iterator<Unit> iterator = units.iterator();
             while(iterator.hasNext()){
                 Unit unit = iterator.next();
@@ -303,10 +349,8 @@ public class ControlGroupTable extends Table{
 
         public void updateSelected(Seq<Unit> selected){
             selectCounter.clear();
-
-            ObjectSet<Unit> selectedSet = ObjectSet.with(selected);
-            for(Unit unit : units){
-                if(selectedSet.contains(unit)){
+            for(Unit unit : selected){
+                if(units.contains(unit)){
                     selectCounter.increment(unit.type);
                 }
             }
