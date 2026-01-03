@@ -22,7 +22,6 @@ import mindustry.input.*;
 import mindustry.type.*;
 import mindustry.world.*;
 import mindustry.world.blocks.*;
-import mindustryX.features.Settings.*;
 import mindustryX.features.SettingsV2.*;
 
 import static arc.Core.settings;
@@ -44,7 +43,11 @@ public class ArcOld{
 
     public static void nextBackground(Image image){
         if(backgroundPath.changed()){
-            backgrounds = Core.files.absolute(backgroundPath.get()).findAll(f -> !f.isDirectory() && (f.extEquals("png") || f.extEquals("jpg") || f.extEquals("jpeg")));
+            if(backgroundPath.get().isEmpty()){
+                backgrounds = Seq.with();
+            }else{
+                backgrounds = Core.files.absolute(backgroundPath.get()).findAll(f -> !f.isDirectory() && (f.extEquals("png") || f.extEquals("jpg") || f.extEquals("jpeg")));
+            }
         }
         image.setDrawable((Drawable)null);
         if(backgrounds.size == 0) return;
