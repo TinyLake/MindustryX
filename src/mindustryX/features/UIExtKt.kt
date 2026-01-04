@@ -11,10 +11,7 @@ import arc.scene.ui.layout.Table
 import arc.util.Align
 import mindustry.Vars
 import mindustry.gen.Tex
-import mindustryX.features.ui.LogicSupport
-import mindustryX.features.ui.OverlayUI
-import mindustryX.features.ui.TeamsStatDisplay
-import mindustryX.features.ui.WaveInfoDisplay
+import mindustryX.features.ui.*
 import mindustryX.features.ui.toolTable.AdvanceToolTable
 import mindustryX.features.ui.toolTable.AuxiliaryTools
 import mindustryX.features.ui.toolTable.NewToolTable
@@ -49,7 +46,7 @@ object UIExtKt {
             resizable = true
             availability = inGameOnly
         }
-        OverlayUI.registerWindow("controlGroup", UIExt.controlGroup).apply {
+        OverlayUI.registerWindow("controlGroup", ControlGroupTable()).apply {
             autoHeight = true
             resizable = true
             availability = inGameOnly

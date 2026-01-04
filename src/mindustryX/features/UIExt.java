@@ -4,15 +4,11 @@ import arc.*;
 import arc.graphics.*;
 import arc.graphics.g2d.*;
 import arc.math.*;
-import arc.math.geom.*;
 import arc.scene.*;
 import arc.scene.actions.*;
 import arc.scene.event.*;
-import arc.scene.ui.*;
 import arc.scene.ui.layout.*;
 import arc.util.*;
-import mindustry.content.*;
-import mindustry.core.*;
 import mindustry.gen.*;
 import mindustry.ui.*;
 import mindustryX.features.ui.*;
@@ -26,7 +22,6 @@ public class UIExt{
     public static ArcMessageDialog arcMessageDialog = new ArcMessageDialog();
     public static AdvanceBuildTool advanceBuildTool = new AdvanceBuildTool();
     public static NewCoreItemsDisplay coreItems = new NewCoreItemsDisplay();
-    public static ControlGroupTable controlGroup = new ControlGroupTable();
 
     public static void init(){
         teamSelect = new TeamSelectDialog();
