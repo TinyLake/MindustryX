@@ -31,6 +31,10 @@ public class ControlGroupTable extends Table{
     public ControlGroupTable(){
         background(Styles.black3);
 
+        Events.on(WorldLoadEvent.class, e -> {
+            updateControlGroup();
+        });
+
         Events.on(SaveLoadEvent.class, e -> {
             updateControlGroup();
         });
@@ -118,9 +122,8 @@ public class ControlGroupTable extends Table{
 
             modelTable.button(b -> {
                 b.add("" + finalI).style(Styles.outlineLabel).labelAlign(Align.center).width(32f);
-                b.table(unitTable -> {
-                    setupUnitsTable(unitTable, model);
-                }).padLeft(8f).padRight(16f).growX();
+                Table unitTable = b.add(new GridTable()).padLeft(8f).padRight(16f).growX().get();
+                setupUnitsTable(unitTable, model);
             }, Styles.clearNonei, () -> {
                 setControlUnits(model.units.toSeq());
 
@@ -130,8 +133,7 @@ public class ControlGroupTable extends Table{
                 }
             }).padTop(finalI != 1 ? 4f : 0f).grow();
 
-            // float layout
-            modelTable.fill(buttons -> {
+            modelTable.table(buttons -> {
                 buttons.right();
                 buttons.defaults().growY().padLeft(8f);
 
@@ -157,6 +159,7 @@ public class ControlGroupTable extends Table{
 
     private void setupUnitsTable(Table table, ControlGroupModel model){
         table.left();
+        table.defaults().minSize(Vars.iconMed).padLeft(8f);
 
         for(UnitType type : Vars.content.units()){
             int amount = model.count(type);
@@ -171,7 +174,7 @@ public class ControlGroupTable extends Table{
                     t.label(() -> model.countSelect(type) + "/" + amount).style(Styles.outlineLabel).fontScale(0.75f);
                 });
             }, Styles.clearNoneTogglei, () -> {})
-            .checked(b -> model.countSelect(type) > 0).padLeft(8f).padRight(8f).tooltip(type.localizedName).get();
+            .checked(b -> model.countSelect(type) > 0).tooltip(type.localizedName).get();
 
             btn.addListener(new ClickListener(){
                 @Override
