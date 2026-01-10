@@ -217,7 +217,7 @@ public class MarkerType{
             return;
         }
         last = at(pos);
-        UIExt.sendChatMessage(Strings.format("<ARCxMDTX>[#@]<@>[]@", color, name, FormatDefault.formatTile(pos)));
+        ShareFeature.send(Iconc.map, Strings.format("[#@]<@>[]@", color, name, FormatDefault.formatTile(pos)));
     }
 
     public static void newMarkFromChat(String text, Vec2 pos){

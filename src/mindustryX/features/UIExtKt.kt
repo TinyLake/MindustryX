@@ -51,6 +51,9 @@ object UIExtKt {
             resizable = true
             availability = inGameOnly
         }
+        OverlayUI.registerWindow("markAndShare", ShareFeature.newShareTable()).apply {
+            availability = inGameOnly
+        }
     }
 
     @JvmStatic

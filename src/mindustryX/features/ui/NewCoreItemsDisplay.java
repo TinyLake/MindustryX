@@ -4,7 +4,6 @@ import arc.*;
 import arc.graphics.*;
 import arc.math.*;
 import arc.scene.event.*;
-import arc.scene.style.*;
 import arc.scene.ui.*;
 import arc.scene.ui.layout.*;
 import arc.struct.*;
@@ -24,10 +23,10 @@ import mindustry.world.blocks.power.*;
 import mindustry.world.blocks.storage.*;
 import mindustryX.features.*;
 import mindustryX.features.SettingsV2.*;
+import mindustryX.features.ShareFeature.*;
 import mindustryX.features.ui.comp.*;
 
 import java.util.*;
-import java.util.List;
 
 import static mindustry.Vars.*;
 
@@ -41,8 +40,8 @@ public class NewCoreItemsDisplay extends Table{
 
     private final int[] itemDelta;
     private final int[] lastItemAmount;
-    private final ObjectSet<Item> usedItems = new ObjectSet<>();
-    private final ObjectSet<UnitType> usedUnits = new ObjectSet<>();
+    public final ObjectSet<Item> usedItems = new ObjectSet<>();
+    public final ObjectSet<UnitType> usedUnits = new ObjectSet<>();
 
     private final ItemSeq planItems = new ItemSeq();
     private final ObjectIntMap<Block> planCounter = new ObjectIntMap<>();
@@ -145,57 +144,12 @@ public class NewCoreItemsDisplay extends Table{
         ).growX();
     }
 
-    public void sharePowerInfo(){
-        ShareFeature.send(Iconc.power,
-        //电力: +xxx K/s 电力储存: xxx M/ xxx M
-        Core.bundle.format("bar.powerbalance", (balance >= 0 ? "[accent]+" : "[red]") + UI.formatAmount((long)balance) + "[]") + (satisfaction >= 1 ? "" : " [gray]" + (int)(satisfaction * 100) + "%[]") + "  "
-        + Core.bundle.format("bar.powerstored", UI.formatAmount((long)stored), UI.formatAmount((long)capacity))
-        );
+    public PowerInfo powerInfo(){
+        return new PowerInfo(balance, stored, capacity, produced, need, satisfaction);
     }
 
-    public void shareItemInfo(){
-        UIExtKt.showFloatSettingsPanel(table -> {
-            GridTable grid = new GridTable();
-            grid.defaults().size(iconMed).pad(4);
-            for(var item : content.items()){
-                if(!usedItems.contains(item)) continue;
-                grid.button(new TextureRegionDrawable(item.uiIcon), Styles.clearNonei, iconMed, () -> shareItemInfo(item));
-            }
-            table.add(grid).growX().maxWidth(320f).row();
-        });
-    }
-
-    public void shareItemInfo(Item item){
-        if(player.dead() || player.team().core() == null) return;
-        ShareFeature.send(
-        item.hasEmoji() ? item.emoji().charAt(0) : Iconc.itemCopper,
-        Core.bundle.format(
-        "mdtx.share.item", item.localizedName,
-        (lastItemAmount[item.id] > 100 ? UI.formatAmount(lastItemAmount[item.id]) : "[red]" + lastItemAmount[item.id] + "[]"),
-        (itemDelta[item.id] > 0 ? "[accent]+" : "[red]") + UI.formatAmount(itemDelta[item.id]) + "[]"));
-    }
-
-
-    public void shareUnitInfo(){
-        UIExtKt.showFloatSettingsPanel(table -> {
-            GridTable grid = new GridTable();
-            grid.defaults().size(iconMed).pad(4);
-            for(var unit : content.units()){
-                if(!usedUnits.contains(unit)) continue;
-                grid.button(new TextureRegionDrawable(unit.uiIcon), Styles.clearNonei, iconMed, () -> shareUnitInfo(unit));
-            }
-            table.add(grid).growX().maxWidth(320f).row();
-        });
-    }
-
-    public void shareUnitInfo(UnitType item){
-        if(player.dead() || player.team().core() == null) return;
-        int count = player.team().data().countType(item);
-        int limit = Units.getCap(player.team());
-        String color = (count == limit ? "orange" : count < 10 ? "red" : "accent");
-        ShareFeature.send(Iconc.units, Core.bundle.format(
-        "mdtx.share.unit", item.emoji() + item.localizedName,
-        "[" + color + "]" + count + "[]", limit));
+    public TeamItemInfo itemInfo(Item item){
+        return new TeamItemInfo(lastItemAmount[item.id], itemDelta[item.id]);
     }
 
     private void updateItemMeans(){

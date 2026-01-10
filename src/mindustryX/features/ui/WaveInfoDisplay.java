@@ -52,9 +52,9 @@ public class WaveInfoDisplay extends Table{
             buttons.add().growX();
             buttons.add("♐>");
             buttons.button(Icon.wavesSmall, Styles.clearNonei, iconMed, () -> ShareFeature.shareWaveInfo(state.wave + waveOffset)).tooltip("分享波次信息");
-            buttons.button(Icon.powerSmall, Styles.clearNonei, iconMed, () -> UIExt.coreItems.sharePowerInfo()).tooltip("分享电力情况");
-            buttons.button(new TextureRegionDrawable(Items.copper.uiIcon), Styles.clearNonei, iconSmall, () -> UIExt.coreItems.shareItemInfo()).tooltip("分享库存情况");
-            buttons.button(Icon.unitsSmall, Styles.clearNonei, iconMed, () -> UIExt.coreItems.shareUnitInfo()).tooltip("分享单位数量");
+            buttons.button(Icon.powerSmall, Styles.clearNonei, iconMed, ShareFeature::shareTeamPower).tooltip("分享电力情况");
+            buttons.button(new TextureRegionDrawable(Items.copper.uiIcon), Styles.clearNonei, iconSmall, ShareFeature::openShareItemDialog).tooltip("分享库存情况");
+            buttons.button(Icon.unitsSmall, Styles.clearNonei, iconMed, ShareFeature::openShareUnitDialog).tooltip("分享单位数量");
         }).fillX().row();
 
         waveInfo = new Table().left().top();

@@ -3,19 +3,33 @@ package mindustryX.features
 import arc.Core
 import arc.math.Mathf
 import arc.math.geom.Vec2
+import arc.scene.style.TextureRegionDrawable
+import arc.scene.ui.TextButton
+import arc.scene.ui.layout.Table
 import arc.util.Http
 import arc.util.Log
 import arc.util.Strings
 import mindustry.Vars
+import mindustry.content.Items
 import mindustry.content.StatusEffects
 import mindustry.ctype.UnlockableContent
+import mindustry.entities.Units
 import mindustry.game.Schematic
+import mindustry.gen.Icon
 import mindustry.gen.Iconc
 import mindustry.gen.Player
+import mindustry.gen.Tex
+import mindustry.type.Item
+import mindustry.type.UnitType
+import mindustry.ui.Fonts
+import mindustry.ui.Styles
+import mindustry.ui.fragments.ChatFragment
 import mindustryX.VarsX
+import mindustryX.features.UIExtKt.showFloatSettingsPanel
 import mindustryX.features.ui.ArcMessageDialog
 import mindustryX.features.ui.FormatDefault.duration
 import mindustryX.features.ui.FormatDefault.format
+import mindustryX.features.ui.comp.GridTable
 
 object ShareFeature {
     private fun tag(icon: Char) = "<MDTX $icon>"
@@ -139,6 +153,94 @@ object ShareFeature {
         send(Iconc.waves, msg)
     }
 
+    data class PowerInfo(val balance: Float, val stored: Float, val capacity: Float, val produced: Float, val need: Float, val satisfaction: Float)
+    data class TeamItemInfo(val amount: Int, val delta: Int)
+
+    @JvmStatic
+    fun shareTeamPower() {
+        val info = UIExt.coreItems.powerInfo()
+        //电力: +xxx K/s 电力储存: xxx M/ xxx M
+        val msg = buildString {
+            append(info.balance.let { Core.bundle.format("bar.powerbalance", (if (it >= 0) "[accent]+" else "[red]") + format(it.toLong()) + "[]") })
+            if (info.satisfaction < 1) append(" [gray]").append((info.satisfaction * 100).toInt()).append("%[]")
+            append("  ")
+            append(Core.bundle.format("bar.powerstored", format(info.stored.toLong()), format(info.capacity.toLong())))
+        }
+        send(Iconc.power, msg)
+    }
+
+    @JvmStatic
+    fun openShareItemDialog() {
+        showFloatSettingsPanel { table ->
+            val grid = GridTable().apply {
+                defaults().size(Vars.iconMed).pad(4f)
+                for (item in Vars.content.items()) {
+                    if (!UIExt.coreItems.usedItems.contains(item)) continue
+                    button(TextureRegionDrawable(item.uiIcon), Styles.clearNonei, Vars.iconMed) { shareTeamItem(item) }
+                }
+            }
+            table.add(grid).growX().maxWidth(320f).row()
+        }
+    }
+
+    fun shareTeamItem(item: Item) {
+        if (Vars.player.dead() || Vars.player.team().core() == null) return
+        val (amount, delta) = UIExt.coreItems.itemInfo(item)
+        send(
+            item.emoji().firstOrNull() ?: Iconc.itemCopper,
+            Core.bundle.format(
+                "mdtx.share.item", item.localizedName,
+                (if (amount > 100) format(amount.toLong()) else "[red]$amount[]"),
+                (if (delta > 0) "[accent]+" else "[red]") + format(delta.toLong()) + "[]"
+            )
+        )
+    }
+
+    @JvmStatic
+    fun openShareUnitDialog() {
+        showFloatSettingsPanel { table ->
+            val grid = GridTable().apply {
+                defaults().size(Vars.iconMed).pad(4f)
+                for (unit in Vars.content.units()) {
+                    if (!UIExt.coreItems.usedUnits.contains(unit)) continue
+                    button(TextureRegionDrawable(unit.uiIcon), Styles.clearNonei, Vars.iconMed) { shareTeamUnit(unit) }
+                }
+            }
+            table.add(grid).growX().maxWidth(320f).row()
+        }
+    }
+
+    fun shareTeamUnit(unit: UnitType) {
+        if (Vars.player.dead() || Vars.player.team().core() == null) return
+        val count = Vars.player.team().data().countType(unit)
+        val limit = Units.getCap(Vars.player.team())
+        val color = (if (count == limit) "orange" else if (count < 10) "red" else "accent")
+        send(
+            unit.emoji().firstOrNull() ?: Iconc.units,
+            Core.bundle.format("mdtx.share.unit", unit.localizedName, "[$color]$count[]", limit)
+        )
+    }
+
+    fun newShareTable() = Table(Styles.black3).apply {
+        defaults().size(Vars.iconMed)
+        val underlineToggleT = TextButton.TextButtonStyle().apply {
+            font = Fonts.def
+            up = Styles.none
+            over = Tex.underline
+            checked = Tex.underlineOver //Over是黄色的
+        }
+        button("T", underlineToggleT) { Vars.ui.chatfrag.nextMode() }
+            .checked { _ -> Vars.ui.chatfrag.mode == ChatFragment.ChatMode.team }.tooltip("前缀添加/t")
+        button(Icon.zoomSmall, Styles.clearNonei) { MarkerType.lockOnLastMark() }
+            .tooltip("锁定上个标记点")
+
+        add("♐>").padRight(18f)
+        button(Icon.mapSmall, Styles.clearNonei, Vars.iconMed) { MarkerType.toggleMarkHitterUI() }.tooltip("标记地图位置")
+        button(Icon.wavesSmall, Styles.clearNonei, Vars.iconMed) { shareWaveInfo(Vars.state.wave) }.tooltip("分享波次信息")
+        button(Icon.powerSmall, Styles.clearNonei, Vars.iconMed) { shareTeamPower() }.tooltip("分享电力情况")
+        button(TextureRegionDrawable(Items.copper.uiIcon), Styles.clearNonei, Vars.iconSmall) { openShareItemDialog() }.tooltip("分享库存情况")
+        button(Icon.unitsSmall, Styles.clearNonei, Vars.iconMed) { openShareUnitDialog() }.tooltip("分享单位数量")
+    }
 
     private fun resolveAt(message: String, sender: Player?): Boolean {
         var message = message
