@@ -19,6 +19,7 @@ Content-Transfer-Encoding: 8bit
  core/src/mindustry/core/UI.java               | 20 ++-----------------
  core/src/mindustry/game/Schematics.java       |  8 +++++---
  .../mindustry/graphics/MinimapRenderer.java   |  6 ++++--
+ .../mindustry/ui/dialogs/DatabaseDialog.java  |  4 ++++
  core/src/mindustry/ui/dialogs/JoinDialog.java | 19 ++++++++++--------
  .../mindustry/ui/dialogs/KeybindDialog.java   | 12 +++++++----
  .../mindustry/ui/dialogs/PausedDialog.java    |  3 ++-
@@ -28,7 +29,7 @@ Content-Transfer-Encoding: 8bit
  .../mindustry/world/blocks/defense/Radar.java |  9 +++++++++
  .../world/blocks/distribution/Router.java     |  3 ++-
  .../world/blocks/units/Reconstructor.java     | 12 ++++-------
- 20 files changed, 80 insertions(+), 56 deletions(-)
+ 21 files changed, 84 insertions(+), 56 deletions(-)
 
 diff --git a/core/src/mindustry/ClientLauncher.java b/core/src/mindustry/ClientLauncher.java
 index 4145f77e4680b962aa3ed89e414095ad71ecdb46..03945cddb87fc0c8fb583f126dde24fa60427e0c 100644
@@ -258,6 +259,28 @@ index 80892c624209e6f7e788c5c96b80f1f83a10d809..9101c36aaa4919cd52e1cd3bfb1bfab2
          float dx = (Core.camera.position.x / tilesize);
          float dy = (Core.camera.position.y / tilesize);
          dx = Mathf.clamp(dx, sz, world.width() - sz);
+diff --git a/core/src/mindustry/ui/dialogs/DatabaseDialog.java b/core/src/mindustry/ui/dialogs/DatabaseDialog.java
+index 663110a852d5b63e5da40ee62dac10a3a329852b..d7336fd7431ce571e5a7b999ebc40d315a109c82 100644
+--- a/core/src/mindustry/ui/dialogs/DatabaseDialog.java
++++ b/core/src/mindustry/ui/dialogs/DatabaseDialog.java
+@@ -96,6 +96,7 @@ public class DatabaseDialog extends BaseDialog{
+             }
+         }).row();
+ 
++        ObjectSet<Object> usedpatches = Reflect.get(state.patcher, "usedpatches");
+         for(int j = 0; j < allContent.length; j++){
+             ContentType type = ContentType.all[j];
+ 
+@@ -129,6 +130,9 @@ public class DatabaseDialog extends BaseDialog{
+                             setColor(Color.scarlet);
+                             touchable = Touchable.disabled;
+                         }}).size(8 * 4).pad(3);
++                    }else if(state.isGame() && usedpatches.contains(unlock)){
++                        //MDTX: border for patched content
++                        list.table(Tex.whiteui, t -> t.add(image).size(8 * 4).pad(2)).color(Pal.accent).pad(1);
+                     }else{
+                         list.add(image).size(8 * 4).pad(3);
+                     }
 diff --git a/core/src/mindustry/ui/dialogs/JoinDialog.java b/core/src/mindustry/ui/dialogs/JoinDialog.java
 index 3598459b4c4c22fc23a79c44b4f47f6c305f9bbf..ffcb29c15f2e1ab996a36cda95b845d64028a9b3 100644
 --- a/core/src/mindustry/ui/dialogs/JoinDialog.java
