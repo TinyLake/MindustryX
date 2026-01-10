@@ -472,28 +472,30 @@ object OverlayUI {
             t.button(Icon.add) {
                 UIExtKt.showFloatSettingsPanel {
                     add("添加面板").color(Color.gold).align(Align.center).row()
-                    defaults().minWidth(120f).fillX().pad(4f)
-                    val notAvailable = mutableListOf<Window>()
-                    windows.forEach {
-                        if (!it.availability.get()) {
-                            notAvailable.add(it)
-                            return@forEach
-                        }
-                        add(TextButton(it.data.title).apply {
-                            label.setWrap(false)
-                            setDisabled { it.data.enabled }
-                            changed { it.data.enabled = true }
-                        }).row()
-                    }
-                    if (notAvailable.isNotEmpty()) {
-                        add("当前不可用的面板:").align(Align.center).row()
-                        notAvailable.forEach {
+                    pane(Styles.smallPane, Table().apply {
+                        defaults().minWidth(120f).fillX().pad(4f)
+                        val notAvailable = mutableListOf<Window>()
+                        windows.forEach {
+                            if (!it.availability.get()) {
+                                notAvailable.add(it)
+                                return@forEach
+                            }
                             add(TextButton(it.data.title).apply {
                                 label.setWrap(false)
-                                isDisabled = true
+                                setDisabled { it.data.enabled }
+                                changed { it.data.enabled = true }
                             }).row()
                         }
-                    }
+                        if (notAvailable.isNotEmpty()) {
+                            add("当前不可用的面板:").align(Align.center).row()
+                            notAvailable.forEach {
+                                add(TextButton(it.data.title).apply {
+                                    label.setWrap(false)
+                                    isDisabled = true
+                                }).row()
+                            }
+                        }
+                    }).grow().row()
                 }
             }
             t.button(Icon.exit) { toggle() }

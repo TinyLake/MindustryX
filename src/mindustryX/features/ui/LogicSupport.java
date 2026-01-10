@@ -56,7 +56,7 @@ public class LogicSupport{
         main.fill(tt -> tt.top().right().button(Icon.cancel, Styles.clearNonei, iconMed, visible::toggle).tooltip("隐藏逻辑辅助器"));
 
         main.table(LogicSupport::buildConfigTable).fillX().row();
-        main.pane(Styles.noBarPane, varsTable).minHeight(450f).fillX().scrollX(false).width(400f).padTop(8f);
+        main.pane(Styles.noBarPane, varsTable).growY().fillX().scrollX(false).width(400f).padTop(8f);
 
         Interval interval = new Interval();
         main.update(() -> refresh = autoRefresh && interval.get(refreshTime));
