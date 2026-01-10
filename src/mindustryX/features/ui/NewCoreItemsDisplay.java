@@ -246,7 +246,7 @@ public class NewCoreItemsDisplay extends Table{
         control.input.allPlans().each(plan -> {
             Block block = plan.block;
 
-            if(block instanceof CoreBlock) return;
+            if(block == null || block instanceof CoreBlock) return;
 
             if(plan.build() instanceof ConstructBuild build){
                 block = build.current;

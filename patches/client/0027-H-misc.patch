@@ -9,7 +9,7 @@ Content-Transfer-Encoding: 8bit
 每个改动仅限连续的一段，且前有注释说明改动内容
 ---
  core/src/mindustry/ClientLauncher.java        |  8 ++++++++
- core/src/mindustry/Vars.java                  |  5 +++++
+ core/src/mindustry/Vars.java                  |  8 +++++++-
  core/src/mindustry/ai/BlockIndexer.java       |  2 +-
  core/src/mindustry/content/Blocks.java        |  2 ++
  core/src/mindustry/content/StatusEffects.java |  1 +
@@ -30,7 +30,7 @@ Content-Transfer-Encoding: 8bit
  .../mindustry/world/blocks/defense/Radar.java |  9 +++++++++
  .../world/blocks/distribution/Router.java     |  3 ++-
  .../world/blocks/units/Reconstructor.java     | 12 ++++-------
- 22 files changed, 87 insertions(+), 56 deletions(-)
+ 22 files changed, 89 insertions(+), 57 deletions(-)
 
 diff --git a/core/src/mindustry/ClientLauncher.java b/core/src/mindustry/ClientLauncher.java
 index 4145f77e4680b962aa3ed89e414095ad71ecdb46..03945cddb87fc0c8fb583f126dde24fa60427e0c 100644
@@ -63,10 +63,20 @@ index 4145f77e4680b962aa3ed89e414095ad71ecdb46..03945cddb87fc0c8fb583f126dde24fa
          }
  
 diff --git a/core/src/mindustry/Vars.java b/core/src/mindustry/Vars.java
-index 25c9cdeb5a6a49d616cafacb21d04172d0fbf59f..37866577b7274f0d0f2f00f0dcc5b74e7c38139b 100644
+index 25c9cdeb5a6a49d616cafacb21d04172d0fbf59f..397744e4237ddb0fcacaec86cf14e4f720a6c87a 100644
 --- a/core/src/mindustry/Vars.java
 +++ b/core/src/mindustry/Vars.java
-@@ -420,6 +420,11 @@ public class Vars implements Loadable{
+@@ -288,7 +288,8 @@ public class Vars implements Loadable{
+     public static NetServer netServer;
+     public static NetClient netClient;
+ 
+-    public static @Nullable Player player;
++    //MDTX: remove @Nullable, as it always not-null in client (init in Control). In server, should not access Vars.player anyway.
++    public static Player player;
+ 
+     @Override
+     public void loadAsync(){
+@@ -420,6 +421,11 @@ public class Vars implements Loadable{
                  if(!headless && (ui == null || ui.consolefrag == null)){
                      logBuffer.add(result);
                  }else if(!headless){
