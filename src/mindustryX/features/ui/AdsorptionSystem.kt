@@ -41,7 +41,7 @@ object AdsorptionSystem {
     }
 
     data class Constraint(val axis: Axis, val target: String, val type: ConstraintType) {
-        @Suppress("unused")//For Json
+        @Suppress("unused")//For JSON
         private constructor() : this(Axis.X, "", ConstraintType.AlignLeading)
 
         val targetPoint get() = all[target]

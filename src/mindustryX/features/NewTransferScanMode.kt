@@ -106,7 +106,7 @@ object NewTransferScanMode {
                 add(output)
             }
             //被动拉取
-            build.proximity.forEach { it ->
+            build.proximity.forEach {
                 if (getWrapper(it).activeInput(build)) {
                     add(it)
                 }

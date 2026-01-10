@@ -8,7 +8,6 @@ import mindustry.game.EventType.*;
 import mindustry.gen.*;
 import mindustry.mod.*;
 import mindustryX.features.*;
-import mindustryX.features.ui.*;
 
 import java.net.*;
 import java.util.*;

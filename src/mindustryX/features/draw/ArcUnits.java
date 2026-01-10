@@ -260,6 +260,7 @@ public class ArcUnits{
         int counter = maxBuildPlans;
         float x = unit.x, y = unit.y, s = unit.hitSize / 2f;
         for(BuildPlan b : unit.plans()){
+            if(b.block == null) return;
             Tmp.v2.trns(Angles.angle(x, y, b.drawx(), b.drawy()), s);
             Tmp.v3.trns(Angles.angle(x, y, b.drawx(), b.drawy()), b.block.size * 2f);
             Lines.circle(b.drawx(), b.drawy(), b.block.size * 2f);

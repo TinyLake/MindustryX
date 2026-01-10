@@ -242,7 +242,7 @@ object NewToolTable : Table() {
         val sField = TextField()
         if (!Vars.mobile) sField.requestKeyboard()
         cont.table().growX().get().apply {
-            image(Icon.zoom).size(48f);
+            image(Icon.zoom).size(48f)
             field(query) { query = it }.pad(8f).grow().colspan(2).update { if (!it.hasKeyboard()) it.text = query }
             button(Icon.cancelSmall, Styles.cleari) { query = "" }.padLeft(16f).size(32f)
             row()

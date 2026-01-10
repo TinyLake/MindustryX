@@ -10,7 +10,6 @@ import mindustry.ui.dialogs.BaseDialog
 import mindustry.world.Block
 import mindustryX.features.UIExt
 
-@Suppress("unused")//js X.func.FuncX.exportBlockData()
 fun exportBlockData() {
     val data = buildString {
         fun writeBlock(block: Block, name: String = block.name) {

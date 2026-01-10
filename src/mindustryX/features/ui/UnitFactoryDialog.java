@@ -804,7 +804,7 @@ public class UnitFactoryDialog extends BaseDialog{
         public @Nullable LoadedMod mod;
         public Seq<UnitType> units = new Seq<>();
 
-        public UnitStack(LoadedMod mod){
+        public UnitStack(@Nullable LoadedMod mod){
             this.mod = mod;
         }
 
