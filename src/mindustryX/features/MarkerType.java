@@ -21,7 +21,6 @@ import mindustry.graphics.*;
 import mindustry.ui.*;
 import mindustryX.features.func.*;
 import mindustryX.features.ui.*;
-import mindustryX.features.ui.ArcMessageDialog.*;
 
 import java.util.regex.*;
 
@@ -221,28 +220,21 @@ public class MarkerType{
         UIExt.sendChatMessage(Strings.format("<ARCxMDTX>[#@]<@>[]@", color, name, FormatDefault.formatTile(pos)));
     }
 
-    public static boolean resolveMessage(String text){
-        var matcher = posPattern.matcher(Strings.stripColors(text));
-        if(!matcher.find()) return false;
-        var typeName = matcher.group(1);//use index to support old Android
-        Vec2 pos = Tmp.v1.set(Strings.parseInt(matcher.group(2)), Strings.parseInt(matcher.group(3)));
-
+    public static void newMarkFromChat(String text, Vec2 pos){
         MarkerType type = mark;
-        if(typeName != null){
-            typeName = typeName.substring(1, typeName.length() - 1);
-            for(var it : allTypes){
-                if(it.name.equals(typeName))
-                    type = it;
-            }
-        }else if(text.contains("集合")){
+        if(text.contains("集合")){
             type = gatherMark;
+        }
+        for(MarkerType it : allTypes){
+            if(text.contains("<" + it.name + ">")){
+                type = it;
+                break;
+            }
         }
 
         var exists = (MarkElement)Groups.draw.find(it -> it instanceof MarkElement e && e.message == null && e.within(pos.scl(tilesize), 2 * tilesize));
         last = exists != null ? exists : type.at(pos.scl(tilesize));
         last.message = text;
-        new ArcMessageDialog.Msg(Type.markLoc, text, pos).add();
-        return true;
     }
 
     public static void eachActive(Cons<MarkElement> cons){

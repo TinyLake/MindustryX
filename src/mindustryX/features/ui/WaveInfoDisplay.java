@@ -51,7 +51,7 @@ public class WaveInfoDisplay extends Table{
 
             buttons.add().growX();
             buttons.add("♐>");
-            buttons.button(Icon.wavesSmall, Styles.clearNonei, iconMed, () -> shareWaveInfo(state.wave + waveOffset)).tooltip("分享波次信息");
+            buttons.button(Icon.wavesSmall, Styles.clearNonei, iconMed, () -> ShareFeature.shareWaveInfo(state.wave + waveOffset)).tooltip("分享波次信息");
             buttons.button(Icon.powerSmall, Styles.clearNonei, iconMed, () -> UIExt.coreItems.sharePowerInfo()).tooltip("分享电力情况");
             buttons.button(new TextureRegionDrawable(Items.copper.uiIcon), Styles.clearNonei, iconSmall, () -> UIExt.coreItems.shareItemInfo()).tooltip("分享库存情况");
             buttons.button(Icon.unitsSmall, Styles.clearNonei, iconMed, () -> UIExt.coreItems.shareUnitInfo()).tooltip("分享单位数量");
@@ -82,24 +82,6 @@ public class WaveInfoDisplay extends Table{
         }).growX().fillY().row();
 
         add(new OverlayUI.PreferAnyWidth()).fillX().row();
-    }
-
-    public void shareWaveInfo(int wave){
-        if(!state.rules.waves) return;
-        StringBuilder builder = new StringBuilder();
-        builder.append("第").append(wave).append("波");
-        if(wave >= state.wave){
-            builder.append("(");
-            if(wave > state.wave){
-                builder.append("还有").append(wave - state.wave).append("波, ");
-            }
-            int timer = (int)(state.wavetime + (wave - state.wave) * state.rules.waveSpacing);
-            builder.append(FormatDefault.duration((float)timer / 60)).append(")");
-        }
-        builder.append("：");
-
-        builder.append(ArcMessageDialog.getWaveInfo(wave));
-        UIExt.shareMessage(Iconc.waves, builder.toString());
     }
 
     private void setWaveOffsetDialog(){

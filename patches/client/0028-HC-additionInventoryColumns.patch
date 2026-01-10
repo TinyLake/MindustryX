@@ -44,7 +44,7 @@ index 9ea968aa912875fba796b853ef71dc08450968ed..1b4bbdb2e44b130e2b8fef9751da7a41
                              }
                          }
 diff --git a/core/src/mindustry/ui/fragments/BlockInventoryFragment.java b/core/src/mindustry/ui/fragments/BlockInventoryFragment.java
-index 54a36cde6eee102c9c8f3bfd5e4c76a2f4d0f1e1..5758f6e2ed41f227ac5fea4e8e4b7dcfd2ba02ff 100644
+index 54a36cde6eee102c9c8f3bfd5e4c76a2f4d0f1e1..dc3fefe34cd41290c432965811a6c85f0c5727f5 100644
 --- a/core/src/mindustry/ui/fragments/BlockInventoryFragment.java
 +++ b/core/src/mindustry/ui/fragments/BlockInventoryFragment.java
 @@ -138,7 +138,7 @@ public class BlockInventoryFragment{
@@ -52,7 +52,7 @@ index 54a36cde6eee102c9c8f3bfd5e4c76a2f4d0f1e1..5758f6e2ed41f227ac5fea4e8e4b7dcf
          });
  
 -        int cols = 3;
-+        int cols = 3 + mindustryX.VarsX.blockInventoryWidth.get();
++        int cols = 3 + mindustryX.VarsX.additionInventoryColumns.get();
          int row = 0;
  
          table.margin(4f);

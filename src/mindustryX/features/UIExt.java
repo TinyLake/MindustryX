@@ -14,7 +14,7 @@ import mindustry.ui.*;
 import mindustryX.features.ui.*;
 import mindustryX.features.ui.toolTable.*;
 
-import static mindustry.Vars.*;
+import static mindustry.Vars.ui;
 
 public class UIExt{
     public static TeamSelectDialog teamSelect;
@@ -22,6 +22,12 @@ public class UIExt{
     public static ArcMessageDialog arcMessageDialog = new ArcMessageDialog();
     public static AdvanceBuildTool advanceBuildTool = new AdvanceBuildTool();
     public static NewCoreItemsDisplay coreItems = new NewCoreItemsDisplay();
+
+    static{
+        if(Core.app.isHeadless()){
+            throw new RuntimeException("UIExt should not be initialized in headless mode.");
+        }
+    }
 
     public static void init(){
         teamSelect = new TeamSelectDialog();
@@ -67,8 +73,9 @@ public class UIExt{
         Call.sendChatMessage(ui.chatfrag.mode.normalizedPrefix() + message);
     }
 
+    @Deprecated
     public static void shareMessage(char icon, String message){
-        sendChatMessage("<MDTX " + icon + ">" + message);
+        ShareFeature.send(icon, message);
     }
 
     public static void openURI(String uri){

@@ -97,30 +97,30 @@ way-zer <himc.wicp@gmail.com> on 2024/9/8
  .../mindustry/entities/comp/BuildingComp.java |  18 +-
  .../mindustry/entities/comp/ShieldComp.java   |  10 +
  .../mindustry/entities/comp/StatusComp.java   |   3 +
- core/src/mindustry/game/Schematic.java        | 104 ++++++++
+ core/src/mindustry/game/Schematic.java        | 104 +++++++++
  .../src/mindustry/graphics/BlockRenderer.java |  17 +-
- .../mindustry/graphics/OverlayRenderer.java   |  36 ++-
+ .../mindustry/graphics/OverlayRenderer.java   |  36 +++-
  core/src/mindustry/input/DesktopInput.java    |  12 +-
  core/src/mindustry/input/InputHandler.java    |  47 +++-
  core/src/mindustry/input/MobileInput.java     |   6 +-
- core/src/mindustry/logic/LExecutor.java       |  12 +-
- core/src/mindustry/type/UnitType.java         | 101 +++++++-
+ core/src/mindustry/logic/LExecutor.java       |  11 +-
+ core/src/mindustry/type/UnitType.java         | 101 +++++++--
  core/src/mindustry/type/Weapon.java           |  19 ++
  core/src/mindustry/ui/Fonts.java              |   2 +-
- .../ui/dialogs/ContentInfoDialog.java         |  22 +-
- .../ui/dialogs/CustomRulesDialog.java         | 116 ++++++++-
+ .../ui/dialogs/ContentInfoDialog.java         |  23 +-
+ .../ui/dialogs/CustomRulesDialog.java         | 116 +++++++++-
  .../mindustry/ui/dialogs/DatabaseDialog.java  |   3 +-
  .../mindustry/ui/dialogs/PausedDialog.java    |  12 +-
- .../mindustry/ui/dialogs/PlanetDialog.java    |  27 +-
- .../ui/dialogs/SchematicsDialog.java          | 240 +++++++++++++++++-
- .../ui/dialogs/SettingsMenuDialog.java        |  24 +-
+ .../mindustry/ui/dialogs/PlanetDialog.java    |  27 ++-
+ .../ui/dialogs/SchematicsDialog.java          | 202 +++++++++++++++++-
+ .../ui/dialogs/SettingsMenuDialog.java        |  24 +--
  .../mindustry/ui/fragments/ChatFragment.java  |   9 +-
- .../ui/fragments/ConsoleFragment.java         |   3 +
- .../mindustry/ui/fragments/HudFragment.java   | 168 +++++++++++-
- .../mindustry/ui/fragments/MenuFragment.java  |  24 +-
- .../ui/fragments/PlacementFragment.java       | 164 ++++++++++--
- .../ui/fragments/PlayerListFragment.java      |  72 ++----
- 27 files changed, 1133 insertions(+), 145 deletions(-)
+ .../ui/fragments/ConsoleFragment.java         |   2 +
+ .../mindustry/ui/fragments/HudFragment.java   | 168 ++++++++++++++-
+ .../mindustry/ui/fragments/MenuFragment.java  |  24 ++-
+ .../ui/fragments/PlacementFragment.java       | 164 +++++++++++---
+ .../ui/fragments/PlayerListFragment.java      |  70 +++---
+ 27 files changed, 1092 insertions(+), 145 deletions(-)
 
 diff --git a/core/src/mindustry/editor/MapInfoDialog.java b/core/src/mindustry/editor/MapInfoDialog.java
 index b4f56d136b632aae1841fcfb6f745018d40b9199..6e38c85a35901a80d632191502f10063066e8e2e 100644
@@ -717,26 +717,18 @@ index b68b2ecad371b3263340c6df19d8c842c247ccdb..aadb4f131566ff7c54e4a3605af046f7
          rect.grow(4f);
  
 diff --git a/core/src/mindustry/logic/LExecutor.java b/core/src/mindustry/logic/LExecutor.java
-index 7fcdd08fe98b0de48c0a83e1e4c1877760160b21..205285fad97466ab5ac639ecca4c898b05080e0f 100644
+index 7fcdd08fe98b0de48c0a83e1e4c1877760160b21..4bff96bb91ed1bd823d1b11b1361769a54d14234 100644
 --- a/core/src/mindustry/logic/LExecutor.java
 +++ b/core/src/mindustry/logic/LExecutor.java
-@@ -10,6 +10,7 @@ import arc.util.*;
- import mindustry.*;
- import mindustry.ai.types.*;
- import mindustry.annotations.Annotations.*;
-+import mindustryX.features.ui.ArcMessageDialog;
- import mindustry.content.*;
- import mindustry.core.*;
- import mindustry.ctype.*;
-@@ -30,6 +31,7 @@ import mindustry.world.blocks.logic.LogicDisplay.*;
+@@ -30,6 +30,7 @@ import mindustry.world.blocks.logic.LogicDisplay.*;
  import mindustry.world.blocks.logic.MessageBlock.*;
  import mindustry.world.blocks.payloads.*;
  import mindustry.world.meta.*;
-+import mindustryX.features.ui.ArcMessageDialog.*;
++import mindustryX.features.ui.*;
  
  import static mindustry.Vars.*;
  
-@@ -1718,8 +1720,14 @@ public class LExecutor{
+@@ -1718,8 +1719,14 @@ public class LExecutor{
              }
  
              switch(type){
@@ -744,11 +736,11 @@ index 7fcdd08fe98b0de48c0a83e1e4c1877760160b21..205285fad97466ab5ac639ecca4c898b
 -                case announce -> ui.announce(text, duration.numf());
 +                case notify -> {
 +                    ui.hudfrag.showToast(Icon.info, text);
-+                    new ArcMessageDialog.Msg(Type.logicNotify, text).add();
++                    ArcMessageDialog.Type.logicNotify.log(text);
 +                }
 +                case announce -> {
 +                    ui.announce(text, duration.numf());
-+                    new ArcMessageDialog.Msg(Type.logicAnnounce, text).add();
++                    ArcMessageDialog.Type.logicAnnounce.log(text);
 +                }
                  case toast -> ui.showInfoToast(text, duration.numf());
                  //TODO desync?
@@ -969,10 +961,10 @@ index 1de3876c6adec0c03a3f477e242aaeac0550b138..380ab33b18be21881c60fadeaacf3507
  
      public static Font def, outline, icon, iconLarge, tech, logic, monospace;
 diff --git a/core/src/mindustry/ui/dialogs/ContentInfoDialog.java b/core/src/mindustry/ui/dialogs/ContentInfoDialog.java
-index d19bebacb06f9d6a2c8453a0ff0f59764dc2cfb4..90c116c938eedc6ac5aa17a4c51adc06fddc978e 100644
+index d19bebacb06f9d6a2c8453a0ff0f59764dc2cfb4..63c4cbf59b676645d6b2411a152d87829ef264e8 100644
 --- a/core/src/mindustry/ui/dialogs/ContentInfoDialog.java
 +++ b/core/src/mindustry/ui/dialogs/ContentInfoDialog.java
-@@ -9,9 +9,11 @@ import arc.util.*;
+@@ -9,9 +9,12 @@ import arc.util.*;
  import mindustry.ctype.*;
  import mindustry.gen.*;
  import mindustry.graphics.*;
@@ -980,11 +972,12 @@ index d19bebacb06f9d6a2c8453a0ff0f59764dc2cfb4..90c116c938eedc6ac5aa17a4c51adc06
  import mindustry.input.*;
  import mindustry.ui.*;
  import mindustry.world.meta.*;
++import mindustryX.features.*;
 +import mindustryX.features.ui.*;
  
  import static arc.Core.*;
  import static mindustry.Vars.*;
-@@ -40,8 +42,9 @@ public class ContentInfoDialog extends BaseDialog{
+@@ -40,8 +43,9 @@ public class ContentInfoDialog extends BaseDialog{
          content.checkStats();
  
          table.table(title1 -> {
@@ -996,7 +989,7 @@ index d19bebacb06f9d6a2c8453a0ff0f59764dc2cfb4..90c116c938eedc6ac5aa17a4c51adc06
          });
  
          table.row();
-@@ -90,7 +93,7 @@ public class ContentInfoDialog extends BaseDialog{
+@@ -90,7 +94,7 @@ public class ContentInfoDialog extends BaseDialog{
          }
  
          if(content.details != null){
@@ -1005,7 +998,7 @@ index d19bebacb06f9d6a2c8453a0ff0f59764dc2cfb4..90c116c938eedc6ac5aa17a4c51adc06
              table.row();
          }
  
-@@ -105,6 +108,19 @@ public class ContentInfoDialog extends BaseDialog{
+@@ -105,6 +109,19 @@ public class ContentInfoDialog extends BaseDialog{
  
          content.displayExtra(table);
  
@@ -1017,8 +1010,8 @@ index d19bebacb06f9d6a2c8453a0ff0f59764dc2cfb4..90c116c938eedc6ac5aa17a4c51adc06
 +                t.button(Icon.book, Styles.clearNonei, () -> Core.app.setClipboardText(content.description)).tooltip(content.description);
 +
 +            if(net.active()){
-+                t.button("♐简", Styles.cleart, () -> ArcMessageDialog.shareContent(content, false)).width(60f);
-+                t.button("♐详", Styles.cleart, () -> ArcMessageDialog.shareContent(content, true)).width(60f);
++                t.button("♐简", Styles.cleart, () -> ShareFeature.shareContent(content, false)).width(60f);
++                t.button("♐详", Styles.cleart, () -> ShareFeature.shareContent(content, true)).width(60f);
 +            }
 +        }).fillX().padLeft(10);
 +
@@ -1429,32 +1422,30 @@ index 1b4bbdb2e44b130e2b8fef9751da7a41eb787a5e..2216f954c48cda2f0b732921491231d0
  
                              if(sec.isAttacked()){
 diff --git a/core/src/mindustry/ui/dialogs/SchematicsDialog.java b/core/src/mindustry/ui/dialogs/SchematicsDialog.java
-index fef8e21d771ccfd81cbc65a0bc62642ebf721952..06ad54d370d3af90ab6e366155b18c8e825c50ca 100644
+index fef8e21d771ccfd81cbc65a0bc62642ebf721952..f855efcd27a47e8ac5a0ac3dffc8a3c8a8413619 100644
 --- a/core/src/mindustry/ui/dialogs/SchematicsDialog.java
 +++ b/core/src/mindustry/ui/dialogs/SchematicsDialog.java
-@@ -15,6 +15,8 @@ import arc.scene.ui.layout.*;
+@@ -15,6 +15,7 @@ import arc.scene.ui.layout.*;
  import arc.scene.utils.*;
  import arc.struct.*;
  import arc.util.*;
 +import mindustry.content.*;
-+import mindustry.core.*;
  import mindustry.ctype.*;
  import mindustry.game.*;
  import mindustry.gen.*;
-@@ -22,6 +24,12 @@ import mindustry.graphics.*;
+@@ -22,6 +23,11 @@ import mindustry.graphics.*;
  import mindustry.input.*;
  import mindustry.type.*;
  import mindustry.ui.*;
 +import mindustry.world.*;
 +import mindustry.world.blocks.production.*;
 +import mindustry.world.meta.*;
-+import mindustryX.*;
 +import mindustryX.features.*;
 +import mindustryX.features.ui.*;
  
  import java.util.regex.*;
  
-@@ -38,6 +46,9 @@ public class SchematicsDialog extends BaseDialog{
+@@ -38,6 +44,9 @@ public class SchematicsDialog extends BaseDialog{
      private Seq<String> tags, selectedTags = new Seq<>();
      private boolean checkedTags;
  
@@ -1464,7 +1455,7 @@ index fef8e21d771ccfd81cbc65a0bc62642ebf721952..06ad54d370d3af90ab6e366155b18c8e
      public SchematicsDialog(){
          super("@schematics");
          Core.assets.load("sprites/schematic-background.png", Texture.class).loaded = t -> t.setWrap(TextureWrap.repeat);
-@@ -47,6 +58,9 @@ public class SchematicsDialog extends BaseDialog{
+@@ -47,6 +56,9 @@ public class SchematicsDialog extends BaseDialog{
          shouldPause = true;
          addCloseButton();
          buttons.button("@schematic.import", Icon.download, this::showImport);
@@ -1474,7 +1465,7 @@ index fef8e21d771ccfd81cbc65a0bc62642ebf721952..06ad54d370d3af90ab6e366155b18c8e
          makeButtonOverlay();
          shown(this::setup);
          onResize(this::setup);
-@@ -110,6 +124,30 @@ public class SchematicsDialog extends BaseDialog{
+@@ -110,6 +122,30 @@ public class SchematicsDialog extends BaseDialog{
              in.button(Icon.pencilSmall, this::showAllTags).size(tagh).pad(2).tooltip("@schematic.edittags");
          }).height(tagh).fillX();
  
@@ -1505,7 +1496,7 @@ index fef8e21d771ccfd81cbc65a0bc62642ebf721952..06ad54d370d3af90ab6e366155b18c8e
          cont.row();
  
          cont.pane(t -> {
-@@ -140,6 +178,10 @@ public class SchematicsDialog extends BaseDialog{
+@@ -140,6 +176,10 @@ public class SchematicsDialog extends BaseDialog{
                      if(selectedTags.any() && !s.labels.containsAll(selectedTags)) continue;
                      //make sure search fits
                      if(!search.isEmpty() && !ignoreSymbols.matcher(s.name().toLowerCase()).replaceAll("").contains(searchString)) continue;
@@ -1516,7 +1507,7 @@ index fef8e21d771ccfd81cbc65a0bc62642ebf721952..06ad54d370d3af90ab6e366155b18c8e
                      if(firstSchematic == null) firstSchematic = s;
  
                      Button[] sel = {null};
-@@ -212,6 +254,11 @@ public class SchematicsDialog extends BaseDialog{
+@@ -212,6 +252,11 @@ public class SchematicsDialog extends BaseDialog{
  
              rebuildPane.run();
          }).grow().scrollX(false);
@@ -1528,61 +1519,25 @@ index fef8e21d771ccfd81cbc65a0bc62642ebf721952..06ad54d370d3af90ab6e366155b18c8e
      }
  
      public void showInfo(Schematic schematic){
-@@ -291,6 +338,20 @@ public class SchematicsDialog extends BaseDialog{
+@@ -291,6 +336,14 @@ public class SchematicsDialog extends BaseDialog{
                  t.button("@schematic.exportfile", Icon.export, style, () -> {
                      dialog.hide();
                      platform.export(s.name(), schematicExtension, file -> Schematics.write(s, file));
 +                }).marginLeft(12f).row();
-+                t.button("分享蓝图", Icon.chat, style, () -> {
++                t.button("聊天分享蓝图", Icon.chat, style, () -> {
 +                    dialog.hide();
-+                    ArcMessageDialog.uploadPasteBin(schematics.writeBase64(s), code -> {
-+                        if(code == null) return;
-+                        ArcMessageDialog.share("[blue]<Schem>[]", " " + code.substring(code.lastIndexOf('/') + 1));
-+                    });
++                    ShareFeature.shareSchematic(s);
 +                }).marginLeft(12f).row();
 +                t.button("复制到剪切板(高级版，含介绍)", Icon.star, style, () -> {
 +                    dialog.hide();
-+                    ArcMessageDialog.uploadPasteBin(schematics.writeBase64(s), code -> {
-+                        if(code == null) code = "x";
-+                        arcSendClipBroadMsg(s, code);
-+                    });
++                    ShareFeature.shareSchematicClipboard(s);
                  }).marginLeft(12f);
              });
          });
-@@ -299,6 +360,48 @@ public class SchematicsDialog extends BaseDialog{
+@@ -299,6 +352,18 @@ public class SchematicsDialog extends BaseDialog{
          dialog.show();
      }
  
-+    private void arcSendClipBroadMsg(Schematic schem, String link){
-+        StringBuilder s = new StringBuilder();
-+        s.append("这是一条来自 MDTX-").append(VarsX.version).append("的分享记录\n");
-+        s.append("蓝图名：").append(schem.name()).append("\n");
-+        s.append("分享者：").append(player.name).append("\n");
-+        s.append("蓝图造价：");
-+        ItemSeq arr = schem.requirements();
-+        for(ItemStack stack : arr){
-+            s.append(stack.item.emoji()).append(stack.item.localizedName).append(stack.amount).append("|");
-+        }
-+        s.append("\n");
-+        s.append("电力：");
-+        float cons = schem.powerConsumption() * 60, prod = schem.powerProduction() * 60;
-+        if(!Mathf.zero(prod)){
-+            s.append("+").append(Strings.autoFixed(prod, 2));
-+            if(!Mathf.zero(cons)){
-+                s.append("|");
-+            }
-+        }
-+        if(!Mathf.zero(cons)){
-+            s.append("-").append(Strings.autoFixed(cons, 2));
-+        }
-+        s.append("\n");
-+        s.append("蓝图代码链接：").append(link).append("\n");
-+        if(schematics.writeBase64(schem).length() > 3500) s.append("蓝图代码过长，请点击链接查看");
-+        else s.append("蓝图代码：\n").append(schematics.writeBase64(schem));
-+        Core.app.setClipboardText(Strings.stripColors(s.toString()));
-+        UIExt.announce("已保存至剪贴板");
-+    }
-+
 +    public void readShare(String base64, @Nullable Player sender){
 +        try{
 +            Schematic s = Schematics.readBase64(base64);
@@ -1598,7 +1553,7 @@ index fef8e21d771ccfd81cbc65a0bc62642ebf721952..06ad54d370d3af90ab6e366155b18c8e
      public void showEdit(Schematic s){
          new BaseDialog("@schematic.edit"){{
              setFillParent(true);
-@@ -376,6 +479,7 @@ public class SchematicsDialog extends BaseDialog{
+@@ -376,6 +441,7 @@ public class SchematicsDialog extends BaseDialog{
      }
  
      void addTag(Schematic s, String tag){
@@ -1606,7 +1561,7 @@ index fef8e21d771ccfd81cbc65a0bc62642ebf721952..06ad54d370d3af90ab6e366155b18c8e
          s.labels.add(tag);
          s.save();
          tagsChanged();
-@@ -579,6 +683,11 @@ public class SchematicsDialog extends BaseDialog{
+@@ -579,6 +645,11 @@ public class SchematicsDialog extends BaseDialog{
                      t.button("@schematic.texttag", Icon.add, () -> showNewTag(res -> rebuild[0].run())).wrapLabel(false).get().getLabelCell().padLeft(5);
                      t.button("@schematic.icontag", Icon.add, () -> showNewIconTag(res -> rebuild[0].run())).wrapLabel(false).get().getLabelCell().padLeft(5);
                  });
@@ -1618,7 +1573,7 @@ index fef8e21d771ccfd81cbc65a0bc62642ebf721952..06ad54d370d3af90ab6e366155b18c8e
  
              };
  
-@@ -587,6 +696,104 @@ public class SchematicsDialog extends BaseDialog{
+@@ -587,6 +658,104 @@ public class SchematicsDialog extends BaseDialog{
          dialog.show();
      }
  
@@ -1723,7 +1678,7 @@ index fef8e21d771ccfd81cbc65a0bc62642ebf721952..06ad54d370d3af90ab6e366155b18c8e
      void buildTags(Schematic schem, Table t){
          buildTags(schem, t, true);
      }
-@@ -800,13 +1007,44 @@ public class SchematicsDialog extends BaseDialog{
+@@ -800,13 +969,44 @@ public class SchematicsDialog extends BaseDialog{
                      }
                  });
              }
@@ -1864,26 +1819,22 @@ index 6202aadb499174630a04c0210e7390a0af4f6a42..dce4a6cfa280bd84ef2aac4c4d576744
      }
  
 diff --git a/core/src/mindustry/ui/fragments/ConsoleFragment.java b/core/src/mindustry/ui/fragments/ConsoleFragment.java
-index 3542163354070ac67c49b82dff6c72b374d4ca7d..ab9ad6c393cc401d13dbad7e62a78f87ccf97a9e 100644
+index 3542163354070ac67c49b82dff6c72b374d4ca7d..6d2b1fbf2840eee89ab7bfcb37990e83073bf083 100644
 --- a/core/src/mindustry/ui/fragments/ConsoleFragment.java
 +++ b/core/src/mindustry/ui/fragments/ConsoleFragment.java
-@@ -12,9 +12,11 @@ import arc.scene.ui.TextField.*;
- import arc.scene.ui.layout.*;
- import arc.struct.*;
- import arc.util.*;
-+import mindustryX.features.ui.ArcMessageDialog;
+@@ -15,6 +15,7 @@ import arc.util.*;
  import mindustry.game.EventType.*;
  import mindustry.input.*;
  import mindustry.ui.*;
-+import mindustryX.features.ui.ArcMessageDialog.*;
++import mindustryX.features.ui.*;
  
  import static arc.Core.*;
  import static mindustry.Vars.*;
-@@ -163,6 +165,7 @@ public class ConsoleFragment extends Table{
+@@ -163,6 +164,7 @@ public class ConsoleFragment extends Table{
          clearChatInput();
  
          if(message.replace(" ", "").isEmpty()) return;
-+        new ArcMessageDialog.Msg(Type.console,message).add();
++        ArcMessageDialog.Type.console.log(message);
  
          //special case for 'clear' command
          if(message.equals("clear")){
@@ -2468,16 +2419,14 @@ index 01ba50f19dcae39176f8dde2be5391777131826c..e37b35d706ab164ff95a9359367c2505
      }
  }
 diff --git a/core/src/mindustry/ui/fragments/PlayerListFragment.java b/core/src/mindustry/ui/fragments/PlayerListFragment.java
-index 58d82ae32d4a37b4e2bea1559c854b775048350f..9b0966bfb36da990de4bd410317c3528e32a0bd4 100644
+index 58d82ae32d4a37b4e2bea1559c854b775048350f..b0e3d09b0a8bea3bd0b32e958a05c5bc2b24ab32 100644
 --- a/core/src/mindustry/ui/fragments/PlayerListFragment.java
 +++ b/core/src/mindustry/ui/fragments/PlayerListFragment.java
-@@ -10,13 +10,16 @@ import arc.scene.ui.ImageButton.*;
+@@ -10,13 +10,14 @@ import arc.scene.ui.ImageButton.*;
  import arc.scene.ui.layout.*;
  import arc.struct.*;
  import arc.util.*;
 -import mindustry.game.*;
-+import mindustry.game.Team;
-+import mindustry.input.*;
  import mindustry.gen.*;
  import mindustry.graphics.*;
  import mindustry.net.*;
@@ -2489,7 +2438,7 @@ index 58d82ae32d4a37b4e2bea1559c854b775048350f..9b0966bfb36da990de4bd410317c3528
  
  import static mindustry.Vars.*;
  
-@@ -67,7 +70,7 @@ public class PlayerListFragment{
+@@ -67,7 +68,7 @@ public class PlayerListFragment{
                      menu.button("@close", this::toggle);
                  }).margin(0f).pad(10f).growX();
  
@@ -2498,7 +2447,7 @@ index 58d82ae32d4a37b4e2bea1559c854b775048350f..9b0966bfb36da990de4bd410317c3528
          });
  
          rebuild();
-@@ -78,7 +81,7 @@ public class PlayerListFragment{
+@@ -78,7 +79,7 @@ public class PlayerListFragment{
  
          content.clear();
  
@@ -2507,7 +2456,7 @@ index 58d82ae32d4a37b4e2bea1559c854b775048350f..9b0966bfb36da990de4bd410317c3528
          boolean found = false;
  
          players.clear();
-@@ -86,7 +89,7 @@ public class PlayerListFragment{
+@@ -86,7 +87,7 @@ public class PlayerListFragment{
  
          players.sort(Structs.comps(Structs.comparing(Player::team), Structs.comparingBool(p -> !p.admin)));
          if(search.getText().length() > 0){
@@ -2516,7 +2465,7 @@ index 58d82ae32d4a37b4e2bea1559c854b775048350f..9b0966bfb36da990de4bd410317c3528
          }
  
          for(var user : players){
-@@ -119,7 +122,7 @@ public class PlayerListFragment{
+@@ -119,7 +120,7 @@ public class PlayerListFragment{
                  iconTable.addListener(listener);
                  iconTable.addListener(new HandCursorListener());
              }
@@ -2525,7 +2474,7 @@ index 58d82ae32d4a37b4e2bea1559c854b775048350f..9b0966bfb36da990de4bd410317c3528
              iconTable.add(new Image(user.icon()).setScaling(Scaling.bounded)).grow();
              iconTable.name = user.name();
              iconTable.touchable = Touchable.enabled;
-@@ -132,12 +135,12 @@ public class PlayerListFragment{
+@@ -132,12 +133,12 @@ public class PlayerListFragment{
              });
  
              button.add(iconTable).size(h);
@@ -2542,7 +2491,7 @@ index 58d82ae32d4a37b4e2bea1559c854b775048350f..9b0966bfb36da990de4bd410317c3528
  
              var ustyle = new ImageButtonStyle(){{
                  down = Styles.none;
-@@ -147,11 +150,22 @@ public class PlayerListFragment{
+@@ -147,11 +148,22 @@ public class PlayerListFragment{
                  imageOverColor = Color.lightGray;
              }};
  
@@ -2550,7 +2499,7 @@ index 58d82ae32d4a37b4e2bea1559c854b775048350f..9b0966bfb36da990de4bd410317c3528
 +                Core.app.setClipboardText(user.name);
 +                UIExt.announce("已复制昵称：" + user.name);
 +            }).size(iconMed);
-+            button.button(Icon.linkSmall, ustyle, () -> ArcMessageDialog.share("AT", "戳了" + user.name + "[white]一下，并提醒你留意对话框")).size(iconMed);
++            button.button(Icon.linkSmall, ustyle, () -> ShareFeature.at(user.name)).size(iconMed);
 +
 +            button.button(Icon.planeOutlineSmall, ustyle, () ->
 +            ui.showTextInput("@votekick.reason", Core.bundle.format("votekick.reason.message", user.name()), "", reason ->
@@ -2566,7 +2515,7 @@ index 58d82ae32d4a37b4e2bea1559c854b775048350f..9b0966bfb36da990de4bd410317c3528
                          var dialog = new BaseDialog(user.coloredName());
  
                          dialog.title.setColor(Color.white);
-@@ -187,30 +201,7 @@ public class PlayerListFragment{
+@@ -187,30 +199,7 @@ public class PlayerListFragment{
                              //there's generally no reason to team switch outside PvP or sandbox, and it's basically an easy way to cheat
                              if(allowTeamSwitch){
                                  t.button("@player.team", Icon.redo, bstyle, () -> {
@@ -2598,7 +2547,7 @@ index 58d82ae32d4a37b4e2bea1559c854b775048350f..9b0966bfb36da990de4bd410317c3528
                                      dialog.hide();
                                  }).row();
                              }
-@@ -238,20 +229,11 @@ public class PlayerListFragment{
+@@ -238,20 +227,11 @@ public class PlayerListFragment{
                          dialog.cont.button("@back", Icon.left, dialog::hide).padTop(-1f).size(220f, 55f);
  
                          dialog.show();

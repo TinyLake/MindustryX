@@ -1,15 +1,11 @@
 package mindustryX.features.ui;
 
 import arc.*;
-import arc.func.*;
 import arc.graphics.*;
 import arc.math.geom.*;
 import arc.struct.*;
 import arc.struct.Queue;
 import arc.util.*;
-import mindustry.*;
-import mindustry.content.*;
-import mindustry.ctype.*;
 import mindustry.game.*;
 import mindustry.gen.*;
 import mindustry.ui.*;
@@ -74,76 +70,11 @@ public class ArcMessageDialog extends BaseDialog{
 
         Events.on(EventType.WaveEvent.class, e -> {
             if(state.wavetime < 60f) return;
-            addMsg(new Msg(Type.eventWave, "波次： " + state.wave + " | " + getWaveInfo(state.wave - 1)));
+            addMsg(new Msg(Type.eventWave, "波次： " + state.wave + " | " + ShareFeature.INSTANCE.waveInfo(state.wave)));
         });
     }
 
-    public static void share(String type, String content){
-        UIExt.sendChatMessage("<ARCxMDTX><" + type + ">" + content);
-    }
-
-    public static void shareContent(UnlockableContent content, boolean description){
-        StringBuilder builder = new StringBuilder();
-        builder.append(content.localizedName).append(content.emoji());
-        builder.append("(").append(content.name).append(")");
-        if(content.description != null && description){
-            builder.append(": ").append(content.description);
-        }
-        UIExt.shareMessage(Iconc.info, builder.toString());
-    }
-
-    public static void uploadPasteBin(String content, Cons<String> callback){
-        Http.HttpRequest req = Http.post("https://pastebin.com/api/api_post.php", "api_dev_key=sdBDjI5mWBnHl9vBEDMNiYQ3IZe0LFEk&api_option=paste&api_paste_expire_date=10M&api_paste_code=" + content);
-        req.submit(r -> {
-            String code = r.getResultAsString();
-            Core.app.post(() -> callback.get(code));
-        });
-        req.error(e -> Core.app.post(() -> {
-            ui.showException("上传失败，再重试一下？", e);
-            Core.app.post(() -> callback.get(null));
-        }));
-    }
-
-    public static String getWaveInfo(int waves){
-        StringBuilder builder = new StringBuilder();
-        if(state.rules.attackMode){
-            int sum = Math.max(state.teams.present.sum(t -> t.team != player.team() ? t.cores.size : 0), 1) + Vars.spawner.countSpawns();
-            builder.append("包含(×").append(sum).append(")");
-        }else{
-            builder.append("包含(×").append(Vars.spawner.countSpawns()).append("):");
-        }
-        for(SpawnGroup group : state.rules.spawns){
-            if(group.getSpawned(waves - 1) > 0){
-                builder.append((char)Fonts.getUnicode(group.type.name)).append("(");
-                if(group.effect != StatusEffects.invincible && group.effect != StatusEffects.none && group.effect != null){
-                    builder.append((char)Fonts.getUnicode(group.effect.name)).append("|");
-                }
-                if(group.getShield(waves - 1) > 0){
-                    builder.append(FormatDefault.format(group.getShield(waves - 1))).append("|");
-                }
-                builder.append(group.getSpawned(waves - 1)).append(")");
-            }
-        }
-        return builder.toString();
-    }
-
-    public String formatTime(Date time){
-        return new SimpleDateFormat("HH:mm:ss", Locale.US).format(time);
-    }
-
-    public static void resolveMsg(String message, @Nullable Player sender){
-        Type type;
-        if(message.contains("<AT>")) type = Type.markPlayer;
-        else type = sender != null ? Type.chat : Type.serverMsg;
-
-        new Msg(type, message, sender != null ? sender.name() : null, sender != null ? new Vec2(sender.x, sender.y) : null).add();
-        if(type == Type.markPlayer){
-            if(!message.split("AT")[1].contains(player.name)) return;
-            if(sender != null)
-                ui.announce("[gold]你被[white] " + sender.name + " [gold]戳了一下，请注意查看信息框哦~", 10);
-            else ui.announce("[orange]你被戳了一下，请注意查看信息框哦~", 10);
-        }
-    }
+    private final DateFormat timeFormat = new SimpleDateFormat("HH:mm:ss", Locale.US);
 
     public void addMsg(Msg msg){
         id++;
@@ -160,7 +91,7 @@ public class ArcMessageDialog extends BaseDialog{
                 else
                     tt.add(msg.msgType.name).style(Styles.outlineLabel).color(msg.msgType.color).left().width(300f);
 
-                tt.add(formatTime(msg.time)).style(Styles.outlineLabel).color(msg.msgType.color).left().padLeft(20f).width(100f);
+                tt.add(timeFormat.format(msg.time)).style(Styles.outlineLabel).color(msg.msgType.color).left().padLeft(20f).width(100f);
 
                 if(msg.msgLoc != null){
                     tt.button("♐： " + (int)(msg.msgLoc.x / tilesize) + "," + (int)(msg.msgLoc.y / tilesize), Styles.logict, () -> {
@@ -220,12 +151,12 @@ public class ArcMessageDialog extends BaseDialog{
             this.msgLoc = msgLoc;
         }
 
-        public Msg(Type msgType, String message, Vec2 msgLoc){
-            this(msgType, message, null, msgLoc);
+        public Msg(Type msgType, String message, @Nullable Player sender){
+            this(msgType, message, sender != null ? sender.name() : null, sender != null ? new Vec2(sender.x, sender.y) : null);
         }
 
         public Msg(Type msgType, String message){
-            this(msgType, message, null);
+            this(msgType, message, null, null);
         }
 
         public void add(){
@@ -254,6 +185,10 @@ public class ArcMessageDialog extends BaseDialog{
         Type(String name, Color color){
             this.name = name;
             this.color = color;
+        }
+
+        public void log(String message){
+            new Msg(this, message).add();
         }
     }
 }

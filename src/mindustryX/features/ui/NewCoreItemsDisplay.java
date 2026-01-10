@@ -146,7 +146,7 @@ public class NewCoreItemsDisplay extends Table{
     }
 
     public void sharePowerInfo(){
-        UIExt.shareMessage(Iconc.power,
+        ShareFeature.send(Iconc.power,
         //电力: +xxx K/s 电力储存: xxx M/ xxx M
         Core.bundle.format("bar.powerbalance", (balance >= 0 ? "[accent]+" : "[red]") + UI.formatAmount((long)balance) + "[]") + (satisfaction >= 1 ? "" : " [gray]" + (int)(satisfaction * 100) + "%[]") + "  "
         + Core.bundle.format("bar.powerstored", UI.formatAmount((long)stored), UI.formatAmount((long)capacity))
@@ -167,7 +167,7 @@ public class NewCoreItemsDisplay extends Table{
 
     public void shareItemInfo(Item item){
         if(player.dead() || player.team().core() == null) return;
-        UIExt.shareMessage(
+        ShareFeature.send(
         item.hasEmoji() ? item.emoji().charAt(0) : Iconc.itemCopper,
         Core.bundle.format(
         "mdtx.share.item", item.localizedName,
@@ -193,7 +193,7 @@ public class NewCoreItemsDisplay extends Table{
         int count = player.team().data().countType(item);
         int limit = Units.getCap(player.team());
         String color = (count == limit ? "orange" : count < 10 ? "red" : "accent");
-        UIExt.shareMessage(Iconc.units, Core.bundle.format(
+        ShareFeature.send(Iconc.units, Core.bundle.format(
         "mdtx.share.unit", item.emoji() + item.localizedName,
         "[" + color + "]" + count + "[]", limit));
     }

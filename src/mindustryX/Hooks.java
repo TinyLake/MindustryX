@@ -77,24 +77,8 @@ public class Hooks implements ApplicationListener{
     public static @Nullable String onHandleSendMessage(String message, @Nullable Player sender){
         if(message == null) return null;
         if(Vars.ui != null){
-            if(MarkerType.resolveMessage(message)){
-            }else if(ArcOld.schematicShare.get() && message.contains("<ARC") && message.contains("<Schem>")){
-                try{
-                    String id = message.split("<Schem>")[1].split(" ")[1];
-                    Http.get("https://pastebin.com/raw/" + id, r -> {
-                        String content = r.getResultAsString().replace(" ", "+");
-                        Core.app.post(() -> ui.schematics.readShare(content, sender));
-                    });
-                }catch(Exception e){
-                    Log.err(e);
-                }
-            }else{
-                try{
-                    ArcMessageDialog.resolveMsg(message, sender);
-                }catch(Exception e){
-                    Log.err(e);
-                }
-            }
+            ShareFeature.resolve(message, sender);
+
             if(sender != null){
                 StringBuilder builder = new StringBuilder();
                 if(Vars.state.rules.pvp){
