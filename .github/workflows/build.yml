@@ -68,6 +68,6 @@ jobs:
       - name: clearOldAssets
         run: bun run .github/actions/clearOldAssets.ts
         env:
-          TOKEN: ${{secrets.PUBLISH_TOKEN}}
-          REPOSITORY: TinyLake/MindustryX-work
+          TOKEN: ${{secrets.GITHUB_TOKEN}}
+          REPOSITORY: TinyLake/MindustryX
           TAG: ${{ env.RELEASE_TAG }}
