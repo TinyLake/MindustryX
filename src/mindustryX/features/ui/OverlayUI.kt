@@ -463,6 +463,8 @@ object OverlayUI {
         touchable = Touchable.childrenOnly
         zIndex = 99
 
+        visible { Vars.state.isMenu || Vars.ui.hudfrag.shown }
+
         fill(Styles.black6) { t ->
             t.name = "overlayUI-bg"
             t.touchable = Touchable.enabled
