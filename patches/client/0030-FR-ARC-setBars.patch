@@ -109,7 +109,7 @@ index 900f9668d79afad7b9d6b75656ea430fedc991af..74d4e982edd390695353be76a6ead91f
                  () -> Mathf.zero(consPower.requestedPower(entity)) && entity.power.graph.getPowerProduced() + entity.power.graph.getBatteryStored() > 0f ? 1f : entity.power.status)
              );
 diff --git a/core/src/mindustry/world/blocks/defense/ForceProjector.java b/core/src/mindustry/world/blocks/defense/ForceProjector.java
-index 44c2a533b086496b757623066c4eadd2e785a43d..be04d1ec55b93c7ca32da34b0140edb7d8fec2d3 100644
+index ccc9095318e32747affcbee27b8acb7cb831f792..8213b85678de93b401a6f15a54c011bde4728f01 100644
 --- a/core/src/mindustry/world/blocks/defense/ForceProjector.java
 +++ b/core/src/mindustry/world/blocks/defense/ForceProjector.java
 @@ -25,6 +25,7 @@ import mindustry.world.blocks.*;

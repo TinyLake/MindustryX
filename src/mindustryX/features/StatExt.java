@@ -22,7 +22,6 @@ public class StatExt{
 
     bufferCapacity = new Stat("buffer_capacity", StatCat.items),
     regenSpeed = new Stat("regen_speed", StatCat.function),//力墙 回复速度
-    regenSpeedBroken = new Stat("regen_speed_broken", StatCat.function),//力墙 过热时回复速度
     mend = new Stat("mend", StatCat.function),//治疗 修复量
     mendReload = new Stat("mend_reload", StatCat.function),//治疗 修复间隔
     mendSpeed = new Stat("mend_speed", StatCat.function),//治疗 修复速度
@@ -35,7 +34,6 @@ public class StatExt{
     drownTimeMultiplier = new Stat("drown_time_multiplier", StatCat.movement),
     mineLevel = new Stat("mine_level", StatCat.support),
 
-    crushDamage = new Stat("crush_damage", StatCat.combat),//碾压伤害(每格)
     estimateDPS = new Stat("estimate_dps", StatCat.combat),
     aiController = new Stat("ai_controller", StatCat.combat),
     targets = new Stat("targets", StatCat.combat),
@@ -102,18 +100,5 @@ public class StatExt{
                 }
             }).padLeft(12f);
         };
-    }
-
-    public static int totalShots(ShootPattern pattern){
-        if(pattern instanceof ShootHelix){
-            return pattern.shots * 2;
-        }else if(pattern instanceof ShootMulti s){
-            int total = 0;
-            for(var p : s.dest){
-                total += totalShots(p);
-            }
-            return s.source.shots * total;
-        }
-        return pattern.shots;
     }
 }

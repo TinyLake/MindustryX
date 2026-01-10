@@ -12,10 +12,10 @@ way-zer <himc.wicp@gmail.com> on 2024/5/4 at 22:17
  core/src/mindustry/type/Item.java             |   5 +
  core/src/mindustry/type/Liquid.java           |   2 +
  core/src/mindustry/type/StatusEffect.java     |   2 +
- core/src/mindustry/type/UnitType.java         |  35 +++-
+ core/src/mindustry/type/UnitType.java         |  32 ++-
  core/src/mindustry/type/Weapon.java           |  12 ++
  core/src/mindustry/world/Block.java           |   4 +-
- .../world/blocks/defense/ForceProjector.java  |   5 +-
+ .../world/blocks/defense/ForceProjector.java  |   2 +
  .../world/blocks/defense/MendProjector.java   |   6 +-
  .../world/blocks/defense/RegenProjector.java  |   5 +-
  .../world/blocks/defense/ShieldWall.java      |   4 +
@@ -30,7 +30,7 @@ way-zer <himc.wicp@gmail.com> on 2024/5/4 at 22:17
  core/src/mindustry/world/meta/Stat.java       |  21 +-
  core/src/mindustry/world/meta/StatCat.java    |   5 +-
  core/src/mindustry/world/meta/StatValues.java | 186 +++++++++++++-----
- 21 files changed, 249 insertions(+), 75 deletions(-)
+ 21 files changed, 244 insertions(+), 74 deletions(-)
 
 diff --git a/core/src/mindustry/type/Item.java b/core/src/mindustry/type/Item.java
 index 3ba4dc9de5a10c39e4e0257e854dabd7434e7b6d..ffac65db1338a457df5189565f554d80cc076500 100644
@@ -96,7 +96,7 @@ index f4e0d3b9c6b33cf5fc64583a02544e3c87e8dc50..e0efab8dc1e5e40d6374ab5934756c7d
          if(damage < 0) stats.add(Stat.healing, -damage * 60f, StatUnit.perSecond);
  
 diff --git a/core/src/mindustry/type/UnitType.java b/core/src/mindustry/type/UnitType.java
-index 010a7c02682f89bfcfc61916494a4eab9f5aee2f..cef9350f355b73ae9fed0181dfa7d396676646b2 100644
+index 010a7c02682f89bfcfc61916494a4eab9f5aee2f..80564bc0440fa9693762f532750777d65f27870f 100644
 --- a/core/src/mindustry/type/UnitType.java
 +++ b/core/src/mindustry/type/UnitType.java
 @@ -37,6 +37,7 @@ import mindustry.world.blocks.payloads.*;
@@ -115,7 +115,7 @@ index 010a7c02682f89bfcfc61916494a4eab9f5aee2f..cef9350f355b73ae9fed0181dfa7d396
          stats.add(Stat.size, StatValues.squared(hitSize / tilesize, StatUnit.blocks));
          stats.add(Stat.itemCapacity, itemCapacity);
          stats.add(Stat.range, Strings.autoFixed(maxRange / tilesize, 1), StatUnit.blocks);
-@@ -781,24 +783,39 @@ public class UnitType extends UnlockableContent implements Senseable{
+@@ -781,24 +783,36 @@ public class UnitType extends UnlockableContent implements Senseable{
  
          stats.add(Stat.targetsAir, targetAir);
          stats.add(Stat.targetsGround, targetGround);
@@ -124,15 +124,12 @@ index 010a7c02682f89bfcfc61916494a4eab9f5aee2f..cef9350f355b73ae9fed0181dfa7d396
          if(abilities.any()){
 -            stats.add(Stat.abilities, StatValues.abilities(abilities));
 +            stats.add(Stat.abilities, StatValues.abilities(this, abilities));
-+        }
-+
+         }
+ 
 +        stats.add(StatExt.estimateDPS,estimateDps());
 +        stats.add(StatExt.ammoType, ammoType.icon());
 +        stats.add(StatExt.ammoCapacity, ammoCapacity);
-+        if (crushDamage > 0) {
-+            stats.add(StatExt.crushDamage, crushDamage * 60f, StatUnit.perSecond);
-         }
- 
++
          stats.add(Stat.flying, flying);
  
          if(!flying){
@@ -161,7 +158,7 @@ index 010a7c02682f89bfcfc61916494a4eab9f5aee2f..cef9350f355b73ae9fed0181dfa7d396
          }
          if(buildSpeed > 0){
              stats.addPercent(Stat.buildSpeed, buildSpeed);
-@@ -817,6 +834,10 @@ public class UnitType extends UnlockableContent implements Senseable{
+@@ -817,6 +831,10 @@ public class UnitType extends UnlockableContent implements Senseable{
              stats.add(Stat.weapons, StatValues.weapons(this, weapons));
          }
  
@@ -172,7 +169,7 @@ index 010a7c02682f89bfcfc61916494a4eab9f5aee2f..cef9350f355b73ae9fed0181dfa7d396
          if(immunities.size > 0){
              stats.add(Stat.immunities, StatValues.statusEffects(immunities.toSeq().sort()));
          }
-@@ -891,6 +912,8 @@ public class UnitType extends UnlockableContent implements Senseable{
+@@ -891,6 +909,8 @@ public class UnitType extends UnlockableContent implements Senseable{
  
          allowLegStep = example instanceof Legsc || example instanceof Crawlc;
  
@@ -234,7 +231,7 @@ index 26f1a576b0f734cc11230aaeab9e9b6df3bcf98f..900f9668d79afad7b9d6b75656ea430f
          //Note: Power stats are added by the consumers.
          if(hasLiquids) stats.add(Stat.liquidCapacity, liquidCapacity, StatUnit.liquidUnits);
 diff --git a/core/src/mindustry/world/blocks/defense/ForceProjector.java b/core/src/mindustry/world/blocks/defense/ForceProjector.java
-index fbc32b5eeb9989f3455c52716bce2d0e6728e85f..44c2a533b086496b757623066c4eadd2e785a43d 100644
+index fbc32b5eeb9989f3455c52716bce2d0e6728e85f..ccc9095318e32747affcbee27b8acb7cb831f792 100644
 --- a/core/src/mindustry/world/blocks/defense/ForceProjector.java
 +++ b/core/src/mindustry/world/blocks/defense/ForceProjector.java
 @@ -24,6 +24,7 @@ import mindustry.world.*;
@@ -245,7 +242,7 @@ index fbc32b5eeb9989f3455c52716bce2d0e6728e85f..44c2a533b086496b757623066c4eadd2
  
  import static mindustry.Vars.*;
  
-@@ -109,10 +110,12 @@ public class ForceProjector extends Block{
+@@ -109,6 +110,7 @@ public class ForceProjector extends Block{
  
          if(consItems) stats.timePeriod = phaseUseTime;
          super.setStats();
@@ -253,12 +250,6 @@ index fbc32b5eeb9989f3455c52716bce2d0e6728e85f..44c2a533b086496b757623066c4eadd2
          stats.add(Stat.shieldHealth, shieldHealth, StatUnit.none);
          stats.add(Stat.regenerationRate, cooldownNormal * 60f, StatUnit.perSecond);
          stats.add(Stat.cooldownTime, (int) (shieldHealth / cooldownBrokenBase / 60f), StatUnit.seconds);
--
-+        stats.add(StatExt.regenSpeed, cooldownNormal * Time.toSeconds, StatUnit.perSecond);
-+        stats.add(StatExt.regenSpeedBroken, cooldownBrokenBase * Time.toSeconds, StatUnit.perSecond);
-         if(consItems && itemConsumer instanceof ConsumeItems coni){
-             stats.remove(Stat.booster);
-             stats.add(Stat.booster, StatValues.itemBoosters("+{0} " + StatUnit.shieldHealth.localized(), stats.timePeriod, phaseShieldBoost, phaseRadiusBoost, coni.items));
 diff --git a/core/src/mindustry/world/blocks/defense/MendProjector.java b/core/src/mindustry/world/blocks/defense/MendProjector.java
 index f1ce6b0ba47e9d3949e344db0ed784d4b4d511d6..543e7c02425379565009be8824f05c0d41489a8e 100644
 --- a/core/src/mindustry/world/blocks/defense/MendProjector.java
