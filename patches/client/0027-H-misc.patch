@@ -19,6 +19,7 @@ Content-Transfer-Encoding: 8bit
  core/src/mindustry/core/UI.java               | 20 ++-----------------
  core/src/mindustry/game/Schematics.java       |  8 +++++---
  .../mindustry/graphics/MinimapRenderer.java   |  6 ++++--
+ core/src/mindustry/input/DesktopInput.java    |  3 +++
  .../mindustry/ui/dialogs/DatabaseDialog.java  |  4 ++++
  core/src/mindustry/ui/dialogs/JoinDialog.java | 19 ++++++++++--------
  .../mindustry/ui/dialogs/KeybindDialog.java   | 12 +++++++----
@@ -29,7 +30,7 @@ Content-Transfer-Encoding: 8bit
  .../mindustry/world/blocks/defense/Radar.java |  9 +++++++++
  .../world/blocks/distribution/Router.java     |  3 ++-
  .../world/blocks/units/Reconstructor.java     | 12 ++++-------
- 21 files changed, 84 insertions(+), 56 deletions(-)
+ 22 files changed, 87 insertions(+), 56 deletions(-)
 
 diff --git a/core/src/mindustry/ClientLauncher.java b/core/src/mindustry/ClientLauncher.java
 index 4145f77e4680b962aa3ed89e414095ad71ecdb46..03945cddb87fc0c8fb583f126dde24fa60427e0c 100644
@@ -259,6 +260,20 @@ index 80892c624209e6f7e788c5c96b80f1f83a10d809..9101c36aaa4919cd52e1cd3bfb1bfab2
          float dx = (Core.camera.position.x / tilesize);
          float dy = (Core.camera.position.y / tilesize);
          dx = Mathf.clamp(dx, sz, world.width() - sz);
+diff --git a/core/src/mindustry/input/DesktopInput.java b/core/src/mindustry/input/DesktopInput.java
+index 1b398a99d5c870f091da5cbe6f0a7dd44803301d..f7ac4952272dbf657cbf2b4bc74a320ebd967dc9 100644
+--- a/core/src/mindustry/input/DesktopInput.java
++++ b/core/src/mindustry/input/DesktopInput.java
+@@ -409,6 +409,9 @@ public class DesktopInput extends InputHandler{
+                         }
+                         lastCtrlGroup = i;
+                         lastCtrlGroupSelectMillis = Time.millis();
++
++                        //MDTX: anuke forgot it
++                        Events.fire(Trigger.unitCommandChange);
+                     }
+                 }
+             }
 diff --git a/core/src/mindustry/ui/dialogs/DatabaseDialog.java b/core/src/mindustry/ui/dialogs/DatabaseDialog.java
 index 663110a852d5b63e5da40ee62dac10a3a329852b..d7336fd7431ce571e5a7b999ebc40d315a109c82 100644
 --- a/core/src/mindustry/ui/dialogs/DatabaseDialog.java

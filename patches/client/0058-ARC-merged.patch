@@ -514,7 +514,7 @@ index 4615b0d9382ead0bfab195af00b4ee5a71c04e1f..8919e7297623351066faa1cc4f187aad
  
      public void checkApplySelection(Unit u){
 diff --git a/core/src/mindustry/input/DesktopInput.java b/core/src/mindustry/input/DesktopInput.java
-index 1b398a99d5c870f091da5cbe6f0a7dd44803301d..0ce0831bd0e9e1bacd402ae15f7e8bb61caf159c 100644
+index f7ac4952272dbf657cbf2b4bc74a320ebd967dc9..bb012f379aafab3daa06e2cfe9ec291d68aba66a 100644
 --- a/core/src/mindustry/input/DesktopInput.java
 +++ b/core/src/mindustry/input/DesktopInput.java
 @@ -22,8 +22,10 @@ import mindustry.gen.*;
@@ -549,7 +549,7 @@ index 1b398a99d5c870f091da5cbe6f0a7dd44803301d..0ce0831bd0e9e1bacd402ae15f7e8bb6
              }).margin(6f);
          });
      }
-@@ -972,11 +981,10 @@ public class DesktopInput extends InputHandler{
+@@ -975,11 +984,10 @@ public class DesktopInput extends InputHandler{
              }
          }
  
