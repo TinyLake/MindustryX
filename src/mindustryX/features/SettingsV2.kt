@@ -46,6 +46,7 @@ object SettingsV2 {
 
 
         fun notifyChanged() {
+            changedSet.clear()
             value?.let { v ->
                 listeners.forEach { it.invoke(v) }
             }
