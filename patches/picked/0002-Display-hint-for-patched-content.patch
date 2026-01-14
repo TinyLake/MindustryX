@@ -1,0 +1,76 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: MinRi2 <minri2@qq.com>
+Date: Wed, 14 Jan 2026 21:54:58 +0800
+Subject: [PATCH] Display hint for patched content
+
+---
+ core/assets/bundles/bundle.properties                | 1 +
+ core/src/mindustry/mod/DataPatcher.java              | 4 ++++
+ core/src/mindustry/ui/dialogs/ContentInfoDialog.java | 9 +++++++++
+ core/src/mindustry/ui/dialogs/DatabaseDialog.java    | 6 ++++++
+ 4 files changed, 20 insertions(+)
+
+diff --git a/core/assets/bundles/bundle.properties b/core/assets/bundles/bundle.properties
+index fa50837ef9df09b7235ae23ea985bdb40467cdb1..06efefcf3457d890a1a94ecb226e1a47ef94db7d 100644
+--- a/core/assets/bundles/bundle.properties
++++ b/core/assets/bundles/bundle.properties
+@@ -101,6 +101,7 @@ coreattack = < Core is under attack! >
+ nearpoint = [[ [scarlet]LEAVE DROP POINT IMMEDIATELY[] ]\nannihilation imminent
+ database = Core Database
+ database.button = Database
++database.patched = Modified by data patches.
+ viewfields = View Content Fields
+ savegame = Save Game
+ loadgame = Load Game
+diff --git a/core/src/mindustry/mod/DataPatcher.java b/core/src/mindustry/mod/DataPatcher.java
+index cd3e767e39e2895c7a5032369d7237d8e5134c0d..ebf6edbc684fdce2b75618dcf428fd3e51c3430d 100644
+--- a/core/src/mindustry/mod/DataPatcher.java
++++ b/core/src/mindustry/mod/DataPatcher.java
+@@ -61,6 +61,10 @@ public class DataPatcher{
+         return cont;
+     }
+ 
++    public boolean isPatched(Object object){
++        return usedpatches.contains(object);
++    }
++
+     /** Applies the specified patches. If patches were already applied, the previous ones are un-applied - they do not stack! */
+     public void apply(Seq<String> patchArray) throws Exception{
+         if(applied){
+diff --git a/core/src/mindustry/ui/dialogs/ContentInfoDialog.java b/core/src/mindustry/ui/dialogs/ContentInfoDialog.java
+index d19bebacb06f9d6a2c8453a0ff0f59764dc2cfb4..40cb40582ac726f0d9028f2cd7d22af4bc0622c3 100644
+--- a/core/src/mindustry/ui/dialogs/ContentInfoDialog.java
++++ b/core/src/mindustry/ui/dialogs/ContentInfoDialog.java
+@@ -46,6 +46,15 @@ public class ContentInfoDialog extends BaseDialog{
+ 
+         table.row();
+ 
++        if(state.isGame() && state.patcher.isPatched(content)){
++            table.table(t -> {
++                t.image(Icon.info).color(Pal.lightishGray);
++                t.add("@database.patched").color(Pal.lightishGray).padLeft(4f);
++            }).pad(4f).left();
++
++            table.row();
++        }
++
+         if(content.description != null){
+             var any = content.stats.toMap().size > 0;
+ 
+diff --git a/core/src/mindustry/ui/dialogs/DatabaseDialog.java b/core/src/mindustry/ui/dialogs/DatabaseDialog.java
+index 663110a852d5b63e5da40ee62dac10a3a329852b..55d6a225f21e8c48f4a44a196a93a2019e25fd80 100644
+--- a/core/src/mindustry/ui/dialogs/DatabaseDialog.java
++++ b/core/src/mindustry/ui/dialogs/DatabaseDialog.java
+@@ -129,6 +129,12 @@ public class DatabaseDialog extends BaseDialog{
+                             setColor(Color.scarlet);
+                             touchable = Touchable.disabled;
+                         }}).size(8 * 4).pad(3);
++                    }else if(state.isGame() && state.patcher.isPatched(unlock)){
++                        list.stack(image, new Table(){{
++                            right().bottom().touchable = Touchable.disabled;
++                            // Interpolated color (lerp lightishGray and white) for better contrast
++                            image(Icon.fileSmall).size(12f).color(Tmp.c1.set(Color.white).a(0.5f));
++                        }}).size(8 * 4).pad(3);
+                     }else{
+                         list.add(image).size(8 * 4).pad(3);
+                     }

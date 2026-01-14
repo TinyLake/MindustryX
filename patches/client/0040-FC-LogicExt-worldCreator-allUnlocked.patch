@@ -47,7 +47,7 @@ index 46823a4c1a60787e11691f74a2a66a5bc2d0b8a7..38ce9fd9ff789751fd68df0889d9bb5d
  
      public boolean unlocked(){
 diff --git a/core/src/mindustry/ui/dialogs/DatabaseDialog.java b/core/src/mindustry/ui/dialogs/DatabaseDialog.java
-index d7336fd7431ce571e5a7b999ebc40d315a109c82..e4767f2653f849453b4557769e0c2c12c0f5fbe4 100644
+index 55d6a225f21e8c48f4a44a196a93a2019e25fd80..6ba9326ce0860c6c3306f87ccee7bd2ebc1a4000 100644
 --- a/core/src/mindustry/ui/dialogs/DatabaseDialog.java
 +++ b/core/src/mindustry/ui/dialogs/DatabaseDialog.java
 @@ -46,6 +46,11 @@ public class DatabaseDialog extends BaseDialog{
@@ -62,7 +62,7 @@ index d7336fd7431ce571e5a7b999ebc40d315a109c82..e4767f2653f849453b4557769e0c2c12
          all.margin(20).marginTop(0f).marginRight(30f);
  
          cont.top();
-@@ -101,7 +106,9 @@ public class DatabaseDialog extends BaseDialog{
+@@ -100,7 +105,9 @@ public class DatabaseDialog extends BaseDialog{
              ContentType type = ContentType.all[j];
  
              Seq<UnlockableContent> array = allContent[j]
@@ -73,7 +73,7 @@ index d7336fd7431ce571e5a7b999ebc40d315a109c82..e4767f2653f849453b4557769e0c2c12
                      (text.isEmpty() || u.localizedName.toLowerCase().contains(text))).as();
  
              if(array.size == 0) continue;
-@@ -170,6 +177,6 @@ public class DatabaseDialog extends BaseDialog{
+@@ -172,6 +179,6 @@ public class DatabaseDialog extends BaseDialog{
      }
  
      boolean unlocked(UnlockableContent content){

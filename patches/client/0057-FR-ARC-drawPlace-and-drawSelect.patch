@@ -104,7 +104,7 @@ index 68a5475d19fbc1593fa2f19d0dff46fe0bee8739..1da8aabd8874232fdf18f9f42e81c829
  
                  Draw.color();
 diff --git a/core/src/mindustry/world/blocks/defense/ForceProjector.java b/core/src/mindustry/world/blocks/defense/ForceProjector.java
-index 8213b85678de93b401a6f15a54c011bde4728f01..8b70f84e08fb21cbd4fd31a3427e427ee3aa6d40 100644
+index 3e5142601441496b54a2a92c0d735b9e3ab4daae..cb681c877fdbeaaa772421138e1a281bf8176c1e 100644
 --- a/core/src/mindustry/world/blocks/defense/ForceProjector.java
 +++ b/core/src/mindustry/world/blocks/defense/ForceProjector.java
 @@ -2,6 +2,7 @@ package mindustry.world.blocks.defense;
@@ -115,7 +115,7 @@ index 8213b85678de93b401a6f15a54c011bde4728f01..8b70f84e08fb21cbd4fd31a3427e427e
  import arc.func.*;
  import arc.graphics.*;
  import arc.graphics.g2d.*;
-@@ -163,6 +164,7 @@ public class ForceProjector extends Block{
+@@ -164,6 +165,7 @@ public class ForceProjector extends Block{
          Draw.color(player.team().color);
          Lines.stroke(1f);
          Lines.poly(x * tilesize + offset, y * tilesize + offset, sides, radius, shieldRotation);

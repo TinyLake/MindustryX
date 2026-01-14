@@ -231,7 +231,7 @@ index 26f1a576b0f734cc11230aaeab9e9b6df3bcf98f..900f9668d79afad7b9d6b75656ea430f
          //Note: Power stats are added by the consumers.
          if(hasLiquids) stats.add(Stat.liquidCapacity, liquidCapacity, StatUnit.liquidUnits);
 diff --git a/core/src/mindustry/world/blocks/defense/ForceProjector.java b/core/src/mindustry/world/blocks/defense/ForceProjector.java
-index fbc32b5eeb9989f3455c52716bce2d0e6728e85f..ccc9095318e32747affcbee27b8acb7cb831f792 100644
+index fbc32b5eeb9989f3455c52716bce2d0e6728e85f..ad212b2b15af8806f792dc7a349cd3a78433c24e 100644
 --- a/core/src/mindustry/world/blocks/defense/ForceProjector.java
 +++ b/core/src/mindustry/world/blocks/defense/ForceProjector.java
 @@ -24,6 +24,7 @@ import mindustry.world.*;
