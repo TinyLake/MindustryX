@@ -108,7 +108,7 @@ way-zer <himc.wicp@gmail.com> on 2024/9/8
  core/src/mindustry/type/Weapon.java           |  19 ++
  core/src/mindustry/ui/Fonts.java              |   2 +-
  .../ui/dialogs/ContentInfoDialog.java         |  23 +-
- .../ui/dialogs/CustomRulesDialog.java         | 116 +++++++++-
+ .../ui/dialogs/CustomRulesDialog.java         | 118 +++++++++-
  .../mindustry/ui/dialogs/DatabaseDialog.java  |   3 +-
  .../mindustry/ui/dialogs/PausedDialog.java    |  12 +-
  .../mindustry/ui/dialogs/PlanetDialog.java    |  27 ++-
@@ -120,7 +120,7 @@ way-zer <himc.wicp@gmail.com> on 2024/9/8
  .../mindustry/ui/fragments/MenuFragment.java  |  24 ++-
  .../ui/fragments/PlacementFragment.java       | 164 +++++++++++---
  .../ui/fragments/PlayerListFragment.java      |  70 +++---
- 27 files changed, 1092 insertions(+), 145 deletions(-)
+ 27 files changed, 1094 insertions(+), 145 deletions(-)
 
 diff --git a/core/src/mindustry/editor/MapInfoDialog.java b/core/src/mindustry/editor/MapInfoDialog.java
 index b4f56d136b632aae1841fcfb6f745018d40b9199..6e38c85a35901a80d632191502f10063066e8e2e 100644
@@ -1019,7 +1019,7 @@ index 40cb40582ac726f0d9028f2cd7d22af4bc0622c3..0a11b9b87960a078e2b0ce865aac089e
          table.marginRight(30f);
          //TODO: some things (e.g. reconstructor requirements) are too long and screw up the layout
 diff --git a/core/src/mindustry/ui/dialogs/CustomRulesDialog.java b/core/src/mindustry/ui/dialogs/CustomRulesDialog.java
-index 14cbaa5f624e29d8974d7b82116e01b11ba4abab..e0aa16ea9aab8310037779dc28387d04274af331 100644
+index 14cbaa5f624e29d8974d7b82116e01b11ba4abab..5a00a56811aa4a4228e50ef291830b56918caa2f 100644
 --- a/core/src/mindustry/ui/dialogs/CustomRulesDialog.java
 +++ b/core/src/mindustry/ui/dialogs/CustomRulesDialog.java
 @@ -3,6 +3,7 @@ package mindustry.ui.dialogs;
@@ -1144,7 +1144,7 @@ index 14cbaa5f624e29d8974d7b82116e01b11ba4abab..e0aa16ea9aab8310037779dc28387d04
          }
  
 +        category("arcExperimental");
-+        check("@rules.logicUnitBuild", b -> rules.logicUnitBuild = b, () -> rules.logicUnitBuild);
++        check("@rules.canGameOver", b -> rules.canGameOver = b, () -> rules.canGameOver);
 +        check("@rules.coreDestroyClear", b -> rules.coreDestroyClear = b, () -> rules.coreDestroyClear);
 +        check("@rules.unitPayloadUpdate", b -> rules.unitPayloadUpdate = b, () -> rules.unitPayloadUpdate);
 +        check("@rules.showSpawns", b -> rules.showSpawns = b, () -> rules.showSpawns);
@@ -1206,18 +1206,20 @@ index 14cbaa5f624e29d8974d7b82116e01b11ba4abab..e0aa16ea9aab8310037779dc28387d04
              boolean[] shown = {false};
              Table wasCurrent = current;
  
-@@ -297,6 +363,10 @@ public class CustomRulesDialog extends BaseDialog{
+@@ -297,6 +363,12 @@ public class CustomRulesDialog extends BaseDialog{
                  current = c;
                  TeamRule teams = rules.teams.get(team);
  
 +                check("@rules.cheat", b -> teams.cheat = b, () -> teams.cheat);
++
++                //MDTX: added
 +                check("@rules.infiniteAmmo",b -> teams.infiniteAmmo = b, () -> teams.infiniteAmmo);
 +                check("@rules.aiCoreSpawn", b -> teams.aiCoreSpawn = b, () -> teams.aiCoreSpawn);
 +
                  number("@rules.blockhealthmultiplier", f -> teams.blockHealthMultiplier = f, () -> teams.blockHealthMultiplier);
                  number("@rules.blockdamagemultiplier", f -> teams.blockDamageMultiplier = f, () -> teams.blockDamageMultiplier);
  
-@@ -334,6 +404,32 @@ public class CustomRulesDialog extends BaseDialog{
+@@ -334,6 +406,32 @@ public class CustomRulesDialog extends BaseDialog{
              }, () -> shown[0]).left().growX().row();
          }
  
@@ -1250,7 +1252,7 @@ index 14cbaa5f624e29d8974d7b82116e01b11ba4abab..e0aa16ea9aab8310037779dc28387d04
          additionalSetup.each(Runnable::run);
  
          for(var i = 0; i < categories.size; i++){
-@@ -368,6 +464,7 @@ public class CustomRulesDialog extends BaseDialog{
+@@ -368,6 +466,7 @@ public class CustomRulesDialog extends BaseDialog{
                      cons.get(team);
                  }).pad(1f).checked(b -> prov.get() == team).size(60f).tooltip(team.coloredName()).with(i -> i.getStyle().imageUpColor = team.color);
              }
@@ -1258,7 +1260,7 @@ index 14cbaa5f624e29d8974d7b82116e01b11ba4abab..e0aa16ea9aab8310037779dc28387d04
          }).padTop(0).row();
      }
  
-@@ -400,7 +497,7 @@ public class CustomRulesDialog extends BaseDialog{
+@@ -400,7 +499,7 @@ public class CustomRulesDialog extends BaseDialog{
              t.field((prov.get()) + "", s -> cons.get(Strings.parseInt(s)))
                  .update(a -> a.setDisabled(!condition.get()))
                  .padRight(100f)
@@ -1267,7 +1269,7 @@ index 14cbaa5f624e29d8974d7b82116e01b11ba4abab..e0aa16ea9aab8310037779dc28387d04
          }).padTop(0);
          ruleInfo(cell, text);
          current.row();
-@@ -415,7 +512,8 @@ public class CustomRulesDialog extends BaseDialog{
+@@ -415,7 +514,8 @@ public class CustomRulesDialog extends BaseDialog{
              t.field((integer ? (int)prov.get() : prov.get()) + "", s -> cons.get(Strings.parseFloat(s)))
              .padRight(50f)
              .update(a -> a.setDisabled(!condition.get()))
