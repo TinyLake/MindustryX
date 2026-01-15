@@ -7,11 +7,11 @@ Subject: [PATCH] Display hint for patched content
  core/assets/bundles/bundle.properties                | 1 +
  core/src/mindustry/mod/DataPatcher.java              | 4 ++++
  core/src/mindustry/ui/dialogs/ContentInfoDialog.java | 9 +++++++++
- core/src/mindustry/ui/dialogs/DatabaseDialog.java    | 6 ++++++
- 4 files changed, 20 insertions(+)
+ core/src/mindustry/ui/dialogs/DatabaseDialog.java    | 8 +++++++-
+ 4 files changed, 21 insertions(+), 1 deletion(-)
 
 diff --git a/core/assets/bundles/bundle.properties b/core/assets/bundles/bundle.properties
-index fa50837ef9df09b7235ae23ea985bdb40467cdb1..06efefcf3457d890a1a94ecb226e1a47ef94db7d 100644
+index b169486d3bd6237a47ac15470dd87b24ace2861c..6e33630d285ac969ee35ac35729d9bfab170eaa8 100644
 --- a/core/assets/bundles/bundle.properties
 +++ b/core/assets/bundles/bundle.properties
 @@ -101,6 +101,7 @@ coreattack = < Core is under attack! >
@@ -58,19 +58,21 @@ index d19bebacb06f9d6a2c8453a0ff0f59764dc2cfb4..40cb40582ac726f0d9028f2cd7d22af4
              var any = content.stats.toMap().size > 0;
  
 diff --git a/core/src/mindustry/ui/dialogs/DatabaseDialog.java b/core/src/mindustry/ui/dialogs/DatabaseDialog.java
-index 663110a852d5b63e5da40ee62dac10a3a329852b..55d6a225f21e8c48f4a44a196a93a2019e25fd80 100644
+index f993d6b5cab4543e6326afc891de35d22dd8fd5c..dfc3a053a0f323ccaa15a0ffc7a77d658f6ea3c6 100644
 --- a/core/src/mindustry/ui/dialogs/DatabaseDialog.java
 +++ b/core/src/mindustry/ui/dialogs/DatabaseDialog.java
-@@ -129,6 +129,12 @@ public class DatabaseDialog extends BaseDialog{
-                             setColor(Color.scarlet);
-                             touchable = Touchable.disabled;
-                         }}).size(8 * 4).pad(3);
-+                    }else if(state.isGame() && state.patcher.isPatched(unlock)){
+@@ -179,7 +179,13 @@ public class DatabaseDialog extends BaseDialog{
+                                     setColor(Color.scarlet);
+                                     touchable = Touchable.disabled;
+                                 }}).size(8 * 4).pad(3);
+-                            }else{
++                            }else if(state.isGame() && state.patcher.isPatched(unlock)){
 +                        list.stack(image, new Table(){{
 +                            right().bottom().touchable = Touchable.disabled;
 +                            // Interpolated color (lerp lightishGray and white) for better contrast
 +                            image(Icon.fileSmall).size(12f).color(Tmp.c1.set(Color.white).a(0.5f));
 +                        }}).size(8 * 4).pad(3);
-                     }else{
-                         list.add(image).size(8 * 4).pad(3);
-                     }
++                    }else{
+                                 list.add(image).size(8 * 4).pad(3);
+                             }
+ 

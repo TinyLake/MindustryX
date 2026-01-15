@@ -746,7 +746,7 @@ index 7fcdd08fe98b0de48c0a83e1e4c1877760160b21..4bff96bb91ed1bd823d1b11b1361769a
                  //TODO desync?
                  case mission -> state.rules.mission = text;
 diff --git a/core/src/mindustry/type/UnitType.java b/core/src/mindustry/type/UnitType.java
-index 80564bc0440fa9693762f532750777d65f27870f..af697c8dd807ed2fa041f851e1b104e321ae12e1 100644
+index 5f5942a26c52558c071150f84be7d6499c6f7309..5ef605b5cfb843753ff95518a34c769192fdc4f0 100644
 --- a/core/src/mindustry/type/UnitType.java
 +++ b/core/src/mindustry/type/UnitType.java
 @@ -38,6 +38,7 @@ import mindustry.world.blocks.units.*;
@@ -757,7 +757,7 @@ index 80564bc0440fa9693762f532750777d65f27870f..af697c8dd807ed2fa041f851e1b104e3
  
  import static arc.graphics.g2d.Draw.*;
  import static mindustry.Vars.*;
-@@ -673,19 +674,45 @@ public class UnitType extends UnlockableContent implements Senseable{
+@@ -688,19 +689,45 @@ public class UnitType extends UnlockableContent implements Senseable{
          table.table(t -> {
              t.left();
              t.add(new Image(uiIcon)).size(iconMed).scaling(Scaling.fit);
@@ -807,7 +807,7 @@ index 80564bc0440fa9693762f532750777d65f27870f..af697c8dd807ed2fa041f851e1b104e3
                  bars.row();
              }
  
-@@ -694,7 +721,10 @@ public class UnitType extends UnlockableContent implements Senseable{
+@@ -709,7 +736,10 @@ public class UnitType extends UnlockableContent implements Senseable{
              }
  
              if(payloadCapacity > 0 && unit instanceof Payloadc payload){
@@ -819,7 +819,7 @@ index 80564bc0440fa9693762f532750777d65f27870f..af697c8dd807ed2fa041f851e1b104e3
                  bars.row();
  
                  var count = new float[]{-1};
-@@ -706,16 +736,55 @@ public class UnitType extends UnlockableContent implements Senseable{
+@@ -721,16 +751,55 @@ public class UnitType extends UnlockableContent implements Senseable{
                  }).growX().left().height(0f).pad(0f);
              }
          }).growX();
@@ -881,7 +881,7 @@ index 80564bc0440fa9693762f532750777d65f27870f..af697c8dd807ed2fa041f851e1b104e3
              if(net.active() && ai.controller != null && ai.controller.lastAccessed != null){
                  table.row();
                  table.add(Core.bundle.format("lastaccessed", ai.controller.lastAccessed)).growX().wrap().left();
-@@ -726,6 +795,11 @@ public class UnitType extends UnlockableContent implements Senseable{
+@@ -741,6 +810,11 @@ public class UnitType extends UnlockableContent implements Senseable{
          }
  
          table.row();
@@ -893,7 +893,7 @@ index 80564bc0440fa9693762f532750777d65f27870f..af697c8dd807ed2fa041f851e1b104e3
      }
  
      /** @return whether this block supports a specific environment. */
-@@ -1689,12 +1763,15 @@ public class UnitType extends UnlockableContent implements Senseable{
+@@ -1704,12 +1778,15 @@ public class UnitType extends UnlockableContent implements Senseable{
              unit.y + Angles.trnsy(unit.rotation + 180f, itemOffsetY),
              size, size);
  
@@ -1280,7 +1280,7 @@ index 14cbaa5f624e29d8974d7b82116e01b11ba4abab..5a00a56811aa4a4228e50ef291830b56
          ruleInfo(cell, text);
          current.row();
 diff --git a/core/src/mindustry/ui/dialogs/DatabaseDialog.java b/core/src/mindustry/ui/dialogs/DatabaseDialog.java
-index 6ba9326ce0860c6c3306f87ccee7bd2ebc1a4000..8fe5a134ac6a2a6950a467c4b88e8878c656bf9a 100644
+index 3f87fb047e9e1b06c579058f6e36528e1826e2a8..37f1134cb6c20dc7116c87f9e4bdb72c01618efa 100644
 --- a/core/src/mindustry/ui/dialogs/DatabaseDialog.java
 +++ b/core/src/mindustry/ui/dialogs/DatabaseDialog.java
 @@ -18,7 +18,6 @@ import mindustry.graphics.*;
@@ -1291,15 +1291,15 @@ index 6ba9326ce0860c6c3306f87ccee7bd2ebc1a4000..8fe5a134ac6a2a6950a467c4b88e8878
  import static mindustry.Vars.*;
  
  public class DatabaseDialog extends BaseDialog{
-@@ -162,7 +161,7 @@ public class DatabaseDialog extends BaseDialog{
-                                 ui.content.show(unlock);
+@@ -210,7 +209,7 @@ public class DatabaseDialog extends BaseDialog{
+                                         ui.content.show(unlock);
+                                     }
+                                 });
+-                                image.addListener(new Tooltip(t -> t.background(Tex.button).add(unlock.localizedName + (settings.getBool("console") ? "\n[gray]" + unlock.name : ""))));
++                                image.addListener(new Tooltip(t -> t.background(Tex.button).add(unlock.localizedName + "\n[gray]" + unlock.name + (logicVars.lookupLogicId(unlock) != -1 ? " <#" + logicVars.lookupLogicId(unlock) +">": ""))));
                              }
-                         });
--                        image.addListener(new Tooltip(t -> t.background(Tex.button).add(unlock.localizedName + (settings.getBool("console") ? "\n[gray]" + unlock.name : ""))));
-+                        image.addListener(new Tooltip(t -> t.background(Tex.button).add(unlock.localizedName + "\n[gray]" + unlock.name + (logicVars.lookupLogicId(unlock) != -1 ? " <#" + logicVars.lookupLogicId(unlock) +">": ""))));
-                     }
  
-                     if((++count) % cols == 0){
+                             if((++count) % cols == 0){
 diff --git a/core/src/mindustry/ui/dialogs/PausedDialog.java b/core/src/mindustry/ui/dialogs/PausedDialog.java
 index 3e0cca2191e2fd062b96af031a6b2af5ba80e224..7a91c9eb1c90142831ea71c54e694d4633e1f208 100644
 --- a/core/src/mindustry/ui/dialogs/PausedDialog.java

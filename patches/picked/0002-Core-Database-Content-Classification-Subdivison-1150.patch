@@ -1,0 +1,385 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: =?UTF-8?q?=E9=85=AA=E6=A1=A6=E5=A7=AC?=
+ <147405396+LaoHuaJiOfficial@users.noreply.github.com>
+Date: Tue, 30 Dec 2025 14:08:00 +0800
+Subject: [PATCH] Core Database Content Classification Subdivison (#11506)
+
+* test
+
+* test
+
+* test
+
+* Core database content subdivision
+
+* Core database content subdivision
+
+* undo some old change
+
+* Revert "test"
+
+This reverts commit ada9dca7873ea00790c592d6bb438d9fc8f4e6e2.
+
+* Revert "test"
+
+This reverts commit d7c81185
+
+* undo some old change
+
+* cleanup
+
+* Update core/assets/bundles/bundle.properties
+
+* Format and Cleanup
+
+* Format and Cleanup
+
+* gradle toggle
+
+* Update core/assets/bundles/bundle.properties
+
+* Update core/assets/bundles/bundle.properties
+
+* Update core/assets/bundles/bundle.properties
+
+---------
+
+Co-authored-by: Anuken <arnukren@gmail.com>
+---
+ core/assets/bundles/bundle.properties         |  28 ++-
+ .../mindustry/ctype/UnlockableContent.java    |  16 ++
+ core/src/mindustry/type/UnitType.java         |  15 ++
+ .../mindustry/ui/dialogs/DatabaseDialog.java  | 160 ++++++++++++------
+ core/src/mindustry/world/Block.java           |   4 +
+ 5 files changed, 167 insertions(+), 56 deletions(-)
+
+diff --git a/core/assets/bundles/bundle.properties b/core/assets/bundles/bundle.properties
+index fa50837ef9df09b7235ae23ea985bdb40467cdb1..b169486d3bd6237a47ac15470dd87b24ace2861c 100644
+--- a/core/assets/bundles/bundle.properties
++++ b/core/assets/bundles/bundle.properties
+@@ -1536,13 +1536,27 @@ rules.randomwaveai.info = Makes units spawned in waves target random structures
+ rules.placerangecheck.info = Prevents players from placing anything near enemy buildings. When trying to place a turret, the range is increased, so the turret will not be able to reach the enemy.
+ rules.onlydepositcore.info = Prevents units from depositing items into any buildings except cores.
+ 
+-content.item.name = Items
+-content.liquid.name = Fluids
+-content.unit.name = Units
+-content.block.name = Blocks
+-content.status.name = Status Effects
+-content.sector.name = Sectors
+-content.team.name = Factions
++database-category.item = Items
++database-category.liquid = Fluids
++database-category.unit = Units
++database-category.block = Blocks
++database-category.status = Status Effects
++database-category.sector = Sectors
++database-category.team = Factions
++
++database-tag.turret = Turret
++database-tag.production = Production
++database-tag.distribution = Distribution
++database-tag.liquid = Liquid
++database-tag.power = Power
++database-tag.defense = Defense
++database-tag.crafting = Crafting
++database-tag.units = Units
++database-tag.effect = Effect
++database-tag.logic = Logic
++database-tag.unit-air = Air
++database-tag.unit-naval = Naval
++database-tag.unit-ground = Ground
+ 
+ wallore = (Wall)
+ 
+diff --git a/core/src/mindustry/ctype/UnlockableContent.java b/core/src/mindustry/ctype/UnlockableContent.java
+index 46823a4c1a60787e11691f74a2a66a5bc2d0b8a7..8f3a4ccca9d09e8d2b4a6d547815db57c24a9d18 100644
+--- a/core/src/mindustry/ctype/UnlockableContent.java
++++ b/core/src/mindustry/ctype/UnlockableContent.java
+@@ -61,6 +61,19 @@ public abstract class UnlockableContent extends MappableContent{
+      * If shownPlanets is also empty, it will use Serpulo as the "default" tab.
+      * */
+     public ObjectSet<UnlockableContent> databaseTabs = new ObjectSet<>();
++    /**
++     * Content category. Defines the primary category of content classification in core database.
++     * For example, "block", "liquid", "unit".
++     * Uses getContentType().name() as a fallback when the value is null or empty.
++     * */
++    public @Nullable String databaseCategory;
++    /**
++     * Category tags. Secondary category of content classification in core database.
++     * For example, "turret", "wall" under databaseCategory "block", "core-unit", "ground-unit" under databaseCategory "units".
++     * Uses "default" as a fallback when the value is null or empty. When using "default", no extra tag label are displayed.
++     * */
++    public @Nullable String databaseTag;
++
+     /** The tech tree node for this content, if applicable. Null if not part of a tech tree. */
+     @NoPatch
+     public @Nullable TechNode techNode;
+@@ -84,6 +97,9 @@ public abstract class UnlockableContent extends MappableContent{
+     public void postInit(){
+         super.postInit();
+ 
++        if(databaseCategory == null || databaseCategory.isEmpty()) databaseCategory = getContentType().name();
++        if(databaseTag == null || databaseTag.isEmpty()) databaseTag = "default";
++
+         databaseTabs.addAll(shownPlanets);
+     }
+ 
+diff --git a/core/src/mindustry/type/UnitType.java b/core/src/mindustry/type/UnitType.java
+index 010a7c02682f89bfcfc61916494a4eab9f5aee2f..29693df334706c59dcb544ca9964c824629982a1 100644
+--- a/core/src/mindustry/type/UnitType.java
++++ b/core/src/mindustry/type/UnitType.java
+@@ -529,6 +529,21 @@ public class UnitType extends UnlockableContent implements Senseable{
+         selectionSize = 30f;
+     }
+ 
++    @Override
++    public void postInit(){
++        if(databaseTag == null || databaseTag.isEmpty()){
++            if(flying){
++                databaseTag = "unit-air";
++            }else if(naval){
++                databaseTag = "unit-naval";
++            }else{
++                databaseTag = "unit-ground";
++            }
++        }
++
++        super.postInit();
++    }
++
+     public UnitController createController(Unit unit){
+         return controller.get(unit);
+     }
+diff --git a/core/src/mindustry/ui/dialogs/DatabaseDialog.java b/core/src/mindustry/ui/dialogs/DatabaseDialog.java
+index 663110a852d5b63e5da40ee62dac10a3a329852b..f993d6b5cab4543e6326afc891de35d22dd8fd5c 100644
+--- a/core/src/mindustry/ui/dialogs/DatabaseDialog.java
++++ b/core/src/mindustry/ui/dialogs/DatabaseDialog.java
+@@ -22,6 +22,9 @@ import static arc.Core.*;
+ import static mindustry.Vars.*;
+ 
+ public class DatabaseDialog extends BaseDialog{
++    private final OrderedMap<String, OrderedMap<String, Seq<UnlockableContent>>> sortedContents = new OrderedMap<>();
++    private final OrderedMap<String, Seq<UnlockableContent>> tmpCategory = new OrderedMap<>();
++
+     private TextField search;
+     private Table all = new Table();
+ 
+@@ -36,6 +39,7 @@ public class DatabaseDialog extends BaseDialog{
+         addCloseButton();
+         shown(() -> {
+             checkTabList();
++            sortContents();
+             if(state.isCampaign() && allTabs.contains(state.getPlanet())){
+                 tab = state.getPlanet();
+             }else if(state.isGame() && state.rules.planet != null && allTabs.contains(state.rules.planet)){
+@@ -74,14 +78,28 @@ public class DatabaseDialog extends BaseDialog{
+         }
+     }
+ 
++    void sortContents(){
++        Seq<Content>[] allContent = Vars.content.getContentMap();
++        sortedContents.clear();
++        for(var contents : allContent){
++            for(var content : contents){
++                if(content instanceof UnlockableContent u){
++                    var categoryContents = sortedContents.get(u.databaseCategory, new OrderedMap<>());
++                    var taggedContents = categoryContents.get(u.databaseTag, new Seq<>());
++                    taggedContents.add(u);
++                    categoryContents.put(u.databaseTag, taggedContents);
++                    sortedContents.put(u.databaseCategory, categoryContents);
++                }
++            }
++        }
++    }
++
+     void rebuild(){
+         checkTabList();
+ 
+         all.clear();
+         var text = search.getText().toLowerCase();
+ 
+-        Seq<Content>[] allContent = Vars.content.getContentMap();
+-
+         all.table(t -> {
+             int i = 0;
+             for(var content : allTabs){
+@@ -96,71 +114,115 @@ public class DatabaseDialog extends BaseDialog{
+             }
+         }).row();
+ 
+-        for(int j = 0; j < allContent.length; j++){
+-            ContentType type = ContentType.all[j];
++        boolean hasResult = false;
++
++        for(int i = 0; i < sortedContents.size; i++){
++            String categoryName = sortedContents.orderedKeys().get(i);
++            OrderedMap<String, Seq<UnlockableContent>> categoryContents = sortedContents.get(categoryName);
++
++            tmpCategory.clear();
++
++            boolean categoryHasResult = false;
+ 
+-            Seq<UnlockableContent> array = allContent[j]
+-                .select(c -> c instanceof UnlockableContent u && !u.isHidden() && !u.hideDatabase && (tab == Planets.sun || u.allDatabaseTabs || u.databaseTabs.contains(tab)) &&
+-                    (text.isEmpty() || u.localizedName.toLowerCase().contains(text))).as();
++            for(int j = 0; j < categoryContents.size; j++){
++                String tagName = categoryContents.orderedKeys().get(j);
++                Seq<UnlockableContent> array = categoryContents.get(tagName).select(u ->
++                !u.isHidden() && !u.hideDatabase &&
++                (tab == Planets.sun || u.allDatabaseTabs || u.databaseTabs.contains(tab)) &&
++                (text.isEmpty() || u.localizedName.toLowerCase().contains(text))).as();
++                if(array.isEmpty()) continue;
+ 
+-            if(array.size == 0) continue;
++                hasResult = true;
++                categoryHasResult = true;
+ 
+-            //sorting only makes sense when in-game; otherwise, banned blocks can't exist
+-            if(state.isGame()){
+-                array.sort(Structs.comps(Structs.comparingBool(UnlockableContent::isBanned), Structs.comparingInt(u -> u.id)));
++                //sorting only makes sense when in-game; otherwise, banned blocks can't exist
++                if(state.isGame()){
++                    array.sort(Structs.comps(Structs.comparingBool(UnlockableContent::isBanned), Structs.comparingInt(u -> u.id)));
++                }
++
++                tmpCategory.put(tagName, array);
+             }
+ 
+-            all.add("@content." + type.name() + ".name").growX().left().color(Pal.accent);
++            if(tmpCategory.isEmpty() || !categoryHasResult) continue;
++
++            all.add("@database-category." + categoryName).growX().left().color(Pal.accent);
+             all.row();
+-            all.image().growX().pad(5).padLeft(0).padRight(0).height(3).color(Pal.accent);
++            all.image().pad(5).padLeft(0).padRight(0).height(3).color(Pal.accent).growX();
+             all.row();
+-            all.table(list -> {
+-                list.left();
+-
+-                int cols = (int)Mathf.clamp((Core.graphics.getWidth() - Scl.scl(30)) / Scl.scl(32 + 12), 1, 22);
+-                int count = 0;
+-
+-                for(var unlock : array){
+-                    Image image = unlocked(unlock) ? new Image(new TextureRegionDrawable(unlock.uiIcon), mobile ? Color.white : Color.lightGray).setScaling(Scaling.fit) : new Image(Icon.lock, Pal.gray);
+-
+-                    //banned cross
+-                    if(state.isGame() && unlock.isBanned()){
+-                        list.stack(image, new Image(Icon.cancel){{
+-                            setColor(Color.scarlet);
+-                            touchable = Touchable.disabled;
+-                        }}).size(8 * 4).pad(3);
+-                    }else{
+-                        list.add(image).size(8 * 4).pad(3);
+-                    }
+ 
+-                    ClickListener listener = new ClickListener();
+-                    image.addListener(listener);
+-                    if(!mobile && unlocked(unlock)){
+-                        image.addListener(new HandCursorListener());
+-                        image.update(() -> image.color.lerp(!listener.isOver() ? Color.lightGray : Color.white, Mathf.clamp(0.4f * Time.delta)));
++            all.table(sub -> {
++                for(int j = 0; j < tmpCategory.size; j++){
++                    String tagName = categoryContents.orderedKeys().get(j);
++                    Seq<UnlockableContent> array = tmpCategory.get(tagName);
++                    if(array == null || array.isEmpty()) continue;
++
++                    if(!"default".equals(tagName)){
++                        sub.table(tag -> {
++                            tag.add("@database-tag." + tagName).left().color(Pal.gray);
++                            tag.image().growX().pad(5).height(3).color(Pal.gray);
++                        }).pad(4, 8, 4, 8).growX();
++                        sub.row();
+                     }
+ 
+-                    if(unlocked(unlock)){
+-                        image.clicked(() -> {
+-                            if(Core.input.keyDown(KeyCode.shiftLeft) && Fonts.getUnicode(unlock.name) != 0){
+-                                Core.app.setClipboardText((char)Fonts.getUnicode(unlock.name) + "");
+-                                ui.showInfoFade("@copied");
++                    sub.table(list -> {
++                        list.left();
++
++                        int cols = (int)Mathf.clamp((Core.graphics.getWidth() - Scl.scl(30)) / Scl.scl(32 + 12), 1, 22);
++                        int count = 0;
++
++                        for(var unlock : array){
++                            Image image = unlocked(unlock) ? new Image(new TextureRegionDrawable(unlock.uiIcon), mobile ? Color.white : Color.lightGray).setScaling(Scaling.fit) : new Image(Icon.lock, Pal.gray);
++
++                            //banned cross
++                            if(state.isGame() && unlock.isBanned()){
++                                list.stack(image, new Image(Icon.cancel){{
++                                    setColor(Color.scarlet);
++                                    touchable = Touchable.disabled;
++                                }}).size(8 * 4).pad(3);
+                             }else{
+-                                ui.content.show(unlock);
++                                list.add(image).size(8 * 4).pad(3);
+                             }
+-                        });
+-                        image.addListener(new Tooltip(t -> t.background(Tex.button).add(unlock.localizedName + (settings.getBool("console") ? "\n[gray]" + unlock.name : ""))));
+-                    }
+ 
+-                    if((++count) % cols == 0){
+-                        list.row();
+-                    }
++                            ClickListener listener = new ClickListener();
++                            image.addListener(listener);
++                            if(!mobile && unlocked(unlock)){
++                                image.addListener(new HandCursorListener());
++                                image.update(() -> image.color.lerp(!listener.isOver() ? Color.lightGray : Color.white, Mathf.clamp(0.4f * Time.delta)));
++                            }
++
++                            if(unlocked(unlock)){
++                                image.clicked(() -> {
++                                    if(Core.input.keyDown(KeyCode.shiftLeft) && Fonts.getUnicode(unlock.name) != 0){
++                                        Core.app.setClipboardText((char)Fonts.getUnicode(unlock.name) + "");
++                                        ui.showInfoFade("@copied");
++                                    }else{
++                                        ui.content.show(unlock);
++                                    }
++                                });
++                                image.addListener(new Tooltip(t -> t.background(Tex.button).add(unlock.localizedName + (settings.getBool("console") ? "\n[gray]" + unlock.name : ""))));
++                            }
++
++                            if((++count) % cols == 0){
++                                list.row();
++                            }
++                        }
++
++                        for(int k = 0; k < cols - count; k++){
++                            Image image = new Image();
++                            image.setColor(Color.clear);
++                            list.add(image).size(8 * 4).pad(3);
++                        }
++                    });
++                    sub.row();
+                 }
++
++
+             }).growX().left().padBottom(10);
++
+             all.row();
+         }
+ 
+-        if(all.getChildren().isEmpty()){
++        if(!hasResult){
+             all.add("@none.found");
+         }
+     }
+diff --git a/core/src/mindustry/world/Block.java b/core/src/mindustry/world/Block.java
+index 26f1a576b0f734cc11230aaeab9e9b6df3bcf98f..e0658b5640fd522dfd231ac646300a44cc6056e5 100644
+--- a/core/src/mindustry/world/Block.java
++++ b/core/src/mindustry/world/Block.java
+@@ -1251,6 +1251,10 @@ public class Block extends UnlockableContent implements Senseable{
+             }
+         }
+ 
++        if(databaseTag == null || databaseTag.isEmpty()){
++            databaseTag = category.name();
++        }
++
+         super.postInit();
+     }
+ 

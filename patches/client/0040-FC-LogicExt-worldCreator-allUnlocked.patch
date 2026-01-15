@@ -8,16 +8,16 @@ Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 
 ---
- core/src/mindustry/ctype/UnlockableContent.java       |  5 +++--
- core/src/mindustry/ui/dialogs/DatabaseDialog.java     | 11 +++++++++--
- .../src/mindustry/ui/fragments/PlacementFragment.java |  9 ++++++++-
- core/src/mindustry/world/Block.java                   |  4 ++--
- core/src/mindustry/world/Build.java                   |  6 ++++++
- core/src/mindustry/world/blocks/ItemSelection.java    |  3 ++-
- 6 files changed, 30 insertions(+), 8 deletions(-)
+ core/src/mindustry/ctype/UnlockableContent.java        | 5 +++--
+ core/src/mindustry/ui/dialogs/DatabaseDialog.java      | 9 +++++++--
+ core/src/mindustry/ui/fragments/PlacementFragment.java | 9 ++++++++-
+ core/src/mindustry/world/Block.java                    | 4 ++--
+ core/src/mindustry/world/Build.java                    | 6 ++++++
+ core/src/mindustry/world/blocks/ItemSelection.java     | 3 ++-
+ 6 files changed, 28 insertions(+), 8 deletions(-)
 
 diff --git a/core/src/mindustry/ctype/UnlockableContent.java b/core/src/mindustry/ctype/UnlockableContent.java
-index 46823a4c1a60787e11691f74a2a66a5bc2d0b8a7..38ce9fd9ff789751fd68df0889d9bb5d5288613d 100644
+index 8f3a4ccca9d09e8d2b4a6d547815db57c24a9d18..8db57d81cd1e78e428eca10f8bcec437450d27b0 100644
 --- a/core/src/mindustry/ctype/UnlockableContent.java
 +++ b/core/src/mindustry/ctype/UnlockableContent.java
 @@ -18,6 +18,7 @@ import mindustry.mod.*;
@@ -28,7 +28,7 @@ index 46823a4c1a60787e11691f74a2a66a5bc2d0b8a7..38ce9fd9ff789751fd68df0889d9bb5d
  
  import static mindustry.Vars.*;
  
-@@ -242,7 +243,7 @@ public abstract class UnlockableContent extends MappableContent{
+@@ -258,7 +259,7 @@ public abstract class UnlockableContent extends MappableContent{
      }
  
      public boolean unlockedNowHost(){
@@ -37,7 +37,7 @@ index 46823a4c1a60787e11691f74a2a66a5bc2d0b8a7..38ce9fd9ff789751fd68df0889d9bb5d
      }
  
      /** @return in multiplayer, whether this is unlocked for the host player, otherwise, whether it is unlocked for the local player (same as unlocked()) */
-@@ -254,7 +255,7 @@ public abstract class UnlockableContent extends MappableContent{
+@@ -270,7 +271,7 @@ public abstract class UnlockableContent extends MappableContent{
  
      /** @return whether this content is unlocked, or the player is in a custom (non-campaign) game. */
      public boolean unlockedNow(){
@@ -47,10 +47,10 @@ index 46823a4c1a60787e11691f74a2a66a5bc2d0b8a7..38ce9fd9ff789751fd68df0889d9bb5d
  
      public boolean unlocked(){
 diff --git a/core/src/mindustry/ui/dialogs/DatabaseDialog.java b/core/src/mindustry/ui/dialogs/DatabaseDialog.java
-index 55d6a225f21e8c48f4a44a196a93a2019e25fd80..6ba9326ce0860c6c3306f87ccee7bd2ebc1a4000 100644
+index dfc3a053a0f323ccaa15a0ffc7a77d658f6ea3c6..3f87fb047e9e1b06c579058f6e36528e1826e2a8 100644
 --- a/core/src/mindustry/ui/dialogs/DatabaseDialog.java
 +++ b/core/src/mindustry/ui/dialogs/DatabaseDialog.java
-@@ -46,6 +46,11 @@ public class DatabaseDialog extends BaseDialog{
+@@ -50,6 +50,11 @@ public class DatabaseDialog extends BaseDialog{
          });
          onResize(this::rebuild);
  
@@ -62,18 +62,16 @@ index 55d6a225f21e8c48f4a44a196a93a2019e25fd80..6ba9326ce0860c6c3306f87ccee7bd2e
          all.margin(20).marginTop(0f).marginRight(30f);
  
          cont.top();
-@@ -100,7 +105,9 @@ public class DatabaseDialog extends BaseDialog{
-             ContentType type = ContentType.all[j];
- 
-             Seq<UnlockableContent> array = allContent[j]
--                .select(c -> c instanceof UnlockableContent u && !u.isHidden() && !u.hideDatabase && (tab == Planets.sun || u.allDatabaseTabs || u.databaseTabs.contains(tab)) &&
-+                .select(c -> c instanceof UnlockableContent u &&
-+                    (mindustryX.VarsX.allUnlocked.getValue() || !u.isHidden() && !u.hideDatabase) &&
-+                    (tab == Planets.sun || u.allDatabaseTabs || u.databaseTabs.contains(tab)) &&
-                     (text.isEmpty() || u.localizedName.toLowerCase().contains(text))).as();
- 
-             if(array.size == 0) continue;
-@@ -172,6 +179,6 @@ public class DatabaseDialog extends BaseDialog{
+@@ -127,7 +132,7 @@ public class DatabaseDialog extends BaseDialog{
+             for(int j = 0; j < categoryContents.size; j++){
+                 String tagName = categoryContents.orderedKeys().get(j);
+                 Seq<UnlockableContent> array = categoryContents.get(tagName).select(u ->
+-                !u.isHidden() && !u.hideDatabase &&
++                (mindustryX.VarsX.allUnlocked.getValue() || !u.isHidden() && !u.hideDatabase) &&
+                 (tab == Planets.sun || u.allDatabaseTabs || u.databaseTabs.contains(tab)) &&
+                 (text.isEmpty() || u.localizedName.toLowerCase().contains(text))).as();
+                 if(array.isEmpty()) continue;
+@@ -234,6 +239,6 @@ public class DatabaseDialog extends BaseDialog{
      }
  
      boolean unlocked(UnlockableContent content){
@@ -125,7 +123,7 @@ index 60cedfaecdb8a85dcfccc30ca090aa48e3463350..01ba50f19dcae39176f8dde2be539177
      }
  
 diff --git a/core/src/mindustry/world/Block.java b/core/src/mindustry/world/Block.java
-index 74d4e982edd390695353be76a6ead91f1b968735..c7042416d7ebc6dc24aebf563ec70b53258a92de 100644
+index 0cac3aaa3b68eb3d547da71ad520df9dddb926ea..38161b0a925e15dbd218567f47875f7f7be3d623 100644
 --- a/core/src/mindustry/world/Block.java
 +++ b/core/src/mindustry/world/Block.java
 @@ -955,11 +955,11 @@ public class Block extends UnlockableContent implements Senseable{

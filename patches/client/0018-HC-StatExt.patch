@@ -96,7 +96,7 @@ index f4e0d3b9c6b33cf5fc64583a02544e3c87e8dc50..e0efab8dc1e5e40d6374ab5934756c7d
          if(damage < 0) stats.add(Stat.healing, -damage * 60f, StatUnit.perSecond);
  
 diff --git a/core/src/mindustry/type/UnitType.java b/core/src/mindustry/type/UnitType.java
-index 010a7c02682f89bfcfc61916494a4eab9f5aee2f..80564bc0440fa9693762f532750777d65f27870f 100644
+index 29693df334706c59dcb544ca9964c824629982a1..5f5942a26c52558c071150f84be7d6499c6f7309 100644
 --- a/core/src/mindustry/type/UnitType.java
 +++ b/core/src/mindustry/type/UnitType.java
 @@ -37,6 +37,7 @@ import mindustry.world.blocks.payloads.*;
@@ -107,7 +107,7 @@ index 010a7c02682f89bfcfc61916494a4eab9f5aee2f..80564bc0440fa9693762f532750777d6
  
  import static arc.graphics.g2d.Draw.*;
  import static mindustry.Vars.*;
-@@ -766,6 +767,7 @@ public class UnitType extends UnlockableContent implements Senseable{
+@@ -781,6 +782,7 @@ public class UnitType extends UnlockableContent implements Senseable{
          stats.add(Stat.health, health);
          stats.add(Stat.armor, armor);
          stats.add(Stat.speed, speed * 60f / tilesize, StatUnit.tilesSecond);
@@ -115,7 +115,7 @@ index 010a7c02682f89bfcfc61916494a4eab9f5aee2f..80564bc0440fa9693762f532750777d6
          stats.add(Stat.size, StatValues.squared(hitSize / tilesize, StatUnit.blocks));
          stats.add(Stat.itemCapacity, itemCapacity);
          stats.add(Stat.range, Strings.autoFixed(maxRange / tilesize, 1), StatUnit.blocks);
-@@ -781,24 +783,36 @@ public class UnitType extends UnlockableContent implements Senseable{
+@@ -796,24 +798,36 @@ public class UnitType extends UnlockableContent implements Senseable{
  
          stats.add(Stat.targetsAir, targetAir);
          stats.add(Stat.targetsGround, targetGround);
@@ -158,7 +158,7 @@ index 010a7c02682f89bfcfc61916494a4eab9f5aee2f..80564bc0440fa9693762f532750777d6
          }
          if(buildSpeed > 0){
              stats.addPercent(Stat.buildSpeed, buildSpeed);
-@@ -817,6 +831,10 @@ public class UnitType extends UnlockableContent implements Senseable{
+@@ -832,6 +846,10 @@ public class UnitType extends UnlockableContent implements Senseable{
              stats.add(Stat.weapons, StatValues.weapons(this, weapons));
          }
  
@@ -169,7 +169,7 @@ index 010a7c02682f89bfcfc61916494a4eab9f5aee2f..80564bc0440fa9693762f532750777d6
          if(immunities.size > 0){
              stats.add(Stat.immunities, StatValues.statusEffects(immunities.toSeq().sort()));
          }
-@@ -891,6 +909,8 @@ public class UnitType extends UnlockableContent implements Senseable{
+@@ -906,6 +924,8 @@ public class UnitType extends UnlockableContent implements Senseable{
  
          allowLegStep = example instanceof Legsc || example instanceof Crawlc;
  
@@ -202,7 +202,7 @@ index 6f5083be8a94e06bc8b085e12e14aec9f654bfff..69137f5ce00244689cb36ca9bc322a46
              t.row();
              t.add("[lightgray]" + Stat.inaccuracy.localized() + ": [white]" + (int)inaccuracy + " " + StatUnit.degrees.localized());
 diff --git a/core/src/mindustry/world/Block.java b/core/src/mindustry/world/Block.java
-index 26f1a576b0f734cc11230aaeab9e9b6df3bcf98f..900f9668d79afad7b9d6b75656ea430fedc991af 100644
+index e0658b5640fd522dfd231ac646300a44cc6056e5..57d4923685e5c568b1fa835aeb18d6197853aeb4 100644
 --- a/core/src/mindustry/world/Block.java
 +++ b/core/src/mindustry/world/Block.java
 @@ -33,6 +33,7 @@ import mindustry.world.blocks.environment.*;
