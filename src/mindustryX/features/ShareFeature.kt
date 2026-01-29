@@ -278,10 +278,10 @@ object ShareFeature {
         return true
     }
 
-    private val posPattern = Regex("\\((?<x>\\d+),(?<y>\\d+)\\)")
+    private val posPattern = Regex("\\((\\d+),(\\d+)\\)")
     private fun resolvePositionShare(message: String): Vec2? {
         val match = posPattern.find(message) ?: return null
-        return Vec2(match.groups["x"]!!.value.toFloat(), match.groups["y"]!!.value.toFloat())
+        return Vec2(match.groupValues[1].toFloat(), match.groupValues[2].toFloat())
     }
 
     @JvmStatic
