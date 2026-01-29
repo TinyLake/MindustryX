@@ -90,11 +90,11 @@ data class GithubProxyConfig(
     /**
      * Apply proxy to URL
      */
-    fun applyProxy(url: String): String {
-        if (locked && id == 0) return url // Source site, no proxy
+    fun applyProxy(originalUrl: String): String {
+        if (locked && id == 0) return originalUrl // Source site, no proxy
         
         // Remove any existing proxy prefix
-        var cleanUrl = url
+        var cleanUrl = originalUrl
         val patterns = listOf(
             Regex("^https?://[^/]+\\.github\\.com/"),
             Regex("^https?://gh\\.[^/]+/https?://"),
@@ -119,7 +119,7 @@ data class GithubProxyConfig(
         return if (locked && id == 0) {
             cleanUrl
         } else {
-            "$url/$cleanUrl"
+            "${url.trimEnd('/')}/$cleanUrl"
         }
     }
 }

@@ -24,11 +24,8 @@ class GithubAccelerationDialog : BaseDialog("GH 加速配置") {
     init {
         addCloseButton()
         rebuild()
-    }
-    
-    fun show() {
-        rebuild()
-        super.show()
+        
+        shown(this::rebuild)
     }
     
     private fun rebuild() {
