@@ -59,17 +59,10 @@ public class Hooks implements ApplicationListener{
 
     @SuppressWarnings("unused")//call before arc.util.Http$HttpRequest.block
     public static void onHttp(Http.HttpRequest req){
-        if(VarsX.githubMirror.get()){
-            try{
-                String url = req.url;
-                String host = new URL(url).getHost();
-                if(host.contains("github.com") || host.contains("raw.githubusercontent.com")){
-                    url = "https://gh.tinylake.top/" + url;
-                    req.url = url;
-                }
-            }catch(Exception e){
-                //ignore
-            }
+        try{
+            GithubAccelerationService.INSTANCE.processRequest(req);
+        }catch(Exception e){
+            Log.err("Failed to process GitHub acceleration", e);
         }
     }
 
