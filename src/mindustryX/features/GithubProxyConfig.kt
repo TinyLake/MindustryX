@@ -86,40 +86,4 @@ data class GithubProxyConfig(
         
         return if (isApiRequest) apiEnabled else assetEnabled
     }
-    
-    /**
-     * Apply proxy to URL
-     */
-    fun applyProxy(originalUrl: String): String {
-        if (locked && id == 0) return originalUrl // Source site, no proxy
-        
-        // Remove any existing proxy prefix
-        var cleanUrl = originalUrl
-        val patterns = listOf(
-            Regex("^https?://[^/]+\\.github\\.com/"),
-            Regex("^https?://gh\\.[^/]+/https?://"),
-            Regex("^https?://ghproxy\\.[^/]+/https?://")
-        )
-        
-        for (pattern in patterns) {
-            val match = pattern.find(cleanUrl)
-            if (match != null && match.range.first == 0) {
-                // Extract the github.com part
-                if (cleanUrl.contains("github.com") || cleanUrl.contains("githubusercontent.com")) {
-                    val githubStart = cleanUrl.indexOf("github")
-                    if (githubStart > 0) {
-                        cleanUrl = "https://" + cleanUrl.substring(githubStart)
-                        break
-                    }
-                }
-            }
-        }
-        
-        // Apply new proxy if not source site
-        return if (locked && id == 0) {
-            cleanUrl
-        } else {
-            "${url.trimEnd('/')}/$cleanUrl"
-        }
-    }
 }

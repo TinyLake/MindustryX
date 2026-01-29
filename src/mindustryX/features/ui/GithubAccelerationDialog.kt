@@ -17,7 +17,7 @@ import mindustryX.features.GithubProxyConfig
 /**
  * Dialog for configuring GitHub acceleration proxies
  */
-class GithubAccelerationDialog : BaseDialog("GH 加速配置") {
+class GithubAccelerationDialog : BaseDialog("@githubAcceleration.dialog.title") {
     
     private val contentTable = Table()
     
@@ -36,12 +36,12 @@ class GithubAccelerationDialog : BaseDialog("GH 加速配置") {
         cont.table(Tex.button) { header ->
             header.defaults().pad(4f).height(40f)
             
-            header.add("序号").width(50f)
-            header.add("启用").width(50f)
-            header.add("镜像地址/备注").minWidth(200f).growX()
-            header.add("Asset").width(60f)
-            header.add("API").width(60f)
-            header.add("操作").width(120f)
+            header.add(Core.bundle.get("githubAcceleration.table.index")).width(50f)
+            header.add(Core.bundle.get("githubAcceleration.table.enabled")).width(50f)
+            header.add(Core.bundle.get("githubAcceleration.table.url")).minWidth(200f).growX()
+            header.add(Core.bundle.get("githubAcceleration.table.asset")).width(60f)
+            header.add(Core.bundle.get("githubAcceleration.table.api")).width(60f)
+            header.add(Core.bundle.get("githubAcceleration.table.actions")).width(120f)
         }.growX().row()
         
         // Separator
@@ -63,7 +63,7 @@ class GithubAccelerationDialog : BaseDialog("GH 加速配置") {
         cont.image().color(Pal.accent).fillX().height(3f).pad(4f).row()
         
         // Add button
-        cont.button("+ 添加", Styles.cleart) {
+        cont.button(Core.bundle.get("githubAcceleration.button.add"), Styles.cleart) {
             showAddProxyDialog()
         }.fillX().height(50f).row()
         
@@ -71,7 +71,7 @@ class GithubAccelerationDialog : BaseDialog("GH 加速配置") {
         cont.image().color(Pal.accent).fillX().height(3f).pad(4f).row()
         
         // Footer message
-        cont.add("修改配置后，请点击保存图标生效")
+        cont.add(Core.bundle.get("githubAcceleration.footer.savePrompt"))
             .color(Color.yellow)
             .pad(8f)
             .row()
@@ -113,7 +113,7 @@ class GithubAccelerationDialog : BaseDialog("GH 加速配置") {
                 } else {
                     // Delete button
                     actions.button(Icon.trash, Styles.cleari, 24f) {
-                        Vars.ui.showConfirm("@confirm", "确定要删除这个代理吗？") {
+                        Vars.ui.showConfirm("@confirm", Core.bundle.get("githubAcceleration.confirm.delete")) {
                             GithubAccelerationService.removeProxy(proxy.id)
                             rebuild()
                         }
@@ -122,7 +122,7 @@ class GithubAccelerationDialog : BaseDialog("GH 加速配置") {
                     // Save button
                     actions.button(Icon.save, Styles.cleari, 24f) {
                         GithubAccelerationService.updateProxy(proxy)
-                        Vars.ui.showInfoFade("已保存")
+                        Vars.ui.showInfoFade(Core.bundle.get("githubAcceleration.message.saved"))
                     }.pad(4f)
                 }
             }.width(120f)
@@ -131,7 +131,7 @@ class GithubAccelerationDialog : BaseDialog("GH 加速配置") {
     }
     
     private fun showAddProxyDialog() {
-        val dialog = BaseDialog("添加代理")
+        val dialog = BaseDialog(Core.bundle.get("githubAcceleration.dialog.addTitle"))
         
         var url = ""
         var name = ""
@@ -141,10 +141,10 @@ class GithubAccelerationDialog : BaseDialog("GH 加速配置") {
         dialog.cont.table { t ->
             t.defaults().pad(4f).left()
             
-            t.add("镜像地址:").row()
+            t.add(Core.bundle.get("githubAcceleration.field.url")).row()
             t.field("https://") { url = it }.growX().row()
             
-            t.add("备注名称:").row()
+            t.add(Core.bundle.get("githubAcceleration.field.name")).row()
             t.field("") { name = it }.growX().row()
             
             t.table { checks ->
@@ -170,7 +170,7 @@ class GithubAccelerationDialog : BaseDialog("GH 加速配置") {
                 rebuild()
                 dialog.hide()
             } else {
-                Vars.ui.showInfo("请输入镜像地址")
+                Vars.ui.showInfo(Core.bundle.get("githubAcceleration.error.urlRequired"))
             }
         }
         

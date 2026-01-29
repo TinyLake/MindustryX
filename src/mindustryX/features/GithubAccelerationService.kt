@@ -29,12 +29,12 @@ object GithubAccelerationService {
     val cacheExpireMinutes = SettingsV2.SliderPref(
         "githubAcceleration.cacheExpireMinutes", 
         60, 10, 1440, 10
-    ) { "${it}分钟" }
+    ) { "$it${arc.Core.bundle.get("unit.minutes", "分钟")}" }
     
     val maxRetries = SettingsV2.SliderPref(
         "githubAcceleration.maxRetries",
         3, 1, 10
-    ) { "$it 次" }
+    ) { "$it ${arc.Core.bundle.get("unit.times", "次")}" }
     
     private val proxiesData = Data<String>("githubAcceleration.proxies", "").apply {
         persistentProvider = SettingsV2.PersistentProvider.Arc("githubAcceleration.proxies")
@@ -50,7 +50,7 @@ object GithubAccelerationService {
     // Custom settings entry that acts as a button
     val configSetting = object : Data<Boolean>("githubAcceleration.config", false) {
         override fun buildUI() = Table().apply {
-            button("⚙ 配置 GH 加速代理", Icon.settings, Styles.cleart) {
+            button(arc.Core.bundle.get("githubAcceleration.button.config"), Icon.settings, Styles.cleart) {
                 dialog.show()
             }.growX().height(50f)
         }
@@ -166,7 +166,13 @@ object GithubAccelerationService {
     }
     
     /**
-     * Process HTTP request with proxy and retry logic
+     * Process HTTP request with proxy
+     * Note: This is a before-request hook, so we can only modify the URL,
+     * not implement full retry logic here. Retry would need to be implemented
+     * at a different level (e.g., in the HTTP client itself).
+     * 
+     * The cache currently tracks successfully accessed URLs to help identify
+     * which proxies work best (future optimization).
      */
     fun processRequest(request: Http.HttpRequest) {
         if (!enabled.value) return
@@ -176,14 +182,11 @@ object GithubAccelerationService {
         
         val isApi = isApiRequest(url)
         
-        // Check cache first
+        // Track previously successful URLs (for future optimization)
         if (enableCache.value && !isApi) {
             val cached = cache[url]
             if (cached != null && !cached.isExpired(cacheExpireMinutes.value)) {
-                Log.debug("Using cached response for: $url")
-                // Note: We can't directly return cached data here as it's a before-request hook
-                // The cache is mainly useful for tracking which URLs work
-                return
+                Log.debug("URL recently accessed: $url")
             }
         }
         
@@ -195,7 +198,8 @@ object GithubAccelerationService {
             return
         }
         
-        // Use first available proxy (will implement retry in actual HTTP execution)
+        // Use first available proxy
+        // TODO: Implement retry logic with fallback to other proxies
         val proxy = availableProxies.first()
         val proxiedUrl = applyProxyToUrl(url, proxy)
         
@@ -206,25 +210,22 @@ object GithubAccelerationService {
     }
     
     /**
-     * Apply proxy to URL
+     * Apply proxy to URL with better cleaning logic
      */
-    private fun applyProxyToUrl(url: String, proxy: GithubProxyConfig): String {
+    private fun applyProxyToUrl(originalUrl: String, proxy: GithubProxyConfig): String {
         // If it's the source site (locked, id=0), don't proxy
-        if (proxy.locked && proxy.id == 0) return url
+        if (proxy.locked && proxy.id == 0) return originalUrl
         
-        // Remove any existing proxy prefix first
-        var cleanUrl = url
+        var cleanUrl = originalUrl
         
-        // Pattern to detect if URL is already proxied
-        val proxyPrefixPattern = Regex("^(https?://[^/]+/)+(https?://)")
-        val match = proxyPrefixPattern.find(cleanUrl)
+        // Check if URL is already proxied by looking for common proxy patterns
+        // Pattern: https://proxy.com/https://github.com/...
+        val doubleProxyPattern = Regex("^https?://[^/]+/(https?://(?:github\\.com|raw\\.githubusercontent\\.com)/)")
+        val match = doubleProxyPattern.find(cleanUrl)
         
         if (match != null) {
-            // Extract the original GitHub URL
-            val lastHttpIndex = cleanUrl.lastIndexOf("http")
-            if (lastHttpIndex > 0) {
-                cleanUrl = cleanUrl.substring(lastHttpIndex)
-            }
+            // Extract the GitHub URL part
+            cleanUrl = match.groupValues[1]
         }
         
         // Apply new proxy
@@ -233,19 +234,12 @@ object GithubAccelerationService {
     }
     
     /**
-     * Cache response
+     * Track successful URL access (for future proxy optimization)
      */
-    fun cacheResponse(url: String) {
-        if (enableCache.value) {
+    fun trackSuccess(url: String) {
+        if (enableCache.value && isGithubUrl(url)) {
             cache[url] = CachedResponse(System.currentTimeMillis())
         }
-    }
-    
-    /**
-     * Clear cache
-     */
-    fun clearCache() {
-        cache.clear()
     }
     
     /**
