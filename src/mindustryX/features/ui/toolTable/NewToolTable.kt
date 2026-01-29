@@ -58,6 +58,9 @@ object NewToolTable : Table() {
         button("${Iconc.blockRadar}", "雷达开关") { ArcRadar.mobileRadar = !ArcRadar.mobileRadar }.get().also {
             SettingsV2.bindQuickSettings(it, ArcRadar.settings)
         }
+        button("GH", "GitHub加速配置") { /* 长按/Shift显示配置 */ }.get().also {
+            SettingsV2.bindQuickSettings(it, GithubAcceleration.INSTANCE.getSettings())
+        }
         toggle("${Iconc.blockWorldProcessor}", "移除逻辑锁定", { Core.settings.getBool("removeLogicLock") }) {
             Settings.toggle("removeLogicLock")
             if (Core.settings.getBool("removeLogicLock")) {
