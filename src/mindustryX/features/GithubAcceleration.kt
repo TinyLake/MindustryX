@@ -58,6 +58,11 @@ object GithubAcceleration {
                 List::class.java,
                 ProxyConfig::class.java
             )
+            // 添加默认值 fallback
+            addFallback(object : PersistentProvider<List<ProxyConfig>> {
+                override fun get() = ProxyConfig.defaults()
+                override fun reset() {}
+            })
         }
         
         override fun buildUI() = Table().let { table ->
@@ -149,10 +154,6 @@ object GithubAcceleration {
     private val cache = ConcurrentHashMap<String, CachedResponse>()
     
     init {
-        // 初始化默认代理
-        if (proxyList.value.isEmpty()) {
-            proxyList.set(ProxyConfig.defaults())
-        }
         setupHttpHooks()
     }
     
