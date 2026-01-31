@@ -18,11 +18,11 @@ way-zer <himc.wicp@gmail.com> on 2024/4/27 at 18:57
  4 files changed, 4 insertions(+), 7 deletions(-)
 
 diff --git a/build.gradle b/build.gradle
-index bcda66480a44e8889cea29eaec390e35e74c2d58..31b4a1dbc86c9939fcd1ec7328e5068534848b7b 100644
+index efc3babc4e107fd1dd62cfb4ca0402d59aa59f57..67c283b4f3489b33a2f479286b21b03b6991a7b9 100644
 --- a/build.gradle
 +++ b/build.gradle
-@@ -183,12 +183,6 @@ project(":core"){
-         }
+@@ -179,12 +179,6 @@ project(":core"){
+         destinationDir = layout.buildDirectory.dir("javadoc").get().asFile
      }
  
 -    gradle.taskGraph.whenReady{

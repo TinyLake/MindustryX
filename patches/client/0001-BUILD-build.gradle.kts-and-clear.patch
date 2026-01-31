@@ -7,11 +7,11 @@ clear and replce jabel(Support record)
 way-zer <himc.wicp@gmail.com> on 2024/6/9
 ---
  .gitignore                                    |   2 +-
- android/build.gradle                          | 113 +++---
+ android/build.gradle                          | 113 +++----
  android/proguard-rules.pro                    |   4 +
  .../com/github/bsideup/jabel/Desugar.java     |  13 +
  .../javax.annotation.processing.Processor     |   6 +
- build.gradle                                  | 321 +++---------------
+ build.gradle                                  | 319 +++---------------
  core/build.gradle                             |   2 -
  core/build.gradle.kts                         |  67 ++++
  desktop/build.gradle                          | 166 +--------
@@ -23,7 +23,7 @@ way-zer <himc.wicp@gmail.com> on 2024/6/9
  settings.gradle                               |  11 +-
  tools/build.gradle                            |  91 ++---
  tools/src/mindustry/tools/Generators.java     |   2 +-
- 17 files changed, 456 insertions(+), 714 deletions(-)
+ 17 files changed, 453 insertions(+), 715 deletions(-)
  create mode 100644 annotations/src/main/java/com/github/bsideup/jabel/Desugar.java
  create mode 100644 annotations/src/main/resources/META-INF/services/javax.annotation.processing.Processor
  delete mode 100644 core/build.gradle
@@ -282,7 +282,7 @@ index 0000000000000000000000000000000000000000..181b87c1d5f3755f16a01c0528d0a89f
 +mindustry.annotations.misc.LogicStatementProcessor
 +mindustry.annotations.remote.RemoteProcess
 diff --git a/build.gradle b/build.gradle
-index 6ee53a65c20d99251f942ca03362fa1d2ff5bfec..bcda66480a44e8889cea29eaec390e35e74c2d58 100644
+index 6ee53a65c20d99251f942ca03362fa1d2ff5bfec..efc3babc4e107fd1dd62cfb4ca0402d59aa59f57 100644
 --- a/build.gradle
 +++ b/build.gradle
 @@ -1,30 +1,16 @@
@@ -607,7 +607,7 @@ index 6ee53a65c20d99251f942ca03362fa1d2ff5bfec..bcda66480a44e8889cea29eaec390e35
          api "org.lz4:lz4-java:1.8.0"
          api arcModule("arc-core")
          api arcModule("extensions:flabel")
-@@ -336,33 +153,33 @@ project(":core"){
+@@ -336,34 +153,30 @@ project(":core"){
          api arcModule("extensions:arcnet")
          implementation arcModule("extensions:filedialogs")
          api "com.github.Anuken:rhino:$rhinoVersion"
@@ -622,32 +622,23 @@ index 6ee53a65c20d99251f942ca03362fa1d2ff5bfec..bcda66480a44e8889cea29eaec390e35
          if(!project.hasProperty("noKapt")) kapt project(":annotations")
      }
  
-     afterEvaluate{
+-    afterEvaluate{
 -        task mergedJavadoc(type: Javadoc){
 -            def blacklist = [project(":ios"), project(":desktop"), project(":server"), project(":annotations")]
 -            if(findProject(":android") != null){
 -                blacklist += project(":android")
-+        tasks.register("mergedJavadoc", Javadoc){
-+            def blacklist = [project(":server"), project(":annotations"), findProject(":ios"), findProject(":desktop"), findProject(":android")]
-+
-+            source = provider{
-+                return rootProject.subprojects.collect{ project ->
-+                    if(!blacklist.contains(project) && project.hasProperty("sourceSets")){
-+                        return project.sourceSets.main.allJava
-+                    }
-+                }.findAll{ it != null }
-             }
--
+-            }
++    tasks.register("mergedJavadoc", Javadoc) {
++        // 黑名单依然可以是配置阶段的常量，因为它是静态数据
++        def excludedPaths = [':server', ':annotations', ':ios', ':desktop', ':android'] as Set
+ 
 -            source rootProject.subprojects.collect{ project ->
 -                if(!blacklist.contains(project) && project.hasProperty("sourceSets")){
 -                    return project.sourceSets.main.allJava
 -                }
-+            classpath = provider{
-+                return rootProject.subprojects.collect{ project ->
-+                    if(!blacklist.contains(project) && project.hasProperty("sourceSets")){
-+                        return project.sourceSets.main.compileClasspath
-+                    }
-+                }.findAll{ it != null }
++        def getJavaProjects = {
++            rootProject.subprojects.findAll { project ->
++                !excludedPaths.contains(project.path) && project.plugins.hasPlugin("java")
              }
 -
 -            classpath = files(rootProject.subprojects.collect { project ->
@@ -656,11 +647,18 @@ index 6ee53a65c20d99251f942ca03362fa1d2ff5bfec..bcda66480a44e8889cea29eaec390e35
 -                }
 -            })
 -            destinationDir = new File(buildDir, 'javadoc')
-+            destinationDir = layout.buildDirectory.dir('javadoc')
          }
++        source = files {
++            getJavaProjects().collect { it.sourceSets.main.allJava }
++        }
++        classpath = files {
++            getJavaProjects().collect { it.sourceSets.main.compileClasspath }
++        }
++        destinationDir = layout.buildDirectory.dir("javadoc").get().asFile
      }
  
-@@ -400,12 +217,6 @@ project(":tests"){
+     gradle.taskGraph.whenReady{
+@@ -400,12 +213,6 @@ project(":tests"){
          testRuntimeOnly "org.junit.jupiter:junit-jupiter-engine:5.7.1"
      }
  
@@ -673,7 +671,7 @@ index 6ee53a65c20d99251f942ca03362fa1d2ff5bfec..bcda66480a44e8889cea29eaec390e35
      test{
          //fork every test so mods don't interact with each other
          forkEvery = 1
-@@ -422,14 +233,19 @@ project(":tools"){
+@@ -422,14 +229,19 @@ project(":tools"){
      apply plugin: "java"
  
      dependencies{
@@ -695,7 +693,7 @@ index 6ee53a65c20d99251f942ca03362fa1d2ff5bfec..bcda66480a44e8889cea29eaec390e35
      }
  }
  
-@@ -452,43 +268,16 @@ configure([":core", ":server"].collect{project(it)}){
+@@ -452,43 +264,16 @@ configure([":core", ":server"].collect{project(it)}){
          publications{
              maven(MavenPublication){
                  from components.java
