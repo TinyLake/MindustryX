@@ -1,6 +1,7 @@
 /.idea/
 *.iml
 /work
+/Arc
 /patches/work/
 
 .gradle/
