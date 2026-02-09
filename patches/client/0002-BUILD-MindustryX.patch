@@ -18,10 +18,10 @@ way-zer <himc.wicp@gmail.com> on 2024/4/27 at 18:57
  4 files changed, 4 insertions(+), 7 deletions(-)
 
 diff --git a/build.gradle b/build.gradle
-index efc3babc4e107fd1dd62cfb4ca0402d59aa59f57..67c283b4f3489b33a2f479286b21b03b6991a7b9 100644
+index 2862e80d1ac6b43151bbaaf74c98c9fc2558e56b..11edc43871e7070b0c1c945cf0865067949015b1 100644
 --- a/build.gradle
 +++ b/build.gradle
-@@ -179,12 +179,6 @@ project(":core"){
+@@ -177,12 +177,6 @@ project(":core"){
          destinationDir = layout.buildDirectory.dir("javadoc").get().asFile
      }
  
@@ -47,7 +47,7 @@ index 712c4750377c079ec77bfea24bd889db58090b98..441b4366206a21f8a5eedc433dd55b00
  sourceSets.main {
      java.setSrcDirs(listOf("src/", "../../src/", layout.buildDirectory.dir("/generated/sources/annotationProcessor/java/main")))
 diff --git a/gradle.properties b/gradle.properties
-index 48a5ef58c5d9f708ea3f208cd3cc8cb154454cb0..4b92feb773c32e35f7e7132712ad4887b990956e 100644
+index aca0cb473de8c02a838aeaa23bfa80a9af689fab..9ac4aada3536a0b63907c3bedeb3478cd749e626 100644
 --- a/gradle.properties
 +++ b/gradle.properties
 @@ -18,7 +18,7 @@ kapt.use.worker.api=true

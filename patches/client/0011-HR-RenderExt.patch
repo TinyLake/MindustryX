@@ -6,11 +6,11 @@ Subject: [PATCH] HR: RenderExt
 ---
  core/src/mindustry/core/Renderer.java          | 3 ++-
  core/src/mindustry/graphics/BlockRenderer.java | 3 ++-
- core/src/mindustry/input/InputHandler.java     | 2 +-
- 3 files changed, 5 insertions(+), 3 deletions(-)
+ core/src/mindustry/input/InputHandler.java     | 5 +++++
+ 3 files changed, 9 insertions(+), 2 deletions(-)
 
 diff --git a/core/src/mindustry/core/Renderer.java b/core/src/mindustry/core/Renderer.java
-index d13e3e9d72c086fb76bb8d0cae7e2ca646f7bcb3..89778dccade18298c268693f6fb0f462bdcc7237 100644
+index 4bbb531666aad6202c6a97660d65c2996900fb48..b8f9741948892d72519fbb8939f55391aa7e5419 100644
 --- a/core/src/mindustry/core/Renderer.java
 +++ b/core/src/mindustry/core/Renderer.java
 @@ -20,6 +20,7 @@ import mindustry.graphics.g3d.*;
@@ -31,7 +31,7 @@ index d13e3e9d72c086fb76bb8d0cae7e2ca646f7bcb3..89778dccade18298c268693f6fb0f462
          if(drawDebugHitboxes){
              DebugCollisionRenderer.draw();
 diff --git a/core/src/mindustry/graphics/BlockRenderer.java b/core/src/mindustry/graphics/BlockRenderer.java
-index 66a083545521fa274632143a687a4381b4f097e4..4c3ec8b90f4e01f20f66eaaf6560350295625344 100644
+index d39cfd9797a5eff99cbca49847776f1eda96108a..e8aa2b654249f2f0d0c78c8400afa62c83a9109d 100644
 --- a/core/src/mindustry/graphics/BlockRenderer.java
 +++ b/core/src/mindustry/graphics/BlockRenderer.java
 @@ -19,6 +19,7 @@ import mindustry.world.*;
@@ -42,7 +42,7 @@ index 66a083545521fa274632143a687a4381b4f097e4..4c3ec8b90f4e01f20f66eaaf65603502
  
  import static arc.Core.*;
  import static mindustry.Vars.*;
-@@ -482,7 +483,7 @@ public class BlockRenderer{
+@@ -479,7 +480,7 @@ public class BlockRenderer{
  
              //comment wasVisible part for hiding?
              if(block != Blocks.air && (visible || build.wasVisible)){
@@ -52,15 +52,18 @@ index 66a083545521fa274632143a687a4381b4f097e4..4c3ec8b90f4e01f20f66eaaf65603502
                  Draw.z(Layer.block);
  
 diff --git a/core/src/mindustry/input/InputHandler.java b/core/src/mindustry/input/InputHandler.java
-index c4263b73236052d228a923d42f2bca3106a1f307..7221f04f6bcbefd6a00e8ce58c28f3b0ffc9657d 100644
+index 68bb108c22a0a4eae1369c7bf2ec37d1ad646e75..7d127c1a88a3256b90855b764209e09b4acf7286 100644
 --- a/core/src/mindustry/input/InputHandler.java
 +++ b/core/src/mindustry/input/InputHandler.java
-@@ -343,7 +343,7 @@ public abstract class InputHandler implements InputProcessor, GestureListener{
- 
-                     //remove when other player command
-                     if(!headless && player != Vars.player){
--                        control.input.selectedUnits.remove(unit);
-+                        if(control.input.selectedUnits.remove(unit)) RenderExt.onRtsRemoveUnit(player, unit);
+@@ -342,6 +342,11 @@ public abstract class InputHandler implements InputProcessor, GestureListener{
+                         ai.group = null;
                      }
  
++                    //remove when other player command
++                    if(!headless && player != Vars.player){
++                        if(control.input.selectedUnits.contains(unit)) RenderExt.onRtsRemoveUnit(player, unit);
++                    }
++
                      toAdd.add(unit);
+                 }
+             }

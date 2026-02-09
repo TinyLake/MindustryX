@@ -17,7 +17,7 @@ Content-Transfer-Encoding: 8bit
  6 files changed, 28 insertions(+), 8 deletions(-)
 
 diff --git a/core/src/mindustry/ctype/UnlockableContent.java b/core/src/mindustry/ctype/UnlockableContent.java
-index 8f3a4ccca9d09e8d2b4a6d547815db57c24a9d18..8db57d81cd1e78e428eca10f8bcec437450d27b0 100644
+index 380fd844426820615fd6d2f88899d2f5ec20ac2a..caf6a100865d862a4d75ccf55741f45b6efe6935 100644
 --- a/core/src/mindustry/ctype/UnlockableContent.java
 +++ b/core/src/mindustry/ctype/UnlockableContent.java
 @@ -18,6 +18,7 @@ import mindustry.mod.*;
@@ -28,7 +28,7 @@ index 8f3a4ccca9d09e8d2b4a6d547815db57c24a9d18..8db57d81cd1e78e428eca10f8bcec437
  
  import static mindustry.Vars.*;
  
-@@ -258,7 +259,7 @@ public abstract class UnlockableContent extends MappableContent{
+@@ -259,7 +260,7 @@ public abstract class UnlockableContent extends MappableContent{
      }
  
      public boolean unlockedNowHost(){
@@ -37,7 +37,7 @@ index 8f3a4ccca9d09e8d2b4a6d547815db57c24a9d18..8db57d81cd1e78e428eca10f8bcec437
      }
  
      /** @return in multiplayer, whether this is unlocked for the host player, otherwise, whether it is unlocked for the local player (same as unlocked()) */
-@@ -270,7 +271,7 @@ public abstract class UnlockableContent extends MappableContent{
+@@ -271,7 +272,7 @@ public abstract class UnlockableContent extends MappableContent{
  
      /** @return whether this content is unlocked, or the player is in a custom (non-campaign) game. */
      public boolean unlockedNow(){
@@ -47,7 +47,7 @@ index 8f3a4ccca9d09e8d2b4a6d547815db57c24a9d18..8db57d81cd1e78e428eca10f8bcec437
  
      public boolean unlocked(){
 diff --git a/core/src/mindustry/ui/dialogs/DatabaseDialog.java b/core/src/mindustry/ui/dialogs/DatabaseDialog.java
-index dfc3a053a0f323ccaa15a0ffc7a77d658f6ea3c6..3f87fb047e9e1b06c579058f6e36528e1826e2a8 100644
+index 5f9489b5b5e4311eca4c50f51fc5624d98c1a03c..72cf36b8c2fd6ffad56b9d3505f8420942f0f77a 100644
 --- a/core/src/mindustry/ui/dialogs/DatabaseDialog.java
 +++ b/core/src/mindustry/ui/dialogs/DatabaseDialog.java
 @@ -50,6 +50,11 @@ public class DatabaseDialog extends BaseDialog{
@@ -123,10 +123,10 @@ index 60cedfaecdb8a85dcfccc30ca090aa48e3463350..01ba50f19dcae39176f8dde2be539177
      }
  
 diff --git a/core/src/mindustry/world/Block.java b/core/src/mindustry/world/Block.java
-index 0cac3aaa3b68eb3d547da71ad520df9dddb926ea..38161b0a925e15dbd218567f47875f7f7be3d623 100644
+index 89f13b9d797e17403213d6af1cdc9974ae30ecb1..47c74febb9899e96ca950e8e7d00afc2be7c9a3b 100644
 --- a/core/src/mindustry/world/Block.java
 +++ b/core/src/mindustry/world/Block.java
-@@ -955,11 +955,11 @@ public class Block extends UnlockableContent implements Senseable{
+@@ -968,11 +968,11 @@ public class Block extends UnlockableContent implements Senseable{
      }
  
      public boolean isVisible(){
@@ -141,7 +141,7 @@ index 0cac3aaa3b68eb3d547da71ad520df9dddb926ea..38161b0a925e15dbd218567f47875f7f
  
      @Override
 diff --git a/core/src/mindustry/world/Build.java b/core/src/mindustry/world/Build.java
-index 29325166665bef59573d5bb5fbbbc0ab6cfc39ad..f0fc4b4ebb7f79d29daf18ab7c304dde89eb1fce 100644
+index d883b6c00bb2beba1d3f957168bd65d85cd4f9a1..0a8b5d7c1118b44f742c3c9e23fa2caab6a92377 100644
 --- a/core/src/mindustry/world/Build.java
 +++ b/core/src/mindustry/world/Build.java
 @@ -15,6 +15,7 @@ import mindustry.gen.*;
@@ -152,7 +152,7 @@ index 29325166665bef59573d5bb5fbbbc0ab6cfc39ad..f0fc4b4ebb7f79d29daf18ab7c304dde
  
  import static mindustry.Vars.*;
  
-@@ -180,6 +181,10 @@ public class Build{
+@@ -181,6 +182,10 @@ public class Build{
  
      /** @return whether a tile can be placed at this location by this team. Ignores units at this location. */
      public static boolean validPlaceIgnoreUnits(Block type, Team team, int x, int y, int rotation, boolean checkVisible, boolean checkCoreRadius){
@@ -163,7 +163,7 @@ index 29325166665bef59573d5bb5fbbbc0ab6cfc39ad..f0fc4b4ebb7f79d29daf18ab7c304dde
          //the wave team can build whatever they want as long as it's visible - banned blocks are not applicable
          if(type == null || (!state.rules.editor && (checkVisible && (!type.environmentBuildable() || (!type.isPlaceable() && !(state.rules.waves && team == state.rules.waveTeam && type.isVisible())))))){
              return false;
-@@ -312,6 +317,7 @@ public class Build{
+@@ -313,6 +318,7 @@ public class Build{
      /** @return whether the tile at this position is breakable by this team */
      public static boolean validBreak(Team team, int x, int y){
          Tile tile = world.tile(x, y);

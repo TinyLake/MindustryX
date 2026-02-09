@@ -11,10 +11,10 @@ Subject: [PATCH] HG: Hooks
  4 files changed, 7 insertions(+)
 
 diff --git a/core/src/mindustry/ClientLauncher.java b/core/src/mindustry/ClientLauncher.java
-index 43502cfc3a1494214efbabdad20107f6ce190746..4145f77e4680b962aa3ed89e414095ad71ecdb46 100644
+index c1cfe2406f5c5c6bad747ce866a5f178f02a90b3..ec993d3e6f8026dcc58cdc6cc943d8c792494bf5 100644
 --- a/core/src/mindustry/ClientLauncher.java
 +++ b/core/src/mindustry/ClientLauncher.java
-@@ -186,6 +186,7 @@ public abstract class ClientLauncher extends ApplicationCore implements Platform
+@@ -192,6 +192,7 @@ public abstract class ClientLauncher extends ApplicationCore implements Platform
          add(ui = new UI());
          add(netServer = new NetServer());
          add(netClient = new NetClient());
@@ -23,10 +23,10 @@ index 43502cfc3a1494214efbabdad20107f6ce190746..4145f77e4680b962aa3ed89e414095ad
          assets.load(schematics);
  
 diff --git a/core/src/mindustry/Vars.java b/core/src/mindustry/Vars.java
-index 3b251b0bdf7b1e035bbd06e0df7fe5cc74f3da3f..25c9cdeb5a6a49d616cafacb21d04172d0fbf59f 100644
+index b466ff373b45d2a280fff9135b9482a25ce8e7c3..1d4c11f8bd7ab61c9c7a4bbc1e300f6afd1f6d3a 100644
 --- a/core/src/mindustry/Vars.java
 +++ b/core/src/mindustry/Vars.java
-@@ -297,6 +297,7 @@ public class Vars implements Loadable{
+@@ -298,6 +298,7 @@ public class Vars implements Loadable{
      }
  
      public static void init(){
@@ -35,10 +35,10 @@ index 3b251b0bdf7b1e035bbd06e0df7fe5cc74f3da3f..25c9cdeb5a6a49d616cafacb21d04172
  
          if(loadLocales){
 diff --git a/core/src/mindustry/core/NetClient.java b/core/src/mindustry/core/NetClient.java
-index 934708b28f4b735ea2311c144315225986daa1e8..a961d0953d07bd427d6071efe6b526ce22b12505 100644
+index cd9ef5356459f40cd17d1519802c040669f56d9a..f1923596677f5027bc4a3179da92082bbd71cf15 100644
 --- a/core/src/mindustry/core/NetClient.java
 +++ b/core/src/mindustry/core/NetClient.java
-@@ -231,6 +231,8 @@ public class NetClient implements ApplicationListener{
+@@ -232,6 +232,8 @@ public class NetClient implements ApplicationListener{
  
      @Remote(targets = Loc.server, variants = Variant.both)
      public static void sendMessage(String message, @Nullable String unformatted, @Nullable Player playersender){
@@ -47,7 +47,7 @@ index 934708b28f4b735ea2311c144315225986daa1e8..a961d0953d07bd427d6071efe6b526ce
          if(Vars.ui != null){
              Vars.ui.chatfrag.addMessage(message);
              Sounds.uiChat.play();
-@@ -248,6 +250,8 @@ public class NetClient implements ApplicationListener{
+@@ -249,6 +251,8 @@ public class NetClient implements ApplicationListener{
      //equivalent to above method but there's no sender and no console log
      @Remote(called = Loc.server, targets = Loc.server)
      public static void sendMessage(String message){

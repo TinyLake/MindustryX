@@ -11,12 +11,12 @@ Content-Transfer-Encoding: 8bit
 ---
  core/src/mindustry/core/ContentLoader.java    | 17 ++++++++++
  core/src/mindustry/core/NetClient.java        |  2 ++
- core/src/mindustry/io/TypeIO.java             | 12 +++++--
+ core/src/mindustry/io/TypeIO.java             | 18 ++++++++--
  core/src/mindustry/net/Net.java               | 34 ++++++++++++++++---
  core/src/mindustry/net/NetworkIO.java         | 32 +++++++++++++----
  core/src/mindustry/net/Packets.java           |  2 +-
  core/src/mindustry/ui/dialogs/JoinDialog.java |  2 +-
- 7 files changed, 85 insertions(+), 16 deletions(-)
+ 7 files changed, 90 insertions(+), 17 deletions(-)
 
 diff --git a/core/src/mindustry/core/ContentLoader.java b/core/src/mindustry/core/ContentLoader.java
 index b7415388c7427601ff9ec6c5bf85f5ae9cffa2ea..df7a39ed93ec5049d2ce6c932cea4a1c7c37ed2e 100644
@@ -54,10 +54,10 @@ index b7415388c7427601ff9ec6c5bf85f5ae9cffa2ea..df7a39ed93ec5049d2ce6c932cea4a1c
  
      /** @return the last registered content with the specified name. Note that the content loader makes no attempt to resolve name conflicts. This method can be unreliable. */
 diff --git a/core/src/mindustry/core/NetClient.java b/core/src/mindustry/core/NetClient.java
-index 61ef7a6ae1a82d078d4eb1d91a06215d5b191a57..4ff530335dc094b433063f06b466cc754efd8e71 100644
+index 556714c2f55370d662722d1e4d0c4f8d57dcdce8..52088c330e65c9fa30d0bab87f9e020fb022f4b2 100644
 --- a/core/src/mindustry/core/NetClient.java
 +++ b/core/src/mindustry/core/NetClient.java
-@@ -522,6 +522,8 @@ public class NetClient implements ApplicationListener{
+@@ -523,6 +523,8 @@ public class NetClient implements ApplicationListener{
  
      @Remote(variants = Variant.both, priority = PacketPriority.low, unreliable = true)
      public static void blockSnapshot(short amount, byte[] data){
@@ -67,7 +67,7 @@ index 61ef7a6ae1a82d078d4eb1d91a06215d5b191a57..4ff530335dc094b433063f06b466cc75
              netClient.byteStream.setBytes(data);
              DataInputStream input = netClient.dataStream;
 diff --git a/core/src/mindustry/io/TypeIO.java b/core/src/mindustry/io/TypeIO.java
-index 9dce3a88534d6f6f609c0c26b98287b84902f5db..ff9e1318add68c7c6c4bd16d4b859baea11b9580 100644
+index 930b7462db02bd201fae6e694b9cc258b24be16b..c663a0fcc8d8372f4844cec65e8759fb871845d2 100644
 --- a/core/src/mindustry/io/TypeIO.java
 +++ b/core/src/mindustry/io/TypeIO.java
 @@ -26,6 +26,7 @@ import mindustry.type.*;
@@ -90,18 +90,24 @@ index 9dce3a88534d6f6f609c0c26b98287b84902f5db..ff9e1318add68c7c6c4bd16d4b859bae
          }else if(object instanceof IntSeq arr){
              write.b((byte)6);
              write.s((short)arr.size);
-@@ -392,6 +396,10 @@ public class TypeIO{
+@@ -392,7 +396,15 @@ public class TypeIO{
      }
  
      public static void writeBlock(Writes write, Block block){
+-        write.s(block == null ? -1 : block.id);
++        if(block == null){
++            write.s(-1);
++            return;
++        }
 +        if(LogicExt.contentsCompatibleMode){
 +            write.s(content.getTemporaryMapperId(block));
 +            return;
 +        }
-         write.s(block.id);
++        write.s(block.id);
      }
  
-@@ -454,7 +462,7 @@ public class TypeIO{
+     public static Block readBlock(Reads read){
+@@ -455,7 +467,7 @@ public class TypeIO{
          write.b(plan.breaking ? (byte)1 : 0);
          write.i(Point2.pack(plan.x, plan.y));
          if(!plan.breaking){
@@ -204,7 +210,7 @@ index 332f2e11d8575e0b70f3589e685c4beb5c7a9049..cb76e9e2a90af2d54aa5668def238828
          if(object instanceof StreamBegin b){
              streams.put(b.id, currentStream = new StreamBuilder(b));
 diff --git a/core/src/mindustry/net/NetworkIO.java b/core/src/mindustry/net/NetworkIO.java
-index 6ff7fc477c68e159e5c65bce0a015ec1690b3692..1b8b11dcd257d0006493dee7de7a7b2ef7224dc3 100644
+index 251f7c454d9823234b492d8878cb07c7e37f0136..082a174b79d1bc90c414dcb88b4dc41beba8c46c 100644
 --- a/core/src/mindustry/net/NetworkIO.java
 +++ b/core/src/mindustry/net/NetworkIO.java
 @@ -4,6 +4,7 @@ import arc.*;
@@ -289,7 +295,7 @@ index 1b445b3ff268b1d626cf9ba84797560c04e9bb0a..8f91b6abf01af158cb8b2c81d10b55b3
              TypeIO.writeString(buffer, locale);
              TypeIO.writeString(buffer, usid);
 diff --git a/core/src/mindustry/ui/dialogs/JoinDialog.java b/core/src/mindustry/ui/dialogs/JoinDialog.java
-index cf2251dfa5bb7b927ee0301cad5d18a73161a934..4b988a8ef9783fda17807c1368eeb11d64418035 100644
+index 497406bf761dfa63cdbbe554289c00f4bff7df5b..1ce5f93c14fb17e4cbc176d1406188251af1d70a 100644
 --- a/core/src/mindustry/ui/dialogs/JoinDialog.java
 +++ b/core/src/mindustry/ui/dialogs/JoinDialog.java
 @@ -642,7 +642,7 @@ public class JoinDialog extends BaseDialog{

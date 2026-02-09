@@ -12,7 +12,7 @@ Content-Transfer-Encoding: 8bit
  1 file changed, 5 insertions(+), 4 deletions(-)
 
 diff --git a/core/src/mindustry/entities/comp/BuildingComp.java b/core/src/mindustry/entities/comp/BuildingComp.java
-index baacb406ab12aae1ac0d31fb582a76190562f888..275d6842f96a84010a1d1c3efc2d494064e8e23e 100644
+index 617a74fc96070bfa9574e5326151cdf4ce60c726..61da0b079538c7ecd3972ae3cc30588c58f881ad 100644
 --- a/core/src/mindustry/entities/comp/BuildingComp.java
 +++ b/core/src/mindustry/entities/comp/BuildingComp.java
 @@ -1148,10 +1148,11 @@ abstract class BuildingComp implements Posc, Teamc, Healthc, Buildingc, Timerc,

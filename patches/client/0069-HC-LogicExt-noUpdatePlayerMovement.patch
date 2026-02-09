@@ -31,7 +31,7 @@ index bb012f379aafab3daa06e2cfe9ec291d68aba66a..7277ea1b02972a73a3124ef1c885fee9
          }
  
 diff --git a/core/src/mindustry/input/MobileInput.java b/core/src/mindustry/input/MobileInput.java
-index aadb4f131566ff7c54e4a3605af046f7e9bce27e..d20506449878379ae9e3714976e432608180f3ca 100644
+index 7dc19c08f6c2e32f83e58b5e132c0396bf92347e..f85a95f248f76151a1baccc9f2b25ac28bb3d56d 100644
 --- a/core/src/mindustry/input/MobileInput.java
 +++ b/core/src/mindustry/input/MobileInput.java
 @@ -24,6 +24,7 @@ import mindustry.type.*;
@@ -42,7 +42,7 @@ index aadb4f131566ff7c54e4a3605af046f7e9bce27e..d20506449878379ae9e3714976e43260
  
  import static arc.Core.*;
  import static mindustry.Vars.*;
-@@ -805,7 +806,7 @@ public class MobileInput extends InputHandler implements GestureListener{
+@@ -807,7 +808,7 @@ public class MobileInput extends InputHandler implements GestureListener{
          }
  
          if(!player.dead() && !state.isPaused() && !locked){

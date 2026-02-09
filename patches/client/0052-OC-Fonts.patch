@@ -14,10 +14,10 @@ Content-Transfer-Encoding: 8bit
  3 files changed, 18 insertions(+), 22 deletions(-)
 
 diff --git a/core/src/mindustry/ClientLauncher.java b/core/src/mindustry/ClientLauncher.java
-index 3db82e7f8a67f9f4a8ec04bbd50691ba8d5e0203..4b2e47a600e2a0d040bafac68fde4fad7016a37d 100644
+index af09f046e1845755f883781ebc6e60e5681edf2a..b957924ea9411c3ec09eb8a24599ad9230beb93a 100644
 --- a/core/src/mindustry/ClientLauncher.java
 +++ b/core/src/mindustry/ClientLauncher.java
-@@ -165,10 +165,8 @@ public abstract class ClientLauncher extends ApplicationCore implements Platform
+@@ -171,10 +171,8 @@ public abstract class ClientLauncher extends ApplicationCore implements Platform
  
          assets.load(new Vars());
  
@@ -29,7 +29,7 @@ index 3db82e7f8a67f9f4a8ec04bbd50691ba8d5e0203..4b2e47a600e2a0d040bafac68fde4fad
          assets.loadRun("maps", Map.class, () -> maps.loadPreviews());
  
          Musics.load();
-@@ -183,11 +181,11 @@ public abstract class ClientLauncher extends ApplicationCore implements Platform
+@@ -189,11 +187,11 @@ public abstract class ClientLauncher extends ApplicationCore implements Platform
          });
  
          assets.load(mods);

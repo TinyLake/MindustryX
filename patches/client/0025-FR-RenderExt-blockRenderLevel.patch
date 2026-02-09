@@ -11,7 +11,7 @@ Subject: [PATCH] FR(RenderExt) blockRenderLevel
  4 files changed, 11 insertions(+), 6 deletions(-)
 
 diff --git a/core/src/mindustry/core/Renderer.java b/core/src/mindustry/core/Renderer.java
-index 3c23eebbc063bf002e087cb07cfc4191137ea829..0c6d636cd64c9d1dd782d3eb46d840414b56e27f 100644
+index d4dddd92e7e5bb87c35120e9dedaebd0decdc4f5..b988dfe212a187b492194d010641611e6465e5b0 100644
 --- a/core/src/mindustry/core/Renderer.java
 +++ b/core/src/mindustry/core/Renderer.java
 @@ -332,7 +332,8 @@ public class Renderer implements ApplicationListener{
@@ -35,10 +35,10 @@ index 3c23eebbc063bf002e087cb07cfc4191137ea829..0c6d636cd64c9d1dd782d3eb46d84041
          Groups.draw.draw(RenderExt::onGroupDraw);
  
 diff --git a/core/src/mindustry/graphics/BlockRenderer.java b/core/src/mindustry/graphics/BlockRenderer.java
-index 4c3ec8b90f4e01f20f66eaaf6560350295625344..89248d96c9ae9f7e27da374717861cfd103da3c6 100644
+index e8aa2b654249f2f0d0c78c8400afa62c83a9109d..a22b49796d989df325e7d1920cafcf6dd408a27f 100644
 --- a/core/src/mindustry/graphics/BlockRenderer.java
 +++ b/core/src/mindustry/graphics/BlockRenderer.java
-@@ -404,7 +404,7 @@ public class BlockRenderer{
+@@ -401,7 +401,7 @@ public class BlockRenderer{
          }
  
  

@@ -31,10 +31,10 @@ index fe2570133e9560a855e72b2bdbe15d207bdc7eb2..e62d626a07bd61ada7fee19547355f5e
  
          if(loaded != null){
 diff --git a/arc-core/src/arc/input/KeyCode.java b/arc-core/src/arc/input/KeyCode.java
-index 9ce212150be80dd1f086f1e0ac86be1ac9ac3988..49f14e3b5ee17310aebc254d58f240d259552fe2 100644
+index 60ad78e0596c4ffa5b2a85dbf7db68ab9d7f7983..112ff7a7b215d43c7e46d6217afd4e7407ee3f09 100644
 --- a/arc-core/src/arc/input/KeyCode.java
 +++ b/arc-core/src/arc/input/KeyCode.java
-@@ -193,6 +193,7 @@ public enum KeyCode implements KeybindValue{
+@@ -194,6 +194,7 @@ public enum KeyCode implements KeybindValue{
      f11(KeyType.key, "F11"),
      f12(KeyType.key, "F12"),
      unset(KeyType.key, "Unset"),

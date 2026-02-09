@@ -15,7 +15,7 @@ Subject: [PATCH] FR: ARC drawPlace and drawSelect
  8 files changed, 91 insertions(+), 19 deletions(-)
 
 diff --git a/core/src/mindustry/world/blocks/ConstructBlock.java b/core/src/mindustry/world/blocks/ConstructBlock.java
-index 68a5475d19fbc1593fa2f19d0dff46fe0bee8739..1da8aabd8874232fdf18f9f42e81c8296022a6a1 100644
+index f8bf94b418cab64321e89ad0b85c883c1335fa2c..8fc82b4776222f0223f8ba7ff7727107f69de910 100644
 --- a/core/src/mindustry/world/blocks/ConstructBlock.java
 +++ b/core/src/mindustry/world/blocks/ConstructBlock.java
 @@ -3,14 +3,17 @@ package mindustry.world.blocks;
@@ -94,7 +94,7 @@ index 68a5475d19fbc1593fa2f19d0dff46fe0bee8739..1da8aabd8874232fdf18f9f42e81c829
          @Override
          public String getDisplayName(){
              return Core.bundle.format("block.constructing", current.localizedName);
-@@ -257,7 +295,7 @@ public class ConstructBlock extends Block{
+@@ -268,7 +306,7 @@ public class ConstructBlock extends Block{
  
                      Draw.rect(region, x, y, current.rotate && (noOverrides || current.regionRotated2 == i || current.regionRotated1 == i) ? rotdeg() + current.visualRotationOffset : 0);
                      Draw.flush();
@@ -104,7 +104,7 @@ index 68a5475d19fbc1593fa2f19d0dff46fe0bee8739..1da8aabd8874232fdf18f9f42e81c829
  
                  Draw.color();
 diff --git a/core/src/mindustry/world/blocks/defense/ForceProjector.java b/core/src/mindustry/world/blocks/defense/ForceProjector.java
-index 3e5142601441496b54a2a92c0d735b9e3ab4daae..cb681c877fdbeaaa772421138e1a281bf8176c1e 100644
+index 33cfc82bdb20cb6d433118f015b11b7983e9ac1d..d3265da9361ce7059e94141a7a9aaea8312b5f21 100644
 --- a/core/src/mindustry/world/blocks/defense/ForceProjector.java
 +++ b/core/src/mindustry/world/blocks/defense/ForceProjector.java
 @@ -2,6 +2,7 @@ package mindustry.world.blocks.defense;
@@ -124,7 +124,7 @@ index 3e5142601441496b54a2a92c0d735b9e3ab4daae..cb681c877fdbeaaa772421138e1a281b
      }
  
 diff --git a/core/src/mindustry/world/blocks/defense/MendProjector.java b/core/src/mindustry/world/blocks/defense/MendProjector.java
-index 50fa4d12f08a908d11c5b1f9d3bb54a115916306..9b734e1a334e291ac1c9b40c3fa45cbb3cd1b9c3 100644
+index a422e97f53c28087878d10338291e96c98f31026..ccad261aacc7c2e26c7939bd424f8f72824237a7 100644
 --- a/core/src/mindustry/world/blocks/defense/MendProjector.java
 +++ b/core/src/mindustry/world/blocks/defense/MendProjector.java
 @@ -1,5 +1,6 @@
@@ -177,7 +177,7 @@ index 31b67b7837d1c1b6c4c3ec00982478b5e4709bae..76f9b2cedb83d84b444a0860b8821826
          indexer.eachBlock(player.team(), x * tilesize + offset, y * tilesize + offset, range, other -> other.block.canOverdrive, other -> Drawf.selected(other, Tmp.c1.set(baseColor).a(Mathf.absin(4f, 1f))));
      }
 diff --git a/core/src/mindustry/world/blocks/defense/turrets/Turret.java b/core/src/mindustry/world/blocks/defense/turrets/Turret.java
-index 9ad3785d6508c05e997c32f130d159c10b6c38e0..ee65e19d87bac912a52d02fb75b9e76b0424f63e 100644
+index 2c2181e00862d4a653aef59afe1446aea743f4eb..2293ee8955308eb6b9a588c59ef3e155199b15c9 100644
 --- a/core/src/mindustry/world/blocks/defense/turrets/Turret.java
 +++ b/core/src/mindustry/world/blocks/defense/turrets/Turret.java
 @@ -30,6 +30,7 @@ import mindustry.world.*;
@@ -188,7 +188,7 @@ index 9ad3785d6508c05e997c32f130d159c10b6c38e0..ee65e19d87bac912a52d02fb75b9e76b
  
  import static mindustry.Vars.*;
  
-@@ -251,6 +252,13 @@ public class Turret extends ReloadTurret{
+@@ -252,6 +253,13 @@ public class Turret extends ReloadTurret{
          if(drawMinRange){
              Drawf.dashCircle(x * tilesize + offset, y * tilesize + offset, minRange, Pal.placing);
          }
@@ -202,7 +202,7 @@ index 9ad3785d6508c05e997c32f130d159c10b6c38e0..ee65e19d87bac912a52d02fb75b9e76b
      }
  
      public static abstract class AmmoEntry{
-@@ -456,6 +464,17 @@ public class Turret extends ReloadTurret{
+@@ -467,6 +475,17 @@ public class Turret extends ReloadTurret{
              if(drawMinRange){
                  Drawf.dashCircle(x, y, minRange(), team.color);
              }
@@ -292,7 +292,7 @@ index 8c80702229e246a30efb7c3ca42d59200facb4ce..6043840864448258a27e9aa782c1001d
          returnItem = null;
          returnCount = 0;
 diff --git a/core/src/mindustry/world/blocks/storage/CoreBlock.java b/core/src/mindustry/world/blocks/storage/CoreBlock.java
-index a11be3c21fbce3cbc257de1645fbdbf6855664db..8e7ca3b1b04dcb9dd95dd7e33b07c6dfc40eed16 100644
+index 95e5b698dc2a4eefede24f83241d4d9ab023bf50..c547e1f803c704eeb98bf094ea5c938a7f132aed 100644
 --- a/core/src/mindustry/world/blocks/storage/CoreBlock.java
 +++ b/core/src/mindustry/world/blocks/storage/CoreBlock.java
 @@ -100,6 +100,7 @@ public class CoreBlock extends StorageBlock{

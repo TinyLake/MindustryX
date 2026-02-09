@@ -40,19 +40,15 @@ index f3ebb3b5b53e1c1c983083644dabb1bcf1f07c67..d92d1f7c97cbad689f2d6d5843d34380
          environment(4096),
          ui(4096),
 diff --git a/core/src/mindustry/world/blocks/logic/LogicDisplay.java b/core/src/mindustry/world/blocks/logic/LogicDisplay.java
-index 49efb020afda2f66b59825119b3359ad2f0c9273..f68288f3da2993d5e2a933ba99f933aeee6498da 100644
+index fc3fe1bfa1d922f5ac8cd4cdb5c4270454332b72..065cae4fc9c2497244d97d3bb5ffee3bebfa897a 100644
 --- a/core/src/mindustry/world/blocks/logic/LogicDisplay.java
 +++ b/core/src/mindustry/world/blocks/logic/LogicDisplay.java
-@@ -90,7 +90,7 @@ public class LogicDisplay extends Block{
+@@ -100,11 +100,11 @@ public class LogicDisplay extends Block{
              //don't even bother processing anything when displays are off.
              if(!Vars.renderer.drawDisplays) return;
  
--            Draw.draw(Draw.z(), () -> {
-+            Draw.draw(Layer.block - 0.002f, () -> {
-                 if(buffer == null){
-                     buffer = new FrameBuffer(displaySize, displaySize);
-                     //clear the buffer - some OSs leave garbage in it
-@@ -102,7 +102,7 @@ public class LogicDisplay extends Block{
+-            Draw.draw(Draw.z(), this::ensureBuffer);
++            Draw.draw(Layer.block - 0.002f, this::ensureBuffer);
              processCommands();
  
              Draw.blend(Blending.disabled);
@@ -61,7 +57,7 @@ index 49efb020afda2f66b59825119b3359ad2f0c9273..f68288f3da2993d5e2a933ba99f933ae
                  if(buffer != null){
                      if(RenderExt.logicDisplayNoBorder){
                          Draw.rect(Draw.wrap(buffer.getTexture()), x, y, (buffer.getWidth() + 16) * Draw.scl, -(buffer.getHeight() + 16) * Draw.scl);
-@@ -112,6 +112,7 @@ public class LogicDisplay extends Block{
+@@ -114,6 +114,7 @@ public class LogicDisplay extends Block{
                  }
              });
              Draw.blend();
@@ -69,12 +65,12 @@ index 49efb020afda2f66b59825119b3359ad2f0c9273..f68288f3da2993d5e2a933ba99f933ae
          }
  
          @Override
-@@ -137,7 +138,7 @@ public class LogicDisplay extends Block{
+@@ -154,7 +155,7 @@ public class LogicDisplay extends Block{
          public void processCommands(){
              //don't bother processing commands if displays are off
              if(!commands.isEmpty() && buffer != null){
 -                Draw.draw(Draw.z(), () -> {
 +                Draw.draw(Layer.block - 0.001f, () -> {
-                     if(buffer == null) return;
+                     if(buffer == null || commands.isEmpty()) return;
  
                      Tmp.m1.set(Draw.proj());

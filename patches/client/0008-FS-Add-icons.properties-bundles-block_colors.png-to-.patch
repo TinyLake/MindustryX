@@ -6,15 +6,15 @@ Subject: [PATCH] FS: Add icons.properties,bundles,block_colors.png to server
 
 ---
  core/src/mindustry/net/Administration.java    |  1 +
- server/build.gradle                           | 25 +++++++++----------
+ server/build.gradle                           | 26 +++++++++----------
  .../src/mindustry/server/ServerLauncher.java  |  2 +-
- 3 files changed, 14 insertions(+), 14 deletions(-)
+ 3 files changed, 14 insertions(+), 15 deletions(-)
 
 diff --git a/core/src/mindustry/net/Administration.java b/core/src/mindustry/net/Administration.java
-index 76d21c6028707cdd98bf135ab21dfbbbd85759e8..21e9472f1158a488d417288fbeb8503b2d6116a6 100644
+index f1c107d50aa076c48668e28c0fb82103c9eaac3d..39928f4b8510ce4fef1d4e60112cdce1eddcbf41 100644
 --- a/core/src/mindustry/net/Administration.java
 +++ b/core/src/mindustry/net/Administration.java
-@@ -491,6 +491,7 @@ public class Administration{
+@@ -512,6 +512,7 @@ public class Administration{
          serverName = new Config("name", "The server name as displayed on clients.", "Server", "servername"),
          desc = new Config("desc", "The server description, displayed under the name. Max 100 characters.", "off"),
          port = new Config("port", "The port to host on.", Vars.port),
@@ -23,13 +23,13 @@ index 76d21c6028707cdd98bf135ab21dfbbbd85759e8..21e9472f1158a488d417288fbeb8503b
          showConnectMessages = new Config("showConnectMessages", "Whether to display connect/disconnect messages.", true),
          enableVotekick = new Config("enableVotekick", "Whether votekick is enabled.", true),
 diff --git a/server/build.gradle b/server/build.gradle
-index 91a4a0f02776a87bee4323993c19ba5e7a7609b4..d57060fff7ec12b93198dca4b447ca68f4c9c076 100644
+index 7c1293746b6329d9904f237b94b1466869f9c47c..768f7a6b7b17feb8bd853dfcffb97674ac450429 100644
 --- a/server/build.gradle
 +++ b/server/build.gradle
-@@ -31,19 +31,18 @@ task dist(type: Jar, dependsOn: configurations.runtimeClasspath){
+@@ -34,20 +34,18 @@ tasks.register('dist', Jar){
      from files(sourceSets.main.output.classesDirs)
      from files(sourceSets.main.output.resourcesDir)
-     from {configurations.runtimeClasspath.collect{ it.isDirectory() ? it : zipTree(it) }}
+     from{ configurations.runtimeClasspath.collect{ it.isDirectory() ? it : zipTree(it) } }
 -    from files(tasks.getByPath(":core:allAssets"))
 -    exclude("sprites/**")
 -    exclude("music/**")
@@ -43,6 +43,7 @@ index 91a4a0f02776a87bee4323993c19ba5e7a7609b4..d57060fff7ec12b93198dca4b447ca68
 -    exclude("icons/icon.icns")
 -    exclude("icons/icon.ico")
 -    exclude("icons/icon_64.png")
+-    exclude("**hs_err**.log")
 +    from (files(tasks.getByPath(":core:allAssets"))){
 +        include "baseparts/**"
 +        include "bundles/**"

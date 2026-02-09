@@ -32,10 +32,10 @@ Content-Transfer-Encoding: 8bit
  21 files changed, 85 insertions(+), 57 deletions(-)
 
 diff --git a/core/src/mindustry/ClientLauncher.java b/core/src/mindustry/ClientLauncher.java
-index 4145f77e4680b962aa3ed89e414095ad71ecdb46..03945cddb87fc0c8fb583f126dde24fa60427e0c 100644
+index ec993d3e6f8026dcc58cdc6cc943d8c792494bf5..f4ed14ca5a2b5f3a8b2d01e0c7bbc383be740962 100644
 --- a/core/src/mindustry/ClientLauncher.java
 +++ b/core/src/mindustry/ClientLauncher.java
-@@ -37,6 +37,10 @@ public abstract class ClientLauncher extends ApplicationCore implements Platform
+@@ -43,6 +43,10 @@ public abstract class ClientLauncher extends ApplicationCore implements Platform
      @Override
      public void setup(){
          String dataDir = System.getProperty("mindustry.data.dir", OS.env("MINDUSTRY_DATA_DIR"));
@@ -46,7 +46,7 @@ index 4145f77e4680b962aa3ed89e414095ad71ecdb46..03945cddb87fc0c8fb583f126dde24fa
          if(dataDir != null){
              Core.settings.setDataDirectory(files.absolute(dataDir));
          }
-@@ -264,10 +268,14 @@ public abstract class ClientLauncher extends ApplicationCore implements Platform
+@@ -270,10 +274,14 @@ public abstract class ClientLauncher extends ApplicationCore implements Platform
          }
  
          if(limitFps){
@@ -62,10 +62,10 @@ index 4145f77e4680b962aa3ed89e414095ad71ecdb46..03945cddb87fc0c8fb583f126dde24fa
          }
  
 diff --git a/core/src/mindustry/Vars.java b/core/src/mindustry/Vars.java
-index 25c9cdeb5a6a49d616cafacb21d04172d0fbf59f..397744e4237ddb0fcacaec86cf14e4f720a6c87a 100644
+index 1d4c11f8bd7ab61c9c7a4bbc1e300f6afd1f6d3a..aec6dcf4528b37165f8b14076f82e8ef58f96189 100644
 --- a/core/src/mindustry/Vars.java
 +++ b/core/src/mindustry/Vars.java
-@@ -288,7 +288,8 @@ public class Vars implements Loadable{
+@@ -289,7 +289,8 @@ public class Vars implements Loadable{
      public static NetServer netServer;
      public static NetClient netClient;
  
@@ -75,7 +75,7 @@ index 25c9cdeb5a6a49d616cafacb21d04172d0fbf59f..397744e4237ddb0fcacaec86cf14e4f7
  
      @Override
      public void loadAsync(){
-@@ -420,6 +421,11 @@ public class Vars implements Loadable{
+@@ -421,6 +422,11 @@ public class Vars implements Loadable{
                  if(!headless && (ui == null || ui.consolefrag == null)){
                      logBuffer.add(result);
                  }else if(!headless){
@@ -101,18 +101,18 @@ index 11278ddac6ce2b35234acb31b43ea7e8c999592d..ed6785c5853a9a8096b2f48792c05b98
      private Seq<Team> activeTeams = new Seq<>(Team.class);
      /** Maps teams to a map of flagged tiles by flag. */
 diff --git a/core/src/mindustry/content/Blocks.java b/core/src/mindustry/content/Blocks.java
-index 566c2132c044f1257a19bf9eb7ed6966ee4c9d0b..deee4bf82f0b3df84f86d41745eab9646bef8e7d 100644
+index 813838da39d91e457ce2b5b69cb3ae12cca7f0b6..94484c6e974cb3563edce0fb921375fa019a6142 100644
 --- a/core/src/mindustry/content/Blocks.java
 +++ b/core/src/mindustry/content/Blocks.java
-@@ -2113,6 +2113,7 @@ public class Blocks{
-             speed = 74f;
+@@ -2121,6 +2121,7 @@ public class Blocks{
              arrowSpacing = 6f;
              bufferCapacity = 14;
+             crushFragile = true;
 +            allowConfigInventory = true; //MDTX: config inventory for bridge
          }};
  
          phaseConveyor = new ItemBridge("phase-conveyor"){{
-@@ -2125,6 +2126,7 @@ public class Blocks{
+@@ -2133,6 +2134,7 @@ public class Blocks{
              pulse = true;
              envEnabled |= Env.space;
              consumePower(0.30f);
@@ -121,7 +121,7 @@ index 566c2132c044f1257a19bf9eb7ed6966ee4c9d0b..deee4bf82f0b3df84f86d41745eab964
  
          sorter = new Sorter("sorter"){{
 diff --git a/core/src/mindustry/content/StatusEffects.java b/core/src/mindustry/content/StatusEffects.java
-index 7e9466f2d629335317b2a706b376d33aab029923..51669a3c774069bdb5f3189a52fd938657aeb30e 100644
+index 6792c68861eb9ddf52428b2afc80510987509210..ef315970349db1c463ba117dfe3b0b15e218a72e 100644
 --- a/core/src/mindustry/content/StatusEffects.java
 +++ b/core/src/mindustry/content/StatusEffects.java
 @@ -206,6 +206,7 @@ public class StatusEffects{
@@ -133,10 +133,10 @@ index 7e9466f2d629335317b2a706b376d33aab029923..51669a3c774069bdb5f3189a52fd9386
  
          dynamic = new StatusEffect("dynamic"){{
 diff --git a/core/src/mindustry/core/Control.java b/core/src/mindustry/core/Control.java
-index b47359f11124b09334d3f3d108a18da2dfd57daf..3985cd03a36d24c55f465822eed6d12074e56094 100644
+index e2055878e6f76e57b50174be15378a18d8f11d31..f6706d0940c86623909c3ea51c4fd7ebdb4c9a3b 100644
 --- a/core/src/mindustry/core/Control.java
 +++ b/core/src/mindustry/core/Control.java
-@@ -603,7 +603,8 @@ public class Control implements ApplicationListener, Loadable{
+@@ -631,7 +631,8 @@ public class Control implements ApplicationListener, Loadable{
                  BaseDialog dialog = new BaseDialog("@confirm");
                  dialog.setFillParent(true);
  
@@ -147,10 +147,10 @@ index b47359f11124b09334d3f3d108a18da2dfd57daf..3985cd03a36d24c55f465822eed6d120
                      Core.settings.put("uiscale", 100);
                      Core.settings.put("uiscalechanged", false);
 diff --git a/core/src/mindustry/core/NetClient.java b/core/src/mindustry/core/NetClient.java
-index 77e23fff3efb2bc6d4ed8ca01086716823d3c869..61ef7a6ae1a82d078d4eb1d91a06215d5b191a57 100644
+index 30c37c2c8f912865d800690664290cbdb314cfd6..556714c2f55370d662722d1e4d0c4f8d57dcdce8 100644
 --- a/core/src/mindustry/core/NetClient.java
 +++ b/core/src/mindustry/core/NetClient.java
-@@ -72,6 +72,10 @@ public class NetClient implements ApplicationListener{
+@@ -73,6 +73,10 @@ public class NetClient implements ApplicationListener{
      public NetClient(){
  
          net.handleClient(Connect.class, packet -> {
@@ -162,7 +162,7 @@ index 77e23fff3efb2bc6d4ed8ca01086716823d3c869..61ef7a6ae1a82d078d4eb1d91a06215d
  
              player.admin = false;
 diff --git a/core/src/mindustry/core/Renderer.java b/core/src/mindustry/core/Renderer.java
-index 0c6d636cd64c9d1dd782d3eb46d840414b56e27f..e5453c4567d808e40ea5039b57d8ed83f854f2f7 100644
+index b988dfe212a187b492194d010641611e6465e5b0..099efb2bcdd709d3a328471a0a434165c665446c 100644
 --- a/core/src/mindustry/core/Renderer.java
 +++ b/core/src/mindustry/core/Renderer.java
 @@ -160,7 +160,7 @@ public class Renderer implements ApplicationListener{
@@ -213,7 +213,7 @@ index daaa194524f5d1afad10f2c3b0731e8ae68da124..a62f8737b3037c8c25c34a84e22369cb
  
      public static int roundAmount(int number){
 diff --git a/core/src/mindustry/game/Schematics.java b/core/src/mindustry/game/Schematics.java
-index 2333f83d451cd664633dc38c9f7d2b0911962398..0ca9f1a37d3f46842a5d1212b0f633dd9de2ae48 100644
+index 15159d0b47c42aa5c1374d5cbf6ed0845fb9af82..437a625f4d3c1e8d8a252b6481b403a3e01b4551 100644
 --- a/core/src/mindustry/game/Schematics.java
 +++ b/core/src/mindustry/game/Schematics.java
 @@ -99,7 +99,9 @@ public class Schematics implements Loadable{
@@ -284,7 +284,7 @@ index 1b398a99d5c870f091da5cbe6f0a7dd44803301d..f7ac4952272dbf657cbf2b4bc74a320e
                  }
              }
 diff --git a/core/src/mindustry/ui/dialogs/JoinDialog.java b/core/src/mindustry/ui/dialogs/JoinDialog.java
-index 3598459b4c4c22fc23a79c44b4f47f6c305f9bbf..ffcb29c15f2e1ab996a36cda95b845d64028a9b3 100644
+index 0c38dd9ab2a7b08cfcc8c0b1849778b90563e47f..4bc5fa841571cfe3e7948f7a74a9f08c4d2a6cb9 100644
 --- a/core/src/mindustry/ui/dialogs/JoinDialog.java
 +++ b/core/src/mindustry/ui/dialogs/JoinDialog.java
 @@ -61,11 +61,9 @@ public class JoinDialog extends BaseDialog{
@@ -321,7 +321,7 @@ index 3598459b4c4c22fc23a79c44b4f47f6c305f9bbf..ffcb29c15f2e1ab996a36cda95b845d6
          add = new BaseDialog("@joingame.title");
          add.cont.add("@joingame.ip").padRight(5f).left();
 diff --git a/core/src/mindustry/ui/dialogs/KeybindDialog.java b/core/src/mindustry/ui/dialogs/KeybindDialog.java
-index e56d2f43cc0dbea91986edefd29189327d409bb6..e26fecde81717004b5561c53dc43ae28579d24f3 100644
+index d14fd47e8d0afa17a76b9112eb89cca4badeb2b8..d3dd7592465f420eb7c225b7dc7218eada30abf8 100644
 --- a/core/src/mindustry/ui/dialogs/KeybindDialog.java
 +++ b/core/src/mindustry/ui/dialogs/KeybindDialog.java
 @@ -79,7 +79,7 @@ public class KeybindDialog extends Dialog{
@@ -344,7 +344,7 @@ index e56d2f43cc0dbea91986edefd29189327d409bb6..e26fecde81717004b5561c53dc43ae28
                  lastCategory = keybind.category;
              }
  
-@@ -115,11 +115,15 @@ public class KeybindDialog extends Dialog{
+@@ -118,11 +118,15 @@ public class KeybindDialog extends Dialog{
                      openDialog(keybind);
                  }).size(bw, bh);
              }

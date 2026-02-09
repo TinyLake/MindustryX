@@ -13,7 +13,7 @@ Content-Transfer-Encoding: 8bit
  2 files changed, 10 insertions(+), 5 deletions(-)
 
 diff --git a/core/src/mindustry/game/Objectives.java b/core/src/mindustry/game/Objectives.java
-index fb947c4bd06e676c79ff2c4b3578e286d048e60a..1941128ce1c18c771c3660f00ae6c8a2b731f125 100644
+index 3328eee453c1b9e5f56bc864a35bb6eaa1c7646c..7da49f8b4df23fd1016e4188c9e4b20c3d3ac556 100644
 --- a/core/src/mindustry/game/Objectives.java
 +++ b/core/src/mindustry/game/Objectives.java
 @@ -4,6 +4,7 @@ import arc.*;
@@ -32,15 +32,15 @@ index fb947c4bd06e676c79ff2c4b3578e286d048e60a..1941128ce1c18c771c3660f00ae6c8a2
                  (content.techNode == null || content.techNode.parent == null || content.techNode.parent.content.unlockedHost()) ?
                      (content.emoji() + " " + content.localizedName) : "???");
          }
-@@ -48,7 +50,7 @@ public class Objectives{
+@@ -53,7 +55,7 @@ public class Objectives{
          @Override
          public String display(){
              return Core.bundle.format("requirement.produce",
 -                content.unlockedHost() ? (content.emoji() + " " + content.localizedName) : "???");
 +                RenderExt.researchViewer || content.unlockedHost() ? (content.emoji() + " " + content.localizedName) : "???");
          }
-     }
  
+         @Override
 diff --git a/core/src/mindustry/ui/dialogs/ResearchDialog.java b/core/src/mindustry/ui/dialogs/ResearchDialog.java
 index 244c04afc7f4d892b1dca301a1ab50344568682a..fbf8dde06bdf66cb336cee8eb3bbe246e43210a5 100644
 --- a/core/src/mindustry/ui/dialogs/ResearchDialog.java

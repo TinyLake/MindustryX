@@ -11,7 +11,7 @@ Subject: [PATCH] HR(RenderExt) overdriveZone mendZone
  4 files changed, 40 insertions(+)
 
 diff --git a/core/src/mindustry/core/Renderer.java b/core/src/mindustry/core/Renderer.java
-index 89778dccade18298c268693f6fb0f462bdcc7237..3c23eebbc063bf002e087cb07cfc4191137ea829 100644
+index b8f9741948892d72519fbb8939f55391aa7e5419..d4dddd92e7e5bb87c35120e9dedaebd0decdc4f5 100644
 --- a/core/src/mindustry/core/Renderer.java
 +++ b/core/src/mindustry/core/Renderer.java
 @@ -374,6 +374,11 @@ public class Renderer implements ApplicationListener{
@@ -41,7 +41,7 @@ index 7d8d9f343acb410ba680aab1c1f6a2be9dbbf3a4..48e80224bdcbaea0476d4be204eef767
      weather = 130,
  
 diff --git a/core/src/mindustry/world/blocks/defense/MendProjector.java b/core/src/mindustry/world/blocks/defense/MendProjector.java
-index 74c0e2aa39b29241538f9deb3f1ecbf717852d33..f1ce6b0ba47e9d3949e344db0ed784d4b4d511d6 100644
+index e56333732c3a467b2a230f0801496cf3f88e0ac4..fe3b942681f449db3a17a6603182162e9b522b24 100644
 --- a/core/src/mindustry/world/blocks/defense/MendProjector.java
 +++ b/core/src/mindustry/world/blocks/defense/MendProjector.java
 @@ -15,6 +15,7 @@ import mindustry.logic.*;

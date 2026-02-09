@@ -10,7 +10,7 @@ Subject: [PATCH] FR(RenderExt) deadOverlay
  3 files changed, 13 insertions(+), 10 deletions(-)
 
 diff --git a/core/src/mindustry/graphics/OverlayRenderer.java b/core/src/mindustry/graphics/OverlayRenderer.java
-index e9c345050371c5322e35fb5384bc683b97eba99c..4615b0d9382ead0bfab195af00b4ee5a71c04e1f 100644
+index 78533c7fe78ce26a184f6251a5d0ae5de6298d5d..f1c07752bbe7d710bd11b255a95dade86c4ebeb4 100644
 --- a/core/src/mindustry/graphics/OverlayRenderer.java
 +++ b/core/src/mindustry/graphics/OverlayRenderer.java
 @@ -75,7 +75,7 @@ public class OverlayRenderer{
@@ -111,10 +111,10 @@ index c50c591559a1ba5fba57c484d14a86d2d5cd86db..1b398a99d5c870f091da5cbe6f0a7dd4
              if(mode == placing && block != null){ //touch up while placing, place everything in selection
                  if(input.keyDown(Binding.boost)){
 diff --git a/core/src/mindustry/input/InputHandler.java b/core/src/mindustry/input/InputHandler.java
-index 8018e512ed8696451a9335380f57190573e146a2..f698eec753ba47b99460527e320c34e5d0007714 100644
+index 93f18140b4d49661e469b115c7c0751520ce035e..150a05c7e6f300d4347d61e729bdc93e3cbff349 100644
 --- a/core/src/mindustry/input/InputHandler.java
 +++ b/core/src/mindustry/input/InputHandler.java
-@@ -2124,6 +2124,7 @@ public abstract class InputHandler implements InputProcessor, GestureListener{
+@@ -2128,6 +2128,7 @@ public abstract class InputHandler implements InputProcessor, GestureListener{
      }
  
      public boolean canShoot(){
@@ -122,7 +122,7 @@ index 8018e512ed8696451a9335380f57190573e146a2..f698eec753ba47b99460527e320c34e5
          return block == null && !onConfigurable() && !isDroppingItem() && !player.unit().activelyBuilding() &&
          !(player.unit() instanceof Mechc && player.unit().isFlying()) && !player.unit().mining() && !commandMode;
      }
-@@ -2165,6 +2166,7 @@ public abstract class InputHandler implements InputProcessor, GestureListener{
+@@ -2177,6 +2178,7 @@ public abstract class InputHandler implements InputProcessor, GestureListener{
      }
  
      public void rebuildArea(int x1, int y1, int x2, int y2){

@@ -122,7 +122,7 @@ index 74fb32ff56eec0fcf565cb7cf7aedf1335c978cc..39f29b027fe979cea410e52b2b8cd695
          public void draw(){
              float pad = 5f;
 diff --git a/core/src/mindustry/logic/LExecutor.java b/core/src/mindustry/logic/LExecutor.java
-index 56fd115ca7a426c67be8477f622fd907c5c68592..7fcdd08fe98b0de48c0a83e1e4c1877760160b21 100644
+index b80ecd7f0cb8e5c9f313d5e106ec17f782c2e452..fabfad8d20fe0388051db8c0f3d76594287a7721 100644
 --- a/core/src/mindustry/logic/LExecutor.java
 +++ b/core/src/mindustry/logic/LExecutor.java
 @@ -44,6 +44,9 @@ public class LExecutor{
@@ -135,7 +135,7 @@ index 56fd115ca7a426c67be8477f622fd907c5c68592..7fcdd08fe98b0de48c0a83e1e4c18777
  
      public LVar counter, unit, thisv, ipt;
  
-@@ -96,6 +99,7 @@ public class LExecutor{
+@@ -118,6 +121,7 @@ public class LExecutor{
      public void load(LAssembler builder){
          nameMap = null;
          vars = builder.vars.values().toSeq().retainAll(var -> !var.constant).toArray(LVar.class);
@@ -143,7 +143,7 @@ index 56fd115ca7a426c67be8477f622fd907c5c68592..7fcdd08fe98b0de48c0a83e1e4c18777
          for(int i = 0; i < vars.length; i++){
              vars[i].id = i;
          }
-@@ -530,6 +534,7 @@ public class LExecutor{
+@@ -565,6 +569,7 @@ public class LExecutor{
          public void run(LExecutor exec){
              Object obj = target.obj();
              if(obj instanceof Building b && (exec.privileged || (exec.build != null && exec.build.validLink(b)))){
@@ -151,7 +151,7 @@ index 56fd115ca7a426c67be8477f622fd907c5c68592..7fcdd08fe98b0de48c0a83e1e4c18777
  
                  if(type == LAccess.enabled){
                      if(p1.bool()){
-@@ -1264,7 +1269,7 @@ public class LExecutor{
+@@ -1301,7 +1306,7 @@ public class LExecutor{
          @Override
          public void run(LExecutor exec){
              if(headless) return;
@@ -161,7 +161,7 @@ index 56fd115ca7a426c67be8477f622fd907c5c68592..7fcdd08fe98b0de48c0a83e1e4c18777
                  case pan -> {
                      control.input.logicCutscene = true;
 diff --git a/core/src/mindustry/logic/LStatements.java b/core/src/mindustry/logic/LStatements.java
-index c230ed1f4732f74fea8ee859c0f6eda415ce9c71..237e02bcac78fdb6a39e3c9bc0c54637a2ea968b 100644
+index 4f172c5f66736634dac190b115827695ab7993f7..ecbe2ed06b45257a1deb16ce7dbab49508cb0987 100644
 --- a/core/src/mindustry/logic/LStatements.java
 +++ b/core/src/mindustry/logic/LStatements.java
 @@ -3,6 +3,9 @@ package mindustry.logic;
@@ -182,7 +182,7 @@ index c230ed1f4732f74fea8ee859c0f6eda415ce9c71..237e02bcac78fdb6a39e3c9bc0c54637
  
  import static mindustry.Vars.*;
  import static mindustry.logic.LCanvas.*;
-@@ -1012,6 +1016,29 @@ public class LStatements{
+@@ -1011,6 +1015,29 @@ public class LStatements{
              table.table(this::rebuild);
  
              table.add().growX();
@@ -213,7 +213,7 @@ index c230ed1f4732f74fea8ee859c0f6eda415ce9c71..237e02bcac78fdb6a39e3c9bc0c54637
  
              String name = name();
 diff --git a/core/src/mindustry/logic/LogicDialog.java b/core/src/mindustry/logic/LogicDialog.java
-index 38211fd1ab47dbc60f7c3871284e79c595de4e6c..6c1b8a57d7206ec6d9f5909613ebf202b29931aa 100644
+index 51c8576d8b41d43e25eb86400d169b9a108e6642..de370177beb5fec5b3b00abbb3dd8e2c608610de 100644
 --- a/core/src/mindustry/logic/LogicDialog.java
 +++ b/core/src/mindustry/logic/LogicDialog.java
 @@ -19,6 +19,8 @@ import mindustry.logic.LStatements.*;
@@ -262,7 +262,7 @@ index 38211fd1ab47dbc60f7c3871284e79c595de4e6c..6c1b8a57d7206ec6d9f5909613ebf202
                  });
              });
  
-@@ -364,6 +376,7 @@ public class LogicDialog extends BaseDialog{
+@@ -365,6 +377,7 @@ public class LogicDialog extends BaseDialog{
              }
          };
  
@@ -271,7 +271,7 @@ index 38211fd1ab47dbc60f7c3871284e79c595de4e6c..6c1b8a57d7206ec6d9f5909613ebf202
      }
  }
 diff --git a/core/src/mindustry/world/blocks/logic/LogicBlock.java b/core/src/mindustry/world/blocks/logic/LogicBlock.java
-index 2a8175d97b75b28648f96f62afbc5eebd6976f4c..e9e0f4f58deaff0e2ba46fdc84ec0378c12af01e 100644
+index 5084bbc41f2630d7d19e948a519e3ed682de7e6a..b959fe31b2db9f6597cb145ca7ae99d11058efe8 100644
 --- a/core/src/mindustry/world/blocks/logic/LogicBlock.java
 +++ b/core/src/mindustry/world/blocks/logic/LogicBlock.java
 @@ -16,17 +16,21 @@ import arc.util.io.*;
@@ -337,7 +337,7 @@ index 2a8175d97b75b28648f96f62afbc5eebd6976f4c..e9e0f4f58deaff0e2ba46fdc84ec0378
          }
  
          //logic blocks cause write problems when picked up
-@@ -604,24 +617,30 @@ public class LogicBlock extends Block{
+@@ -606,24 +619,30 @@ public class LogicBlock extends Block{
              }
  
              for(LogicLink l : links){
@@ -372,7 +372,7 @@ index 2a8175d97b75b28648f96f62afbc5eebd6976f4c..e9e0f4f58deaff0e2ba46fdc84ec0378
  
              Groups.unit.each(u -> u.controller() instanceof LogicAI ai && ai.controller == this, unit -> {
                  Drawf.square(unit.x, unit.y, unit.hitSize, unit.rotation + 45);
-@@ -668,12 +687,12 @@ public class LogicBlock extends Block{
+@@ -670,12 +689,12 @@ public class LogicBlock extends Block{
  
          @Override
          public boolean shouldShowConfigure(Player player){

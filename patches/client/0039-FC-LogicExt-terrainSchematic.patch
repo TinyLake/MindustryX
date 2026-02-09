@@ -10,12 +10,12 @@ Content-Transfer-Encoding: 8bit
 ---
  .../mindustry/entities/comp/BuilderComp.java  |  3 +-
  core/src/mindustry/game/Schematics.java       | 37 ++++++++++++++++---
- core/src/mindustry/input/MobileInput.java     | 11 +-----
+ core/src/mindustry/input/MobileInput.java     |  9 +----
  .../world/blocks/environment/Floor.java       |  1 +
- 4 files changed, 36 insertions(+), 16 deletions(-)
+ 4 files changed, 36 insertions(+), 14 deletions(-)
 
 diff --git a/core/src/mindustry/entities/comp/BuilderComp.java b/core/src/mindustry/entities/comp/BuilderComp.java
-index 66d334a96fdf3bb7d7dd8dd83073412f7e9c7248..fb21684625130ced78405d40964c2388ce177137 100644
+index 5d2b2837fb2cb8fa68bb14c20ecae0759886f1c2..12749bfe3d52e249656ad3fa74f015f779a78844 100644
 --- a/core/src/mindustry/entities/comp/BuilderComp.java
 +++ b/core/src/mindustry/entities/comp/BuilderComp.java
 @@ -18,6 +18,7 @@ import mindustry.type.*;
@@ -36,7 +36,7 @@ index 66d334a96fdf3bb7d7dd8dd83073412f7e9c7248..fb21684625130ced78405d40964c2388
          }
          Tile tile = world.tile(place.x, place.y);
 diff --git a/core/src/mindustry/game/Schematics.java b/core/src/mindustry/game/Schematics.java
-index 0ca9f1a37d3f46842a5d1212b0f633dd9de2ae48..82c93e03c4fc28e4ed8a150f460042b22bd7b4cc 100644
+index 437a625f4d3c1e8d8a252b6481b403a3e01b4551..c50a75537bba343fb4783dcf1127649a4d761a82 100644
 --- a/core/src/mindustry/game/Schematics.java
 +++ b/core/src/mindustry/game/Schematics.java
 @@ -35,6 +35,7 @@ import mindustry.world.blocks.sandbox.*;
@@ -119,16 +119,17 @@ index 0ca9f1a37d3f46842a5d1212b0f633dd9de2ae48..82c93e03c4fc28e4ed8a150f460042b2
          return new Schematic(tiles, new StringMap(), width, height);
      }
 diff --git a/core/src/mindustry/input/MobileInput.java b/core/src/mindustry/input/MobileInput.java
-index c8daa118fcad9c5ceb75c495ba463184b1ee8a58..b68b2ecad371b3263340c6df19d8c842c247ccdb 100644
+index 154b0e957ca49ea558f4084fd56c42fc7570de23..9d500d48c44855219309039ccb368ba64ae9bd36 100644
 --- a/core/src/mindustry/input/MobileInput.java
 +++ b/core/src/mindustry/input/MobileInput.java
-@@ -235,15 +235,8 @@ public class MobileInput extends InputHandler implements GestureListener{
+@@ -235,16 +235,11 @@ public class MobileInput extends InputHandler implements GestureListener{
                      if(tile != null){
                          if(!plan.breaking){
                              if(validPlace(plan.x, plan.y, plan.block, plan.rotation, null, true)){
 -                                BuildPlan other = getPlan(plan.x, plan.y, plan.block.size, null);
--                                BuildPlan copy = plan.copy();
--
+                                 BuildPlan copy = plan.copy();
+                                 plan.block.onNewPlan(copy);
+ 
 -                                if(other == null){
 -                                    player.unit().addBuild(copy);
 -                                }else if(!other.breaking && other.x == plan.x && other.y == plan.y && other.block.size == plan.block.size){
@@ -136,7 +137,7 @@ index c8daa118fcad9c5ceb75c495ba463184b1ee8a58..b68b2ecad371b3263340c6df19d8c842
 -                                    player.unit().addBuild(copy);
 -                                }
 +                                //MDTX: no need check other, addBuild will do it
-+                                player.unit().addBuild(plan.copy());
++                                player.unit().addBuild(copy);
                              }
  
                              rotation = plan.rotation;

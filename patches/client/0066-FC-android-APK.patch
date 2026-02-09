@@ -17,7 +17,7 @@ Content-Transfer-Encoding: 8bit
  create mode 100644 android/src/mindustryX/features/ApkInstallHelper.java
 
 diff --git a/android/AndroidManifest.xml b/android/AndroidManifest.xml
-index 2948020fbb297c68b65c0a5490a7d78984c64c92..110d20d8c44a3e6bbd178e22a5986689cb4e6523 100644
+index a9e095c374ed63a9cf6d484abb1cd3d0ddabefd8..f5f470c24931c2016a9abd762902fa7fc891461f 100644
 --- a/android/AndroidManifest.xml
 +++ b/android/AndroidManifest.xml
 @@ -6,6 +6,7 @@
@@ -28,8 +28,8 @@ index 2948020fbb297c68b65c0a5490a7d78984c64c92..110d20d8c44a3e6bbd178e22a5986689
  
      <application
              android:resizeableActivity="true"
-@@ -40,6 +41,16 @@
-             </intent-filter>
+@@ -33,6 +34,16 @@
+ 
          </activity>
  
 +

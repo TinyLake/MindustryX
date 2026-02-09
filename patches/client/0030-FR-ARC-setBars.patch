@@ -30,7 +30,7 @@ Subject: [PATCH] FR: ARC setBars
  23 files changed, 129 insertions(+), 39 deletions(-)
 
 diff --git a/core/src/mindustry/entities/abilities/ShieldArcAbility.java b/core/src/mindustry/entities/abilities/ShieldArcAbility.java
-index 3dffd2c93e07ae1cde20b485c2fef51dead1d219..09885dd6157f9cff4d780833dddd39a765c00055 100644
+index a4917590f773b2dc47fa2162dd9d97ee554ef7cb..be14295c259557726a1f95a0d6d63cfc0fe689cd 100644
 --- a/core/src/mindustry/entities/abilities/ShieldArcAbility.java
 +++ b/core/src/mindustry/entities/abilities/ShieldArcAbility.java
 @@ -14,6 +14,7 @@ import mindustry.entities.*;
@@ -41,7 +41,7 @@ index 3dffd2c93e07ae1cde20b485c2fef51dead1d219..09885dd6157f9cff4d780833dddd39a7
  
  public class ShieldArcAbility extends Ability{
  
-@@ -216,6 +217,6 @@ public class ShieldArcAbility extends Ability{
+@@ -227,6 +228,6 @@ public class ShieldArcAbility extends Ability{
  
      @Override
      public void displayBars(Unit unit, Table bars){
@@ -50,7 +50,7 @@ index 3dffd2c93e07ae1cde20b485c2fef51dead1d219..09885dd6157f9cff4d780833dddd39a7
      }
  }
 diff --git a/core/src/mindustry/world/Block.java b/core/src/mindustry/world/Block.java
-index 57d4923685e5c568b1fa835aeb18d6197853aeb4..0cac3aaa3b68eb3d547da71ad520df9dddb926ea 100644
+index 2d8b8024cf0d22f4961cb0c4db9561d39f7afcbe..89f13b9d797e17403213d6af1cdc9974ae30ecb1 100644
 --- a/core/src/mindustry/world/Block.java
 +++ b/core/src/mindustry/world/Block.java
 @@ -34,6 +34,7 @@ import mindustry.world.blocks.power.*;
@@ -61,7 +61,7 @@ index 57d4923685e5c568b1fa835aeb18d6197853aeb4..0cac3aaa3b68eb3d547da71ad520df9d
  
  import java.lang.reflect.*;
  import java.util.*;
-@@ -643,7 +644,7 @@ public class Block extends UnlockableContent implements Senseable{
+@@ -656,7 +657,7 @@ public class Block extends UnlockableContent implements Senseable{
  
      public void addLiquidBar(Liquid liq){
          addBar("liquid-" + liq.name, entity -> !liq.unlockedNow() ? null : new Bar(
@@ -70,7 +70,7 @@ index 57d4923685e5c568b1fa835aeb18d6197853aeb4..0cac3aaa3b68eb3d547da71ad520df9d
              liq::barColor,
              () -> entity.liquids.get(liq) / liquidCapacity
          ));
-@@ -651,15 +652,19 @@ public class Block extends UnlockableContent implements Senseable{
+@@ -664,15 +665,19 @@ public class Block extends UnlockableContent implements Senseable{
  
      /** Adds a liquid bar that dynamically displays a liquid type. */
      public <T extends Building> void addLiquidBar(Func<T, Liquid> current){
@@ -95,7 +95,7 @@ index 57d4923685e5c568b1fa835aeb18d6197853aeb4..0cac3aaa3b68eb3d547da71ad520df9d
  
          if(consPower != null){
              boolean buffered = consPower.buffered;
-@@ -667,7 +672,11 @@ public class Block extends UnlockableContent implements Senseable{
+@@ -680,7 +685,11 @@ public class Block extends UnlockableContent implements Senseable{
  
              addBar("power", entity -> new Bar(
                  () -> buffered ? Core.bundle.format("bar.poweramount", Float.isNaN(entity.power.status * capacity) ? "<ERROR>" : UI.formatAmount((int)(entity.power.status * capacity))) :
@@ -109,7 +109,7 @@ index 57d4923685e5c568b1fa835aeb18d6197853aeb4..0cac3aaa3b68eb3d547da71ad520df9d
                  () -> Mathf.zero(consPower.requestedPower(entity)) && entity.power.graph.getPowerProduced() + entity.power.graph.getBatteryStored() > 0f ? 1f : entity.power.status)
              );
 diff --git a/core/src/mindustry/world/blocks/defense/ForceProjector.java b/core/src/mindustry/world/blocks/defense/ForceProjector.java
-index ad212b2b15af8806f792dc7a349cd3a78433c24e..3e5142601441496b54a2a92c0d735b9e3ab4daae 100644
+index cd0314aed5f922962bc8596badab02d6c548ce33..33cfc82bdb20cb6d433118f015b11b7983e9ac1d 100644
 --- a/core/src/mindustry/world/blocks/defense/ForceProjector.java
 +++ b/core/src/mindustry/world/blocks/defense/ForceProjector.java
 @@ -25,6 +25,7 @@ import mindustry.world.blocks.*;
@@ -134,7 +134,7 @@ index ad212b2b15af8806f792dc7a349cd3a78433c24e..3e5142601441496b54a2a92c0d735b9e
  
      @Override
 diff --git a/core/src/mindustry/world/blocks/defense/MendProjector.java b/core/src/mindustry/world/blocks/defense/MendProjector.java
-index 543e7c02425379565009be8824f05c0d41489a8e..50fa4d12f08a908d11c5b1f9d3bb54a115916306 100644
+index 97cbce3dec0c4f3c8966fd2b64a81d499bf6ee63..a422e97f53c28087878d10338291e96c98f31026 100644
 --- a/core/src/mindustry/world/blocks/defense/MendProjector.java
 +++ b/core/src/mindustry/world/blocks/defense/MendProjector.java
 @@ -12,6 +12,7 @@ import mindustry.content.*;
@@ -205,7 +205,7 @@ index 53c0889446bda2891a6417c435ff255953447b92..2d2e5e04d9105714a828cda022f84687
          public float shield = shieldHealth, shieldRadius = 0f;
          public float breakTimer;
 diff --git a/core/src/mindustry/world/blocks/defense/turrets/ItemTurret.java b/core/src/mindustry/world/blocks/defense/turrets/ItemTurret.java
-index 684e5deeb40af81d86f9bfe92ea82b5536824f78..383768a7f652cea043710a8e4a28b6a0debed6c7 100644
+index 66eea92543cf5255679f609cc4f1040c798996f9..c85a4155384c20505f36cb877bf8f70bae622825 100644
 --- a/core/src/mindustry/world/blocks/defense/turrets/ItemTurret.java
 +++ b/core/src/mindustry/world/blocks/defense/turrets/ItemTurret.java
 @@ -16,6 +16,7 @@ import mindustry.type.*;
@@ -231,7 +231,7 @@ index 684e5deeb40af81d86f9bfe92ea82b5536824f78..383768a7f652cea043710a8e4a28b6a0
          );
      }
 diff --git a/core/src/mindustry/world/blocks/defense/turrets/ReloadTurret.java b/core/src/mindustry/world/blocks/defense/turrets/ReloadTurret.java
-index 8748b91ed8a54cd400bd1953dbf64d9e8e20bc75..f8ae33745f7037b3120cac24095361a27edb30ce 100644
+index 6b5721987bc27225b574c857abd1b93726138cc9..459ccab8c40424b597b3215aac9699ea09fe1fc7 100644
 --- a/core/src/mindustry/world/blocks/defense/turrets/ReloadTurret.java
 +++ b/core/src/mindustry/world/blocks/defense/turrets/ReloadTurret.java
 @@ -1,6 +1,10 @@
@@ -245,9 +245,9 @@ index 8748b91ed8a54cd400bd1953dbf64d9e8e20bc75..f8ae33745f7037b3120cac24095361a2
  import mindustry.world.consumers.*;
  import mindustry.world.meta.*;
  
-@@ -45,5 +49,14 @@ public class ReloadTurret extends BaseTurret{
-         protected float baseReloadSpeed(){
-             return efficiency;
+@@ -49,5 +53,14 @@ public class ReloadTurret extends BaseTurret{
+         protected boolean canReload(){
+             return reloadCounter < reload;
          }
 +
 +        @Override
@@ -261,7 +261,7 @@ index 8748b91ed8a54cd400bd1953dbf64d9e8e20bc75..f8ae33745f7037b3120cac24095361a2
      }
  }
 diff --git a/core/src/mindustry/world/blocks/defense/turrets/Turret.java b/core/src/mindustry/world/blocks/defense/turrets/Turret.java
-index 29e9ae1c66728dd19b8a490d636bc3a2439ca406..9ad3785d6508c05e997c32f130d159c10b6c38e0 100644
+index 7e0ab67fb145e7bbbc93511f3b0bb614a9cd59dd..2c2181e00862d4a653aef59afe1446aea743f4eb 100644
 --- a/core/src/mindustry/world/blocks/defense/turrets/Turret.java
 +++ b/core/src/mindustry/world/blocks/defense/turrets/Turret.java
 @@ -7,6 +7,7 @@ import arc.graphics.*;
@@ -272,7 +272,7 @@ index 29e9ae1c66728dd19b8a490d636bc3a2439ca406..9ad3785d6508c05e997c32f130d159c1
  import arc.struct.*;
  import arc.util.*;
  import arc.util.io.*;
-@@ -815,6 +816,14 @@ public class Turret extends ReloadTurret{
+@@ -858,6 +859,14 @@ public class Turret extends ReloadTurret{
              rotation = oldRot;
              reloadCounter = oldReload;
          }
@@ -338,10 +338,10 @@ index e07cc083a4c25fa68dd0eb249464ff9909c6e27d..67e932b885b55c3c6519e140a07cbafa
  
      public class HeatProducerBuild extends GenericCrafterBuild implements HeatBlock{
 diff --git a/core/src/mindustry/world/blocks/payloads/BlockProducer.java b/core/src/mindustry/world/blocks/payloads/BlockProducer.java
-index c0c3a7b1546f6d648dca33a2cc45ae0cf1a5a6f7..9b93ed3b5f43c1cdf1fed6686fe35f109c23744e 100644
+index 21136e906b109c89fb5416d59e86e3ca8b84b3d2..5ee91abb0f443152687c4aa6342b347138a76c87 100644
 --- a/core/src/mindustry/world/blocks/payloads/BlockProducer.java
 +++ b/core/src/mindustry/world/blocks/payloads/BlockProducer.java
-@@ -67,7 +67,10 @@ public abstract class BlockProducer extends PayloadBlock{
+@@ -71,7 +71,10 @@ public abstract class BlockProducer extends PayloadBlock{
      public void setBars(){
          super.setBars();
  
@@ -468,7 +468,7 @@ index 85edf348646875db7a9f024330ecf208ac4f2010..71043d7eb294e2395006357b81f5a7a8
      }
  }
 diff --git a/core/src/mindustry/world/blocks/production/HeatCrafter.java b/core/src/mindustry/world/blocks/production/HeatCrafter.java
-index 5af67c37c74871553a35e9b5ff9757869072b6da..8c7ef00a68c89b1b82d8a1dbfbf63ad65e9c91cf 100644
+index fcf25ddc4c6d279a9be63de7d7f0ca9937673fdd..759205912a11a627212454ce085c82acf612673e 100644
 --- a/core/src/mindustry/world/blocks/production/HeatCrafter.java
 +++ b/core/src/mindustry/world/blocks/production/HeatCrafter.java
 @@ -6,6 +6,7 @@ import mindustry.graphics.*;
@@ -491,7 +491,7 @@ index 5af67c37c74871553a35e9b5ff9757869072b6da..8c7ef00a68c89b1b82d8a1dbfbf63ad6
              () -> entity.heat / heatRequirement));
      }
 diff --git a/core/src/mindustry/world/blocks/production/WallCrafter.java b/core/src/mindustry/world/blocks/production/WallCrafter.java
-index bc3dfb0ae7cf2935cf44d5e4070e716ee8adb305..02195874d688b4843a392b6ddf44c68e57422620 100644
+index 9ae3c98364c860ed47d03592f9d660d1af1b753c..e13f83f830269f8485351d2a52c2edffd1651905 100644
 --- a/core/src/mindustry/world/blocks/production/WallCrafter.java
 +++ b/core/src/mindustry/world/blocks/production/WallCrafter.java
 @@ -69,7 +69,7 @@ public class WallCrafter extends Block{

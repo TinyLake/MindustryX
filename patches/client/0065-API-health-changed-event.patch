@@ -13,7 +13,7 @@ Subject: [PATCH] API: health changed event
  6 files changed, 40 insertions(+), 1 deletion(-)
 
 diff --git a/core/src/mindustry/entities/Damage.java b/core/src/mindustry/entities/Damage.java
-index d75098db20ecdf67bebd01f448d705b5ab74183a..c690dcf5408a55524cf4ca704559aedbccf56a34 100644
+index e714b410edc44e85cf05c36247685c8df526e4c2..d7f3810d14c462c018cce48a21c5187e438e3e33 100644
 --- a/core/src/mindustry/entities/Damage.java
 +++ b/core/src/mindustry/entities/Damage.java
 @@ -18,6 +18,7 @@ import mindustry.type.*;
@@ -55,7 +55,7 @@ index 48e42b4e5fcdb86d678ceb75355c72415634f36b..b115b9617204ed997e8337248f9562b4
              lines.add(new Vec2(x + Mathf.range(3f), y + Mathf.range(3f)));
  
 diff --git a/core/src/mindustry/entities/bullet/BulletType.java b/core/src/mindustry/entities/bullet/BulletType.java
-index 016a636562a1f5dda79e3ab0bf4a8d7aeb3e3ae8..aaa2d560cec516fdd27a5d7d940eacbe6c203184 100644
+index ca6aadd32acc789fc0267c802d56b5e1e9ab4546..b9dc211a02ad5fc785f25dbe2af86faa8f007c33 100644
 --- a/core/src/mindustry/entities/bullet/BulletType.java
 +++ b/core/src/mindustry/entities/bullet/BulletType.java
 @@ -23,6 +23,7 @@ import mindustry.graphics.*;
@@ -66,7 +66,7 @@ index 016a636562a1f5dda79e3ab0bf4a8d7aeb3e3ae8..aaa2d560cec516fdd27a5d7d940eacbe
  import mindustryX.features.*;
  
  import static mindustry.Vars.*;
-@@ -447,6 +448,7 @@ public class BulletType extends Content implements Cloneable{
+@@ -451,6 +452,7 @@ public class BulletType extends Content implements Cloneable{
          }
  
          if(heals() && build.team == b.team && !(build.block instanceof ConstructBlock)){
@@ -74,7 +74,7 @@ index 016a636562a1f5dda79e3ab0bf4a8d7aeb3e3ae8..aaa2d560cec516fdd27a5d7d940eacbe
              healEffect.at(build.x, build.y, 0f, healColor, build.block);
              build.heal(healPercent / 100f * build.maxHealth + healAmount);
              healSound.at(build, 1f + Mathf.range(0.1f), healSoundVolume);
-@@ -468,6 +470,8 @@ public class BulletType extends Content implements Cloneable{
+@@ -472,6 +474,8 @@ public class BulletType extends Content implements Cloneable{
          boolean wasDead = entity instanceof Unit u && u.dead;
  
          if(entity instanceof Healthc h){
@@ -83,7 +83,7 @@ index 016a636562a1f5dda79e3ab0bf4a8d7aeb3e3ae8..aaa2d560cec516fdd27a5d7d940eacbe
              float damage = b.damage;
              float shield = entity instanceof Shieldc s ? Math.max(s.shield(), 0f) : 0f;
              if(maxDamageFraction > 0){
-@@ -573,7 +577,9 @@ public class BulletType extends Content implements Cloneable{
+@@ -583,7 +587,9 @@ public class BulletType extends Content implements Cloneable{
  
      public void createSplashDamage(Bullet b, float x, float y){
          if(splashDamageRadius > 0 && !b.absorbed){
@@ -93,7 +93,7 @@ index 016a636562a1f5dda79e3ab0bf4a8d7aeb3e3ae8..aaa2d560cec516fdd27a5d7d940eacbe
  
              if(status != StatusEffects.none){
                  Damage.status(b.team, x, y, splashDamageRadius, status, statusDuration, collidesAir, collidesGround);
-@@ -581,6 +587,7 @@ public class BulletType extends Content implements Cloneable{
+@@ -591,6 +597,7 @@ public class BulletType extends Content implements Cloneable{
  
              if(heals()){
                  indexer.eachBlock(b.team, x, y, splashDamageRadius, Building::damaged, other -> {
@@ -102,7 +102,7 @@ index 016a636562a1f5dda79e3ab0bf4a8d7aeb3e3ae8..aaa2d560cec516fdd27a5d7d940eacbe
                      other.heal(healPercent / 100f * other.maxHealth() + healAmount);
                  });
 diff --git a/core/src/mindustry/entities/comp/BuildingComp.java b/core/src/mindustry/entities/comp/BuildingComp.java
-index 3958f30572d00f047368dd82ee11b6a560d597af..ebaf61a8ebf3ab0e2b51fda88fa391e160df68cc 100644
+index 98c318dffbc1b24b2e4fa2fbf85b2b3892209fb1..757210fd75da811050dd809eadf9b9a7a9731ab8 100644
 --- a/core/src/mindustry/entities/comp/BuildingComp.java
 +++ b/core/src/mindustry/entities/comp/BuildingComp.java
 @@ -41,6 +41,7 @@ import mindustry.world.blocks.power.*;
@@ -134,7 +134,7 @@ index 3958f30572d00f047368dd82ee11b6a560d597af..ebaf61a8ebf3ab0e2b51fda88fa391e1
  
          healthChanged();
 diff --git a/core/src/mindustry/entities/comp/HealthComp.java b/core/src/mindustry/entities/comp/HealthComp.java
-index f315b3fb753d1c2d4a2895fc27e0d06ac141b174..0ccf194df8752be9121d26ce2705f42e3cbb1cbb 100644
+index cfc3cb92c46786da84690aa0834e98121dc14e80..c4edc8d4b098d17d8a619f51522294fb03fafb8b 100644
 --- a/core/src/mindustry/entities/comp/HealthComp.java
 +++ b/core/src/mindustry/entities/comp/HealthComp.java
 @@ -3,6 +3,8 @@ package mindustry.entities.comp;
@@ -162,7 +162,7 @@ index f315b3fb753d1c2d4a2895fc27e0d06ac141b174..0ccf194df8752be9121d26ce2705f42e
      }
  
      boolean damaged(){
-@@ -62,6 +66,8 @@ abstract class HealthComp implements Entityc, Posc{
+@@ -72,6 +76,8 @@ abstract class HealthComp implements Entityc, Posc{
          if(Float.isNaN(health)) health = 0f;
  
          health -= amount;
@@ -171,8 +171,8 @@ index f315b3fb753d1c2d4a2895fc27e0d06ac141b174..0ccf194df8752be9121d26ce2705f42e
          hitTime = 1f;
          if(health <= 0 && !dead){
              kill();
-@@ -86,9 +92,21 @@ abstract class HealthComp implements Entityc, Posc{
-         damagePierce(amount * Time.delta, hitTime <= -20 + hitDuration);
+@@ -100,9 +106,21 @@ abstract class HealthComp implements Entityc, Posc{
+         damageArmorMult(amount * Time.delta, armorMult, hitTime <= -20 + hitDuration);
      }
  
 +    @MindustryXApi
@@ -194,10 +194,10 @@ index f315b3fb753d1c2d4a2895fc27e0d06ac141b174..0ccf194df8752be9121d26ce2705f42e
  
      /** Heals by a flat amount. */
 diff --git a/core/src/mindustry/entities/comp/ShieldComp.java b/core/src/mindustry/entities/comp/ShieldComp.java
-index 1e06d2950428331e65745d4821d3c53f079c75c4..9c75a01679e88b08a348edd755d612450f17e911 100644
+index b3ce6e2d804e18ae0b2df3a232d8873e75ea9921..3079d14cba03ef8552796a7344d024efe2f6300c 100644
 --- a/core/src/mindustry/entities/comp/ShieldComp.java
 +++ b/core/src/mindustry/entities/comp/ShieldComp.java
-@@ -61,6 +61,9 @@ abstract class ShieldComp implements Healthc, Posc{
+@@ -73,6 +73,9 @@ abstract class ShieldComp implements Healthc, Posc{
  
          if(amount > 0 && type.killable){
              health -= amount;

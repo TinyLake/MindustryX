@@ -9,10 +9,10 @@ Subject: [PATCH] HC: ARC arcScanMode
  2 files changed, 7 insertions(+), 1 deletion(-)
 
 diff --git a/core/src/mindustry/world/blocks/distribution/ItemBridge.java b/core/src/mindustry/world/blocks/distribution/ItemBridge.java
-index 97c69dd2cfe25d81b94b7031fbd5919672f0b8cf..c6a77a0f45c062d49994bb760785f417aa237a3b 100644
+index 18ff5f65ad18a7d1eb82434a0d30ccb6e466eea7..0f731d125ebba2dbc1f0a01258cd0745c071354d 100644
 --- a/core/src/mindustry/world/blocks/distribution/ItemBridge.java
 +++ b/core/src/mindustry/world/blocks/distribution/ItemBridge.java
-@@ -494,7 +494,7 @@ public class ItemBridge extends Block{
+@@ -496,7 +496,7 @@ public class ItemBridge extends Block{
              int rel = relativeTo(other.x, other.y);
              int rel2 = relativeTo(to.tileX(), to.tileY());
  
@@ -21,7 +21,7 @@ index 97c69dd2cfe25d81b94b7031fbd5919672f0b8cf..c6a77a0f45c062d49994bb760785f417
          }
  
          @Override
-@@ -540,5 +540,8 @@ public class ItemBridge extends Block{
+@@ -542,5 +542,8 @@ public class ItemBridge extends Block{
                  wasMoved = moved = read.bool();
              }
          }

@@ -8,11 +8,11 @@ Subject: [PATCH] UI: hidden hudText when ResetEvent
  1 file changed, 6 insertions(+)
 
 diff --git a/core/src/mindustry/ui/fragments/HudFragment.java b/core/src/mindustry/ui/fragments/HudFragment.java
-index 2992b9d6898b16d1b60c3e2871aba3babe9698da..727e88b85eff74af2f28d8f8bbc95a7449534f04 100644
+index b6d80499a3e58b9e30b20958302e13587ea18b94..d12decb19afe61bb1a7a4a5f8c8521ebffd655b7 100644
 --- a/core/src/mindustry/ui/fragments/HudFragment.java
 +++ b/core/src/mindustry/ui/fragments/HudFragment.java
-@@ -535,6 +535,12 @@ public class HudFragment{
-             }));
+@@ -623,6 +623,12 @@ public class HudFragment{
+                 .with(p -> p.visible(() -> (p.color.a = Mathf.lerpDelta(p.color.a, Mathf.num(showHudText), 0.2f)) >= 0.001f));
          });
  
 +        //MDTX: hidden when change map

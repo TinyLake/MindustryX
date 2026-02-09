@@ -12,7 +12,7 @@ Content-Transfer-Encoding: 8bit
  1 file changed, 162 insertions(+), 104 deletions(-)
 
 diff --git a/core/src/mindustry/ui/dialogs/ModsDialog.java b/core/src/mindustry/ui/dialogs/ModsDialog.java
-index b234ce3d084bda749c12dbad3cce36e16795b349..dfb3879780dc1dc89db1cf48870da738fc0a5d43 100644
+index 96bab6f64b46a2a698e24cc44d8f78cc6ee8a6a0..b64eb5f99ffad6f5f6fbf33304989806c997b6b9 100644
 --- a/core/src/mindustry/ui/dialogs/ModsDialog.java
 +++ b/core/src/mindustry/ui/dialogs/ModsDialog.java
 @@ -1,6 +1,7 @@
@@ -32,7 +32,7 @@ index b234ce3d084bda749c12dbad3cce36e16795b349..dfb3879780dc1dc89db1cf48870da738
  
  import java.text.*;
  import java.util.*;
-@@ -44,6 +47,12 @@ public class ModsDialog extends BaseDialog{
+@@ -45,6 +48,12 @@ public class ModsDialog extends BaseDialog{
  
      private BaseDialog browser;
      private Table browserTable;
@@ -45,7 +45,7 @@ index b234ce3d084bda749c12dbad3cce36e16795b349..dfb3879780dc1dc89db1cf48870da738
      private float scroll = 0f;
  
      public ModsDialog(){
-@@ -51,6 +60,7 @@ public class ModsDialog extends BaseDialog{
+@@ -52,6 +61,7 @@ public class ModsDialog extends BaseDialog{
          addCloseButton();
  
          browser = new BaseDialog("@mods.browser");
@@ -53,7 +53,7 @@ index b234ce3d084bda749c12dbad3cce36e16795b349..dfb3879780dc1dc89db1cf48870da738
  
          browser.cont.table(table -> {
              table.left();
-@@ -118,7 +128,7 @@ public class ModsDialog extends BaseDialog{
+@@ -119,7 +129,7 @@ public class ModsDialog extends BaseDialog{
          getModList(0, listener);
      }
  
@@ -62,7 +62,7 @@ index b234ce3d084bda749c12dbad3cce36e16795b349..dfb3879780dc1dc89db1cf48870da738
          if(index >= modJsonURLs.length) return;
  
          if(modList != null){
-@@ -164,8 +174,19 @@ public class ModsDialog extends BaseDialog{
+@@ -165,8 +175,19 @@ public class ModsDialog extends BaseDialog{
      }
  
      void setup(){
@@ -84,7 +84,7 @@ index b234ce3d084bda749c12dbad3cce36e16795b349..dfb3879780dc1dc89db1cf48870da738
  
          cont.clear();
          cont.defaults().width(Math.min(Core.graphics.getWidth() / Scl.scl(1.05f), 556f)).pad(4);
-@@ -174,9 +195,9 @@ public class ModsDialog extends BaseDialog{
+@@ -175,9 +196,9 @@ public class ModsDialog extends BaseDialog{
  
          cont.table(buttons -> {
              buttons.left().defaults().growX().height(60f).uniformX();
@@ -95,7 +95,7 @@ index b234ce3d084bda749c12dbad3cce36e16795b349..dfb3879780dc1dc89db1cf48870da738
  
              buttons.button("@mod.import", Icon.add, style, () -> {
                  BaseDialog dialog = new BaseDialog("@mod.import");
-@@ -221,125 +242,162 @@ public class ModsDialog extends BaseDialog{
+@@ -222,125 +243,162 @@ public class ModsDialog extends BaseDialog{
  
                  dialog.show();
  

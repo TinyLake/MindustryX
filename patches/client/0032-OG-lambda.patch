@@ -14,10 +14,10 @@ Content-Transfer-Encoding: 8bit
  3 files changed, 107 insertions(+), 23 deletions(-)
 
 diff --git a/core/src/mindustry/entities/Units.java b/core/src/mindustry/entities/Units.java
-index 8a4d5b458679db124b0535b401ab2b1f8aaa4dde..13877e9b23cb4aa6b7934e10014f630076810a28 100644
+index 1b0543282063c741277298d46f3789d910a1a289..cdd50ebb9189c7e087a4b85714eecb76c31e6137 100644
 --- a/core/src/mindustry/entities/Units.java
 +++ b/core/src/mindustry/entities/Units.java
-@@ -276,6 +276,10 @@ public class Units{
+@@ -287,6 +287,10 @@ public class Units{
          }
      }
  
@@ -28,7 +28,7 @@ index 8a4d5b458679db124b0535b401ab2b1f8aaa4dde..13877e9b23cb4aa6b7934e10014f6300
      /** Returns the closest enemy of this team. Filter by predicate. */
      public static Unit closestEnemy(Team team, float x, float y, float range, Boolf<Unit> predicate){
          if(team == Team.derelict) return null;
-@@ -284,11 +288,16 @@ public class Units{
+@@ -295,11 +299,16 @@ public class Units{
          cdist = 0f;
          cpriority = -99999f;
  
@@ -48,7 +48,7 @@ index 8a4d5b458679db124b0535b401ab2b1f8aaa4dde..13877e9b23cb4aa6b7934e10014f6300
                  result = e;
                  cdist = dst2;
                  cpriority = e.type.targetPriority;
-@@ -306,10 +315,16 @@ public class Units{
+@@ -317,10 +326,16 @@ public class Units{
          cdist = 0f;
          cpriority = -99999f;
  
@@ -68,10 +68,10 @@ index 8a4d5b458679db124b0535b401ab2b1f8aaa4dde..13877e9b23cb4aa6b7934e10014f6300
                  result = e;
                  cdist = cost;
 diff --git a/core/src/mindustry/entities/bullet/BulletType.java b/core/src/mindustry/entities/bullet/BulletType.java
-index a74c13edce50a82fb114debc301d9ca0e7e3f2da..aa8c219a6c36218e6dadc0802389399e41d1ec2b 100644
+index b03e48e9b6dbfcf3689691343bdaddc0420e24f4..c031b07d71e8e1736c6f6b291aa3f9203caefc05 100644
 --- a/core/src/mindustry/entities/bullet/BulletType.java
 +++ b/core/src/mindustry/entities/bullet/BulletType.java
-@@ -717,6 +717,7 @@ public class BulletType extends Content implements Cloneable{
+@@ -721,6 +721,7 @@ public class BulletType extends Content implements Cloneable{
          }
      }
  
@@ -79,7 +79,7 @@ index a74c13edce50a82fb114debc301d9ca0e7e3f2da..aa8c219a6c36218e6dadc0802389399e
      public void updateHoming(Bullet b){
          if(homingPower > 0.0001f && b.time >= homingDelay){
              float realAimX = b.aimX < 0 ? b.x : b.aimX;
-@@ -724,20 +725,22 @@ public class BulletType extends Content implements Cloneable{
+@@ -728,20 +729,22 @@ public class BulletType extends Content implements Cloneable{
  
              Teamc target;
              //home in on allies if possible

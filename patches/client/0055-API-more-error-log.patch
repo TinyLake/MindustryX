@@ -4,17 +4,16 @@ Date: Mon, 2 Sep 2024 21:56:38 +0800
 Subject: [PATCH] API: more error log
 
 ---
- core/src/mindustry/core/Control.java             | 1 +
- core/src/mindustry/core/World.java               | 1 +
- core/src/mindustry/game/FogControl.java          | 4 +++-
- core/src/mindustry/maps/filters/LogicFilter.java | 2 ++
- 4 files changed, 7 insertions(+), 1 deletion(-)
+ core/src/mindustry/core/Control.java    | 1 +
+ core/src/mindustry/core/World.java      | 1 +
+ core/src/mindustry/game/FogControl.java | 4 +++-
+ 3 files changed, 5 insertions(+), 1 deletion(-)
 
 diff --git a/core/src/mindustry/core/Control.java b/core/src/mindustry/core/Control.java
-index 3985cd03a36d24c55f465822eed6d12074e56094..dfcaba19db853da5af4e58064bb058d246141e0f 100644
+index f6706d0940c86623909c3ea51c4fd7ebdb4c9a3b..01c2bcd645766990ff33f232925702207803ea40 100644
 --- a/core/src/mindustry/core/Control.java
 +++ b/core/src/mindustry/core/Control.java
-@@ -643,6 +643,7 @@ public class Control implements ApplicationListener, Loadable{
+@@ -671,6 +671,7 @@ public class Control implements ApplicationListener, Loadable{
          try{
              assets.update();
          }catch(Exception ignored){
@@ -23,7 +22,7 @@ index 3985cd03a36d24c55f465822eed6d12074e56094..dfcaba19db853da5af4e58064bb058d2
  
          input.updateState();
 diff --git a/core/src/mindustry/core/World.java b/core/src/mindustry/core/World.java
-index c6b4c885bed5ea25dd0fee21cb46dbf716932c2d..5676311b55c7712d6e5ad97e2cfea2d04e8da9d5 100644
+index c5bfcd6d14b6cf38519eb11f29e1ab55b11443cd..8d13c1102d6f66a53d3e29afbd9ef42a8abd0776 100644
 --- a/core/src/mindustry/core/World.java
 +++ b/core/src/mindustry/core/World.java
 @@ -238,6 +238,7 @@ public class World{
@@ -49,23 +48,3 @@ index 4ef68bf44d62001517049f20ab3a1c07cd7cf382..f5a383a4636a48408685407917775b64
              }
          }
      }
-diff --git a/core/src/mindustry/maps/filters/LogicFilter.java b/core/src/mindustry/maps/filters/LogicFilter.java
-index 1346d1a52ec0b006c9e1f73b2c021a03f01b1095..93aeebef832fc4b465c0c3967b31325850e4d969 100644
---- a/core/src/mindustry/maps/filters/LogicFilter.java
-+++ b/core/src/mindustry/maps/filters/LogicFilter.java
-@@ -1,6 +1,7 @@
- package mindustry.maps.filters;
- 
- import arc.scene.ui.layout.*;
-+import arc.util.*;
- import mindustry.*;
- import mindustry.gen.*;
- import mindustry.logic.*;
-@@ -45,6 +46,7 @@ public class LogicFilter extends GenerateFilter{
-             //assembler has no variables, all the standard ones are null
-             executor.load(LAssembler.assemble(code, true));
-         }catch(Throwable ignored){
-+            Log.err(ignored);
-             //if loading code
-             return;
-         }

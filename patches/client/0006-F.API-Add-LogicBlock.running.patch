@@ -8,7 +8,7 @@ Subject: [PATCH] F.API: Add `LogicBlock.running`
  1 file changed, 5 insertions(+)
 
 diff --git a/core/src/mindustry/world/blocks/logic/LogicBlock.java b/core/src/mindustry/world/blocks/logic/LogicBlock.java
-index ec589a9eaae9ff2871a7724c1c4a882ab6775635..4be2ee93287a60ea694a50292c11632f086e2606 100644
+index 0f6e7133502e452ff8afe4abd51e63d6e3ea8337..43595b23cc73d417a9cdff052c2f890c999ab2bb 100644
 --- a/core/src/mindustry/world/blocks/logic/LogicBlock.java
 +++ b/core/src/mindustry/world/blocks/logic/LogicBlock.java
 @@ -24,6 +24,7 @@ import mindustry.ui.*;
@@ -28,19 +28,19 @@ index ec589a9eaae9ff2871a7724c1c4a882ab6775635..4be2ee93287a60ea694a50292c11632f
      private static final int maxByteLen = 1024 * 100;
      private static final int maxLinks = 6000;
      public static final int maxNameLength = 32;
-@@ -527,6 +530,7 @@ public class LogicBlock extends Block{
- 
+@@ -525,6 +528,7 @@ public class LogicBlock extends Block{
+             if(enabled && executor.initialized()){
                  if(accumulator > maxInstructionScale * ipt) accumulator = maxInstructionScale * ipt;
  
 +                running = true;
                  while(accumulator >= 1f){
                      executor.runOnce();
-                     accumulator --;
-@@ -535,6 +539,7 @@ public class LogicBlock extends Block{
-                         break;
+                     if(executor.yield){
+@@ -533,6 +537,7 @@ public class LogicBlock extends Block{
                      }
+                     accumulator --;
                  }
 +                running = false;
-             }
-         }
  
+                 // Do not move in front of the loop, otherwise the curTime accumulated in WaitI
+                 // may get out of sync with the accumulator increase.

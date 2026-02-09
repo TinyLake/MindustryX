@@ -14,7 +14,7 @@ way-zer <himc.wicp@gmail.com> on 2024/6/9
  build.gradle                                  | 319 +++---------------
  core/build.gradle                             |   2 -
  core/build.gradle.kts                         |  67 ++++
- desktop/build.gradle                          | 166 +--------
+ desktop/build.gradle                          | 174 +---------
  gradle.properties                             |   5 +-
  gradlew                                       | 284 ++++++++++------
  gradlew.bat                                   |  37 +-
@@ -23,7 +23,7 @@ way-zer <himc.wicp@gmail.com> on 2024/6/9
  settings.gradle                               |  11 +-
  tools/build.gradle                            |  91 ++---
  tools/src/mindustry/tools/Generators.java     |   2 +-
- 17 files changed, 453 insertions(+), 715 deletions(-)
+ 17 files changed, 453 insertions(+), 723 deletions(-)
  create mode 100644 annotations/src/main/java/com/github/bsideup/jabel/Desugar.java
  create mode 100644 annotations/src/main/resources/META-INF/services/javax.annotation.processing.Processor
  delete mode 100644 core/build.gradle
@@ -282,7 +282,7 @@ index 0000000000000000000000000000000000000000..181b87c1d5f3755f16a01c0528d0a89f
 +mindustry.annotations.misc.LogicStatementProcessor
 +mindustry.annotations.remote.RemoteProcess
 diff --git a/build.gradle b/build.gradle
-index 6ee53a65c20d99251f942ca03362fa1d2ff5bfec..efc3babc4e107fd1dd62cfb4ca0402d59aa59f57 100644
+index 9d7c1011f260edd4a4dc05ffc19a82ccf7942ada..2862e80d1ac6b43151bbaaf74c98c9fc2558e56b 100644
 --- a/build.gradle
 +++ b/build.gradle
 @@ -1,30 +1,16 @@
@@ -386,7 +386,7 @@ index 6ee53a65c20d99251f942ca03362fa1d2ff5bfec..efc3babc4e107fd1dd62cfb4ca0402d5
 -            def output = 'en\n'
 -            def bundles = new File(project(':core').projectDir, 'assets/bundles/')
 -            bundles.list().sort().each{ name ->
--                if(name == "bundle.properties") return
+-                if(name == "bundle.properties" || name == "global.properties") return
 -                output += name.substring("bundle".length() + 1, name.lastIndexOf('.')) + "\n"
 -            }
 -            new File(project(':core').projectDir, 'assets/locales').text = output
@@ -537,7 +537,7 @@ index 6ee53a65c20d99251f942ca03362fa1d2ff5bfec..efc3babc4e107fd1dd62cfb4ca0402d5
      dependencies{
          implementation project(":core")
          implementation arcModule("extensions:profiling")
-@@ -250,8 +93,6 @@ project(":desktop"){
+@@ -249,8 +92,6 @@ project(":desktop"){
          implementation arcModule("natives:natives-desktop")
          implementation arcModule("natives:natives-freetype-desktop")
  
@@ -545,8 +545,8 @@ index 6ee53a65c20d99251f942ca03362fa1d2ff5bfec..efc3babc4e107fd1dd62cfb4ca0402d5
 -
          implementation "com.github.Anuken:steamworks4j:$steamworksVersion"
  
-         implementation arcModule("backends:backend-sdl")
-@@ -271,17 +112,7 @@ project(":core"){
+         implementation arcModule("backends:backend-sdl3")
+@@ -270,17 +111,7 @@ project(":core"){
          }
      }
  
@@ -565,7 +565,7 @@ index 6ee53a65c20d99251f942ca03362fa1d2ff5bfec..efc3babc4e107fd1dd62cfb4ca0402d5
          doLast{
              def props = loadVersionProps()
              def androidVersion = props['androidBuildCode'].toInteger() - 2
-@@ -289,9 +120,9 @@ project(":core"){
+@@ -288,9 +119,9 @@ project(":core"){
              def notice = "[This is a truncated changelog, see Github for full notes]"
              def maxLength = 460
  
@@ -577,7 +577,7 @@ index 6ee53a65c20d99251f942ca03362fa1d2ff5bfec..efc3babc4e107fd1dd62cfb4ca0402d5
                  if(result.length() + line.length() + 1 < maxLength){
                      result += line + "\n"
                  }
-@@ -305,19 +136,7 @@ project(":core"){
+@@ -304,19 +135,7 @@ project(":core"){
          }
      }
  
@@ -598,18 +598,18 @@ index 6ee53a65c20d99251f942ca03362fa1d2ff5bfec..efc3babc4e107fd1dd62cfb4ca0402d5
          archiveClassifier = 'music'
          from files("assets"){
              include "music/*", "sounds/*"
-@@ -325,8 +144,6 @@ project(":core"){
+@@ -324,8 +143,6 @@ project(":core"){
      }
  
      dependencies{
 -        compileJava.dependsOn(preGen)
 -
-         api "org.lz4:lz4-java:1.8.0"
+         api "at.yawk.lz4:lz4-java:1.10.2"
          api arcModule("arc-core")
          api arcModule("extensions:flabel")
-@@ -336,34 +153,30 @@ project(":core"){
+@@ -334,34 +151,30 @@ project(":core"){
+         api arcModule("extensions:fx")
          api arcModule("extensions:arcnet")
-         implementation arcModule("extensions:filedialogs")
          api "com.github.Anuken:rhino:$rhinoVersion"
 -        if(localArc && debugged()) api arcModule("extensions:recorder")
 -        if(localArc) api arcModule(":extensions:packer")
@@ -658,7 +658,7 @@ index 6ee53a65c20d99251f942ca03362fa1d2ff5bfec..efc3babc4e107fd1dd62cfb4ca0402d5
      }
  
      gradle.taskGraph.whenReady{
-@@ -400,12 +213,6 @@ project(":tests"){
+@@ -398,12 +211,6 @@ project(":tests"){
          testRuntimeOnly "org.junit.jupiter:junit-jupiter-engine:5.7.1"
      }
  
@@ -671,7 +671,7 @@ index 6ee53a65c20d99251f942ca03362fa1d2ff5bfec..efc3babc4e107fd1dd62cfb4ca0402d5
      test{
          //fork every test so mods don't interact with each other
          forkEvery = 1
-@@ -422,14 +229,19 @@ project(":tools"){
+@@ -420,14 +227,19 @@ project(":tools"){
      apply plugin: "java"
  
      dependencies{
@@ -693,7 +693,7 @@ index 6ee53a65c20d99251f942ca03362fa1d2ff5bfec..efc3babc4e107fd1dd62cfb4ca0402d5
      }
  }
  
-@@ -452,43 +264,16 @@ configure([":core", ":server"].collect{project(it)}){
+@@ -450,43 +262,16 @@ configure([":core", ":server"].collect{project(it)}){
          publications{
              maven(MavenPublication){
                  from components.java
@@ -823,10 +823,10 @@ index 0000000000000000000000000000000000000000..712c4750377c079ec77bfea24bd889db
 +}
 \ No newline at end of file
 diff --git a/desktop/build.gradle b/desktop/build.gradle
-index b3f192bc75d3c1775179a7252c02f7ce0a39ff7e..b47e0569d82a8cc6331a1fe36952c206e3660901 100644
+index 193d6ce313a6744d6f8a144631ab2edde6ab5c1c..7c93493b8a786c0e5fcb5051a0fd98bfdbd99fd4 100644
 --- a/desktop/build.gradle
 +++ b/desktop/build.gradle
-@@ -3,14 +3,9 @@ sourceSets.main.java.srcDirs = ["src/"]
+@@ -3,15 +3,10 @@ sourceSets.main.java.srcDirs = ["src/"]
  project.ext.mainClassName = "mindustry.desktop.DesktopLauncher"
  project.ext.assetsDir = new File("../core/assets")
  
@@ -835,26 +835,27 @@ index b3f192bc75d3c1775179a7252c02f7ce0a39ff7e..b47e0569d82a8cc6331a1fe36952c206
 -def ICON_DIR = new File("$rootDir/core/assets/icons/icon.icns")
 -def platforms = ["Linux64", "Windows64", "Windows32", "MacOS"]
 -
--task run(dependsOn: classes, type: JavaExec){
-+task run(dependsOn: [classes, ":core:allAssets"], type: JavaExec){
+ tasks.register('run', JavaExec){
+-    dependsOn classes
++    dependsOn classes, ":core:allAssets"
      mainClass = project.mainClassName
 -    classpath = sourceSets.main.runtimeClasspath
 +    classpath = files(sourceSets.main.runtimeClasspath, tasks.getByPath(":core:allAssets"))
      standardInput = System.in
      workingDir = project.assetsDir
      ignoreExitValue = true
-@@ -44,7 +39,7 @@ task dist(type: Jar, dependsOn: configurations.runtimeClasspath){
+@@ -46,7 +41,7 @@ tasks.register('dist', Jar){
      from files(sourceSets.main.output.classesDirs)
      from files(sourceSets.main.output.resourcesDir)
-     from {configurations.runtimeClasspath.collect{ it.isDirectory() ? it : zipTree(it) }}
+     from{ configurations.runtimeClasspath.collect{ it.isDirectory() ? it : zipTree(it) } }
 -    from files(project.assetsDir)
 +    from(files(tasks.getByPath(":core:allAssets")))
      exclude("config/**")
+     exclude("**hs_err**.log")
      duplicatesStrategy = DuplicatesStrategy.EXCLUDE
- 
-@@ -58,157 +53,4 @@ task dist(type: Jar, dependsOn: configurations.runtimeClasspath){
-     manifest{
-         attributes 'Main-Class': project.mainClassName
+@@ -63,165 +58,4 @@ tasks.register('dist', Jar){
+         //note: this doesn't do anything when launched from the bundled JVM
+         attributes 'Enable-Native-Access': 'ALL-UNNAMED'
      }
 -}
 -
@@ -866,7 +867,8 @@ index b3f192bc75d3c1775179a7252c02f7ce0a39ff7e..b47e0569d82a8cc6331a1fe36952c206
 -
 -//this is only for local testing
 -//add -Prelease -PversionModifier=steam as build properties
--task steamtest(dependsOn: dist){
+-tasks.register('steamtest'){
+-    dependsOn dist
 -    doLast{
 -        copy{
 -            from "build/libs/Mindustry.jar"
@@ -940,11 +942,15 @@ index b3f192bc75d3c1775179a7252c02f7ce0a39ff7e..b47e0569d82a8cc6331a1fe36952c206
 -
 -                args += "Dhttps.protocols=TLSv1.2,TLSv1.1,TLSv1"
 -                args += "XX:+ShowCodeDetailsInExceptionMessages"
+-                args += "XX:+UseCompactObjectHeaders"
+-                args += "enable-native-access=ALL-UNNAMED"
 -
 -                exec{
 -                    commandLine args.toList()
 -                    standardOutput = System.out
 -                }
+-
+-                def outputJsonFile = platform != "MacOS" ? file("build/packr/output/Mindustry.json") : file("build/packr/output/${appName}.app/Contents/Resources/Mindustry.json")
 -
 -                if(platform != "MacOS"){
 -                    copy{
@@ -956,7 +962,7 @@ index b3f192bc75d3c1775179a7252c02f7ce0a39ff7e..b47e0569d82a8cc6331a1fe36952c206
 -                        delete "build/packr/output/desktop.jar"
 -                    }
 -
--                    file("build/packr/output/Mindustry.json").text = file("build/packr/output/Mindustry.json").text.replace("desktop.jar", "jre/desktop.jar")
+-                    outputJsonFile.text = outputJsonFile.text.replace("desktop.jar", "jre/desktop.jar")
 -                }else{
 -                    copy{
 -                        into "build/packr/output/${appName}.app/Contents/"
@@ -967,6 +973,9 @@ index b3f192bc75d3c1775179a7252c02f7ce0a39ff7e..b47e0569d82a8cc6331a1fe36952c206
 -                        delete "build/packr/output/Contents/"
 -                    }
 -                }
+-
+-                //packr is broken and won't let me add one hyphen,so I have to do that myself later
+-                outputJsonFile.text = outputJsonFile.text.replace("-enable-native-access=ALL-UNNAMED", "--enable-native-access=ALL-UNNAMED")
 -            }
 -
 -            if((platform == "Windows64" || platform == "Windows32")){
@@ -1013,18 +1022,18 @@ index b3f192bc75d3c1775179a7252c02f7ce0a39ff7e..b47e0569d82a8cc6331a1fe36952c206
 +}
 \ No newline at end of file
 diff --git a/gradle.properties b/gradle.properties
-index 892210f5956cc3f370bf8fadc6e8e081b0acee9c..48a5ef58c5d9f708ea3f208cd3cc8cb154454cb0 100644
+index 0abbd4cb32b96a88f1f63ae44802544ae5abae7e..aca0cb473de8c02a838aeaa23bfa80a9af689fab 100644
 --- a/gradle.properties
 +++ b/gradle.properties
 @@ -26,4 +26,7 @@ org.gradle.caching=true
  org.gradle.internal.http.socketTimeout=100000
  org.gradle.internal.http.connectionTimeout=100000
  android.enableR8.fullMode=false
--archash=ec5df18e54
+-archash=e1ae1436f2
++#archash=e1ae1436f2
 +
 +#MDTX: Use "v{upstreamBuild}" by default
-+#archash=ec5df18e54
-+upstreamBuild=154.3
++upstreamBuild=155
 diff --git a/gradlew b/gradlew
 index 4f906e0c811fc9e230eb44819f509cd0627f2600..f3b75f3b0d4faeb4b1c8a02b5c47007e6efb7dcd 100755
 --- a/gradlew
@@ -1477,7 +1486,7 @@ index f61a602c9bd42f6b57450507349fcf3f155426de..34ace3c8c477d9558c14af8e787d1dfe
  launchIPhoneSimulator.dependsOn build
  launchIPadSimulator.dependsOn build
 diff --git a/server/build.gradle b/server/build.gradle
-index 45b887b1a75559db50435bb23156523e30ce50ee..91a4a0f02776a87bee4323993c19ba5e7a7609b4 100644
+index 24252a0271c0ca9d54d51ab52853eb3b8a89dfa4..7c1293746b6329d9904f237b94b1466869f9c47c 100644
 --- a/server/build.gradle
 +++ b/server/build.gradle
 @@ -3,10 +3,6 @@ sourceSets.main.java.srcDirs = ["src/"]
@@ -1488,28 +1497,29 @@ index 45b887b1a75559db50435bb23156523e30ce50ee..91a4a0f02776a87bee4323993c19ba5e
 -    return "../deploy/${appName}-server-${getVersionString()}"
 -}
 -
- task run(dependsOn: classes, type: JavaExec){
+ tasks.register('run', JavaExec){
+     dependsOn classes
      mainClass = project.mainClassName
-     classpath = sourceSets.main.runtimeClasspath
-@@ -31,10 +27,11 @@ task debug(dependsOn: classes, type: JavaExec){
+@@ -33,11 +29,12 @@ tasks.register('debug', JavaExec){
  }
  
- task dist(type: Jar, dependsOn: configurations.runtimeClasspath){
+ tasks.register('dist', Jar){
 +    dependsOn classes
+     dependsOn configurations.runtimeClasspath
      from files(sourceSets.main.output.classesDirs)
      from files(sourceSets.main.output.resourcesDir)
-     from {configurations.runtimeClasspath.collect{ it.isDirectory() ? it : zipTree(it) }}
+     from{ configurations.runtimeClasspath.collect{ it.isDirectory() ? it : zipTree(it) } }
 -    from files(project.assetsDir)
 +    from files(tasks.getByPath(":core:allAssets"))
      exclude("sprites/**")
      exclude("music/**")
      exclude("sounds/**")
-@@ -54,40 +51,3 @@ task dist(type: Jar, dependsOn: configurations.runtimeClasspath){
+@@ -58,40 +55,3 @@ tasks.register('dist', Jar){
          attributes 'Main-Class': project.mainClassName
      }
  }
 -
--task dzip(type: Zip){
+-tasks.register('dzip', Zip){
 -    from getServerFolder()
 -    archiveFileName = "${generateDeployName('server')}.zip"
 -    destinationDirectory = file("../deploy/")
@@ -1517,7 +1527,7 @@ index 45b887b1a75559db50435bb23156523e30ce50ee..91a4a0f02776a87bee4323993c19ba5e
 -    finalizedBy 'cleanup'
 -}
 -
--task cleanup{
+-tasks.register('cleanup'){
 -    doLast{
 -        delete{
 -            delete getServerFolder()
@@ -1525,7 +1535,7 @@ index 45b887b1a75559db50435bb23156523e30ce50ee..91a4a0f02776a87bee4323993c19ba5e
 -    }
 -}
 -
--task deploy{
+-tasks.register('deploy'){
 -    dependsOn "dist"
 -
 -    finalizedBy 'dzip'
@@ -1569,7 +1579,7 @@ index b18346f65206aa9ddce3857083b40ce0c4001f53..1f526ce26a1f12e125de9fe8887ae355
  def hasSdk = System.getenv("ANDROID_HOME") != null
  
 diff --git a/tools/build.gradle b/tools/build.gradle
-index 6701a24f5fb261ed6ff21fc80d049577002861e0..0d5899f3b5d763f2882f339f690834f7d43671ff 100644
+index 28b3842033774d6c528eaef5d1c9ccc3eed96dc2..fedb4b0b9da61d14a30643877e84a52a62cf0b0c 100644
 --- a/tools/build.gradle
 +++ b/tools/build.gradle
 @@ -1,3 +1,13 @@
