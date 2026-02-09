@@ -6,9 +6,6 @@ import arc.files.Fi
 import arc.struct.IntIntMap
 import arc.struct.ObjectIntMap
 import arc.util.Log
-import arc.util.io.Reads
-import mindustry.gen.Player
-import mindustry.gen.Syncc
 import mindustry.net.Net
 import mindustry.net.Packet
 
@@ -49,41 +46,5 @@ class ProtocolMap(val version: String) {
     fun mapId(oldId: Int): Int {
         load()
         return idMapping.get(oldId, -1)
-    }
-
-    class PlayerFixReads(val raw: Reads) : Reads(raw.input) {
-        /*
-        Skip: "selectedBlock" and "selectedRotation" after "name" field in Player class
-        * */
-        var state = 0
-        override fun str(): String? {
-            state = 1
-            return super.str()
-        }
-
-        override fun s(): Short {
-            if (state == 1) {
-                state = 2
-                return 0
-            }
-            return super.s()
-        }
-
-        override fun i(): Int {
-            if (state == 2) {
-                state = 3
-                return 0
-            }
-            return super.i()
-        }
-    }
-
-    companion object {
-        fun entityReadSnapReplace(entity: Syncc, read: Reads): Reads {
-            if (LogicExt.mockProtocol < 155 && entity is Player) {
-                return PlayerFixReads(read)
-            }
-            return read
-        }
     }
 }

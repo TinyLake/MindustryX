@@ -1,0 +1,53 @@
+--- ./mindustry/gen/ClientSnapshotCallPacket.java
++++ ./mindustry/gen/ClientSnapshotCallPacket.java
+@@ -9,6 +9,7 @@ import mindustry.net.NetConnection;
+ import mindustry.net.Packet;
+ import mindustry.world.Block;
+ import mindustry.world.Tile;
++import mindustryX.features.*;
+ 
+ public class ClientSnapshotCallPacket extends Packet {
+   private byte[] DATA = NODATA;
+@@ -82,8 +83,10 @@ public class ClientSnapshotCallPacket extends Packet {
+     WRITE.bool(shooting);
+     WRITE.bool(chatting);
+     WRITE.bool(building);
+-    mindustry.io.TypeIO.writeBlock(WRITE, selectedBlock);
+-    WRITE.i(selectedRotation);
++    if(LogicExt.mockProtocol>=155){
++        mindustry.io.TypeIO.writeBlock(WRITE, selectedBlock);
++        WRITE.i(selectedRotation);
++    }
+     mindustry.io.TypeIO.writePlansQueueNet(WRITE, plans);
+     WRITE.f(viewX);
+     WRITE.f(viewY);
+--- ./mindustry/gen/Player.java
++++ ./mindustry/gen/Player.java
+@@ -926,15 +926,17 @@ public class Player implements Drawc, Entityc, IndexableEntity__all, IndexableEn
+       read.f();
+     }
+     this.name = mindustry.io.TypeIO.readString(read);
+-    if(!islocal) {
+-      this.selectedBlock = mindustry.Vars.content.getByID(mindustry.ctype.ContentType.block, read.s());
+-    } else {
+-      mindustry.Vars.content.getByID(mindustry.ctype.ContentType.block, read.s());
+-    }
+-    if(!islocal) {
+-      this.selectedRotation = read.i();
+-    } else {
+-      read.i();
++    if(LogicExt.mockProtocol>=155){
++        if(!islocal) {
++            this.selectedBlock = mindustry.Vars.content.getByID(mindustry.ctype.ContentType.block, read.s());
++        } else {
++            mindustry.Vars.content.getByID(mindustry.ctype.ContentType.block, read.s());
++        }
++        if(!islocal) {
++            this.selectedRotation = read.i();
++        } else {
++            read.i();
++        }
+     }
+     if(!islocal) {
+       this.shooting = read.bool();
+
