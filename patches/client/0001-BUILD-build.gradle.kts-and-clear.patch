@@ -50,7 +50,7 @@ index 5e3b7987ef4f776a0bc35dde58fb2c74f4acdb07..b5b2a237c2f5343aab2fb668337c2bc4
  /core/assets/locales
  /core/assets/cache/
 diff --git a/android/build.gradle b/android/build.gradle
-index c6349e291620b214ee740f156cd9b0514387125b..262147eec096507847d05c5b2a77d6e6442b8761 100644
+index c6349e291620b214ee740f156cd9b0514387125b..13e9a69de55f1ceb51409c317b9b1c5db56b86b3 100644
 --- a/android/build.gradle
 +++ b/android/build.gradle
 @@ -1,45 +1,23 @@
@@ -206,7 +206,7 @@ index c6349e291620b214ee740f156cd9b0514387125b..262147eec096507847d05c5b2a77d6e6
 -    }
 +tasks.register('copyAndroidNatives', Copy){
 +    dependsOn configurations.natives
-+    from configurations.natives.files.collect{ zipTree(it) }
++    from files(provider{ configurations.natives.files.collect{ zipTree(it) } })
 +    exclude("META-INF/**")
 +    into file("libs/")
  }
