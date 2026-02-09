@@ -10,13 +10,13 @@ Content-Transfer-Encoding: 8bit
 
 ---
  core/src/mindustry/core/ContentLoader.java    | 17 ++++++++++
- core/src/mindustry/core/NetClient.java        |  2 ++
+ core/src/mindustry/core/NetClient.java        |  5 ++-
  core/src/mindustry/io/TypeIO.java             | 18 ++++++++--
  core/src/mindustry/net/Net.java               | 34 ++++++++++++++++---
  core/src/mindustry/net/NetworkIO.java         | 32 +++++++++++++----
  core/src/mindustry/net/Packets.java           |  2 +-
  core/src/mindustry/ui/dialogs/JoinDialog.java |  2 +-
- 7 files changed, 90 insertions(+), 17 deletions(-)
+ 7 files changed, 92 insertions(+), 18 deletions(-)
 
 diff --git a/core/src/mindustry/core/ContentLoader.java b/core/src/mindustry/core/ContentLoader.java
 index b7415388c7427601ff9ec6c5bf85f5ae9cffa2ea..df7a39ed93ec5049d2ce6c932cea4a1c7c37ed2e 100644
@@ -54,10 +54,20 @@ index b7415388c7427601ff9ec6c5bf85f5ae9cffa2ea..df7a39ed93ec5049d2ce6c932cea4a1c
  
      /** @return the last registered content with the specified name. Note that the content loader makes no attempt to resolve name conflicts. This method can be unreliable. */
 diff --git a/core/src/mindustry/core/NetClient.java b/core/src/mindustry/core/NetClient.java
-index 556714c2f55370d662722d1e4d0c4f8d57dcdce8..52088c330e65c9fa30d0bab87f9e020fb022f4b2 100644
+index 556714c2f55370d662722d1e4d0c4f8d57dcdce8..5f1e2d601fb5258af426e8d1545924bdf52b746e 100644
 --- a/core/src/mindustry/core/NetClient.java
 +++ b/core/src/mindustry/core/NetClient.java
-@@ -523,6 +523,8 @@ public class NetClient implements ApplicationListener{
+@@ -480,7 +480,8 @@ public class NetClient implements ApplicationListener{
+         }
+ 
+         //read the entity
+-        entity.readSync(read);
++        Reads read2 = ProtocolMap.Companion.entityReadSnapReplace(entity, read);
++        entity.readSync(read2);
+ 
+         if(created){
+             //snap initial starting position
+@@ -523,6 +524,8 @@ public class NetClient implements ApplicationListener{
  
      @Remote(variants = Variant.both, priority = PacketPriority.low, unreliable = true)
      public static void blockSnapshot(short amount, byte[] data){
