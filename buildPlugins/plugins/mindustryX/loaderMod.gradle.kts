@@ -16,6 +16,8 @@ plugins {
 
 tasks {
     val downloadOriginJar by registering(de.undercouch.gradle.tasks.download.Download::class) {
+        group = "mdtx"
+
         outputs.cacheIf { true }
         val upstreamBuild = project.properties["upstreamBuild"] as String?
         val output = temporaryDir.resolve("v$upstreamBuild.jar")
@@ -27,6 +29,7 @@ tasks {
     }
     val distTask = provider { getByPath("::desktop:dist") }
     val genLoaderMod by registering {
+        group = "mdtx"
         outputs.cacheIf { true }
         val androidTask = findByPath("::android:compileReleaseJavaWithJavac")
         dependsOn(downloadOriginJar, distTask)
@@ -73,6 +76,7 @@ tasks {
     }
 
     val genLoaderModDex by registering(Exec::class) {
+        group = "mdtx"
         dependsOn(genLoaderMod, distTask)
         val library = distTask.get().outputs.files.singleFile
         val inFile = genLoaderMod.get().outputs.files.singleFile
@@ -113,9 +117,23 @@ tasks {
     }
 
     val genLoaderModAll by registering(Zip::class) {
+        group = "mdtx"
         dependsOn(genLoaderMod, genLoaderModDex)
         archiveFileName.set("MindustryX.loader.dex.jar")
         from(zipTree(genLoaderMod.get().outputs.files.singleFile))
         from(genLoaderModDex)
+    }
+
+    val loaderRunTest by registering(JavaExec::class) {
+        group = "mdtx"
+        dependsOn(downloadOriginJar, genLoaderMod)
+        classpath(files(downloadOriginJar))
+
+        doFirst {
+            copy {
+                from(genLoaderMod.get().outputs)
+                into("${System.getenv("APPDATA")}/Mindustry/mods/")
+            }
+        }
     }
 }

@@ -5,7 +5,9 @@ Subject: [PATCH] HC: Support reuse SDL-window for LoaderMod
 
 ---
  .../src/arc/backend/sdl/SdlApplication.java       | 15 +++++++++++++++
- 1 file changed, 15 insertions(+)
+ .../src/arc/backend/sdl/SdlApplication.java       | 14 ++++++++++++++
+ .../src/arc/backend/sdl/SdlGraphics.java          |  3 ++-
+ 3 files changed, 31 insertions(+), 1 deletion(-)
 
 diff --git a/backends/backend-sdl/src/arc/backend/sdl/SdlApplication.java b/backends/backend-sdl/src/arc/backend/sdl/SdlApplication.java
 index f356fe21605f785cc84845c75a2c26568a9b5782..8248211d452110c3e158fe6cd3b1f995c775b38e 100644
@@ -33,3 +35,42 @@ index f356fe21605f785cc84845c75a2c26568a9b5782..8248211d452110c3e158fe6cd3b1f995
          check(SDL_Init(SDL_INIT_VIDEO | SDL_INIT_EVENTS));
  
          //show native IME candidate UI
+diff --git a/backends/backend-sdl3/src/arc/backend/sdl/SdlApplication.java b/backends/backend-sdl3/src/arc/backend/sdl/SdlApplication.java
+index b7f3e976946def4268f890537182b991fb00e1fa..2b5e4df3b610575a3b766d89ed4a8755afbda815 100644
+--- a/backends/backend-sdl3/src/arc/backend/sdl/SdlApplication.java
++++ b/backends/backend-sdl3/src/arc/backend/sdl/SdlApplication.java
+@@ -124,6 +124,20 @@ public class SdlApplication implements Application{
+ 
+         if(OS.isMac) restartMac();
+ 
++        //MDTX: Special handle for Loader
++        if(System.getProperty("MDTX-SDL-window") != null){
++            Log.info("[Core] Initialize reusing window and context.");
++            window = Long.parseLong(System.getProperty("MDTX-SDL-window"));
++            context = Long.parseLong(System.getProperty("MDTX-SDL-context"));
++
++            config.width = Integer.parseInt(System.getProperty("MDTX-SDL-width"));
++            config.height = Integer.parseInt(System.getProperty("MDTX-SDL-height"));
++
++            String ver = SDLVersion.SDL_GetRevision();
++            Log.info("[Core] Initialized @", ver);
++            return;
++        }
++
+         check(SDLInit.SDL_Init(SDLInit.SDL_INIT_VIDEO | SDLInit.SDL_INIT_EVENTS));
+ 
+         //show native IME candidate UI
+diff --git a/backends/backend-sdl3/src/arc/backend/sdl/SdlGraphics.java b/backends/backend-sdl3/src/arc/backend/sdl/SdlGraphics.java
+index 20afcfb03738e2cb3bca006b4cb7835f0794ff80..b40488280136183c2208b111c8fd99d2f00e6ae5 100644
+--- a/backends/backend-sdl3/src/arc/backend/sdl/SdlGraphics.java
++++ b/backends/backend-sdl3/src/arc/backend/sdl/SdlGraphics.java
+@@ -38,7 +38,8 @@ public class SdlGraphics extends Graphics{
+         this.app = app;
+ 
+         Configuration.OPENGL_EXPLICIT_INIT.set(true);
+-        GL.create(SDLVideo::SDL_GL_GetProcAddress);
++        //MDTX: skip if already initialized (for Loader)
++        if(GL.getFunctionProvider() == null) GL.create(SDLVideo::SDL_GL_GetProcAddress);
+         GLCapabilities caps = GL.createCapabilities();
+ 
+         Core.gl = Core.gl20 = gl20 = new SdlGL20();
