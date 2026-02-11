@@ -32,4 +32,4 @@ git add --force Arc work && git commit -m "Update HEAD -> $upstreamRef($refRemot
 
 echo "Rebuilding patches"
 ./scripts/applyPatches.sh
-echo "After resolve conflict, run './scripts/genPatches.sh'"
+./scripts/genPatches.sh

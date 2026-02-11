@@ -177,7 +177,7 @@ index 31b67b7837d1c1b6c4c3ec00982478b5e4709bae..76f9b2cedb83d84b444a0860b8821826
          indexer.eachBlock(player.team(), x * tilesize + offset, y * tilesize + offset, range, other -> other.block.canOverdrive, other -> Drawf.selected(other, Tmp.c1.set(baseColor).a(Mathf.absin(4f, 1f))));
      }
 diff --git a/core/src/mindustry/world/blocks/defense/turrets/Turret.java b/core/src/mindustry/world/blocks/defense/turrets/Turret.java
-index 2c2181e00862d4a653aef59afe1446aea743f4eb..2293ee8955308eb6b9a588c59ef3e155199b15c9 100644
+index d601a340712560783657c1569dafe71128312b1b..b3332e3426ebe606692e85385f1a4458d8480755 100644
 --- a/core/src/mindustry/world/blocks/defense/turrets/Turret.java
 +++ b/core/src/mindustry/world/blocks/defense/turrets/Turret.java
 @@ -30,6 +30,7 @@ import mindustry.world.*;
@@ -202,7 +202,7 @@ index 2c2181e00862d4a653aef59afe1446aea743f4eb..2293ee8955308eb6b9a588c59ef3e155
      }
  
      public static abstract class AmmoEntry{
-@@ -467,6 +475,17 @@ public class Turret extends ReloadTurret{
+@@ -472,6 +480,17 @@ public class Turret extends ReloadTurret{
              if(drawMinRange){
                  Drawf.dashCircle(x, y, minRange(), team.color);
              }

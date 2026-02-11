@@ -9,7 +9,7 @@ Subject: [PATCH] OC: no bullet create when hidden
  2 files changed, 3 insertions(+), 1 deletion(-)
 
 diff --git a/core/src/mindustry/entities/bullet/BulletType.java b/core/src/mindustry/entities/bullet/BulletType.java
-index c031b07d71e8e1736c6f6b291aa3f9203caefc05..ca6aadd32acc789fc0267c802d56b5e1e9ab4546 100644
+index eab058e032a1cd4f8b43d695f1b1ef3a41576a6a..5591df91d45b7026c2ca4bc063ceba9b75065039 100644
 --- a/core/src/mindustry/entities/bullet/BulletType.java
 +++ b/core/src/mindustry/entities/bullet/BulletType.java
 @@ -23,6 +23,7 @@ import mindustry.graphics.*;
@@ -20,7 +20,7 @@ index c031b07d71e8e1736c6f6b291aa3f9203caefc05..ca6aadd32acc789fc0267c802d56b5e1
  
  import static mindustry.Vars.*;
  
-@@ -905,6 +906,7 @@ public class BulletType extends Content implements Cloneable{
+@@ -909,6 +910,7 @@ public class BulletType extends Content implements Cloneable{
          @Nullable Entityc owner, @Nullable Entityc shooter, Team team, float x, float y, float angle, float damage, float velocityScl,
          float lifetimeScl, Object data, @Nullable Mover mover, float aimX, float aimY, @Nullable Teamc target
      ){
@@ -29,10 +29,10 @@ index c031b07d71e8e1736c6f6b291aa3f9203caefc05..ca6aadd32acc789fc0267c802d56b5e1
  
          if(!Mathf.chance(createChance)) return null;
 diff --git a/core/src/mindustry/type/Weapon.java b/core/src/mindustry/type/Weapon.java
-index 81fe5909810fb53c2d88810c29eb8da43c053d3d..8986fcdd88e68508e393fc1dee4ace1debe9465a 100644
+index c527a7c4e0164fcbb22240880692f58bbce6b2b6..b5dea6beedbbaa476491ccac484a1233193b3efc 100644
 --- a/core/src/mindustry/type/Weapon.java
 +++ b/core/src/mindustry/type/Weapon.java
-@@ -543,7 +543,7 @@ public class Weapon implements Cloneable{
+@@ -547,7 +547,7 @@ public class Weapon implements Cloneable{
  
      //override to do special things to a bullet after spawning
      protected void handleBullet(Unit unit, WeaponMount mount, Bullet bullet){

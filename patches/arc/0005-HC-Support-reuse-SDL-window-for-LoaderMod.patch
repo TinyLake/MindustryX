@@ -61,7 +61,7 @@ index b7f3e976946def4268f890537182b991fb00e1fa..2b5e4df3b610575a3b766d89ed4a8755
  
          //show native IME candidate UI
 diff --git a/backends/backend-sdl3/src/arc/backend/sdl/SdlGraphics.java b/backends/backend-sdl3/src/arc/backend/sdl/SdlGraphics.java
-index 20afcfb03738e2cb3bca006b4cb7835f0794ff80..b40488280136183c2208b111c8fd99d2f00e6ae5 100644
+index d620ccf09e7f6da096a243312e4cdc316b176cb2..aed803baa8dbd66c09dd3b40b3e5c95ff8997ac3 100644
 --- a/backends/backend-sdl3/src/arc/backend/sdl/SdlGraphics.java
 +++ b/backends/backend-sdl3/src/arc/backend/sdl/SdlGraphics.java
 @@ -38,7 +38,8 @@ public class SdlGraphics extends Graphics{

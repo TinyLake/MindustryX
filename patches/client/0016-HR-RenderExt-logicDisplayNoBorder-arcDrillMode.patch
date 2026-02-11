@@ -14,7 +14,7 @@ Content-Transfer-Encoding: 8bit
  2 files changed, 8 insertions(+), 1 deletion(-)
 
 diff --git a/core/src/mindustry/world/blocks/logic/LogicDisplay.java b/core/src/mindustry/world/blocks/logic/LogicDisplay.java
-index 20e70d071e405afa213003b4317fe766065bac99..fc3fe1bfa1d922f5ac8cd4cdb5c4270454332b72 100644
+index 2f4c404f1348ccae82a6d0f86ae96eb0ee147172..0b573076a400645ba85168028ac18ee74b3b188c 100644
 --- a/core/src/mindustry/world/blocks/logic/LogicDisplay.java
 +++ b/core/src/mindustry/world/blocks/logic/LogicDisplay.java
 @@ -18,6 +18,7 @@ import mindustry.logic.*;

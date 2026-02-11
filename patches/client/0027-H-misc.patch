@@ -101,10 +101,10 @@ index 11278ddac6ce2b35234acb31b43ea7e8c999592d..ed6785c5853a9a8096b2f48792c05b98
      private Seq<Team> activeTeams = new Seq<>(Team.class);
      /** Maps teams to a map of flagged tiles by flag. */
 diff --git a/core/src/mindustry/content/Blocks.java b/core/src/mindustry/content/Blocks.java
-index 813838da39d91e457ce2b5b69cb3ae12cca7f0b6..94484c6e974cb3563edce0fb921375fa019a6142 100644
+index 54e4554bddbccc697f4395db4f4510ae931c888d..d33cfbdfc40111e72e048095dfecd2ce2054af74 100644
 --- a/core/src/mindustry/content/Blocks.java
 +++ b/core/src/mindustry/content/Blocks.java
-@@ -2121,6 +2121,7 @@ public class Blocks{
+@@ -2123,6 +2123,7 @@ public class Blocks{
              arrowSpacing = 6f;
              bufferCapacity = 14;
              crushFragile = true;
@@ -112,7 +112,7 @@ index 813838da39d91e457ce2b5b69cb3ae12cca7f0b6..94484c6e974cb3563edce0fb921375fa
          }};
  
          phaseConveyor = new ItemBridge("phase-conveyor"){{
-@@ -2133,6 +2134,7 @@ public class Blocks{
+@@ -2135,6 +2136,7 @@ public class Blocks{
              pulse = true;
              envEnabled |= Env.space;
              consumePower(0.30f);
@@ -376,7 +376,7 @@ index 8c8b7c49668a1adb90aa0d018c18f66ed6deeb6e..3e0cca2191e2fd062b96af031a6b2af5
              return;
          }else if(checkPlaytest()){
 diff --git a/core/src/mindustry/ui/dialogs/SettingsMenuDialog.java b/core/src/mindustry/ui/dialogs/SettingsMenuDialog.java
-index 7949471868168ce97170f6550ce2949c7590506b..6e0bd9f94bd41137ddc69bae8beb7727d12ac6c0 100644
+index d8385605c14470e4252710084f56ab56908dfdc3..b207cdfe4c4a1e80a4852667b3909059bef6e8a9 100644
 --- a/core/src/mindustry/ui/dialogs/SettingsMenuDialog.java
 +++ b/core/src/mindustry/ui/dialogs/SettingsMenuDialog.java
 @@ -408,14 +408,14 @@ public class SettingsMenuDialog extends BaseDialog{
@@ -436,10 +436,10 @@ index add50b5864c311b66d4278e684a4e0260170139f..6202aadb499174630a04c0210e7390a0
          team("/t"),
          admin("/a", player::admin)
 diff --git a/core/src/mindustry/ui/fragments/PlacementFragment.java b/core/src/mindustry/ui/fragments/PlacementFragment.java
-index 7df456cb0c2465507c2faa8fe6f4ca8eee7b0425..60cedfaecdb8a85dcfccc30ca090aa48e3463350 100644
+index 2050811b53179fe9d4e805f2f2f8b23e64d2aa15..722f0a96ded8714d89b128bba97e7fa9aa4975dc 100644
 --- a/core/src/mindustry/ui/fragments/PlacementFragment.java
 +++ b/core/src/mindustry/ui/fragments/PlacementFragment.java
-@@ -756,10 +756,8 @@ public class PlacementFragment{
+@@ -770,10 +770,8 @@ public class PlacementFragment{
  
      /** @return the thing being hovered over. */
      public @Nullable Displayable hovered(){

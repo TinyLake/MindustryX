@@ -175,7 +175,7 @@ index a0a4cc851b54564c0998752a9409a309350fa6d9..9544dcded1bb516f19167b5d1923ba5b
              linkerFlags = "-shared -arch arm64 -mmacosx-version-min=10.9 -stdlib=libc++"
              //execCmd("sdl2-config --static-libs") + " -Wl,-framework,OpenGL"
 diff --git a/build.gradle b/build.gradle
-index 8a6c1a0109a2bafb7fa0d74a4a617bf16dc40d14..6791e2cf781e2a0c9e2fd2ab08cfee7f9d572adf 100644
+index 72e4f6f1997c16e57fcedc14dcc5b1669d267b3a..a930c75f0fbd812e5238685fa62584afeea4bcfe 100644
 --- a/build.gradle
 +++ b/build.gradle
 @@ -1,5 +1,6 @@
@@ -191,7 +191,7 @@ index 8a6c1a0109a2bafb7fa0d74a4a617bf16dc40d14..6791e2cf781e2a0c9e2fd2ab08cfee7f
  versions.junit = "4.11"
 -//TODO: upgrade to 3.1.1 and finally get rid of the disease that is ant
 -versions.jnigen = "2.5.1"
- versions.lwjgl = "3.4.0"
+ versions.lwjgl = "3.4.1"
  
  libraries.robovm = [
 @@ -63,22 +62,10 @@ allprojects{

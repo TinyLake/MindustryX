@@ -50,7 +50,7 @@ index a4917590f773b2dc47fa2162dd9d97ee554ef7cb..be14295c259557726a1f95a0d6d63cfc
      }
  }
 diff --git a/core/src/mindustry/world/Block.java b/core/src/mindustry/world/Block.java
-index 2d8b8024cf0d22f4961cb0c4db9561d39f7afcbe..89f13b9d797e17403213d6af1cdc9974ae30ecb1 100644
+index 2011f1c6f47fbadf5170049a0e410b54509c4e7f..20d4447eef00bda4e70beb18a456f4610e65062c 100644
 --- a/core/src/mindustry/world/Block.java
 +++ b/core/src/mindustry/world/Block.java
 @@ -34,6 +34,7 @@ import mindustry.world.blocks.power.*;
@@ -261,7 +261,7 @@ index 6b5721987bc27225b574c857abd1b93726138cc9..459ccab8c40424b597b3215aac9699ea
      }
  }
 diff --git a/core/src/mindustry/world/blocks/defense/turrets/Turret.java b/core/src/mindustry/world/blocks/defense/turrets/Turret.java
-index 7e0ab67fb145e7bbbc93511f3b0bb614a9cd59dd..2c2181e00862d4a653aef59afe1446aea743f4eb 100644
+index 2844a099397e136709fe2525288c3976eb013a92..d601a340712560783657c1569dafe71128312b1b 100644
 --- a/core/src/mindustry/world/blocks/defense/turrets/Turret.java
 +++ b/core/src/mindustry/world/blocks/defense/turrets/Turret.java
 @@ -7,6 +7,7 @@ import arc.graphics.*;
@@ -272,7 +272,7 @@ index 7e0ab67fb145e7bbbc93511f3b0bb614a9cd59dd..2c2181e00862d4a653aef59afe1446ae
  import arc.struct.*;
  import arc.util.*;
  import arc.util.io.*;
-@@ -858,6 +859,14 @@ public class Turret extends ReloadTurret{
+@@ -841,6 +842,14 @@ public class Turret extends ReloadTurret{
              rotation = oldRot;
              reloadCounter = oldReload;
          }
@@ -468,7 +468,7 @@ index 85edf348646875db7a9f024330ecf208ac4f2010..71043d7eb294e2395006357b81f5a7a8
      }
  }
 diff --git a/core/src/mindustry/world/blocks/production/HeatCrafter.java b/core/src/mindustry/world/blocks/production/HeatCrafter.java
-index fcf25ddc4c6d279a9be63de7d7f0ca9937673fdd..759205912a11a627212454ce085c82acf612673e 100644
+index 7cc1ee3d5ca050b9867653a4c890af8ddd59caf9..f6633e8fecc928e665b0d58b48f1886e63ff4ab6 100644
 --- a/core/src/mindustry/world/blocks/production/HeatCrafter.java
 +++ b/core/src/mindustry/world/blocks/production/HeatCrafter.java
 @@ -6,6 +6,7 @@ import mindustry.graphics.*;

@@ -179,10 +179,10 @@ index 4e703c7d154cb337d8fbc949f3e2bb80ec3fb071..096c63ea6c40a9c0d294548f1597e21c
          if(example instanceof WaterMovec || example instanceof WaterCrawlc){
              naval = true;
 diff --git a/core/src/mindustry/type/Weapon.java b/core/src/mindustry/type/Weapon.java
-index 6ab803150afc5e13501d077935cfadccd8f68124..81fe5909810fb53c2d88810c29eb8da43c053d3d 100644
+index eedcaa20c7b63b6c41d647cead5febc8b8c2dacb..c527a7c4e0164fcbb22240880692f58bbce6b2b6 100644
 --- a/core/src/mindustry/type/Weapon.java
 +++ b/core/src/mindustry/type/Weapon.java
-@@ -173,6 +173,18 @@ public class Weapon implements Cloneable{
+@@ -175,6 +175,18 @@ public class Weapon implements Cloneable{
      }
  
      public void addStats(UnitType u, Table t){
@@ -202,7 +202,7 @@ index 6ab803150afc5e13501d077935cfadccd8f68124..81fe5909810fb53c2d88810c29eb8da4
              t.row();
              t.add("[lightgray]" + Stat.inaccuracy.localized() + ": [white]" + (int)inaccuracy + " " + StatUnit.degrees.localized());
 diff --git a/core/src/mindustry/world/Block.java b/core/src/mindustry/world/Block.java
-index a55f8fa72de3dc4291ffba80f986dd839d260ebc..2d8b8024cf0d22f4961cb0c4db9561d39f7afcbe 100644
+index b7739913f15fcebaaf32ec0a7698ab062c05cbbf..2011f1c6f47fbadf5170049a0e410b54509c4e7f 100644
 --- a/core/src/mindustry/world/Block.java
 +++ b/core/src/mindustry/world/Block.java
 @@ -33,6 +33,7 @@ import mindustry.world.blocks.environment.*;
@@ -514,7 +514,7 @@ index 416df5a20af4767cdfdc2646bce19468ad11cd28..239311eea91980f2c3e0facd6613b237
      public final String name;
      public final int id;
 diff --git a/core/src/mindustry/world/meta/StatValues.java b/core/src/mindustry/world/meta/StatValues.java
-index 8556ef3adc2f183ad256c8fed846ff8a7ee5909a..5cd7121c3695bd4ebe58b923844ae3e5e7f73ddc 100644
+index 2dcc47bb3891d79f132e5f8550be37689f31283b..73fd553f5d1b48a5db604d4d556e4a60b1255c31 100644
 --- a/core/src/mindustry/world/meta/StatValues.java
 +++ b/core/src/mindustry/world/meta/StatValues.java
 @@ -25,6 +25,8 @@ import mindustry.ui.*;

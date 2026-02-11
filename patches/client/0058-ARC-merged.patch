@@ -717,7 +717,7 @@ index 9d500d48c44855219309039ccb368ba64ae9bd36..7dc19c08f6c2e32f83e58b5e132c0396
          rect.grow(4f);
  
 diff --git a/core/src/mindustry/logic/LExecutor.java b/core/src/mindustry/logic/LExecutor.java
-index fabfad8d20fe0388051db8c0f3d76594287a7721..ed590640de4c06c97b5d208f62d1d21017619e61 100644
+index b0be48f97810eb2f0f84092a880cb70ce1391e5a..69f588431bfa3f62338e13a1b956e8071464298a 100644
 --- a/core/src/mindustry/logic/LExecutor.java
 +++ b/core/src/mindustry/logic/LExecutor.java
 @@ -30,6 +30,7 @@ import mindustry.world.blocks.logic.LogicDisplay.*;
@@ -911,7 +911,7 @@ index 096c63ea6c40a9c0d294548f1597e21c781d6946..25ad60770eda4538e1b503d2a16592d1
  
              Draw.reset();
 diff --git a/core/src/mindustry/type/Weapon.java b/core/src/mindustry/type/Weapon.java
-index 8986fcdd88e68508e393fc1dee4ace1debe9465a..2b1d35801ac850dc52312272c27eaaf92ef4a712 100644
+index b5dea6beedbbaa476491ccac484a1233193b3efc..8fcde8c4b7b20822269628c3c56d03de71a71960 100644
 --- a/core/src/mindustry/type/Weapon.java
 +++ b/core/src/mindustry/type/Weapon.java
 @@ -23,6 +23,8 @@ import mindustry.entities.units.*;
@@ -923,7 +923,7 @@ index 8986fcdd88e68508e393fc1dee4ace1debe9465a..2b1d35801ac850dc52312272c27eaaf9
  
  import static mindustry.Vars.*;
  
-@@ -294,6 +296,23 @@ public class Weapon implements Cloneable{
+@@ -296,6 +298,23 @@ public class Weapon implements Cloneable{
  
          Draw.xscl = 1f;
  
@@ -1727,7 +1727,7 @@ index fef8e21d771ccfd81cbc65a0bc62642ebf721952..f855efcd27a47e8ac5a0ac3dffc8a3c8
          }
      }
 diff --git a/core/src/mindustry/ui/dialogs/SettingsMenuDialog.java b/core/src/mindustry/ui/dialogs/SettingsMenuDialog.java
-index 6e0bd9f94bd41137ddc69bae8beb7727d12ac6c0..2ab0dd207537b56873e71412a3862d209f0f43e9 100644
+index b207cdfe4c4a1e80a4852667b3909059bef6e8a9..50fe3aa329afc0e4f3f7b103367906352ead458e 100644
 --- a/core/src/mindustry/ui/dialogs/SettingsMenuDialog.java
 +++ b/core/src/mindustry/ui/dialogs/SettingsMenuDialog.java
 @@ -303,8 +303,8 @@ public class SettingsMenuDialog extends BaseDialog{
@@ -1768,7 +1768,7 @@ index 6e0bd9f94bd41137ddc69bae8beb7727d12ac6c0..2ab0dd207537b56873e71412a3862d20
  
          int[] lastUiScale = {settings.getInt("uiscale", 100)};
  
-@@ -476,6 +474,8 @@ public class SettingsMenuDialog extends BaseDialog{
+@@ -458,6 +456,8 @@ public class SettingsMenuDialog extends BaseDialog{
          graphics.checkPref("destroyedblocks", true);
          graphics.checkPref("blockstatus", false);
          graphics.checkPref("playerchat", true);
@@ -1777,7 +1777,7 @@ index 6e0bd9f94bd41137ddc69bae8beb7727d12ac6c0..2ab0dd207537b56873e71412a3862d20
          if(!mobile){
              graphics.checkPref("coreitems", true);
          }
-@@ -485,12 +485,12 @@ public class SettingsMenuDialog extends BaseDialog{
+@@ -467,12 +467,12 @@ public class SettingsMenuDialog extends BaseDialog{
              graphics.checkPref("detach-camera", false);
          }
          graphics.checkPref("position", false);
@@ -2124,7 +2124,7 @@ index 90c843267ba9c3c59413a658c9777198296514f5..ef94d7797a159263ea5da2f2d1e445a8
      }
  
 diff --git a/core/src/mindustry/ui/fragments/PlacementFragment.java b/core/src/mindustry/ui/fragments/PlacementFragment.java
-index 01ba50f19dcae39176f8dde2be5391777131826c..e37b35d706ab164ff95a9359367c250514605370 100644
+index 0e70bc703f77e282296a226b39ed73236fd5d694..9ad989b1f5ad672a411122bceeb54b9eee27a759 100644
 --- a/core/src/mindustry/ui/fragments/PlacementFragment.java
 +++ b/core/src/mindustry/ui/fragments/PlacementFragment.java
 @@ -1,6 +1,7 @@
@@ -2135,7 +2135,7 @@ index 01ba50f19dcae39176f8dde2be5391777131826c..e37b35d706ab164ff95a9359367c2505
  import arc.graphics.*;
  import arc.input.*;
  import arc.math.geom.*;
-@@ -26,25 +27,26 @@ import mindustry.input.*;
+@@ -27,27 +28,28 @@ import mindustry.input.*;
  import mindustry.type.*;
  import mindustry.ui.*;
  import mindustry.world.*;
@@ -2145,6 +2145,8 @@ index 01ba50f19dcae39176f8dde2be5391777131826c..e37b35d706ab164ff95a9359367c2505
  import mindustry.world.meta.*;
  import mindustryX.features.*;
 +import mindustryX.features.ui.*;
+ 
+ import java.util.*;
  
  import static mindustry.Vars.*;
  
@@ -2167,7 +2169,7 @@ index 01ba50f19dcae39176f8dde2be5391777131826c..e37b35d706ab164ff95a9359367c2505
      @Nullable Building lastFlowBuild, nextFlowBuild;
      @Nullable Object lastDisplayState;
      @Nullable Team lastTeam;
-@@ -112,7 +114,7 @@ public class PlacementFragment{
+@@ -115,7 +117,7 @@ public class PlacementFragment{
                  if(nextFlowBuild.liquids != null) nextFlowBuild.liquids.updateFlow();
              }
  
@@ -2176,7 +2178,7 @@ index 01ba50f19dcae39176f8dde2be5391777131826c..e37b35d706ab164ff95a9359367c2505
                  rebuild();
              }
          });
-@@ -277,6 +279,8 @@ public class PlacementFragment{
+@@ -280,6 +282,8 @@ public class PlacementFragment{
      }
  
      public void build(Group parent){
@@ -2185,7 +2187,7 @@ index 01ba50f19dcae39176f8dde2be5391777131826c..e37b35d706ab164ff95a9359367c2505
          parent.fill(full -> {
              toggler = full;
              full.bottom().right().visible(() -> ui.hudfrag.shown);
-@@ -353,19 +357,22 @@ public class PlacementFragment{
+@@ -356,19 +360,22 @@ public class PlacementFragment{
  
                          //find current hovered thing
                          Displayable hovered = hover;
@@ -2209,7 +2211,7 @@ index 01ba50f19dcae39176f8dde2be5391777131826c..e37b35d706ab164ff95a9359367c2505
                          lastTeam = player.team();
  
                          //show details of selected block, with costs
-@@ -434,6 +441,30 @@ public class PlacementFragment{
+@@ -437,6 +444,30 @@ public class PlacementFragment{
                          }else if(hovered != null){
                              //show hovered item, whatever that may be
                              hovered.display(topTable);
@@ -2240,7 +2242,7 @@ index 01ba50f19dcae39176f8dde2be5391777131826c..e37b35d706ab164ff95a9359367c2505
                          }
                      });
                  }).colspan(3).fillX().visible(this::hasInfoBox).touchable(Touchable.enabled).row();
-@@ -493,6 +524,8 @@ public class PlacementFragment{
+@@ -498,6 +529,8 @@ public class PlacementFragment{
  
                          rebuildCommand = () -> {
                              u.clearChildren();
@@ -2249,7 +2251,7 @@ index 01ba50f19dcae39176f8dde2be5391777131826c..e37b35d706ab164ff95a9359367c2505
                              var units = control.input.selectedUnits;
                              if(units.size > 0){
                                  usedCommands.clear();
-@@ -571,7 +604,7 @@ public class PlacementFragment{
+@@ -581,7 +614,7 @@ public class PlacementFragment{
                                                  Call.setUnitCommand(player, units.mapInt(un -> un.id, un -> un.type.allowCommand(un, command)).toArray(), command);
                                              }).checked(i -> activeCommands.get(command.id)).size(50f).tooltip(command.localized(), true);
  
@@ -2258,7 +2260,7 @@ index 01ba50f19dcae39176f8dde2be5391777131826c..e37b35d706ab164ff95a9359367c2505
                                          }
  
                                      }).fillX().padTop(4f).left();
-@@ -594,13 +627,67 @@ public class PlacementFragment{
+@@ -604,13 +637,67 @@ public class PlacementFragment{
                                                  Call.setUnitStance(player, units.mapInt(un -> un.id, un -> un.type.allowStance(un, stance)).toArray(), stance, !activeStances.get(stance.id));
                                              }).checked(i -> activeStances.get(stance.id)).size(50f).tooltip(stance.localized(), true);
  
@@ -2327,7 +2329,7 @@ index 01ba50f19dcae39176f8dde2be5391777131826c..e37b35d706ab164ff95a9359367c2505
                          };
  
                          u.update(() -> {
-@@ -661,7 +748,7 @@ public class PlacementFragment{
+@@ -675,7 +762,7 @@ public class PlacementFragment{
                  {
                      blockCatTable.table(Tex.pane2, blocksSelect -> {
                          blocksSelect.margin(4).marginTop(0);
@@ -2336,7 +2338,7 @@ index 01ba50f19dcae39176f8dde2be5391777131826c..e37b35d706ab164ff95a9359367c2505
                              if(pane.hasScroll()){
                                  Element result = Core.scene.getHoverElement();
                                  if(result == null || !result.isDescendantOf(pane)){
-@@ -699,6 +786,17 @@ public class PlacementFragment{
+@@ -713,6 +800,17 @@ public class PlacementFragment{
                          boolean needsAssign = categoryEmpty[currentCategory.ordinal()];
  
                          int f = 0;
@@ -2354,7 +2356,7 @@ index 01ba50f19dcae39176f8dde2be5391777131826c..e37b35d706ab164ff95a9359367c2505
                          for(Category cat : getCategories()){
                              if(f++ % 2 == 0) categories.row();
  
-@@ -757,8 +855,9 @@ public class PlacementFragment{
+@@ -771,8 +869,9 @@ public class PlacementFragment{
      }
  
      boolean hasInfoBox(){
@@ -2365,7 +2367,7 @@ index 01ba50f19dcae39176f8dde2be5391777131826c..e37b35d706ab164ff95a9359367c2505
      }
  
      /** @return the thing being hovered over. */
-@@ -766,25 +865,40 @@ public class PlacementFragment{
+@@ -780,25 +879,40 @@ public class PlacementFragment{
          //MDTX: fix flashing. Don't clear hover if the mouse just on topTable.
          if(Core.scene.hasMouse(Core.input.mouseX(), Core.input.mouseY()) && !topTable.hasMouse()) return null;
  

@@ -80,10 +80,10 @@ index 5f9489b5b5e4311eca4c50f51fc5624d98c1a03c..72cf36b8c2fd6ffad56b9d3505f84209
      }
  }
 diff --git a/core/src/mindustry/ui/fragments/PlacementFragment.java b/core/src/mindustry/ui/fragments/PlacementFragment.java
-index 60cedfaecdb8a85dcfccc30ca090aa48e3463350..01ba50f19dcae39176f8dde2be5391777131826c 100644
+index 722f0a96ded8714d89b128bba97e7fa9aa4975dc..0e70bc703f77e282296a226b39ed73236fd5d694 100644
 --- a/core/src/mindustry/ui/fragments/PlacementFragment.java
 +++ b/core/src/mindustry/ui/fragments/PlacementFragment.java
-@@ -26,8 +26,10 @@ import mindustry.input.*;
+@@ -27,8 +27,10 @@ import mindustry.input.*;
  import mindustry.type.*;
  import mindustry.ui.*;
  import mindustry.world.*;
@@ -92,9 +92,9 @@ index 60cedfaecdb8a85dcfccc30ca090aa48e3463350..01ba50f19dcae39176f8dde2be539177
  import mindustry.world.meta.*;
 +import mindustryX.features.*;
  
- import static mindustry.Vars.*;
+ import java.util.*;
  
-@@ -109,6 +111,10 @@ public class PlacementFragment{
+@@ -112,6 +114,10 @@ public class PlacementFragment{
                  if(nextFlowBuild.flowItems() != null) nextFlowBuild.flowItems().updateFlow();
                  if(nextFlowBuild.liquids != null) nextFlowBuild.liquids.updateFlow();
              }
@@ -105,7 +105,7 @@ index 60cedfaecdb8a85dcfccc30ca090aa48e3463350..01ba50f19dcae39176f8dde2be539177
          });
      }
  
-@@ -289,6 +295,7 @@ public class PlacementFragment{
+@@ -292,6 +298,7 @@ public class PlacementFragment{
  
                      for(Block block : getUnlockedByCategory(currentCategory)){
                          if(!unlocked(block)) continue;
@@ -113,7 +113,7 @@ index 60cedfaecdb8a85dcfccc30ca090aa48e3463350..01ba50f19dcae39176f8dde2be539177
                          if(index++ % rowWidth == 0){
                              blockTable.row();
                          }
-@@ -745,7 +752,7 @@ public class PlacementFragment{
+@@ -759,7 +766,7 @@ public class PlacementFragment{
      }
  
      boolean unlocked(Block block){
@@ -123,10 +123,10 @@ index 60cedfaecdb8a85dcfccc30ca090aa48e3463350..01ba50f19dcae39176f8dde2be539177
      }
  
 diff --git a/core/src/mindustry/world/Block.java b/core/src/mindustry/world/Block.java
-index 89f13b9d797e17403213d6af1cdc9974ae30ecb1..47c74febb9899e96ca950e8e7d00afc2be7c9a3b 100644
+index 20d4447eef00bda4e70beb18a456f4610e65062c..bc542170478ef7796a88b2e13b5cb78635a36593 100644
 --- a/core/src/mindustry/world/Block.java
 +++ b/core/src/mindustry/world/Block.java
-@@ -968,11 +968,11 @@ public class Block extends UnlockableContent implements Senseable{
+@@ -974,11 +974,11 @@ public class Block extends UnlockableContent implements Senseable{
      }
  
      public boolean isVisible(){

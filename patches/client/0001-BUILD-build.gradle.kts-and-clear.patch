@@ -823,7 +823,7 @@ index 0000000000000000000000000000000000000000..712c4750377c079ec77bfea24bd889db
 +}
 \ No newline at end of file
 diff --git a/desktop/build.gradle b/desktop/build.gradle
-index 193d6ce313a6744d6f8a144631ab2edde6ab5c1c..7c93493b8a786c0e5fcb5051a0fd98bfdbd99fd4 100644
+index ae9bb676da0e9270628d06a2d126e238645646f0..7c93493b8a786c0e5fcb5051a0fd98bfdbd99fd4 100644
 --- a/desktop/build.gradle
 +++ b/desktop/build.gradle
 @@ -3,15 +3,10 @@ sourceSets.main.java.srcDirs = ["src/"]
@@ -974,7 +974,7 @@ index 193d6ce313a6744d6f8a144631ab2edde6ab5c1c..7c93493b8a786c0e5fcb5051a0fd98bf
 -                    }
 -                }
 -
--                //packr is broken and won't let me add one hyphen,so I have to do that myself later
+-                //packr is broken and won't let me add one hyphen, so I have to do that myself later
 -                outputJsonFile.text = outputJsonFile.text.replace("-enable-native-access=ALL-UNNAMED", "--enable-native-access=ALL-UNNAMED")
 -            }
 -
@@ -1022,15 +1022,15 @@ index 193d6ce313a6744d6f8a144631ab2edde6ab5c1c..7c93493b8a786c0e5fcb5051a0fd98bf
 +}
 \ No newline at end of file
 diff --git a/gradle.properties b/gradle.properties
-index 0abbd4cb32b96a88f1f63ae44802544ae5abae7e..aca0cb473de8c02a838aeaa23bfa80a9af689fab 100644
+index 259a92e70478db390169981a37aad75866940d59..89e015130b59d630e1683b42c5c0326001479878 100644
 --- a/gradle.properties
 +++ b/gradle.properties
 @@ -26,4 +26,7 @@ org.gradle.caching=true
  org.gradle.internal.http.socketTimeout=100000
  org.gradle.internal.http.connectionTimeout=100000
  android.enableR8.fullMode=false
--archash=e1ae1436f2
-+#archash=e1ae1436f2
+-archash=acfda45497
++#archash=acfda45497
 +
 +#MDTX: Use "v{upstreamBuild}" by default
 +upstreamBuild=155
