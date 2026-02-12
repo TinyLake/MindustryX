@@ -34,10 +34,7 @@ object AutoUpdate {
         val isRelease get() = repo == VarsX.repo && !preRelease
 
         fun matchCurrent(): Boolean {
-            if (isRelease) return currentBranch == null
-            //main repo's pre-release matching any branch
-            if (repo == VarsX.repo && preRelease && currentBranch != null) return true
-            return tag == "$currentBranch-build" || description.contains("REPLACE $currentBranch")
+            return isRelease || (preRelease && VarsX.version.contains(".B"))
         }
 
         fun findAsset(): Asset? {
@@ -56,9 +53,7 @@ object AutoUpdate {
 
     val active get() = !VarsX.devVersion
 
-    const val devRepo = "TinyLake/MindustryX-work"
     var versions = emptyList<Release>()
-    val currentBranch get() = VarsX.version.split('-', limit = 2).getOrNull(1)
     var latest: Release? = null
     val newVersion: Release? get() = latest?.takeIf { it.version > VarsX.version }
 
@@ -102,10 +97,8 @@ object AutoUpdate {
                 //Old MDTX release like v146.001
                 it.version.isEmpty() || it.version.startsWith("v")
             }
-            getReleases(devRepo) { devVersions ->
-                this.versions = versions + devVersions
-                Core.app.post { fetchSuccess() }
-            }
+            this.versions = versions
+            Core.app.post { fetchSuccess() }
         }
     }
 
