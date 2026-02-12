@@ -134,7 +134,7 @@ index cd0314aed5f922962bc8596badab02d6c548ce33..33cfc82bdb20cb6d433118f015b11b79
  
      @Override
 diff --git a/core/src/mindustry/world/blocks/defense/MendProjector.java b/core/src/mindustry/world/blocks/defense/MendProjector.java
-index 97cbce3dec0c4f3c8966fd2b64a81d499bf6ee63..a422e97f53c28087878d10338291e96c98f31026 100644
+index 3c7b9653a58a5d4e92f9ba050de2f44757d91be2..dc337d182b0679e533c2389640b8edc70bb27a05 100644
 --- a/core/src/mindustry/world/blocks/defense/MendProjector.java
 +++ b/core/src/mindustry/world/blocks/defense/MendProjector.java
 @@ -12,6 +12,7 @@ import mindustry.content.*;
@@ -426,7 +426,7 @@ index a142f890eaf5c8252a04201c8485ecb0e260d3f6..2fdaf89d8bfafa089c5a6de09115ec81
  
      @Override
 diff --git a/core/src/mindustry/world/blocks/production/GenericCrafter.java b/core/src/mindustry/world/blocks/production/GenericCrafter.java
-index 85edf348646875db7a9f024330ecf208ac4f2010..71043d7eb294e2395006357b81f5a7a8d451463b 100644
+index 79b7bb451100f5f66ffd77e409f8ac1c73e139b5..44174463d8030e1d2abcfa89518ed0e6ea8b9f0c 100644
 --- a/core/src/mindustry/world/blocks/production/GenericCrafter.java
 +++ b/core/src/mindustry/world/blocks/production/GenericCrafter.java
 @@ -1,5 +1,6 @@
@@ -451,7 +451,7 @@ index 85edf348646875db7a9f024330ecf208ac4f2010..71043d7eb294e2395006357b81f5a7a8
  
  import static mindustry.Vars.*;
  
-@@ -361,5 +365,15 @@ public class GenericCrafter extends Block{
+@@ -362,5 +366,15 @@ public class GenericCrafter extends Block{
              warmup = read.f();
              if(legacyReadWarmup) read.f();
          }

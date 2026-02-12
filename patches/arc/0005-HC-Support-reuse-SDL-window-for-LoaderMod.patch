@@ -36,7 +36,7 @@ index f356fe21605f785cc84845c75a2c26568a9b5782..8248211d452110c3e158fe6cd3b1f995
  
          //show native IME candidate UI
 diff --git a/backends/backend-sdl3/src/arc/backend/sdl/SdlApplication.java b/backends/backend-sdl3/src/arc/backend/sdl/SdlApplication.java
-index b7f3e976946def4268f890537182b991fb00e1fa..2b5e4df3b610575a3b766d89ed4a8755afbda815 100644
+index 604d89b5f47dc1f690c5a2a4ffd89f9cad746a33..f15d7a4b3020f95f0e4d499e5e1c5fc1caeb2162 100644
 --- a/backends/backend-sdl3/src/arc/backend/sdl/SdlApplication.java
 +++ b/backends/backend-sdl3/src/arc/backend/sdl/SdlApplication.java
 @@ -124,6 +124,20 @@ public class SdlApplication implements Application{

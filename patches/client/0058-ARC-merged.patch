@@ -717,7 +717,7 @@ index 9d500d48c44855219309039ccb368ba64ae9bd36..7dc19c08f6c2e32f83e58b5e132c0396
          rect.grow(4f);
  
 diff --git a/core/src/mindustry/logic/LExecutor.java b/core/src/mindustry/logic/LExecutor.java
-index b0be48f97810eb2f0f84092a880cb70ce1391e5a..69f588431bfa3f62338e13a1b956e8071464298a 100644
+index 70c4f082107ab036fa6391bca9be1dfcd6450434..8deed19f7dad8f547221cfaf90f9c3f6b0624154 100644
 --- a/core/src/mindustry/logic/LExecutor.java
 +++ b/core/src/mindustry/logic/LExecutor.java
 @@ -30,6 +30,7 @@ import mindustry.world.blocks.logic.LogicDisplay.*;
@@ -728,7 +728,7 @@ index b0be48f97810eb2f0f84092a880cb70ce1391e5a..69f588431bfa3f62338e13a1b956e807
  
  import static mindustry.Vars.*;
  
-@@ -1755,8 +1756,14 @@ public class LExecutor{
+@@ -1754,8 +1755,14 @@ public class LExecutor{
              }
  
              switch(type){
@@ -746,7 +746,7 @@ index b0be48f97810eb2f0f84092a880cb70ce1391e5a..69f588431bfa3f62338e13a1b956e807
                  //TODO desync?
                  case mission -> state.rules.mission = text;
 diff --git a/core/src/mindustry/type/UnitType.java b/core/src/mindustry/type/UnitType.java
-index 096c63ea6c40a9c0d294548f1597e21c781d6946..25ad60770eda4538e1b503d2a16592d1fc75a3ac 100644
+index ede5dc36c5e133c3f1033c00f678d64c9f8a4cc3..4db27739bf896ee6d9dbf1a8d7549cd14dca237b 100644
 --- a/core/src/mindustry/type/UnitType.java
 +++ b/core/src/mindustry/type/UnitType.java
 @@ -38,6 +38,7 @@ import mindustry.world.blocks.units.*;
@@ -893,7 +893,7 @@ index 096c63ea6c40a9c0d294548f1597e21c781d6946..25ad60770eda4538e1b503d2a16592d1
      }
  
      /** @return whether this block supports a specific environment. */
-@@ -1715,12 +1789,15 @@ public class UnitType extends UnlockableContent implements Senseable{
+@@ -1717,12 +1791,15 @@ public class UnitType extends UnlockableContent implements Senseable{
              unit.y + Angles.trnsy(unit.rotation + 180f, itemOffsetY),
              size, size);
  

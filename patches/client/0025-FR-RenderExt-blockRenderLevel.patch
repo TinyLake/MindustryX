@@ -70,7 +70,7 @@ index d2ff9c0ad19f3fc20f5e2b36d6bd4b77e60b4b95..8c80702229e246a30efb7c3ca42d5920
          }
  
 diff --git a/core/src/mindustry/world/blocks/production/GenericCrafter.java b/core/src/mindustry/world/blocks/production/GenericCrafter.java
-index 8599a7881b1d4bc3ab788c3a531845502179b748..85edf348646875db7a9f024330ecf208ac4f2010 100644
+index 6efd4520d2e239abfa845ba9938754a425331c9e..79b7bb451100f5f66ffd77e409f8ac1c73e139b5 100644
 --- a/core/src/mindustry/world/blocks/production/GenericCrafter.java
 +++ b/core/src/mindustry/world/blocks/production/GenericCrafter.java
 @@ -17,6 +17,7 @@ import mindustry.world.*;
@@ -81,7 +81,7 @@ index 8599a7881b1d4bc3ab788c3a531845502179b748..85edf348646875db7a9f024330ecf208
  
  import static mindustry.Vars.*;
  
-@@ -235,7 +236,7 @@ public class GenericCrafter extends Block{
+@@ -236,7 +237,7 @@ public class GenericCrafter extends Block{
                      }
                  }
  
@@ -90,7 +90,7 @@ index 8599a7881b1d4bc3ab788c3a531845502179b748..85edf348646875db7a9f024330ecf208
                      updateEffect.at(x + Mathf.range(size * updateEffectSpread), y + Mathf.range(size * updateEffectSpread));
                  }
              }else{
-@@ -301,6 +302,8 @@ public class GenericCrafter extends Block{
+@@ -302,6 +303,8 @@ public class GenericCrafter extends Block{
              if(wasVisible){
                  craftEffect.at(x, y);
              }

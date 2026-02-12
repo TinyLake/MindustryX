@@ -12,25 +12,24 @@ way-zer <himc.wicp@gmail.com> on 2024/5/4 at 22:17
  core/src/mindustry/type/Item.java             |   5 +
  core/src/mindustry/type/Liquid.java           |   2 +
  core/src/mindustry/type/StatusEffect.java     |   2 +
- core/src/mindustry/type/UnitType.java         |  32 ++-
+ core/src/mindustry/type/UnitType.java         |  21 ++-
  core/src/mindustry/type/Weapon.java           |  12 ++
  core/src/mindustry/world/Block.java           |   4 +-
  .../world/blocks/defense/ForceProjector.java  |   2 +
- .../world/blocks/defense/MendProjector.java   |   6 +-
- .../world/blocks/defense/RegenProjector.java  |   5 +-
+ .../world/blocks/defense/MendProjector.java   |   4 +-
+ .../world/blocks/defense/RegenProjector.java  |   3 +-
  .../world/blocks/defense/ShieldWall.java      |   4 +
- .../defense/turrets/PointDefenseTurret.java   |   1 +
  .../distribution/BufferedItemBridge.java      |   1 +
- .../world/blocks/power/ImpactReactor.java     |  17 ++
+ .../world/blocks/power/ImpactReactor.java     |  24 ++-
  .../world/blocks/sandbox/PowerSource.java     |   6 +
  .../world/blocks/sandbox/PowerVoid.java       |   1 -
  .../world/consumers/ConsumeItemDynamic.java   |   2 +-
  .../world/consumers/ConsumeItems.java         |   2 +-
  .../consumers/ConsumePayloadDynamic.java      |   2 +-
- core/src/mindustry/world/meta/Stat.java       |  21 +-
+ core/src/mindustry/world/meta/Stat.java       |  23 +--
  core/src/mindustry/world/meta/StatCat.java    |   5 +-
- core/src/mindustry/world/meta/StatValues.java | 186 +++++++++++++-----
- 21 files changed, 244 insertions(+), 74 deletions(-)
+ core/src/mindustry/world/meta/StatValues.java | 142 +++++++++++++++---
+ 20 files changed, 215 insertions(+), 52 deletions(-)
 
 diff --git a/core/src/mindustry/type/Item.java b/core/src/mindustry/type/Item.java
 index 3ba4dc9de5a10c39e4e0257e854dabd7434e7b6d..ffac65db1338a457df5189565f554d80cc076500 100644
@@ -96,7 +95,7 @@ index c66cff2cbbb05e9783c613cd03e9fcaacb961705..7bdee181be7752ae7509782bf1623bed
          if(damage < 0) stats.add(Stat.healing, -damage * 60f, StatUnit.perSecond);
  
 diff --git a/core/src/mindustry/type/UnitType.java b/core/src/mindustry/type/UnitType.java
-index 4e703c7d154cb337d8fbc949f3e2bb80ec3fb071..096c63ea6c40a9c0d294548f1597e21c781d6946 100644
+index e47316c1a1b7495f3e8b4672f89f89ba0bc8c82b..ede5dc36c5e133c3f1033c00f678d64c9f8a4cc3 100644
 --- a/core/src/mindustry/type/UnitType.java
 +++ b/core/src/mindustry/type/UnitType.java
 @@ -37,6 +37,7 @@ import mindustry.world.blocks.payloads.*;
@@ -115,7 +114,7 @@ index 4e703c7d154cb337d8fbc949f3e2bb80ec3fb071..096c63ea6c40a9c0d294548f1597e21c
          stats.add(Stat.size, StatValues.squared(hitSize / tilesize, StatUnit.blocks));
          stats.add(Stat.itemCapacity, itemCapacity);
          stats.add(Stat.range, Strings.autoFixed(maxRange / tilesize, 1), StatUnit.blocks);
-@@ -800,24 +802,36 @@ public class UnitType extends UnlockableContent implements Senseable{
+@@ -802,11 +804,16 @@ public class UnitType extends UnlockableContent implements Senseable{
  
          stats.add(Stat.targetsAir, targetAir);
          stats.add(Stat.targetsGround, targetGround);
@@ -133,32 +132,23 @@ index 4e703c7d154cb337d8fbc949f3e2bb80ec3fb071..096c63ea6c40a9c0d294548f1597e21c
          stats.add(Stat.flying, flying);
  
          if(!flying){
-             stats.add(Stat.canBoost, canBoost);
-+            if(canBoost && boostMultiplier != 1){
-+                stats.add(StatExt.boostMultiplier, boostMultiplier);
-+            }
-+        }
+@@ -815,10 +822,14 @@ public class UnitType extends UnlockableContent implements Senseable{
+                 stats.add(Stat.boostingSpeed, boostMultiplier * speed * 60f / tilesize, StatUnit.tilesSecond);
+             }
+         }
 +        if(drownTimeMultiplier != 1){
 +            stats.add(StatExt.drownTimeMultiplier, drownTimeMultiplier);
-         }
++        }
  
          if(mineTier >= 1){
 +            stats.add(StatExt.mineLevel, "@级", mineTier);
              stats.addPercent(Stat.mineSpeed, mineSpeed);
 -            stats.add(Stat.mineTier, StatValues.drillables(mineSpeed, 1f, 1, null, b ->
--                b.itemDrop != null &&
--                (b instanceof Floor f && (((f.wallOre && mineWalls) || (!f.wallOre && mineFloor))) ||
--                (!(b instanceof Floor) && mineWalls)) &&
--                b.itemDrop.hardness <= mineTier && (!b.playerUnmineable || Core.settings.getBool("doubletapmine"))));
 +            stats.add(Stat.mineTier, StatValues.drillables(mineHardnessScaling ? 50 : 65, mineHardnessScaling ? 1 : 0, mineSpeed, null, b ->
-+            b.itemDrop != null &&
-+            (b instanceof Floor f && (((f.wallOre && mineWalls) || (!f.wallOre && mineFloor))) ||
-+            (!(b instanceof Floor) && mineWalls)) &&
-+            b.itemDrop.hardness <= mineTier && (!b.playerUnmineable || Core.settings.getBool("doubletapmine"))));
-         }
-         if(buildSpeed > 0){
-             stats.addPercent(Stat.buildSpeed, buildSpeed);
-@@ -836,6 +850,10 @@ public class UnitType extends UnlockableContent implements Senseable{
+                 b.itemDrop != null &&
+                 (b instanceof Floor f && (((f.wallOre && mineWalls) || (!f.wallOre && mineFloor))) ||
+                 (!(b instanceof Floor) && mineWalls)) &&
+@@ -841,6 +852,10 @@ public class UnitType extends UnlockableContent implements Senseable{
              stats.add(Stat.weapons, StatValues.weapons(this, weapons));
          }
  
@@ -169,7 +159,7 @@ index 4e703c7d154cb337d8fbc949f3e2bb80ec3fb071..096c63ea6c40a9c0d294548f1597e21c
          if(immunities.size > 0){
              stats.add(Stat.immunities, StatValues.statusEffects(immunities.toSeq().sort()));
          }
-@@ -910,6 +928,8 @@ public class UnitType extends UnlockableContent implements Senseable{
+@@ -915,6 +930,8 @@ public class UnitType extends UnlockableContent implements Senseable{
  
          allowLegStep = example instanceof Legsc || example instanceof Crawlc;
  
@@ -251,10 +241,10 @@ index cfafdca58465e803cb415a2ced3547da4ae754c0..cd0314aed5f922962bc8596badab02d6
          stats.add(Stat.regenerationRate, cooldownNormal * 60f, StatUnit.perSecond);
          stats.add(Stat.cooldownTime, (int) (shieldHealth / cooldownBrokenBase / 60f), StatUnit.seconds);
 diff --git a/core/src/mindustry/world/blocks/defense/MendProjector.java b/core/src/mindustry/world/blocks/defense/MendProjector.java
-index fe3b942681f449db3a17a6603182162e9b522b24..97cbce3dec0c4f3c8966fd2b64a81d499bf6ee63 100644
+index fe3b942681f449db3a17a6603182162e9b522b24..3c7b9653a58a5d4e92f9ba050de2f44757d91be2 100644
 --- a/core/src/mindustry/world/blocks/defense/MendProjector.java
 +++ b/core/src/mindustry/world/blocks/defense/MendProjector.java
-@@ -59,13 +59,15 @@ public class MendProjector extends Block{
+@@ -59,8 +59,10 @@ public class MendProjector extends Block{
          stats.timePeriod = useTime;
          super.setStats();
  
@@ -266,14 +256,8 @@ index fe3b942681f449db3a17a6603182162e9b522b24..97cbce3dec0c4f3c8966fd2b64a81d49
  
          if(findConsumer(c -> c instanceof ConsumeItems) instanceof ConsumeItems cons){
              stats.remove(Stat.booster);
-             stats.add(Stat.booster, StatValues.itemBoosters(
--                "{0}" + StatUnit.timesSpeed.localized(),
-+                "{0}x修复量",
-                 stats.timePeriod, (phaseBoost + healPercent) / healPercent, phaseRangeBoost,
-                 cons.items)
-             );
 diff --git a/core/src/mindustry/world/blocks/defense/RegenProjector.java b/core/src/mindustry/world/blocks/defense/RegenProjector.java
-index 1f8d60a39b78c461abda10407d2ec968c601b721..dab9907f9b6fcb1106ad8498852dddedfee8e1ab 100644
+index 1f8d60a39b78c461abda10407d2ec968c601b721..63af1b0c07a102143c5170a32bbe38673b8566c5 100644
 --- a/core/src/mindustry/world/blocks/defense/RegenProjector.java
 +++ b/core/src/mindustry/world/blocks/defense/RegenProjector.java
 @@ -14,6 +14,7 @@ import mindustry.world.*;
@@ -284,7 +268,7 @@ index 1f8d60a39b78c461abda10407d2ec968c601b721..dab9907f9b6fcb1106ad8498852ddded
  
  import static mindustry.Vars.*;
  
-@@ -92,13 +93,13 @@ public class RegenProjector extends Block{
+@@ -92,8 +93,8 @@ public class RegenProjector extends Block{
          stats.timePeriod = optionalUseTime;
          super.setStats();
  
@@ -294,12 +278,6 @@ index 1f8d60a39b78c461abda10407d2ec968c601b721..dab9907f9b6fcb1106ad8498852ddded
  
          if(findConsumer(c -> c instanceof ConsumeItems) instanceof ConsumeItems cons){
              stats.remove(Stat.booster);
-             stats.add(Stat.booster, StatValues.itemBoosters(
--                "{0}" + StatUnit.timesSpeed.localized(),
-+                "{0}x修复速度",
-                 stats.timePeriod, optionalMultiplier, 0f,
-                 cons.items)
-             );
 diff --git a/core/src/mindustry/world/blocks/defense/ShieldWall.java b/core/src/mindustry/world/blocks/defense/ShieldWall.java
 index 8f7a1135a1c2b46b7b83b8ca58cdbb12ccc90784..53c0889446bda2891a6417c435ff255953447b92 100644
 --- a/core/src/mindustry/world/blocks/defense/ShieldWall.java
@@ -322,18 +300,6 @@ index 8f7a1135a1c2b46b7b83b8ca58cdbb12ccc90784..53c0889446bda2891a6417c435ff2559
      }
  
      public class ShieldWallBuild extends WallBuild{
-diff --git a/core/src/mindustry/world/blocks/defense/turrets/PointDefenseTurret.java b/core/src/mindustry/world/blocks/defense/turrets/PointDefenseTurret.java
-index 2fdc39f416babac3c11e9fa7b6af60def898d078..79c1b4eb1019051064d6f8ec814a7498ffebe0db 100644
---- a/core/src/mindustry/world/blocks/defense/turrets/PointDefenseTurret.java
-+++ b/core/src/mindustry/world/blocks/defense/turrets/PointDefenseTurret.java
-@@ -52,6 +52,7 @@ public class PointDefenseTurret extends ReloadTurret{
-         super.setStats();
- 
-         stats.add(Stat.reload, 60f / reload, StatUnit.perSecond);
-+        stats.add(Stat.damage, bulletDamage);
-     }
- 
-     public class PointDefenseBuild extends ReloadTurretBuild{
 diff --git a/core/src/mindustry/world/blocks/distribution/BufferedItemBridge.java b/core/src/mindustry/world/blocks/distribution/BufferedItemBridge.java
 index c79a5c21485da2f6c8a9daad1ba7877819f43775..c60fffbbdcb8db5cfb9fceb7f275d55e2b7316b2 100644
 --- a/core/src/mindustry/world/blocks/distribution/BufferedItemBridge.java
@@ -347,7 +313,7 @@ index c79a5c21485da2f6c8a9daad1ba7877819f43775..c60fffbbdcb8db5cfb9fceb7f275d55e
          stats.add(Stat.itemsMoved, displayedSpeed, StatUnit.itemsSecond);
      }
 diff --git a/core/src/mindustry/world/blocks/power/ImpactReactor.java b/core/src/mindustry/world/blocks/power/ImpactReactor.java
-index 8ba3e4d956b5a44a181389cf95d0d153d49c1a6b..2869759bab9ca11481538a58f9bdcd9cb5037abc 100644
+index 74a2e374f196fb414a01d8d51150c44cf40d87a8..2869759bab9ca11481538a58f9bdcd9cb5037abc 100644
 --- a/core/src/mindustry/world/blocks/power/ImpactReactor.java
 +++ b/core/src/mindustry/world/blocks/power/ImpactReactor.java
 @@ -13,6 +13,7 @@ import mindustry.logic.*;
@@ -373,10 +339,17 @@ index 8ba3e4d956b5a44a181389cf95d0d153d49c1a6b..2869759bab9ca11481538a58f9bdcd9c
      @Override
      public void setBars(){
          super.setBars();
-@@ -59,6 +68,14 @@ public class ImpactReactor extends PowerGenerator{
+@@ -59,13 +68,14 @@ public class ImpactReactor extends PowerGenerator{
          if(hasItems){
              stats.add(Stat.productionTime, itemDuration / 60f, StatUnit.seconds);
          }
+-        //exponential decay formula
+-        float max = -(float)Math.log(0.001f) / warmupSpeed / 60f;
+-        float equal = -(float)Math.log(1f - Mathf.pow(consPower.usage / powerProduction, 1f / 5f)) / warmupSpeed / 60f;
+-        stats.add(Stat.warmupTime, t -> {
+-            t.add(Strings.autoFixed(max, 2) + " " + StatUnit.seconds.localized() + (consPower != null ? 
+-                " ~ " + Strings.autoFixed(equal, 2) + " " + StatUnit.seconds.localized() + " " + StatUnit.powerEquilibrium.localized() : ""));
+-        });
 +        float startTime = warmupToTime(Mathf.pow(consPower.usage / powerProduction, 1f / 5f), 1f);
 +        stats.add(StatExt.warmupPartial, startTime / 60f, StatUnit.seconds);
 +        stats.add(StatExt.warmupTime, warmupToTime(0.999f, 1f) / 60f, StatUnit.seconds);
@@ -456,10 +429,10 @@ index c2d52fcefd930ea36511420960086e0057647157..e77e03387f9e623aed7214ef34f02eee
                  if(++i % 4 == 0) c.row();
              }
 diff --git a/core/src/mindustry/world/meta/Stat.java b/core/src/mindustry/world/meta/Stat.java
-index 6dcef85afecb85f5489329e5dbba84434b5ba4b7..fb9da12c28cca78b54931a74a720cb75f20c2103 100644
+index c2f207259a32d563b4ed6b8ec284d67a34dfd1a2..890317c55e56551e6685e8d29d13235b13f2fad7 100644
 --- a/core/src/mindustry/world/meta/Stat.java
 +++ b/core/src/mindustry/world/meta/Stat.java
-@@ -25,17 +25,18 @@ public class Stat implements Comparable<Stat>{
+@@ -25,18 +25,19 @@ public class Stat implements Comparable<Stat>{
      heatCapacity = new Stat("heatCapacity"),
      viscosity = new Stat("viscosity"),
      temperature = new Stat("temperature"),
@@ -481,12 +454,14 @@ index 6dcef85afecb85f5489329e5dbba84434b5ba4b7..fb9da12c28cca78b54931a74a720cb75
      lightningDamage = new Stat("lightningDamage"),
 -    abilities = new Stat("abilities"),
 -    canBoost = new Stat("canBoost"),
+-    boostingSpeed = new Stat("boostingspeed"),
 +    abilities = new Stat("abilities", StatCat.combat),
 +    canBoost = new Stat("canBoost", StatCat.movement),
++    boostingSpeed = new Stat("boostingspeed", StatCat.movement),
      maxUnits = new Stat("maxUnits"),
  
      damageMultiplier = new Stat("damageMultiplier"),
-@@ -71,8 +72,8 @@ public class Stat implements Comparable<Stat>{
+@@ -73,8 +74,8 @@ public class Stat implements Comparable<Stat>{
      linkRange = new Stat("linkRange", StatCat.crafting),
      instructions = new Stat("instructions", StatCat.crafting),
  
@@ -514,10 +489,10 @@ index 416df5a20af4767cdfdc2646bce19468ad11cd28..239311eea91980f2c3e0facd6613b237
      public final String name;
      public final int id;
 diff --git a/core/src/mindustry/world/meta/StatValues.java b/core/src/mindustry/world/meta/StatValues.java
-index 2dcc47bb3891d79f132e5f8550be37689f31283b..73fd553f5d1b48a5db604d4d556e4a60b1255c31 100644
+index 58134e5c84363b261f6270c44802fbf471128261..72207f49403881823181169657a797fe879678cc 100644
 --- a/core/src/mindustry/world/meta/StatValues.java
 +++ b/core/src/mindustry/world/meta/StatValues.java
-@@ -25,6 +25,8 @@ import mindustry.ui.*;
+@@ -27,6 +27,8 @@ import mindustry.ui.*;
  import mindustry.world.*;
  import mindustry.world.blocks.defense.turrets.*;
  import mindustry.world.blocks.environment.*;
@@ -526,7 +501,7 @@ index 2dcc47bb3891d79f132e5f8550be37689f31283b..73fd553f5d1b48a5db604d4d556e4a60
  
  import static mindustry.Vars.*;
  
-@@ -259,6 +261,17 @@ public class StatValues{
+@@ -264,6 +266,17 @@ public class StatValues{
          return stack(item.uiIcon, amount, item);
      }
  
@@ -544,7 +519,7 @@ index 2dcc47bb3891d79f132e5f8550be37689f31283b..73fd553f5d1b48a5db604d4d556e4a60
      public static Stack stack(UnlockableContent item, int amount, boolean tooltip){
          return stack(item.uiIcon, amount, item, tooltip);
      }
-@@ -331,7 +344,7 @@ public class StatValues{
+@@ -336,7 +349,7 @@ public class StatValues{
  
                  if(state.isGame()){
                      var blocks = Vars.content.blocks()
@@ -553,7 +528,7 @@ index 2dcc47bb3891d79f132e5f8550be37689f31283b..73fd553f5d1b48a5db604d4d556e4a60
                      .with(s -> s.sort(f -> f.attributes.get(attr)));
  
                      if(blocks.any()){
-@@ -423,10 +436,9 @@ public class StatValues{
+@@ -428,10 +441,9 @@ public class StatValues{
                              info.add(block.localizedName).left().row();
                              info.add(block.itemDrop.emoji()).with(l -> withTooltip(l, block.itemDrop)).left();
                          }).grow();
@@ -567,7 +542,7 @@ index 2dcc47bb3891d79f132e5f8550be37689f31283b..73fd553f5d1b48a5db604d4d556e4a60
                      }).growX().pad(5);
                      if(++i % 2 == 0) c.row();
                  }
-@@ -578,19 +590,30 @@ public class StatValues{
+@@ -583,19 +595,30 @@ public class StatValues{
          };
      }
  
@@ -605,20 +580,19 @@ index 2dcc47bb3891d79f132e5f8550be37689f31283b..73fd553f5d1b48a5db604d4d556e4a60
                      }
                  }
              });
-@@ -639,7 +662,11 @@ public class StatValues{
+@@ -644,17 +667,21 @@ public class StatValues{
                          bt.row();
                      }
  
 -                    if(type.damage > 0 && (type.collides || type.splashDamage <= 0)){
+-                        bt.add(Core.bundle.format("bullet.damage", type.damage) + (type.continuousDamage() > 0 ? 
 +                    if(type instanceof LaserBulletType lb && lb.lightningSpacing > 0){
 +                        lightning(Mathf.floor(lb.length / lb.lightningSpacing) + 1, lb.lightningDamage, lb.lightningLength, lb.lightningLengthRand).display(bt);
 +                    }if(type instanceof LightningBulletType lb){
 +                        lightning(0, lb.damage, lb.lightningLength, lb.lightningLengthRand).display(bt);
 +                    }else if(type.damage > 0 && (type.collides || type.splashDamage <= 0)){
-                         if(type.continuousDamage() > 0){
-                             bt.add(Core.bundle.format("bullet.damage", type.continuousDamage()) + StatUnit.perSecond.localized());
-                         }else{
-@@ -648,11 +675,11 @@ public class StatValues{
++                        bt.add(Core.bundle.format("bullet.damage", type.damage) + (type.continuousDamage() > 0 ?
+                         "[lightgray] ~ [stat]" + Core.bundle.format("bullet.damage", type.continuousDamage()) + StatUnit.perSecond.localized() : ""));
                      }
  
                      if(type.buildingDamageMultiplier != 1){
@@ -632,7 +606,7 @@ index 2dcc47bb3891d79f132e5f8550be37689f31283b..73fd553f5d1b48a5db604d4d556e4a60
                      }
  
                      if(type.shieldDamageMultiplier != 1){
-@@ -668,8 +695,7 @@ public class StatValues{
+@@ -670,8 +697,7 @@ public class StatValues{
                      }
  
                      if(!compact && !Mathf.equal(type.reloadMultiplier, 1f)){
@@ -642,7 +616,7 @@ index 2dcc47bb3891d79f132e5f8550be37689f31283b..73fd553f5d1b48a5db604d4d556e4a60
                      }
  
                      if(type.knockback > 0){
-@@ -684,8 +710,24 @@ public class StatValues{
+@@ -686,8 +712,24 @@ public class StatValues{
                          sep(bt, Core.bundle.format("bullet.healamount", Strings.autoFixed(type.healAmount, 2)));
                      }
  
@@ -669,7 +643,7 @@ index 2dcc47bb3891d79f132e5f8550be37689f31283b..73fd553f5d1b48a5db604d4d556e4a60
                      }
  
                      if(type.incendAmount > 0){
-@@ -693,11 +735,11 @@ public class StatValues{
+@@ -695,11 +737,11 @@ public class StatValues{
                      }
  
                      if(type.homingPower > 0.01f){
@@ -683,27 +657,20 @@ index 2dcc47bb3891d79f132e5f8550be37689f31283b..73fd553f5d1b48a5db604d4d556e4a60
 +                        lightning(type.lightning, type.lightningDamage < 0 ? type.damage : type.lightningDamage, type.lightningLength, type.lightningLengthRand).display(bt);
                      }
  
-                     if(type.pierceArmor){
-@@ -736,39 +778,51 @@ public class StatValues{
+                     if(type instanceof LaserBulletType b && b.lightningSpacing > 0){
+@@ -716,7 +758,7 @@ public class StatValues{
+                             Strings.autoFixed(b.timeDuration / 60f, 1)) + " " + StatUnit.seconds.localized());
+                         }
+                         if(b.timeDuration > 0f && b.powerSclDecrease < 1f){
+-                            sep(bt, Core.bundle.format("bullet.empslowdown", 
++                            sep(bt, Core.bundle.format("bullet.empslowdown",
+                             (b.powerSclDecrease < 1f ? "[negstat]" : "") + Strings.autoFixed((b.powerSclDecrease - 1f) * 100f, 2),
+                             Strings.autoFixed(b.timeDuration / 60f, 1)) + " " + StatUnit.seconds.localized());
+                         }
+@@ -782,6 +824,22 @@ public class StatValues{
+                         bt.add(coll);
                      }
  
-                     if(type.intervalBullet != null){
--                        bt.row();
--
--                        Table ic = new Table();
--                        ammo(ObjectMap.of(t, type.intervalBullet), true, false).display(ic);
--                        Collapser coll = new Collapser(ic, true);
--                        coll.setDuration(0.1f);
--
--                        bt.table(it -> {
--                            it.left().defaults().left();
-+                        collapse(bt,Core.bundle.format("bullet.interval", Strings.autoFixed(type.intervalBullets / type.bulletInterval * 60, 2)),ic->{
-+                            ammo(ObjectMap.of(t, type.intervalBullet), true, false).display(ic);
-+                        });
-+                    }
- 
--                            it.add(Core.bundle.format("bullet.interval", Strings.autoFixed(type.intervalBullets / type.bulletInterval * 60, 2)));
--                            it.button(Icon.downOpen, Styles.emptyi, () -> coll.toggle(false)).update(i -> i.getStyle().imageUp = (!coll.isCollapsed() ? Icon.upOpen : Icon.downOpen)).size(8).padLeft(16f).expandX();
 +                    if(type instanceof EmpBulletType eb){
 +                        collapse(bt, Strings.format("[stat]EMP~@[lightgray]格[]~[white]\uE810[]@%/[white]\uE86D[]@%~[white]\uF899[][green]@%[]/[negstat]@%[]",
 +                        Strings.autoFixed(eb.radius / tilesize, 0),
@@ -717,52 +684,13 @@ index 2dcc47bb3891d79f132e5f8550be37689f31283b..73fd553f5d1b48a5db604d4d556e4a60
 +                            sep(ec, Strings.format("[stat]对敌方单位造成@%子弹伤害", Strings.autoFixed(eb.unitDamageScl * 100, 0)));
 +                            sep(ec, Strings.format("[stat]对我方耗电建筑超速至@%", Strings.autoFixed(eb.timeIncrease * 100, 0)));
 +                            sep(ec, Strings.format("[stat]对敌方电网建筑减速至@%", Strings.autoFixed(eb.powerSclDecrease * 100, 0)));
-                         });
--                        bt.row();
--                        bt.add(coll);
-                     }
- 
-                     if(type.fragBullet != null){
--                        bt.row();
--
--                        Table fc = new Table();
--                        ammo(ObjectMap.of(t, type.fragBullet), true, false).display(fc);
--                        Collapser coll = new Collapser(fc, true);
--                        coll.setDuration(0.1f);
--
--                        bt.table(ft -> {
--                            ft.left().defaults().left();
-+                        collapse(bt, Core.bundle.format("bullet.frags", type.fragBullets), fc -> {
-+                            ammo(ObjectMap.of(t, type.fragBullet), true, false).display(fc);
 +                        });
 +                    }
++
+                     if(type.fragBullet != null){
+                         bt.row();
  
--                            ft.add(Core.bundle.format("bullet.frags", type.fragBullets));
--                            ft.button(Icon.downOpen, Styles.emptyi, () -> coll.toggle(false)).update(i -> i.getStyle().imageUp = (!coll.isCollapsed() ? Icon.upOpen : Icon.downOpen)).size(8).padLeft(16f).expandX();
-+                    Seq<BulletType> spawn = type.spawnBullets.copy();
-+                    if(spawn.any()){
-+                        collapse(bt, Strings.format("[stat]@x[lightgray]生成子弹：", spawn.size), sc -> {
-+                            while(spawn.any()){
-+                                BulletType bullet = spawn.first();
-+                                Boolf<BulletType> pred = b -> bullet.damage == b.damage && bullet.splashDamage == b.splashDamage;
-+                                //通过pred的的子弹被认为和当前子弹是一样的，合并显示
-+                                int count = spawn.count(pred);
-+                                if(count == type.spawnBullets.size){
-+                                    ammo(ObjectMap.of(t, bullet), true, false).display(sc);
-+                                }else{
-+                                    sep(sc, Strings.format(" [stat]@x[lightgray]子弹：", count)).padLeft(0f);//不知道为什么padLeft0刚刚好，就这样了
-+                                    ammo(ObjectMap.of(t, bullet), true, false).display(sc);
-+                                }
-+                                bt.row();
-+                                spawn.removeAll(pred);
-+                            }
-                         });
--                        bt.row();
--                        bt.add(coll);
-                     }
-                 }).padLeft(5).padTop(5).padBottom(compact ? 0 : 5).growX().margin(compact ? 0 : 10);
-                 table.row();
-@@ -776,12 +830,48 @@ public class StatValues{
+@@ -826,6 +884,22 @@ public class StatValues{
          };
      }
  
@@ -785,7 +713,8 @@ index 2dcc47bb3891d79f132e5f8550be37689f31283b..73fd553f5d1b48a5db604d4d556e4a60
      //for AmmoListValue
      private static Cell<?> sep(Table table, String text){
          table.row();
-         return table.add(text);
+@@ -845,6 +919,26 @@ public class StatValues{
+         });
      }
  
 +    private static void collapse(Table table, String text, Cons<Table> cons){

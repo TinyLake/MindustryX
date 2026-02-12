@@ -8,29 +8,32 @@ Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 
 ---
- .../type/weapons/PointDefenseWeapon.java      | 24 ++++++++++++++++++-
+ .../type/weapons/PointDefenseWeapon.java      | 25 +++++++++++++++++--
  .../defense/turrets/PointDefenseTurret.java   |  3 ++-
- 2 files changed, 25 insertions(+), 2 deletions(-)
+ 2 files changed, 25 insertions(+), 3 deletions(-)
 
 diff --git a/core/src/mindustry/type/weapons/PointDefenseWeapon.java b/core/src/mindustry/type/weapons/PointDefenseWeapon.java
-index 86c1130dc184851ec4f62e975bc42b331c2d95a7..e00bdfaa62630f3d0ec3a6c8f70b42ea6337edc7 100644
+index b90026826717730afef1761883561d1afdcd56f1..bb90db919e026096a9d2d0badf10490391f11abc 100644
 --- a/core/src/mindustry/type/weapons/PointDefenseWeapon.java
 +++ b/core/src/mindustry/type/weapons/PointDefenseWeapon.java
-@@ -1,11 +1,13 @@
+@@ -1,6 +1,7 @@
  package mindustry.type.weapons;
  
+ import arc.*;
 +import arc.func.*;
  import arc.graphics.*;
  import arc.math.*;
  import arc.math.geom.*;
- import mindustry.content.*;
- import mindustry.entities.*;
- import mindustry.entities.units.*;
-+import mindustry.game.*;
- import mindustry.gen.*;
- import mindustry.type.*;
+@@ -43,7 +44,7 @@ public class PointDefenseWeapon extends Weapon{
+         targetInterval = 10f;
+     }
  
-@@ -40,7 +42,27 @@ public class PointDefenseWeapon extends Weapon{
+-    @Override 
++    @Override
+     public void addStats(UnitType u, Table t){
+         t.add(Core.bundle.format("weapon.pointdefense"));
+         super.addStats(u, t);
+@@ -51,7 +52,27 @@ public class PointDefenseWeapon extends Weapon{
  
      @Override
      protected Teamc findTarget(Unit unit, float x, float y, float range, boolean air, boolean ground){
@@ -60,7 +63,7 @@ index 86c1130dc184851ec4f62e975bc42b331c2d95a7..e00bdfaa62630f3d0ec3a6c8f70b42ea
  
      @Override
 diff --git a/core/src/mindustry/world/blocks/defense/turrets/PointDefenseTurret.java b/core/src/mindustry/world/blocks/defense/turrets/PointDefenseTurret.java
-index 79c1b4eb1019051064d6f8ec814a7498ffebe0db..17396093eb08717b953f406fbe8c857f157cbf76 100644
+index a5dd001dd963a85cdede83c8d7c0985dcfca9e02..f66cb6152d914a568eb3bd52150da8dd6449b1f0 100644
 --- a/core/src/mindustry/world/blocks/defense/turrets/PointDefenseTurret.java
 +++ b/core/src/mindustry/world/blocks/defense/turrets/PointDefenseTurret.java
 @@ -12,6 +12,7 @@ import mindustry.content.*;

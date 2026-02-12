@@ -7,7 +7,7 @@ clear and replce jabel(Support record)
 way-zer <himc.wicp@gmail.com> on 2024/6/9
 ---
  .gitignore                                    |   2 +-
- android/build.gradle                          | 113 +++----
+ android/build.gradle                          | 120 +++----
  android/proguard-rules.pro                    |   4 +
  .../com/github/bsideup/jabel/Desugar.java     |  13 +
  .../javax.annotation.processing.Processor     |   6 +
@@ -23,7 +23,7 @@ way-zer <himc.wicp@gmail.com> on 2024/6/9
  settings.gradle                               |  11 +-
  tools/build.gradle                            |  91 ++---
  tools/src/mindustry/tools/Generators.java     |   2 +-
- 17 files changed, 453 insertions(+), 723 deletions(-)
+ 17 files changed, 453 insertions(+), 730 deletions(-)
  create mode 100644 annotations/src/main/java/com/github/bsideup/jabel/Desugar.java
  create mode 100644 annotations/src/main/resources/META-INF/services/javax.annotation.processing.Processor
  delete mode 100644 core/build.gradle
@@ -50,10 +50,10 @@ index 5e3b7987ef4f776a0bc35dde58fb2c74f4acdb07..b5b2a237c2f5343aab2fb668337c2bc4
  /core/assets/locales
  /core/assets/cache/
 diff --git a/android/build.gradle b/android/build.gradle
-index c6349e291620b214ee740f156cd9b0514387125b..13e9a69de55f1ceb51409c317b9b1c5db56b86b3 100644
+index aa9745eac9c9ef3d75d9f870466a25a7447e928e..13e9a69de55f1ceb51409c317b9b1c5db56b86b3 100644
 --- a/android/build.gradle
 +++ b/android/build.gradle
-@@ -1,45 +1,23 @@
+@@ -1,49 +1,24 @@
 -buildscript{
 -    repositories{
 -        mavenLocal()
@@ -102,9 +102,13 @@ index c6349e291620b214ee740f156cd9b0514387125b..13e9a69de55f1ceb51409c317b9b1c5d
 -            assets.srcDirs = ['assets', 'src/main/assets', '../core/assets/']
 +            assets.srcDirs = ['../core/assets/', '../../assets/']
              jniLibs.srcDirs = ['libs']
+-            if(localArc){
+-                jniLibs.srcDirs += ['../../Arc/natives/natives-android/libs', '../../Arc/natives/natives-freetype-android/libs']
+-            }
          }
  
-@@ -51,23 +29,22 @@ android{
+         androidTest.setRoot('tests')
+@@ -54,23 +29,22 @@ android{
      }
  
      defaultConfig{
@@ -135,7 +139,7 @@ index c6349e291620b214ee740f156cd9b0514387125b..13e9a69de55f1ceb51409c317b9b1c5d
      }
  
      compileOptions{
-@@ -80,10 +57,10 @@ android{
+@@ -83,10 +57,10 @@ android{
      signingConfigs{
          release{
              if(project.hasProperty("RELEASE_STORE_FILE")){
@@ -150,7 +154,7 @@ index c6349e291620b214ee740f156cd9b0514387125b..13e9a69de55f1ceb51409c317b9b1c5d
              }else if(System.getenv("CI") == "true"){
                  storeFile = file("../../bekeystore.jks")
                  storePassword = System.getenv("keystore_password")
-@@ -96,7 +73,7 @@ android{
+@@ -99,7 +73,7 @@ android{
      }
  
      buildTypes{
@@ -159,7 +163,7 @@ index c6349e291620b214ee740f156cd9b0514387125b..13e9a69de55f1ceb51409c317b9b1c5d
              //TODO without these lines (r8 enabled), Mindustry crashes with missing default interface method errors.
              //WHY THE HELL ARE DEFAULT INTERFACES NOT BEING DESUGARED? WHY DID UPDATING AGP MAKE THIS HAPPEN?
              //When I ENABLE shrinking, r8 goes and REMOVES ALL DEFAULT INTERFACE CLASSES, which breaks mods. Why?
-@@ -104,13 +81,8 @@ android{
+@@ -107,13 +81,8 @@ android{
              minifyEnabled = true
              shrinkResources = true
              proguardFiles("proguard-rules.pro")
@@ -175,14 +179,16 @@ index c6349e291620b214ee740f156cd9b0514387125b..13e9a69de55f1ceb51409c317b9b1c5d
              }
          }
      }
-@@ -121,38 +93,31 @@ dependencies{
+@@ -124,42 +93,31 @@ dependencies{
  
      implementation arcModule("backends:backend-android")
      implementation 'com.jakewharton.android.repackaged:dalvik-dx:9.0.0_r3'
 +    implementation 'androidx.core:core:1.16.0'
  
--    natives "com.github.Anuken.Arc:natives-android:$arcHash"
--    natives "com.github.Anuken.Arc:natives-freetype-android:$arcHash"
+-    if(!localArc){
+-        natives "com.github.Anuken.Arc:natives-android:$arcHash"
+-        natives "com.github.Anuken.Arc:natives-freetype-android:$arcHash"
+-    }
 -
 -    def version, highestVersion
 -    new File((String)findSdkDir(), "/platforms").eachFileMatch ~/android-\d+/, {
@@ -197,11 +203,13 @@ index c6349e291620b214ee740f156cd9b0514387125b..13e9a69de55f1ceb51409c317b9b1c5d
  }
  
 -task copyAndroidNatives(){
--    configurations.natives.files.each{ jar ->
--        copy{
--            from zipTree(jar)
--            into file("libs/")
--            include "**"
+-    if(!localArc){
+-        configurations.natives.files.each{ jar ->
+-            copy{
+-                from zipTree(jar)
+-                into file("libs/")
+-                include "**"
+-            }
 -        }
 -    }
 +tasks.register('copyAndroidNatives', Copy){
@@ -1022,18 +1030,18 @@ index ae9bb676da0e9270628d06a2d126e238645646f0..7c93493b8a786c0e5fcb5051a0fd98bf
 +}
 \ No newline at end of file
 diff --git a/gradle.properties b/gradle.properties
-index 259a92e70478db390169981a37aad75866940d59..0e70e4c22ff518841c3b591170ef25eab115c68b 100644
+index 781917255d8d5833663775f0945f22f8ff1912e1..4a61a04715907e94cbbb0e4cc39d51b0396afe1e 100644
 --- a/gradle.properties
 +++ b/gradle.properties
 @@ -26,4 +26,7 @@ org.gradle.caching=true
  org.gradle.internal.http.socketTimeout=100000
  org.gradle.internal.http.connectionTimeout=100000
  android.enableR8.fullMode=false
--archash=acfda45497
-+#archash=acfda45497
+-archash=b6f4958d92
++#archash=b6f4958d92
 +
 +#MDTX: Use "v{upstreamBuild}" by default
-+upstreamBuild=155.1
++upstreamBuild=155.2
 diff --git a/gradlew b/gradlew
 index 4f906e0c811fc9e230eb44819f509cd0627f2600..f3b75f3b0d4faeb4b1c8a02b5c47007e6efb7dcd 100755
 --- a/gradlew
@@ -1556,7 +1564,7 @@ index 24252a0271c0ca9d54d51ab52853eb3b8a89dfa4..7c1293746b6329d9904f237b94b14668
 -
 -dist.dependsOn classes
 diff --git a/settings.gradle b/settings.gradle
-index b18346f65206aa9ddce3857083b40ce0c4001f53..1f526ce26a1f12e125de9fe8887ae3557d831832 100644
+index f1856aef82bcae48d6424685836bf5581d803ab8..c12696a95e60431af9557bd09017e22aafe97f21 100644
 --- a/settings.gradle
 +++ b/settings.gradle
 @@ -1,8 +1,17 @@

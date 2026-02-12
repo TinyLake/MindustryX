@@ -122,7 +122,7 @@ index 74fb32ff56eec0fcf565cb7cf7aedf1335c978cc..39f29b027fe979cea410e52b2b8cd695
          public void draw(){
              float pad = 5f;
 diff --git a/core/src/mindustry/logic/LExecutor.java b/core/src/mindustry/logic/LExecutor.java
-index ed21ab623969810ad9abe21b978237a6fc2fe0bc..b0be48f97810eb2f0f84092a880cb70ce1391e5a 100644
+index c14123c77fe71bb166bd2b6ab8469d8ef32a1c81..70c4f082107ab036fa6391bca9be1dfcd6450434 100644
 --- a/core/src/mindustry/logic/LExecutor.java
 +++ b/core/src/mindustry/logic/LExecutor.java
 @@ -44,6 +44,9 @@ public class LExecutor{
@@ -143,7 +143,7 @@ index ed21ab623969810ad9abe21b978237a6fc2fe0bc..b0be48f97810eb2f0f84092a880cb70c
          for(int i = 0; i < vars.length; i++){
              vars[i].id = i;
          }
-@@ -565,6 +569,7 @@ public class LExecutor{
+@@ -564,6 +568,7 @@ public class LExecutor{
          public void run(LExecutor exec){
              Object obj = target.obj();
              if(obj instanceof Building b && (exec.privileged || (exec.build != null && exec.build.validLink(b)))){
@@ -151,7 +151,7 @@ index ed21ab623969810ad9abe21b978237a6fc2fe0bc..b0be48f97810eb2f0f84092a880cb70c
  
                  if(type == LAccess.enabled){
                      if(p1.bool()){
-@@ -1301,7 +1306,7 @@ public class LExecutor{
+@@ -1300,7 +1305,7 @@ public class LExecutor{
          @Override
          public void run(LExecutor exec){
              if(headless) return;
