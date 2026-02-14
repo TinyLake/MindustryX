@@ -21,9 +21,9 @@ way-zer <himc.wicp@gmail.com> on 2024/6/9
  ios/build.gradle                              |   2 +-
  server/build.gradle                           |  44 +--
  settings.gradle                               |  11 +-
- tools/build.gradle                            |  86 +++--
+ tools/build.gradle                            |  82 +++--
  tools/src/mindustry/tools/Generators.java     |   2 +-
- 17 files changed, 446 insertions(+), 729 deletions(-)
+ 17 files changed, 446 insertions(+), 725 deletions(-)
  create mode 100644 annotations/src/main/java/com/github/bsideup/jabel/Desugar.java
  create mode 100644 annotations/src/main/resources/META-INF/services/javax.annotation.processing.Processor
  delete mode 100644 core/build.gradle
@@ -1576,7 +1576,7 @@ index d16da6d9d3e87d5dea9007176bd49cdfc499bb52..3df920741511290f54bcd11e95c87ba0
  def hasSdk = System.getenv("ANDROID_HOME") != null
  
 diff --git a/tools/build.gradle b/tools/build.gradle
-index 28b3842033774d6c528eaef5d1c9ccc3eed96dc2..1f5824191132413ca97092c24123181f68b08036 100644
+index 28b3842033774d6c528eaef5d1c9ccc3eed96dc2..2fe5bd8ef6c93ae25262a88814e79ba43584abba 100644
 --- a/tools/build.gradle
 +++ b/tools/build.gradle
 @@ -1,3 +1,13 @@
@@ -1638,13 +1638,11 @@ index 28b3842033774d6c528eaef5d1c9ccc3eed96dc2..1f5824191132413ca97092c24123181f
      doLast{
          for(def img : project.getProperty("images").split(",")){
              println(project.getProperty("startdir") + "/" + img)
-@@ -120,9 +130,14 @@ task tileImages(){
+@@ -120,7 +130,13 @@ task tileImages(){
      }
  }
  
 -task pack(dependsOn: [classes, configurations.runtimeClasspath]){
--
--    doLast{
 +tasks.register('doPack'){
 +    outputs.cacheIf{ true }
 +    dependsOn(classes)
@@ -1652,25 +1650,22 @@ index 28b3842033774d6c528eaef5d1c9ccc3eed96dc2..1f5824191132413ca97092c24123181f
 +    inputs.property("enableAA", enableAA)
 +    inputs.property("gameVersion", project.property("upstreamBuild"))
 +    outputs.dir("../core/assets-raw/packed")
-+    doFirst{
+ 
+     doLast{
          //cleanup old sprites
-         delete{
-             delete "../core/assets-raw/sprites_out/"
-@@ -133,11 +148,10 @@ task pack(dependsOn: [classes, configurations.runtimeClasspath]){
-             from "../core/assets-raw/sprites/"
-             into "../core/assets-raw/sprites_out/"
-         }
--
+@@ -137,19 +152,18 @@ task pack(dependsOn: [classes, configurations.runtimeClasspath]){
          //run generation task; generate all needed sprites
          file(genFolder).mkdirs()
--        javaexec{
+         javaexec{
 -            main = "mindustry.tools.ImagePacker"
-+        providers.javaexec{
 +            mainClass = "mindustry.tools.ImagePacker"
              classpath = sourceSets.main.runtimeClasspath
              workingDir = genFolder
++            standardOutput = System.out
++            errorOutput = System.err
          }
-@@ -146,10 +160,7 @@ task pack(dependsOn: [classes, configurations.runtimeClasspath]){
+ 
+         copy{
              from "../core/assets-raw/sprites_out/ui/icons"
              into "../core/assets-raw/sprites_out/ui/"
          }
@@ -1682,7 +1677,7 @@ index 28b3842033774d6c528eaef5d1c9ccc3eed96dc2..1f5824191132413ca97092c24123181f
  
          if(enableAA){
              ExecutorService executor = Executors.newFixedThreadPool(OS.cores)
-@@ -172,23 +183,27 @@ task pack(dependsOn: [classes, configurations.runtimeClasspath]){
+@@ -172,23 +186,27 @@ task pack(dependsOn: [classes, configurations.runtimeClasspath]){
          println("\n\nPacking normal 4096 sprites...\n\n")
  
          //pack normal sprites
@@ -1720,7 +1715,7 @@ index 28b3842033774d6c528eaef5d1c9ccc3eed96dc2..1f5824191132413ca97092c24123181f
      finalizedBy 'antialiasGen'
  
      mainClass = "mindustry.tools.ImagePacker"
-@@ -197,7 +212,8 @@ task genSprites(dependsOn: classes, type: JavaExec){
+@@ -197,7 +215,8 @@ task genSprites(dependsOn: classes, type: JavaExec){
      workingDir = genFolder
  }
  
@@ -1730,7 +1725,7 @@ index 28b3842033774d6c528eaef5d1c9ccc3eed96dc2..1f5824191132413ca97092c24123181f
      /* icon font pipeline:
       1. take set of pre-defined icons and SVGs
       2. use Fontello API to get a font with these
-@@ -232,30 +248,32 @@ task fontgen(dependsOn: classes, type: JavaExec){
+@@ -232,30 +251,32 @@ task fontgen(dependsOn: classes, type: JavaExec){
          //TODO this is broken
  
          Log.info(OS.exec("fontforge", "-script",
@@ -1769,7 +1764,7 @@ index 28b3842033774d6c528eaef5d1c9ccc3eed96dc2..1f5824191132413ca97092c24123181f
      doLast{
          def uniEscape = { String string ->
              StringBuilder outBuffer = new StringBuilder()
-@@ -263,12 +281,12 @@ task updateBundles{
+@@ -263,12 +284,12 @@ task updateBundles{
              for(int i = 0; i < len; i++){
                  char ch = string.charAt(i)
                  if((ch > 61) && (ch < 127)){
