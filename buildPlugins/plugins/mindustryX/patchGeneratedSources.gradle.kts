@@ -68,7 +68,7 @@ tasks {
         dependsOn("kaptKotlin")
         workingDir = kaptGenDir.get().asFile
         environment("GIT_DIR", "NOT_GIT")
-        commandLine = listOf("git", "apply", rootDir.resolve("../patches/generated.patch").absolutePath)
+        commandLine = listOf("git", "apply", "--ignore-space-change", "--ignore-whitespace", rootDir.resolve("../patches/generated.patch").absolutePath)
     }
 
     afterEvaluate {
