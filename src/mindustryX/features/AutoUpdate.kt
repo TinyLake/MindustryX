@@ -34,7 +34,7 @@ object AutoUpdate {
         val isRelease get() = repo == VarsX.repo && !preRelease
 
         fun matchCurrent(): Boolean {
-            return isRelease || (preRelease && VarsX.version.contains(".B"))
+            return if (currentIsRelease) isRelease else preRelease
         }
 
         fun findAsset(): Asset? {
@@ -52,6 +52,7 @@ object AutoUpdate {
     }
 
     val active get() = !VarsX.devVersion
+    val currentIsRelease get() = VarsX.version.contains(".X")
 
     var versions = emptyList<Release>()
     var latest: Release? = null
