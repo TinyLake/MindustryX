@@ -30,7 +30,7 @@ Subject: [PATCH] FR: ARC setBars
  23 files changed, 129 insertions(+), 39 deletions(-)
 
 diff --git a/core/src/mindustry/entities/abilities/ShieldArcAbility.java b/core/src/mindustry/entities/abilities/ShieldArcAbility.java
-index a4917590f773b2dc47fa2162dd9d97ee554ef7cb..be14295c259557726a1f95a0d6d63cfc0fe689cd 100644
+index 36c61c5c641f197f6f13fcab6e5cc0da3e7181a4..b2c0fe2c649602c9d46fff7d3fdd8ac029bde4e8 100644
 --- a/core/src/mindustry/entities/abilities/ShieldArcAbility.java
 +++ b/core/src/mindustry/entities/abilities/ShieldArcAbility.java
 @@ -14,6 +14,7 @@ import mindustry.entities.*;
@@ -41,7 +41,7 @@ index a4917590f773b2dc47fa2162dd9d97ee554ef7cb..be14295c259557726a1f95a0d6d63cfc
  
  public class ShieldArcAbility extends Ability{
  
-@@ -227,6 +228,6 @@ public class ShieldArcAbility extends Ability{
+@@ -229,6 +230,6 @@ public class ShieldArcAbility extends Ability{
  
      @Override
      public void displayBars(Unit unit, Table bars){

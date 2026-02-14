@@ -18,10 +18,10 @@ way-zer <himc.wicp@gmail.com> on 2024/4/27 at 18:57
  4 files changed, 4 insertions(+), 7 deletions(-)
 
 diff --git a/build.gradle b/build.gradle
-index 2862e80d1ac6b43151bbaaf74c98c9fc2558e56b..11edc43871e7070b0c1c945cf0865067949015b1 100644
+index 2ac8a33e399ef97e797d4f48a1ac654a2041ba23..07adf20b034be30e1525a93943d0ccedac03784a 100644
 --- a/build.gradle
 +++ b/build.gradle
-@@ -177,12 +177,6 @@ project(":core"){
+@@ -176,12 +176,6 @@ project(":core"){
          destinationDir = layout.buildDirectory.dir("javadoc").get().asFile
      }
  
@@ -47,7 +47,7 @@ index 712c4750377c079ec77bfea24bd889db58090b98..441b4366206a21f8a5eedc433dd55b00
  sourceSets.main {
      java.setSrcDirs(listOf("src/", "../../src/", layout.buildDirectory.dir("/generated/sources/annotationProcessor/java/main")))
 diff --git a/gradle.properties b/gradle.properties
-index 4a61a04715907e94cbbb0e4cc39d51b0396afe1e..9103bd2120716662258274c91510359dde9a57d4 100644
+index a2e7a79636c7626f19fde6b1c2f7b638b00fe4ec..01ee21228905887584a04b78e6e29816aee5e0e7 100644
 --- a/gradle.properties
 +++ b/gradle.properties
 @@ -18,7 +18,7 @@ kapt.use.worker.api=true
@@ -60,7 +60,7 @@ index 4a61a04715907e94cbbb0e4cc39d51b0396afe1e..9103bd2120716662258274c91510359d
  android.useAndroidX=true
  org.gradle.caching=true
 diff --git a/settings.gradle b/settings.gradle
-index c12696a95e60431af9557bd09017e22aafe97f21..e670fac6f02ed622c720ca1549960c48fa21f506 100644
+index 3df920741511290f54bcd11e95c87ba0b063af71..ef02e521e934bf4446a8382325af17af9f2b4e3b 100644
 --- a/settings.gradle
 +++ b/settings.gradle
 @@ -9,6 +9,8 @@ if(JavaVersion.current().ordinal() < JavaVersion.VERSION_17.ordinal()){

@@ -7,23 +7,23 @@ clear and replce jabel(Support record)
 way-zer <himc.wicp@gmail.com> on 2024/6/9
 ---
  .gitignore                                    |   2 +-
- android/build.gradle                          | 120 +++----
+ android/build.gradle                          | 124 +++----
  android/proguard-rules.pro                    |   4 +
  .../com/github/bsideup/jabel/Desugar.java     |  13 +
  .../javax.annotation.processing.Processor     |   6 +
- build.gradle                                  | 319 +++---------------
+ build.gradle                                  | 312 +++---------------
  core/build.gradle                             |   2 -
  core/build.gradle.kts                         |  67 ++++
  desktop/build.gradle                          | 174 +---------
  gradle.properties                             |   5 +-
  gradlew                                       | 284 ++++++++++------
- gradlew.bat                                   |  37 +-
+ gradlew.bat                                   |  37 ++-
  ios/build.gradle                              |   2 +-
  server/build.gradle                           |  44 +--
  settings.gradle                               |  11 +-
- tools/build.gradle                            |  91 ++---
+ tools/build.gradle                            |  86 +++--
  tools/src/mindustry/tools/Generators.java     |   2 +-
- 17 files changed, 453 insertions(+), 730 deletions(-)
+ 17 files changed, 446 insertions(+), 729 deletions(-)
  create mode 100644 annotations/src/main/java/com/github/bsideup/jabel/Desugar.java
  create mode 100644 annotations/src/main/resources/META-INF/services/javax.annotation.processing.Processor
  delete mode 100644 core/build.gradle
@@ -50,10 +50,10 @@ index 5e3b7987ef4f776a0bc35dde58fb2c74f4acdb07..b5b2a237c2f5343aab2fb668337c2bc4
  /core/assets/locales
  /core/assets/cache/
 diff --git a/android/build.gradle b/android/build.gradle
-index aa9745eac9c9ef3d75d9f870466a25a7447e928e..13e9a69de55f1ceb51409c317b9b1c5db56b86b3 100644
+index 64c4270c306a853b45db26def94287336c067d98..13e9a69de55f1ceb51409c317b9b1c5db56b86b3 100644
 --- a/android/build.gradle
 +++ b/android/build.gradle
-@@ -1,49 +1,24 @@
+@@ -1,51 +1,24 @@
 -buildscript{
 -    repositories{
 -        mavenLocal()
@@ -100,15 +100,18 @@ index aa9745eac9c9ef3d75d9f870466a25a7447e928e..13e9a69de55f1ceb51409c317b9b1c5d
 -            renderscript.srcDirs = ['src']
              res.srcDirs = ['res']
 -            assets.srcDirs = ['assets', 'src/main/assets', '../core/assets/']
-+            assets.srcDirs = ['../core/assets/', '../../assets/']
-             jniLibs.srcDirs = ['libs']
+-
 -            if(localArc){
 -                jniLibs.srcDirs += ['../../Arc/natives/natives-android/libs', '../../Arc/natives/natives-freetype-android/libs']
+-            }else{
+-                jniLibs.srcDirs = ['libs']
 -            }
++            assets.srcDirs = ['../core/assets/', '../../assets/']
++            jniLibs.srcDirs = ['libs']
          }
  
          androidTest.setRoot('tests')
-@@ -54,23 +29,22 @@ android{
+@@ -56,23 +29,22 @@ android{
      }
  
      defaultConfig{
@@ -139,7 +142,7 @@ index aa9745eac9c9ef3d75d9f870466a25a7447e928e..13e9a69de55f1ceb51409c317b9b1c5d
      }
  
      compileOptions{
-@@ -83,10 +57,10 @@ android{
+@@ -85,10 +57,10 @@ android{
      signingConfigs{
          release{
              if(project.hasProperty("RELEASE_STORE_FILE")){
@@ -154,7 +157,7 @@ index aa9745eac9c9ef3d75d9f870466a25a7447e928e..13e9a69de55f1ceb51409c317b9b1c5d
              }else if(System.getenv("CI") == "true"){
                  storeFile = file("../../bekeystore.jks")
                  storePassword = System.getenv("keystore_password")
-@@ -99,7 +73,7 @@ android{
+@@ -101,7 +73,7 @@ android{
      }
  
      buildTypes{
@@ -163,7 +166,7 @@ index aa9745eac9c9ef3d75d9f870466a25a7447e928e..13e9a69de55f1ceb51409c317b9b1c5d
              //TODO without these lines (r8 enabled), Mindustry crashes with missing default interface method errors.
              //WHY THE HELL ARE DEFAULT INTERFACES NOT BEING DESUGARED? WHY DID UPDATING AGP MAKE THIS HAPPEN?
              //When I ENABLE shrinking, r8 goes and REMOVES ALL DEFAULT INTERFACE CLASSES, which breaks mods. Why?
-@@ -107,13 +81,8 @@ android{
+@@ -109,13 +81,8 @@ android{
              minifyEnabled = true
              shrinkResources = true
              proguardFiles("proguard-rules.pro")
@@ -179,7 +182,7 @@ index aa9745eac9c9ef3d75d9f870466a25a7447e928e..13e9a69de55f1ceb51409c317b9b1c5d
              }
          }
      }
-@@ -124,42 +93,31 @@ dependencies{
+@@ -126,42 +93,31 @@ dependencies{
  
      implementation arcModule("backends:backend-android")
      implementation 'com.jakewharton.android.repackaged:dalvik-dx:9.0.0_r3'
@@ -290,18 +293,18 @@ index 0000000000000000000000000000000000000000..181b87c1d5f3755f16a01c0528d0a89f
 +mindustry.annotations.misc.LogicStatementProcessor
 +mindustry.annotations.remote.RemoteProcess
 diff --git a/build.gradle b/build.gradle
-index 9d7c1011f260edd4a4dc05ffc19a82ccf7942ada..2862e80d1ac6b43151bbaaf74c98c9fc2558e56b 100644
+index 6a84a637608d78e0486b3cf6fa5bcfc6a354f891..2ac8a33e399ef97e797d4f48a1ac654a2041ba23 100644
 --- a/build.gradle
 +++ b/build.gradle
-@@ -1,30 +1,16 @@
+@@ -1,30 +1,15 @@
 -import java.text.SimpleDateFormat
 -
  buildscript{
++    def arcHash = findProperty("archash") ?: "v${property("upstreamBuild")}"
      ext{
 -        arcHash = property("archash")
-+        arcHash = findProperty("archash") ?: "v${property("upstreamBuild")}"
- 
-         localArc = !project.hasProperty("release") && new File(rootDir.parent, 'Arc').exists() && !project.hasProperty("noLocalArc")
+-
+         localArc = new File(rootDir.parent, 'Arc').exists() && !project.hasProperty("noLocalArc")
  
          arcModule = { String name ->
 +            def useLocalArc = localArc
@@ -327,7 +330,7 @@ index 9d7c1011f260edd4a4dc05ffc19a82ccf7942ada..2862e80d1ac6b43151bbaaf74c98c9fc
  }
  
  plugins{
-@@ -50,185 +36,43 @@ allprojects{
+@@ -50,185 +35,43 @@ allprojects{
              return new Properties().with{p -> p.load(file('../core/assets/version.properties').newReader()); return p }
          }
  
@@ -532,7 +535,7 @@ index 9d7c1011f260edd4a4dc05ffc19a82ccf7942ada..2862e80d1ac6b43151bbaaf74c98c9fc
          options{
              addStringOption('Xdoclint:none', '-quiet')
              addStringOption('-release', '17')
-@@ -237,11 +81,10 @@ configure(subprojects - project(":annotations") - project(":tests")){
+@@ -237,11 +80,10 @@ configure(subprojects - project(":annotations") - project(":tests")){
      }
  }
  
@@ -545,7 +548,7 @@ index 9d7c1011f260edd4a4dc05ffc19a82ccf7942ada..2862e80d1ac6b43151bbaaf74c98c9fc
      dependencies{
          implementation project(":core")
          implementation arcModule("extensions:profiling")
-@@ -249,8 +92,6 @@ project(":desktop"){
+@@ -249,8 +91,6 @@ project(":desktop"){
          implementation arcModule("natives:natives-desktop")
          implementation arcModule("natives:natives-freetype-desktop")
  
@@ -553,8 +556,8 @@ index 9d7c1011f260edd4a4dc05ffc19a82ccf7942ada..2862e80d1ac6b43151bbaaf74c98c9fc
 -
          implementation "com.github.Anuken:steamworks4j:$steamworksVersion"
  
-         implementation arcModule("backends:backend-sdl3")
-@@ -270,17 +111,7 @@ project(":core"){
+         implementation arcModule("backends:backend-sdl")
+@@ -270,17 +110,7 @@ project(":core"){
          }
      }
  
@@ -573,7 +576,7 @@ index 9d7c1011f260edd4a4dc05ffc19a82ccf7942ada..2862e80d1ac6b43151bbaaf74c98c9fc
          doLast{
              def props = loadVersionProps()
              def androidVersion = props['androidBuildCode'].toInteger() - 2
-@@ -288,9 +119,9 @@ project(":core"){
+@@ -288,9 +118,9 @@ project(":core"){
              def notice = "[This is a truncated changelog, see Github for full notes]"
              def maxLength = 460
  
@@ -585,7 +588,7 @@ index 9d7c1011f260edd4a4dc05ffc19a82ccf7942ada..2862e80d1ac6b43151bbaaf74c98c9fc
                  if(result.length() + line.length() + 1 < maxLength){
                      result += line + "\n"
                  }
-@@ -304,19 +135,7 @@ project(":core"){
+@@ -304,19 +134,7 @@ project(":core"){
          }
      }
  
@@ -606,7 +609,7 @@ index 9d7c1011f260edd4a4dc05ffc19a82ccf7942ada..2862e80d1ac6b43151bbaaf74c98c9fc
          archiveClassifier = 'music'
          from files("assets"){
              include "music/*", "sounds/*"
-@@ -324,8 +143,6 @@ project(":core"){
+@@ -324,8 +142,6 @@ project(":core"){
      }
  
      dependencies{
@@ -615,7 +618,7 @@ index 9d7c1011f260edd4a4dc05ffc19a82ccf7942ada..2862e80d1ac6b43151bbaaf74c98c9fc
          api "at.yawk.lz4:lz4-java:1.10.2"
          api arcModule("arc-core")
          api arcModule("extensions:flabel")
-@@ -334,34 +151,30 @@ project(":core"){
+@@ -334,34 +150,30 @@ project(":core"){
          api arcModule("extensions:fx")
          api arcModule("extensions:arcnet")
          api "com.github.Anuken:rhino:$rhinoVersion"
@@ -666,7 +669,7 @@ index 9d7c1011f260edd4a4dc05ffc19a82ccf7942ada..2862e80d1ac6b43151bbaaf74c98c9fc
      }
  
      gradle.taskGraph.whenReady{
-@@ -398,12 +211,6 @@ project(":tests"){
+@@ -398,12 +210,6 @@ project(":tests"){
          testRuntimeOnly "org.junit.jupiter:junit-jupiter-engine:5.7.1"
      }
  
@@ -679,21 +682,7 @@ index 9d7c1011f260edd4a4dc05ffc19a82ccf7942ada..2862e80d1ac6b43151bbaaf74c98c9fc
      test{
          //fork every test so mods don't interact with each other
          forkEvery = 1
-@@ -420,14 +227,19 @@ project(":tools"){
-     apply plugin: "java"
- 
-     dependencies{
--        implementation project(":core")
-+        //MDTX: use upstream build for tools, avoid classpath change
-+        implementation("com.github.Anuken.Mindustry:core:v${property("upstreamBuild")}"){
-+            transitive = false
-+        }
-+        implementation arcModule("arc-core")
-+        implementation arcModule(":extensions:g3d")
-+        implementation arcModule(":extensions:packer")
- 
-         implementation arcModule("natives:natives-desktop")
-         implementation arcModule("natives:natives-freetype-desktop")
+@@ -427,7 +233,6 @@ project(":tools"){
          implementation arcModule("backends:backend-headless")
  
          implementation("com.google.guava:guava:33.3.1-jre")
@@ -701,7 +690,7 @@ index 9d7c1011f260edd4a4dc05ffc19a82ccf7942ada..2862e80d1ac6b43151bbaaf74c98c9fc
      }
  }
  
-@@ -450,43 +262,16 @@ configure([":core", ":server"].collect{project(it)}){
+@@ -450,43 +255,16 @@ configure([":core", ":server"].collect{project(it)}){
          publications{
              maven(MavenPublication){
                  from components.java
@@ -831,7 +820,7 @@ index 0000000000000000000000000000000000000000..712c4750377c079ec77bfea24bd889db
 +}
 \ No newline at end of file
 diff --git a/desktop/build.gradle b/desktop/build.gradle
-index ae9bb676da0e9270628d06a2d126e238645646f0..7c93493b8a786c0e5fcb5051a0fd98bfdbd99fd4 100644
+index d30d59c78a6f6d8f4f5b02e1c84538646acf2c80..bbab133446e5eaed169ff0ad31ddf7b83aec7a1f 100644
 --- a/desktop/build.gradle
 +++ b/desktop/build.gradle
 @@ -3,15 +3,10 @@ sourceSets.main.java.srcDirs = ["src/"]
@@ -861,9 +850,9 @@ index ae9bb676da0e9270628d06a2d126e238645646f0..7c93493b8a786c0e5fcb5051a0fd98bf
      exclude("config/**")
      exclude("**hs_err**.log")
      duplicatesStrategy = DuplicatesStrategy.EXCLUDE
-@@ -63,165 +58,4 @@ tasks.register('dist', Jar){
-         //note: this doesn't do anything when launched from the bundled JVM
+@@ -64,165 +59,4 @@ tasks.register('dist', Jar){
          attributes 'Enable-Native-Access': 'ALL-UNNAMED'
+         attributes 'Multi-Release': 'true'
      }
 -}
 -
@@ -1030,18 +1019,18 @@ index ae9bb676da0e9270628d06a2d126e238645646f0..7c93493b8a786c0e5fcb5051a0fd98bf
 +}
 \ No newline at end of file
 diff --git a/gradle.properties b/gradle.properties
-index 781917255d8d5833663775f0945f22f8ff1912e1..4a61a04715907e94cbbb0e4cc39d51b0396afe1e 100644
+index 13b0cd97269bdad351b341093c6443cb4dfe1226..a2e7a79636c7626f19fde6b1c2f7b638b00fe4ec 100644
 --- a/gradle.properties
 +++ b/gradle.properties
 @@ -26,4 +26,7 @@ org.gradle.caching=true
  org.gradle.internal.http.socketTimeout=100000
  org.gradle.internal.http.connectionTimeout=100000
  android.enableR8.fullMode=false
--archash=b6f4958d92
-+#archash=b6f4958d92
+-archash=f42837db92
++#archash=f42837db92
 +
 +#MDTX: Use "v{upstreamBuild}" by default
-+upstreamBuild=155.2
++upstreamBuild=155.3
 diff --git a/gradlew b/gradlew
 index 4f906e0c811fc9e230eb44819f509cd0627f2600..f3b75f3b0d4faeb4b1c8a02b5c47007e6efb7dcd 100755
 --- a/gradlew
@@ -1564,7 +1553,7 @@ index 24252a0271c0ca9d54d51ab52853eb3b8a89dfa4..7c1293746b6329d9904f237b94b14668
 -
 -dist.dependsOn classes
 diff --git a/settings.gradle b/settings.gradle
-index f1856aef82bcae48d6424685836bf5581d803ab8..c12696a95e60431af9557bd09017e22aafe97f21 100644
+index d16da6d9d3e87d5dea9007176bd49cdfc499bb52..3df920741511290f54bcd11e95c87ba0b063af71 100644
 --- a/settings.gradle
 +++ b/settings.gradle
 @@ -1,8 +1,17 @@
@@ -1587,7 +1576,7 @@ index f1856aef82bcae48d6424685836bf5581d803ab8..c12696a95e60431af9557bd09017e22a
  def hasSdk = System.getenv("ANDROID_HOME") != null
  
 diff --git a/tools/build.gradle b/tools/build.gradle
-index 28b3842033774d6c528eaef5d1c9ccc3eed96dc2..fedb4b0b9da61d14a30643877e84a52a62cf0b0c 100644
+index 28b3842033774d6c528eaef5d1c9ccc3eed96dc2..1f5824191132413ca97092c24123181f68b08036 100644
 --- a/tools/build.gradle
 +++ b/tools/build.gradle
 @@ -1,3 +1,13 @@
@@ -1649,23 +1638,25 @@ index 28b3842033774d6c528eaef5d1c9ccc3eed96dc2..fedb4b0b9da61d14a30643877e84a52a
      doLast{
          for(def img : project.getProperty("images").split(",")){
              println(project.getProperty("startdir") + "/" + img)
-@@ -120,9 +130,12 @@ task tileImages(){
+@@ -120,9 +130,14 @@ task tileImages(){
      }
  }
  
 -task pack(dependsOn: [classes, configurations.runtimeClasspath]){
 -
 -    doLast{
-+tasks.register('doPack', JavaExec){
++tasks.register('doPack'){
 +    outputs.cacheIf{ true }
 +    dependsOn(classes)
 +    inputs.dir("../core/assets-raw/sprites/")
++    inputs.property("enableAA", enableAA)
++    inputs.property("gameVersion", project.property("upstreamBuild"))
 +    outputs.dir("../core/assets-raw/packed")
 +    doFirst{
          //cleanup old sprites
          delete{
              delete "../core/assets-raw/sprites_out/"
-@@ -133,23 +146,18 @@ task pack(dependsOn: [classes, configurations.runtimeClasspath]){
+@@ -133,11 +148,10 @@ task pack(dependsOn: [classes, configurations.runtimeClasspath]){
              from "../core/assets-raw/sprites/"
              into "../core/assets-raw/sprites_out/"
          }
@@ -1674,16 +1665,12 @@ index 28b3842033774d6c528eaef5d1c9ccc3eed96dc2..fedb4b0b9da61d14a30643877e84a52a
          file(genFolder).mkdirs()
 -        javaexec{
 -            main = "mindustry.tools.ImagePacker"
--            classpath = sourceSets.main.runtimeClasspath
--            workingDir = genFolder
--        }
--
-+    }
-+    mainClass = "mindustry.tools.ImagePacker"
-+    classpath = sourceSets.main.runtimeClasspath
-+    workingDir = genFolder
-+    doLast{
-         copy{
++        providers.javaexec{
++            mainClass = "mindustry.tools.ImagePacker"
+             classpath = sourceSets.main.runtimeClasspath
+             workingDir = genFolder
+         }
+@@ -146,10 +160,7 @@ task pack(dependsOn: [classes, configurations.runtimeClasspath]){
              from "../core/assets-raw/sprites_out/ui/icons"
              into "../core/assets-raw/sprites_out/ui/"
          }
@@ -1695,7 +1682,7 @@ index 28b3842033774d6c528eaef5d1c9ccc3eed96dc2..fedb4b0b9da61d14a30643877e84a52a
  
          if(enableAA){
              ExecutorService executor = Executors.newFixedThreadPool(OS.cores)
-@@ -172,23 +180,27 @@ task pack(dependsOn: [classes, configurations.runtimeClasspath]){
+@@ -172,23 +183,27 @@ task pack(dependsOn: [classes, configurations.runtimeClasspath]){
          println("\n\nPacking normal 4096 sprites...\n\n")
  
          //pack normal sprites
@@ -1733,7 +1720,7 @@ index 28b3842033774d6c528eaef5d1c9ccc3eed96dc2..fedb4b0b9da61d14a30643877e84a52a
      finalizedBy 'antialiasGen'
  
      mainClass = "mindustry.tools.ImagePacker"
-@@ -197,7 +209,8 @@ task genSprites(dependsOn: classes, type: JavaExec){
+@@ -197,7 +212,8 @@ task genSprites(dependsOn: classes, type: JavaExec){
      workingDir = genFolder
  }
  
@@ -1743,7 +1730,7 @@ index 28b3842033774d6c528eaef5d1c9ccc3eed96dc2..fedb4b0b9da61d14a30643877e84a52a
      /* icon font pipeline:
       1. take set of pre-defined icons and SVGs
       2. use Fontello API to get a font with these
-@@ -232,30 +245,32 @@ task fontgen(dependsOn: classes, type: JavaExec){
+@@ -232,30 +248,32 @@ task fontgen(dependsOn: classes, type: JavaExec){
          //TODO this is broken
  
          Log.info(OS.exec("fontforge", "-script",
@@ -1782,7 +1769,7 @@ index 28b3842033774d6c528eaef5d1c9ccc3eed96dc2..fedb4b0b9da61d14a30643877e84a52a
      doLast{
          def uniEscape = { String string ->
              StringBuilder outBuffer = new StringBuilder()
-@@ -263,12 +278,12 @@ task updateBundles{
+@@ -263,12 +281,12 @@ task updateBundles{
              for(int i = 0; i < len; i++){
                  char ch = string.charAt(i)
                  if((ch > 61) && (ch < 127)){
