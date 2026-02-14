@@ -14,7 +14,8 @@ Content-Transfer-Encoding: 8bit
  .../distribution/BufferedItemBridge.java      | 48 ++++++++++++++++++-
  .../world/blocks/distribution/ItemBridge.java | 15 ++++++
  .../world/blocks/distribution/Junction.java   | 30 ++++++++++++
- 5 files changed, 112 insertions(+), 1 deletion(-)
+ .../world/blocks/distribution/Router.java     | 37 ++++++++++++++
+ 6 files changed, 149 insertions(+), 1 deletion(-)
 
 diff --git a/core/src/mindustry/world/DirectionalItemBuffer.java b/core/src/mindustry/world/DirectionalItemBuffer.java
 index f71aa74671a3ef59579ff3e1fde127406a1401ea..d15edc5db9297ae74cfa6f91e53a60b1cf8b8009 100644
@@ -221,3 +222,71 @@ index 024695a06bdb82374e705ca24f5576ea50a33883..01fa8c384ac1f4005dc0b2a9c3f801f7
          @Override
          public byte version(){
              return 1;
+diff --git a/core/src/mindustry/world/blocks/distribution/Router.java b/core/src/mindustry/world/blocks/distribution/Router.java
+index cbe6d64d52f66d38be69a897a9a1a2f5b928e631..45b50a6504a69ebe787a79397df39ee3846701ae 100644
+--- a/core/src/mindustry/world/blocks/distribution/Router.java
++++ b/core/src/mindustry/world/blocks/distribution/Router.java
+@@ -1,13 +1,17 @@
+ package mindustry.world.blocks.distribution;
+ 
++import arc.graphics.*;
++import arc.graphics.g2d.*;
+ import arc.math.*;
+ import arc.util.*;
+ import mindustry.content.*;
+ import mindustry.gen.*;
++import mindustry.graphics.*;
+ import mindustry.type.*;
+ import mindustry.world.*;
+ import mindustry.world.blocks.*;
+ import mindustry.world.meta.*;
++import mindustryX.features.*;
+ 
+ public class Router extends Block{
+     public float speed = 8f;
+@@ -30,6 +34,8 @@ public class Router extends Block{
+         public float time;
+         public @Nullable BlockUnitc unit;
+ 
++        public Tile lastTarget;
++
+         @Override
+         public Unit unit(){
+             if(unit == null){
+@@ -125,5 +131,36 @@ public class Router extends Block{
+             }
+             return null;
+         }
++
++        @Override
++        public void draw(){
++            super.draw();
++
++            if(RenderExt.hiddenItemTransparency > 0){
++                Building target = lastItem == null ? null : getTileTarget(lastItem, lastInput, false);
++                if(target != null) lastTarget = target.tile;
++
++                if(lastItem != null){
++                    float itemSize = 4f;
++                    float itemX = x, itemY = y;
++                    if(lastInput != null && lastTarget != null){
++                        float progress = Interp.pow2.apply(Mathf.clamp(time));
++
++                        Tile targetEdge = progress < 0.5f ? Edges.getFacingEdge(lastInput, tile) : Edges.getFacingEdge(lastTarget, tile);
++                        float targetProgress = Math.abs(0.5f - progress);
++                        itemX = x + (targetEdge.worldx() - x) * targetProgress;
++                        itemY = y + (targetEdge.worldy() - y) * targetProgress;
++                    }
++
++                    float z = Draw.z();
++                    Draw.z(Layer.power + 0.1f);
++                    // reflow hint
++                    Draw.color(lastInput != null && lastInput == lastTarget ? Pal.remove : Color.white, RenderExt.hiddenItemTransparency / 100f);
++                    Draw.rect(lastItem.fullIcon, itemX, itemY, itemSize, itemSize);
++                    Draw.reset();
++                    Draw.z(z);
++                }
++            }
++        }
+     }
+ }

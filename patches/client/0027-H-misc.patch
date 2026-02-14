@@ -486,10 +486,10 @@ index e24a3368d190f64fdaf002130a76f4799834c9a5..0811c4520865cff648084cbc743a1413
          public float progress;
          public float lastRadius = 0f;
 diff --git a/core/src/mindustry/world/blocks/distribution/Router.java b/core/src/mindustry/world/blocks/distribution/Router.java
-index cbe6d64d52f66d38be69a897a9a1a2f5b928e631..c5fe7f0080fea29764ebd94f576f1f98549e06a3 100644
+index 45b50a6504a69ebe787a79397df39ee3846701ae..6ee115c126247878ee0904764196759615134ffb 100644
 --- a/core/src/mindustry/world/blocks/distribution/Router.java
 +++ b/core/src/mindustry/world/blocks/distribution/Router.java
-@@ -41,7 +41,8 @@ public class Router extends Block{
+@@ -47,7 +47,8 @@ public class Router extends Block{
  
          @Override
          public boolean canControl(){
