@@ -4,25 +4,17 @@ Date: Fri, 24 May 2024 19:45:32 +0800
 Subject: [PATCH] FC(LogicExt) limitUpdate
 
 ---
- core/src/mindustry/entities/EntityGroup.java | 12 ++++++++++++
- 1 file changed, 12 insertions(+)
+ core/src/mindustry/entities/EntityGroup.java | 11 +++++++++++
+ 1 file changed, 11 insertions(+)
 
 diff --git a/core/src/mindustry/entities/EntityGroup.java b/core/src/mindustry/entities/EntityGroup.java
-index ea8ef0cdb8a30b54bb304543ea92dc99da44acb6..e251d6586a933556b3f8bf68c272f12410c2d13d 100644
+index 100337b3b1e99a85788803e4396ddd571cea0b33..b58756aa0d5c0f69fe5369a786d772316f70e7b4 100644
 --- a/core/src/mindustry/entities/EntityGroup.java
 +++ b/core/src/mindustry/entities/EntityGroup.java
-@@ -6,6 +6,7 @@ import arc.math.geom.*;
- import arc.struct.*;
- import arc.util.*;
- import mindustry.gen.*;
-+import mindustryX.features.*;
- 
- import java.util.*;
- 
-@@ -80,6 +81,17 @@ public class EntityGroup<T extends Entityc> implements Iterable<T>{
-     }
- 
-     public void update(){
+@@ -93,6 +93,17 @@ public class EntityGroup<T extends Entityc> implements Iterable<T>{
+             DebugUtil.traceEnd();
+             return;
+         }
 +        if(LogicExt.limitUpdate.get() > 0 && LogicExt.limitUpdateTimer != 0){
 +            Core.camera.bounds(viewport);
 +            viewport.grow(LogicExt.limitUpdate.get() * 2);

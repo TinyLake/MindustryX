@@ -1576,7 +1576,7 @@ index d16da6d9d3e87d5dea9007176bd49cdfc499bb52..3df920741511290f54bcd11e95c87ba0
  def hasSdk = System.getenv("ANDROID_HOME") != null
  
 diff --git a/tools/build.gradle b/tools/build.gradle
-index 28b3842033774d6c528eaef5d1c9ccc3eed96dc2..2fe5bd8ef6c93ae25262a88814e79ba43584abba 100644
+index 28b3842033774d6c528eaef5d1c9ccc3eed96dc2..e76f2594a54db837b0b4bb3c48bec944497bc374 100644
 --- a/tools/build.gradle
 +++ b/tools/build.gradle
 @@ -1,3 +1,13 @@
@@ -1653,7 +1653,7 @@ index 28b3842033774d6c528eaef5d1c9ccc3eed96dc2..2fe5bd8ef6c93ae25262a88814e79ba4
  
      doLast{
          //cleanup old sprites
-@@ -137,19 +152,18 @@ task pack(dependsOn: [classes, configurations.runtimeClasspath]){
+@@ -137,19 +153,18 @@ task pack(dependsOn: [classes, configurations.runtimeClasspath]){
          //run generation task; generate all needed sprites
          file(genFolder).mkdirs()
          javaexec{
@@ -1677,7 +1677,7 @@ index 28b3842033774d6c528eaef5d1c9ccc3eed96dc2..2fe5bd8ef6c93ae25262a88814e79ba4
  
          if(enableAA){
              ExecutorService executor = Executors.newFixedThreadPool(OS.cores)
-@@ -172,23 +186,27 @@ task pack(dependsOn: [classes, configurations.runtimeClasspath]){
+@@ -172,23 +187,27 @@ task pack(dependsOn: [classes, configurations.runtimeClasspath]){
          println("\n\nPacking normal 4096 sprites...\n\n")
  
          //pack normal sprites
@@ -1715,7 +1715,7 @@ index 28b3842033774d6c528eaef5d1c9ccc3eed96dc2..2fe5bd8ef6c93ae25262a88814e79ba4
      finalizedBy 'antialiasGen'
  
      mainClass = "mindustry.tools.ImagePacker"
-@@ -197,7 +215,8 @@ task genSprites(dependsOn: classes, type: JavaExec){
+@@ -197,7 +216,8 @@ task genSprites(dependsOn: classes, type: JavaExec){
      workingDir = genFolder
  }
  
@@ -1725,7 +1725,7 @@ index 28b3842033774d6c528eaef5d1c9ccc3eed96dc2..2fe5bd8ef6c93ae25262a88814e79ba4
      /* icon font pipeline:
       1. take set of pre-defined icons and SVGs
       2. use Fontello API to get a font with these
-@@ -232,30 +251,32 @@ task fontgen(dependsOn: classes, type: JavaExec){
+@@ -232,30 +252,32 @@ task fontgen(dependsOn: classes, type: JavaExec){
          //TODO this is broken
  
          Log.info(OS.exec("fontforge", "-script",
@@ -1764,7 +1764,7 @@ index 28b3842033774d6c528eaef5d1c9ccc3eed96dc2..2fe5bd8ef6c93ae25262a88814e79ba4
      doLast{
          def uniEscape = { String string ->
              StringBuilder outBuffer = new StringBuilder()
-@@ -263,12 +284,12 @@ task updateBundles{
+@@ -263,12 +285,12 @@ task updateBundles{
              for(int i = 0; i < len; i++){
                  char ch = string.charAt(i)
                  if((ch > 61) && (ch < 127)){

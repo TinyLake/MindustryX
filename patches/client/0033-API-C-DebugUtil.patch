@@ -9,10 +9,11 @@ Content-Transfer-Encoding: 8bit
 更多统计信息
 way-zer <himc.wicp@gmail.com> on 2024/7/21
 ---
- core/src/mindustry/ClientLauncher.java           | 2 +-
- core/src/mindustry/core/Logic.java               | 3 +++
- core/src/mindustry/ui/fragments/HudFragment.java | 5 +++++
- 3 files changed, 9 insertions(+), 1 deletion(-)
+ core/src/mindustry/ClientLauncher.java           |  2 +-
+ core/src/mindustry/core/Logic.java               |  3 +++
+ core/src/mindustry/entities/EntityGroup.java     | 13 +++++++++++++
+ core/src/mindustry/ui/fragments/HudFragment.java |  5 +++++
+ 4 files changed, 22 insertions(+), 1 deletion(-)
 
 diff --git a/core/src/mindustry/ClientLauncher.java b/core/src/mindustry/ClientLauncher.java
 index f4ed14ca5a2b5f3a8b2d01e0c7bbc383be740962..c3d0524f8e9760d1a59610f3ab505eaab6948b17 100644
@@ -55,6 +56,38 @@ index ebbda4bd45262dfa397312cceebcabb6934ecb3f..f305042ec6533da4fe2a3340f527f2a0
      }
  
      /** @return whether the wave timer is paused due to enemies */
+diff --git a/core/src/mindustry/entities/EntityGroup.java b/core/src/mindustry/entities/EntityGroup.java
+index ea8ef0cdb8a30b54bb304543ea92dc99da44acb6..100337b3b1e99a85788803e4396ddd571cea0b33 100644
+--- a/core/src/mindustry/entities/EntityGroup.java
++++ b/core/src/mindustry/entities/EntityGroup.java
+@@ -5,7 +5,9 @@ import arc.func.*;
+ import arc.math.geom.*;
+ import arc.struct.*;
+ import arc.util.*;
++import mindustry.*;
+ import mindustry.gen.*;
++import mindustryX.features.*;
+ 
+ import java.util.*;
+ 
+@@ -80,6 +82,17 @@ public class EntityGroup<T extends Entityc> implements Iterable<T>{
+     }
+ 
+     public void update(){
++        if(this == Groups.all && DebugUtil.traceUpdate){
++            for(index = 0; index < array.size; index++){
++                var e = array.items[index];
++                long start = System.nanoTime();
++                e.update();
++                long time = System.nanoTime() - start;
++                DebugUtil.logTrace("update", e, time);
++            }
++            DebugUtil.traceEnd();
++            return;
++        }
+         for(index = 0; index < array.size; index++){
+             array.items[index].update();
+         }
 diff --git a/core/src/mindustry/ui/fragments/HudFragment.java b/core/src/mindustry/ui/fragments/HudFragment.java
 index 9881c6f64868715f44f16d5cd874652827edf94d..d6c8321377b26ee05636c41588fdaa6a0787e97a 100644
 --- a/core/src/mindustry/ui/fragments/HudFragment.java
