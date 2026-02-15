@@ -74,8 +74,8 @@ object UIExtKt {
             })
         }
         Core.scene.add(table)
+        table.pack()
         table.update {
-            table.pack()
             if (table.width > Core.scene.width * 0.8) table.width = Core.scene.width * 0.8f
             if (table.height > Core.scene.height * 0.8) table.height = Core.scene.height * 0.8f
             table.setPosition(mouse.x, mouse.y, Align.center)
