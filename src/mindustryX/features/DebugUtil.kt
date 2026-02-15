@@ -93,8 +93,77 @@ object DebugUtil {
     }
 
     data class TraceSample(val type: String, val obj: Any?, val time: Long)
-    data class TraceSummary(val type: String, val obj: Any?, val count: Int, val sum: Long, val min: Long, val max: Long) {
-        constructor(type: String, obj: Any?, samples: List<Long>) : this(type, obj, samples.size, samples.sum(), samples.minOrNull() ?: 0L, samples.maxOrNull() ?: 0L)
+    class TraceObject(val samples: List<TraceSample>) {
+        val type = samples[0].type
+        val obj = samples[0].obj
+        val tree: List<String> = when (obj) {
+            is Building -> listOf(
+                type, "Building", obj.block.category.toString(), obj.block.localizedName,
+                "${obj.block.localizedName} ${Format.default.formatTile(obj)}",
+            )
+
+            is Unitc -> listOf(
+                type, "Unit", obj.type().toString(), obj.type().localizedName,
+                "${obj.type().localizedName} ${Format.default.formatTile(obj)}",
+            )
+
+            //Bullet可能已经被reset了，无法获取更多信息了
+            is Bulletc -> listOf(type, "Bullet", obj.toString())
+            is PowerGraphUpdaterc -> listOf(type, "PowerGraphUpdater", obj.toString())
+            else -> listOf(type, "Unknown", obj.toString())
+        }
+        val name get() = tree.last()
+        val avg get() = samples.sumOf { it.time } / samples.size
+        val min get() = samples.minOf { it.time }
+        val max get() = samples.maxOf { it.time }
+
+        override fun toString(): String {
+            return "TraceObject(tree=$tree, avg=$avg)"
+        }
+    }
+
+    class TraceNode(val prefix: List<String>, objects: List<TraceObject>) {
+        val name = prefix.lastOrNull() ?: "Root"
+        val objectsCount = objects.size
+        val timeSum = objects.sumOf { it.avg }
+        val isLeaf = objects[0].tree.size <= prefix.size + 1
+        val children: List<TraceNode> = if (!isLeaf) objects.groupBy { it.tree[prefix.size] }.map { (name, list) ->
+            TraceNode(prefix + name, list)
+        } else emptyList()
+        val objects: List<TraceObject> = if (isLeaf) objects else emptyList()
+
+        override fun toString(): String {
+            return "TraceNode(name='$name', objectsCount=$objectsCount, timeSum=$timeSum)"
+        }
+
+        fun buildChildren(): Table = Table().apply {
+            left().defaults().left().pad(4f)
+            this@TraceNode.children.forEach { c ->
+                var expanded = false
+                button({
+                    it.label { if (expanded) "-" else "+" }
+                }) {
+                    expanded = !expanded
+                }.size(Vars.iconMed)
+                add(c.name).expandX()
+                add("x${c.objectsCount}").minWidth(60f)
+                add("${c.timeSum / 1000} μs").labelAlign(Align.right).minWidth(100f)
+                add("${"%.2f".format(c.timeSum * 100f / timeSum)}%").labelAlign(Align.right).width(120f)
+                row()
+
+                add().width(24f)//pad
+                collapser(c.buildChildren()) { expanded }.colspan(columns - 1).growX()
+                row()
+            }
+            objects.forEach { obj ->
+                add(obj.name).left().minWidth(200f).expandX()
+                add("MIN ${obj.min}ns").labelAlign(Align.right).minWidth(100f)
+                add("AVG ${obj.avg}ns").labelAlign(Align.right).minWidth(100f)
+                add("MAX ${obj.max}ns").labelAlign(Align.right).minWidth(100f)
+                add("${"%.2f".format(obj.avg * 100f / timeSum)}%").labelAlign(Align.right).width(120f)
+                row()
+            }
+        }
     }
 
     private const val traceTimes = 30
@@ -113,52 +182,11 @@ object DebugUtil {
             return
         }
         traceUpdate = false
-        val summary = traceSamples.groupBy { it.obj }.map { (_, list) ->
-            TraceSummary(list[0].type, list[0].obj, list.map { it.time })
-        }.sortedByDescending { it.sum }
+        val objects = traceSamples.groupBy { it.obj }.map { TraceObject(it.value) }
+        val root = TraceNode(emptyList(), objects)
         BaseDialog("Trace Result").apply {
-            val sum = summary.sumOf { it.sum }
-            val knownTypes = summary.groupBy {
-                when (it.obj) {
-                    is Building -> "Building"
-                    is Unitc -> "Unit"
-                    is Bulletc -> "Bullet"
-                    is PowerGraphUpdaterc -> "PowerGraphUpdater"
-                    else -> "Unknown"
-                }
-            }.map { (type, list) ->
-                TraceSummary(list[0].type, type, list.map { it.sum })
-            }.sortedByDescending { it.sum }
-            cont.add("Total: ${summary.size} objects, costs: ${Format.default.format(sum / 1e6f / traceTimes)}ms").pad(4f).row()
-            cont.table {
-                it.left().defaults().pad(4f)
-                knownTypes.forEach { info ->
-                    it.add(info.obj.toString()).left().minWidth(100f)
-                    it.add("x${info.count}").left().minWidth(50f)
-                    it.add("${info.sum / traceTimes / 1000} μs/tick").right().minWidth(100f)
-                    it.add("${"%.2f".format(info.sum * 100f / sum)}%").right().minWidth(80f)
-                    it.row()
-                }
-            }.row()
-            //详情
-            cont.image().fillX().row()
-            cont.pane { t ->
-                t.left().defaults().pad(4f)
-                summary.slice(0..(summary.size.coerceAtMost(50))).forEach { info ->
-                    val name = when (val obj = info.obj) {
-                        is Building -> "${obj.block.localizedName} ${Format.default.formatTile(obj)}"
-                        is Unitc -> "${obj.type().localizedName} ${Format.default.formatTile(obj)}"
-                        else -> obj.toString()
-                    }
-                    t.add(info.type).left().minWidth(100f)
-                    t.add(name).left().minWidth(200f)
-                    t.add("MIN ${info.min / 1000} μs").right().minWidth(100f)
-                    t.add("AVG ${info.sum / info.count} μs").right().minWidth(100f)
-                    t.add("MAX ${info.max} μs").right().minWidth(100f)
-                    t.add("${"%.2f".format(info.sum * 100f / sum)}%").right().minWidth(80f)
-                    t.row()
-                }
-            }
+            cont.add("Total: ${root.objectsCount} objects, ${Format.default.format(root.timeSum / 1e6f)} ms").pad(10f).row()
+            cont.pane(root.buildChildren()).expandY()
             addCloseButton()
         }.show()
     }
