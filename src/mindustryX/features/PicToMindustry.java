@@ -195,7 +195,7 @@ public class PicToMindustry{
         schem.labels.add(l);
         if(Core.settings.getBool("autoSavePTM")){
             Vars.schematics.add(schem);
-            String text = arc.Core.bundle.get("mdtx.ui.saved_blueprint") + originFile.name(); // 原文本:已保存蓝图：
+            String text = arc.Core.bundle.format("mdtx.ui.template.savedBlueprint", originFile.name()); // 原文本:已保存蓝图：{0}
             UIExt.announce(text, (float)10);
         }
         if(state.isGame()){
