@@ -236,7 +236,7 @@ public class LogicSupport{
             t.label(() -> format.format((float)memory[finalI])).growX().align(Align.right).labelAlign(Align.right)
             .touchable(Touchable.enabled).get().tapped(() -> {
                 Core.app.setClipboardText(memory[finalI] + "");
-                UIExt.announce(arc.Core.bundle.get("mdtx.ui.copied_memory_n") + memory[finalI]); // 原文本:[cyan]复制内存[white]\n
+                UIExt.announce(arc.Core.bundle.format("mdtx.ui.template.copiedMemory", memory[finalI])); // 原文本:[cyan]复制内存[white]\n {0}
             });
             if((i + 1) % LogicSupport.memoryColumns.get() == 0) t.row();
             else t.add("|").color(((i % LogicSupport.memoryColumns.get()) % 2 == 0) ? Color.cyan : Color.acid)

@@ -341,7 +341,7 @@ public class RenderExt{
                 count.increment(u.type);
             }
             StringBuilder builder = new StringBuilder();
-            builder.append("[gold][MDTX][]").append(player.name).append(arc.Core.bundle.get("mdtx.ui.n_took_units")); // 原文本:\n[white]分走了单位:
+            builder.append("[gold][MDTX][]").append(player.name).append(arc.Core.bundle.get("mdtx.ui.n_took_units")).append(" "); // 原文本:\n[white]分走了单位: {0}
             for(UnitType type : count.keys()){
                 builder.append(type.emoji()).append("x").append(count.get(type)).append(" ");
             }

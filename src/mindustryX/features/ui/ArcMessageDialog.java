@@ -63,14 +63,14 @@ public class ArcMessageDialog extends BaseDialog{
         buttons.button(arc.Core.bundle.get("mdtx.ui.export"), Icon.upload, this::exportMsg).name(arc.Core.bundle.get("mdtx.ui.export_chat_history")); // 原文本:导出 | 导出聊天记录
 
         Events.on(EventType.WorldLoadEvent.class, e -> {
-            addMsg(new Msg(Type.eventWorldLoad, arc.Core.bundle.get("mdtx.ui.load_map") + state.map.name())); // 原文本:载入地图：
+            addMsg(new Msg(Type.eventWorldLoad, arc.Core.bundle.format("mdtx.ui.template.loadMap", state.map.name()))); // 原文本:载入地图：{0}
             addMsg(new Msg(Type.eventWorldLoad, arc.Core.bundle.format("mdtx.ui.template.introduction", state.map.description()))); // 原文本:简介：{0}
             while(msgTable.getChildren().size >= maxMsgRecorded) msgTable.getChildren().get(0).remove();
         });
 
         Events.on(EventType.WaveEvent.class, e -> {
             if(state.wavetime < 60f) return;
-            addMsg(new Msg(Type.eventWave, arc.Core.bundle.get("mdtx.ui.waves") + state.wave + " | " + ShareFeature.INSTANCE.waveInfo(state.wave))); // 原文本:波次：
+            addMsg(new Msg(Type.eventWave, arc.Core.bundle.format("mdtx.ui.template.waveEvent", state.wave, ShareFeature.INSTANCE.waveInfo(state.wave)))); // 原文本:波次：{0} | {1}
         });
     }
 
@@ -129,7 +129,7 @@ public class ArcMessageDialog extends BaseDialog{
         StringBuilder messageHis = new StringBuilder();
         messageHis.append(arc.Core.bundle.format("mdtx.ui.template.exportHeader", VarsX.version)).append("\n"); // 原文本:下面是[MDTX-{0}] 导出的游戏内聊天记录
         messageHis.append(arc.Core.bundle.format("mdtx.ui.template.exportMap", state.map.name(), state.rules.modeName)); // 原文本:*** 当前地图名称: {0}(模式: {1})\n
-        messageHis.append(arc.Core.bundle.get("mdtx.ui.current_wave")).append(state.wave).append("\n"); // 原文本:*** 当前波次:
+        messageHis.append(arc.Core.bundle.format("mdtx.ui.template.currentWave", state.wave)).append("\n"); // 原文本:*** 当前波次: {0}
         messageHis.append(arc.Core.bundle.format("mdtx.ui.template.exportCount", msgList.size)); // 原文本:成功选取共{0}条记录，如下：\n
         for(var msg : msgList){
             messageHis.append(Strings.stripColors(msg.message)).append("\n");

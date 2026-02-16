@@ -56,7 +56,7 @@ public class PicToMindustry{
                     if(oriImage.width > 500 || oriImage.height > 500)
                         UIExt.announce(arc.Core.bundle.get("mdtx.ui.warning_image_may_be_too_large_please_try_compressing_image"), (float)5); // 原文本:[orange]警告：图片可能过大，请尝试压缩图片
                 }catch(Throwable e){
-                    UIExt.announce(arc.Core.bundle.get("mdtx.ui.failed_to_read_image_please_try_another_image_n") + e); // 原文本:读取图片失败，请尝试更换图片\n
+                    UIExt.announce(arc.Core.bundle.format("mdtx.ui.template.failedReadImage", e)); // 原文本:读取图片失败，请尝试更换图片\n{0}
                 }
                 rebuilt();
             })).size(240, 50).padBottom(20f).row();
@@ -81,7 +81,7 @@ public class PicToMindustry{
         }).padBottom(20f).visible(() -> oriImage != null).row();
         pt.cont.add(tTable);
         pt.cont.row();
-        pt.cont.button(arc.Core.bundle.get("mdtx.ui.logic_art_website") + Blocks.logicDisplay.emoji(), () -> UIExt.openURI("https://buibiu.github.io/imageToMLogicPage/#/")).width(200f); // 原文本:逻辑画网站
+        pt.cont.button(arc.Core.bundle.format("mdtx.ui.template.labelWithEmoji", arc.Core.bundle.get("mdtx.ui.logic_art_website"), Blocks.logicDisplay.emoji()), () -> UIExt.openURI("https://buibiu.github.io/imageToMLogicPage/#/")).width(200f); // 原文本:逻辑画网站 {0}
         pt.addCloseButton();
         pt.show();
     }
@@ -115,7 +115,7 @@ public class PicToMindustry{
         tTable.table(t -> {
             t.table(tt -> {
                 int w = Mathf.ceil(scaledW * 1f / canvasSize), h = Mathf.ceil(scaledH * 1f / canvasSize);
-                tt.button(arc.Core.bundle.get("mdtx.ui.canvas") + Blocks.canvas.emoji(), Styles.cleart, () -> { // 原文本:画板
+                tt.button(arc.Core.bundle.format("mdtx.ui.template.labelWithEmoji", arc.Core.bundle.get("mdtx.ui.canvas"), Blocks.canvas.emoji()), Styles.cleart, () -> { // 原文本:画板 {0}
                     Pixmap image = Pixmaps.scale(oriImage, w * canvasSize, h * canvasSize, false);
                     image.replace((pixel) -> ArraysKt.minByOrThrow(palette, (it) -> diff_rbg(it, pixel)));
                     Schematic schem = canvasGenerator(image, w, h);
@@ -127,7 +127,7 @@ public class PicToMindustry{
             t.row();
             t.table(tt -> {
                 int w = Mathf.ceil(scaledW * 1f / canvasSize), h = Mathf.ceil(scaledH * 1f / canvasSize);
-                tt.button(arc.Core.bundle.get("mdtx.ui.artboard") + Blocks.canvas.emoji(), Styles.cleart, () -> { // 原文本:画板++
+                tt.button(arc.Core.bundle.format("mdtx.ui.template.labelWithEmoji", arc.Core.bundle.get("mdtx.ui.artboard"), Blocks.canvas.emoji()), Styles.cleart, () -> { // 原文本:画板++ {0}
                     Pixmap image = Pixmaps.scale(oriImage, w * canvasSize, h * canvasSize, false);
                     mapPalettePlus(image);
                     Schematic schem = canvasGenerator(image, w, h);
@@ -137,7 +137,7 @@ public class PicToMindustry{
                 tt.add(arc.Core.bundle.get("mdtx.ui.size") + w + "\uE815" + h); // 原文本:大小：
             }).row();
             t.table(tt -> {
-                tt.button(arc.Core.bundle.get("mdtx.ui.pixel_art") + Blocks.sorter.emoji(), Styles.cleart, () -> { // 原文本:像素画
+                tt.button(arc.Core.bundle.format("mdtx.ui.template.labelWithEmoji", arc.Core.bundle.get("mdtx.ui.pixel_art"), Blocks.sorter.emoji()), Styles.cleart, () -> { // 原文本:像素画 {0}
                     Pixmap image = Pixmaps.scale(oriImage, scale);
                     Schematic schem = sorterGenerator(image);
                     image.dispose();
