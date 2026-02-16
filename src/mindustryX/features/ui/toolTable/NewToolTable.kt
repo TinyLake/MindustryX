@@ -43,7 +43,7 @@ object NewToolTable : Table() {
             Vars.state.rules.fog = Vars.state.rules.fog xor true
         }.disabled { Vars.state.rules.pvp && Vars.player.team().id != 255 }
         button(arc.Core.bundle.get("mdtx.ui.shortcut_surrender_vote"), arc.Core.bundle.get("mdtx.ui.surrender_vote")) { // 原文本:[white]法 | 法国军礼
-            Vars.ui.showConfirm(arc.Core.bundle.get("mdtx.ui.if_you_can_t_stand_it_anymore_just_surrender")) { Call.sendChatMessage("/vote gameover") } // 原文本:受不了，直接投降？
+            Vars.ui.showConfirm(arc.Core.bundle.get("mdtx.ui.surrender_vote_confirm")) { Call.sendChatMessage("/vote gameover") } // 原文本:受不了，直接投降？
         }
         toggle(arc.Core.bundle.get("mdtx.ui.shortcut_scan_mode"), arc.Core.bundle.get("mdtx.ui.scan_mode"), { RenderExt.transportScan.value }) { RenderExt.transportScan.toggle() } // 原文本:扫 | 扫描模式
 

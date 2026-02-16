@@ -77,7 +77,7 @@ public class AdvanceBuildTool extends Table{
         button("\uE818", Styles.clearTogglet, () -> {
             selection = control.input.lastSelection;
             if(selection.area() < 10f){
-                UIExt.announce(arc.Core.bundle.get("mdtx.ui.the_currently_selected_area_is_empty_please_use_f_to_plan_the_area")); // 原文本:当前选定区域为空，请通过F规划区域
+                UIExt.announce(arc.Core.bundle.get("mdtx.ui.empty_selection_area_hint")); // 原文本:当前选定区域为空，请通过F规划区域
                 return;
             }
             placement = BuildRange.zone;
