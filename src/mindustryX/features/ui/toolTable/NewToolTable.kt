@@ -35,41 +35,41 @@ object NewToolTable : Table() {
         add(gridTable).growX().row()
         gridTable.defaults().size(Vars.iconLarge)
 
-        button("信", "中央监控室") { UIExt.arcMessageDialog.show() }
-        button("S", "同步一波") { Call.sendChatMessage("/sync") }
-        button("观", "观察者模式") { Call.sendChatMessage("/ob") }
-        button("版", "服务器信息版") { Call.sendChatMessage("/broad") }
-        toggle("雾", "战争迷雾", { Vars.state.rules.fog }) {
+        button(arc.Core.bundle.get("mdtx.ui.shortcut_message_center"), arc.Core.bundle.get("mdtx.ui.message_center")) { UIExt.arcMessageDialog.show() } // 原文本:信 | 中央监控室
+        button("S", arc.Core.bundle.get("mdtx.ui.sync_a_wave")) { Call.sendChatMessage("/sync") } // 原文本:同步一波
+        button(arc.Core.bundle.get("mdtx.ui.shortcut_observer_mode"), arc.Core.bundle.get("mdtx.ui.observer_mode")) { Call.sendChatMessage("/ob") } // 原文本:观 | 观察者模式
+        button(arc.Core.bundle.get("mdtx.ui.shortcut_server_info"), arc.Core.bundle.get("mdtx.ui.server_info_build")) { Call.sendChatMessage("/broad") } // 原文本:版 | 服务器信息版
+        toggle(arc.Core.bundle.get("mdtx.ui.shortcut_fog"), arc.Core.bundle.get("mdtx.ui.fog_of_war"), { Vars.state.rules.fog }) { // 原文本:雾 | 战争迷雾
             Vars.state.rules.fog = Vars.state.rules.fog xor true
         }.disabled { Vars.state.rules.pvp && Vars.player.team().id != 255 }
-        button("[white]法", "法国军礼") {
-            Vars.ui.showConfirm("受不了，直接投降？") { Call.sendChatMessage("/vote gameover") }
+        button(arc.Core.bundle.get("mdtx.ui.shortcut_surrender_vote"), arc.Core.bundle.get("mdtx.ui.surrender_vote")) { // 原文本:[white]法 | 法国军礼
+            Vars.ui.showConfirm(arc.Core.bundle.get("mdtx.ui.if_you_can_t_stand_it_anymore_just_surrender")) { Call.sendChatMessage("/vote gameover") } // 原文本:受不了，直接投降？
         }
-        toggle("扫", "扫描模式", { RenderExt.transportScan.value }) { RenderExt.transportScan.toggle() }
+        toggle(arc.Core.bundle.get("mdtx.ui.shortcut_scan_mode"), arc.Core.bundle.get("mdtx.ui.scan_mode"), { RenderExt.transportScan.value }) { RenderExt.transportScan.toggle() } // 原文本:扫 | 扫描模式
 
-        toggle("块", "建筑显示", { RenderExt.blockRenderLevel > 0 }) { RenderExt.blockRenderLevel0.cycle() }
-        toggle("兵", "兵种显示", { !RenderExt.unitHide.value }) { RenderExt.unitHide.toggle() }
-        toggle("弹", "子弹显示", { !RenderExt.noBulletShow.value }) { RenderExt.noBulletShow.toggle() }
-        toggle("效", "特效显示", { Vars.renderer.enableEffects }) { Settings.toggle("effects") }
-        toggle("墙", "墙体阴影显示", { Vars.enableDarkness }) { Vars.enableDarkness = !Vars.enableDarkness }
-        toggle("${Iconc.map}", "小地图显示", { Core.settings.getBool("minimap") }) { Settings.toggle("minimap") }
-        toggle("箱", "碰撞箱显示", { RenderExt.unitHitbox.value }) { RenderExt.unitHitbox.toggle() }
+        toggle(arc.Core.bundle.get("mdtx.ui.shortcut_block_render"), arc.Core.bundle.get("mdtx.ui.block_rendering"), { RenderExt.blockRenderLevel > 0 }) { RenderExt.blockRenderLevel0.cycle() } // 原文本:块 | 建筑显示
+        toggle(arc.Core.bundle.get("mdtx.ui.shortcut_unit_render"), arc.Core.bundle.get("mdtx.ui.unit_rendering"), { !RenderExt.unitHide.value }) { RenderExt.unitHide.toggle() } // 原文本:兵 | 兵种显示
+        toggle(arc.Core.bundle.get("mdtx.ui.shortcut_bullet_render"), arc.Core.bundle.get("mdtx.ui.bullet_rendering"), { !RenderExt.noBulletShow.value }) { RenderExt.noBulletShow.toggle() } // 原文本:弹 | 子弹显示
+        toggle(arc.Core.bundle.get("mdtx.ui.fx"), arc.Core.bundle.get("mdtx.ui.effects_rendering"), { Vars.renderer.enableEffects }) { Settings.toggle("effects") } // 原文本:效 | 特效显示
+        toggle(arc.Core.bundle.get("mdtx.ui.shortcut_wall_shadow"), arc.Core.bundle.get("mdtx.ui.wall_shadow_rendering"), { Vars.enableDarkness }) { Vars.enableDarkness = !Vars.enableDarkness } // 原文本:墙 | 墙体阴影显示
+        toggle("${Iconc.map}", arc.Core.bundle.get("mdtx.ui.minimap"), { Core.settings.getBool("minimap") }) { Settings.toggle("minimap") } // 原文本:小地图显示
+        toggle(arc.Core.bundle.get("mdtx.ui.shortcut_hitbox"), arc.Core.bundle.get("mdtx.ui.hitbox_overlay"), { RenderExt.unitHitbox.value }) { RenderExt.unitHitbox.toggle() } // 原文本:箱 | 碰撞箱显示
 
-        button("${Iconc.blockRadar}", "雷达开关") { ArcRadar.mobileRadar = !ArcRadar.mobileRadar }.get().also {
+        button("${Iconc.blockRadar}", arc.Core.bundle.get("mdtx.ui.radar_toggle")) { ArcRadar.mobileRadar = !ArcRadar.mobileRadar }.get().also { // 原文本:雷达开关
             SettingsV2.bindQuickSettings(it, ArcRadar.settings)
         }
-        toggle("${Iconc.blockWorldProcessor}", "移除逻辑锁定", { Core.settings.getBool("removeLogicLock") }) {
+        toggle("${Iconc.blockWorldProcessor}", arc.Core.bundle.get("mdtx.ui.remove_logic_lock"), { Core.settings.getBool("removeLogicLock") }) { // 原文本:移除逻辑锁定
             Settings.toggle("removeLogicLock")
             if (Core.settings.getBool("removeLogicLock")) {
                 Vars.control.input.logicCutscene = false
-                Vars.ui.announce("已移除逻辑视角锁定")
+                Vars.ui.announce(arc.Core.bundle.get("mdtx.ui.logic_camera_lock_removed")) // 原文本:已移除逻辑视角锁定
             }
         }
-        toggle(Blocks.worldMessage.emoji(), "信息板全显示", { RenderExt.displayAllMessage }) { Settings.toggle("displayallmessage") }
-        button("${Iconc.itemCopper}", "矿物信息") { floorStatisticDialog() }
+        toggle(Blocks.worldMessage.emoji(), arc.Core.bundle.get("mdtx.ui.show_all_message_blocks"), { RenderExt.displayAllMessage }) { Settings.toggle("displayallmessage") } // 原文本:信息板全显示
+        button("${Iconc.itemCopper}", arc.Core.bundle.get("mdtx.ui.ore_info")) { floorStatisticDialog() } // 原文本:矿物信息
 
-        button("${Iconc.fill}", "特效大全") { EffectsDialog.withAllEffects().show() }
-        button("${Iconc.star}", "ui大全") { uiTableDialog().show() }
+        button("${Iconc.fill}", arc.Core.bundle.get("mdtx.ui.effects_library")) { EffectsDialog.withAllEffects().show() } // 原文本:特效大全
+        button("${Iconc.star}", arc.Core.bundle.get("mdtx.ui.ui_toolkit")) { uiTableDialog().show() } // 原文本:ui大全
 
 
         add(GridTable()).update { t: Table ->
@@ -114,7 +114,7 @@ object NewToolTable : Table() {
     data class Button(val icon: Drawable, val tooltip: String, val action: () -> Unit)
 
     data class CustomButton(val name: String, val content: String) {
-        constructor() : this("?", "未输入指令")
+        constructor() : this("?", arc.Core.bundle.get("mdtx.ui.no_command_entered")) // 原文本:未输入指令
 
         fun run() {
             if (content.startsWith("@js ")) {
@@ -168,7 +168,7 @@ object NewToolTable : Table() {
                 update {
                     if (changed()) clearChildren()
                     if (hasChildren()) return@update
-                    add("序号"); add("显示名"); add("消息(@js 开头为脚本)"); row()
+                    add(arc.Core.bundle.get("mdtx.ui.index")); add(arc.Core.bundle.get("mdtx.ui.display_name")); add(arc.Core.bundle.get("mdtx.ui.message_arg_js_starts_with_script")); row() // 原文本:序号 | 显示名 | 消息(@js 开头为脚本)
                     value.forEachIndexed { i, d ->
                         var tmp = d
                         add(i.toString()).padRight(4f)
@@ -185,7 +185,7 @@ object NewToolTable : Table() {
                     button("@add", Icon.addSmall) {
                         set(value + CustomButton())
                     }.colspan(columns).fillX().row()
-                    add("[yellow]添加新指令前，请先保存编辑的指令").colspan(columns).center().padTop(-4f).row()
+                    add(arc.Core.bundle.get("mdtx.ui.before_adding_new_instructions_please_save_the_edited_instructions_first")).colspan(columns).center().padTop(-4f).row() // 原文本:[yellow]添加新指令前，请先保存编辑的指令
                 }
             }) { shown }.growX()
             table.row()
@@ -194,12 +194,12 @@ object NewToolTable : Table() {
 
 
     private fun floorStatisticDialog() {
-        val dialog = BaseDialog("ARC-矿物统计")
+        val dialog = BaseDialog(arc.Core.bundle.get("mdtx.ui.arc_ore_statistics")) // 原文本:ARC-矿物统计
         val table = dialog.cont
         table.clear()
 
         table.table { c: Table ->
-            c.add("矿物矿(地表/墙矿)").color(Pal.accent).center().fillX().row()
+            c.add(arc.Core.bundle.get("mdtx.ui.ore_count_surface_wall")).color(Pal.accent).center().fillX().row() // 原文本:矿物矿(地表/墙矿)
             c.image().color(Pal.accent).fillX().row()
             c.table { list: Table ->
                 var i = 0
@@ -213,7 +213,7 @@ object NewToolTable : Table() {
                 }
             }.row()
 
-            c.add("液体").color(Pal.accent).center().fillX().row()
+            c.add(arc.Core.bundle.get("mdtx.ui.liquids")).color(Pal.accent).center().fillX().row() // 原文本:液体
             c.image().color(Pal.accent).fillX().row()
             c.table { list: Table ->
                 var i = 0
@@ -236,7 +236,7 @@ object NewToolTable : Table() {
     }
 
 
-    private fun uiTableDialog() = BaseDialog("UI图标大全").apply {
+    private fun uiTableDialog() = BaseDialog(arc.Core.bundle.get("mdtx.ui.ui_icon_library")).apply { // 原文本:UI图标大全
         cont.defaults().maxWidth(800f)
         var query = ""
         val sField = TextField()
@@ -246,7 +246,7 @@ object NewToolTable : Table() {
             field(query) { query = it }.pad(8f).grow().colspan(2).update { if (!it.hasKeyboard()) it.text = query }
             button(Icon.cancelSmall, Styles.cleari) { query = "" }.padLeft(16f).size(32f)
             row()
-            add("暂存区").color(Pal.lightishGray).padRight(16f)
+            add(arc.Core.bundle.get("mdtx.ui.staging_area")).color(Pal.lightishGray).padRight(16f) // 原文本:暂存区
             add(sField).growX().get()
             button(Icon.copySmall, Styles.cleari) {
                 Core.app.clipboardText = sField.text
@@ -256,7 +256,7 @@ object NewToolTable : Table() {
         cont.row()
         Table().apply {
             defaults().minWidth(1f)
-            add("颜色").color(Pal.accent).center().row()
+            add(arc.Core.bundle.get("mdtx.ui.color")).color(Pal.accent).center().row() // 原文本:颜色
             image().color(Pal.accent).fillX().row()
             GridTable().apply {
                 defaults().height(32f).width(80f).pad(4f)
@@ -270,7 +270,7 @@ object NewToolTable : Table() {
                 }
             }.also { add(it).growX().row() }
 
-            add("物品").color(Pal.accent).center().row()
+            add(arc.Core.bundle.get("mdtx.ui.item")).color(Pal.accent).center().row() // 原文本:物品
             image().color(Pal.accent).fillX().row()
             GridTable().apply {
                 defaults().size(Vars.iconLarge)
@@ -287,7 +287,7 @@ object NewToolTable : Table() {
                 }
             }.also { add(it).growX().row() }
 
-            add("图标").color(Pal.accent).center().row()
+            add(arc.Core.bundle.get("mdtx.ui.icon")).color(Pal.accent).center().row() // 原文本:图标
             image().color(Pal.accent).fillX().row()
             GridTable().apply {
                 defaults().size(Vars.iconLarge)

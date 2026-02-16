@@ -41,7 +41,7 @@ object ShareFeature {
 
     @JvmStatic
     fun at(playerName: String?) {
-        send('@', "<AT>戳了$playerName[white]一下，并提醒他留意对话框")
+        send('@', arc.Core.bundle.format("mdtx.ui.template.atPlayer", playerName)) // 原文本:<AT>戳了{0}[white]一下，并提醒他留意对话框
     }
 
     @JvmStatic
@@ -49,7 +49,7 @@ object ShareFeature {
         uploadPasteBin(Vars.schematics.writeBase64(s)) { url ->
             if (url == null) return@uploadPasteBin
             val code = url.substring(url.lastIndexOf('/') + 1)
-            send(Iconc.paste, "<ARCxMDTX><Schem>[black]一坨兼容[] $code")
+            send(Iconc.paste, arc.Core.bundle.format("mdtx.ui.template.shareCode", code)) // 原文本:<ARCxMDTX><Schem>[black]一坨兼容[] {0}
         }
     }
 
@@ -61,7 +61,7 @@ object ShareFeature {
         }
         req.error {
             Core.app.post {
-                Vars.ui.showException("上传失败，再重试一下？", it)
+                Vars.ui.showException(arc.Core.bundle.get("mdtx.ui.upload_failed_try_again"), it) // 原文本:上传失败，再重试一下？
                 Core.app.post { callback(null) }
             }
         }
@@ -71,16 +71,16 @@ object ShareFeature {
     fun shareSchematicClipboard(schem: Schematic) {
         uploadPasteBin(Vars.schematics.writeBase64(schem)) { link: String? ->
             val msg = buildString {
-                append("这是一条来自 MDTX-").append(VarsX.version).append("的分享记录\n")
-                append("蓝图名：").append(schem.name()).append("\n")
-                append("分享者：").append(Vars.player.name).append("\n")
-                append("蓝图造价：")
+                append(arc.Core.bundle.format("mdtx.ui.template.shareHeader", VarsX.version)) // 原文本:这是一条来自 MDTX-{0} 的分享记录\n
+                append(arc.Core.bundle.get("mdtx.ui.blueprint_name")).append(schem.name()).append("\n") // 原文本:蓝图名：
+                append(arc.Core.bundle.get("mdtx.ui.shared_by")).append(Vars.player.name).append("\n") // 原文本:分享者：
+                append(arc.Core.bundle.get("mdtx.ui.blueprint_cost")) // 原文本:蓝图造价：
                 val arr = schem.requirements()
                 for (stack in arr) {
                     append(stack.item.emoji()).append(stack.item.localizedName).append(stack.amount).append("|")
                 }
                 append("\n")
-                append("电力：")
+                append(arc.Core.bundle.get("mdtx.ui.power")) // 原文本:电力：
                 val cons = schem.powerConsumption() * 60
                 val prod = schem.powerProduction() * 60
                 if (!Mathf.zero(prod)) {
@@ -93,13 +93,13 @@ object ShareFeature {
                     append("-").append(Strings.autoFixed(cons, 2))
                 }
                 append("\n")
-                append("蓝图代码链接：").append(link ?: "x").append("\n")
-                if (Vars.schematics.writeBase64(schem).length > 3500) append("蓝图代码过长，请点击链接查看")
-                else append("蓝图代码：\n").append(Vars.schematics.writeBase64(schem))
+                append(arc.Core.bundle.get("mdtx.ui.blueprint_code_link")).append(link ?: "x").append("\n") // 原文本:蓝图代码链接：
+                if (Vars.schematics.writeBase64(schem).length > 3500) append(arc.Core.bundle.get("mdtx.ui.the_blueprint_code_is_too_long_please_click_the_link_to_view_it")) // 原文本:蓝图代码过长，请点击链接查看
+                else append(arc.Core.bundle.get("mdtx.ui.blueprint_code_n")).append(Vars.schematics.writeBase64(schem)) // 原文本:蓝图代码：\n
             }
 
             Core.app.setClipboardText(Strings.stripColors(msg))
-            UIExt.announce("已保存至剪贴板")
+            UIExt.announce(arc.Core.bundle.get("mdtx.ui.saved_to_clipboard")) // 原文本:已保存至剪贴板
         }
     }
 
@@ -118,8 +118,7 @@ object ShareFeature {
     //因为ArcMessageDialog共用了，所以单独提取出来
     fun waveInfo(wave: Int) = buildString {
         val spawner = Vars.spawner
-        append("包含(地×").append(spawner.countGroundSpawns())
-        append(",空x").append(spawner.countFlyerSpawns()).append("):")
+        append(arc.Core.bundle.format("mdtx.ui.template.waveContains", spawner.countGroundSpawns(), spawner.countFlyerSpawns())) // 原文本:包含(地×{0},空x{1}):
 
         for (group in Vars.state.rules.spawns) {
             val count = group.getSpawned(wave - 1)
@@ -140,12 +139,11 @@ object ShareFeature {
         if (!Vars.state.rules.waves) return
 
         val msg = buildString {
-            append("第").append(wave).append("波")
+            append(arc.Core.bundle.format("mdtx.ui.template.waveTitle", wave)) // 原文本:第{0}波
 
             if (wave >= Vars.state.wave) {
                 val timer = (Vars.state.wavetime + (wave - Vars.state.wave) * Vars.state.rules.waveSpacing).toInt()
-                append("(").append("还有").append(wave - Vars.state.wave).append("波, ")
-                append(duration(timer.toFloat() / 60)).append(")")
+                append(arc.Core.bundle.format("mdtx.ui.template.waveEta", wave - Vars.state.wave, duration(timer.toFloat() / 60))) // 原文本:(还有{0}波, {1})
             }
 
             append("：").append(waveInfo(wave))
@@ -230,16 +228,16 @@ object ShareFeature {
             checked = Tex.underlineOver //Over是黄色的
         }
         button("T", underlineToggleT) { Vars.ui.chatfrag.nextMode() }
-            .checked { _ -> Vars.ui.chatfrag.mode == ChatFragment.ChatMode.team }.tooltip("前缀添加/t")
+            .checked { _ -> Vars.ui.chatfrag.mode == ChatFragment.ChatMode.team }.tooltip(arc.Core.bundle.get("mdtx.ui.add_prefix_t")) // 原文本:前缀添加/t
         button(Icon.zoomSmall, Styles.clearNonei) { MarkerType.lockOnLastMark() }
-            .tooltip("锁定上个标记点")
+            .tooltip(arc.Core.bundle.get("mdtx.ui.lock_the_last_marked_point")) // 原文本:锁定上个标记点
 
         add("♐>").padRight(18f)
-        button(Icon.mapSmall, Styles.clearNonei, Vars.iconMed) { MarkerType.toggleMarkHitterUI() }.tooltip("标记地图位置")
-        button(Icon.wavesSmall, Styles.clearNonei, Vars.iconMed) { shareWaveInfo(Vars.state.wave) }.tooltip("分享波次信息")
-        button(Icon.powerSmall, Styles.clearNonei, Vars.iconMed) { shareTeamPower() }.tooltip("分享电力情况")
-        button(TextureRegionDrawable(Items.copper.uiIcon), Styles.clearNonei, Vars.iconSmall) { openShareItemDialog() }.tooltip("分享库存情况")
-        button(Icon.unitsSmall, Styles.clearNonei, Vars.iconMed) { openShareUnitDialog() }.tooltip("分享单位数量")
+        button(Icon.mapSmall, Styles.clearNonei, Vars.iconMed) { MarkerType.toggleMarkHitterUI() }.tooltip(arc.Core.bundle.get("mdtx.ui.mark_map_location")) // 原文本:标记地图位置
+        button(Icon.wavesSmall, Styles.clearNonei, Vars.iconMed) { shareWaveInfo(Vars.state.wave) }.tooltip(arc.Core.bundle.get("mdtx.ui.share_wave_information")) // 原文本:分享波次信息
+        button(Icon.powerSmall, Styles.clearNonei, Vars.iconMed) { shareTeamPower() }.tooltip(arc.Core.bundle.get("mdtx.ui.share_power_status")) // 原文本:分享电力情况
+        button(TextureRegionDrawable(Items.copper.uiIcon), Styles.clearNonei, Vars.iconSmall) { openShareItemDialog() }.tooltip(arc.Core.bundle.get("mdtx.ui.share_inventory_status")) // 原文本:分享库存情况
+        button(Icon.unitsSmall, Styles.clearNonei, Vars.iconMed) { openShareUnitDialog() }.tooltip(arc.Core.bundle.get("mdtx.ui.share_unit_count")) // 原文本:分享单位数量
     }
 
     private fun resolveAt(message: String, sender: Player?): Boolean {
@@ -249,8 +247,8 @@ object ShareFeature {
         //Remove prefix
         message = message.substringAfter("<AT>").substringAfter(tag('@'))
         if (message.contains(Vars.player.name)) {
-            if (sender != null) Vars.ui.announce("[gold]你被[white] " + sender.name + " [gold]戳了一下，请注意查看信息框哦~", 10f)
-            else Vars.ui.announce("[orange]你被戳了一下，请注意查看信息框哦~", 10f)
+            if (sender != null) Vars.ui.announce(arc.Core.bundle.format("mdtx.ui.template.atNoticeFrom", sender.name), 10f) // 原文本:[gold]你被[white]{0}[gold]戳了一下，请注意查看信息框哦~
+            else Vars.ui.announce(arc.Core.bundle.get("mdtx.ui.you_were_poked_please_pay_attention_to_the_information_box"), 10f) // 原文本:[orange]你被戳了一下，请注意查看信息框哦~
         }
 
         return true

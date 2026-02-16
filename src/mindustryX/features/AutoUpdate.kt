@@ -121,7 +121,7 @@ object AutoUpdate {
     @JvmOverloads
     fun showDialog(version: Release? = latest) {
         checkUpdate()
-        val dialog = BaseDialog("自动更新")
+        val dialog = BaseDialog(arc.Core.bundle.get("mdtx.ui.check_for_updates")) // 原文本:自动更新
         dialog.getCell(dialog.cont).setElement(ScrollPane(dialog.cont))
         dialog.cont.table().growY().get().apply {
             fun buildVersionList(versions: List<Release>) {
@@ -138,36 +138,36 @@ object AutoUpdate {
                                         p.add(it.description).labelAlign(Align.left)
                                     }.row()
                                 }
-                            }.tooltip("发布说明").padRight(16f)
+                            }.tooltip(arc.Core.bundle.get("mdtx.ui.release_notes")).padRight(16f) // 原文本:发布说明
                         button(Icon.link, Styles.clearNonei, Vars.iconSmall) {
                             UIExt.openURI(it.url)
-                        }.tooltip("打开发布页面").padRight(4f).row()
+                        }.tooltip(arc.Core.bundle.get("mdtx.ui.open_release_page")).padRight(4f).row() // 原文本:打开发布页面
                     }
                 }
                 row()
             }
 
             //width为整个Table最小宽度
-            add("当前版本号: ${VarsX.version}").labelAlign(Align.center).width(500f).row()
+            add(arc.Core.bundle.format("mdtx.ui.template.currentVersion", VarsX.version)).labelAlign(Align.center).width(500f).wrap().row() // 原文本:当前版本号: {0}
             newVersion?.let {
-                add("[green]发现新版本[]: ${it.version}").row()
+                add(arc.Core.bundle.format("mdtx.ui.template.newVersion", it.version)).labelAlign(Align.center).width(500f).wrap().row() // 原文本:[green]发现新版本[]: {0}
             }
             if (versions.isEmpty()) {
-                add("检查更新失败，请稍后再试").row()
+                add(arc.Core.bundle.get("mdtx.ui.could_not_check_for_updates_nplease_try_again_later")).labelAlign(Align.center).width(500f).wrap().row() // 原文本:检查更新失败，请稍后再试
                 return@apply
             }
 
             image().fillX().height(2f).row()
-            add("正式版").row()
+            add(arc.Core.bundle.get("mdtx.ui.stable_releases")).labelAlign(Align.center).width(500f).wrap().row() // 原文本:正式版
             buildVersionList(versions.filter { it.isRelease })
 
             image().fillX().height(2f).row()
-            add("预览版(更新更快,新功能体验,BUG修复)").row()
+            add(arc.Core.bundle.get("mdtx.ui.preview_releases_n_faster_updates_new_features_bug_fixes")).labelAlign(Align.center).width(500f).wrap().row() // 原文本:预览版(更新更快,新功能体验,BUG修复)
             buildVersionList(versions.filter { !it.isRelease })
 
             image().fillX().height(2f).row()
             if (version == null) {
-                add("你已是最新版本，不需要更新！")
+                add(arc.Core.bundle.get("mdtx.ui.you_are_already_on_the_latest_version")).labelAlign(Align.center).width(500f).wrap() // 原文本:你已是最新版本，不需要更新！
                 return@apply
             }
 
@@ -181,7 +181,7 @@ object AutoUpdate {
             }
             row()
 
-            button("自动下载更新") {
+            button(arc.Core.bundle.get("mdtx.ui.download_and_install_update")) { // 原文本:自动下载更新
                 if (asset == null) return@button
                 startDownload(asset.copy(url = url)) { file ->
                     if (VarsX.isLoader) {
@@ -204,7 +204,7 @@ object AutoUpdate {
                         dialog.hide()
                     }.growX()
                     button(ignoreUntil.title) {
-                        ignoreOnce.set((Instant.now() + Duration.ofDays(7)).toString())
+                        ignoreUntil.set((Instant.now() + Duration.ofDays(7)).toString())
                         dialog.hide()
                     }.growX()
                 }.row()

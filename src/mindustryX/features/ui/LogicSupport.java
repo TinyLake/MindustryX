@@ -52,8 +52,8 @@ public class LogicSupport{
         Table main = new Table(Styles.grayPanel);
         main.margin(4f);
 
-        main.add("逻辑辅助器[gold]X[]").style(Styles.outlineLabel).pad(8f).padBottom(12f).row();
-        main.fill(tt -> tt.top().right().button(Icon.cancel, Styles.clearNonei, iconMed, visible::toggle).tooltip("隐藏逻辑辅助器"));
+        main.add(arc.Core.bundle.get("mdtx.ui.logic_helper_x")).style(Styles.outlineLabel).pad(8f).padBottom(12f).row(); // 原文本:逻辑辅助器[gold]X[]
+        main.fill(tt -> tt.top().right().button(Icon.cancel, Styles.clearNonei, iconMed, visible::toggle).tooltip(arc.Core.bundle.get("mdtx.ui.hide_logic_helper"))); // 原文本:隐藏逻辑辅助器
 
         main.table(LogicSupport::buildConfigTable).fillX().row();
         main.pane(Styles.noBarPane, varsTable).growY().fillX().scrollX(false).width(400f).padTop(8f);
@@ -91,31 +91,33 @@ public class LogicSupport{
         table.button(Icon.downloadSmall, Styles.cleari, () -> {
             if(refreshExecutor != null){
                 refreshExecutor.run();
-                UIExt.announce("[orange]已更新编辑的逻辑！");
+                UIExt.announce(arc.Core.bundle.get("mdtx.ui.updated_edited_logic")); // 原文本:[orange]已更新编辑的逻辑！
             }
-        }).tooltip("更新编辑的逻辑").disabled(b -> refreshExecutor == null);
+        }).tooltip(arc.Core.bundle.get("mdtx.ui.refresh_edited_logic")).disabled(b -> refreshExecutor == null); // 原文本:更新编辑的逻辑
         table.button(Icon.eyeSmall, Styles.clearTogglei, () -> {
             changeSplash.toggle();
-            String text = "[orange]已" + (changeSplash.get() ? "开启" : "关闭") + "变动闪烁";
+            String state = changeSplash.get() ? arc.Core.bundle.get("mdtx.ui.on") : arc.Core.bundle.get("mdtx.ui.off"); // 原文本:开启 | 关闭
+            String text = arc.Core.bundle.format("mdtx.ui.template.toggleState", arc.Core.bundle.get("mdtx.ui.flash_on_change"), state); // 原文本:{0}: {1} | 变动闪烁
             UIExt.announce(text);
-        }).checked((b) -> changeSplash.get()).tooltip("变量变动闪烁");
+        }).checked((b) -> changeSplash.get()).tooltip(arc.Core.bundle.get("mdtx.ui.flash_on_variable_change")); // 原文本:变量变动闪烁
         table.button(Icon.refreshSmall, Styles.clearTogglei, () -> {
             autoRefresh = !autoRefresh;
-            String text = "[orange]已" + (autoRefresh ? "开启" : "关闭") + "变量自动更新";
+            String state = autoRefresh ? arc.Core.bundle.get("mdtx.ui.on") : arc.Core.bundle.get("mdtx.ui.off"); // 原文本:开启 | 关闭
+            String text = arc.Core.bundle.format("mdtx.ui.template.toggleState", arc.Core.bundle.get("mdtx.ui.auto_refresh_variables"), state); // 原文本:{0}: {1} | 变量自动更新
             UIExt.announce(text);
-        }).checked((b) -> autoRefresh).tooltip("自动刷新变量");
+        }).checked((b) -> autoRefresh).tooltip(arc.Core.bundle.get("mdtx.ui.automatically_refresh_variables")); // 原文本:自动刷新变量
         table.button(Icon.pause, Styles.clearTogglei, () -> {
             if(state.isPaused()) state.set(State.playing);
             else state.set(State.paused);
-            String text = state.isPaused() ? "已暂停" : "已继续游戏";
+            String text = state.isPaused() ? arc.Core.bundle.get("mdtx.ui.paused") : arc.Core.bundle.get("mdtx.ui.game_resumed"); // 原文本:已暂停 | 已继续游戏
             UIExt.announce(text);
-        }).checked((b) -> state.isPaused()).tooltip("暂停逻辑(游戏)运行");
+        }).checked((b) -> state.isPaused()).tooltip(arc.Core.bundle.get("mdtx.ui.pause_logic_game_execution")); // 原文本:暂停逻辑(游戏)运行
 
         table.defaults().reset();
         var slider = new Slider(1, 60, 1, false);
         slider.setValue(refreshTime);
         slider.moved((res) -> refreshTime = res);
-        var label = new Label(() -> "刷新间隔" + ((int)refreshTime));
+        var label = new Label(() -> arc.Core.bundle.get("mdtx.ui.refresh_interval") + ((int)refreshTime)); // 原文本:刷新间隔
         label.touchable = Touchable.disabled;
         table.stack(slider, label).padLeft(8f).growX();
     }
@@ -128,8 +130,8 @@ public class LogicSupport{
         for(var v : executor.allVars){
             if(v.name.startsWith("___")) continue;
             varsTable.table(Tex.paneSolid, table -> {
-                Label nameLabel = createCopyableLabel(v.name, null, "复制变量名\n@");
-                Label valueLabel = createCopyableLabel(arcVarsText(v), null, "复制变量属性\n@");
+                Label nameLabel = createCopyableLabel(v.name, null, arc.Core.bundle.get("mdtx.ui.copied_variable_name_n_arg")); // 原文本:复制变量名\n@
+                Label valueLabel = createCopyableLabel(arcVarsText(v), null, arc.Core.bundle.get("mdtx.ui.copied_variable_attributes_n_arg")); // 原文本:复制变量属性\n@
 
                 table.add(nameLabel).color(arcVarsColor(v)).ellipsis(true).wrap().expand(3, 1).fill().get();
                 table.add(valueLabel).ellipsis(true).wrap().padLeft(16f).expand(2, 1).fill().get();
@@ -151,7 +153,7 @@ public class LogicSupport{
         }
 
         varsTable.table(Tex.paneSolid, table -> {
-            Label label = createCopyableLabel("", table, "复制信息版\n@");
+            Label label = createCopyableLabel("", table, arc.Core.bundle.get("mdtx.ui.copied_print_buffer_n_arg")); // 原文本:复制信息版\n@
 
             table.add("@printbuffer").color(Color.goldenrod).center().row();
             table.add(label).labelAlign(Align.topLeft).wrap().minHeight(150).growX();
@@ -234,7 +236,7 @@ public class LogicSupport{
             t.label(() -> format.format((float)memory[finalI])).growX().align(Align.right).labelAlign(Align.right)
             .touchable(Touchable.enabled).get().tapped(() -> {
                 Core.app.setClipboardText(memory[finalI] + "");
-                UIExt.announce("[cyan]复制内存[white]\n " + memory[finalI]);
+                UIExt.announce(arc.Core.bundle.get("mdtx.ui.copied_memory_n") + memory[finalI]); // 原文本:[cyan]复制内存[white]\n
             });
             if((i + 1) % LogicSupport.memoryColumns.get() == 0) t.row();
             else t.add("|").color(((i % LogicSupport.memoryColumns.get()) % 2 == 0) ? Color.cyan : Color.acid)
@@ -255,7 +257,7 @@ public class LogicSupport{
             t.defaults().size(40);
             t.button(Icon.pencil, Styles.cleari, () -> {
                 if(!block.accessible())
-                    UIExt.announce("[yellow]当前无权编辑，仅供查阅");
+                    UIExt.announce(arc.Core.bundle.get("mdtx.ui.no_permission_to_edit_view_only")); // 原文本:[yellow]当前无权编辑，仅供查阅
                 build.showEditDialog();
             });
             t.button(Icon.info, Styles.cleari, () -> {
@@ -266,8 +268,8 @@ public class LogicSupport{
             t.button(Icon.trash, Styles.cleari, () -> {
                 build.links.clear();
                 build.updateCode(build.code, true, null);
-            }).disabled(b -> net.client()).tooltip("重置所有链接");
-            t.button(Icon.paste, Styles.cleari, () -> showLogicCodePickDialog(block, build)).tooltip("从蓝图中选择代码");
+            }).disabled(b -> net.client()).tooltip(arc.Core.bundle.get("mdtx.ui.reset_all_links")); // 原文本:重置所有链接
+            t.button(Icon.paste, Styles.cleari, () -> showLogicCodePickDialog(block, build)).tooltip(arc.Core.bundle.get("mdtx.ui.extract_code_from_schematic")); // 原文本:从蓝图中选择代码
         });
         table.row().pane(Styles.noBarPane, vars).pad(4).maxHeight(400f).touchable(Touchable.disabled).get().setScrollingDisabledX(true);
         if(showVars) buildLogicVarTable(vars, build.executor);
@@ -275,10 +277,10 @@ public class LogicSupport{
 
     private static void showLogicCodePickDialog(LogicBlock block, LogicBuild build){
         var all = schematics.all().select(it -> it.tiles.contains(s -> s.block instanceof LogicBlock));
-        new BaseDialog("选择代码"){{
+        new BaseDialog(arc.Core.bundle.get("mdtx.ui.select_code")){{ // 原文本:选择代码
             addCloseButton();
             closeOnBack();
-            cont.add("TIP: 所有包含处理器的蓝图").row();
+            cont.add(arc.Core.bundle.get("mdtx.ui.tip_all_schematics_containing_processors")).row(); // 原文本:TIP: 所有包含处理器的蓝图
             cont.pane(tt -> {
                 for(var schem : all){
                     tt.button(schem.name(), () -> {

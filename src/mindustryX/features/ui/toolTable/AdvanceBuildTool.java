@@ -48,7 +48,7 @@ public class AdvanceBuildTool extends Table{
                 Lines.stroke(Math.min(Math.abs(width), Math.abs(height)) / tilesize / 10f);
                 Lines.rect(selection.x * tilesize - tilesize / 2f, selection.y * tilesize - tilesize / 2f, selection.width * tilesize + tilesize, selection.height * tilesize + tilesize);
                 Draw.color();
-                FuncX.drawText(selection.getCenter(Tmp.v1).scl(tilesize), "建造区域", Scl.scl(1.25f), Color.white);
+                FuncX.drawText(selection.getCenter(Tmp.v1).scl(tilesize), arc.Core.bundle.get("mdtx.ui.build_area"), Scl.scl(1.25f), Color.white); // 原文本:建造区域
             }
             if(placement == BuildRange.find && find != null){
                 Draw.z(Layer.blockBuilding + 1f);
@@ -73,20 +73,20 @@ public class AdvanceBuildTool extends Table{
             }
         });
         add().height(40);
-        button("", Styles.clearTogglet, () -> placement = BuildRange.global).checked((b) -> placement == BuildRange.global).tooltip("全局检查").size(30f);
+        button("", Styles.clearTogglet, () -> placement = BuildRange.global).checked((b) -> placement == BuildRange.global).tooltip(arc.Core.bundle.get("mdtx.ui.global_range")).size(30f); // 原文本:全局检查
         button("\uE818", Styles.clearTogglet, () -> {
             selection = control.input.lastSelection;
             if(selection.area() < 10f){
-                UIExt.announce("当前选定区域为空，请通过F规划区域");
+                UIExt.announce(arc.Core.bundle.get("mdtx.ui.the_currently_selected_area_is_empty_please_use_f_to_plan_the_area")); // 原文本:当前选定区域为空，请通过F规划区域
                 return;
             }
             placement = BuildRange.zone;
-        }).checked((b) -> placement == BuildRange.zone).tooltip("选择范围").size(30f);
+        }).checked((b) -> placement == BuildRange.zone).tooltip(arc.Core.bundle.get("mdtx.ui.selection_range")).size(30f); // 原文本:选择范围
         button(Blocks.coreShard.emoji(), Styles.clearTogglet, () -> {
             placement = BuildRange.team;
             rebuild();
-        }).checked((b) -> placement == BuildRange.team).tooltip("队伍区域").size(30f);
-        button(UnitTypes.gamma.emoji(), Styles.clearTogglet, () -> placement = BuildRange.player).checked((b) -> placement == BuildRange.player).tooltip("玩家建造区").size(30f);
+        }).checked((b) -> placement == BuildRange.team).tooltip(arc.Core.bundle.get("mdtx.ui.team_range")).size(30f); // 原文本:队伍区域
+        button(UnitTypes.gamma.emoji(), Styles.clearTogglet, () -> placement = BuildRange.player).checked((b) -> placement == BuildRange.player).tooltip(arc.Core.bundle.get("mdtx.ui.player_build_range")).size(30f); // 原文本:玩家建造区
 
         var findButton = add(new TextButton("", Styles.clearTogglet)).update((b) -> {
             buildingSeq.clear();
@@ -99,7 +99,7 @@ public class AdvanceBuildTool extends Table{
             }
             b.setText(find.emoji() + " " + buildingSeq.size);
             b.setChecked(placement == BuildRange.find);
-        }).height(30f).tooltip("查找方块").wrapLabel(false).get();
+        }).height(30f).tooltip(arc.Core.bundle.get("mdtx.ui.find_blocks")).wrapLabel(false).get(); // 原文本:查找方块
         findButton.clicked(() -> {
             if(findButton.childrenPressed()) return;
             if(placement != BuildRange.find){
@@ -116,14 +116,14 @@ public class AdvanceBuildTool extends Table{
         findButton.getLabelCell().padLeft(2f);
         findButton.button(Icon.settingsSmall, Styles.clearTogglei, iconSmall, () -> {
             if(target == null){
-                UIExt.announce("[yellow]当前选中物品为空，请在物品栏选中建筑");
+                UIExt.announce(arc.Core.bundle.get("mdtx.ui.current_selection_is_empty_select_a_block_in_the_inventory")); // 原文本:[yellow]当前选中物品为空，请在物品栏选中建筑
                 return;
             }
             find = target;
             searchIndex = 0;
             placement = BuildRange.find;
             rebuild();
-        }).tooltip("设置目标").padRight(2f);
+        }).tooltip(arc.Core.bundle.get("mdtx.ui.set_target")).padRight(2f); // 原文本:设置目标
 
         add().width(16);
         button("P", Styles.cleart, () -> {
@@ -145,13 +145,13 @@ public class AdvanceBuildTool extends Table{
             var plans = player.unit().plans();
             if(plans.size > 1000){
                 while(plans.size > 1000) plans.removeLast();
-                UIExt.announce("[yellow]建筑过多，避免卡顿，仅保留前1000个规划");
+                UIExt.announce(arc.Core.bundle.get("mdtx.ui.there_are_too_many_buildings_to_avoid_lag_and_only_keep_the_first_1000_plans")); // 原文本:[yellow]建筑过多，避免卡顿，仅保留前1000个规划
             }
-        }).tooltip("放置/替换").size(30f);
+        }).tooltip(arc.Core.bundle.get("mdtx.ui.place_replace")).size(30f); // 原文本:放置/替换
     }
 
     public static void showWorldProcessorInfo(){
-        Log.info("当前地图:@", state.map.name());
+        Log.info(arc.Core.bundle.get("mdtx.ui.current_map_arg"), state.map.name()); // 原文本:当前地图:@
         int[] data = new int[3];
         Groups.build.each(b -> {
             if(b instanceof LogicBlock.LogicBuild lb && lb.block.privileged){
@@ -160,8 +160,8 @@ public class AdvanceBuildTool extends Table{
                 data[2] += lb.code.length();
             }
         });
-        Log.info("地图共有@个世处，总共@行指令，@个字符", data[0], data[1], data[2]);
-        ui.announce(Strings.format("地图共有@个世处，总共@行指令，@个字符", data[0], data[1], data[2]), 10);
+        Log.info(arc.Core.bundle.get("mdtx.ui.the_map_has_arg_world_processors_arg_instruction_lines_and_arg_characters"), data[0], data[1], data[2]); // 原文本:地图共有@个世处，总共@行指令，@个字符
+        ui.announce(Strings.format(arc.Core.bundle.get("mdtx.ui.the_map_has_arg_world_processors_arg_instruction_lines_and_arg_characters"), data[0], data[1], data[2]), 10); // 原文本:地图共有@个世处，总共@行指令，@个字符
     }
 
     void replaceBlock(Block ori, Block re){

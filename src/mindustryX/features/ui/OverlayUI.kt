@@ -61,7 +61,8 @@ object OverlayUI {
 
         override fun buildUI() = Table().apply {
             image(Icon.listSmall).color(Color.lightGray).padRight(4f)
-            add(title).width(148f).padRight(8f)
+            // Prevent long window names from drawing into the position column.
+            add(title).width(148f).padRight(8f).ellipsis(true).left()
 
             val builder = StringBuilder()
             label {
@@ -81,13 +82,13 @@ object OverlayUI {
             }
             button(Icon.eyeSmall, myToggleI, Vars.iconSmall) {
                 set(value.copy(enabled = !value.enabled))
-            }.tooltip("开关").padRight(4f).checked { value.enabled }
+            }.tooltip(arc.Core.bundle.get("mdtx.ui.toggle")).padRight(4f).checked { value.enabled } // 原文本:开关
             button(Icon.lockSmall, myToggleI, Vars.iconSmall) {
                 set(value.copy(pinned = !value.pinned))
-            }.tooltip("锁定").padRight(4f).checked { value.pinned }
+            }.tooltip(arc.Core.bundle.get("mdtx.ui.lock")).padRight(4f).checked { value.pinned } // 原文本:锁定
             button(Icon.resizeSmall, myToggleI, Vars.iconSmall) {
                 UIExtKt.showFloatSettingsPanel {
-                    label { "缩放: x" + Strings.fixed(value.scale, 1) }.center().row()
+                    label { arc.Core.bundle.get("mdtx.ui.zoom_x") + Strings.fixed(value.scale, 1) }.center().row() // 原文本:缩放: x
                     slider(0.2f, 3f, 0.1f, value.scale) {
                         set(value.copy(scale = it))
                     }.update { it.value = value.scale }.width(200f)
@@ -96,7 +97,7 @@ object OverlayUI {
                     }.disabled { Mathf.equal(value.scale, 1f) }.padTop(4f)
                     row()
                 }
-            }.tooltip("缩放").padRight(4f).checked { !Mathf.equal(value.scale, 1f) }
+            }.tooltip(arc.Core.bundle.get("mdtx.ui.zoom")).padRight(4f).checked { !Mathf.equal(value.scale, 1f) } // 原文本:缩放
             addTools()
 
             row()
@@ -473,7 +474,7 @@ object OverlayUI {
             t.defaults().size(Vars.iconLarge).width(Vars.iconLarge * 1.5f).pad(4f)
             t.button(Icon.add) {
                 UIExtKt.showFloatSettingsPanel {
-                    add("添加面板").color(Color.gold).align(Align.center).row()
+                    add(arc.Core.bundle.get("mdtx.ui.add_panel")).color(Color.gold).align(Align.center).row() // 原文本:添加面板
                     pane(Styles.smallPane, Table().apply {
                         defaults().minWidth(120f).fillX().pad(4f)
                         val notAvailable = mutableListOf<Window>()
@@ -483,16 +484,18 @@ object OverlayUI {
                                 return@forEach
                             }
                             add(TextButton(it.data.title).apply {
-                                label.setWrap(false)
+                                label.setWrap(true)
+                                label.setAlignment(Align.left)
                                 setDisabled { it.data.enabled }
                                 changed { it.data.enabled = true }
                             }).row()
                         }
                         if (notAvailable.isNotEmpty()) {
-                            add("当前不可用的面板:").align(Align.center).row()
+                            add(arc.Core.bundle.get("mdtx.ui.panels_currently_unavailable")).align(Align.center).row() // 原文本:当前不可用的面板:
                             notAvailable.forEach {
                                 add(TextButton(it.data.title).apply {
-                                    label.setWrap(false)
+                                    label.setWrap(true)
+                                    label.setAlignment(Align.left)
                                     isDisabled = true
                                 }).row()
                             }
