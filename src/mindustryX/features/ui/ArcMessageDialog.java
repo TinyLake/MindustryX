@@ -64,7 +64,7 @@ public class ArcMessageDialog extends BaseDialog{
 
         Events.on(EventType.WorldLoadEvent.class, e -> {
             addMsg(new Msg(Type.eventWorldLoad, arc.Core.bundle.get("mdtx.ui.load_map") + state.map.name())); // 原文本:载入地图：
-            addMsg(new Msg(Type.eventWorldLoad, arc.Core.bundle.get("mdtx.ui.introduction") + state.map.description())); // 原文本:简介：
+            addMsg(new Msg(Type.eventWorldLoad, arc.Core.bundle.format("mdtx.ui.template.introduction", state.map.description()))); // 原文本:简介：{0}
             while(msgTable.getChildren().size >= maxMsgRecorded) msgTable.getChildren().get(0).remove();
         });
 
