@@ -33,7 +33,17 @@ public class MenuFloatLabel extends WidgetGroup{
             }
             lastVisible = Core.graphics.getFrameId();
         });
-        labels = Core.files.internal("labels").readString("UTF-8").replace("\r", "").replace("\\n", "\n").replace("/n", "\n").split("\n");
+        String labelFile = "labels";
+        try{
+            var locale = Core.bundle == null ? null : Core.bundle.getLocale();
+            // Use English slogans for non-Chinese locales when available.
+            if(locale != null && !"zh".equalsIgnoreCase(locale.getLanguage()) && Core.files.internal("labels_en").exists()){
+                labelFile = "labels_en";
+            }
+        }catch(Throwable ignored){
+            // Fallback to default labels file.
+        }
+        labels = Core.files.internal(labelFile).readString("UTF-8").replace("\r", "").replace("\\n", "\n").replace("/n", "\n").split("\n");
         randomLabel();
     }
 

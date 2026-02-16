@@ -60,7 +60,7 @@ object NewTransferScanMode {
 
         val pos = Core.input.mouseWorld()
         val text = Strings.format(
-            "@,@\n距离: @",
+            arc.Core.bundle.get("mdtx.ui.arg_arg_ndistance_arg"), // 原文本:@,@\n距离: @
             (pos.x / tilesize).toInt(), (pos.y / tilesize).toInt(),
             (player.dst(pos) / tilesize).toInt()
         )

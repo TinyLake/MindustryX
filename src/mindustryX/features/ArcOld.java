@@ -61,7 +61,7 @@ public class ArcOld{
                     image.setDrawable(texture);
                 });
             }catch(Exception e){
-                Core.app.post(() -> ui.showException("背景图片无效:" + file.path(), e));
+                Core.app.post(() -> ui.showException(arc.Core.bundle.get("mdtx.ui.invalid_background_image") + file.path(), e)); // 原文本:背景图片无效:
             }
         });
     }
@@ -93,7 +93,7 @@ public class ArcOld{
             c.checkPref("arcdrillmode", false);
 
             c.checkPref("mass_driver_line", true);
-            c.sliderPref("mass_driver_line_interval", 40, 8, 400, 4, i -> i / 8f + "格");
+            c.sliderPref("mass_driver_line_interval", 40, 8, 400, 4, i -> i / 8f + arc.Core.bundle.get("mdtx.ui.tiles")); // 原文本:格
             {
                 Cons<String> changed = (t) -> {
                     try{
@@ -110,25 +110,25 @@ public class ArcOld{
             c.checkPref("showTurretAmmo", false);
             c.checkPref("showTurretAmmoAmount", false);
             c.sliderPref("turretShowRange", 0, 0, 3, 1, s -> switch(s){
-                case 0 -> "关闭";
-                case 1 -> "仅对地";
-                case 2 -> "仅对空";
-                case 3 -> "全部";
+                case 0 -> arc.Core.bundle.get("mdtx.ui.off"); // 原文本:关闭
+                case 1 -> arc.Core.bundle.get("mdtx.ui.ground_only"); // 原文本:仅对地
+                case 2 -> arc.Core.bundle.get("mdtx.ui.air_only"); // 原文本:仅对空
+                case 3 -> arc.Core.bundle.get("mdtx.ui.all"); // 原文本:全部
                 default -> "";
             });
             c.checkPref("turretForceShowRange", false);
-            c.sliderPref("turretAlertRange", 0, 0, 30, 1, i -> i > 0 ? i + "格" : "关闭");
+            c.sliderPref("turretAlertRange", 0, 0, 30, 1, i -> i > 0 ? i + arc.Core.bundle.get("mdtx.ui.tiles") : arc.Core.bundle.get("mdtx.ui.off")); // 原文本:格 | 关闭
             c.checkPref("blockWeaponTargetLine", false);
             c.checkPref("blockWeaponTargetLineWhenIdle", false);
 
             c.addCategory("arcAddUnitInfo");
             c.checkPref("unitHealthBar", false);
             c.sliderPref("unitWeaponRange", settings.getInt("unitAlertRange", 0), 0, 30, 1, s -> switch(s){
-                case 0 -> "关闭";
-                case 30 -> "一直开启";
-                default -> s + "格";
+                case 0 -> arc.Core.bundle.get("mdtx.ui.off"); // 原文本:关闭
+                case 30 -> arc.Core.bundle.get("mdtx.ui.always_on"); // 原文本:一直开启
+                default -> s + arc.Core.bundle.get("mdtx.ui.tiles"); // 原文本:格
             });
-            c.sliderPref("unitWeaponRangeAlpha", settings.getInt("unitweapon_range", 0), 0, 100, 1, i -> i > 0 ? i + "%" : "关闭");
+            c.sliderPref("unitWeaponRangeAlpha", settings.getInt("unitweapon_range", 0), 0, 100, 1, i -> i > 0 ? i + "%" : arc.Core.bundle.get("mdtx.ui.off")); // 原文本:关闭
             c.checkPref("unitWeaponTargetLine", false);
             c.checkPref("unitItemCarried", true);
             c.checkPref("unitLogicMoveLine", false);
@@ -151,18 +151,18 @@ public class ArcOld{
                 changed.get(settings.getString("playerEffectColor"));
             }
             c.sliderPref("unitTargetType", 0, 0, 5, 1, s -> switch(s){
-                case 0 -> "关闭";
-                case 1 -> "虚圆";
-                case 2 -> "攻击";
-                case 3 -> "攻击去边框";
-                case 4 -> "圆十字";
-                case 5 -> "十字";
+                case 0 -> arc.Core.bundle.get("mdtx.ui.off"); // 原文本:关闭
+                case 1 -> arc.Core.bundle.get("mdtx.ui.ring"); // 原文本:虚圆
+                case 2 -> arc.Core.bundle.get("mdtx.ui.attack"); // 原文本:攻击
+                case 3 -> arc.Core.bundle.get("mdtx.ui.attack_no_border"); // 原文本:攻击去边框
+                case 4 -> arc.Core.bundle.get("mdtx.ui.ring_cross"); // 原文本:圆十字
+                case 5 -> arc.Core.bundle.get("mdtx.ui.cross"); // 原文本:十字
                 default -> s + "";
             });
             c.sliderPref("superUnitEffect", 0, 0, 2, 1, s -> switch(s){
-                case 0 -> "关闭";
-                case 1 -> "独一无二";
-                case 2 -> "全部玩家";
+                case 0 -> arc.Core.bundle.get("mdtx.ui.off"); // 原文本:关闭
+                case 1 -> arc.Core.bundle.get("mdtx.ui.unique"); // 原文本:独一无二
+                case 2 -> arc.Core.bundle.get("mdtx.ui.all_players"); // 原文本:全部玩家
                 default -> s + "";
             });
             c.sliderPref("playerEffectCurStroke", 0, 1, 30, 1, i -> (float)i / 10f + "Pixel(s)");

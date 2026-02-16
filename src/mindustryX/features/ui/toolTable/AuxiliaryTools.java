@@ -39,10 +39,10 @@ public class AuxiliaryTools extends Table{
 
     protected void rebuild(){
         defaults().size(40);
-        aiButton(new ArcMinerAI(), UnitTypes.mono.region, "矿机AI");
-        aiButton(new BuilderAI(), UnitTypes.poly.region, "重建AI");
-        aiButton(new RepairAI(), UnitTypes.mega.region, "修复AI");
-        aiButton(new DefenderAI(), UnitTypes.oct.region, "保护AI");
+        aiButton(new ArcMinerAI(), UnitTypes.mono.region, arc.Core.bundle.get("mdtx.ui.miner_ai")); // 原文本:矿机AI
+        aiButton(new BuilderAI(), UnitTypes.poly.region, arc.Core.bundle.get("mdtx.ui.builder_ai")); // 原文本:重建AI
+        aiButton(new RepairAI(), UnitTypes.mega.region, arc.Core.bundle.get("mdtx.ui.repair_ai")); // 原文本:修复AI
+        aiButton(new DefenderAI(), UnitTypes.oct.region, arc.Core.bundle.get("mdtx.ui.defender_ai")); // 原文本:保护AI
         button(Icon.settingsSmall, Styles.clearNonei, iconMed, this::showAiSettingDialog);
 
         row();
@@ -55,20 +55,20 @@ public class AuxiliaryTools extends Table{
                     if(++count >= 255) break;
                 }
             }
-        }).tooltip("在建造列表加入被摧毁建筑");
-        var t = button(new TextureRegionDrawable(Items.copper.uiIcon), Styles.clearNoneTogglei, () -> AutoFill.enable ^= true).tooltip("一键装填").checked((b) -> AutoFill.enable).get();
+        }).tooltip(arc.Core.bundle.get("mdtx.ui.add_destroyed_buildings_to_build_queue")); // 原文本:在建造列表加入被摧毁建筑
+        var t = button(new TextureRegionDrawable(Items.copper.uiIcon), Styles.clearNoneTogglei, () -> AutoFill.enable ^= true).tooltip(arc.Core.bundle.get("mdtx.ui.auto_fill")).checked((b) -> AutoFill.enable).get(); // 原文本:一键装填
         SettingsV2.bindQuickSettings(t, AutoFill.INSTANCE.getSettings());
-        toggleButton(Icon.modeAttack, "autotarget", "自动攻击");
-        toggleButton(new TextureRegionDrawable(UnitTypes.vela.uiIcon), "forceBoost", "强制助推");
-        toggleButton(Icon.eyeSmall, "detach-camera", "视角脱离玩家");
+        toggleButton(Icon.modeAttack, "autotarget", arc.Core.bundle.get("mdtx.ui.auto_attack")); // 原文本:自动攻击
+        toggleButton(new TextureRegionDrawable(UnitTypes.vela.uiIcon), "forceBoost", arc.Core.bundle.get("mdtx.ui.force_boost")); // 原文本:强制助推
+        toggleButton(Icon.eyeSmall, "detach-camera", arc.Core.bundle.get("mdtx.ui.detached_camera")); // 原文本:视角脱离玩家
 
         if(!mobile) return;
         row();
-        toggleButton(Icon.unitsSmall, "指挥模式", () -> control.input.commandMode = !control.input.commandMode).checked(b -> control.input.commandMode);
-        toggleButton(Icon.pause, "暂停建造", () -> control.input.isBuilding = !control.input.isBuilding).checked(b -> control.input.isBuilding);
-        scriptButton(Icon.up, "捡起载荷", () -> control.input.tryPickupPayload());
-        scriptButton(Icon.down, "丢下载荷", () -> control.input.tryDropPayload());
-        scriptButton(new TextureRegionDrawable(Blocks.payloadConveyor.uiIcon), "进入传送带", () -> {
+        toggleButton(Icon.unitsSmall, arc.Core.bundle.get("mdtx.ui.command_mode"), () -> control.input.commandMode = !control.input.commandMode).checked(b -> control.input.commandMode); // 原文本:指挥模式
+        toggleButton(Icon.pause, arc.Core.bundle.get("mdtx.ui.construction_suspended"), () -> control.input.isBuilding = !control.input.isBuilding).checked(b -> control.input.isBuilding); // 原文本:暂停建造
+        scriptButton(Icon.up, arc.Core.bundle.get("mdtx.ui.pick_up_payload"), () -> control.input.tryPickupPayload()); // 原文本:捡起载荷
+        scriptButton(Icon.down, arc.Core.bundle.get("mdtx.ui.drop_payload"), () -> control.input.tryDropPayload()); // 原文本:丢下载荷
+        scriptButton(new TextureRegionDrawable(Blocks.payloadConveyor.uiIcon), arc.Core.bundle.get("mdtx.ui.enter_the_conveyor_belt"), () -> { // 原文本:进入传送带
             Building build = player.buildOn();
             if(build == null || player.dead()) return;
             Call.unitBuildingControlSelect(player.unit(), build);
@@ -85,7 +85,8 @@ public class AuxiliaryTools extends Table{
             boolean setting = Core.settings.getBool(settingName);
 
             Core.settings.put(settingName, !setting);
-            UIExt.announce("已" + (setting ? "取消" : "开启") + description);
+            String state = setting ? arc.Core.bundle.get("mdtx.ui.off") : arc.Core.bundle.get("mdtx.ui.on"); // 原文本:关闭 | 开启
+            UIExt.announce(arc.Core.bundle.format("mdtx.ui.template.toggleState", description, state)); // 原文本:{0}: {1}
         }).tooltip(description, true).checked(b -> Core.settings.getBool(settingName));
     }
 
@@ -100,10 +101,10 @@ public class AuxiliaryTools extends Table{
     private void showAiSettingDialog(){
         int cols = (int)Math.max(Core.graphics.getWidth() / Scl.scl(480), 1);
 
-        BaseDialog dialog = new BaseDialog("ARC-AI设定器");
+        BaseDialog dialog = new BaseDialog(arc.Core.bundle.get("mdtx.ui.arc_ai_configurator")); // 原文本:ARC-AI设定器
 
         dialog.cont.table(t -> {
-            t.add("minerAI-矿物筛选器").color(Pal.accent).pad(cols / 2f).center().row();
+            t.add(arc.Core.bundle.get("mdtx.ui.miner_ai_ore_filter")).color(Pal.accent).pad(cols / 2f).center().row(); // 原文本:minerAI-矿物筛选器
             t.image().color(Pal.accent).fillX().row();
             t.table(list -> {
                 int i = 0;

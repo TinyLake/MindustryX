@@ -76,12 +76,12 @@ object VarsX {
     }
 
     @JvmField
-    val itemSelectionHeight = SliderPref("gameUI.itemSelectionHeight", 4, 4, 12) { "$it 行" }.apply {
+    val itemSelectionHeight = SliderPref("gameUI.itemSelectionHeight", 4, 4, 12) { arc.Core.bundle.format("mdtx.ui.template.itemSelectionHeight", it) }.apply { // 原文本:{0} 行
         addFallbackName("itemSelectionHeight")
     }
 
     @JvmField
-    val itemSelectionWidth = SliderPref("gameUI.itemSelectionWidth", 4, 4, 12) { "$it 列" }.apply {
+    val itemSelectionWidth = SliderPref("gameUI.itemSelectionWidth", 4, 4, 12) { arc.Core.bundle.format("mdtx.ui.template.itemSelectionWidth", it) }.apply { // 原文本:{0} 列
         addFallbackName("itemSelectionWidth")
     }
 
@@ -92,7 +92,7 @@ object VarsX {
 
     @JvmField
     val maxSchematicSize = SliderPref("maxSchematicSize", Vars.maxSchematicSize, 64, 257) {
-        if (it == 257) return@SliderPref "无限制"
+        if (it == 257) return@SliderPref arc.Core.bundle.get("mdtx.ui.unlimited") // 原文本:无限制
         "${it}x${it}"
     }
 
