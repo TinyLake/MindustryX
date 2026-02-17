@@ -37,7 +37,7 @@ index 4051453c38e79d1f6c8c02900ac9823aaf1993b9..f2bf3bba1bf733159746729bc1aa7499
                  if(connection.isConnected()){
                      if(reliable){
 diff --git a/core/src/mindustry/net/Net.java b/core/src/mindustry/net/Net.java
-index 7271c06aaf52d4e1592293c4d9e2a2a30e8fba0f..7072e96706e4134bccc29c2cd6b40e2290b1072c 100644
+index b53601bc1d79052b569a721a7ee2207d0ee2420a..5cfafc4fba4b6a056f77256a674812b53498139f 100644
 --- a/core/src/mindustry/net/Net.java
 +++ b/core/src/mindustry/net/Net.java
 @@ -10,6 +10,7 @@ import mindustry.game.EventType.*;
@@ -48,7 +48,7 @@ index 7271c06aaf52d4e1592293c4d9e2a2a30e8fba0f..7072e96706e4134bccc29c2cd6b40e22
  import net.jpountz.lz4.*;
  
  import java.io.*;
-@@ -226,8 +227,10 @@ public class Net{
+@@ -225,8 +226,10 @@ public class Net{
  
      /** Send an object to all connected clients, or to the server if this is a client.*/
      public void send(Object object, boolean reliable){
@@ -59,7 +59,7 @@ index 7271c06aaf52d4e1592293c4d9e2a2a30e8fba0f..7072e96706e4134bccc29c2cd6b40e22
                  con.send(object, reliable);
              }
          }else{
-@@ -237,8 +240,9 @@ public class Net{
+@@ -236,8 +239,9 @@ public class Net{
  
      /** Send an object to everyone EXCEPT a certain client. Server-side only.*/
      public void sendExcept(NetConnection except, Object object, boolean reliable){

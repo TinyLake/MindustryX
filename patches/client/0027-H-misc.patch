@@ -62,7 +62,7 @@ index ec993d3e6f8026dcc58cdc6cc943d8c792494bf5..f4ed14ca5a2b5f3a8b2d01e0c7bbc383
          }
  
 diff --git a/core/src/mindustry/Vars.java b/core/src/mindustry/Vars.java
-index 1d4c11f8bd7ab61c9c7a4bbc1e300f6afd1f6d3a..aec6dcf4528b37165f8b14076f82e8ef58f96189 100644
+index 9813c47bd6316ac26023ad444c17f64c273e6afa..fba02d5892846f2a48b45384d0c0bb463e5e1d0f 100644
 --- a/core/src/mindustry/Vars.java
 +++ b/core/src/mindustry/Vars.java
 @@ -289,7 +289,8 @@ public class Vars implements Loadable{
@@ -101,10 +101,10 @@ index 11278ddac6ce2b35234acb31b43ea7e8c999592d..ed6785c5853a9a8096b2f48792c05b98
      private Seq<Team> activeTeams = new Seq<>(Team.class);
      /** Maps teams to a map of flagged tiles by flag. */
 diff --git a/core/src/mindustry/content/Blocks.java b/core/src/mindustry/content/Blocks.java
-index 54e4554bddbccc697f4395db4f4510ae931c888d..d33cfbdfc40111e72e048095dfecd2ce2054af74 100644
+index 55e608fcdff4c6fa6cc1fd7dd26ca65780ec2308..10d6b4165acb0efc88355b04839221ed4705316a 100644
 --- a/core/src/mindustry/content/Blocks.java
 +++ b/core/src/mindustry/content/Blocks.java
-@@ -2123,6 +2123,7 @@ public class Blocks{
+@@ -2124,6 +2124,7 @@ public class Blocks{
              arrowSpacing = 6f;
              bufferCapacity = 14;
              crushFragile = true;
@@ -112,7 +112,7 @@ index 54e4554bddbccc697f4395db4f4510ae931c888d..d33cfbdfc40111e72e048095dfecd2ce
          }};
  
          phaseConveyor = new ItemBridge("phase-conveyor"){{
-@@ -2135,6 +2136,7 @@ public class Blocks{
+@@ -2136,6 +2137,7 @@ public class Blocks{
              pulse = true;
              envEnabled |= Env.space;
              consumePower(0.30f);
@@ -133,10 +133,10 @@ index 6792c68861eb9ddf52428b2afc80510987509210..ef315970349db1c463ba117dfe3b0b15
  
          dynamic = new StatusEffect("dynamic"){{
 diff --git a/core/src/mindustry/core/Control.java b/core/src/mindustry/core/Control.java
-index e2055878e6f76e57b50174be15378a18d8f11d31..f6706d0940c86623909c3ea51c4fd7ebdb4c9a3b 100644
+index 9d742cb882c473e191549fe1d9c1364ebce32c80..0e65f6091b906412ce8e52b54d10891182798738 100644
 --- a/core/src/mindustry/core/Control.java
 +++ b/core/src/mindustry/core/Control.java
-@@ -631,7 +631,8 @@ public class Control implements ApplicationListener, Loadable{
+@@ -622,7 +622,8 @@ public class Control implements ApplicationListener, Loadable{
                  BaseDialog dialog = new BaseDialog("@confirm");
                  dialog.setFillParent(true);
  
@@ -376,7 +376,7 @@ index 8c8b7c49668a1adb90aa0d018c18f66ed6deeb6e..3e0cca2191e2fd062b96af031a6b2af5
              return;
          }else if(checkPlaytest()){
 diff --git a/core/src/mindustry/ui/dialogs/SettingsMenuDialog.java b/core/src/mindustry/ui/dialogs/SettingsMenuDialog.java
-index d8385605c14470e4252710084f56ab56908dfdc3..b207cdfe4c4a1e80a4852667b3909059bef6e8a9 100644
+index 7949471868168ce97170f6550ce2949c7590506b..6e0bd9f94bd41137ddc69bae8beb7727d12ac6c0 100644
 --- a/core/src/mindustry/ui/dialogs/SettingsMenuDialog.java
 +++ b/core/src/mindustry/ui/dialogs/SettingsMenuDialog.java
 @@ -408,14 +408,14 @@ public class SettingsMenuDialog extends BaseDialog{

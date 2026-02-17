@@ -8,10 +8,10 @@ Subject: [PATCH] H.API: InternalMods
  1 file changed, 5 insertions(+), 1 deletion(-)
 
 diff --git a/core/src/mindustry/mod/Mods.java b/core/src/mindustry/mod/Mods.java
-index ece6c6720383db31af8627dd2c34adfab0d56bb3..43681b6a8a3c4af307bddb69f3cae9930f568865 100644
+index 3815be9323dc1abb3573b968f70dec83bb18c1af..2779987cf88ddc347b2730f76195029318644295 100644
 --- a/core/src/mindustry/mod/Mods.java
 +++ b/core/src/mindustry/mod/Mods.java
-@@ -153,6 +153,10 @@ public class Mods implements Loadable{
+@@ -155,6 +155,10 @@ public class Mods implements Loadable{
          eachEnabled(mod -> {
              Seq<Fi> sprites = mod.root.child("sprites").findAll(f -> f.extension().equals("png"));
              Seq<Fi> overrides = mod.root.child("sprites-override").findAll(f -> f.extension().equals("png"));
@@ -22,7 +22,7 @@ index ece6c6720383db31af8627dd2c34adfab0d56bb3..43681b6a8a3c4af307bddb69f3cae993
  
              if(sprites.isEmpty() && overrides.isEmpty()) return;
  
-@@ -490,7 +494,7 @@ public class Mods implements Loadable{
+@@ -492,7 +496,7 @@ public class Mods implements Loadable{
      /** Loads all mods from the folder, but does not call any methods on them.*/
      public void load(){
          var candidates = new Seq<Fi>();

@@ -7,11 +7,11 @@ clear and replce jabel(Support record)
 way-zer <himc.wicp@gmail.com> on 2024/6/9
 ---
  .gitignore                                    |   2 +-
- android/build.gradle                          | 124 +++----
+ android/build.gradle                          | 123 +++----
  android/proguard-rules.pro                    |   4 +
  .../com/github/bsideup/jabel/Desugar.java     |  13 +
  .../javax.annotation.processing.Processor     |   6 +
- build.gradle                                  | 312 +++---------------
+ build.gradle                                  | 309 +++---------------
  core/build.gradle                             |   2 -
  core/build.gradle.kts                         |  67 ++++
  desktop/build.gradle                          | 174 +---------
@@ -23,7 +23,7 @@ way-zer <himc.wicp@gmail.com> on 2024/6/9
  settings.gradle                               |  11 +-
  tools/build.gradle                            |  82 +++--
  tools/src/mindustry/tools/Generators.java     |   2 +-
- 17 files changed, 446 insertions(+), 725 deletions(-)
+ 17 files changed, 445 insertions(+), 722 deletions(-)
  create mode 100644 annotations/src/main/java/com/github/bsideup/jabel/Desugar.java
  create mode 100644 annotations/src/main/resources/META-INF/services/javax.annotation.processing.Processor
  delete mode 100644 core/build.gradle
@@ -50,16 +50,15 @@ index 5e3b7987ef4f776a0bc35dde58fb2c74f4acdb07..b5b2a237c2f5343aab2fb668337c2bc4
  /core/assets/locales
  /core/assets/cache/
 diff --git a/android/build.gradle b/android/build.gradle
-index 64c4270c306a853b45db26def94287336c067d98..13e9a69de55f1ceb51409c317b9b1c5db56b86b3 100644
+index 7e66a790f120b4838f02c57752395072dc998aa0..13e9a69de55f1ceb51409c317b9b1c5db56b86b3 100644
 --- a/android/build.gradle
 +++ b/android/build.gradle
-@@ -1,51 +1,24 @@
+@@ -1,50 +1,24 @@
 -buildscript{
 -    repositories{
 -        mavenLocal()
 -        mavenCentral()
 -        google()
--        maven{ url "https://oss.sonatype.org/content/repositories/snapshots/" }
 -    }
 -
 -    dependencies{
@@ -111,7 +110,7 @@ index 64c4270c306a853b45db26def94287336c067d98..13e9a69de55f1ceb51409c317b9b1c5d
          }
  
          androidTest.setRoot('tests')
-@@ -56,23 +29,22 @@ android{
+@@ -55,23 +29,22 @@ android{
      }
  
      defaultConfig{
@@ -142,7 +141,7 @@ index 64c4270c306a853b45db26def94287336c067d98..13e9a69de55f1ceb51409c317b9b1c5d
      }
  
      compileOptions{
-@@ -85,10 +57,10 @@ android{
+@@ -84,10 +57,10 @@ android{
      signingConfigs{
          release{
              if(project.hasProperty("RELEASE_STORE_FILE")){
@@ -157,7 +156,7 @@ index 64c4270c306a853b45db26def94287336c067d98..13e9a69de55f1ceb51409c317b9b1c5d
              }else if(System.getenv("CI") == "true"){
                  storeFile = file("../../bekeystore.jks")
                  storePassword = System.getenv("keystore_password")
-@@ -101,7 +73,7 @@ android{
+@@ -100,7 +73,7 @@ android{
      }
  
      buildTypes{
@@ -166,7 +165,7 @@ index 64c4270c306a853b45db26def94287336c067d98..13e9a69de55f1ceb51409c317b9b1c5d
              //TODO without these lines (r8 enabled), Mindustry crashes with missing default interface method errors.
              //WHY THE HELL ARE DEFAULT INTERFACES NOT BEING DESUGARED? WHY DID UPDATING AGP MAKE THIS HAPPEN?
              //When I ENABLE shrinking, r8 goes and REMOVES ALL DEFAULT INTERFACE CLASSES, which breaks mods. Why?
-@@ -109,13 +81,8 @@ android{
+@@ -108,13 +81,8 @@ android{
              minifyEnabled = true
              shrinkResources = true
              proguardFiles("proguard-rules.pro")
@@ -182,7 +181,7 @@ index 64c4270c306a853b45db26def94287336c067d98..13e9a69de55f1ceb51409c317b9b1c5d
              }
          }
      }
-@@ -126,42 +93,31 @@ dependencies{
+@@ -125,42 +93,31 @@ dependencies{
  
      implementation arcModule("backends:backend-android")
      implementation 'com.jakewharton.android.repackaged:dalvik-dx:9.0.0_r3'
@@ -293,10 +292,10 @@ index 0000000000000000000000000000000000000000..181b87c1d5f3755f16a01c0528d0a89f
 +mindustry.annotations.misc.LogicStatementProcessor
 +mindustry.annotations.remote.RemoteProcess
 diff --git a/build.gradle b/build.gradle
-index 6a84a637608d78e0486b3cf6fa5bcfc6a354f891..2ac8a33e399ef97e797d4f48a1ac654a2041ba23 100644
+index 936da47050ee603a8f659893881d78978163e2e8..6c544fd32053b3e4beded879bbc9d7b0fc7d3fde 100644
 --- a/build.gradle
 +++ b/build.gradle
-@@ -1,30 +1,15 @@
+@@ -1,29 +1,15 @@
 -import java.text.SimpleDateFormat
 -
  buildscript{
@@ -319,7 +318,6 @@ index 6a84a637608d78e0486b3cf6fa5bcfc6a354f891..2ac8a33e399ef97e797d4f48a1ac654a
 -        mavenLocal()
 -        mavenCentral()
 -        google()
--        maven{ url "https://oss.sonatype.org/content/repositories/snapshots/" }
 -        maven{ url 'https://jitpack.io' }
 -    }
 -
@@ -330,7 +328,7 @@ index 6a84a637608d78e0486b3cf6fa5bcfc6a354f891..2ac8a33e399ef97e797d4f48a1ac654a
  }
  
  plugins{
-@@ -50,185 +35,43 @@ allprojects{
+@@ -49,184 +35,42 @@ allprojects{
              return new Properties().with{p -> p.load(file('../core/assets/version.properties').newReader()); return p }
          }
  
@@ -465,8 +463,7 @@ index 6a84a637608d78e0486b3cf6fa5bcfc6a354f891..2ac8a33e399ef97e797d4f48a1ac654a
      repositories{
          mavenLocal()
          mavenCentral()
--        maven{ url "https://oss.sonatype.org/content/repositories/snapshots/" }
--        maven{ url "https://oss.sonatype.org/content/repositories/releases/" }
+-        maven{ url "https://central.sonatype.com/repository/maven-snapshots" }
 -        maven{ url 'https://jitpack.io' }
 -    }
 -
@@ -474,8 +471,7 @@ index 6a84a637608d78e0486b3cf6fa5bcfc6a354f891..2ac8a33e399ef97e797d4f48a1ac654a
 -        doFirst{
 -            delete{
 -                delete "$rootDir/core/assets/cache"
-+        maven{ url = "https://oss.sonatype.org/content/repositories/snapshots/" }
-+        maven{ url = "https://oss.sonatype.org/content/repositories/releases/" }
++        maven{ url = "https://central.sonatype.com/repository/maven-snapshots" }
 +        maven{ url = 'https://jitpack.io' }
 +    }
 +
@@ -535,7 +531,7 @@ index 6a84a637608d78e0486b3cf6fa5bcfc6a354f891..2ac8a33e399ef97e797d4f48a1ac654a
          options{
              addStringOption('Xdoclint:none', '-quiet')
              addStringOption('-release', '17')
-@@ -237,11 +80,10 @@ configure(subprojects - project(":annotations") - project(":tests")){
+@@ -235,11 +79,10 @@ configure(subprojects - project(":annotations") - project(":tests")){
      }
  }
  
@@ -548,7 +544,7 @@ index 6a84a637608d78e0486b3cf6fa5bcfc6a354f891..2ac8a33e399ef97e797d4f48a1ac654a
      dependencies{
          implementation project(":core")
          implementation arcModule("extensions:profiling")
-@@ -249,8 +91,6 @@ project(":desktop"){
+@@ -249,8 +92,6 @@ project(":desktop"){
          implementation arcModule("natives:natives-desktop")
          implementation arcModule("natives:natives-freetype-desktop")
  
@@ -557,7 +553,7 @@ index 6a84a637608d78e0486b3cf6fa5bcfc6a354f891..2ac8a33e399ef97e797d4f48a1ac654a
          implementation "com.github.Anuken:steamworks4j:$steamworksVersion"
  
          implementation arcModule("backends:backend-sdl")
-@@ -270,17 +110,7 @@ project(":core"){
+@@ -270,17 +111,7 @@ project(":core"){
          }
      }
  
@@ -576,7 +572,7 @@ index 6a84a637608d78e0486b3cf6fa5bcfc6a354f891..2ac8a33e399ef97e797d4f48a1ac654a
          doLast{
              def props = loadVersionProps()
              def androidVersion = props['androidBuildCode'].toInteger() - 2
-@@ -288,9 +118,9 @@ project(":core"){
+@@ -288,9 +119,9 @@ project(":core"){
              def notice = "[This is a truncated changelog, see Github for full notes]"
              def maxLength = 460
  
@@ -588,7 +584,7 @@ index 6a84a637608d78e0486b3cf6fa5bcfc6a354f891..2ac8a33e399ef97e797d4f48a1ac654a
                  if(result.length() + line.length() + 1 < maxLength){
                      result += line + "\n"
                  }
-@@ -304,19 +134,7 @@ project(":core"){
+@@ -304,19 +135,7 @@ project(":core"){
          }
      }
  
@@ -609,7 +605,7 @@ index 6a84a637608d78e0486b3cf6fa5bcfc6a354f891..2ac8a33e399ef97e797d4f48a1ac654a
          archiveClassifier = 'music'
          from files("assets"){
              include "music/*", "sounds/*"
-@@ -324,8 +142,6 @@ project(":core"){
+@@ -324,8 +143,6 @@ project(":core"){
      }
  
      dependencies{
@@ -618,7 +614,7 @@ index 6a84a637608d78e0486b3cf6fa5bcfc6a354f891..2ac8a33e399ef97e797d4f48a1ac654a
          api "at.yawk.lz4:lz4-java:1.10.2"
          api arcModule("arc-core")
          api arcModule("extensions:flabel")
-@@ -334,34 +150,30 @@ project(":core"){
+@@ -334,34 +151,30 @@ project(":core"){
          api arcModule("extensions:fx")
          api arcModule("extensions:arcnet")
          api "com.github.Anuken:rhino:$rhinoVersion"
@@ -669,7 +665,7 @@ index 6a84a637608d78e0486b3cf6fa5bcfc6a354f891..2ac8a33e399ef97e797d4f48a1ac654a
      }
  
      gradle.taskGraph.whenReady{
-@@ -398,12 +210,6 @@ project(":tests"){
+@@ -398,12 +211,6 @@ project(":tests"){
          testRuntimeOnly "org.junit.jupiter:junit-jupiter-engine:5.7.1"
      }
  
@@ -682,7 +678,7 @@ index 6a84a637608d78e0486b3cf6fa5bcfc6a354f891..2ac8a33e399ef97e797d4f48a1ac654a
      test{
          //fork every test so mods don't interact with each other
          forkEvery = 1
-@@ -427,7 +233,6 @@ project(":tools"){
+@@ -427,7 +234,6 @@ project(":tools"){
          implementation arcModule("backends:backend-headless")
  
          implementation("com.google.guava:guava:33.3.1-jre")
@@ -690,7 +686,7 @@ index 6a84a637608d78e0486b3cf6fa5bcfc6a354f891..2ac8a33e399ef97e797d4f48a1ac654a
      }
  }
  
-@@ -450,43 +255,16 @@ configure([":core", ":server"].collect{project(it)}){
+@@ -450,43 +256,16 @@ configure([":core", ":server"].collect{project(it)}){
          publications{
              maven(MavenPublication){
                  from components.java
@@ -1019,18 +1015,18 @@ index d30d59c78a6f6d8f4f5b02e1c84538646acf2c80..bbab133446e5eaed169ff0ad31ddf7b8
 +}
 \ No newline at end of file
 diff --git a/gradle.properties b/gradle.properties
-index 13b0cd97269bdad351b341093c6443cb4dfe1226..a2e7a79636c7626f19fde6b1c2f7b638b00fe4ec 100644
+index 52acca77cac68c113b4f7002d22d16062fe1d0c7..7fecd47800825099dae1d2e7e535799e91a2df8a 100644
 --- a/gradle.properties
 +++ b/gradle.properties
 @@ -26,4 +26,7 @@ org.gradle.caching=true
  org.gradle.internal.http.socketTimeout=100000
  org.gradle.internal.http.connectionTimeout=100000
  android.enableR8.fullMode=false
--archash=f42837db92
-+#archash=f42837db92
+-archash=a3c7d2cbf3
++#archash=a3c7d2cbf3
 +
 +#MDTX: Use "v{upstreamBuild}" by default
-+upstreamBuild=155.3
++upstreamBuild=155.4
 diff --git a/gradlew b/gradlew
 index 4f906e0c811fc9e230eb44819f509cd0627f2600..f3b75f3b0d4faeb4b1c8a02b5c47007e6efb7dcd 100755
 --- a/gradlew

@@ -47,10 +47,10 @@ index 380fd844426820615fd6d2f88899d2f5ec20ac2a..caf6a100865d862a4d75ccf55741f45b
  
      public boolean unlocked(){
 diff --git a/core/src/mindustry/ui/dialogs/DatabaseDialog.java b/core/src/mindustry/ui/dialogs/DatabaseDialog.java
-index 22205bcf1d5eccffc91701b6a008c5f3d068daea..41e0337b2adb7f14493a4e1df83b3e2972a57d9e 100644
+index 078026a393a19b36a66577a962f5984310375570..dfc6b9f31bdb9d1f890acc21f4ecca33e09c22fd 100644
 --- a/core/src/mindustry/ui/dialogs/DatabaseDialog.java
 +++ b/core/src/mindustry/ui/dialogs/DatabaseDialog.java
-@@ -50,6 +50,11 @@ public class DatabaseDialog extends BaseDialog{
+@@ -51,6 +51,11 @@ public class DatabaseDialog extends BaseDialog{
          });
          onResize(this::rebuild);
  
@@ -62,16 +62,16 @@ index 22205bcf1d5eccffc91701b6a008c5f3d068daea..41e0337b2adb7f14493a4e1df83b3e29
          all.margin(20).marginTop(0f).marginRight(30f);
  
          cont.top();
-@@ -131,7 +136,7 @@ public class DatabaseDialog extends BaseDialog{
+@@ -132,7 +137,7 @@ public class DatabaseDialog extends BaseDialog{
              for(int j = 0; j < categoryContents.size; j++){
                  String tagName = categoryContents.orderedKeys().get(j);
                  Seq<UnlockableContent> array = categoryContents.get(tagName).select(u ->
 -                !u.isHidden() && !u.hideDatabase &&
 +                (mindustryX.VarsX.allUnlocked.getValue() || !u.isHidden() && !u.hideDatabase) &&
                  (tab == Planets.sun || u.allDatabaseTabs || u.databaseTabs.contains(tab)) &&
-                 (text.isEmpty() || u.localizedName.toLowerCase().contains(text))).as();
+                 (text.isEmpty() || u.localizedName.toLowerCase(Locale.ROOT).contains(text))).as();
                  if(array.isEmpty()) continue;
-@@ -238,6 +243,6 @@ public class DatabaseDialog extends BaseDialog{
+@@ -239,6 +244,6 @@ public class DatabaseDialog extends BaseDialog{
      }
  
      boolean unlocked(UnlockableContent content){

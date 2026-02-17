@@ -51,7 +51,7 @@ index f174d06288d5adcffa6f8f60cbefe18d8fd40fe1..930b7462db02bd201fae6e694b9cc258
  
      public static void writeUnit(Writes write, Unit unit){
 diff --git a/core/src/mindustry/net/Net.java b/core/src/mindustry/net/Net.java
-index 7072e96706e4134bccc29c2cd6b40e2290b1072c..39e9077a7db6007c85699ea987ecc04be6e2416a 100644
+index 5cfafc4fba4b6a056f77256a674812b53498139f..81b815965da3409ebee50b5aab5eaf59a7dadbfd 100644
 --- a/core/src/mindustry/net/Net.java
 +++ b/core/src/mindustry/net/Net.java
 @@ -11,6 +11,7 @@ import mindustry.gen.*;
@@ -62,7 +62,7 @@ index 7072e96706e4134bccc29c2cd6b40e2290b1072c..39e9077a7db6007c85699ea987ecc04b
  import net.jpountz.lz4.*;
  
  import java.io.*;
-@@ -295,6 +296,7 @@ public class Net{
+@@ -294,6 +295,7 @@ public class Net{
              int p = object.getPriority();
  
              if(clientLoaded || p == Packet.priorityHigh){

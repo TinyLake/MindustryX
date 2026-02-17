@@ -5,12 +5,13 @@ Subject: [PATCH] BUILD upgrade jnigen to v3.1.1 (WIP)
 
 ---
  arc-core/build.gradle               |  40 +++---
- build.gradle                        |  17 +--
+ backends/backend-sdl/build.gradle   |  21 +--
+ build.gradle                        |  19 +--
  extensions/box2d/build.gradle       | 191 ++++++++++++++--------------
  extensions/filedialogs/build.gradle |  19 ++-
  extensions/freetype/build.gradle    |  23 ++--
  settings.gradle                     |   2 -
- 6 files changed, 137 insertions(+), 155 deletions(-)
+ 7 files changed, 149 insertions(+), 166 deletions(-)
 
 diff --git a/arc-core/build.gradle b/arc-core/build.gradle
 index ca6244fa6ad6db164a8281c003fbaa3b67eeab6f..a807c3df03a26ee7c3275ae988b7620a88554427 100644
@@ -100,8 +101,81 @@ index ca6244fa6ad6db164a8281c003fbaa3b67eeab6f..a807c3df03a26ee7c3275ae988b7620a
  
  getTasksByName("jnigen", true).each{
      it.dependsOn preJni
+diff --git a/backends/backend-sdl/build.gradle b/backends/backend-sdl/build.gradle
+index a0a4cc851b54564c0998752a9409a309350fa6d9..9544dcded1bb516f19167b5d1923ba5b97f5bce1 100644
+--- a/backends/backend-sdl/build.gradle
++++ b/backends/backend-sdl/build.gradle
+@@ -1,13 +1,14 @@
++plugins {
++    id "com.badlogicgames.jnigen.jnigen-gradle"
++}
++
+ sourceSets.main.java.srcDirs = ["src"]
+ sourceSets.main.resources.srcDirs = ["libs/linux64", "libs/macosx64","libs/windows32", "libs/windows64"]
+ 
+ dependencies{
+-    testImplementation libraries.jnigen
+     testImplementation aproj(":arc-core")
+ }
+ 
+-apply plugin: "com.badlogicgames.gdx.gdx-jnigen"
+-
+ file("jni").mkdir()
+ 
+ task preJni{
+@@ -79,7 +80,7 @@ jnigen{
+         cIncludes = ["*.c", "glew-2.2.0/src/glew.c"]
+         headerDirs += ["glew-2.2.0/include"]
+     }
+-    add(Linux, x64){
++    addLinux(x64, x86){
+         cppFlags += " " + execCmd("sdl2-config --cflags")
+         cFlags = cppFlags
+         //NOTE: for this to statically link properly, you need to add -L/path/to/folder/with/custom/libSDL2.a
+@@ -88,27 +89,27 @@ jnigen{
+         libraries = execCmd("sdl2-config --libs") + " -Wl,-Bdynamic -lGL "
+         linkerFlags = "-shared -m64"
+     }
+-    add(Windows, x64){
++    addWindows(x64, x86){
+         def path = "SDL2-$sdlVersion/x86_64-w64-mingw32"
+         def root = "$rootDir/backends/backend-sdl/jni"
+         headerDirs += (String[])["$path/include/SDL2"]
+         cppFlags += " " + execCmd("sh $root/$path/bin/sdl2-config --cflags")
+         cFlags = cppFlags
+         libraries = execCmd("sh $root/$path/bin/sdl2-config --static-libs") + " -lopengl32"
+-        linkerFlags += " -L $root/$path/lib"
++        linkerFlags += (String[])["-L", "$root/$path/lib"]
+     }
+-    add(Windows, x32){
++    addWindows(x32, x86){
+         def path = "SDL2-$sdlVersion/i686-w64-mingw32"
+         def root = "$rootDir/backends/backend-sdl/jni"
+         headerDirs +=  (String[])["$path/include/SDL2"]
+         cppFlags += " " + execCmd("sh $root/$path/bin/sdl2-config --cflags")
+         cFlags = cppFlags
+         libraries = execCmd("sh $root/$path/bin/sdl2-config --static-libs") + " -lopengl32"
+-        linkerFlags += " -L $root/$path/lib"
++        linkerFlags += (String[])["-L", "$root/$path/lib"]
+     }
+ 
+     if(System.getProperty("os.arch") != "aarch64"){
+-        add(MacOsX, x64){
++        addMac(x64, x86){
+             cppFlags = cFlags= execCmd("sdl2-config --cflags") + " -c -Wall -O2 -arch x86_64 -DFIXED_POINT -fmessage-length=0 -fPIC -mmacosx-version-min=10.9 -stdlib=libc++"
+             linkerFlags = "-shared -arch x86_64 -mmacosx-version-min=10.9 -stdlib=libc++"
+             libraries = "/usr/local/lib/libSDL2.a -lm -liconv -Wl,-framework,CoreAudio -Wl,-framework,CoreHaptics -Wl,-weak_framework,GameController -Wl,-framework,OpenGL,-weak_framework,AudioToolbox -Wl,-framework,ForceFeedback -lobjc -Wl,-framework,CoreVideo -Wl,-framework,Cocoa -Wl,-framework,Carbon -Wl,-framework,IOKit -Wl,-weak_framework,QuartzCore -Wl,-weak_framework,Metal /usr/local/lib/libGLEW.a"
+@@ -116,7 +117,7 @@ jnigen{
+     }else{
+ 
+         //doesn't work on CI, have to use native M1
+-        add(MacOsX, x64, ARM){
++        addMac(x64, ARM){
+             cppFlags = cFlags = execCmd("sdl2-config --cflags") + " -c -Wall -O2 -arch arm64 -DFIXED_POINT -fmessage-length=0 -fPIC -mmacosx-version-min=10.9 -stdlib=libc++"
+             linkerFlags = "-shared -arch arm64 -mmacosx-version-min=10.9 -stdlib=libc++"
+             //execCmd("sdl2-config --static-libs") + " -Wl,-framework,OpenGL"
 diff --git a/build.gradle b/build.gradle
-index 72e4f6f1997c16e57fcedc14dcc5b1669d267b3a..a930c75f0fbd812e5238685fa62584afeea4bcfe 100644
+index 08b2bc173c33fc46f7b6eb046cf6e66b5ec69830..a489753797c24ac3931390bb4e557729a3b3d800 100644
 --- a/build.gradle
 +++ b/build.gradle
 @@ -1,5 +1,6 @@
@@ -117,10 +191,10 @@ index 72e4f6f1997c16e57fcedc14dcc5b1669d267b3a..a930c75f0fbd812e5238685fa62584af
  versions.junit = "4.11"
 -//TODO: upgrade to 3.1.1 and finally get rid of the disease that is ant
 -versions.jnigen = "2.5.1"
- versions.lwjgl = "3.4.1"
+ versions.lwjgl = "3.4.2-SNAPSHOT"
  
  libraries.robovm = [
-@@ -63,22 +62,10 @@ allprojects{
+@@ -63,23 +62,11 @@ allprojects{
      group = 'com.github.Anuken'
      version = '1.0'
  
@@ -138,6 +212,8 @@ index 72e4f6f1997c16e57fcedc14dcc5b1669d267b3a..a930c75f0fbd812e5238685fa62584af
 -
      repositories{
          mavenCentral()
+-        maven{ url "https://central.sonatype.com/repository/maven-snapshots" }
++        maven{ url = "https://central.sonatype.com/repository/maven-snapshots" }
          google()
 -        maven{ url 'https://jitpack.io' }
 +        maven{ url = 'https://jitpack.io' }
@@ -444,10 +520,10 @@ index 8dc6fe2966372785c83544647fcdb8392c7c9c87..ea7f39bb394da750ae6b5725c1ffc6af
  getTasksByName("jnigen", true).each{
      it.dependsOn preJni
 diff --git a/settings.gradle b/settings.gradle
-index fdfec89ead02dafacd6e8846c76afdc4ae27c6d9..7a6311271239397bad31d3278d5772cbbba50a52 100644
+index 5a4690abc360a290702903a7cd55a2084138938d..174a930efd2ccf72a27d4ffa792d62653ade0fc8 100644
 --- a/settings.gradle
 +++ b/settings.gradle
-@@ -23,14 +23,12 @@ include ":backends:backend-robovm"
+@@ -24,14 +24,12 @@ include ":backends:backend-robovm"
  include ":natives"
  include ":natives:natives-desktop"
  include ":natives:natives-android"

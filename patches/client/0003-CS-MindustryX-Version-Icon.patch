@@ -57,7 +57,7 @@ index d42ffe6d4a318ce558f1010eae46140f88ed5c99..bf44ead5c58abfb79c500e6daae30c3e
 +    <string name="app_name">MindustryX</string>
  </resources>
 diff --git a/build.gradle b/build.gradle
-index 07adf20b034be30e1525a93943d0ccedac03784a..efbb5fab4e3344735fba35cdd2dd51966e3e16f7 100644
+index a340b6d96ad764e992412eb90aea5f83223fabe0..dc55fe6948e5845fb72680d68566d95fc12b538c 100644
 --- a/build.gradle
 +++ b/build.gradle
 @@ -21,7 +21,7 @@ allprojects{
@@ -83,7 +83,7 @@ index 441b4366206a21f8a5eedc433dd55b00de6a15d8..bc63d9ae23cffccb96877410c70b646f
      }
      processResources.configure {
 diff --git a/core/src/mindustry/Vars.java b/core/src/mindustry/Vars.java
-index 2063cbacf7863734a22901e63199587aab04a35f..b466ff373b45d2a280fff9135b9482a25ce8e7c3 100644
+index e75d82bf838a27c256bfce94f74e56e924dd47e4..84cf00172e8b630eddd7c268668400abe44cf286 100644
 --- a/core/src/mindustry/Vars.java
 +++ b/core/src/mindustry/Vars.java
 @@ -89,7 +89,7 @@ public class Vars implements Loadable{
@@ -116,7 +116,7 @@ index e38694fe5abb9098c43e274d12a08a97a38622c6..cd9ef5356459f40cd17d1519802c0406
          });
      }
 diff --git a/core/src/mindustry/core/Version.java b/core/src/mindustry/core/Version.java
-index d8981d42c957bb7b79df9ca5eafbea325dcbea49..78ea113d871cb1e7492c55568822c704de9ae8b8 100644
+index b2b59ddafcb5f022a51588caefd0b30121fcf7ac..24de76a2633e1f28b8d693cb91de8e57187e55a4 100644
 --- a/core/src/mindustry/core/Version.java
 +++ b/core/src/mindustry/core/Version.java
 @@ -6,6 +6,7 @@ import arc.files.*;
@@ -127,7 +127,7 @@ index d8981d42c957bb7b79df9ca5eafbea325dcbea49..78ea113d871cb1e7492c55568822c704
  
  public class Version{
      /** Build type. 'official' for official releases; 'custom' or 'bleeding edge' are also used. */
-@@ -79,6 +80,7 @@ public class Version{
+@@ -82,6 +83,7 @@ public class Version{
          if(build == -1){
              return "custom build";
          }
@@ -150,10 +150,10 @@ index 5b13558d13d816c420d34b32b161030955d1ae64..251f7c454d9823234b492d8878cb07c7
          buffer.put((byte)state.rules.mode().ordinal());
          buffer.putInt(netServer.admins.getPlayerLimit());
 diff --git a/desktop/src/mindustry/desktop/DesktopLauncher.java b/desktop/src/mindustry/desktop/DesktopLauncher.java
-index 91f0933b2a8fcffc462cff387f8b9e6b34c4f249..e1e002963ad3cd04da40fb03f996d4ad417f0eb9 100644
+index 49b4012ea1470afd399076a780718a8ad32463d2..e9bd8dece555391346b6ed8838c96e7ff3c971a3 100644
 --- a/desktop/src/mindustry/desktop/DesktopLauncher.java
 +++ b/desktop/src/mindustry/desktop/DesktopLauncher.java
-@@ -104,7 +104,7 @@ public class DesktopLauncher extends ClientLauncher{
+@@ -108,7 +108,7 @@ public class DesktopLauncher extends ClientLauncher{
                          }
                      }
                  }

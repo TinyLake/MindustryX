@@ -4,17 +4,44 @@ Date: Sun, 14 Dec 2025 23:19:27 +0800
 Subject: [PATCH] HC: Support reuse SDL-window for LoaderMod
 
 ---
- .../src/arc/backend/sdl/SdlApplication.java        | 14 ++++++++++++++
- .../src/arc/backend/sdl/SdlGraphics.java           |  3 ++-
- 2 files changed, 16 insertions(+), 1 deletion(-)
+ .../src/arc/backend/sdl/SdlApplication.java       | 15 +++++++++++++++
+ .../src/arc/backend/sdl/SdlApplication.java       | 14 ++++++++++++++
+ .../src/arc/backend/sdl/SdlGraphics.java          |  3 ++-
+ 3 files changed, 31 insertions(+), 1 deletion(-)
 
 diff --git a/backends/backend-sdl/src/arc/backend/sdl/SdlApplication.java b/backends/backend-sdl/src/arc/backend/sdl/SdlApplication.java
-index cad8f97ed6dc623d7e1ccb88c0c31ec9d57761bd..0921a196f0bf76b8b33a3c311824e2d008c5e1db 100644
+index f356fe21605f785cc84845c75a2c26568a9b5782..8248211d452110c3e158fe6cd3b1f995c775b38e 100644
 --- a/backends/backend-sdl/src/arc/backend/sdl/SdlApplication.java
 +++ b/backends/backend-sdl/src/arc/backend/sdl/SdlApplication.java
-@@ -134,6 +134,20 @@ public class SdlApplication implements Application{
+@@ -112,6 +112,21 @@ public class SdlApplication implements Application{
  
-         check(SDLInit.SDL_Init(SDLInit.SDL_INIT_VIDEO | SDLInit.SDL_INIT_EVENTS));
+         if(OS.isMac) restartMac();
+ 
++        //MDTX: Special handle for Loader
++        if(System.getProperty("MDTX-SDL-window") != null){
++            Log.info("[Core] Initialize reusing window and context.");
++            window = Long.parseLong(System.getProperty("MDTX-SDL-window"));
++            context = Long.parseLong(System.getProperty("MDTX-SDL-context"));
++
++            config.width = Integer.parseInt(System.getProperty("MDTX-SDL-width"));
++            config.height = Integer.parseInt(System.getProperty("MDTX-SDL-height"));
++
++            int[] ver = new int[3];
++            SDL_GetVersion(ver);
++            Log.info("[Core] Initialized SDL v@.@.@", ver[0], ver[1], ver[2]);
++            return;
++        }
++
+         check(SDL_Init(SDL_INIT_VIDEO | SDL_INIT_EVENTS));
+ 
+         //show native IME candidate UI
+diff --git a/backends/backend-sdl3/src/arc/backend/sdl/SdlApplication.java b/backends/backend-sdl3/src/arc/backend/sdl/SdlApplication.java
+index 35526aab2ddf686dd47e34410e85af140bd4e343..abbc29a7863e64cf511a21375bb123583a4fc8fd 100644
+--- a/backends/backend-sdl3/src/arc/backend/sdl/SdlApplication.java
++++ b/backends/backend-sdl3/src/arc/backend/sdl/SdlApplication.java
+@@ -124,6 +124,20 @@ public class SdlApplication implements Application{
+ 
+         if(OS.isMac) restartMac();
  
 +        //MDTX: Special handle for Loader
 +        if(System.getProperty("MDTX-SDL-window") != null){
@@ -26,17 +53,17 @@ index cad8f97ed6dc623d7e1ccb88c0c31ec9d57761bd..0921a196f0bf76b8b33a3c311824e2d0
 +            config.height = Integer.parseInt(System.getProperty("MDTX-SDL-height"));
 +
 +            String ver = SDLVersion.SDL_GetRevision();
-+            Log.info("[Core] Initialized @ (@)", ver, SDLVideo.SDL_GetCurrentVideoDriver());
++            Log.info("[Core] Initialized @", ver);
 +            return;
 +        }
 +
-         //show native IME candidate UI
-         SDLHints.SDL_SetHint("SDL_IME_SHOW_UI","1");
-         SDLHints.SDL_SetHint("SDL_WINDOWS_DPI_SCALING", "1");
-diff --git a/backends/backend-sdl/src/arc/backend/sdl/SdlGraphics.java b/backends/backend-sdl/src/arc/backend/sdl/SdlGraphics.java
-index d620ccf09e7f6da096a243312e4cdc316b176cb2..aed803baa8dbd66c09dd3b40b3e5c95ff8997ac3 100644
---- a/backends/backend-sdl/src/arc/backend/sdl/SdlGraphics.java
-+++ b/backends/backend-sdl/src/arc/backend/sdl/SdlGraphics.java
+         if(OS.isLinux && !OS.hasEnvFlag("MINDUSTRY_FORCE_WAYLAND")){
+             //Prefer x11, as Wayland seems to be broken: https://github.com/Anuken/Mindustry/issues/11657
+             if("wayland".equalsIgnoreCase(System.getenv("XDG_SESSION_TYPE"))){
+diff --git a/backends/backend-sdl3/src/arc/backend/sdl/SdlGraphics.java b/backends/backend-sdl3/src/arc/backend/sdl/SdlGraphics.java
+index 20afcfb03738e2cb3bca006b4cb7835f0794ff80..b40488280136183c2208b111c8fd99d2f00e6ae5 100644
+--- a/backends/backend-sdl3/src/arc/backend/sdl/SdlGraphics.java
++++ b/backends/backend-sdl3/src/arc/backend/sdl/SdlGraphics.java
 @@ -38,7 +38,8 @@ public class SdlGraphics extends Graphics{
          this.app = app;
  

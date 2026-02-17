@@ -109,7 +109,7 @@ way-zer <himc.wicp@gmail.com> on 2024/9/8
  core/src/mindustry/ui/Fonts.java              |   2 +-
  .../ui/dialogs/ContentInfoDialog.java         |  23 +-
  .../ui/dialogs/CustomRulesDialog.java         | 118 +++++++++-
- .../mindustry/ui/dialogs/DatabaseDialog.java  |   3 +-
+ .../mindustry/ui/dialogs/DatabaseDialog.java  |   2 +-
  .../mindustry/ui/dialogs/PausedDialog.java    |  12 +-
  .../mindustry/ui/dialogs/PlanetDialog.java    |  27 ++-
  .../ui/dialogs/SchematicsDialog.java          | 202 +++++++++++++++++-
@@ -120,7 +120,7 @@ way-zer <himc.wicp@gmail.com> on 2024/9/8
  .../mindustry/ui/fragments/MenuFragment.java  |  24 ++-
  .../ui/fragments/PlacementFragment.java       | 164 +++++++++++---
  .../ui/fragments/PlayerListFragment.java      |  70 +++---
- 27 files changed, 1094 insertions(+), 145 deletions(-)
+ 27 files changed, 1094 insertions(+), 144 deletions(-)
 
 diff --git a/core/src/mindustry/editor/MapInfoDialog.java b/core/src/mindustry/editor/MapInfoDialog.java
 index b4f56d136b632aae1841fcfb6f745018d40b9199..6e38c85a35901a80d632191502f10063066e8e2e 100644
@@ -1280,18 +1280,10 @@ index 98c85e5372269a1542ff1506da06025b9e08f487..135c8690779426c469a74894db89f795
          ruleInfo(cell, text);
          current.row();
 diff --git a/core/src/mindustry/ui/dialogs/DatabaseDialog.java b/core/src/mindustry/ui/dialogs/DatabaseDialog.java
-index 41e0337b2adb7f14493a4e1df83b3e2972a57d9e..34e58d0edb3564d60752167047ede0c1d0672083 100644
+index dfc6b9f31bdb9d1f890acc21f4ecca33e09c22fd..ba19ab884b440747864f6ccd84164e9b48490445 100644
 --- a/core/src/mindustry/ui/dialogs/DatabaseDialog.java
 +++ b/core/src/mindustry/ui/dialogs/DatabaseDialog.java
-@@ -18,7 +18,6 @@ import mindustry.graphics.*;
- import mindustry.type.*;
- import mindustry.ui.*;
- 
--import static arc.Core.*;
- import static mindustry.Vars.*;
- 
- public class DatabaseDialog extends BaseDialog{
-@@ -214,7 +213,7 @@ public class DatabaseDialog extends BaseDialog{
+@@ -215,7 +215,7 @@ public class DatabaseDialog extends BaseDialog{
                                          ui.content.show(unlock);
                                      }
                                  });
@@ -1338,7 +1330,7 @@ index 3e0cca2191e2fd062b96af031a6b2af5ba80e224..7a91c9eb1c90142831ea71c54e694d46
      }
  
 diff --git a/core/src/mindustry/ui/dialogs/PlanetDialog.java b/core/src/mindustry/ui/dialogs/PlanetDialog.java
-index adea10dd85e8252f98adc1b9083e0deec97b4702..5a5df666b167dc7b7d9c4a2facc184c7296518e7 100644
+index 3f671f948eb3be11d7ebe461c78f9cadbd302996..4630bb8d182e0b71a1e2490f7de8e0f3b378cf55 100644
 --- a/core/src/mindustry/ui/dialogs/PlanetDialog.java
 +++ b/core/src/mindustry/ui/dialogs/PlanetDialog.java
 @@ -38,6 +38,7 @@ import mindustry.type.Planet.*;
@@ -1373,7 +1365,7 @@ index adea10dd85e8252f98adc1b9083e0deec97b4702..5a5df666b167dc7b7d9c4a2facc184c7
              addTech();
          }
      }
-@@ -562,6 +567,11 @@ public class PlanetDialog extends BaseDialog implements PlanetInterfaceRenderer{
+@@ -564,6 +569,11 @@ public class PlanetDialog extends BaseDialog implements PlanetInterfaceRenderer{
                          Draw.rect(icon, 0, 0, iw, iw * icon.height / icon.width);
                      });
                  }
@@ -1385,7 +1377,7 @@ index adea10dd85e8252f98adc1b9083e0deec97b4702..5a5df666b167dc7b7d9c4a2facc184c7
              }
  
              if(debugShowNumbers && (sec.hasEnemyBase() || sec.preset != null)){
-@@ -771,7 +781,7 @@ public class PlanetDialog extends BaseDialog implements PlanetInterfaceRenderer{
+@@ -773,7 +783,7 @@ public class PlanetDialog extends BaseDialog implements PlanetInterfaceRenderer{
  
              //sector notifications & search
              c.top().right();
@@ -1394,7 +1386,7 @@ index adea10dd85e8252f98adc1b9083e0deec97b4702..5a5df666b167dc7b7d9c4a2facc184c7
  
              c.button(bundle.get("sectorlist") +
              (attacked == 0 ? "" : "\n[red]⚠[lightgray] " + bundle.format("sectorlist.attacked", "[red]" + attacked + "[]")),
-@@ -815,7 +825,7 @@ public class PlanetDialog extends BaseDialog implements PlanetInterfaceRenderer{
+@@ -817,7 +827,7 @@ public class PlanetDialog extends BaseDialog implements PlanetInterfaceRenderer{
  
              readd[0] = () -> {
                  con.clearChildren();
@@ -1403,7 +1395,7 @@ index adea10dd85e8252f98adc1b9083e0deec97b4702..5a5df666b167dc7b7d9c4a2facc184c7
                      if(sec.hasBase() && (searchText.isEmpty() || sec.name().toLowerCase().contains(searchText.toLowerCase()))){
                          con.button(t -> {
                              t.marginRight(10f);
-@@ -836,6 +846,19 @@ public class PlanetDialog extends BaseDialog implements PlanetInterfaceRenderer{
+@@ -838,6 +848,19 @@ public class PlanetDialog extends BaseDialog implements PlanetInterfaceRenderer{
                                  String ic = sec.iconChar() == null ? "" : sec.iconChar() + " ";
  
                                  head.add(ic + sec.name()).growX().wrap();
@@ -1727,7 +1719,7 @@ index fef8e21d771ccfd81cbc65a0bc62642ebf721952..f855efcd27a47e8ac5a0ac3dffc8a3c8
          }
      }
 diff --git a/core/src/mindustry/ui/dialogs/SettingsMenuDialog.java b/core/src/mindustry/ui/dialogs/SettingsMenuDialog.java
-index b207cdfe4c4a1e80a4852667b3909059bef6e8a9..50fe3aa329afc0e4f3f7b103367906352ead458e 100644
+index 6e0bd9f94bd41137ddc69bae8beb7727d12ac6c0..2ab0dd207537b56873e71412a3862d209f0f43e9 100644
 --- a/core/src/mindustry/ui/dialogs/SettingsMenuDialog.java
 +++ b/core/src/mindustry/ui/dialogs/SettingsMenuDialog.java
 @@ -303,8 +303,8 @@ public class SettingsMenuDialog extends BaseDialog{
@@ -1768,7 +1760,7 @@ index b207cdfe4c4a1e80a4852667b3909059bef6e8a9..50fe3aa329afc0e4f3f7b10336790635
  
          int[] lastUiScale = {settings.getInt("uiscale", 100)};
  
-@@ -458,6 +456,8 @@ public class SettingsMenuDialog extends BaseDialog{
+@@ -476,6 +474,8 @@ public class SettingsMenuDialog extends BaseDialog{
          graphics.checkPref("destroyedblocks", true);
          graphics.checkPref("blockstatus", false);
          graphics.checkPref("playerchat", true);
@@ -1777,7 +1769,7 @@ index b207cdfe4c4a1e80a4852667b3909059bef6e8a9..50fe3aa329afc0e4f3f7b10336790635
          if(!mobile){
              graphics.checkPref("coreitems", true);
          }
-@@ -467,12 +467,12 @@ public class SettingsMenuDialog extends BaseDialog{
+@@ -485,12 +485,12 @@ public class SettingsMenuDialog extends BaseDialog{
              graphics.checkPref("detach-camera", false);
          }
          graphics.checkPref("position", false);
