@@ -1,7 +1,6 @@
 package mindustryX.bundles
 
 import arc.Core
-import arc.struct.ObjectMap
 import arc.util.I18NBundle
 import arc.util.Log
 import arc.util.Reflect
@@ -28,13 +27,13 @@ object MdtxBundleLoader {
             // Sample-like fallback chain:
             // - zh* locale:      ZH -> origin
             // - otherwise:       EN -> ZH -> origin
-            val zh = loadBundle(MdtxBundleData.zh, locale)
+            val zh = loadBundle("bundles/bundle-mdtx", locale)
             if (Lang.isChinese(locale)) {
                 attachParentChain(zh, origin)
                 Core.bundle = zh
                 Log.info("MDTX: bundle has been loaded: zh (${locale.language}).")
             } else {
-                val en = loadBundle(MdtxBundleData.en, locale)
+                val en = loadBundle("bundles/bundle-mdtx_en", locale)
                 attachParentChain(en, zh)
                 attachParentChain(zh, origin)
                 Core.bundle = en
@@ -46,9 +45,9 @@ object MdtxBundleLoader {
         }
     }
 
-    private fun loadBundle(data: ObjectMap<String, String>, locale: Locale): I18NBundle {
-        val bundle = I18NBundle.createEmptyBundle()
-        bundle.setProperties(data.copy())
+    private fun loadBundle(baseName: String, locale: Locale): I18NBundle {
+        val handle = Core.files.internal(baseName)
+        val bundle = I18NBundle.createBundle(handle, locale)
 
         // I18NBundle may fall back to ROOT locale; keep locale/formatter consistent with the game's locale.
         Reflect.set(bundle, "locale", locale)

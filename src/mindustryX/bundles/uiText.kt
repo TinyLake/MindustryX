@@ -151,7 +151,11 @@ interface UiTextBundle {
     fun minerAi(): String = "矿机AI"
     fun minerAiOreFilter(): String = "minerAI-矿物筛选器"
     fun minimap(): String = "小地图显示"
+    fun mdtxReport(): String = "问题反馈"
+    fun mdtxQqLink(): String = "QQ交流群"
     fun modsEnabled(): String = "| mod启用"
+    fun modsRecommendTitle(): String = "[accent]MdtX[]推荐辅助模组列表"
+    fun modsRecommendInfo(): String = "精选辅助模组"
     fun moreTeams(): String = "更多队伍选择"
     fun movementSpeed(): String = "[cyan]移速"
     fun nTookUnits(): String = "\n[white]分走了单位:"
@@ -283,6 +287,14 @@ interface UiTextBundle {
     fun templateJavaWarnLog(): String = "Java版本 {0} 过低，不受支持。请使用Java 17或更高版本运行MindustryX。"
     fun templateLabelWithEmoji(): String = "{0} {1}"
     fun templateLoadMap(): String = "载入地图：{0}"
+    fun templateMdtxShareItem(): String = "{0}：库存 {1}，产量 {2}/秒"
+    fun templateMdtxShareUnit(): String = "{0}：数量 {1}，上限 {2}"
+    fun templateModsRecommendLastUpdated(): String = "推荐列表更新时间：{0}"
+    fun templateModsRecommendModName(): String = "模组：{0}"
+    fun templateModsRecommendModAuthor(): String = "作者：{0}"
+    fun templateModsRecommendModMinGameVersion(): String = "最低支持游戏版本：{0}"
+    fun templateModsRecommendModLastUpdated(): String = "上次更新时间：{0}"
+    fun templateModsRecommendModStars(): String = "Github收藏数：{0}"
     fun templateNewVersion(): String = "[green]发现新版本[]: {0}"
     fun templateSavedBlueprint(): String = "已保存蓝图：{0}"
     fun templateShareCode(): String = "<ARCxMDTX><Schem>[black]一坨兼容[] {0}"
@@ -485,7 +497,11 @@ interface UiTextBundle {
         override fun minerAi(): String = "Miner AI"
         override fun minerAiOreFilter(): String = "Miner AI - Ore Filter"
         override fun minimap(): String = "Minimap"
+        override fun mdtxReport(): String = "Report Issue"
+        override fun mdtxQqLink(): String = "QQ Group"
         override fun modsEnabled(): String = "| mods enabled"
+        override fun modsRecommendTitle(): String = "[accent]MdtX[]Recommended Mods List"
+        override fun modsRecommendInfo(): String = "Selected Mods"
         override fun moreTeams(): String = "More Teams"
         override fun movementSpeed(): String = "[cyan]Movement speed"
         override fun nTookUnits(): String = "\n[white] took units:"
@@ -617,6 +633,14 @@ interface UiTextBundle {
         override fun templateJavaWarnLog(): String = "Java version {0} is too low and unsupported. Please use Java 17+ to run MindustryX."
         override fun templateLabelWithEmoji(): String = "{0} {1}"
         override fun templateLoadMap(): String = "Load map: {0}"
+        override fun templateMdtxShareItem(): String = "{0}: Stock {1}, Production {2}/s"
+        override fun templateMdtxShareUnit(): String = "{0}: Count {1}, Limit {2}"
+        override fun templateModsRecommendLastUpdated(): String = "Recommended List Last Updated: {0}"
+        override fun templateModsRecommendModName(): String = "Mod: {0}"
+        override fun templateModsRecommendModAuthor(): String = "Author: {0}"
+        override fun templateModsRecommendModMinGameVersion(): String = "Minimum Supported Game Version: {0}"
+        override fun templateModsRecommendModLastUpdated(): String = "Last Updated: {0}"
+        override fun templateModsRecommendModStars(): String = "Github Stars: {0}"
         override fun templateNewVersion(): String = "[green]New version found[]: {0}"
         override fun templateSavedBlueprint(): String = "Saved blueprint: {0}"
         override fun templateShareCode(): String = "<ARCxMDTX><Schem>[black]compat code[] {0}"
@@ -831,7 +855,11 @@ object UiTexts {
             "miner_ai" -> bundle().minerAi()
             "miner_ai_ore_filter" -> bundle().minerAiOreFilter()
             "minimap" -> bundle().minimap()
+            "mdtx_report" -> bundle().mdtxReport()
+            "mdtx_qq_link" -> bundle().mdtxQqLink()
             "mods_enabled" -> bundle().modsEnabled()
+            "mods_recommend_title" -> bundle().modsRecommendTitle()
+            "mods_recommend_info" -> bundle().modsRecommendInfo()
             "more_teams" -> bundle().moreTeams()
             "movement_speed" -> bundle().movementSpeed()
             "n_took_units" -> bundle().nTookUnits()
@@ -963,6 +991,14 @@ object UiTexts {
             "template.javaWarnLog" -> bundle().templateJavaWarnLog()
             "template.labelWithEmoji" -> bundle().templateLabelWithEmoji()
             "template.loadMap" -> bundle().templateLoadMap()
+            "template.mdtxShareItem" -> bundle().templateMdtxShareItem()
+            "template.mdtxShareUnit" -> bundle().templateMdtxShareUnit()
+            "template.modsRecommendLastUpdated" -> bundle().templateModsRecommendLastUpdated()
+            "template.modsRecommendModName" -> bundle().templateModsRecommendModName()
+            "template.modsRecommendModAuthor" -> bundle().templateModsRecommendModAuthor()
+            "template.modsRecommendModMinGameVersion" -> bundle().templateModsRecommendModMinGameVersion()
+            "template.modsRecommendModLastUpdated" -> bundle().templateModsRecommendModLastUpdated()
+            "template.modsRecommendModStars" -> bundle().templateModsRecommendModStars()
             "template.newVersion" -> bundle().templateNewVersion()
             "template.savedBlueprint" -> bundle().templateSavedBlueprint()
             "template.shareCode" -> bundle().templateShareCode()
@@ -1038,6 +1074,18 @@ object UiTexts {
     @JvmStatic fun uiExport(): String = ui("export")
     @JvmStatic fun uiExportChatHistory(): String = ui("export_chat_history")
     @JvmStatic fun uiLoadMap(mapName: String): String = uiTemplate("loadMap", mapName)
+    @JvmStatic fun uiMdtxReport(): String = ui("mdtx_report")
+    @JvmStatic fun uiMdtxQqLink(): String = ui("mdtx_qq_link")
+    @JvmStatic fun uiMdtxShareItem(name: Any?, stock: Any?, production: Any?): String = uiTemplate("mdtxShareItem", name, stock, production)
+    @JvmStatic fun uiMdtxShareUnit(name: Any?, count: Any?, limit: Any?): String = uiTemplate("mdtxShareUnit", name, count, limit)
+    @JvmStatic fun uiModsRecommendTitle(): String = ui("mods_recommend_title")
+    @JvmStatic fun uiModsRecommendInfo(): String = ui("mods_recommend_info")
+    @JvmStatic fun uiModsRecommendLastUpdated(value: Any?): String = uiTemplate("modsRecommendLastUpdated", value)
+    @JvmStatic fun uiModsRecommendModName(value: Any?): String = uiTemplate("modsRecommendModName", value)
+    @JvmStatic fun uiModsRecommendModAuthor(value: Any?): String = uiTemplate("modsRecommendModAuthor", value)
+    @JvmStatic fun uiModsRecommendModMinGameVersion(value: Any?): String = uiTemplate("modsRecommendModMinGameVersion", value)
+    @JvmStatic fun uiModsRecommendModLastUpdated(value: Any?): String = uiTemplate("modsRecommendModLastUpdated", value)
+    @JvmStatic fun uiModsRecommendModStars(value: Any?): String = uiTemplate("modsRecommendModStars", value)
     @JvmStatic fun uiIntroduction(description: String): String = uiTemplate("introduction", description)
     @JvmStatic fun uiWaveEvent(wave: Int, detail: String): String = uiTemplate("waveEvent", wave, detail)
     @JvmStatic fun uiCopiedChatRecord(): String = ui("copied_this_chat_record")

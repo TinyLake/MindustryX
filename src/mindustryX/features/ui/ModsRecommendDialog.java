@@ -21,7 +21,6 @@ import mindustry.io.*;
 import mindustry.mod.*;
 import mindustry.ui.*;
 import mindustry.ui.dialogs.*;
-import mindustryX.bundles.*;
 import mindustryX.features.ui.comp.*;
 
 import java.text.*;
@@ -101,9 +100,9 @@ public class ModsRecommendDialog extends BaseDialog{
             info.top();
             info.defaults().expandX().center();
 
-            info.add(MdtxTexts.text("mods.recommend")).pad(12f).row();
-            info.add(MdtxTexts.format("mods.recommend.lastUpdated", meta.lastUpdated)).pad(6f).row();
-            info.add(MdtxTexts.text("mods.recommend.info")).pad(6f);
+            info.add(mindustryX.bundles.UiTexts.uiModsRecommendTitle()).pad(12f).row();
+            info.add(mindustryX.bundles.UiTexts.uiModsRecommendLastUpdated(meta.lastUpdated)).pad(6f).row();
+            info.add(mindustryX.bundles.UiTexts.uiModsRecommendInfo()).pad(6f);
 
             for(Element child : info.getChildren()){
                 if(child instanceof Label label){
@@ -181,7 +180,15 @@ public class ModsRecommendDialog extends BaseDialog{
     }
 
     private Cell<?> addInfo(Table table, String bundle, Object value){
-        Cell<?> cell = table.add(MdtxTexts.format("mods.recommend.mod." + bundle, value)).color(pink);
+        String text = switch(bundle){
+            case "name" -> mindustryX.bundles.UiTexts.uiModsRecommendModName(value);
+            case "author" -> mindustryX.bundles.UiTexts.uiModsRecommendModAuthor(value);
+            case "minGameVersion" -> mindustryX.bundles.UiTexts.uiModsRecommendModMinGameVersion(value);
+            case "lastUpdated" -> mindustryX.bundles.UiTexts.uiModsRecommendModLastUpdated(value);
+            case "stars" -> mindustryX.bundles.UiTexts.uiModsRecommendModStars(value);
+            default -> String.valueOf(value);
+        };
+        Cell<?> cell = table.add(text).color(pink);
 
         table.row();
 

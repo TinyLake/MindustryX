@@ -19,7 +19,6 @@ import mindustry.gen.Icon
 import mindustry.graphics.Pal
 import mindustry.io.JsonIO
 import mindustry.ui.Styles
-import mindustryX.bundles.MdtxTexts
 import java.io.ByteArrayInputStream
 import java.io.ByteArrayOutputStream
 import java.io.DataInputStream
@@ -120,8 +119,8 @@ object SettingsV2 {
         // UI fields
 
         val category: String get() = categoryOverride[name] ?: name.substringBefore('.', "")
-        val title: String get() = MdtxTexts.text("settingV2.${name}.name", name)
-        val description: String? get() = MdtxTexts.textOrNull("settingV2.${name}.description")
+        val title: String get() = Core.bundle.get("settingV2.${name}.name", name)
+        val description: String? get() = Core.bundle.getOrNull("settingV2.${name}.description")
 
         override fun buildUI() = Table().apply {
             add(title).padRight(8f)
@@ -133,7 +132,7 @@ object SettingsV2 {
             val help = description
             button(Icon.info, Styles.clearNonei) { Vars.ui.showInfo(help) }.tooltip(help ?: "@none")
                 .fillY().padLeft(8f).disabled { help == null }
-            button(Icon.undo, Styles.clearNonei) { resetDefault() }.tooltip(MdtxTexts.text("settingV2.reset"))
+            button(Icon.undo, Styles.clearNonei) { resetDefault() }.tooltip("@settingV2.reset")
                 .fillY().disabled { !modified }
         }
     }
@@ -280,7 +279,7 @@ object SettingsV2 {
     }
 
     class CategoryUI(val key: String) : UIBuilder {
-        val title: String = MdtxTexts.text("settingV2.${key}.category", key)
+        val title: String = Core.bundle.get("settingV2.${key}.category", key)
         val children = mutableListOf<UIBuilder>()
 
         override fun buildUI() = Table().apply {
@@ -331,7 +330,7 @@ object SettingsV2 {
             button(Icon.filter, Styles.squareTogglei, Vars.iconMed) {
                 onlyModified = !onlyModified
                 rebuildContent()
-            }.checked { onlyModified }.tooltip(MdtxTexts.text("settingV2.onlyModified"))
+            }.checked { onlyModified }.tooltip("@settingV2.onlyModified")
         }
         rebuildContent()
     }
