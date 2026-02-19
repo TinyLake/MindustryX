@@ -50,7 +50,7 @@ public class UnitFactoryDialog extends BaseDialog{
     private Table selection, infoTable, posTable, countTable, itemTable, propertiesTable, teamTable, effectTable, payloadTable;
 
     public UnitFactoryDialog(){
-        super(arc.Core.bundle.get("mdtx.ui.unit_factory")); // 原文本:单位工厂
+        super(mindustryX.bundles.FuncX.ui("unit_factory")); // 原文本:单位工厂
         getCell(cont).setElement(new ScrollPane(cont));
         closeOnBack();
         addCloseButton();
@@ -78,11 +78,11 @@ public class UnitFactoryDialog extends BaseDialog{
         setupPosTable();
         rebuildTables();
 
-        buttons.button(arc.Core.bundle.get("mdtx.ui.reset"), Icon.refresh, () -> { // 原文本:重置
+        buttons.button(mindustryX.bundles.FuncX.ui("reset"), Icon.refresh, () -> { // 原文本:重置
             resetUnit(spawnUnit);
             rebuildTables();
         });
-        buttons.button(arc.Core.bundle.get("mdtx.ui.spawned"), Icon.modeAttack, this::spawn); // 原文本:[orange]生成！
+        buttons.button(mindustryX.bundles.FuncX.ui("spawned"), Icon.modeAttack, this::spawn); // 原文本:[orange]生成！
 
         rebuild();
 
@@ -138,9 +138,9 @@ public class UnitFactoryDialog extends BaseDialog{
             settings.add(posTable).padTop(0f).row();
             settings.add(countTable).row();
             settings.table(randDstTable -> {
-                randDstTable.add(arc.Core.bundle.get("mdtx.ui.spawn_range")); // 原文本:生成范围：
-                randDstTable.field(Strings.autoFixed(unitRandDst, 3), text -> unitRandDst = Float.parseFloat(text)).valid(Strings::canParsePositiveFloat).tooltip(arc.Core.bundle.get("mdtx.ui.randomly_generated_within_this_range_near_the_target_point")).maxTextLength(6).padLeft(4f); // 原文本:在目标点附近的这个范围内随机生成
-                randDstTable.add(arc.Core.bundle.get("mdtx.ui.tiles")).expandX().left(); // 原文本:格
+                randDstTable.add(mindustryX.bundles.FuncX.ui("spawn_range")); // 原文本:生成范围：
+                randDstTable.field(Strings.autoFixed(unitRandDst, 3), text -> unitRandDst = Float.parseFloat(text)).valid(Strings::canParsePositiveFloat).tooltip(mindustryX.bundles.FuncX.ui("randomly_generated_within_this_range_near_the_target_point")).maxTextLength(6).padLeft(4f); // 原文本:在目标点附近的这个范围内随机生成
+                randDstTable.add(mindustryX.bundles.FuncX.ui("tiles")).expandX().left(); // 原文本:格
             }).row();
             settings.add(itemTable).row();
             settings.add(propertiesTable).row();
@@ -243,7 +243,7 @@ public class UnitFactoryDialog extends BaseDialog{
     }
 
     private void setupPosTable(){
-        posTable.add(arc.Core.bundle.get("mdtx.ui.spawn_location")); // 原文本:生成位置:
+        posTable.add(mindustryX.bundles.FuncX.ui("spawn_location")); // 原文本:生成位置:
 
         posTable.label(() -> {
             int tileX = World.toTile(spawnUnit.x);
@@ -268,7 +268,7 @@ public class UnitFactoryDialog extends BaseDialog{
                 return true;
             });
 
-            UIExt.announce(arc.Core.bundle.get("mdtx.ui.tap_the_screen_to_capture_coordinates"), 2f); // 原文本:[green]点击屏幕采集坐标
+            UIExt.announce(mindustryX.bundles.FuncX.ui("tap_the_screen_to_capture_coordinates"), 2f); // 原文本:[green]点击屏幕采集坐标
         });
 
         posTable.button(Icon.eyeSmall, Styles.clearNonei, () -> {
@@ -287,14 +287,14 @@ public class UnitFactoryDialog extends BaseDialog{
                 return true;
             });
 
-            UIExt.announce(arc.Core.bundle.get("mdtx.ui.click_the_screen_to_return"), 2f); // 原文本:[green]点击屏幕返回
+            UIExt.announce(mindustryX.bundles.FuncX.ui("click_the_screen_to_return"), 2f); // 原文本:[green]点击屏幕返回
         }).padLeft(4);
 
         posTable.button(new TextureRegionDrawable(UnitTypes.gamma.uiIcon), Styles.clearNonei, 24, () -> spawnUnit.set(player)).padLeft(4);
     }
 
     private void setupCountTable(){
-        countTable.add(arc.Core.bundle.get("mdtx.ui.generate_quantity")); // 原文本:生成数量:
+        countTable.add(mindustryX.bundles.FuncX.ui("generate_quantity")); // 原文本:生成数量:
         countTable.field("", text -> unitCount = Math.min(maxCount, Strings.parseInt(text)))
         .update(it -> it.setText("" + unitCount)).left().expandX().width(80).valid(Strings::canParseInt);
 
@@ -323,7 +323,7 @@ public class UnitFactoryDialog extends BaseDialog{
                     buttons.button(Icon.copySmall, Styles.clearNonei, 16, () -> {
                         Core.app.setClipboardText("" + label.getText());
 
-                        ui.announce(arc.Core.bundle.get("mdtx.ui.copied_successfully") + label.getText(), 3); // 原文本:复制成功:
+                        ui.announce(mindustryX.bundles.FuncX.ui("copied_successfully") + label.getText(), 3); // 原文本:复制成功:
                     }).size(28);
 
                     buttons.button("i", () -> ui.content.show(unit.type)).size(28).padLeft(4);
@@ -342,18 +342,18 @@ public class UnitFactoryDialog extends BaseDialog{
         propertiesTable.clearChildren();
         propertiesTable.defaults().expandX().left();
 
-        propertiesTable.table(t -> t.check(arc.Core.bundle.get("mdtx.ui.flight_mode"), unit.elevation > 0, a -> unit.elevation = a ? 1 : 0).padBottom(5f).padRight(10f).tooltip(arc.Core.bundle.get("mdtx.ui.spawns_units_that_fly"), true) // 原文本:飞行模式 | [orange]生成的单位会飞起来
+        propertiesTable.table(t -> t.check(mindustryX.bundles.FuncX.ui("flight_mode"), unit.elevation > 0, a -> unit.elevation = a ? 1 : 0).padBottom(5f).padRight(10f).tooltip(mindustryX.bundles.FuncX.ui("spawns_units_that_fly"), true) // 原文本:飞行模式 | [orange]生成的单位会飞起来
         .checked(b -> unit.elevation > 0));
 
         propertiesTable.row();
 
         propertiesTable.table(healthTable -> {
-            healthTable.add(arc.Core.bundle.get("mdtx.ui.health_label")); // 原文本:[red]血量：
+            healthTable.add(mindustryX.bundles.FuncX.ui("health_label")); // 原文本:[red]血量：
             healthTable.field(Strings.autoFixed(unit.health, 1), text -> unit.health = Float.parseFloat(text)).valid(Strings::canParsePositiveFloat).padLeft(4f);
         });
 
         propertiesTable.table(shieldTable -> {
-            shieldTable.add(arc.Core.bundle.get("mdtx.ui.shield")); // 原文本:[yellow]护盾：
+            shieldTable.add(mindustryX.bundles.FuncX.ui("shield")); // 原文本:[yellow]护盾：
             shieldTable.field(Strings.autoFixed(unit.shield, 1), text -> unit.shield = Float.parseFloat(text)).valid(Strings::canParsePositiveFloat).padLeft(4f);
         });
     }
@@ -364,7 +364,7 @@ public class UnitFactoryDialog extends BaseDialog{
         int itemCapacity = unit.itemCapacity();
         if(itemCapacity == 0) return;
 
-        itemTable.add(arc.Core.bundle.get("mdtx.ui.carried_item")); // 原文本:携带物品:
+        itemTable.add(mindustryX.bundles.FuncX.ui("carried_item")); // 原文本:携带物品:
         itemTable.button(b -> b.image(() -> unit.hasItem() ? unit.item().uiIcon : Icon.noneSmall.getRegion()).size(48f).scaling(Scaling.fit).padLeft(8f), Styles.clearNonei, () -> ContentSelectDialog.once(content.items(), unit.item(), item -> unit.stack.item = item)).size(48f).padLeft(8f);
 
         itemTable.field("" + unit.stack.amount, text -> unit.stack.amount = Mathf.clamp(Strings.parseInt(text), 0, itemCapacity))
@@ -379,7 +379,7 @@ public class UnitFactoryDialog extends BaseDialog{
     private void rebuildTeamTable(Unit unit, Table teamTable){
         teamTable.clearChildren();
 
-        teamTable.add(arc.Core.bundle.get("mdtx.ui.spawn_team")); // 原文本:生成队伍:
+        teamTable.add(mindustryX.bundles.FuncX.ui("spawn_team")); // 原文本:生成队伍:
         teamTable.label(() -> {
             Team team = unit.team;
             return "[#" + team.color + "]" + team.localized();
@@ -395,7 +395,7 @@ public class UnitFactoryDialog extends BaseDialog{
             teamTable.button(b -> b.image().grow().color(team.color), Styles.clearNonei, () -> changeTeam.get(team)).size(36).pad(8);
         }
 
-        teamTable.add(arc.Core.bundle.get("mdtx.ui.team_id")).padLeft(4); // 原文本:队伍ID:
+        teamTable.add(mindustryX.bundles.FuncX.ui("team_id")).padLeft(4); // 原文本:队伍ID:
         teamTable.field("" + unit.team.id, text -> {
             int id = Mathf.clamp(Strings.parseInt(text), 0, Team.all.length - 1);
             changeTeam.get(Team.all[id]);
@@ -427,29 +427,29 @@ public class UnitFactoryDialog extends BaseDialog{
             effectInfo.clearChildren();
             effectInfo.defaults().pad(4f);
 
-            effectInfo.add(arc.Core.bundle.get("mdtx.ui.damage")); // 原文本:[red]伤害
+            effectInfo.add(mindustryX.bundles.FuncX.ui("damage")); // 原文本:[red]伤害
             effectInfo.add(FormatDefault.format(status[0])).expandX().right();
 
-            effectInfo.add(arc.Core.bundle.get("mdtx.ui.hp")).padLeft(12f); // 原文本:[acid]血量
+            effectInfo.add(mindustryX.bundles.FuncX.ui("hp")).padLeft(12f); // 原文本:[acid]血量
             effectInfo.add(FormatDefault.format(status[1])).expandX().right();
             effectInfo.row();
 
-            effectInfo.add(arc.Core.bundle.get("mdtx.ui.movement_speed")); // 原文本:[cyan]移速
+            effectInfo.add(mindustryX.bundles.FuncX.ui("movement_speed")); // 原文本:[cyan]移速
             effectInfo.add(FormatDefault.format(status[2])).expandX().right();
 
-            effectInfo.add(arc.Core.bundle.get("mdtx.ui.attack_speed")).padLeft(12f); // 原文本:[violet]攻速
+            effectInfo.add(mindustryX.bundles.FuncX.ui("attack_speed")).padLeft(12f); // 原文本:[violet]攻速
             effectInfo.add(FormatDefault.format(status[3])).expandX().right();
             effectInfo.row();
 
-            effectInfo.add(arc.Core.bundle.get("mdtx.ui.build_speed")); // 原文本:[accent]建速
+            effectInfo.add(mindustryX.bundles.FuncX.ui("build_speed")); // 原文本:[accent]建速
             effectInfo.add(FormatDefault.format(status[4])).expandX().right();
 
-            effectInfo.add(arc.Core.bundle.get("mdtx.ui.resistance")).padLeft(12f); // 原文本:[purple]阻力
+            effectInfo.add(mindustryX.bundles.FuncX.ui("resistance")).padLeft(12f); // 原文本:[purple]阻力
             effectInfo.add(FormatDefault.format(status[5])).expandX().right();
             effectInfo.row();
 
             if(status[6] >= 0){
-                effectInfo.add(arc.Core.bundle.get("mdtx.ui.armor")); // 原文本:[teal]装甲
+                effectInfo.add(mindustryX.bundles.FuncX.ui("armor")); // 原文本:[teal]装甲
                 effectInfo.add(FormatDefault.format(status[6])).expandX().right();
             }
         };
@@ -522,9 +522,9 @@ public class UnitFactoryDialog extends BaseDialog{
                 t.add(effect.localizedName).ellipsis(true).width(64f).padLeft(6);
 
                 if(entry.effect.permanent){
-                    t.add(arc.Core.bundle.get("mdtx.ui.permanent_status")).expandX(); // 原文本:<永久状态>
+                    t.add(mindustryX.bundles.FuncX.ui("permanent_status")).expandX(); // 原文本:<永久状态>
                 }else if(entry.effect.reactive){
-                    t.add(arc.Core.bundle.get("mdtx.ui.temporary_status")).expandX(); // 原文本:<瞬间状态>
+                    t.add(mindustryX.bundles.FuncX.ui("temporary_status")).expandX(); // 原文本:<瞬间状态>
                 }else{
                     t.table(bottom -> {
                         bottom.field("", text -> entry.time = Strings.parseFloat(text) * 60f)
@@ -536,7 +536,7 @@ public class UnitFactoryDialog extends BaseDialog{
                         })
                         .width(100f);
 
-                        bottom.add(arc.Core.bundle.get("mdtx.ui.sec")); // 原文本:秒
+                        bottom.add(mindustryX.bundles.FuncX.ui("sec")); // 原文本:秒
                         bottom.button(b -> b.add(new FLabel("{rainbow}∞")), Styles.clearNonei, () -> entry.time = Float.POSITIVE_INFINITY)
                         .size(32f).padLeft(8).expandX().right();
                     }).padTop(8f).expandX().left();
@@ -562,34 +562,34 @@ public class UnitFactoryDialog extends BaseDialog{
             if(effect.dynamic) table.add(new Card(Pal.darkestGray, Card.grayOuterDark, t -> {
                 t.defaults().pad(4f).padLeft(8f).left();
 
-                t.add(arc.Core.bundle.get("mdtx.ui.damage")).style(Styles.outlineLabel); // 原文本:[red]伤害
+                t.add(mindustryX.bundles.FuncX.ui("damage")).style(Styles.outlineLabel); // 原文本:[red]伤害
                 t.field("" + entry.damageMultiplier, text -> entry.damageMultiplier = Strings.parseFloat(text)).valid(Strings::canParsePositiveFloat).width(88f);
 
                 t.add().expandX();
 
-                t.add(arc.Core.bundle.get("mdtx.ui.hp")).style(Styles.outlineLabel); // 原文本:[acid]血量
+                t.add(mindustryX.bundles.FuncX.ui("hp")).style(Styles.outlineLabel); // 原文本:[acid]血量
                 t.field("" + entry.healthMultiplier, text -> entry.healthMultiplier = Strings.parseFloat(text)).valid(Strings::canParsePositiveFloat).width(88f);
                 t.add().expandX().row();
 
-                t.add(arc.Core.bundle.get("mdtx.ui.movement_speed")).style(Styles.outlineLabel); // 原文本:[cyan]移速
+                t.add(mindustryX.bundles.FuncX.ui("movement_speed")).style(Styles.outlineLabel); // 原文本:[cyan]移速
                 t.field("" + entry.speedMultiplier, text -> entry.speedMultiplier = Strings.parseFloat(text)).valid(Strings::canParsePositiveFloat).width(88f);
 
                 t.add().expandX();
 
-                t.add(arc.Core.bundle.get("mdtx.ui.attack_speed")).style(Styles.outlineLabel); // 原文本:[violet]攻速
+                t.add(mindustryX.bundles.FuncX.ui("attack_speed")).style(Styles.outlineLabel); // 原文本:[violet]攻速
                 t.field("" + entry.reloadMultiplier, text -> entry.reloadMultiplier = Strings.parseFloat(text)).valid(Strings::canParsePositiveFloat).width(88f);
                 t.add().expandX().row();
 
-                t.add(arc.Core.bundle.get("mdtx.ui.build_speed")).style(Styles.outlineLabel); // 原文本:[accent]建速
+                t.add(mindustryX.bundles.FuncX.ui("build_speed")).style(Styles.outlineLabel); // 原文本:[accent]建速
                 t.field("" + entry.buildSpeedMultiplier, text -> entry.buildSpeedMultiplier = Strings.parseFloat(text)).valid(Strings::canParsePositiveFloat).width(88f);
 
                 t.add().expandX();
 
-                t.add(arc.Core.bundle.get("mdtx.ui.resistance")).style(Styles.outlineLabel); // 原文本:[purple]阻力
+                t.add(mindustryX.bundles.FuncX.ui("resistance")).style(Styles.outlineLabel); // 原文本:[purple]阻力
                 t.field("" + entry.dragMultiplier, text -> entry.dragMultiplier = Strings.parseFloat(text)).valid(Strings::canParsePositiveFloat).width(88f);
                 t.add().expandX().row();
 
-                t.add(arc.Core.bundle.get("mdtx.ui.armor")).style(Styles.outlineLabel); // 原文本:[teal]装甲
+                t.add(mindustryX.bundles.FuncX.ui("armor")).style(Styles.outlineLabel); // 原文本:[teal]装甲
                 t.field("" + entry.armorOverride, text -> entry.armorOverride = Strings.parseFloat(text)).valid(Strings::canParseFloat).width(88f);
 
                 for(Element child : t.getChildren()){
@@ -628,7 +628,7 @@ public class UnitFactoryDialog extends BaseDialog{
             table.table(Styles.grayPanel, buttons -> {
                 buttons.defaults().height(48f).pad(4f).growX();
 
-                buttons.button(arc.Core.bundle.get("mdtx.ui.load_building"), new TextureRegionDrawable(Blocks.siliconSmelter.uiIcon), Styles.flatt, 32, // 原文本:装载建筑
+                buttons.button(mindustryX.bundles.FuncX.ui("load_building"), new TextureRegionDrawable(Blocks.siliconSmelter.uiIcon), Styles.flatt, 32, // 原文本:装载建筑
                 () -> ContentSelectDialog.once(content.blocks().select(block -> !block.isFloor() && block.buildVisibility != BuildVisibility.hidden),
                 null,
                 block -> {
@@ -637,14 +637,14 @@ public class UnitFactoryDialog extends BaseDialog{
                     rebuildPayloadSettingTable(payloads, settingTable);
                 })).row();
 
-                buttons.button(arc.Core.bundle.get("mdtx.ui.load_unit"), new TextureRegionDrawable(UnitTypes.alpha.uiIcon), Styles.flatt, 32f, // 原文本:装载单位
+                buttons.button(mindustryX.bundles.FuncX.ui("load_unit"), new TextureRegionDrawable(UnitTypes.alpha.uiIcon), Styles.flatt, 32f, // 原文本:装载单位
                 () -> ContentSelectDialog.once(content.units(), null, unitType -> {
                     UnitPayload payload = new UnitPayload(unitType.create(payloadUnit.team));
                     payloads.add(payload);
                     rebuildPayloadSettingTable(payloads, settingTable);
                 })).row();
 
-                buttons.button(arc.Core.bundle.get("mdtx.ui.load_self"), Icon.add, Styles.flatt, () -> { // 原文本:装载自己
+                buttons.button(mindustryX.bundles.FuncX.ui("load_self"), Icon.add, Styles.flatt, () -> { // 原文本:装载自己
                     payloads.add(new UnitPayload(cloneUnit(payloadUnit)));
                     rebuildPayloadSettingTable(payloads, settingTable);
                 }).row();
@@ -701,7 +701,7 @@ public class UnitFactoryDialog extends BaseDialog{
     }
 
     private void simpleFactory(Unit unit){
-        BaseDialog dialog = new BaseDialog(arc.Core.bundle.get("mdtx.ui.unit_factory")); // 原文本:单位工厂
+        BaseDialog dialog = new BaseDialog(mindustryX.bundles.FuncX.ui("unit_factory")); // 原文本:单位工厂
 
         Table main = new Table();
 
@@ -731,7 +731,7 @@ public class UnitFactoryDialog extends BaseDialog{
         }).padTop(8f).growY();
 
         dialog.addCloseButton();
-        dialog.buttons.button(arc.Core.bundle.get("mdtx.ui.reset"), Icon.refresh, () -> { // 原文本:重置
+        dialog.buttons.button(mindustryX.bundles.FuncX.ui("reset"), Icon.refresh, () -> { // 原文本:重置
             resetUnit(unit);
             rebuildTables();
         });
@@ -809,7 +809,7 @@ public class UnitFactoryDialog extends BaseDialog{
         }
 
         public String name(){
-            return mod == null ? Core.bundle.get("vanilla", arc.Core.bundle.get("mdtx.ui.vanilla")) : mod.meta.displayName; // 原文本:原版
+            return mod == null ? Core.bundle.get("vanilla", mindustryX.bundles.FuncX.ui("vanilla")) : mod.meta.displayName; // 原文本:原版
         }
 
         public TextureRegion icon(){

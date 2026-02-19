@@ -48,13 +48,13 @@ public class ArcRadar{
 
     private static final SettingsV2.Data<Integer>
     mode = new SliderPref("arcExtra.radarMode", 1, 1, 30, 1, s -> switch(s){
-        case 0 -> arc.Core.bundle.get("mdtx.ui.off"); // 原文本:关闭
-        case 30 -> arc.Core.bundle.get("mdtx.ui.instant"); // 原文本:瞬间完成
-        default -> "[lightgray]x[white]" + Strings.autoFixed(s * 0.2f, 1) + arc.Core.bundle.get("mdtx.ui.x_scan_speed"); // 原文本:倍搜索速度
+        case 0 -> mindustryX.bundles.FuncX.ui("off"); // 原文本:关闭
+        case 30 -> mindustryX.bundles.FuncX.ui("instant"); // 原文本:瞬间完成
+        default -> "[lightgray]x[white]" + Strings.autoFixed(s * 0.2f, 1) + mindustryX.bundles.FuncX.ui("x_scan_speed"); // 原文本:倍搜索速度
     }),
     size = new SliderPref("arcExtra.radarSize", 0, 0, 50, 1, s -> {
-        if(s == 0) return arc.Core.bundle.get("mdtx.ui.fixed_size"); // 原文本:固定大小
-        return "[lightgray]x[white]" + Strings.autoFixed(s * 0.1f, 1) + arc.Core.bundle.get("mdtx.ui.placeholder_x"); // 原文本:倍
+        if(s == 0) return mindustryX.bundles.FuncX.ui("fixed_size"); // 原文本:固定大小
+        return "[lightgray]x[white]" + Strings.autoFixed(s * 0.1f, 1) + mindustryX.bundles.FuncX.ui("placeholder_x"); // 原文本:倍
     });
     public static List<SettingsV2.Data<?>> settings = CollectionsKt.listOf(mode, size);
 
@@ -90,7 +90,7 @@ public class ArcRadar{
         if(working && t == null){
             t = new Table(Styles.black3);
             t.touchable = Touchable.disabled;
-            t.margin(8f).add(arc.Core.bundle.get("mdtx.ui.radar_scanning")).color(Pal.accent).style(Styles.outlineLabel); // 原文本:>> 雷达扫描中 <<
+            t.margin(8f).add(mindustryX.bundles.FuncX.ui("radar_scanning")).color(Pal.accent).style(Styles.outlineLabel); // 原文本:>> 雷达扫描中 <<
             t.pack();
             t.visible(() -> working);
             t.update(() -> t.setPosition(Core.graphics.getWidth() / 2f, Core.graphics.getHeight() * 0.1f, Align.center));

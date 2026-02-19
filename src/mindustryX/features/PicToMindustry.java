@@ -18,7 +18,7 @@ import mindustry.ui.dialogs.*;
 import mindustry.world.blocks.logic.*;
 import mindustry.world.blocks.logic.CanvasBlock.*;
 
-import static mindustryX.features.func.FuncX.*;
+import static mindustryX.bundles.FuncX.*;
 import static mindustry.Vars.*;
 
 //move from mindustry.arcModule.toolpack.picToMindustry

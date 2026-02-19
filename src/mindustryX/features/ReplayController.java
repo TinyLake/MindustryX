@@ -41,9 +41,9 @@ public class ReplayController{
         Events.on(ClientServerConnectEvent.class, (e) -> stopPlay());
         {
             Table buttons = Vars.ui.join.buttons;
-            buttons.button(arc.Core.bundle.get("mdtx.ui.load_replay_file"), Icon.file, () -> { // 原文本:加载回放文件
+            buttons.button(mindustryX.bundles.FuncX.ui("load_replay_file"), Icon.file, () -> { // 原文本:加载回放文件
                 FileChooser.setLastDirectory(saveDirectory);
-                platform.showFileChooser(true, arc.Core.bundle.get("mdtx.ui.open_playback_file"), "mrep", f -> Core.app.post(() -> ReplayController.startPlay(f))); // 原文本:打开回放文件
+                platform.showFileChooser(true, mindustryX.bundles.FuncX.ui("open_playback_file"), "mrep", f -> Core.app.post(() -> ReplayController.startPlay(f))); // 原文本:打开回放文件
             });
         }
         {
@@ -51,7 +51,7 @@ public class ReplayController{
             pausedDialog.shown(() -> {
                 if(!replaying) return;
                 pausedDialog.cont.row()
-                .button(arc.Core.bundle.get("mdtx.ui.view_recording_info"), Icon.fileImage, ReplayController::showInfo).name("ReplayInfo") // 原文本:查看录制信息
+                .button(mindustryX.bundles.FuncX.ui("view_recording_info"), Icon.fileImage, ReplayController::showInfo).name("ReplayInfo") // 原文本:查看录制信息
                 .size(0, 60).colspan(pausedDialog.cont.getColumns()).fill();
             });
         }
@@ -65,13 +65,13 @@ public class ReplayController{
         try{
             writer = new ReplayData.Writer(file.write(false, 8192));
         }catch(Exception e){
-            Log.err(arc.Core.bundle.get("mdtx.ui.failed_to_create_replay"), e); // 原文本:创建回放出错!
+            Log.err(mindustryX.bundles.FuncX.ui("failed_to_create_replay"), e); // 原文本:创建回放出错!
             return;
         }
         boolean anonymous = Core.settings.getBool("anonymous", false);
         ReplayData header = new ReplayData(Version.build, new Date(), anonymous ? "anonymous" : ip, anonymous ? "anonymous" : Vars.player.name.trim());
         writer.writeHeader(header);
-        Log.info(arc.Core.bundle.get("mdtx.ui.recording_arg"), file.absolutePath()); // 原文本:录制中: @
+        Log.info(mindustryX.bundles.FuncX.ui("recording_arg"), file.absolutePath()); // 原文本:录制中: @
         ReplayController.writer = writer;
     }
 
@@ -80,7 +80,7 @@ public class ReplayController{
         if(p instanceof Disconnect){
             writer.close();
             writer = null;
-            Log.info(arc.Core.bundle.get("mdtx.ui.recording_ended")); // 原文本:录制结束
+            Log.info(mindustryX.bundles.FuncX.ui("recording_ended")); // 原文本:录制结束
             return;
         }
         try{
@@ -88,7 +88,7 @@ public class ReplayController{
         }catch(Exception e){
             net.disconnect();
             Log.err(e);
-            Core.app.post(() -> ui.showException(arc.Core.bundle.get("mdtx.ui.recording_error"), e)); // 原文本:录制出错!
+            Core.app.post(() -> ui.showException(mindustryX.bundles.FuncX.ui("recording_error"), e)); // 原文本:录制出错!
         }
     }
 
@@ -99,7 +99,7 @@ public class ReplayController{
             reader = new ReplayData.Reader(input);
             Log.infoTag("Replay", reader.getMeta().toString());
         }catch(Exception e){
-            Core.app.post(() -> ui.showException(arc.Core.bundle.get("mdtx.ui.failed_to_read_playback"), e)); // 原文本:读取回放失败!
+            Core.app.post(() -> ui.showException(mindustryX.bundles.FuncX.ui("failed_to_read_playback"), e)); // 原文本:读取回放失败!
         }
 
         replaying = true;
@@ -160,25 +160,25 @@ public class ReplayController{
 
 
     public static void showInfo(){
-        BaseDialog dialog = new BaseDialog(arc.Core.bundle.get("mdtx.ui.replay_stats")); // 原文本:回放统计
+        BaseDialog dialog = new BaseDialog(mindustryX.bundles.FuncX.ui("replay_stats")); // 原文本:回放统计
         if(reader == null){
-            dialog.cont.add(arc.Core.bundle.get("mdtx.ui.replay_not_loaded")); // 原文本:未加载回放!
+            dialog.cont.add(mindustryX.bundles.FuncX.ui("replay_not_loaded")); // 原文本:未加载回放!
             return;
         }
         var replay = reader.getMeta();
-        dialog.cont.add(arc.Core.bundle.get("mdtx.ui.playback_version") + replay.getVersion()).row(); // 原文本:回放版本:
-        dialog.cont.add(arc.Core.bundle.get("mdtx.ui.replay_creation_time") + replay.getTime()).row(); // 原文本:回放创建时间:
-        dialog.cont.add(arc.Core.bundle.get("mdtx.ui.server_ip") + replay.getServerIp()).row(); // 原文本:服务器ip:
-        dialog.cont.add(arc.Core.bundle.get("mdtx.ui.player_name") + replay.getRecordPlayer()).row(); // 原文本:玩家名:
+        dialog.cont.add(mindustryX.bundles.FuncX.ui("playback_version") + replay.getVersion()).row(); // 原文本:回放版本:
+        dialog.cont.add(mindustryX.bundles.FuncX.ui("replay_creation_time") + replay.getTime()).row(); // 原文本:回放创建时间:
+        dialog.cont.add(mindustryX.bundles.FuncX.ui("server_ip") + replay.getServerIp()).row(); // 原文本:服务器ip:
+        dialog.cont.add(mindustryX.bundles.FuncX.ui("player_name") + replay.getRecordPlayer()).row(); // 原文本:玩家名:
 
         if(reader.getSource() != null){
             var tmpReader = new ReplayData.Reader(reader.getSource());
             var packets = tmpReader.allPacket();
             tmpReader.close();
 
-            dialog.cont.add(arc.Core.bundle.get("mdtx.ui.packet_count") + packets.size()).row(); // 原文本:数据包总数：
+            dialog.cont.add(mindustryX.bundles.FuncX.ui("packet_count") + packets.size()).row(); // 原文本:数据包总数：
             int secs = (int)(packets.get(packets.size() - 1).getOffset() / 60);
-            dialog.cont.add(arc.Core.bundle.get("mdtx.ui.playback_length") + (secs / 3600) + ":" + (secs / 60 % 60) + ":" + (secs % 60)).row(); // 原文本:回放长度:
+            dialog.cont.add(mindustryX.bundles.FuncX.ui("playback_length") + (secs / 3600) + ":" + (secs / 60 % 60) + ":" + (secs % 60)).row(); // 原文本:回放长度:
             dialog.cont.pane(t -> {
                 t.defaults().pad(2);
                 for(var packet : packets){

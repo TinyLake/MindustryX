@@ -13,12 +13,12 @@ public class TeamSelectDialog extends BaseDialog{
     private Cons<Team> cons;
 
     public TeamSelectDialog(){
-        super(arc.Core.bundle.get("mdtx.ui.team_selector")); // 原文本:队伍选择器
+        super(mindustryX.bundles.FuncX.ui("team_selector")); // 原文本:队伍选择器
         cont.pane(td -> {
             for(Team team : Team.all){
                 if(team.id % 10 == 6){
                     td.row();
-                    td.add(arc.Core.bundle.get("mdtx.ui.team") + team.id + "~" + (team.id + 9)); // 原文本:队伍：
+                    td.add(mindustryX.bundles.FuncX.ui("team") + team.id + "~" + (team.id + 9)); // 原文本:队伍：
                 }
                 td.button(Tex.whiteui, Styles.clearTogglei, 36f, () -> {
                     lastTeam = team;
