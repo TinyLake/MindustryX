@@ -19,6 +19,7 @@ import mindustry.ui.Bar
 import mindustry.ui.Styles
 import mindustry.ui.dialogs.BaseDialog
 import mindustryX.VarsX
+import mindustryX.bundles.MdtxTexts
 import mindustryX.features.ui.CommitsTable
 import mindustryX.features.ui.Format
 import java.time.Duration
@@ -67,8 +68,8 @@ object AutoUpdate {
     fun initUI() {
         Vars.ui.menuGroup.fill { c ->
             c.bottom().right().defaults().size(200f, 60f)
-            c.button("@mdtx.report", Icon.github) { UIExt.openURI("https://github.com/${VarsX.repo}") }.row()
-            c.button("@mdtx.qqLink", Icon.units) { UIExt.openURI(VarsX.qqLink) }.row()
+            c.button(MdtxTexts.text("mdtx.report"), Icon.github) { UIExt.openURI("https://github.com/${VarsX.repo}") }.row()
+            c.button(MdtxTexts.text("mdtx.qqLink"), Icon.units) { UIExt.openURI(VarsX.qqLink) }.row()
             c.button("@be.check", Icon.refresh) { showDialog() }.update {
                 it.label.color.apply {
                     set(Color.white)

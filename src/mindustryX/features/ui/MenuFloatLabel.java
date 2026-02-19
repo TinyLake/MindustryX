@@ -37,7 +37,7 @@ public class MenuFloatLabel extends WidgetGroup{
         try{
             var locale = Core.bundle == null ? null : Core.bundle.getLocale();
             // Use English slogans for non-Chinese locales when available.
-            if(locale != null && !"zh".equalsIgnoreCase(locale.getLanguage()) && Core.files.internal("labels_en").exists()){
+            if(!mindustryX.bundles.Lang.isChinese(locale) && Core.files.internal("labels_en").exists()){
                 labelFile = "labels_en";
             }
         }catch(Throwable ignored){

@@ -25,6 +25,7 @@ import mindustry.ui.Fonts
 import mindustry.ui.Styles
 import mindustry.ui.fragments.ChatFragment
 import mindustryX.VarsX
+import mindustryX.bundles.MdtxTexts
 import mindustryX.features.UIExtKt.showFloatSettingsPanel
 import mindustryX.features.ui.ArcMessageDialog
 import mindustryX.features.ui.FormatDefault.duration
@@ -186,7 +187,7 @@ object ShareFeature {
         val (amount, delta) = UIExt.coreItems.itemInfo(item)
         send(
             item.emoji().firstOrNull() ?: Iconc.itemCopper,
-            Core.bundle.format(
+            MdtxTexts.format(
                 "mdtx.share.item", item.localizedName,
                 (if (amount > 100) format(amount.toLong()) else "[red]$amount[]"),
                 (if (delta > 0) "[accent]+" else "[red]") + format(delta.toLong()) + "[]"
@@ -215,7 +216,7 @@ object ShareFeature {
         val color = (if (count == limit) "orange" else if (count < 10) "red" else "accent")
         send(
             unit.emoji().firstOrNull() ?: Iconc.units,
-            Core.bundle.format("mdtx.share.unit", unit.localizedName, "[$color]$count[]", limit)
+            MdtxTexts.format("mdtx.share.unit", unit.localizedName, "[$color]$count[]", limit)
         )
     }
 

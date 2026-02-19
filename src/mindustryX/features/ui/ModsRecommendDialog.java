@@ -21,6 +21,7 @@ import mindustry.io.*;
 import mindustry.mod.*;
 import mindustry.ui.*;
 import mindustry.ui.dialogs.*;
+import mindustryX.bundles.*;
 import mindustryX.features.ui.comp.*;
 
 import java.text.*;
@@ -100,9 +101,9 @@ public class ModsRecommendDialog extends BaseDialog{
             info.top();
             info.defaults().expandX().center();
 
-            info.add("@mods.recommend").pad(12f).row();
-            info.add(Core.bundle.format("mods.recommend.lastUpdated", meta.lastUpdated)).pad(6f).row();
-            info.add("@mods.recommend.info").pad(6f);
+            info.add(MdtxTexts.text("mods.recommend")).pad(12f).row();
+            info.add(MdtxTexts.format("mods.recommend.lastUpdated", meta.lastUpdated)).pad(6f).row();
+            info.add(MdtxTexts.text("mods.recommend.info")).pad(6f);
 
             for(Element child : info.getChildren()){
                 if(child instanceof Label label){
@@ -180,7 +181,7 @@ public class ModsRecommendDialog extends BaseDialog{
     }
 
     private Cell<?> addInfo(Table table, String bundle, Object value){
-        Cell<?> cell = table.add(Core.bundle.format("mods.recommend.mod." + bundle, value)).color(pink);
+        Cell<?> cell = table.add(MdtxTexts.format("mods.recommend.mod." + bundle, value)).color(pink);
 
         table.row();
 
