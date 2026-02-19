@@ -12,6 +12,7 @@ import mindustryX.features.*;
 import java.net.*;
 import java.util.*;
 
+import static mindustryX.features.func.FuncX.*;
 import static mindustry.Vars.ui;
 
 public class Hooks implements ApplicationListener{
@@ -25,9 +26,9 @@ public class Hooks implements ApplicationListener{
         Events.on(ClientLoadEvent.class, (e) -> MetricCollector.INSTANCE.onLaunch());
         //deprecated Java 8
         if(!OS.isAndroid && Strings.parseInt(OS.javaVersion.split("\\.")[0]) < 17){
-            Log.warn(arc.Core.bundle.format("mdtx.ui.template.javaWarnLog", OS.javaVersion)); // 原文本:Java版本 {0} 过低，不受支持。请使用Java 17或更高版本运行MindustryX。
+            Log.warn(uiJavaWarnLog(OS.javaVersion)); // 原文本:Java版本 {0} 过低，不受支持。请使用Java 17或更高版本运行MindustryX。
             Events.on(ClientLoadEvent.class, (e) -> {
-                ui.showInfo(arc.Core.bundle.format("mdtx.ui.template.javaWarnDialog", OS.javaVersion)); // 原文本:Java版本 {0} 过低，不受支持。\n[grey]该警告不存在设置，请更新Java版本。
+                ui.showInfo(uiJavaWarnDialog(OS.javaVersion)); // 原文本:Java版本 {0} 过低，不受支持。\n[grey]该警告不存在设置，请更新Java版本。
             });
         }
         try{
@@ -128,8 +129,7 @@ public class Hooks implements ApplicationListener{
     private void updateTitle(){
         if(Core.graphics == null) return;
         var mod = Vars.mods.orderedMods();
-        var title = arc.Core.bundle.format("mdtx.ui.template.windowTitle", VarsX.version, mod.count(Mods.LoadedMod::enabled), mod.size) + // 原文本:MindustryX | 版本号 {0} | mod启用{1}/{2}
-        " | " + Core.graphics.getWidth() + "x" + Core.graphics.getHeight();
+        var title = uiWindowTitle(VarsX.version, mod.count(Mods.LoadedMod::enabled), mod.size, Core.graphics.getWidth(), Core.graphics.getHeight());
         if(!title.equals(lastTitle)){
             lastTitle = title;
             Core.graphics.setTitle(title);

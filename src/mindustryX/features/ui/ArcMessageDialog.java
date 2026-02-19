@@ -17,6 +17,7 @@ import mindustryX.features.ui.comp.*;
 import java.text.*;
 import java.util.*;
 
+import static mindustryX.features.func.FuncX.*;
 import static mindustry.Vars.*;
 
 //move from mindustry.arcModule.ui.dialogs.MessageDialog
@@ -30,7 +31,7 @@ public class ArcMessageDialog extends BaseDialog{
     private static final GridTable chooseTable = new GridTable();
 
     public ArcMessageDialog(){
-        super(arc.Core.bundle.get("mdtx.ui.arc_message_center")); // 原文本:ARC-中央监控室
+        super(uiArcMessageCenter()); // 原文本:ARC-中央监控室
         if(Core.settings.getInt("maxMsgRecorded") == 0) Core.settings.put("maxMsgRecorded", 500);
         maxMsgRecorded = Core.settings.getInt("maxMsgRecorded");
 
@@ -48,29 +49,29 @@ public class ArcMessageDialog extends BaseDialog{
         msgTable.defaults().minWidth(600).growX().padBottom(15f);
 
         cont.table(t -> {
-            t.add(arc.Core.bundle.get("mdtx.ui.maximum_storage_of_chat_history_too_high_may_cause_lag")); // 原文本:最大储存聊天记录(过高可能导致卡顿)：
+            t.add(uiMaxChatHistoryHint()); // 原文本:最大储存聊天记录(过高可能导致卡顿)：
             t.field(maxMsgRecorded + "", text -> {
                 int record = Math.min(Math.max(Integer.parseInt(text), 1), 9999);
                 maxMsgRecorded = record;
                 Core.settings.put("maxMsgRecorded", record);
             }).valid(Strings::canParsePositiveInt).width(200f).get();
             t.row();
-            t.add(arc.Core.bundle.get("mdtx.ui.chat_history_exceeding_the_limit_will_be_cleared_when_loading_the_map")).color(Color.lightGray).colspan(2); // 原文本:超出限制的聊天记录将在载入地图时清除
+            t.add(uiChatHistoryCleanupHint()).color(Color.lightGray).colspan(2); // 原文本:超出限制的聊天记录将在载入地图时清除
         }).row();
 
         addCloseButton();
-        buttons.button(arc.Core.bundle.get("mdtx.ui.clear"), Icon.trash, msgTable::clearChildren); // 原文本:清空
-        buttons.button(arc.Core.bundle.get("mdtx.ui.export"), Icon.upload, this::exportMsg).name(arc.Core.bundle.get("mdtx.ui.export_chat_history")); // 原文本:导出 | 导出聊天记录
+        buttons.button(uiClear(), Icon.trash, msgTable::clearChildren); // 原文本:清空
+        buttons.button(uiExport(), Icon.upload, this::exportMsg).name(uiExportChatHistory()); // 原文本:导出 | 导出聊天记录
 
         Events.on(EventType.WorldLoadEvent.class, e -> {
-            addMsg(new Msg(Type.eventWorldLoad, arc.Core.bundle.format("mdtx.ui.template.loadMap", state.map.name()))); // 原文本:载入地图：{0}
-            addMsg(new Msg(Type.eventWorldLoad, arc.Core.bundle.format("mdtx.ui.template.introduction", state.map.description()))); // 原文本:简介：{0}
+            addMsg(new Msg(Type.eventWorldLoad, uiLoadMap(state.map.name()))); // 原文本:载入地图：{0}
+            addMsg(new Msg(Type.eventWorldLoad, uiIntroduction(state.map.description()))); // 原文本:简介：{0}
             while(msgTable.getChildren().size >= maxMsgRecorded) msgTable.getChildren().get(0).remove();
         });
 
         Events.on(EventType.WaveEvent.class, e -> {
             if(state.wavetime < 60f) return;
-            addMsg(new Msg(Type.eventWave, arc.Core.bundle.format("mdtx.ui.template.waveEvent", state.wave, ShareFeature.INSTANCE.waveInfo(state.wave)))); // 原文本:波次：{0} | {1}
+            addMsg(new Msg(Type.eventWave, uiWaveEvent(state.wave, ShareFeature.INSTANCE.waveInfo(state.wave)))); // 原文本:波次：{0} | {1}
         });
     }
 
@@ -106,7 +107,7 @@ public class ArcMessageDialog extends BaseDialog{
 
                 tt.button(Icon.copy, Styles.logici, () -> {
                     Core.app.setClipboardText(msg.message);
-                    ui.announce(arc.Core.bundle.get("mdtx.ui.copied_this_chat_record")); // 原文本:已导出本条聊天记录
+                    ui.announce(uiCopiedChatRecord()); // 原文本:已导出本条聊天记录
                 }).size(24f).padRight(6);
                 tt.button(Icon.cancel, Styles.logici, t::remove).size(24f);
 
@@ -127,10 +128,10 @@ public class ArcMessageDialog extends BaseDialog{
 
     void exportMsg(){
         StringBuilder messageHis = new StringBuilder();
-        messageHis.append(arc.Core.bundle.format("mdtx.ui.template.exportHeader", VarsX.version)).append("\n"); // 原文本:下面是[MDTX-{0}] 导出的游戏内聊天记录
-        messageHis.append(arc.Core.bundle.format("mdtx.ui.template.exportMap", state.map.name(), state.rules.modeName)); // 原文本:*** 当前地图名称: {0}(模式: {1})\n
-        messageHis.append(arc.Core.bundle.format("mdtx.ui.template.currentWave", state.wave)).append("\n"); // 原文本:*** 当前波次: {0}
-        messageHis.append(arc.Core.bundle.format("mdtx.ui.template.exportCount", msgList.size)); // 原文本:成功选取共{0}条记录，如下：\n
+        messageHis.append(uiExportHeader(VarsX.version)).append("\n"); // 原文本:下面是[MDTX-{0}] 导出的游戏内聊天记录
+        messageHis.append(uiExportMap(state.map.name(), state.rules.modeName)); // 原文本:*** 当前地图名称: {0}(模式: {1})\n
+        messageHis.append(uiCurrentWave(state.wave)).append("\n"); // 原文本:*** 当前波次: {0}
+        messageHis.append(uiExportCount(msgList.size)); // 原文本:成功选取共{0}条记录，如下：\n
         for(var msg : msgList){
             messageHis.append(Strings.stripColors(msg.message)).append("\n");
         }
@@ -165,19 +166,19 @@ public class ArcMessageDialog extends BaseDialog{
     }
 
     public enum Type{
-        chat(arc.Core.bundle.get("mdtx.ui.chat"), Color.gray), // 原文本:聊天
-        serverMsg(arc.Core.bundle.get("mdtx.ui.server_msg"), Color.valueOf("#cefdce")), // 原文本:服务器信息
+        chat(uiChatType(), Color.gray), // 原文本:聊天
+        serverMsg(uiServerMsgType(), Color.valueOf("#cefdce")), // 原文本:服务器信息
 
-        markLoc(arc.Core.bundle.get("mdtx.ui.mark_coordinates"), Color.valueOf("#7FFFD4")), // 原文本:标记~坐标
-        markPlayer(arc.Core.bundle.get("mdtx.ui.mark_player"), Color.valueOf("#7FFFD4")), // 原文本:标记~玩家
+        markLoc(uiMarkCoordinatesType(), Color.valueOf("#7FFFD4")), // 原文本:标记~坐标
+        markPlayer(uiMarkPlayerType(), Color.valueOf("#7FFFD4")), // 原文本:标记~玩家
 
-        console(arc.Core.bundle.get("mdtx.ui.command"), Color.gold), // 原文本:指令
+        console(uiCommandType(), Color.gold), // 原文本:指令
 
-        logicNotify(arc.Core.bundle.get("mdtx.ui.logic_notice"), Color.valueOf("#ffccff")), // 原文本:逻辑~通报
-        logicAnnounce(arc.Core.bundle.get("mdtx.ui.logic_announcement"), Color.valueOf("#ffccff")), // 原文本:逻辑~公告
+        logicNotify(uiLogicNoticeType(), Color.valueOf("#ffccff")), // 原文本:逻辑~通报
+        logicAnnounce(uiLogicAnnouncementType(), Color.valueOf("#ffccff")), // 原文本:逻辑~公告
 
-        eventWorldLoad(arc.Core.bundle.get("mdtx.ui.event_map_load"), Color.valueOf("#ff9999")), // 原文本:事件~载入地图
-        eventWave(arc.Core.bundle.get("mdtx.ui.event_wave"), Color.valueOf("#ffcc99")); // 原文本:事件~波次
+        eventWorldLoad(uiEventMapLoadType(), Color.valueOf("#ff9999")), // 原文本:事件~载入地图
+        eventWave(uiEventWaveType(), Color.valueOf("#ffcc99")); // 原文本:事件~波次
 
         public final String name;
         public final Color color;
