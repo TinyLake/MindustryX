@@ -68,8 +68,8 @@ object AutoUpdate {
     fun initUI() {
         Vars.ui.menuGroup.fill { c ->
             c.bottom().right().defaults().size(200f, 60f)
-            c.button(UiTexts.uiMdtxReport(), Icon.github) { UIExt.openURI("https://github.com/${VarsX.repo}") }.row()
-            c.button(UiTexts.uiMdtxQqLink(), Icon.units) { UIExt.openURI(VarsX.qqLink) }.row()
+            c.button(UiTexts.bundle().mdtxReport(), Icon.github) { UIExt.openURI("https://github.com/${VarsX.repo}") }.row()
+            c.button(UiTexts.bundle().mdtxQqLink(), Icon.units) { UIExt.openURI(VarsX.qqLink) }.row()
             c.button("@be.check", Icon.refresh) { showDialog() }.update {
                 it.label.color.apply {
                     set(Color.white)

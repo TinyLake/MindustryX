@@ -187,7 +187,7 @@ object ShareFeature {
         val (amount, delta) = UIExt.coreItems.itemInfo(item)
         send(
             item.emoji().firstOrNull() ?: Iconc.itemCopper,
-            UiTexts.uiMdtxShareItem(
+            UiTexts.bundle().mdtxShareItem(
                 item.localizedName,
                 (if (amount > 100) format(amount.toLong()) else "[red]$amount[]"),
                 (if (delta > 0) "[accent]+" else "[red]") + format(delta.toLong()) + "[]"
@@ -216,7 +216,7 @@ object ShareFeature {
         val color = (if (count == limit) "orange" else if (count < 10) "red" else "accent")
         send(
             unit.emoji().firstOrNull() ?: Iconc.units,
-            UiTexts.uiMdtxShareUnit(unit.localizedName, "[$color]$count[]", limit)
+            UiTexts.bundle().mdtxShareUnit(unit.localizedName, "[$color]$count[]", limit)
         )
     }
 

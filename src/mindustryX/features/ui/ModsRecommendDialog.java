@@ -100,9 +100,9 @@ public class ModsRecommendDialog extends BaseDialog{
             info.top();
             info.defaults().expandX().center();
 
-            info.add(mindustryX.bundles.UiTexts.uiModsRecommendTitle()).pad(12f).row();
-            info.add(mindustryX.bundles.UiTexts.uiModsRecommendLastUpdated(meta.lastUpdated)).pad(6f).row();
-            info.add(mindustryX.bundles.UiTexts.uiModsRecommendInfo()).pad(6f);
+            info.add(mindustryX.bundles.UiTexts.bundle().modsRecommendTitle()).pad(12f).row();
+            info.add(mindustryX.bundles.UiTexts.bundle().modsRecommendLastUpdated(meta.lastUpdated)).pad(6f).row();
+            info.add(mindustryX.bundles.UiTexts.bundle().modsRecommendInfo()).pad(6f);
 
             for(Element child : info.getChildren()){
                 if(child instanceof Label label){
@@ -181,11 +181,11 @@ public class ModsRecommendDialog extends BaseDialog{
 
     private Cell<?> addInfo(Table table, String bundle, Object value){
         String text = switch(bundle){
-            case "name" -> mindustryX.bundles.UiTexts.uiModsRecommendModName(value);
-            case "author" -> mindustryX.bundles.UiTexts.uiModsRecommendModAuthor(value);
-            case "minGameVersion" -> mindustryX.bundles.UiTexts.uiModsRecommendModMinGameVersion(value);
-            case "lastUpdated" -> mindustryX.bundles.UiTexts.uiModsRecommendModLastUpdated(value);
-            case "stars" -> mindustryX.bundles.UiTexts.uiModsRecommendModStars(value);
+            case "name" -> mindustryX.bundles.UiTexts.bundle().modsRecommendModName(value);
+            case "author" -> mindustryX.bundles.UiTexts.bundle().modsRecommendModAuthor(value);
+            case "minGameVersion" -> mindustryX.bundles.UiTexts.bundle().modsRecommendModMinGameVersion(value);
+            case "lastUpdated" -> mindustryX.bundles.UiTexts.bundle().modsRecommendModLastUpdated(value);
+            case "stars" -> mindustryX.bundles.UiTexts.bundle().modsRecommendModStars(value);
             default -> String.valueOf(value);
         };
         Cell<?> cell = table.add(text).color(pink);
