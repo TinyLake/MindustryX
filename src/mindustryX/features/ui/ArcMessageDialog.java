@@ -17,7 +17,7 @@ import mindustryX.features.ui.comp.*;
 import java.text.*;
 import java.util.*;
 
-import static mindustryX.bundles.FuncX.*;
+import static mindustryX.bundles.UiTexts.*;
 import static mindustry.Vars.*;
 
 //move from mindustry.arcModule.ui.dialogs.MessageDialog

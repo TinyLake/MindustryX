@@ -22,7 +22,7 @@ import mindustry.world.blocks.logic.MemoryBlock.*;
 import mindustryX.features.SettingsV2.*;
 import mindustryX.features.*;
 
-import static mindustryX.bundles.FuncX.*;
+import static mindustryX.bundles.UiTexts.*;
 import static mindustry.Vars.*;
 
 public class LogicSupport{

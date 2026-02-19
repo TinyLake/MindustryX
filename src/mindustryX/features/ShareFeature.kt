@@ -41,7 +41,7 @@ object ShareFeature {
 
     @JvmStatic
     fun at(playerName: String?) {
-        send('@', mindustryX.bundles.uiTemplate("atPlayer", playerName)) // 原文本:<AT>戳了{0}[white]一下，并提醒他留意对话框
+        send('@', mindustryX.bundles.UiTexts.uiTemplate("atPlayer", playerName)) // 原文本:<AT>戳了{0}[white]一下，并提醒他留意对话框
     }
 
     @JvmStatic
@@ -49,7 +49,7 @@ object ShareFeature {
         uploadPasteBin(Vars.schematics.writeBase64(s)) { url ->
             if (url == null) return@uploadPasteBin
             val code = url.substring(url.lastIndexOf('/') + 1)
-            send(Iconc.paste, mindustryX.bundles.uiTemplate("shareCode", code)) // 原文本:<ARCxMDTX><Schem>[black]一坨兼容[] {0}
+            send(Iconc.paste, mindustryX.bundles.UiTexts.uiTemplate("shareCode", code)) // 原文本:<ARCxMDTX><Schem>[black]一坨兼容[] {0}
         }
     }
 
@@ -61,7 +61,7 @@ object ShareFeature {
         }
         req.error {
             Core.app.post {
-                Vars.ui.showException(mindustryX.bundles.ui("upload_failed_try_again"), it) // 原文本:上传失败，再重试一下？
+                Vars.ui.showException(mindustryX.bundles.UiTexts.ui("upload_failed_try_again"), it) // 原文本:上传失败，再重试一下？
                 Core.app.post { callback(null) }
             }
         }
@@ -71,16 +71,16 @@ object ShareFeature {
     fun shareSchematicClipboard(schem: Schematic) {
         uploadPasteBin(Vars.schematics.writeBase64(schem)) { link: String? ->
             val msg = buildString {
-                append(mindustryX.bundles.uiTemplate("shareHeader", VarsX.version)) // 原文本:这是一条来自 MDTX-{0} 的分享记录\n
-                append(mindustryX.bundles.ui("blueprint_name")).append(schem.name()).append("\n") // 原文本:蓝图名：
-                append(mindustryX.bundles.ui("shared_by")).append(Vars.player.name).append("\n") // 原文本:分享者：
-                append(mindustryX.bundles.ui("blueprint_cost")) // 原文本:蓝图造价：
+                append(mindustryX.bundles.UiTexts.uiTemplate("shareHeader", VarsX.version)) // 原文本:这是一条来自 MDTX-{0} 的分享记录\n
+                append(mindustryX.bundles.UiTexts.ui("blueprint_name")).append(schem.name()).append("\n") // 原文本:蓝图名：
+                append(mindustryX.bundles.UiTexts.ui("shared_by")).append(Vars.player.name).append("\n") // 原文本:分享者：
+                append(mindustryX.bundles.UiTexts.ui("blueprint_cost")) // 原文本:蓝图造价：
                 val arr = schem.requirements()
                 for (stack in arr) {
                     append(stack.item.emoji()).append(stack.item.localizedName).append(stack.amount).append("|")
                 }
                 append("\n")
-                append(mindustryX.bundles.ui("power")) // 原文本:电力：
+                append(mindustryX.bundles.UiTexts.ui("power")) // 原文本:电力：
                 val cons = schem.powerConsumption() * 60
                 val prod = schem.powerProduction() * 60
                 if (!Mathf.zero(prod)) {
@@ -93,13 +93,13 @@ object ShareFeature {
                     append("-").append(Strings.autoFixed(cons, 2))
                 }
                 append("\n")
-                append(mindustryX.bundles.ui("blueprint_code_link")).append(link ?: "x").append("\n") // 原文本:蓝图代码链接：
-                if (Vars.schematics.writeBase64(schem).length > 3500) append(mindustryX.bundles.ui("the_blueprint_code_is_too_long_please_click_the_link_to_view_it")) // 原文本:蓝图代码过长，请点击链接查看
-                else append(mindustryX.bundles.ui("blueprint_code_n")).append(Vars.schematics.writeBase64(schem)) // 原文本:蓝图代码：\n
+                append(mindustryX.bundles.UiTexts.ui("blueprint_code_link")).append(link ?: "x").append("\n") // 原文本:蓝图代码链接：
+                if (Vars.schematics.writeBase64(schem).length > 3500) append(mindustryX.bundles.UiTexts.ui("the_blueprint_code_is_too_long_please_click_the_link_to_view_it")) // 原文本:蓝图代码过长，请点击链接查看
+                else append(mindustryX.bundles.UiTexts.ui("blueprint_code_n")).append(Vars.schematics.writeBase64(schem)) // 原文本:蓝图代码：\n
             }
 
             Core.app.setClipboardText(Strings.stripColors(msg))
-            UIExt.announce(mindustryX.bundles.ui("saved_to_clipboard")) // 原文本:已保存至剪贴板
+            UIExt.announce(mindustryX.bundles.UiTexts.ui("saved_to_clipboard")) // 原文本:已保存至剪贴板
         }
     }
 
@@ -118,7 +118,7 @@ object ShareFeature {
     //因为ArcMessageDialog共用了，所以单独提取出来
     fun waveInfo(wave: Int) = buildString {
         val spawner = Vars.spawner
-        append(mindustryX.bundles.uiTemplate("waveContains", spawner.countGroundSpawns(), spawner.countFlyerSpawns())) // 原文本:包含(地×{0},空x{1}):
+        append(mindustryX.bundles.UiTexts.uiTemplate("waveContains", spawner.countGroundSpawns(), spawner.countFlyerSpawns())) // 原文本:包含(地×{0},空x{1}):
 
         for (group in Vars.state.rules.spawns) {
             val count = group.getSpawned(wave - 1)
@@ -139,11 +139,11 @@ object ShareFeature {
         if (!Vars.state.rules.waves) return
 
         val msg = buildString {
-            append(mindustryX.bundles.uiTemplate("waveTitle", wave)) // 原文本:第{0}波
+            append(mindustryX.bundles.UiTexts.uiTemplate("waveTitle", wave)) // 原文本:第{0}波
 
             if (wave >= Vars.state.wave) {
                 val timer = (Vars.state.wavetime + (wave - Vars.state.wave) * Vars.state.rules.waveSpacing).toInt()
-                append(mindustryX.bundles.uiTemplate("waveEta", wave - Vars.state.wave, duration(timer.toFloat() / 60))) // 原文本:(还有{0}波, {1})
+                append(mindustryX.bundles.UiTexts.uiTemplate("waveEta", wave - Vars.state.wave, duration(timer.toFloat() / 60))) // 原文本:(还有{0}波, {1})
             }
 
             append("：").append(waveInfo(wave))
@@ -228,16 +228,16 @@ object ShareFeature {
             checked = Tex.underlineOver //Over是黄色的
         }
         button("T", underlineToggleT) { Vars.ui.chatfrag.nextMode() }
-            .checked { _ -> Vars.ui.chatfrag.mode == ChatFragment.ChatMode.team }.tooltip(mindustryX.bundles.ui("add_prefix_t")) // 原文本:前缀添加/t
+            .checked { _ -> Vars.ui.chatfrag.mode == ChatFragment.ChatMode.team }.tooltip(mindustryX.bundles.UiTexts.ui("add_prefix_t")) // 原文本:前缀添加/t
         button(Icon.zoomSmall, Styles.clearNonei) { MarkerType.lockOnLastMark() }
-            .tooltip(mindustryX.bundles.ui("lock_the_last_marked_point")) // 原文本:锁定上个标记点
+            .tooltip(mindustryX.bundles.UiTexts.ui("lock_the_last_marked_point")) // 原文本:锁定上个标记点
 
         add("♐>").padRight(18f)
-        button(Icon.mapSmall, Styles.clearNonei, Vars.iconMed) { MarkerType.toggleMarkHitterUI() }.tooltip(mindustryX.bundles.ui("mark_map_location")) // 原文本:标记地图位置
-        button(Icon.wavesSmall, Styles.clearNonei, Vars.iconMed) { shareWaveInfo(Vars.state.wave) }.tooltip(mindustryX.bundles.ui("share_wave_information")) // 原文本:分享波次信息
-        button(Icon.powerSmall, Styles.clearNonei, Vars.iconMed) { shareTeamPower() }.tooltip(mindustryX.bundles.ui("share_power_status")) // 原文本:分享电力情况
-        button(TextureRegionDrawable(Items.copper.uiIcon), Styles.clearNonei, Vars.iconSmall) { openShareItemDialog() }.tooltip(mindustryX.bundles.ui("share_inventory_status")) // 原文本:分享库存情况
-        button(Icon.unitsSmall, Styles.clearNonei, Vars.iconMed) { openShareUnitDialog() }.tooltip(mindustryX.bundles.ui("share_unit_count")) // 原文本:分享单位数量
+        button(Icon.mapSmall, Styles.clearNonei, Vars.iconMed) { MarkerType.toggleMarkHitterUI() }.tooltip(mindustryX.bundles.UiTexts.ui("mark_map_location")) // 原文本:标记地图位置
+        button(Icon.wavesSmall, Styles.clearNonei, Vars.iconMed) { shareWaveInfo(Vars.state.wave) }.tooltip(mindustryX.bundles.UiTexts.ui("share_wave_information")) // 原文本:分享波次信息
+        button(Icon.powerSmall, Styles.clearNonei, Vars.iconMed) { shareTeamPower() }.tooltip(mindustryX.bundles.UiTexts.ui("share_power_status")) // 原文本:分享电力情况
+        button(TextureRegionDrawable(Items.copper.uiIcon), Styles.clearNonei, Vars.iconSmall) { openShareItemDialog() }.tooltip(mindustryX.bundles.UiTexts.ui("share_inventory_status")) // 原文本:分享库存情况
+        button(Icon.unitsSmall, Styles.clearNonei, Vars.iconMed) { openShareUnitDialog() }.tooltip(mindustryX.bundles.UiTexts.ui("share_unit_count")) // 原文本:分享单位数量
     }
 
     private fun resolveAt(message: String, sender: Player?): Boolean {
@@ -247,8 +247,8 @@ object ShareFeature {
         //Remove prefix
         message = message.substringAfter("<AT>").substringAfter(tag('@'))
         if (message.contains(Vars.player.name)) {
-            if (sender != null) Vars.ui.announce(mindustryX.bundles.uiTemplate("atNoticeFrom", sender.name), 10f) // 原文本:[gold]你被[white]{0}[gold]戳了一下，请注意查看信息框哦~
-            else Vars.ui.announce(mindustryX.bundles.ui("you_were_poked_please_pay_attention_to_the_information_box"), 10f) // 原文本:[orange]你被戳了一下，请注意查看信息框哦~
+            if (sender != null) Vars.ui.announce(mindustryX.bundles.UiTexts.uiTemplate("atNoticeFrom", sender.name), 10f) // 原文本:[gold]你被[white]{0}[gold]戳了一下，请注意查看信息框哦~
+            else Vars.ui.announce(mindustryX.bundles.UiTexts.ui("you_were_poked_please_pay_attention_to_the_information_box"), 10f) // 原文本:[orange]你被戳了一下，请注意查看信息框哦~
         }
 
         return true

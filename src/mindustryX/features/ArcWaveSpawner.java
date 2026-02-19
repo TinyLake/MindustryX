@@ -98,7 +98,7 @@ public class ArcWaveSpawner{
                 dps += group.dpsT;
             }
 
-            if(amount == 0) return new Table(t -> t.add(mindustryX.bundles.FuncX.ui("there_are_no_enemies_in_this_wave"))); // 原文本:该波次没有敌人
+            if(amount == 0) return new Table(t -> t.add(mindustryX.bundles.UiTexts.ui("there_are_no_enemies_in_this_wave"))); // 原文本:该波次没有敌人
             Table t = new Table();
             t.add("\uE86D").width(50f);
             t.add("[accent]" + amount).growX().padRight(50f);

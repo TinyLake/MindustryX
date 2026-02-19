@@ -121,7 +121,7 @@ object AutoUpdate {
     @JvmOverloads
     fun showDialog(version: Release? = latest) {
         checkUpdate()
-        val dialog = BaseDialog(mindustryX.bundles.ui("check_for_updates")) // 原文本:自动更新
+        val dialog = BaseDialog(mindustryX.bundles.UiTexts.ui("check_for_updates")) // 原文本:自动更新
         dialog.getCell(dialog.cont).setElement(ScrollPane(dialog.cont))
         dialog.cont.table().growY().get().apply {
             fun buildVersionList(versions: List<Release>) {
@@ -138,36 +138,36 @@ object AutoUpdate {
                                         p.add(it.description).labelAlign(Align.left)
                                     }.row()
                                 }
-                            }.tooltip(mindustryX.bundles.ui("release_notes")).padRight(16f) // 原文本:发布说明
+                            }.tooltip(mindustryX.bundles.UiTexts.ui("release_notes")).padRight(16f) // 原文本:发布说明
                         button(Icon.link, Styles.clearNonei, Vars.iconSmall) {
                             UIExt.openURI(it.url)
-                        }.tooltip(mindustryX.bundles.ui("open_release_page")).padRight(4f).row() // 原文本:打开发布页面
+                        }.tooltip(mindustryX.bundles.UiTexts.ui("open_release_page")).padRight(4f).row() // 原文本:打开发布页面
                     }
                 }
                 row()
             }
 
             //width为整个Table最小宽度
-            add(mindustryX.bundles.uiTemplate("currentVersion", VarsX.version)).labelAlign(Align.center).width(500f).wrap().row() // 原文本:当前版本号: {0}
+            add(mindustryX.bundles.UiTexts.uiTemplate("currentVersion", VarsX.version)).labelAlign(Align.center).width(500f).wrap().row() // 原文本:当前版本号: {0}
             newVersion?.let {
-                add(mindustryX.bundles.uiTemplate("newVersion", it.version)).labelAlign(Align.center).width(500f).wrap().row() // 原文本:[green]发现新版本[]: {0}
+                add(mindustryX.bundles.UiTexts.uiTemplate("newVersion", it.version)).labelAlign(Align.center).width(500f).wrap().row() // 原文本:[green]发现新版本[]: {0}
             }
             if (versions.isEmpty()) {
-                add(mindustryX.bundles.ui("could_not_check_for_updates_nplease_try_again_later")).labelAlign(Align.center).width(500f).wrap().row() // 原文本:检查更新失败，请稍后再试
+                add(mindustryX.bundles.UiTexts.ui("could_not_check_for_updates_nplease_try_again_later")).labelAlign(Align.center).width(500f).wrap().row() // 原文本:检查更新失败，请稍后再试
                 return@apply
             }
 
             image().fillX().height(2f).row()
-            add(mindustryX.bundles.ui("stable_releases")).labelAlign(Align.center).width(500f).wrap().row() // 原文本:正式版
+            add(mindustryX.bundles.UiTexts.ui("stable_releases")).labelAlign(Align.center).width(500f).wrap().row() // 原文本:正式版
             buildVersionList(versions.filter { it.isRelease })
 
             image().fillX().height(2f).row()
-            add(mindustryX.bundles.ui("preview_releases_n_faster_updates_new_features_bug_fixes")).labelAlign(Align.center).width(500f).wrap().row() // 原文本:预览版(更新更快,新功能体验,BUG修复)
+            add(mindustryX.bundles.UiTexts.ui("preview_releases_n_faster_updates_new_features_bug_fixes")).labelAlign(Align.center).width(500f).wrap().row() // 原文本:预览版(更新更快,新功能体验,BUG修复)
             buildVersionList(versions.filter { !it.isRelease })
 
             image().fillX().height(2f).row()
             if (version == null) {
-                add(mindustryX.bundles.ui("you_are_already_on_the_latest_version")).labelAlign(Align.center).width(500f).wrap() // 原文本:你已是最新版本，不需要更新！
+                add(mindustryX.bundles.UiTexts.ui("you_are_already_on_the_latest_version")).labelAlign(Align.center).width(500f).wrap() // 原文本:你已是最新版本，不需要更新！
                 return@apply
             }
 
@@ -181,7 +181,7 @@ object AutoUpdate {
             }
             row()
 
-            button(mindustryX.bundles.ui("download_and_install_update")) { // 原文本:自动下载更新
+            button(mindustryX.bundles.UiTexts.ui("download_and_install_update")) { // 原文本:自动下载更新
                 if (asset == null) return@button
                 startDownload(asset.copy(url = url)) { file ->
                     if (VarsX.isLoader) {

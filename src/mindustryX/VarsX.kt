@@ -76,12 +76,12 @@ object VarsX {
     }
 
     @JvmField
-    val itemSelectionHeight = SliderPref("gameUI.itemSelectionHeight", 4, 4, 12) { mindustryX.bundles.uiTemplate("itemSelectionHeight", it) }.apply { // 原文本:{0} 行
+    val itemSelectionHeight = SliderPref("gameUI.itemSelectionHeight", 4, 4, 12) { mindustryX.bundles.UiTexts.uiTemplate("itemSelectionHeight", it) }.apply { // 原文本:{0} 行
         addFallbackName("itemSelectionHeight")
     }
 
     @JvmField
-    val itemSelectionWidth = SliderPref("gameUI.itemSelectionWidth", 4, 4, 12) { mindustryX.bundles.uiTemplate("itemSelectionWidth", it) }.apply { // 原文本:{0} 列
+    val itemSelectionWidth = SliderPref("gameUI.itemSelectionWidth", 4, 4, 12) { mindustryX.bundles.UiTexts.uiTemplate("itemSelectionWidth", it) }.apply { // 原文本:{0} 列
         addFallbackName("itemSelectionWidth")
     }
 
@@ -92,7 +92,7 @@ object VarsX {
 
     @JvmField
     val maxSchematicSize = SliderPref("maxSchematicSize", Vars.maxSchematicSize, 64, 257) {
-        if (it == 257) return@SliderPref mindustryX.bundles.ui("unlimited") // 原文本:无限制
+        if (it == 257) return@SliderPref mindustryX.bundles.UiTexts.ui("unlimited") // 原文本:无限制
         "${it}x${it}"
     }
 

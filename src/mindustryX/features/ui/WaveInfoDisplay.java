@@ -35,7 +35,7 @@ public class WaveInfoDisplay extends Table{
             buttons.defaults().size(32);
             buttons.add().growX();
 
-            buttons.button(Icon.waves, Styles.clearNonei, iconMed, waveInfoDialog::show).tooltip(mindustryX.bundles.FuncX.ui("wave_info")); // 原文本:波次信息
+            buttons.button(Icon.waves, Styles.clearNonei, iconMed, waveInfoDialog::show).tooltip(mindustryX.bundles.UiTexts.ui("wave_info")); // 原文本:波次信息
 
             buttons.button("<", Styles.cleart, () -> shiftWaveOffset(-1));
             var i = buttons.button("", Styles.cleart, this::setWaveOffsetDialog).minHeight(48).maxWidth(160f).get();
@@ -43,18 +43,18 @@ public class WaveInfoDisplay extends Table{
             i.getLabel().setText(() -> "" + (state.wave + waveOffset));
             buttons.button(">", Styles.cleart, () -> shiftWaveOffset(1));
 
-            buttons.button("R", Styles.cleart, () -> setWaveOffset(0)).tooltip(mindustryX.bundles.FuncX.ui("restore_current_wave")); // 原文本:恢复当前波次
-            buttons.button("J", Styles.cleart, () -> ui.showConfirm(mindustryX.bundles.FuncX.ui("this_is_a_cheat_feature_njump_to_the"), () -> { // 原文本:[red]这是一个作弊功能[]\n快速跳转到目标波次(不刷兵)
+            buttons.button("R", Styles.cleart, () -> setWaveOffset(0)).tooltip(mindustryX.bundles.UiTexts.ui("restore_current_wave")); // 原文本:恢复当前波次
+            buttons.button("J", Styles.cleart, () -> ui.showConfirm(mindustryX.bundles.UiTexts.ui("this_is_a_cheat_feature_njump_to_the"), () -> { // 原文本:[red]这是一个作弊功能[]\n快速跳转到目标波次(不刷兵)
                 state.wave += waveOffset;
                 setWaveOffset(0);
-            })).tooltip(mindustryX.bundles.FuncX.ui("force_skip_waves")).disabled((b) -> net.client()); // 原文本:强制跳波
+            })).tooltip(mindustryX.bundles.UiTexts.ui("force_skip_waves")).disabled((b) -> net.client()); // 原文本:强制跳波
 
             buttons.add().growX();
             buttons.add("♐>");
-            buttons.button(Icon.wavesSmall, Styles.clearNonei, iconMed, () -> ShareFeature.shareWaveInfo(state.wave + waveOffset)).tooltip(mindustryX.bundles.FuncX.ui("share_wave_information")); // 原文本:分享波次信息
-            buttons.button(Icon.powerSmall, Styles.clearNonei, iconMed, ShareFeature::shareTeamPower).tooltip(mindustryX.bundles.FuncX.ui("share_power_status")); // 原文本:分享电力情况
-            buttons.button(new TextureRegionDrawable(Items.copper.uiIcon), Styles.clearNonei, iconSmall, ShareFeature::openShareItemDialog).tooltip(mindustryX.bundles.FuncX.ui("share_inventory_status")); // 原文本:分享库存情况
-            buttons.button(Icon.unitsSmall, Styles.clearNonei, iconMed, ShareFeature::openShareUnitDialog).tooltip(mindustryX.bundles.FuncX.ui("share_unit_count")); // 原文本:分享单位数量
+            buttons.button(Icon.wavesSmall, Styles.clearNonei, iconMed, () -> ShareFeature.shareWaveInfo(state.wave + waveOffset)).tooltip(mindustryX.bundles.UiTexts.ui("share_wave_information")); // 原文本:分享波次信息
+            buttons.button(Icon.powerSmall, Styles.clearNonei, iconMed, ShareFeature::shareTeamPower).tooltip(mindustryX.bundles.UiTexts.ui("share_power_status")); // 原文本:分享电力情况
+            buttons.button(new TextureRegionDrawable(Items.copper.uiIcon), Styles.clearNonei, iconSmall, ShareFeature::openShareItemDialog).tooltip(mindustryX.bundles.UiTexts.ui("share_inventory_status")); // 原文本:分享库存情况
+            buttons.button(Icon.unitsSmall, Styles.clearNonei, iconMed, ShareFeature::openShareUnitDialog).tooltip(mindustryX.bundles.UiTexts.ui("share_unit_count")); // 原文本:分享单位数量
         }).fillX().row();
 
         waveInfo = new Table().left().top();
@@ -85,8 +85,8 @@ public class WaveInfoDisplay extends Table{
     }
 
     private void setWaveOffsetDialog(){
-        Dialog lsSet = new BaseDialog(mindustryX.bundles.FuncX.ui("wave_settings")); // 原文本:波次设定
-        lsSet.cont.add(mindustryX.bundles.FuncX.ui("set_target_wave")).padRight(5f).left(); // 原文本:设定查询波次
+        Dialog lsSet = new BaseDialog(mindustryX.bundles.UiTexts.ui("wave_settings")); // 原文本:波次设定
+        lsSet.cont.add(mindustryX.bundles.UiTexts.ui("set_target_wave")).padRight(5f).left(); // 原文本:设定查询波次
         TextField field = lsSet.cont.field(state.wave + waveOffset + "", text -> waveOffset = Integer.parseInt(text) - state.wave).size(320f, 54f).valid(Strings::canParsePositiveInt).maxTextLength(100).get();
         lsSet.cont.row();
         lsSet.cont.slider(1, ArcWaveSpawner.calWinWaveClamped(), 1, res -> {
