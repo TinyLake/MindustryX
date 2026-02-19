@@ -4,82 +4,89 @@
 package mindustryX.features.func
 
 import arc.Core
+import java.util.Locale
 
-private fun ui(key: String): String = Core.bundle.get("mdtx.ui.$key")
-private fun uiTemplate(key: String, vararg args: Any?): String = Core.bundle.format("mdtx.ui.template.$key", *args)
+private fun isZh(): Boolean = Core.bundle.locale.language == Locale.CHINESE.language
 
-fun uiJavaWarnLog(javaVersion: String): String = uiTemplate("javaWarnLog", javaVersion)
-fun uiJavaWarnDialog(javaVersion: String): String = uiTemplate("javaWarnDialog", javaVersion)
+fun uiJavaWarnLog(javaVersion: String): String =
+    if(isZh()) "Java版本 $javaVersion 过低，不受支持。请使用Java 17或更高版本运行MindustryX。"
+    else "Java version $javaVersion is too low and unsupported. Please use Java 17+ to run MindustryX."
+
+fun uiJavaWarnDialog(javaVersion: String): String =
+    if(isZh()) "Java版本 $javaVersion 过低，不受支持。\n[grey]该警告不存在设置，请更新Java版本。"
+    else "Java version $javaVersion is too low and unsupported.\n[grey]This warning cannot be disabled; please update Java."
+
 fun uiWindowTitle(version: String, enabledMods: Int, totalMods: Int, width: Int, height: Int): String =
-    uiTemplate("windowTitle", version, enabledMods, totalMods) + " | " + width + "x" + height
+    if(isZh()) "MindustryX | 版本号 $version | mod启用$enabledMods/$totalMods | ${width}x$height"
+    else "MindustryX | Version $version | mods enabled $enabledMods/$totalMods | ${width}x$height"
 
-fun uiArcMessageCenter(): String = ui("arc_message_center")
-fun uiMaxChatHistoryHint(): String = ui("maximum_storage_of_chat_history_too_high_may_cause_lag")
-fun uiChatHistoryCleanupHint(): String = ui("chat_history_exceeding_the_limit_will_be_cleared_when_loading_the_map")
-fun uiClear(): String = ui("clear")
-fun uiExport(): String = ui("export")
-fun uiExportChatHistory(): String = ui("export_chat_history")
-fun uiLoadMap(mapName: String): String = uiTemplate("loadMap", mapName)
-fun uiIntroduction(description: String): String = uiTemplate("introduction", description)
-fun uiWaveEvent(wave: Int, detail: String): String = uiTemplate("waveEvent", wave, detail)
-fun uiCopiedChatRecord(): String = ui("copied_this_chat_record")
-fun uiExportHeader(version: String): String = uiTemplate("exportHeader", version)
-fun uiExportMap(mapName: String, mode: String): String = uiTemplate("exportMap", mapName, mode)
-fun uiCurrentWave(wave: Int): String = uiTemplate("currentWave", wave)
-fun uiExportCount(count: Int): String = uiTemplate("exportCount", count)
-fun uiChatType(): String = ui("chat")
-fun uiServerMsgType(): String = ui("server_msg")
-fun uiMarkCoordinatesType(): String = ui("mark_coordinates")
-fun uiMarkPlayerType(): String = ui("mark_player")
-fun uiCommandType(): String = ui("command")
-fun uiLogicNoticeType(): String = ui("logic_notice")
-fun uiLogicAnnouncementType(): String = ui("logic_announcement")
-fun uiEventMapLoadType(): String = ui("event_map_load")
-fun uiEventWaveType(): String = ui("event_wave")
+fun uiArcMessageCenter(): String = if(isZh()) "ARC-中央监控室" else "ARC Message Center"
+fun uiMaxChatHistoryHint(): String = if(isZh()) "最大储存聊天记录(过高可能导致卡顿)：" else "Maximum storage of chat history (too high may cause lag):"
+fun uiChatHistoryCleanupHint(): String = if(isZh()) "超出限制的聊天记录将在载入地图时清除" else "Chat history exceeding the limit will be cleared when loading the map"
+fun uiClear(): String = if(isZh()) "清空" else "Clear"
+fun uiExport(): String = if(isZh()) "导出" else "Export"
+fun uiExportChatHistory(): String = if(isZh()) "导出聊天记录" else "Export chat history"
+fun uiLoadMap(mapName: String): String = if(isZh()) "载入地图：$mapName" else "Load map: $mapName"
+fun uiIntroduction(description: String): String = if(isZh()) "简介：$description" else "Introduction: $description"
+fun uiWaveEvent(wave: Int, detail: String): String = if(isZh()) "波次：$wave | $detail" else "Waves: $wave | $detail"
+fun uiCopiedChatRecord(): String = if(isZh()) "已导出本条聊天记录" else "Copied this chat record"
+fun uiExportHeader(version: String): String = if(isZh()) "下面是[MDTX-$version] 导出的游戏内聊天记录" else "[MDTX-$version] Exported in-game chat history"
+fun uiExportMap(mapName: String, mode: String): String = if(isZh()) "*** 当前地图名称: $mapName(模式: $mode)\n" else "*** Current map name: $mapName (mode: $mode)\n"
+fun uiCurrentWave(wave: Int): String = if(isZh()) "*** 当前波次: $wave" else "*** Current wave: $wave"
+fun uiExportCount(count: Int): String = if(isZh()) "成功选取共${count}条记录，如下：\n" else "Successfully selected a total of $count records:\n"
+fun uiChatType(): String = if(isZh()) "聊天" else "Chat"
+fun uiServerMsgType(): String = if(isZh()) "服务器信息" else "Server Msg"
+fun uiMarkCoordinatesType(): String = if(isZh()) "标记~坐标" else "Mark~Coordinates"
+fun uiMarkPlayerType(): String = if(isZh()) "标记~玩家" else "Mark~Player"
+fun uiCommandType(): String = if(isZh()) "指令" else "Command"
+fun uiLogicNoticeType(): String = if(isZh()) "逻辑~通报" else "Logic~Notice"
+fun uiLogicAnnouncementType(): String = if(isZh()) "逻辑~公告" else "Logic~Announcement"
+fun uiEventMapLoadType(): String = if(isZh()) "事件~载入地图" else "Event~Map Load"
+fun uiEventWaveType(): String = if(isZh()) "事件~波次" else "Event~Wave"
 
-fun uiLogicHelperX(): String = ui("logic_helper_x")
-fun uiHideLogicHelper(): String = ui("hide_logic_helper")
-fun uiUpdatedEditedLogic(): String = ui("updated_edited_logic")
-fun uiRefreshEditedLogic(): String = ui("refresh_edited_logic")
-fun uiOn(): String = ui("on")
-fun uiOff(): String = ui("off")
-fun uiToggleState(label: String, state: String): String = uiTemplate("toggleState", label, state)
-fun uiFlashOnChange(): String = ui("flash_on_change")
-fun uiFlashOnVariableChange(): String = ui("flash_on_variable_change")
-fun uiAutoRefreshVariables(): String = ui("auto_refresh_variables")
-fun uiAutoRefreshVariablesHint(): String = ui("automatically_refresh_variables")
-fun uiPaused(): String = ui("paused")
-fun uiGameResumed(): String = ui("game_resumed")
-fun uiPauseLogicGameExecution(): String = ui("pause_logic_game_execution")
-fun uiRefreshInterval(): String = ui("refresh_interval")
-fun uiCopiedVariableNameHint(): String = ui("copied_variable_name_n_arg")
-fun uiCopiedVariableAttributesHint(): String = ui("copied_variable_attributes_n_arg")
-fun uiCopiedPrintBufferHint(): String = ui("copied_print_buffer_n_arg")
-fun uiCopiedMemory(value: Double): String = uiTemplate("copiedMemory", value)
-fun uiNoPermissionToEditViewOnly(): String = ui("no_permission_to_edit_view_only")
-fun uiResetAllLinks(): String = ui("reset_all_links")
-fun uiExtractCodeFromSchematic(): String = ui("extract_code_from_schematic")
-fun uiSelectCode(): String = ui("select_code")
-fun uiTipAllSchematicsContainingProcessors(): String = ui("tip_all_schematics_containing_processors")
+fun uiLogicHelperX(): String = if(isZh()) "逻辑辅助器[gold]X[]" else "Logic Helper[gold]X[]"
+fun uiHideLogicHelper(): String = if(isZh()) "隐藏逻辑辅助器" else "Hide Logic Helper"
+fun uiUpdatedEditedLogic(): String = if(isZh()) "[orange]已更新编辑的逻辑！" else "[orange]Updated edited logic!"
+fun uiRefreshEditedLogic(): String = if(isZh()) "更新编辑的逻辑" else "Refresh edited logic"
+fun uiOn(): String = if(isZh()) "开启" else "On"
+fun uiOff(): String = if(isZh()) "关闭" else "Off"
+fun uiToggleState(label: String, state: String): String = "$label: $state"
+fun uiFlashOnChange(): String = if(isZh()) "变动闪烁" else "Flash on Change"
+fun uiFlashOnVariableChange(): String = if(isZh()) "变量变动闪烁" else "Flash on variable change"
+fun uiAutoRefreshVariables(): String = if(isZh()) "变量自动更新" else "Auto-refresh variables"
+fun uiAutoRefreshVariablesHint(): String = if(isZh()) "自动刷新变量" else "Automatically refresh variables"
+fun uiPaused(): String = if(isZh()) "已暂停" else "Paused"
+fun uiGameResumed(): String = if(isZh()) "已继续游戏" else "Game resumed"
+fun uiPauseLogicGameExecution(): String = if(isZh()) "暂停逻辑(游戏)运行" else "Pause logic (game) execution"
+fun uiRefreshInterval(): String = if(isZh()) "刷新间隔" else "Refresh interval"
+fun uiCopiedVariableNameHint(): String = if(isZh()) "复制变量名\n@" else "Copied variable name\n@"
+fun uiCopiedVariableAttributesHint(): String = if(isZh()) "复制变量属性\n@" else "Copied variable attributes\n@"
+fun uiCopiedPrintBufferHint(): String = if(isZh()) "复制信息版\n@" else "Copied print buffer\n@"
+fun uiCopiedMemory(value: Double): String = if(isZh()) "[cyan]复制内存[white]\n $value" else "[cyan]Copied memory[white]\n $value"
+fun uiNoPermissionToEditViewOnly(): String = if(isZh()) "[yellow]当前无权编辑，仅供查阅" else "[yellow]No permission to edit; view only."
+fun uiResetAllLinks(): String = if(isZh()) "重置所有链接" else "Reset all links"
+fun uiExtractCodeFromSchematic(): String = if(isZh()) "从蓝图中选择代码" else "Extract code from schematic"
+fun uiSelectCode(): String = if(isZh()) "选择代码" else "Select Code"
+fun uiTipAllSchematicsContainingProcessors(): String = if(isZh()) "TIP: 所有包含处理器的蓝图" else "TIP: All schematics containing processors"
 
-fun uiBasic(): String = ui("basic")
-fun uiSquared(): String = ui("squared")
-fun uiArcImageConverter(): String = ui("arc_image_converter")
-fun uiSelectAndImportPictures(): String = ui("select_and_import_pictures_which_can_be_converted")
-fun uiSelectImagePng(): String = ui("select_image_png")
-fun uiWarnImageTooLarge(): String = ui("warning_image_may_be_too_large_please_try_compressing_image")
-fun uiFailedReadImage(error: Any?): String = uiTemplate("failedReadImage", error)
-fun uiAutomaticallySaveAsBlueprint(): String = ui("automatically_save_as_blueprint")
-fun uiZoomZoom(): String = ui("zoom_zoom")
-fun uiHueMode(): String = ui("hue_mode")
-fun uiLabelWithEmoji(label: String, emoji: String): String = uiTemplate("labelWithEmoji", label, emoji)
-fun uiLogicArtWebsite(): String = ui("logic_art_website")
-fun uiPath(): String = ui("path")
-fun uiName(): String = ui("name")
-fun uiOriginalSize(): String = ui("original_size")
-fun uiScaledSize(): String = ui("scaled_size")
-fun uiCanvas(): String = ui("canvas")
-fun uiArtboard(): String = ui("artboard")
-fun uiPixelArt(): String = ui("pixel_art")
-fun uiSize(): String = ui("size")
-fun uiSavedBlueprint(name: String): String = uiTemplate("savedBlueprint", name)
+fun uiBasic(): String = if(isZh()) "基础对比" else "Basic"
+fun uiSquared(): String = if(isZh()) "平方对比" else "Squared"
+fun uiArcImageConverter(): String = if(isZh()) "arc-图片转换器" else "ARC Image Converter"
+fun uiSelectAndImportPictures(): String = if(isZh()) "选择并导入图片，可将其转成画板、像素画或是逻辑画" else "Select and import pictures, which can be converted into artboards, pixel paintings or logic paintings."
+fun uiSelectImagePng(): String = if(isZh()) "选择图片[white](png)" else "Select image[white](png)"
+fun uiWarnImageTooLarge(): String = if(isZh()) "[orange]警告：图片可能过大，请尝试压缩图片" else "[orange]Warning: Image may be too large, please try compressing image"
+fun uiFailedReadImage(error: Any?): String = if(isZh()) "读取图片失败，请尝试更换图片\n$error" else "Failed to read image, please try another image\n$error"
+fun uiAutomaticallySaveAsBlueprint(): String = if(isZh()) "自动保存为蓝图" else "Automatically save as blueprint"
+fun uiZoomZoom(): String = if(isZh()) "缩放: \uE815" else "Zoom: \uE815"
+fun uiHueMode(): String = if(isZh()) "色调函数:" else "Hue mode:"
+fun uiLabelWithEmoji(label: String, emoji: String): String = "$label $emoji"
+fun uiLogicArtWebsite(): String = if(isZh()) "逻辑画网站" else "Logic art website"
+fun uiPath(): String = if(isZh()) "路径" else "Path"
+fun uiName(): String = if(isZh()) "名称" else "Name"
+fun uiOriginalSize(): String = if(isZh()) "原始大小" else "Original size"
+fun uiScaledSize(): String = if(isZh()) "缩放后大小" else "Scaled size"
+fun uiCanvas(): String = if(isZh()) "画板" else "Canvas"
+fun uiArtboard(): String = if(isZh()) "画板++" else "Artboard++"
+fun uiPixelArt(): String = if(isZh()) "像素画" else "Pixel Art"
+fun uiSize(): String = if(isZh()) "大小：" else "Size:"
+fun uiSavedBlueprint(name: String): String = if(isZh()) "已保存蓝图：$name" else "Saved blueprint: $name"
