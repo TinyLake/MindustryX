@@ -6,676 +6,1014 @@ package mindustryX.bundles
 import arc.Core
 import java.util.Locale
 
-private val uiTextsZh = mapOf(
-    "add_destroyed_buildings_to_build_queue" to "在建造列表加入被摧毁建筑" ,
-    "add_panel" to "添加面板" ,
-    "add_prefix_t" to "前缀添加/t" ,
-    "add_team" to "添加队伍" ,
-    "air_only" to "仅对空" ,
-    "air_x" to ",空x" ,
-    "all" to "全部" ,
-    "all_players" to "全部玩家" ,
-    "allowed_range_2_9999" to "允许的范围：2~9999" ,
-    "always_on" to "一直开启" ,
-    "arc_ai_configurator" to "ARC-AI设定器" ,
-    "arc_image_converter" to "arc-图片转换器" ,
-    "arc_message_center" to "ARC-中央监控室" ,
-    "arc_ore_statistics" to "ARC-矿物统计" ,
-    "arg_arg_ndistance_arg" to "@,@\\n距离: @" ,
-    "arg_s_arg_tiles" to "@s~@格" ,
-    "arg_shield_capacity_arg_grid_arg_recovery_arg_s_cooldown" to "@盾容~@格~@恢复~@s冷却" ,
-    "armor" to "[teal]装甲" ,
-    "artboard" to "画板++" ,
-    "attack" to "攻击" ,
-    "attack_no_border" to "攻击去边框" ,
-    "attack_speed" to "[violet]攻速" ,
-    "auto_attack" to "自动攻击" ,
-    "auto_fill" to "一键装填" ,
-    "auto_refresh_variables" to "变量自动更新" ,
-    "automatically_refresh_variables" to "自动刷新变量" ,
-    "automatically_save_as_blueprint" to "自动保存为蓝图" ,
-    "basic" to "基础对比" ,
-    "before_adding_new_instructions_please_save_the_edited_instructions_first" to "[yellow]添加新指令前，请先保存编辑的指令" ,
-    "below_is_mdtx" to "下面是[MDTX-" ,
-    "block_rendering" to "建筑显示" ,
-    "blueprint_code_link" to "蓝图代码链接：" ,
-    "blueprint_code_n" to "蓝图代码：\\n" ,
-    "blueprint_cost" to "蓝图造价：" ,
-    "blueprint_name" to "蓝图名：" ,
-    "build_area" to "建造区域" ,
-    "build_speed" to "[accent]建速" ,
-    "builder_ai" to "重建AI" ,
-    "buildings" to "建筑：" ,
-    "built_in_prefix" to "[内置]" ,
-    "bullet_rendering" to "子弹显示" ,
-    "cancel" to "取消" ,
-    "canvas" to "画板" ,
-    "carried_item" to "携带物品:" ,
-    "chat" to "聊天" ,
-    "chat_history_exceeding_the_limit_will_be_cleared_when_loading_the_map" to "超出限制的聊天记录将在载入地图时清除" ,
-    "cheat" to "无限火力" ,
-    "check_for_updates" to "自动更新" ,
-    "clear" to "清空" ,
-    "clear_all_core_resources" to "清空核心的所有资源" ,
-    "click_the_screen_to_return" to "[green]点击屏幕返回" ,
-    "clone" to "克隆" ,
-    "color" to "颜色" ,
-    "command" to "指令" ,
-    "command_mode" to "指挥模式" ,
-    "construction_suspended" to "暂停建造" ,
-    "contains_ground_x" to "包含(地×" ,
-    "copied_print_buffer_n_arg" to "复制信息版\\n@" ,
-    "copied_successfully" to "复制成功:" ,
-    "copied_this_chat_record" to "已导出本条聊天记录" ,
-    "copied_variable_attributes_n_arg" to "复制变量属性\\n@" ,
-    "copied_variable_name_n_arg" to "复制变量名\\n@" ,
-    "could_not_check_for_updates_nplease_try_again_later" to "检查更新失败，请稍后再试" ,
-    "cross" to "十字" ,
-    "current_frame_rate_locked_arg" to "当前帧率锁定：@" ,
-    "current_game_speed_arg_times" to "当前游戏速度：@倍" ,
-    "current_map_arg" to "当前地图:@" ,
-    "current_map_name" to "*** 当前地图名称:" ,
-    "current_selection_is_empty_select_a_block_in_the_inventory" to "[yellow]当前选中物品为空，请在物品栏选中建筑" ,
-    "current_unit_cannot_build" to "[red]当前单位不可建筑" ,
-    "damage" to "[red]伤害" ,
-    "defender_ai" to "保护AI" ,
-    "detached_camera" to "视角脱离玩家" ,
-    "display_name" to "显示名" ,
-    "download_and_install_update" to "自动下载更新" ,
-    "drop_payload" to "丢下载荷" ,
-    "each_cell_absorbs_arg_s_arg_arg_arg_s_and_returns_blood_maximum_arg_s" to "每格吸收@/s@@~@/s回血~最大@/s" ,
-    "editor" to "编辑器" ,
-    "effects_library" to "特效大全" ,
-    "effects_rendering" to "特效显示" ,
-    "empty_selection_area_hint" to "当前选定区域为空，请通过F规划区域" ,
-    "enter_the_conveyor_belt" to "进入传送带" ,
-    "event_map_load" to "事件~载入地图" ,
-    "event_wave" to "事件~波次" ,
-    "export" to "导出" ,
-    "export_chat_history" to "导出聊天记录" ,
-    "exported_in_game_chat_history" to "] 导出的游戏内聊天记录" ,
-    "extract_code_from_schematic" to "从蓝图中选择代码" ,
-    "failed_to_create_replay" to "创建回放出错!" ,
-    "failed_to_read_image_please_try_another_image_n" to "读取图片失败，请尝试更换图片\\n" ,
-    "failed_to_read_playback" to "读取回放失败!" ,
-    "fill_core_resources" to "填满核心的所有资源" ,
-    "find_blocks" to "查找方块" ,
-    "fixed_size" to "固定大小" ,
-    "flash_on_change" to "变动闪烁" ,
-    "flash_on_variable_change" to "变量变动闪烁" ,
-    "flight_mode" to "飞行模式" ,
-    "fog_of_war" to "战争迷雾" ,
-    "force_boost" to "强制助推" ,
-    "force_skip_waves" to "强制跳波" ,
-    "frame_rate_lock_mode_enabled_ncurrent_frame_rate_lock_arg" to "已开启帧率锁定模式\\n当前帧率锁定：@" ,
-    "frame_rate_lock_mode_turned_off_ncurrent_game_speed_arg_times" to "已关闭帧率锁定模式\\n当前游戏速度：@倍" ,
-    "frame_rate_simulation" to "帧率模拟" ,
-    "fx" to "效" ,
-    "game_resumed" to "已继续游戏" ,
-    "generate_quantity" to "生成数量:" ,
-    "generated_label" to "[orange]已" ,
-    "global_range" to "全局检查" ,
-    "god_mode" to "创世神" ,
-    "ground_only" to "仅对地" ,
-    "health_label" to "[red]血量：" ,
-    "hide_all_buildings" to "隐藏全部建筑" ,
-    "hide_logic_helper" to "隐藏逻辑辅助器" ,
-    "hitbox_overlay" to "碰撞箱显示" ,
-    "hourglass" to "沙漏：" ,
-    "hp" to "[acid]血量" ,
-    "hue_mode" to "色调函数:" ,
-    "icon" to "图标" ,
-    "index" to "序号" ,
-    "instant" to "瞬间完成" ,
-    "item" to "物品" ,
-    "kotlin_language_standard_library" to "Kotlin语言标准库" ,
-    "lightning_arg_probability_arg_damage_arg_length_arg_x_speed" to "闪电@概率~@伤害~@长度 @x速度" ,
-    "liquids" to "液体" ,
-    "load_building" to "装载建筑" ,
-    "load_map" to "载入地图：" ,
-    "load_replay_file" to "加载回放文件" ,
-    "load_self" to "装载自己" ,
-    "load_unit" to "装载单位" ,
-    "lock" to "锁定" ,
-    "lock_the_last_marked_point" to "锁定上个标记点" ,
-    "logic_announcement" to "逻辑~公告" ,
-    "logic_art_website" to "逻辑画网站" ,
-    "logic_camera_lock_removed" to "已移除逻辑视角锁定" ,
-    "logic_helper_x" to "逻辑辅助器[gold]X[]" ,
-    "logic_notice" to "逻辑~通报" ,
-    "mark_coordinates" to "标记~坐标" ,
-    "mark_map_location" to "标记地图位置" ,
-    "mark_mode_tap_the_screen_to_place_a_mark" to "[cyan]标记模式,点击屏幕标记." ,
-    "mark_player" to "标记~玩家" ,
-    "maximum_storage_of_chat_history_too_high_may_cause_lag" to "最大储存聊天记录(过高可能导致卡顿)：" ,
-    "message_arg_js_starts_with_script" to "消息(@js 开头为脚本)" ,
-    "message_center" to "中央监控室" ,
-    "mindustryx_version" to "MindustryX | 版本号" ,
-    "miner_ai" to "矿机AI" ,
-    "miner_ai_ore_filter" to "minerAI-矿物筛选器" ,
-    "minimap" to "小地图显示" ,
-    "mods_enabled" to "| mod启用" ,
-    "more_teams" to "更多队伍选择" ,
-    "movement_speed" to "[cyan]移速" ,
-    "n_took_units" to "\\n[white]分走了单位:" ,
-    "name" to "名称" ,
-    "no" to "第" ,
-    "no_command_entered" to "未输入指令" ,
-    "no_permission_to_edit_view_only" to "[yellow]当前无权编辑，仅供查阅" ,
-    "observer_mode" to "观察者模式" ,
-    "off" to "关闭" ,
-    "on" to "开启" ,
-    "open_playback_file" to "打开回放文件" ,
-    "open_release_page" to "打开发布页面" ,
-    "ore_count_surface_wall" to "矿物矿(地表/墙矿)" ,
-    "ore_info" to "矿物信息" ,
-    "original_size" to "原始大小" ,
-    "packet_count" to "数据包总数：" ,
-    "panels_currently_unavailable" to "当前不可用的面板:" ,
-    "path" to "路径" ,
-    "pause_logic_game_execution" to "暂停逻辑(游戏)运行" ,
-    "pause_time" to "暂停时间" ,
-    "paused" to "已暂停" ,
-    "permanent_status" to "<永久状态>" ,
-    "pick_up_payload" to "捡起载荷" ,
-    "pixel_art" to "像素画" ,
-    "place_replace" to "放置/替换" ,
-    "placeholder_x" to "倍" ,
-    "playback_length" to "回放长度:" ,
-    "playback_version" to "回放版本:" ,
-    "player_build_range" to "玩家建造区" ,
-    "player_name" to "玩家名:" ,
-    "please_don_t_tag_too_often" to "请不要频繁标记!" ,
-    "please_use_java_17_or_higher_to_run" to ")。请使用Java 17或更高版本运行MindustryX。\\n[grey]该警告不存在设置，请更新Java版本。" ,
-    "poked_you_check_the_message_dialog" to "[gold]戳了一下，请注意查看信息框哦~" ,
-    "power" to "电力：" ,
-    "preview_releases_n_faster_updates_new_features_bug_fixes" to "预览版(更新更快,新功能体验,BUG修复)" ,
-    "radar_scanning" to ">> 雷达扫描中 <<" ,
-    "radar_toggle" to "雷达开关" ,
-    "rally" to "集合" ,
-    "randomly_generated_within_this_range_near_the_target_point" to "在目标点附近的这个范围内随机生成" ,
-    "recording_arg" to "录制中: @" ,
-    "recording_ended" to "录制结束" ,
-    "recording_error" to "录制出错!" ,
-    "refresh_edited_logic" to "更新编辑的逻辑" ,
-    "refresh_interval" to "刷新间隔" ,
-    "release_notes" to "发布说明" ,
-    "remove_logic_lock" to "移除逻辑锁定" ,
-    "repair_ai" to "修复AI" ,
-    "replay_creation_time" to "回放创建时间:" ,
-    "replay_not_loaded" to "未加载回放!" ,
-    "replay_stats" to "回放统计" ,
-    "reset" to "重置" ,
-    "reset_all_links" to "重置所有链接" ,
-    "resistance" to "[purple]阻力" ,
-    "restore_current_wave" to "恢复当前波次" ,
-    "return_to_original_speed" to "恢复原速" ,
-    "ring" to "虚圆" ,
-    "ring_cross" to "圆十字" ,
-    "rules" to "规则：" ,
-    "sandbox" to "沙盒" ,
-    "saved_to_clipboard" to "已保存至剪贴板" ,
-    "scaled_size" to "缩放后大小" ,
-    "scan_mode" to "扫描模式" ,
-    "sec" to "秒" ,
-    "select_and_import_pictures_which_can_be_converted" to "选择并导入图片，可将其转成画板、像素画或是逻辑画" ,
-    "select_code" to "选择代码" ,
-    "select_image_png" to "选择图片[white](png)" ,
-    "selection_range" to "选择范围" ,
-    "self_destruct" to "自杀" ,
-    "server_info_build" to "服务器信息版" ,
-    "server_ip" to "服务器ip:" ,
-    "server_msg" to "服务器信息" ,
-    "set_target" to "设置目标" ,
-    "set_target_wave" to "设定查询波次" ,
-    "share_inventory_status" to "分享库存情况" ,
-    "share_power_status" to "分享电力情况" ,
-    "share_unit_count" to "分享单位数量" ,
-    "share_wave_information" to "分享波次信息" ,
-    "shared_by" to "分享者：" ,
-    "shield" to "[yellow]护盾：" ,
-    "shortcut_block_render" to "块" ,
-    "shortcut_bullet_render" to "弹" ,
-    "shortcut_fog" to "雾" ,
-    "shortcut_hitbox" to "箱" ,
-    "shortcut_message_center" to "信" ,
-    "shortcut_observer_mode" to "观" ,
-    "shortcut_scan_mode" to "扫" ,
-    "shortcut_server_info" to "版" ,
-    "shortcut_surrender_vote" to "[white]法" ,
-    "shortcut_unit_render" to "兵" ,
-    "shortcut_wall_shadow" to "墙" ,
-    "show_all" to "全部显示" ,
-    "show_all_message_blocks" to "信息板全显示" ,
-    "show_building_status_only" to "只显示建筑状态" ,
-    "single_player_map_tools_only" to "警告：该页功能主要供单机作图使用" ,
-    "size" to "大小：" ,
-    "slow_the_flow_of_time_to_half" to "将时间流速放慢到一半" ,
-    "spawn_location" to "生成位置:" ,
-    "spawn_range" to "生成范围：" ,
-    "spawn_team" to "生成队伍:" ,
-    "spawned" to "[orange]生成！" ,
-    "spawns_units_that_fly" to "[orange]生成的单位会飞起来" ,
-    "speed_up_time_to_2x" to "将时间流速加快到两倍" ,
-    "squared" to "平方对比" ,
-    "stable_releases" to "正式版" ,
-    "staging_area" to "暂存区" ,
-    "successfully_selected_a_total_of" to "成功选取共" ,
-    "surrender_vote" to "法国军礼" ,
-    "surrender_vote_confirm" to "受不了，直接投降？" ,
-    "sync_a_wave" to "同步一波" ,
-    "tap_the_screen_to_capture_coordinates" to "[green]点击屏幕采集坐标" ,
-    "team" to "队伍：" ,
-    "team_id" to "队伍ID:" ,
-    "team_range" to "队伍区域" ,
-    "team_selector" to "队伍选择器" ,
-    "template.atNoticeFrom" to "[gold]你被[white]{0}[gold]戳了一下，请注意查看信息框哦~" ,
-    "template.atPlayer" to "<AT>戳了{0}[white]一下，并提醒他留意对话框" ,
-    "template.copiedMemory" to "[cyan]复制内存[white]\\n {0}" ,
-    "template.currentVersion" to "当前版本号: {0}" ,
-    "template.currentWave" to "*** 当前波次: {0}" ,
-    "template.exportCount" to "成功选取共{0}条记录，如下：\\n" ,
-    "template.exportHeader" to "下面是[MDTX-{0}] 导出的游戏内聊天记录" ,
-    "template.exportMap" to "*** 当前地图名称: {0}(模式: {1})\\n" ,
-    "template.failedReadImage" to "读取图片失败，请尝试更换图片\\n{0}" ,
-    "template.introduction" to "简介：{0}" ,
-    "template.invalidBackgroundImage" to "背景图片无效: {0}" ,
-    "template.itemSelectionHeight" to "{0} 行" ,
-    "template.itemSelectionWidth" to "{0} 列" ,
-    "template.javaWarnDialog" to "Java版本 {0} 过低，不受支持。\\n[grey]该警告不存在设置，请更新Java版本。" ,
-    "template.javaWarnLog" to "Java版本 {0} 过低，不受支持。请使用Java 17或更高版本运行MindustryX。" ,
-    "template.labelWithEmoji" to "{0} {1}" ,
-    "template.loadMap" to "载入地图：{0}" ,
-    "template.newVersion" to "[green]发现新版本[]: {0}" ,
-    "template.savedBlueprint" to "已保存蓝图：{0}" ,
-    "template.shareCode" to "<ARCxMDTX><Schem>[black]一坨兼容[] {0}" ,
-    "template.shareHeader" to "这是一条来自 MDTX-{0} 的分享记录\\n" ,
-    "template.toggleState" to "{0}: {1}" ,
-    "template.waveContains" to "包含(地×{0},空x{1}):" ,
-    "template.waveEta" to "(还有{0}波, {1})" ,
-    "template.waveEvent" to "波次：{0} | {1}" ,
-    "template.waveTitle" to "第{0}波" ,
-    "template.windowTitle" to "MindustryX | 版本号 {0} | mod启用{1}/{2}" ,
-    "temporary_status" to "<瞬间状态>" ,
-    "terrain_blueprint" to "地形蓝图" ,
-    "the_blueprint_code_is_too_long_please_click_the_link_to_view_it" to "蓝图代码过长，请点击链接查看" ,
-    "the_map_has_arg_world_processors_arg_instruction_lines_and_arg_characters" to "地图共有@个世处，总共@行指令，@个字符" ,
-    "there_are_no_enemies_in_this_wave" to "该波次没有敌人" ,
-    "there_are_too_many_buildings_to_avoid_lag_and_only_keep_the_first_1000_plans" to "[yellow]建筑过多，避免卡顿，仅保留前1000个规划" ,
-    "this_is_a_cheat_feature_njump_to_the" to "[red]这是一个作弊功能[]\\n快速跳转到目标波次(不刷兵)" ,
-    "this_is_a_message_from_mdtx" to "这是一条来自 MDTX-" ,
-    "tiles" to "格" ,
-    "tip_all_schematics_containing_processors" to "TIP: 所有包含处理器的蓝图" ,
-    "toggle" to "开关" ,
-    "toggle_your_team_s_cheat" to "开关自己队的无限火力" ,
-    "total_arg_arg_arg_arg_tile_radius" to "总计@@@~@格半径" ,
-    "ui_icon_library" to "UI图标大全" ,
-    "ui_toolkit" to "ui大全" ,
-    "unique" to "独一无二" ,
-    "unit" to "单位：" ,
-    "unit_factory" to "单位工厂" ,
-    "unit_factory_x" to "单位工厂-X" ,
-    "unit_rendering" to "兵种显示" ,
-    "unlimited" to "无限制" ,
-    "unlock" to "解禁" ,
-    "unlock_and_allow_all_blocks" to "显示并允许建造所有物品" ,
-    "updated_edited_logic" to "[orange]已更新编辑的逻辑！" ,
-    "upload_failed_try_again" to "上传失败，再重试一下？" ,
-    "vanilla" to "原版" ,
-    "view_recording_info" to "查看录制信息" ,
-    "wall_shadow_rendering" to "墙体阴影显示" ,
-    "warning_image_may_be_too_large_please_try_compressing_image" to "[orange]警告：图片可能过大，请尝试压缩图片" ,
-    "wave" to "波" ,
-    "wave_in_prefix" to "还有" ,
-    "wave_info" to "波次信息" ,
-    "wave_settings" to "波次设定" ,
-    "waves" to "波次：" ,
-    "waves_suffix" to "波," ,
-    "x_scan_speed" to "倍搜索速度" ,
-    "you_are_already_on_the_latest_version" to "你已是最新版本，不需要更新！" ,
-    "you_were_poked_please_pay_attention_to_the_information_box" to "[orange]你被戳了一下，请注意查看信息框哦~" ,
-    "zoom" to "缩放" ,
-    "zoom_x" to "缩放: x" ,
-    "zoom_zoom" to "缩放: " ,
-)
+interface UiTextBundle {
+    fun addDestroyedBuildingsToBuildQueue(): String = "在建造列表加入被摧毁建筑"
+    fun addPanel(): String = "添加面板"
+    fun addPrefixT(): String = "前缀添加/t"
+    fun addTeam(): String = "添加队伍"
+    fun airOnly(): String = "仅对空"
+    fun airX(): String = ",空x"
+    fun all(): String = "全部"
+    fun allPlayers(): String = "全部玩家"
+    fun allowedRange29999(): String = "允许的范围：2~9999"
+    fun alwaysOn(): String = "一直开启"
+    fun arcAiConfigurator(): String = "ARC-AI设定器"
+    fun arcImageConverter(): String = "arc-图片转换器"
+    fun arcMessageCenter(): String = "ARC-中央监控室"
+    fun arcOreStatistics(): String = "ARC-矿物统计"
+    fun argArgNdistanceArg(): String = "@,@\\n距离: @"
+    fun argSArgTiles(): String = "@s~@格"
+    fun argShieldCapacityArgGridArgRecoveryArgSCooldown(): String = "@盾容~@格~@恢复~@s冷却"
+    fun armor(): String = "[teal]装甲"
+    fun artboard(): String = "画板++"
+    fun attack(): String = "攻击"
+    fun attackNoBorder(): String = "攻击去边框"
+    fun attackSpeed(): String = "[violet]攻速"
+    fun autoAttack(): String = "自动攻击"
+    fun autoFill(): String = "一键装填"
+    fun autoRefreshVariables(): String = "变量自动更新"
+    fun automaticallyRefreshVariables(): String = "自动刷新变量"
+    fun automaticallySaveAsBlueprint(): String = "自动保存为蓝图"
+    fun basic(): String = "基础对比"
+    fun beforeAddingNewInstructionsPleaseSaveTheEditedInstructionsFirst(): String = "[yellow]添加新指令前，请先保存编辑的指令"
+    fun belowIsMdtx(): String = "下面是[MDTX-"
+    fun blockRendering(): String = "建筑显示"
+    fun blueprintCodeLink(): String = "蓝图代码链接："
+    fun blueprintCodeN(): String = "蓝图代码：\\n"
+    fun blueprintCost(): String = "蓝图造价："
+    fun blueprintName(): String = "蓝图名："
+    fun buildArea(): String = "建造区域"
+    fun buildSpeed(): String = "[accent]建速"
+    fun builderAi(): String = "重建AI"
+    fun buildings(): String = "建筑："
+    fun builtInPrefix(): String = "[内置]"
+    fun bulletRendering(): String = "子弹显示"
+    fun cancel(): String = "取消"
+    fun canvas(): String = "画板"
+    fun carriedItem(): String = "携带物品:"
+    fun chat(): String = "聊天"
+    fun chatHistoryExceedingTheLimitWillBeClearedWhenLoadingTheMap(): String = "超出限制的聊天记录将在载入地图时清除"
+    fun cheat(): String = "无限火力"
+    fun checkForUpdates(): String = "自动更新"
+    fun clear(): String = "清空"
+    fun clearAllCoreResources(): String = "清空核心的所有资源"
+    fun clickTheScreenToReturn(): String = "[green]点击屏幕返回"
+    fun clone(): String = "克隆"
+    fun color(): String = "颜色"
+    fun command(): String = "指令"
+    fun commandMode(): String = "指挥模式"
+    fun constructionSuspended(): String = "暂停建造"
+    fun containsGroundX(): String = "包含(地×"
+    fun copiedPrintBufferNArg(): String = "复制信息版\\n@"
+    fun copiedSuccessfully(): String = "复制成功:"
+    fun copiedThisChatRecord(): String = "已导出本条聊天记录"
+    fun copiedVariableAttributesNArg(): String = "复制变量属性\\n@"
+    fun copiedVariableNameNArg(): String = "复制变量名\\n@"
+    fun couldNotCheckForUpdatesNpleaseTryAgainLater(): String = "检查更新失败，请稍后再试"
+    fun cross(): String = "十字"
+    fun currentFrameRateLockedArg(): String = "当前帧率锁定：@"
+    fun currentGameSpeedArgTimes(): String = "当前游戏速度：@倍"
+    fun currentMapArg(): String = "当前地图:@"
+    fun currentMapName(): String = "*** 当前地图名称:"
+    fun currentSelectionIsEmptySelectABlockInTheInventory(): String = "[yellow]当前选中物品为空，请在物品栏选中建筑"
+    fun currentUnitCannotBuild(): String = "[red]当前单位不可建筑"
+    fun damage(): String = "[red]伤害"
+    fun defenderAi(): String = "保护AI"
+    fun detachedCamera(): String = "视角脱离玩家"
+    fun displayName(): String = "显示名"
+    fun downloadAndInstallUpdate(): String = "自动下载更新"
+    fun dropPayload(): String = "丢下载荷"
+    fun eachCellAbsorbsArgSArgArgArgSAndReturnsBloodMaximumArgS(): String = "每格吸收@/s@@~@/s回血~最大@/s"
+    fun editor(): String = "编辑器"
+    fun effectsLibrary(): String = "特效大全"
+    fun effectsRendering(): String = "特效显示"
+    fun emptySelectionAreaHint(): String = "当前选定区域为空，请通过F规划区域"
+    fun enterTheConveyorBelt(): String = "进入传送带"
+    fun eventMapLoad(): String = "事件~载入地图"
+    fun eventWave(): String = "事件~波次"
+    fun export(): String = "导出"
+    fun exportChatHistory(): String = "导出聊天记录"
+    fun exportedInGameChatHistory(): String = "] 导出的游戏内聊天记录"
+    fun extractCodeFromSchematic(): String = "从蓝图中选择代码"
+    fun failedToCreateReplay(): String = "创建回放出错!"
+    fun failedToReadImagePleaseTryAnotherImageN(): String = "读取图片失败，请尝试更换图片\\n"
+    fun failedToReadPlayback(): String = "读取回放失败!"
+    fun fillCoreResources(): String = "填满核心的所有资源"
+    fun findBlocks(): String = "查找方块"
+    fun fixedSize(): String = "固定大小"
+    fun flashOnChange(): String = "变动闪烁"
+    fun flashOnVariableChange(): String = "变量变动闪烁"
+    fun flightMode(): String = "飞行模式"
+    fun fogOfWar(): String = "战争迷雾"
+    fun forceBoost(): String = "强制助推"
+    fun forceSkipWaves(): String = "强制跳波"
+    fun frameRateLockModeEnabledNcurrentFrameRateLockArg(): String = "已开启帧率锁定模式\\n当前帧率锁定：@"
+    fun frameRateLockModeTurnedOffNcurrentGameSpeedArgTimes(): String = "已关闭帧率锁定模式\\n当前游戏速度：@倍"
+    fun frameRateSimulation(): String = "帧率模拟"
+    fun fx(): String = "效"
+    fun gameResumed(): String = "已继续游戏"
+    fun generateQuantity(): String = "生成数量:"
+    fun generatedLabel(): String = "[orange]已"
+    fun globalRange(): String = "全局检查"
+    fun godMode(): String = "创世神"
+    fun groundOnly(): String = "仅对地"
+    fun healthLabel(): String = "[red]血量："
+    fun hideAllBuildings(): String = "隐藏全部建筑"
+    fun hideLogicHelper(): String = "隐藏逻辑辅助器"
+    fun hitboxOverlay(): String = "碰撞箱显示"
+    fun hourglass(): String = "沙漏："
+    fun hp(): String = "[acid]血量"
+    fun hueMode(): String = "色调函数:"
+    fun icon(): String = "图标"
+    fun index(): String = "序号"
+    fun instant(): String = "瞬间完成"
+    fun item(): String = "物品"
+    fun kotlinLanguageStandardLibrary(): String = "Kotlin语言标准库"
+    fun lightningArgProbabilityArgDamageArgLengthArgXSpeed(): String = "闪电@概率~@伤害~@长度 @x速度"
+    fun liquids(): String = "液体"
+    fun loadBuilding(): String = "装载建筑"
+    fun loadMap(): String = "载入地图："
+    fun loadReplayFile(): String = "加载回放文件"
+    fun loadSelf(): String = "装载自己"
+    fun loadUnit(): String = "装载单位"
+    fun lock(): String = "锁定"
+    fun lockTheLastMarkedPoint(): String = "锁定上个标记点"
+    fun logicAnnouncement(): String = "逻辑~公告"
+    fun logicArtWebsite(): String = "逻辑画网站"
+    fun logicCameraLockRemoved(): String = "已移除逻辑视角锁定"
+    fun logicHelperX(): String = "逻辑辅助器[gold]X[]"
+    fun logicNotice(): String = "逻辑~通报"
+    fun markCoordinates(): String = "标记~坐标"
+    fun markMapLocation(): String = "标记地图位置"
+    fun markModeTapTheScreenToPlaceAMark(): String = "[cyan]标记模式,点击屏幕标记."
+    fun markPlayer(): String = "标记~玩家"
+    fun maximumStorageOfChatHistoryTooHighMayCauseLag(): String = "最大储存聊天记录(过高可能导致卡顿)："
+    fun messageArgJsStartsWithScript(): String = "消息(@js 开头为脚本)"
+    fun messageCenter(): String = "中央监控室"
+    fun mindustryxVersion(): String = "MindustryX | 版本号"
+    fun minerAi(): String = "矿机AI"
+    fun minerAiOreFilter(): String = "minerAI-矿物筛选器"
+    fun minimap(): String = "小地图显示"
+    fun modsEnabled(): String = "| mod启用"
+    fun moreTeams(): String = "更多队伍选择"
+    fun movementSpeed(): String = "[cyan]移速"
+    fun nTookUnits(): String = "\\n[white]分走了单位:"
+    fun name(): String = "名称"
+    fun no(): String = "第"
+    fun noCommandEntered(): String = "未输入指令"
+    fun noPermissionToEditViewOnly(): String = "[yellow]当前无权编辑，仅供查阅"
+    fun observerMode(): String = "观察者模式"
+    fun off(): String = "关闭"
+    fun on(): String = "开启"
+    fun openPlaybackFile(): String = "打开回放文件"
+    fun openReleasePage(): String = "打开发布页面"
+    fun oreCountSurfaceWall(): String = "矿物矿(地表/墙矿)"
+    fun oreInfo(): String = "矿物信息"
+    fun originalSize(): String = "原始大小"
+    fun packetCount(): String = "数据包总数："
+    fun panelsCurrentlyUnavailable(): String = "当前不可用的面板:"
+    fun path(): String = "路径"
+    fun pauseLogicGameExecution(): String = "暂停逻辑(游戏)运行"
+    fun pauseTime(): String = "暂停时间"
+    fun paused(): String = "已暂停"
+    fun permanentStatus(): String = "<永久状态>"
+    fun pickUpPayload(): String = "捡起载荷"
+    fun pixelArt(): String = "像素画"
+    fun placeReplace(): String = "放置/替换"
+    fun placeholderX(): String = "倍"
+    fun playbackLength(): String = "回放长度:"
+    fun playbackVersion(): String = "回放版本:"
+    fun playerBuildRange(): String = "玩家建造区"
+    fun playerName(): String = "玩家名:"
+    fun pleaseDonTTagTooOften(): String = "请不要频繁标记!"
+    fun pleaseUseJava17OrHigherToRun(): String = ")。请使用Java 17或更高版本运行MindustryX。\\n[grey]该警告不存在设置，请更新Java版本。"
+    fun pokedYouCheckTheMessageDialog(): String = "[gold]戳了一下，请注意查看信息框哦~"
+    fun power(): String = "电力："
+    fun previewReleasesNFasterUpdatesNewFeaturesBugFixes(): String = "预览版(更新更快,新功能体验,BUG修复)"
+    fun radarScanning(): String = ">> 雷达扫描中 <<"
+    fun radarToggle(): String = "雷达开关"
+    fun rally(): String = "集合"
+    fun randomlyGeneratedWithinThisRangeNearTheTargetPoint(): String = "在目标点附近的这个范围内随机生成"
+    fun recordingArg(): String = "录制中: @"
+    fun recordingEnded(): String = "录制结束"
+    fun recordingError(): String = "录制出错!"
+    fun refreshEditedLogic(): String = "更新编辑的逻辑"
+    fun refreshInterval(): String = "刷新间隔"
+    fun releaseNotes(): String = "发布说明"
+    fun removeLogicLock(): String = "移除逻辑锁定"
+    fun repairAi(): String = "修复AI"
+    fun replayCreationTime(): String = "回放创建时间:"
+    fun replayNotLoaded(): String = "未加载回放!"
+    fun replayStats(): String = "回放统计"
+    fun reset(): String = "重置"
+    fun resetAllLinks(): String = "重置所有链接"
+    fun resistance(): String = "[purple]阻力"
+    fun restoreCurrentWave(): String = "恢复当前波次"
+    fun returnToOriginalSpeed(): String = "恢复原速"
+    fun ring(): String = "虚圆"
+    fun ringCross(): String = "圆十字"
+    fun rules(): String = "规则："
+    fun sandbox(): String = "沙盒"
+    fun savedToClipboard(): String = "已保存至剪贴板"
+    fun scaledSize(): String = "缩放后大小"
+    fun scanMode(): String = "扫描模式"
+    fun sec(): String = "秒"
+    fun selectAndImportPicturesWhichCanBeConverted(): String = "选择并导入图片，可将其转成画板、像素画或是逻辑画"
+    fun selectCode(): String = "选择代码"
+    fun selectImagePng(): String = "选择图片[white](png)"
+    fun selectionRange(): String = "选择范围"
+    fun selfDestruct(): String = "自杀"
+    fun serverInfoBuild(): String = "服务器信息版"
+    fun serverIp(): String = "服务器ip:"
+    fun serverMsg(): String = "服务器信息"
+    fun setTarget(): String = "设置目标"
+    fun setTargetWave(): String = "设定查询波次"
+    fun shareInventoryStatus(): String = "分享库存情况"
+    fun sharePowerStatus(): String = "分享电力情况"
+    fun shareUnitCount(): String = "分享单位数量"
+    fun shareWaveInformation(): String = "分享波次信息"
+    fun sharedBy(): String = "分享者："
+    fun shield(): String = "[yellow]护盾："
+    fun shortcutBlockRender(): String = "块"
+    fun shortcutBulletRender(): String = "弹"
+    fun shortcutFog(): String = "雾"
+    fun shortcutHitbox(): String = "箱"
+    fun shortcutMessageCenter(): String = "信"
+    fun shortcutObserverMode(): String = "观"
+    fun shortcutScanMode(): String = "扫"
+    fun shortcutServerInfo(): String = "版"
+    fun shortcutSurrenderVote(): String = "[white]法"
+    fun shortcutUnitRender(): String = "兵"
+    fun shortcutWallShadow(): String = "墙"
+    fun showAll(): String = "全部显示"
+    fun showAllMessageBlocks(): String = "信息板全显示"
+    fun showBuildingStatusOnly(): String = "只显示建筑状态"
+    fun singlePlayerMapToolsOnly(): String = "警告：该页功能主要供单机作图使用"
+    fun size(): String = "大小："
+    fun slowTheFlowOfTimeToHalf(): String = "将时间流速放慢到一半"
+    fun spawnLocation(): String = "生成位置:"
+    fun spawnRange(): String = "生成范围："
+    fun spawnTeam(): String = "生成队伍:"
+    fun spawned(): String = "[orange]生成！"
+    fun spawnsUnitsThatFly(): String = "[orange]生成的单位会飞起来"
+    fun speedUpTimeTo2x(): String = "将时间流速加快到两倍"
+    fun squared(): String = "平方对比"
+    fun stableReleases(): String = "正式版"
+    fun stagingArea(): String = "暂存区"
+    fun successfullySelectedATotalOf(): String = "成功选取共"
+    fun surrenderVote(): String = "法国军礼"
+    fun surrenderVoteConfirm(): String = "受不了，直接投降？"
+    fun syncAWave(): String = "同步一波"
+    fun tapTheScreenToCaptureCoordinates(): String = "[green]点击屏幕采集坐标"
+    fun team(): String = "队伍："
+    fun teamId(): String = "队伍ID:"
+    fun teamRange(): String = "队伍区域"
+    fun teamSelector(): String = "队伍选择器"
+    fun templateAtNoticeFrom(): String = "[gold]你被[white]{0}[gold]戳了一下，请注意查看信息框哦~"
+    fun templateAtPlayer(): String = "<AT>戳了{0}[white]一下，并提醒他留意对话框"
+    fun templateCopiedMemory(): String = "[cyan]复制内存[white]\\n {0}"
+    fun templateCurrentVersion(): String = "当前版本号: {0}"
+    fun templateCurrentWave(): String = "*** 当前波次: {0}"
+    fun templateExportCount(): String = "成功选取共{0}条记录，如下：\\n"
+    fun templateExportHeader(): String = "下面是[MDTX-{0}] 导出的游戏内聊天记录"
+    fun templateExportMap(): String = "*** 当前地图名称: {0}(模式: {1})\\n"
+    fun templateFailedReadImage(): String = "读取图片失败，请尝试更换图片\\n{0}"
+    fun templateIntroduction(): String = "简介：{0}"
+    fun templateInvalidBackgroundImage(): String = "背景图片无效: {0}"
+    fun templateItemSelectionHeight(): String = "{0} 行"
+    fun templateItemSelectionWidth(): String = "{0} 列"
+    fun templateJavaWarnDialog(): String = "Java版本 {0} 过低，不受支持。\\n[grey]该警告不存在设置，请更新Java版本。"
+    fun templateJavaWarnLog(): String = "Java版本 {0} 过低，不受支持。请使用Java 17或更高版本运行MindustryX。"
+    fun templateLabelWithEmoji(): String = "{0} {1}"
+    fun templateLoadMap(): String = "载入地图：{0}"
+    fun templateNewVersion(): String = "[green]发现新版本[]: {0}"
+    fun templateSavedBlueprint(): String = "已保存蓝图：{0}"
+    fun templateShareCode(): String = "<ARCxMDTX><Schem>[black]一坨兼容[] {0}"
+    fun templateShareHeader(): String = "这是一条来自 MDTX-{0} 的分享记录\\n"
+    fun templateToggleState(): String = "{0}: {1}"
+    fun templateWaveContains(): String = "包含(地×{0},空x{1}):"
+    fun templateWaveEta(): String = "(还有{0}波, {1})"
+    fun templateWaveEvent(): String = "波次：{0} | {1}"
+    fun templateWaveTitle(): String = "第{0}波"
+    fun templateWindowTitle(): String = "MindustryX | 版本号 {0} | mod启用{1}/{2}"
+    fun temporaryStatus(): String = "<瞬间状态>"
+    fun terrainBlueprint(): String = "地形蓝图"
+    fun theBlueprintCodeIsTooLongPleaseClickTheLinkToViewIt(): String = "蓝图代码过长，请点击链接查看"
+    fun theMapHasArgWorldProcessorsArgInstructionLinesAndArgCharacters(): String = "地图共有@个世处，总共@行指令，@个字符"
+    fun thereAreNoEnemiesInThisWave(): String = "该波次没有敌人"
+    fun thereAreTooManyBuildingsToAvoidLagAndOnlyKeepTheFirst1000Plans(): String = "[yellow]建筑过多，避免卡顿，仅保留前1000个规划"
+    fun thisIsACheatFeatureNjumpToThe(): String = "[red]这是一个作弊功能[]\\n快速跳转到目标波次(不刷兵)"
+    fun thisIsAMessageFromMdtx(): String = "这是一条来自 MDTX-"
+    fun tiles(): String = "格"
+    fun tipAllSchematicsContainingProcessors(): String = "TIP: 所有包含处理器的蓝图"
+    fun toggle(): String = "开关"
+    fun toggleYourTeamSCheat(): String = "开关自己队的无限火力"
+    fun totalArgArgArgArgTileRadius(): String = "总计@@@~@格半径"
+    fun uiIconLibrary(): String = "UI图标大全"
+    fun uiToolkit(): String = "ui大全"
+    fun unique(): String = "独一无二"
+    fun unit(): String = "单位："
+    fun unitFactory(): String = "单位工厂"
+    fun unitFactoryX(): String = "单位工厂-X"
+    fun unitRendering(): String = "兵种显示"
+    fun unlimited(): String = "无限制"
+    fun unlock(): String = "解禁"
+    fun unlockAndAllowAllBlocks(): String = "显示并允许建造所有物品"
+    fun updatedEditedLogic(): String = "[orange]已更新编辑的逻辑！"
+    fun uploadFailedTryAgain(): String = "上传失败，再重试一下？"
+    fun vanilla(): String = "原版"
+    fun viewRecordingInfo(): String = "查看录制信息"
+    fun wallShadowRendering(): String = "墙体阴影显示"
+    fun warningImageMayBeTooLargePleaseTryCompressingImage(): String = "[orange]警告：图片可能过大，请尝试压缩图片"
+    fun wave(): String = "波"
+    fun waveInPrefix(): String = "还有"
+    fun waveInfo(): String = "波次信息"
+    fun waveSettings(): String = "波次设定"
+    fun waves(): String = "波次："
+    fun wavesSuffix(): String = "波,"
+    fun xScanSpeed(): String = "倍搜索速度"
+    fun youAreAlreadyOnTheLatestVersion(): String = "你已是最新版本，不需要更新！"
+    fun youWerePokedPleasePayAttentionToTheInformationBox(): String = "[orange]你被戳了一下，请注意查看信息框哦~"
+    fun zoom(): String = "缩放"
+    fun zoomX(): String = "缩放: x"
+    fun zoomZoom(): String = "缩放: "
 
-private val uiTextsEn = mapOf(
-    "add_destroyed_buildings_to_build_queue" to "Add destroyed buildings to build queue" ,
-    "add_panel" to "Add Panel" ,
-    "add_prefix_t" to "Add prefix /t" ,
-    "add_team" to "Add Team" ,
-    "air_only" to "Air only" ,
-    "air_x" to ", air x" ,
-    "all" to "All" ,
-    "all_players" to "All players" ,
-    "allowed_range_2_9999" to "Allowed range: 2~9999" ,
-    "always_on" to "Always On" ,
-    "arc_ai_configurator" to "ARC-AI Configurator" ,
-    "arc_image_converter" to "ARC Image Converter" ,
-    "arc_message_center" to "ARC Message Center" ,
-    "arc_ore_statistics" to "ARC Ore Statistics" ,
-    "arg_arg_ndistance_arg" to "@,@\\nDistance: @" ,
-    "arg_s_arg_tiles" to "@s~@ tiles" ,
-    "arg_shield_capacity_arg_grid_arg_recovery_arg_s_cooldown" to "@ shield capacity ~ @ grid ~ @ recovery ~ @s cooldown" ,
-    "armor" to "[teal]Armor" ,
-    "artboard" to "Artboard++" ,
-    "attack" to "Attack" ,
-    "attack_no_border" to "Attack (no border)" ,
-    "attack_speed" to "[violet]Attack speed" ,
-    "auto_attack" to "Auto Attack" ,
-    "auto_fill" to "Auto Fill" ,
-    "auto_refresh_variables" to "Auto-refresh variables" ,
-    "automatically_refresh_variables" to "Automatically refresh variables" ,
-    "automatically_save_as_blueprint" to "Automatically save as blueprint" ,
-    "basic" to "Basic" ,
-    "before_adding_new_instructions_please_save_the_edited_instructions_first" to "[yellow]Before adding new instructions, please save the edited instructions first." ,
-    "below_is_mdtx" to "Below is [MDTX-" ,
-    "block_rendering" to "Block Rendering" ,
-    "blueprint_code_link" to "Blueprint code link:" ,
-    "blueprint_code_n" to "Blueprint code: \\n" ,
-    "blueprint_cost" to "Blueprint cost:" ,
-    "blueprint_name" to "Blueprint name:" ,
-    "build_area" to "Build area" ,
-    "build_speed" to "[accent]Build Speed" ,
-    "builder_ai" to "Builder AI" ,
-    "buildings" to "Buildings:" ,
-    "built_in_prefix" to "[Built-in]" ,
-    "bullet_rendering" to "Bullet Rendering" ,
-    "cancel" to "Cancel" ,
-    "canvas" to "Canvas" ,
-    "carried_item" to "Carried item:" ,
-    "chat" to "Chat" ,
-    "chat_history_exceeding_the_limit_will_be_cleared_when_loading_the_map" to "Chat history exceeding the limit will be cleared when loading the map" ,
-    "cheat" to "Cheat" ,
-    "check_for_updates" to "Check for Updates" ,
-    "clear" to "Clear" ,
-    "clear_all_core_resources" to "Clear all core resources" ,
-    "click_the_screen_to_return" to "[green]Click the screen to return" ,
-    "clone" to "Clone" ,
-    "color" to "Color" ,
-    "command" to "Command" ,
-    "command_mode" to "Command Mode" ,
-    "construction_suspended" to "Construction suspended" ,
-    "contains_ground_x" to "Contains (ground x" ,
-    "copied_print_buffer_n_arg" to "Copied print buffer\\n@" ,
-    "copied_successfully" to "Copied successfully:" ,
-    "copied_this_chat_record" to "Copied this chat record" ,
-    "copied_variable_attributes_n_arg" to "Copied variable attributes\\n@" ,
-    "copied_variable_name_n_arg" to "Copied variable name\\n@" ,
-    "could_not_check_for_updates_nplease_try_again_later" to "Could not check for updates.\\nPlease try again later." ,
-    "cross" to "Cross" ,
-    "current_frame_rate_locked_arg" to "Current frame rate locked: @" ,
-    "current_game_speed_arg_times" to "Current game speed: @ times" ,
-    "current_map_arg" to "Current map: @" ,
-    "current_map_name" to "*** Current map name:" ,
-    "current_selection_is_empty_select_a_block_in_the_inventory" to "[yellow]Current selection is empty; select a block in the inventory." ,
-    "current_unit_cannot_build" to "[red]Current unit cannot build" ,
-    "damage" to "[red]Damage" ,
-    "defender_ai" to "Defender AI" ,
-    "detached_camera" to "Detached camera" ,
-    "display_name" to "Display name" ,
-    "download_and_install_update" to "Download and Install Update" ,
-    "drop_payload" to "Drop Payload" ,
-    "each_cell_absorbs_arg_s_arg_arg_arg_s_and_returns_blood_maximum_arg_s" to "Each cell absorbs @/s@@~heals @/s~up to @/s" ,
-    "editor" to "Editor" ,
-    "effects_library" to "Effects Library" ,
-    "effects_rendering" to "Effects Rendering" ,
-    "empty_selection_area_hint" to "The currently selected area is empty. Please use F to plan the area." ,
-    "enter_the_conveyor_belt" to "Enter the conveyor belt" ,
-    "event_map_load" to "Event~Map Load" ,
-    "event_wave" to "Event~Wave" ,
-    "export" to "Export" ,
-    "export_chat_history" to "Export chat history" ,
-    "exported_in_game_chat_history" to "] Exported in-game chat history" ,
-    "extract_code_from_schematic" to "Extract code from schematic" ,
-    "failed_to_create_replay" to "Failed to create replay!" ,
-    "failed_to_read_image_please_try_another_image_n" to "Failed to read image, please try another image\\n" ,
-    "failed_to_read_playback" to "Failed to read playback!" ,
-    "fill_core_resources" to "Fill core resources" ,
-    "find_blocks" to "Find blocks" ,
-    "fixed_size" to "Fixed size" ,
-    "flash_on_change" to "Flash on Change" ,
-    "flash_on_variable_change" to "Flash on variable change" ,
-    "flight_mode" to "Flight mode" ,
-    "fog_of_war" to "Fog of War" ,
-    "force_boost" to "Force Boost" ,
-    "force_skip_waves" to "Force skip waves" ,
-    "frame_rate_lock_mode_enabled_ncurrent_frame_rate_lock_arg" to "Frame rate lock mode enabled \\nCurrent frame rate lock: @" ,
-    "frame_rate_lock_mode_turned_off_ncurrent_game_speed_arg_times" to "Frame rate lock mode turned off \\nCurrent game speed: @ times" ,
-    "frame_rate_simulation" to "Frame rate simulation" ,
-    "fx" to "FX" ,
-    "game_resumed" to "Game resumed" ,
-    "generate_quantity" to "Generate quantity:" ,
-    "generated_label" to "Generated" ,
-    "global_range" to "Global range" ,
-    "god_mode" to "God Mode" ,
-    "ground_only" to "Ground only" ,
-    "health_label" to "[red]HP:" ,
-    "hide_all_buildings" to "Hide all buildings" ,
-    "hide_logic_helper" to "Hide Logic Helper" ,
-    "hitbox_overlay" to "Hitbox Overlay" ,
-    "hourglass" to "Hourglass:" ,
-    "hp" to "[acid]HP" ,
-    "hue_mode" to "Hue mode:" ,
-    "icon" to "Icon" ,
-    "index" to "Index" ,
-    "instant" to "Instant" ,
-    "item" to "Item" ,
-    "kotlin_language_standard_library" to "Kotlin language standard library" ,
-    "lightning_arg_probability_arg_damage_arg_length_arg_x_speed" to "Lightning @ probability ~ @ damage ~ @ length @x speed" ,
-    "liquids" to "Liquids" ,
-    "load_building" to "Load Building" ,
-    "load_map" to "Load map:" ,
-    "load_replay_file" to "Load replay file" ,
-    "load_self" to "Load self" ,
-    "load_unit" to "Load Unit" ,
-    "lock" to "Lock" ,
-    "lock_the_last_marked_point" to "Lock the last marked point" ,
-    "logic_announcement" to "Logic~Announcement" ,
-    "logic_art_website" to "Logic art website" ,
-    "logic_camera_lock_removed" to "Logic camera lock removed" ,
-    "logic_helper_x" to "Logic Helper[gold]X[]" ,
-    "logic_notice" to "Logic~Notice" ,
-    "mark_coordinates" to "Mark~Coordinates" ,
-    "mark_map_location" to "Mark map location" ,
-    "mark_mode_tap_the_screen_to_place_a_mark" to "[cyan]Mark mode: tap the screen to place a mark." ,
-    "mark_player" to "Mark~Player" ,
-    "maximum_storage_of_chat_history_too_high_may_cause_lag" to "Maximum storage of chat history (too high may cause lag):" ,
-    "message_arg_js_starts_with_script" to "Message (@js starts with script)" ,
-    "message_center" to "Message Center" ,
-    "mindustryx_version" to "MindustryX | Version" ,
-    "miner_ai" to "Miner AI" ,
-    "miner_ai_ore_filter" to "Miner AI - Ore Filter" ,
-    "minimap" to "Minimap" ,
-    "mods_enabled" to "| mods enabled" ,
-    "more_teams" to "More Teams" ,
-    "movement_speed" to "[cyan]Movement speed" ,
-    "n_took_units" to "\\n[white] took units:" ,
-    "name" to "Name" ,
-    "no" to "No." ,
-    "no_command_entered" to "No command entered" ,
-    "no_permission_to_edit_view_only" to "[yellow]No permission to edit; view only." ,
-    "observer_mode" to "Observer Mode" ,
-    "off" to "Off" ,
-    "on" to "On" ,
-    "open_playback_file" to "Open playback file" ,
-    "open_release_page" to "Open Release Page" ,
-    "ore_count_surface_wall" to "Ore Count (surface/wall)" ,
-    "ore_info" to "Ore Info" ,
-    "original_size" to "Original size" ,
-    "packet_count" to "Packet count:" ,
-    "panels_currently_unavailable" to "Panels currently unavailable:" ,
-    "path" to "Path" ,
-    "pause_logic_game_execution" to "Pause logic (game) execution" ,
-    "pause_time" to "Pause time" ,
-    "paused" to "Paused" ,
-    "permanent_status" to "<Permanent Status>" ,
-    "pick_up_payload" to "Pick up payload" ,
-    "pixel_art" to "Pixel Art" ,
-    "place_replace" to "Place/Replace" ,
-    "placeholder_x" to "x" ,
-    "playback_length" to "Playback length:" ,
-    "playback_version" to "Playback version:" ,
-    "player_build_range" to "Player build range" ,
-    "player_name" to "Player name:" ,
-    "please_don_t_tag_too_often" to "Please don't tag too often!" ,
-    "please_use_java_17_or_higher_to_run" to "). Please use Java 17 or higher to run MindustryX. \\n[grey]This warning cannot be disabled, please update Java." ,
-    "poked_you_check_the_message_dialog" to "[gold]You were poked; check the message dialog." ,
-    "power" to "Power:" ,
-    "preview_releases_n_faster_updates_new_features_bug_fixes" to "Preview Releases\\n(faster updates, new features, bug fixes)" ,
-    "radar_scanning" to ">> Radar Scanning <<" ,
-    "radar_toggle" to "Radar Toggle" ,
-    "rally" to "Rally" ,
-    "randomly_generated_within_this_range_near_the_target_point" to "Randomly generated within this range near the target point" ,
-    "recording_arg" to "Recording: @" ,
-    "recording_ended" to "Recording ended" ,
-    "recording_error" to "Recording error!" ,
-    "refresh_edited_logic" to "Refresh edited logic" ,
-    "refresh_interval" to "Refresh interval" ,
-    "release_notes" to "Release Notes" ,
-    "remove_logic_lock" to "Remove logic lock" ,
-    "repair_ai" to "Repair AI" ,
-    "replay_creation_time" to "Replay creation time:" ,
-    "replay_not_loaded" to "Replay not loaded!" ,
-    "replay_stats" to "Replay Stats" ,
-    "reset" to "Reset" ,
-    "reset_all_links" to "Reset all links" ,
-    "resistance" to "[purple]Resistance" ,
-    "restore_current_wave" to "Restore current wave" ,
-    "return_to_original_speed" to "Return to original speed" ,
-    "ring" to "Ring" ,
-    "ring_cross" to "Ring Cross" ,
-    "rules" to "Rules:" ,
-    "sandbox" to "Sandbox" ,
-    "saved_to_clipboard" to "Saved to clipboard" ,
-    "scaled_size" to "Scaled size" ,
-    "scan_mode" to "Scan Mode" ,
-    "sec" to "sec" ,
-    "select_and_import_pictures_which_can_be_converted" to "Select and import pictures, which can be converted into artboards, pixel paintings or logic paintings." ,
-    "select_code" to "Select Code" ,
-    "select_image_png" to "Select image[white](png)" ,
-    "selection_range" to "Selection Range" ,
-    "self_destruct" to "Self-Destruct" ,
-    "server_info_build" to "Server Info Build" ,
-    "server_ip" to "Server IP:" ,
-    "server_msg" to "Server Msg" ,
-    "set_target" to "Set target" ,
-    "set_target_wave" to "Set target wave" ,
-    "share_inventory_status" to "Share inventory status" ,
-    "share_power_status" to "Share power status" ,
-    "share_unit_count" to "Share unit count" ,
-    "share_wave_information" to "Share wave information" ,
-    "shared_by" to "Shared by:" ,
-    "shield" to "[yellow]Shield:" ,
-    "shortcut_block_render" to "B" ,
-    "shortcut_bullet_render" to "P" ,
-    "shortcut_fog" to "F" ,
-    "shortcut_hitbox" to "H" ,
-    "shortcut_message_center" to "M" ,
-    "shortcut_observer_mode" to "O" ,
-    "shortcut_scan_mode" to "S" ,
-    "shortcut_server_info" to "V" ,
-    "shortcut_surrender_vote" to "[white]S" ,
-    "shortcut_unit_render" to "U" ,
-    "shortcut_wall_shadow" to "W" ,
-    "show_all" to "Show all" ,
-    "show_all_message_blocks" to "Show all message blocks" ,
-    "show_building_status_only" to "Show building status only" ,
-    "single_player_map_tools_only" to "Single-player map tools only." ,
-    "size" to "Size:" ,
-    "slow_the_flow_of_time_to_half" to "Slow the flow of time to half" ,
-    "spawn_location" to "Spawn location:" ,
-    "spawn_range" to "Spawn range:" ,
-    "spawn_team" to "Spawn Team:" ,
-    "spawned" to "[orange]spawned!" ,
-    "spawns_units_that_fly" to "[orange]spawns units that fly" ,
-    "speed_up_time_to_2x" to "Speed up time to 2x" ,
-    "squared" to "Squared" ,
-    "stable_releases" to "Stable Releases" ,
-    "staging_area" to "Staging area" ,
-    "successfully_selected_a_total_of" to "Successfully selected a total of" ,
-    "surrender_vote" to "Surrender Vote" ,
-    "surrender_vote_confirm" to "Are you sure you want to surrender?" ,
-    "sync_a_wave" to "Sync a wave" ,
-    "tap_the_screen_to_capture_coordinates" to "[green]Tap the screen to capture coordinates" ,
-    "team" to "Team:" ,
-    "team_id" to "Team ID:" ,
-    "team_range" to "Team range" ,
-    "team_selector" to "Team selector" ,
-    "template.atNoticeFrom" to "[gold]You were poked by [white]{0}[gold]! Check the message dialog." ,
-    "template.atPlayer" to "<AT> poked {0}[white] to check their messages." ,
-    "template.copiedMemory" to "[cyan]Copied memory[white]\\n {0}" ,
-    "template.currentVersion" to "Current version: {0}" ,
-    "template.currentWave" to "*** Current wave: {0}" ,
-    "template.exportCount" to "Successfully selected a total of {0} records:\\n" ,
-    "template.exportHeader" to "[MDTX-{0}] Exported in-game chat history" ,
-    "template.exportMap" to "*** Current map name: {0} (mode: {1})\\n" ,
-    "template.failedReadImage" to "Failed to read image, please try another image\\n{0}" ,
-    "template.introduction" to "Introduction: {0}" ,
-    "template.invalidBackgroundImage" to "Invalid background image: {0}" ,
-    "template.itemSelectionHeight" to "{0} rows" ,
-    "template.itemSelectionWidth" to "{0} columns" ,
-    "template.javaWarnDialog" to "Java version {0} is too low and unsupported.\\n[grey]This warning cannot be disabled; please update Java." ,
-    "template.javaWarnLog" to "Java version {0} is too low and unsupported. Please use Java 17+ to run MindustryX." ,
-    "template.labelWithEmoji" to "{0} {1}" ,
-    "template.loadMap" to "Load map: {0}" ,
-    "template.newVersion" to "[green]New version found[]: {0}" ,
-    "template.savedBlueprint" to "Saved blueprint: {0}" ,
-    "template.shareCode" to "<ARCxMDTX><Schem>[black]compat code[] {0}" ,
-    "template.shareHeader" to "This is a share log from MDTX-{0}\\n" ,
-    "template.toggleState" to "{0}: {1}" ,
-    "template.waveContains" to "Contains (ground x{0}, air x{1}):" ,
-    "template.waveEta" to "(in {0} waves, {1})" ,
-    "template.waveEvent" to "Waves: {0} | {1}" ,
-    "template.waveTitle" to "Wave {0}" ,
-    "template.windowTitle" to "MindustryX | Version {0} | mods enabled {1}/{2}" ,
-    "temporary_status" to "<Temporary State>" ,
-    "terrain_blueprint" to "Terrain Blueprint" ,
-    "the_blueprint_code_is_too_long_please_click_the_link_to_view_it" to "The blueprint code is too long, please click the link to view it" ,
-    "the_map_has_arg_world_processors_arg_instruction_lines_and_arg_characters" to "The map has @ world processors, @ instruction lines, and @ characters." ,
-    "there_are_no_enemies_in_this_wave" to "There are no enemies in this wave" ,
-    "there_are_too_many_buildings_to_avoid_lag_and_only_keep_the_first_1000_plans" to "[yellow]There are too many buildings to avoid lag and only keep the first 1000 plans." ,
-    "this_is_a_cheat_feature_njump_to_the" to "[red]This is a cheat feature[]\\nJump to the target wave instantly (without spawning enemies)" ,
-    "this_is_a_message_from_mdtx" to "This is a message from MDTX-" ,
-    "tiles" to "tiles" ,
-    "tip_all_schematics_containing_processors" to "TIP: All schematics containing processors" ,
-    "toggle" to "Toggle" ,
-    "toggle_your_team_s_cheat" to "Toggle your team's Cheat" ,
-    "total_arg_arg_arg_arg_tile_radius" to "Total @@@~@ tile radius" ,
-    "ui_icon_library" to "UI Icon Library" ,
-    "ui_toolkit" to "UI Toolkit" ,
-    "unique" to "Unique" ,
-    "unit" to "Unit:" ,
-    "unit_factory" to "Unit Factory" ,
-    "unit_factory_x" to "Unit Factory-X" ,
-    "unit_rendering" to "Unit Rendering" ,
-    "unlimited" to "Unlimited" ,
-    "unlock" to "Unlock" ,
-    "unlock_and_allow_all_blocks" to "Unlock and allow all blocks" ,
-    "updated_edited_logic" to "[orange]Updated edited logic!" ,
-    "upload_failed_try_again" to "Upload failed, try again?" ,
-    "vanilla" to "Vanilla" ,
-    "view_recording_info" to "View recording info" ,
-    "wall_shadow_rendering" to "Wall Shadow Rendering" ,
-    "warning_image_may_be_too_large_please_try_compressing_image" to "[orange]Warning: Image may be too large, please try compressing image" ,
-    "wave" to "Wave" ,
-    "wave_in_prefix" to "in" ,
-    "wave_info" to "Wave Info" ,
-    "wave_settings" to "Wave Settings" ,
-    "waves" to "Waves:" ,
-    "waves_suffix" to "waves," ,
-    "x_scan_speed" to "x scan speed" ,
-    "you_are_already_on_the_latest_version" to "You are already on the latest version." ,
-    "you_were_poked_please_pay_attention_to_the_information_box" to "[orange]You were poked. Please check the message dialog." ,
-    "zoom" to "Zoom" ,
-    "zoom_x" to "Zoom: x" ,
-    "zoom_zoom" to "Zoom: " ,
-)
+    object ZH : UiTextBundle
 
-private fun currentUiTexts(): Map<String, String> =
-    if(Core.bundle.locale.language == Locale.CHINESE.language) uiTextsZh else uiTextsEn
+    object EN : UiTextBundle {
+        override fun addDestroyedBuildingsToBuildQueue(): String = "Add destroyed buildings to build queue"
+        override fun addPanel(): String = "Add Panel"
+        override fun addPrefixT(): String = "Add prefix /t"
+        override fun addTeam(): String = "Add Team"
+        override fun airOnly(): String = "Air only"
+        override fun airX(): String = ", air x"
+        override fun all(): String = "All"
+        override fun allPlayers(): String = "All players"
+        override fun allowedRange29999(): String = "Allowed range: 2~9999"
+        override fun alwaysOn(): String = "Always On"
+        override fun arcAiConfigurator(): String = "ARC-AI Configurator"
+        override fun arcImageConverter(): String = "ARC Image Converter"
+        override fun arcMessageCenter(): String = "ARC Message Center"
+        override fun arcOreStatistics(): String = "ARC Ore Statistics"
+        override fun argArgNdistanceArg(): String = "@,@\\nDistance: @"
+        override fun argSArgTiles(): String = "@s~@ tiles"
+        override fun argShieldCapacityArgGridArgRecoveryArgSCooldown(): String = "@ shield capacity ~ @ grid ~ @ recovery ~ @s cooldown"
+        override fun armor(): String = "[teal]Armor"
+        override fun artboard(): String = "Artboard++"
+        override fun attack(): String = "Attack"
+        override fun attackNoBorder(): String = "Attack (no border)"
+        override fun attackSpeed(): String = "[violet]Attack speed"
+        override fun autoAttack(): String = "Auto Attack"
+        override fun autoFill(): String = "Auto Fill"
+        override fun autoRefreshVariables(): String = "Auto-refresh variables"
+        override fun automaticallyRefreshVariables(): String = "Automatically refresh variables"
+        override fun automaticallySaveAsBlueprint(): String = "Automatically save as blueprint"
+        override fun basic(): String = "Basic"
+        override fun beforeAddingNewInstructionsPleaseSaveTheEditedInstructionsFirst(): String = "[yellow]Before adding new instructions, please save the edited instructions first."
+        override fun belowIsMdtx(): String = "Below is [MDTX-"
+        override fun blockRendering(): String = "Block Rendering"
+        override fun blueprintCodeLink(): String = "Blueprint code link:"
+        override fun blueprintCodeN(): String = "Blueprint code: \\n"
+        override fun blueprintCost(): String = "Blueprint cost:"
+        override fun blueprintName(): String = "Blueprint name:"
+        override fun buildArea(): String = "Build area"
+        override fun buildSpeed(): String = "[accent]Build Speed"
+        override fun builderAi(): String = "Builder AI"
+        override fun buildings(): String = "Buildings:"
+        override fun builtInPrefix(): String = "[Built-in]"
+        override fun bulletRendering(): String = "Bullet Rendering"
+        override fun cancel(): String = "Cancel"
+        override fun canvas(): String = "Canvas"
+        override fun carriedItem(): String = "Carried item:"
+        override fun chat(): String = "Chat"
+        override fun chatHistoryExceedingTheLimitWillBeClearedWhenLoadingTheMap(): String = "Chat history exceeding the limit will be cleared when loading the map"
+        override fun cheat(): String = "Cheat"
+        override fun checkForUpdates(): String = "Check for Updates"
+        override fun clear(): String = "Clear"
+        override fun clearAllCoreResources(): String = "Clear all core resources"
+        override fun clickTheScreenToReturn(): String = "[green]Click the screen to return"
+        override fun clone(): String = "Clone"
+        override fun color(): String = "Color"
+        override fun command(): String = "Command"
+        override fun commandMode(): String = "Command Mode"
+        override fun constructionSuspended(): String = "Construction suspended"
+        override fun containsGroundX(): String = "Contains (ground x"
+        override fun copiedPrintBufferNArg(): String = "Copied print buffer\\n@"
+        override fun copiedSuccessfully(): String = "Copied successfully:"
+        override fun copiedThisChatRecord(): String = "Copied this chat record"
+        override fun copiedVariableAttributesNArg(): String = "Copied variable attributes\\n@"
+        override fun copiedVariableNameNArg(): String = "Copied variable name\\n@"
+        override fun couldNotCheckForUpdatesNpleaseTryAgainLater(): String = "Could not check for updates.\\nPlease try again later."
+        override fun cross(): String = "Cross"
+        override fun currentFrameRateLockedArg(): String = "Current frame rate locked: @"
+        override fun currentGameSpeedArgTimes(): String = "Current game speed: @ times"
+        override fun currentMapArg(): String = "Current map: @"
+        override fun currentMapName(): String = "*** Current map name:"
+        override fun currentSelectionIsEmptySelectABlockInTheInventory(): String = "[yellow]Current selection is empty; select a block in the inventory."
+        override fun currentUnitCannotBuild(): String = "[red]Current unit cannot build"
+        override fun damage(): String = "[red]Damage"
+        override fun defenderAi(): String = "Defender AI"
+        override fun detachedCamera(): String = "Detached camera"
+        override fun displayName(): String = "Display name"
+        override fun downloadAndInstallUpdate(): String = "Download and Install Update"
+        override fun dropPayload(): String = "Drop Payload"
+        override fun eachCellAbsorbsArgSArgArgArgSAndReturnsBloodMaximumArgS(): String = "Each cell absorbs @/s@@~heals @/s~up to @/s"
+        override fun editor(): String = "Editor"
+        override fun effectsLibrary(): String = "Effects Library"
+        override fun effectsRendering(): String = "Effects Rendering"
+        override fun emptySelectionAreaHint(): String = "The currently selected area is empty. Please use F to plan the area."
+        override fun enterTheConveyorBelt(): String = "Enter the conveyor belt"
+        override fun eventMapLoad(): String = "Event~Map Load"
+        override fun eventWave(): String = "Event~Wave"
+        override fun export(): String = "Export"
+        override fun exportChatHistory(): String = "Export chat history"
+        override fun exportedInGameChatHistory(): String = "] Exported in-game chat history"
+        override fun extractCodeFromSchematic(): String = "Extract code from schematic"
+        override fun failedToCreateReplay(): String = "Failed to create replay!"
+        override fun failedToReadImagePleaseTryAnotherImageN(): String = "Failed to read image, please try another image\\n"
+        override fun failedToReadPlayback(): String = "Failed to read playback!"
+        override fun fillCoreResources(): String = "Fill core resources"
+        override fun findBlocks(): String = "Find blocks"
+        override fun fixedSize(): String = "Fixed size"
+        override fun flashOnChange(): String = "Flash on Change"
+        override fun flashOnVariableChange(): String = "Flash on variable change"
+        override fun flightMode(): String = "Flight mode"
+        override fun fogOfWar(): String = "Fog of War"
+        override fun forceBoost(): String = "Force Boost"
+        override fun forceSkipWaves(): String = "Force skip waves"
+        override fun frameRateLockModeEnabledNcurrentFrameRateLockArg(): String = "Frame rate lock mode enabled \\nCurrent frame rate lock: @"
+        override fun frameRateLockModeTurnedOffNcurrentGameSpeedArgTimes(): String = "Frame rate lock mode turned off \\nCurrent game speed: @ times"
+        override fun frameRateSimulation(): String = "Frame rate simulation"
+        override fun fx(): String = "FX"
+        override fun gameResumed(): String = "Game resumed"
+        override fun generateQuantity(): String = "Generate quantity:"
+        override fun generatedLabel(): String = "Generated"
+        override fun globalRange(): String = "Global range"
+        override fun godMode(): String = "God Mode"
+        override fun groundOnly(): String = "Ground only"
+        override fun healthLabel(): String = "[red]HP:"
+        override fun hideAllBuildings(): String = "Hide all buildings"
+        override fun hideLogicHelper(): String = "Hide Logic Helper"
+        override fun hitboxOverlay(): String = "Hitbox Overlay"
+        override fun hourglass(): String = "Hourglass:"
+        override fun hp(): String = "[acid]HP"
+        override fun hueMode(): String = "Hue mode:"
+        override fun icon(): String = "Icon"
+        override fun index(): String = "Index"
+        override fun instant(): String = "Instant"
+        override fun item(): String = "Item"
+        override fun kotlinLanguageStandardLibrary(): String = "Kotlin language standard library"
+        override fun lightningArgProbabilityArgDamageArgLengthArgXSpeed(): String = "Lightning @ probability ~ @ damage ~ @ length @x speed"
+        override fun liquids(): String = "Liquids"
+        override fun loadBuilding(): String = "Load Building"
+        override fun loadMap(): String = "Load map:"
+        override fun loadReplayFile(): String = "Load replay file"
+        override fun loadSelf(): String = "Load self"
+        override fun loadUnit(): String = "Load Unit"
+        override fun lock(): String = "Lock"
+        override fun lockTheLastMarkedPoint(): String = "Lock the last marked point"
+        override fun logicAnnouncement(): String = "Logic~Announcement"
+        override fun logicArtWebsite(): String = "Logic art website"
+        override fun logicCameraLockRemoved(): String = "Logic camera lock removed"
+        override fun logicHelperX(): String = "Logic Helper[gold]X[]"
+        override fun logicNotice(): String = "Logic~Notice"
+        override fun markCoordinates(): String = "Mark~Coordinates"
+        override fun markMapLocation(): String = "Mark map location"
+        override fun markModeTapTheScreenToPlaceAMark(): String = "[cyan]Mark mode: tap the screen to place a mark."
+        override fun markPlayer(): String = "Mark~Player"
+        override fun maximumStorageOfChatHistoryTooHighMayCauseLag(): String = "Maximum storage of chat history (too high may cause lag):"
+        override fun messageArgJsStartsWithScript(): String = "Message (@js starts with script)"
+        override fun messageCenter(): String = "Message Center"
+        override fun mindustryxVersion(): String = "MindustryX | Version"
+        override fun minerAi(): String = "Miner AI"
+        override fun minerAiOreFilter(): String = "Miner AI - Ore Filter"
+        override fun minimap(): String = "Minimap"
+        override fun modsEnabled(): String = "| mods enabled"
+        override fun moreTeams(): String = "More Teams"
+        override fun movementSpeed(): String = "[cyan]Movement speed"
+        override fun nTookUnits(): String = "\\n[white] took units:"
+        override fun name(): String = "Name"
+        override fun no(): String = "No."
+        override fun noCommandEntered(): String = "No command entered"
+        override fun noPermissionToEditViewOnly(): String = "[yellow]No permission to edit; view only."
+        override fun observerMode(): String = "Observer Mode"
+        override fun off(): String = "Off"
+        override fun on(): String = "On"
+        override fun openPlaybackFile(): String = "Open playback file"
+        override fun openReleasePage(): String = "Open Release Page"
+        override fun oreCountSurfaceWall(): String = "Ore Count (surface/wall)"
+        override fun oreInfo(): String = "Ore Info"
+        override fun originalSize(): String = "Original size"
+        override fun packetCount(): String = "Packet count:"
+        override fun panelsCurrentlyUnavailable(): String = "Panels currently unavailable:"
+        override fun path(): String = "Path"
+        override fun pauseLogicGameExecution(): String = "Pause logic (game) execution"
+        override fun pauseTime(): String = "Pause time"
+        override fun paused(): String = "Paused"
+        override fun permanentStatus(): String = "<Permanent Status>"
+        override fun pickUpPayload(): String = "Pick up payload"
+        override fun pixelArt(): String = "Pixel Art"
+        override fun placeReplace(): String = "Place/Replace"
+        override fun placeholderX(): String = "x"
+        override fun playbackLength(): String = "Playback length:"
+        override fun playbackVersion(): String = "Playback version:"
+        override fun playerBuildRange(): String = "Player build range"
+        override fun playerName(): String = "Player name:"
+        override fun pleaseDonTTagTooOften(): String = "Please don't tag too often!"
+        override fun pleaseUseJava17OrHigherToRun(): String = "). Please use Java 17 or higher to run MindustryX. \\n[grey]This warning cannot be disabled, please update Java."
+        override fun pokedYouCheckTheMessageDialog(): String = "[gold]You were poked; check the message dialog."
+        override fun power(): String = "Power:"
+        override fun previewReleasesNFasterUpdatesNewFeaturesBugFixes(): String = "Preview Releases\\n(faster updates, new features, bug fixes)"
+        override fun radarScanning(): String = ">> Radar Scanning <<"
+        override fun radarToggle(): String = "Radar Toggle"
+        override fun rally(): String = "Rally"
+        override fun randomlyGeneratedWithinThisRangeNearTheTargetPoint(): String = "Randomly generated within this range near the target point"
+        override fun recordingArg(): String = "Recording: @"
+        override fun recordingEnded(): String = "Recording ended"
+        override fun recordingError(): String = "Recording error!"
+        override fun refreshEditedLogic(): String = "Refresh edited logic"
+        override fun refreshInterval(): String = "Refresh interval"
+        override fun releaseNotes(): String = "Release Notes"
+        override fun removeLogicLock(): String = "Remove logic lock"
+        override fun repairAi(): String = "Repair AI"
+        override fun replayCreationTime(): String = "Replay creation time:"
+        override fun replayNotLoaded(): String = "Replay not loaded!"
+        override fun replayStats(): String = "Replay Stats"
+        override fun reset(): String = "Reset"
+        override fun resetAllLinks(): String = "Reset all links"
+        override fun resistance(): String = "[purple]Resistance"
+        override fun restoreCurrentWave(): String = "Restore current wave"
+        override fun returnToOriginalSpeed(): String = "Return to original speed"
+        override fun ring(): String = "Ring"
+        override fun ringCross(): String = "Ring Cross"
+        override fun rules(): String = "Rules:"
+        override fun sandbox(): String = "Sandbox"
+        override fun savedToClipboard(): String = "Saved to clipboard"
+        override fun scaledSize(): String = "Scaled size"
+        override fun scanMode(): String = "Scan Mode"
+        override fun sec(): String = "sec"
+        override fun selectAndImportPicturesWhichCanBeConverted(): String = "Select and import pictures, which can be converted into artboards, pixel paintings or logic paintings."
+        override fun selectCode(): String = "Select Code"
+        override fun selectImagePng(): String = "Select image[white](png)"
+        override fun selectionRange(): String = "Selection Range"
+        override fun selfDestruct(): String = "Self-Destruct"
+        override fun serverInfoBuild(): String = "Server Info Build"
+        override fun serverIp(): String = "Server IP:"
+        override fun serverMsg(): String = "Server Msg"
+        override fun setTarget(): String = "Set target"
+        override fun setTargetWave(): String = "Set target wave"
+        override fun shareInventoryStatus(): String = "Share inventory status"
+        override fun sharePowerStatus(): String = "Share power status"
+        override fun shareUnitCount(): String = "Share unit count"
+        override fun shareWaveInformation(): String = "Share wave information"
+        override fun sharedBy(): String = "Shared by:"
+        override fun shield(): String = "[yellow]Shield:"
+        override fun shortcutBlockRender(): String = "B"
+        override fun shortcutBulletRender(): String = "P"
+        override fun shortcutFog(): String = "F"
+        override fun shortcutHitbox(): String = "H"
+        override fun shortcutMessageCenter(): String = "M"
+        override fun shortcutObserverMode(): String = "O"
+        override fun shortcutScanMode(): String = "S"
+        override fun shortcutServerInfo(): String = "V"
+        override fun shortcutSurrenderVote(): String = "[white]S"
+        override fun shortcutUnitRender(): String = "U"
+        override fun shortcutWallShadow(): String = "W"
+        override fun showAll(): String = "Show all"
+        override fun showAllMessageBlocks(): String = "Show all message blocks"
+        override fun showBuildingStatusOnly(): String = "Show building status only"
+        override fun singlePlayerMapToolsOnly(): String = "Single-player map tools only."
+        override fun size(): String = "Size:"
+        override fun slowTheFlowOfTimeToHalf(): String = "Slow the flow of time to half"
+        override fun spawnLocation(): String = "Spawn location:"
+        override fun spawnRange(): String = "Spawn range:"
+        override fun spawnTeam(): String = "Spawn Team:"
+        override fun spawned(): String = "[orange]spawned!"
+        override fun spawnsUnitsThatFly(): String = "[orange]spawns units that fly"
+        override fun speedUpTimeTo2x(): String = "Speed up time to 2x"
+        override fun squared(): String = "Squared"
+        override fun stableReleases(): String = "Stable Releases"
+        override fun stagingArea(): String = "Staging area"
+        override fun successfullySelectedATotalOf(): String = "Successfully selected a total of"
+        override fun surrenderVote(): String = "Surrender Vote"
+        override fun surrenderVoteConfirm(): String = "Are you sure you want to surrender?"
+        override fun syncAWave(): String = "Sync a wave"
+        override fun tapTheScreenToCaptureCoordinates(): String = "[green]Tap the screen to capture coordinates"
+        override fun team(): String = "Team:"
+        override fun teamId(): String = "Team ID:"
+        override fun teamRange(): String = "Team range"
+        override fun teamSelector(): String = "Team selector"
+        override fun templateAtNoticeFrom(): String = "[gold]You were poked by [white]{0}[gold]! Check the message dialog."
+        override fun templateAtPlayer(): String = "<AT> poked {0}[white] to check their messages."
+        override fun templateCopiedMemory(): String = "[cyan]Copied memory[white]\\n {0}"
+        override fun templateCurrentVersion(): String = "Current version: {0}"
+        override fun templateCurrentWave(): String = "*** Current wave: {0}"
+        override fun templateExportCount(): String = "Successfully selected a total of {0} records:\\n"
+        override fun templateExportHeader(): String = "[MDTX-{0}] Exported in-game chat history"
+        override fun templateExportMap(): String = "*** Current map name: {0} (mode: {1})\\n"
+        override fun templateFailedReadImage(): String = "Failed to read image, please try another image\\n{0}"
+        override fun templateIntroduction(): String = "Introduction: {0}"
+        override fun templateInvalidBackgroundImage(): String = "Invalid background image: {0}"
+        override fun templateItemSelectionHeight(): String = "{0} rows"
+        override fun templateItemSelectionWidth(): String = "{0} columns"
+        override fun templateJavaWarnDialog(): String = "Java version {0} is too low and unsupported.\\n[grey]This warning cannot be disabled; please update Java."
+        override fun templateJavaWarnLog(): String = "Java version {0} is too low and unsupported. Please use Java 17+ to run MindustryX."
+        override fun templateLabelWithEmoji(): String = "{0} {1}"
+        override fun templateLoadMap(): String = "Load map: {0}"
+        override fun templateNewVersion(): String = "[green]New version found[]: {0}"
+        override fun templateSavedBlueprint(): String = "Saved blueprint: {0}"
+        override fun templateShareCode(): String = "<ARCxMDTX><Schem>[black]compat code[] {0}"
+        override fun templateShareHeader(): String = "This is a share log from MDTX-{0}\\n"
+        override fun templateToggleState(): String = "{0}: {1}"
+        override fun templateWaveContains(): String = "Contains (ground x{0}, air x{1}):"
+        override fun templateWaveEta(): String = "(in {0} waves, {1})"
+        override fun templateWaveEvent(): String = "Waves: {0} | {1}"
+        override fun templateWaveTitle(): String = "Wave {0}"
+        override fun templateWindowTitle(): String = "MindustryX | Version {0} | mods enabled {1}/{2}"
+        override fun temporaryStatus(): String = "<Temporary State>"
+        override fun terrainBlueprint(): String = "Terrain Blueprint"
+        override fun theBlueprintCodeIsTooLongPleaseClickTheLinkToViewIt(): String = "The blueprint code is too long, please click the link to view it"
+        override fun theMapHasArgWorldProcessorsArgInstructionLinesAndArgCharacters(): String = "The map has @ world processors, @ instruction lines, and @ characters."
+        override fun thereAreNoEnemiesInThisWave(): String = "There are no enemies in this wave"
+        override fun thereAreTooManyBuildingsToAvoidLagAndOnlyKeepTheFirst1000Plans(): String = "[yellow]There are too many buildings to avoid lag and only keep the first 1000 plans."
+        override fun thisIsACheatFeatureNjumpToThe(): String = "[red]This is a cheat feature[]\\nJump to the target wave instantly (without spawning enemies)"
+        override fun thisIsAMessageFromMdtx(): String = "This is a message from MDTX-"
+        override fun tiles(): String = "tiles"
+        override fun tipAllSchematicsContainingProcessors(): String = "TIP: All schematics containing processors"
+        override fun toggle(): String = "Toggle"
+        override fun toggleYourTeamSCheat(): String = "Toggle your team's Cheat"
+        override fun totalArgArgArgArgTileRadius(): String = "Total @@@~@ tile radius"
+        override fun uiIconLibrary(): String = "UI Icon Library"
+        override fun uiToolkit(): String = "UI Toolkit"
+        override fun unique(): String = "Unique"
+        override fun unit(): String = "Unit:"
+        override fun unitFactory(): String = "Unit Factory"
+        override fun unitFactoryX(): String = "Unit Factory-X"
+        override fun unitRendering(): String = "Unit Rendering"
+        override fun unlimited(): String = "Unlimited"
+        override fun unlock(): String = "Unlock"
+        override fun unlockAndAllowAllBlocks(): String = "Unlock and allow all blocks"
+        override fun updatedEditedLogic(): String = "[orange]Updated edited logic!"
+        override fun uploadFailedTryAgain(): String = "Upload failed, try again?"
+        override fun vanilla(): String = "Vanilla"
+        override fun viewRecordingInfo(): String = "View recording info"
+        override fun wallShadowRendering(): String = "Wall Shadow Rendering"
+        override fun warningImageMayBeTooLargePleaseTryCompressingImage(): String = "[orange]Warning: Image may be too large, please try compressing image"
+        override fun wave(): String = "Wave"
+        override fun waveInPrefix(): String = "in"
+        override fun waveInfo(): String = "Wave Info"
+        override fun waveSettings(): String = "Wave Settings"
+        override fun waves(): String = "Waves:"
+        override fun wavesSuffix(): String = "waves,"
+        override fun xScanSpeed(): String = "x scan speed"
+        override fun youAreAlreadyOnTheLatestVersion(): String = "You are already on the latest version."
+        override fun youWerePokedPleasePayAttentionToTheInformationBox(): String = "[orange]You were poked. Please check the message dialog."
+        override fun zoom(): String = "Zoom"
+        override fun zoomX(): String = "Zoom: x"
+        override fun zoomZoom(): String = "Zoom: "
+    }
 
-fun ui(key: String): String = currentUiTexts()[key] ?: key
+    companion object {
+        fun default(): UiTextBundle =
+            if(Core.bundle.locale.language == Locale.CHINESE.language) ZH else EN
+    }
+}
+
+private fun bundle(): UiTextBundle = UiTextBundle.default()
+
+fun ui(key: String): String = when(key) {
+        "add_destroyed_buildings_to_build_queue" -> bundle().addDestroyedBuildingsToBuildQueue()
+        "add_panel" -> bundle().addPanel()
+        "add_prefix_t" -> bundle().addPrefixT()
+        "add_team" -> bundle().addTeam()
+        "air_only" -> bundle().airOnly()
+        "air_x" -> bundle().airX()
+        "all" -> bundle().all()
+        "all_players" -> bundle().allPlayers()
+        "allowed_range_2_9999" -> bundle().allowedRange29999()
+        "always_on" -> bundle().alwaysOn()
+        "arc_ai_configurator" -> bundle().arcAiConfigurator()
+        "arc_image_converter" -> bundle().arcImageConverter()
+        "arc_message_center" -> bundle().arcMessageCenter()
+        "arc_ore_statistics" -> bundle().arcOreStatistics()
+        "arg_arg_ndistance_arg" -> bundle().argArgNdistanceArg()
+        "arg_s_arg_tiles" -> bundle().argSArgTiles()
+        "arg_shield_capacity_arg_grid_arg_recovery_arg_s_cooldown" -> bundle().argShieldCapacityArgGridArgRecoveryArgSCooldown()
+        "armor" -> bundle().armor()
+        "artboard" -> bundle().artboard()
+        "attack" -> bundle().attack()
+        "attack_no_border" -> bundle().attackNoBorder()
+        "attack_speed" -> bundle().attackSpeed()
+        "auto_attack" -> bundle().autoAttack()
+        "auto_fill" -> bundle().autoFill()
+        "auto_refresh_variables" -> bundle().autoRefreshVariables()
+        "automatically_refresh_variables" -> bundle().automaticallyRefreshVariables()
+        "automatically_save_as_blueprint" -> bundle().automaticallySaveAsBlueprint()
+        "basic" -> bundle().basic()
+        "before_adding_new_instructions_please_save_the_edited_instructions_first" -> bundle().beforeAddingNewInstructionsPleaseSaveTheEditedInstructionsFirst()
+        "below_is_mdtx" -> bundle().belowIsMdtx()
+        "block_rendering" -> bundle().blockRendering()
+        "blueprint_code_link" -> bundle().blueprintCodeLink()
+        "blueprint_code_n" -> bundle().blueprintCodeN()
+        "blueprint_cost" -> bundle().blueprintCost()
+        "blueprint_name" -> bundle().blueprintName()
+        "build_area" -> bundle().buildArea()
+        "build_speed" -> bundle().buildSpeed()
+        "builder_ai" -> bundle().builderAi()
+        "buildings" -> bundle().buildings()
+        "built_in_prefix" -> bundle().builtInPrefix()
+        "bullet_rendering" -> bundle().bulletRendering()
+        "cancel" -> bundle().cancel()
+        "canvas" -> bundle().canvas()
+        "carried_item" -> bundle().carriedItem()
+        "chat" -> bundle().chat()
+        "chat_history_exceeding_the_limit_will_be_cleared_when_loading_the_map" -> bundle().chatHistoryExceedingTheLimitWillBeClearedWhenLoadingTheMap()
+        "cheat" -> bundle().cheat()
+        "check_for_updates" -> bundle().checkForUpdates()
+        "clear" -> bundle().clear()
+        "clear_all_core_resources" -> bundle().clearAllCoreResources()
+        "click_the_screen_to_return" -> bundle().clickTheScreenToReturn()
+        "clone" -> bundle().clone()
+        "color" -> bundle().color()
+        "command" -> bundle().command()
+        "command_mode" -> bundle().commandMode()
+        "construction_suspended" -> bundle().constructionSuspended()
+        "contains_ground_x" -> bundle().containsGroundX()
+        "copied_print_buffer_n_arg" -> bundle().copiedPrintBufferNArg()
+        "copied_successfully" -> bundle().copiedSuccessfully()
+        "copied_this_chat_record" -> bundle().copiedThisChatRecord()
+        "copied_variable_attributes_n_arg" -> bundle().copiedVariableAttributesNArg()
+        "copied_variable_name_n_arg" -> bundle().copiedVariableNameNArg()
+        "could_not_check_for_updates_nplease_try_again_later" -> bundle().couldNotCheckForUpdatesNpleaseTryAgainLater()
+        "cross" -> bundle().cross()
+        "current_frame_rate_locked_arg" -> bundle().currentFrameRateLockedArg()
+        "current_game_speed_arg_times" -> bundle().currentGameSpeedArgTimes()
+        "current_map_arg" -> bundle().currentMapArg()
+        "current_map_name" -> bundle().currentMapName()
+        "current_selection_is_empty_select_a_block_in_the_inventory" -> bundle().currentSelectionIsEmptySelectABlockInTheInventory()
+        "current_unit_cannot_build" -> bundle().currentUnitCannotBuild()
+        "damage" -> bundle().damage()
+        "defender_ai" -> bundle().defenderAi()
+        "detached_camera" -> bundle().detachedCamera()
+        "display_name" -> bundle().displayName()
+        "download_and_install_update" -> bundle().downloadAndInstallUpdate()
+        "drop_payload" -> bundle().dropPayload()
+        "each_cell_absorbs_arg_s_arg_arg_arg_s_and_returns_blood_maximum_arg_s" -> bundle().eachCellAbsorbsArgSArgArgArgSAndReturnsBloodMaximumArgS()
+        "editor" -> bundle().editor()
+        "effects_library" -> bundle().effectsLibrary()
+        "effects_rendering" -> bundle().effectsRendering()
+        "empty_selection_area_hint" -> bundle().emptySelectionAreaHint()
+        "enter_the_conveyor_belt" -> bundle().enterTheConveyorBelt()
+        "event_map_load" -> bundle().eventMapLoad()
+        "event_wave" -> bundle().eventWave()
+        "export" -> bundle().export()
+        "export_chat_history" -> bundle().exportChatHistory()
+        "exported_in_game_chat_history" -> bundle().exportedInGameChatHistory()
+        "extract_code_from_schematic" -> bundle().extractCodeFromSchematic()
+        "failed_to_create_replay" -> bundle().failedToCreateReplay()
+        "failed_to_read_image_please_try_another_image_n" -> bundle().failedToReadImagePleaseTryAnotherImageN()
+        "failed_to_read_playback" -> bundle().failedToReadPlayback()
+        "fill_core_resources" -> bundle().fillCoreResources()
+        "find_blocks" -> bundle().findBlocks()
+        "fixed_size" -> bundle().fixedSize()
+        "flash_on_change" -> bundle().flashOnChange()
+        "flash_on_variable_change" -> bundle().flashOnVariableChange()
+        "flight_mode" -> bundle().flightMode()
+        "fog_of_war" -> bundle().fogOfWar()
+        "force_boost" -> bundle().forceBoost()
+        "force_skip_waves" -> bundle().forceSkipWaves()
+        "frame_rate_lock_mode_enabled_ncurrent_frame_rate_lock_arg" -> bundle().frameRateLockModeEnabledNcurrentFrameRateLockArg()
+        "frame_rate_lock_mode_turned_off_ncurrent_game_speed_arg_times" -> bundle().frameRateLockModeTurnedOffNcurrentGameSpeedArgTimes()
+        "frame_rate_simulation" -> bundle().frameRateSimulation()
+        "fx" -> bundle().fx()
+        "game_resumed" -> bundle().gameResumed()
+        "generate_quantity" -> bundle().generateQuantity()
+        "generated_label" -> bundle().generatedLabel()
+        "global_range" -> bundle().globalRange()
+        "god_mode" -> bundle().godMode()
+        "ground_only" -> bundle().groundOnly()
+        "health_label" -> bundle().healthLabel()
+        "hide_all_buildings" -> bundle().hideAllBuildings()
+        "hide_logic_helper" -> bundle().hideLogicHelper()
+        "hitbox_overlay" -> bundle().hitboxOverlay()
+        "hourglass" -> bundle().hourglass()
+        "hp" -> bundle().hp()
+        "hue_mode" -> bundle().hueMode()
+        "icon" -> bundle().icon()
+        "index" -> bundle().index()
+        "instant" -> bundle().instant()
+        "item" -> bundle().item()
+        "kotlin_language_standard_library" -> bundle().kotlinLanguageStandardLibrary()
+        "lightning_arg_probability_arg_damage_arg_length_arg_x_speed" -> bundle().lightningArgProbabilityArgDamageArgLengthArgXSpeed()
+        "liquids" -> bundle().liquids()
+        "load_building" -> bundle().loadBuilding()
+        "load_map" -> bundle().loadMap()
+        "load_replay_file" -> bundle().loadReplayFile()
+        "load_self" -> bundle().loadSelf()
+        "load_unit" -> bundle().loadUnit()
+        "lock" -> bundle().lock()
+        "lock_the_last_marked_point" -> bundle().lockTheLastMarkedPoint()
+        "logic_announcement" -> bundle().logicAnnouncement()
+        "logic_art_website" -> bundle().logicArtWebsite()
+        "logic_camera_lock_removed" -> bundle().logicCameraLockRemoved()
+        "logic_helper_x" -> bundle().logicHelperX()
+        "logic_notice" -> bundle().logicNotice()
+        "mark_coordinates" -> bundle().markCoordinates()
+        "mark_map_location" -> bundle().markMapLocation()
+        "mark_mode_tap_the_screen_to_place_a_mark" -> bundle().markModeTapTheScreenToPlaceAMark()
+        "mark_player" -> bundle().markPlayer()
+        "maximum_storage_of_chat_history_too_high_may_cause_lag" -> bundle().maximumStorageOfChatHistoryTooHighMayCauseLag()
+        "message_arg_js_starts_with_script" -> bundle().messageArgJsStartsWithScript()
+        "message_center" -> bundle().messageCenter()
+        "mindustryx_version" -> bundle().mindustryxVersion()
+        "miner_ai" -> bundle().minerAi()
+        "miner_ai_ore_filter" -> bundle().minerAiOreFilter()
+        "minimap" -> bundle().minimap()
+        "mods_enabled" -> bundle().modsEnabled()
+        "more_teams" -> bundle().moreTeams()
+        "movement_speed" -> bundle().movementSpeed()
+        "n_took_units" -> bundle().nTookUnits()
+        "name" -> bundle().name()
+        "no" -> bundle().no()
+        "no_command_entered" -> bundle().noCommandEntered()
+        "no_permission_to_edit_view_only" -> bundle().noPermissionToEditViewOnly()
+        "observer_mode" -> bundle().observerMode()
+        "off" -> bundle().off()
+        "on" -> bundle().on()
+        "open_playback_file" -> bundle().openPlaybackFile()
+        "open_release_page" -> bundle().openReleasePage()
+        "ore_count_surface_wall" -> bundle().oreCountSurfaceWall()
+        "ore_info" -> bundle().oreInfo()
+        "original_size" -> bundle().originalSize()
+        "packet_count" -> bundle().packetCount()
+        "panels_currently_unavailable" -> bundle().panelsCurrentlyUnavailable()
+        "path" -> bundle().path()
+        "pause_logic_game_execution" -> bundle().pauseLogicGameExecution()
+        "pause_time" -> bundle().pauseTime()
+        "paused" -> bundle().paused()
+        "permanent_status" -> bundle().permanentStatus()
+        "pick_up_payload" -> bundle().pickUpPayload()
+        "pixel_art" -> bundle().pixelArt()
+        "place_replace" -> bundle().placeReplace()
+        "placeholder_x" -> bundle().placeholderX()
+        "playback_length" -> bundle().playbackLength()
+        "playback_version" -> bundle().playbackVersion()
+        "player_build_range" -> bundle().playerBuildRange()
+        "player_name" -> bundle().playerName()
+        "please_don_t_tag_too_often" -> bundle().pleaseDonTTagTooOften()
+        "please_use_java_17_or_higher_to_run" -> bundle().pleaseUseJava17OrHigherToRun()
+        "poked_you_check_the_message_dialog" -> bundle().pokedYouCheckTheMessageDialog()
+        "power" -> bundle().power()
+        "preview_releases_n_faster_updates_new_features_bug_fixes" -> bundle().previewReleasesNFasterUpdatesNewFeaturesBugFixes()
+        "radar_scanning" -> bundle().radarScanning()
+        "radar_toggle" -> bundle().radarToggle()
+        "rally" -> bundle().rally()
+        "randomly_generated_within_this_range_near_the_target_point" -> bundle().randomlyGeneratedWithinThisRangeNearTheTargetPoint()
+        "recording_arg" -> bundle().recordingArg()
+        "recording_ended" -> bundle().recordingEnded()
+        "recording_error" -> bundle().recordingError()
+        "refresh_edited_logic" -> bundle().refreshEditedLogic()
+        "refresh_interval" -> bundle().refreshInterval()
+        "release_notes" -> bundle().releaseNotes()
+        "remove_logic_lock" -> bundle().removeLogicLock()
+        "repair_ai" -> bundle().repairAi()
+        "replay_creation_time" -> bundle().replayCreationTime()
+        "replay_not_loaded" -> bundle().replayNotLoaded()
+        "replay_stats" -> bundle().replayStats()
+        "reset" -> bundle().reset()
+        "reset_all_links" -> bundle().resetAllLinks()
+        "resistance" -> bundle().resistance()
+        "restore_current_wave" -> bundle().restoreCurrentWave()
+        "return_to_original_speed" -> bundle().returnToOriginalSpeed()
+        "ring" -> bundle().ring()
+        "ring_cross" -> bundle().ringCross()
+        "rules" -> bundle().rules()
+        "sandbox" -> bundle().sandbox()
+        "saved_to_clipboard" -> bundle().savedToClipboard()
+        "scaled_size" -> bundle().scaledSize()
+        "scan_mode" -> bundle().scanMode()
+        "sec" -> bundle().sec()
+        "select_and_import_pictures_which_can_be_converted" -> bundle().selectAndImportPicturesWhichCanBeConverted()
+        "select_code" -> bundle().selectCode()
+        "select_image_png" -> bundle().selectImagePng()
+        "selection_range" -> bundle().selectionRange()
+        "self_destruct" -> bundle().selfDestruct()
+        "server_info_build" -> bundle().serverInfoBuild()
+        "server_ip" -> bundle().serverIp()
+        "server_msg" -> bundle().serverMsg()
+        "set_target" -> bundle().setTarget()
+        "set_target_wave" -> bundle().setTargetWave()
+        "share_inventory_status" -> bundle().shareInventoryStatus()
+        "share_power_status" -> bundle().sharePowerStatus()
+        "share_unit_count" -> bundle().shareUnitCount()
+        "share_wave_information" -> bundle().shareWaveInformation()
+        "shared_by" -> bundle().sharedBy()
+        "shield" -> bundle().shield()
+        "shortcut_block_render" -> bundle().shortcutBlockRender()
+        "shortcut_bullet_render" -> bundle().shortcutBulletRender()
+        "shortcut_fog" -> bundle().shortcutFog()
+        "shortcut_hitbox" -> bundle().shortcutHitbox()
+        "shortcut_message_center" -> bundle().shortcutMessageCenter()
+        "shortcut_observer_mode" -> bundle().shortcutObserverMode()
+        "shortcut_scan_mode" -> bundle().shortcutScanMode()
+        "shortcut_server_info" -> bundle().shortcutServerInfo()
+        "shortcut_surrender_vote" -> bundle().shortcutSurrenderVote()
+        "shortcut_unit_render" -> bundle().shortcutUnitRender()
+        "shortcut_wall_shadow" -> bundle().shortcutWallShadow()
+        "show_all" -> bundle().showAll()
+        "show_all_message_blocks" -> bundle().showAllMessageBlocks()
+        "show_building_status_only" -> bundle().showBuildingStatusOnly()
+        "single_player_map_tools_only" -> bundle().singlePlayerMapToolsOnly()
+        "size" -> bundle().size()
+        "slow_the_flow_of_time_to_half" -> bundle().slowTheFlowOfTimeToHalf()
+        "spawn_location" -> bundle().spawnLocation()
+        "spawn_range" -> bundle().spawnRange()
+        "spawn_team" -> bundle().spawnTeam()
+        "spawned" -> bundle().spawned()
+        "spawns_units_that_fly" -> bundle().spawnsUnitsThatFly()
+        "speed_up_time_to_2x" -> bundle().speedUpTimeTo2x()
+        "squared" -> bundle().squared()
+        "stable_releases" -> bundle().stableReleases()
+        "staging_area" -> bundle().stagingArea()
+        "successfully_selected_a_total_of" -> bundle().successfullySelectedATotalOf()
+        "surrender_vote" -> bundle().surrenderVote()
+        "surrender_vote_confirm" -> bundle().surrenderVoteConfirm()
+        "sync_a_wave" -> bundle().syncAWave()
+        "tap_the_screen_to_capture_coordinates" -> bundle().tapTheScreenToCaptureCoordinates()
+        "team" -> bundle().team()
+        "team_id" -> bundle().teamId()
+        "team_range" -> bundle().teamRange()
+        "team_selector" -> bundle().teamSelector()
+        "template.atNoticeFrom" -> bundle().templateAtNoticeFrom()
+        "template.atPlayer" -> bundle().templateAtPlayer()
+        "template.copiedMemory" -> bundle().templateCopiedMemory()
+        "template.currentVersion" -> bundle().templateCurrentVersion()
+        "template.currentWave" -> bundle().templateCurrentWave()
+        "template.exportCount" -> bundle().templateExportCount()
+        "template.exportHeader" -> bundle().templateExportHeader()
+        "template.exportMap" -> bundle().templateExportMap()
+        "template.failedReadImage" -> bundle().templateFailedReadImage()
+        "template.introduction" -> bundle().templateIntroduction()
+        "template.invalidBackgroundImage" -> bundle().templateInvalidBackgroundImage()
+        "template.itemSelectionHeight" -> bundle().templateItemSelectionHeight()
+        "template.itemSelectionWidth" -> bundle().templateItemSelectionWidth()
+        "template.javaWarnDialog" -> bundle().templateJavaWarnDialog()
+        "template.javaWarnLog" -> bundle().templateJavaWarnLog()
+        "template.labelWithEmoji" -> bundle().templateLabelWithEmoji()
+        "template.loadMap" -> bundle().templateLoadMap()
+        "template.newVersion" -> bundle().templateNewVersion()
+        "template.savedBlueprint" -> bundle().templateSavedBlueprint()
+        "template.shareCode" -> bundle().templateShareCode()
+        "template.shareHeader" -> bundle().templateShareHeader()
+        "template.toggleState" -> bundle().templateToggleState()
+        "template.waveContains" -> bundle().templateWaveContains()
+        "template.waveEta" -> bundle().templateWaveEta()
+        "template.waveEvent" -> bundle().templateWaveEvent()
+        "template.waveTitle" -> bundle().templateWaveTitle()
+        "template.windowTitle" -> bundle().templateWindowTitle()
+        "temporary_status" -> bundle().temporaryStatus()
+        "terrain_blueprint" -> bundle().terrainBlueprint()
+        "the_blueprint_code_is_too_long_please_click_the_link_to_view_it" -> bundle().theBlueprintCodeIsTooLongPleaseClickTheLinkToViewIt()
+        "the_map_has_arg_world_processors_arg_instruction_lines_and_arg_characters" -> bundle().theMapHasArgWorldProcessorsArgInstructionLinesAndArgCharacters()
+        "there_are_no_enemies_in_this_wave" -> bundle().thereAreNoEnemiesInThisWave()
+        "there_are_too_many_buildings_to_avoid_lag_and_only_keep_the_first_1000_plans" -> bundle().thereAreTooManyBuildingsToAvoidLagAndOnlyKeepTheFirst1000Plans()
+        "this_is_a_cheat_feature_njump_to_the" -> bundle().thisIsACheatFeatureNjumpToThe()
+        "this_is_a_message_from_mdtx" -> bundle().thisIsAMessageFromMdtx()
+        "tiles" -> bundle().tiles()
+        "tip_all_schematics_containing_processors" -> bundle().tipAllSchematicsContainingProcessors()
+        "toggle" -> bundle().toggle()
+        "toggle_your_team_s_cheat" -> bundle().toggleYourTeamSCheat()
+        "total_arg_arg_arg_arg_tile_radius" -> bundle().totalArgArgArgArgTileRadius()
+        "ui_icon_library" -> bundle().uiIconLibrary()
+        "ui_toolkit" -> bundle().uiToolkit()
+        "unique" -> bundle().unique()
+        "unit" -> bundle().unit()
+        "unit_factory" -> bundle().unitFactory()
+        "unit_factory_x" -> bundle().unitFactoryX()
+        "unit_rendering" -> bundle().unitRendering()
+        "unlimited" -> bundle().unlimited()
+        "unlock" -> bundle().unlock()
+        "unlock_and_allow_all_blocks" -> bundle().unlockAndAllowAllBlocks()
+        "updated_edited_logic" -> bundle().updatedEditedLogic()
+        "upload_failed_try_again" -> bundle().uploadFailedTryAgain()
+        "vanilla" -> bundle().vanilla()
+        "view_recording_info" -> bundle().viewRecordingInfo()
+        "wall_shadow_rendering" -> bundle().wallShadowRendering()
+        "warning_image_may_be_too_large_please_try_compressing_image" -> bundle().warningImageMayBeTooLargePleaseTryCompressingImage()
+        "wave" -> bundle().wave()
+        "wave_in_prefix" -> bundle().waveInPrefix()
+        "wave_info" -> bundle().waveInfo()
+        "wave_settings" -> bundle().waveSettings()
+        "waves" -> bundle().waves()
+        "waves_suffix" -> bundle().wavesSuffix()
+        "x_scan_speed" -> bundle().xScanSpeed()
+        "you_are_already_on_the_latest_version" -> bundle().youAreAlreadyOnTheLatestVersion()
+        "you_were_poked_please_pay_attention_to_the_information_box" -> bundle().youWerePokedPleasePayAttentionToTheInformationBox()
+        "zoom" -> bundle().zoom()
+        "zoom_x" -> bundle().zoomX()
+        "zoom_zoom" -> bundle().zoomZoom()
+    else -> key
+}
 
 fun uiTemplate(key: String, vararg args: Any?): String {
     var text = ui("template.$key")
