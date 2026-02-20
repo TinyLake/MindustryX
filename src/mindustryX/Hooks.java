@@ -22,6 +22,7 @@ public class Hooks implements ApplicationListener{
         SettingsV2.INSTANCE.init();
         DebugUtil.init();//this is safe, and better at beforeInit,
         BindingExt.init();
+        GithubAcceleration.INSTANCE.loadProxies(); // 初始化GitHub加速
         Events.on(ClientLoadEvent.class, (e) -> MetricCollector.INSTANCE.onLaunch());
         //deprecated Java 8
         if(!OS.isAndroid && Strings.parseInt(OS.javaVersion.split("\\.")[0]) < 17){
@@ -29,11 +30,6 @@ public class Hooks implements ApplicationListener{
             Events.on(ClientLoadEvent.class, (e) -> {
                 ui.showInfo("Java版本过低，不受支持(" + OS.javaVersion + ")。请使用Java 17或更高版本运行MindustryX。\n[grey]该警告不存在设置，请更新Java版本。");
             });
-        }
-        try{
-            Http.onBeforeRequest = Hooks::onHttp;
-        }catch(NoSuchFieldError e){
-            Log.warn("Failed to set Http.onBeforeRequest " + e.toString());
         }
     }
 
@@ -57,21 +53,6 @@ public class Hooks implements ApplicationListener{
         }
     }
 
-    @SuppressWarnings("unused")//call before arc.util.Http$HttpRequest.block
-    public static void onHttp(Http.HttpRequest req){
-        if(VarsX.githubMirror.get()){
-            try{
-                String url = req.url;
-                String host = new URL(url).getHost();
-                if(host.contains("github.com") || host.contains("raw.githubusercontent.com")){
-                    url = "https://gh.tinylake.top/" + url;
-                    req.url = url;
-                }
-            }catch(Exception e){
-                //ignore
-            }
-        }
-    }
 
     public static @Nullable String onHandleSendMessage(String message, @Nullable Player sender){
         if(message == null) return null;
