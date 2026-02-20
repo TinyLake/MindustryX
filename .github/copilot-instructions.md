@@ -34,6 +34,13 @@ gradle --parallel desktop:dist server:dist core:genLoaderModAll android:assemble
 - Loader Mod（dex）：`work/core/build/distributions/MindustryX.loader.dex.jar`
 - Android APK：`work/android/build/outputs/apk/release/android-release.apk`
 
+**日常测试构建（无需完整发布产物）：**
+```bash
+cd work
+gradle desktop:build          # 一般功能测试
+gradle android:build          # 涉及安卓相关代码时使用
+```
+
 **指定版本号编译：**
 ```bash
 cd work
