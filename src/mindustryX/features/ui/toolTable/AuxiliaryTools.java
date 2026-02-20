@@ -14,6 +14,7 @@ import mindustry.graphics.*;
 import mindustry.type.*;
 import mindustry.ui.*;
 import mindustry.ui.dialogs.*;
+import mindustryX.VarsX;
 import mindustryX.features.*;
 import mindustryX.features.ui.toolTable.ai.*;
 
@@ -86,7 +87,7 @@ public class AuxiliaryTools extends Table{
 
             Core.settings.put(settingName, !setting);
             String state = setting ? mindustryX.bundles.UiTextBundle.i("关闭") : mindustryX.bundles.UiTextBundle.i("开启"); // 原文本:关闭 | 开启
-            UIExt.announce(mindustryX.bundles.UiTextBundle.uiToggleState(description, state));
+            UIExt.announce(VarsX.getUiTextBundle().toggleState(description, state));
         }).tooltip(description, true).checked(b -> Core.settings.getBool(settingName));
     }
 

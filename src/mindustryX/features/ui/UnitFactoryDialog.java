@@ -28,6 +28,7 @@ import mindustry.ui.dialogs.*;
 import mindustry.world.*;
 import mindustry.world.blocks.payloads.*;
 import mindustry.world.meta.*;
+import mindustryX.VarsX;
 import mindustryX.features.*;
 import mindustryX.features.func.*;
 import mindustryX.features.ui.comp.*;
@@ -323,7 +324,7 @@ public class UnitFactoryDialog extends BaseDialog{
                     buttons.button(Icon.copySmall, Styles.clearNonei, 16, () -> {
                         Core.app.setClipboardText("" + label.getText());
 
-                        ui.announce(mindustryX.bundles.UiTextBundle.bundle().copiedSuccessfully(String.valueOf(label.getText())), 3); // 原文本:复制成功:
+                        ui.announce(VarsX.getUiTextBundle().copiedSuccessfully(String.valueOf(label.getText())), 3); // 原文本:复制成功:
                     }).size(28);
 
                     buttons.button("i", () -> ui.content.show(unit.type)).size(28).padLeft(4);

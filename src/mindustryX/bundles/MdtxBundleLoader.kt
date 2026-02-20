@@ -28,7 +28,7 @@ object MdtxBundleLoader {
             // - zh* locale:      ZH -> origin
             // - otherwise:       EN -> ZH -> origin
             val zh = loadBundle("bundles/bundle-mdtx", locale)
-            if (Lang.isChinese(locale)) {
+            if (isChinese(locale)) {
                 attachParentChain(zh, origin)
                 Core.bundle = zh
                 Log.info("MDTX: bundle has been loaded: zh (${locale.language}).")
@@ -61,5 +61,10 @@ object MdtxBundleLoader {
             root = root.parent
         }
         Reflect.set(root, "parent", parent)
+    }
+
+    private fun isChinese(locale: Locale?): Boolean {
+        val lang = locale?.language ?: return false
+        return lang.equals(Locale.CHINESE.language, ignoreCase = true)
     }
 }

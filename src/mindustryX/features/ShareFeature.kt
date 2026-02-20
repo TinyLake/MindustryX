@@ -42,7 +42,7 @@ object ShareFeature {
 
     @JvmStatic
     fun at(playerName: String?) {
-        send('@', mindustryX.bundles.UiTextBundle.uiAtPlayer(playerName))
+        send('@', VarsX.uiTextBundle.atPlayer(playerName))
     }
 
     @JvmStatic
@@ -50,7 +50,7 @@ object ShareFeature {
         uploadPasteBin(Vars.schematics.writeBase64(s)) { url ->
             if (url == null) return@uploadPasteBin
             val code = url.substring(url.lastIndexOf('/') + 1)
-            send(Iconc.paste, mindustryX.bundles.UiTextBundle.uiShareCode(code))
+            send(Iconc.paste, VarsX.uiTextBundle.shareCode(code))
         }
     }
 
@@ -72,7 +72,7 @@ object ShareFeature {
     fun shareSchematicClipboard(schem: Schematic) {
         uploadPasteBin(Vars.schematics.writeBase64(schem)) { link: String? ->
             val msg = buildString {
-                append(mindustryX.bundles.UiTextBundle.uiShareHeader(VarsX.version))
+                append(VarsX.uiTextBundle.shareHeader(VarsX.version))
                 append(mindustryX.bundles.UiTextBundle.i("蓝图名：")).append(schem.name()).append("\n") // 原文本:蓝图名：
                 append(mindustryX.bundles.UiTextBundle.i("分享者：")).append(Vars.player.name).append("\n") // 原文本:分享者：
                 append(mindustryX.bundles.UiTextBundle.i("蓝图造价：")) // 原文本:蓝图造价：
@@ -119,7 +119,7 @@ object ShareFeature {
     //因为ArcMessageDialog共用了，所以单独提取出来
     fun waveInfo(wave: Int) = buildString {
         val spawner = Vars.spawner
-        append(mindustryX.bundles.UiTextBundle.uiWaveContains(spawner.countGroundSpawns(), spawner.countFlyerSpawns()))
+        append(VarsX.uiTextBundle.waveContains(spawner.countGroundSpawns(), spawner.countFlyerSpawns()))
 
         for (group in Vars.state.rules.spawns) {
             val count = group.getSpawned(wave - 1)
@@ -140,11 +140,11 @@ object ShareFeature {
         if (!Vars.state.rules.waves) return
 
         val msg = buildString {
-            append(mindustryX.bundles.UiTextBundle.uiWaveTitle(wave))
+            append(VarsX.uiTextBundle.waveTitle(wave))
 
             if (wave >= Vars.state.wave) {
                 val timer = (Vars.state.wavetime + (wave - Vars.state.wave) * Vars.state.rules.waveSpacing).toInt()
-                append(mindustryX.bundles.UiTextBundle.uiWaveEta(wave - Vars.state.wave, duration(timer.toFloat() / 60)))
+                append(VarsX.uiTextBundle.waveEta(wave - Vars.state.wave, duration(timer.toFloat() / 60)))
             }
 
             append("：").append(waveInfo(wave))
@@ -187,7 +187,7 @@ object ShareFeature {
         val (amount, delta) = UIExt.coreItems.itemInfo(item)
         send(
             item.emoji().firstOrNull() ?: Iconc.itemCopper,
-            UiTextBundle.bundle().mdtxShareItem(
+            VarsX.uiTextBundle.mdtxShareItem(
                 item.localizedName,
                 (if (amount > 100) format(amount.toLong()) else "[red]$amount[]"),
                 (if (delta > 0) "[accent]+" else "[red]") + format(delta.toLong()) + "[]"
@@ -216,7 +216,7 @@ object ShareFeature {
         val color = (if (count == limit) "orange" else if (count < 10) "red" else "accent")
         send(
             unit.emoji().firstOrNull() ?: Iconc.units,
-            UiTextBundle.bundle().mdtxShareUnit(unit.localizedName, "[$color]$count[]", limit)
+            VarsX.uiTextBundle.mdtxShareUnit(unit.localizedName, "[$color]$count[]", limit)
         )
     }
 
@@ -248,7 +248,7 @@ object ShareFeature {
         //Remove prefix
         message = message.substringAfter("<AT>").substringAfter(tag('@'))
         if (message.contains(Vars.player.name)) {
-            if (sender != null) Vars.ui.announce(mindustryX.bundles.UiTextBundle.uiAtNoticeFrom(sender.name), 10f)
+            if (sender != null) Vars.ui.announce(VarsX.uiTextBundle.atNoticeFrom(sender.name), 10f)
             else Vars.ui.announce(mindustryX.bundles.UiTextBundle.i("[orange]你被戳了一下，请注意查看信息框哦~"), 10f) // 原文本:[orange]你被戳了一下，请注意查看信息框哦~
         }
 

@@ -13,6 +13,7 @@ import mindustry.graphics.*;
 import mindustry.ui.*;
 import mindustry.world.*;
 import mindustry.world.blocks.storage.*;
+import mindustryX.VarsX;
 import mindustryX.features.SettingsV2.*;
 import mindustryX.features.func.*;
 
@@ -47,9 +48,9 @@ public class ArcRadar{
     private static Table t;
 
     private static final SettingsV2.Data<Integer>
-    mode = new SliderPref("arcExtra.radarMode", 1, 1, 30, 1, s -> mindustryX.bundles.UiTextBundle.bundle().radarSpeedMode(s)),
+    mode = new SliderPref("arcExtra.radarMode", 1, 1, 30, 1, s -> VarsX.getUiTextBundle().radarSpeedMode(s)),
     size = new SliderPref("arcExtra.radarSize", 0, 0, 50, 1, s -> {
-        return mindustryX.bundles.UiTextBundle.bundle().radarSizeMode(s);
+        return VarsX.getUiTextBundle().radarSizeMode(s);
     });
     public static List<SettingsV2.Data<?>> settings = CollectionsKt.listOf(mode, size);
 

@@ -17,8 +17,9 @@ import mindustry.ui.*;
 import mindustry.ui.dialogs.*;
 import mindustry.world.blocks.logic.*;
 import mindustry.world.blocks.logic.CanvasBlock.*;
+import mindustryX.VarsX;
 
-import static mindustryX.bundles.UiTextBundle.*;
+import static mindustryX.bundles.UiTextBundle.i;
 import static mindustry.Vars.*;
 
 //move from mindustry.arcModule.toolpack.picToMindustry
@@ -26,7 +27,7 @@ public class PicToMindustry{
     static final int[] palette;
     static final int canvasSize;
     static final float[] scaleList = {0.02f, 0.05f, 0.1f, 0.15f, 0.2f, 0.25f, 0.3f, 0.4f, 0.5f, 0.65f, 0.8f, 1f, 1.25f, 1.5f, 2f, 3f, 5f};
-    static final String[] disFunList = {uiBasic(), uiSquared(), "LAB"}; // 原文本:基础对比 | 平方对比
+    static final String[] disFunList = {i("基础对比"), i("平方对比"), "LAB"}; // 原文本:基础对比 | 平方对比
 
     static{
         CanvasBlock canva = (CanvasBlock)Blocks.canvas;
@@ -42,10 +43,10 @@ public class PicToMindustry{
 
 
     public static void show(){
-        Dialog pt = new BaseDialog(uiArcImageConverter()); // 原文本:arc-图片转换器
+        Dialog pt = new BaseDialog(i("arc-图片转换器")); // 原文本:arc-图片转换器
         pt.cont.table(t -> {
-            t.add(uiSelectAndImportPictures()).padBottom(20f).row(); // 原文本:选择并导入图片，可将其转成画板、像素画或是逻辑画
-            t.button(uiSelectImagePng(), () -> Vars.platform.showFileChooser(true, "png", file -> { // 原文本:选择图片[white](png)
+            t.add(i("选择并导入图片，可将其转成画板、像素画或是逻辑画")).padBottom(20f).row(); // 原文本:选择并导入图片，可将其转成画板、像素画或是逻辑画
+            t.button(i("选择图片[white](png)"), () -> Vars.platform.showFileChooser(true, "png", file -> { // 原文本:选择图片[white](png)
                 if(oriImage != null){
                     oriImage.dispose();
                     oriImage = null;
@@ -55,16 +56,16 @@ public class PicToMindustry{
                     byte[] bytes = file.readBytes();
                     oriImage = new Pixmap(bytes);
                     if(oriImage.width > 500 || oriImage.height > 500)
-                        UIExt.announce(uiWarnImageTooLarge(), (float)5); // 原文本:[orange]警告：图片可能过大，请尝试压缩图片
+                        UIExt.announce(i("[orange]警告：图片可能过大，请尝试压缩图片"), (float)5); // 原文本:[orange]警告：图片可能过大，请尝试压缩图片
                 }catch(Throwable e){
-                    UIExt.announce(uiFailedReadImage(e)); // 原文本:读取图片失败，请尝试更换图片\n{0}
+                    UIExt.announce(VarsX.getUiTextBundle().failedReadImage(e)); // 原文本:读取图片失败，请尝试更换图片\n{0}
                 }
                 rebuilt();
             })).size(240, 50).padBottom(20f).row();
-            t.check(uiAutomaticallySaveAsBlueprint(), Core.settings.getBool("autoSavePTM"), ta -> Core.settings.put("autoSavePTM", ta)); // 原文本:自动保存为蓝图
+            t.check(i("自动保存为蓝图"), Core.settings.getBool("autoSavePTM"), ta -> Core.settings.put("autoSavePTM", ta)); // 原文本:自动保存为蓝图
         }).padBottom(20f).row();
         pt.cont.table(t -> {
-            t.add(uiZoomZoom()); // 原文本:缩放: 
+            t.add(i("缩放: ")); // 原文本:缩放: 
             Label zoom = t.add(String.valueOf(scale)).padRight(20f).get();
             t.slider(0, scaleList.length - 1, 1, 11, s -> {
                 scale = scaleList[(int)s];
@@ -73,7 +74,7 @@ public class PicToMindustry{
             }).width(200f);
         }).padBottom(20f).visible(() -> oriImage != null).row();
         pt.cont.table(t -> {
-            t.add(uiHueMode()); // 原文本:色调函数:
+            t.add(i("色调函数:")); // 原文本:色调函数:
             Label zoom = t.add(disFunList[0]).padRight(20f).get();
             t.slider(0, disFunList.length - 1, 1, 0, s -> {
                 colorDisFun = (int)s;
@@ -82,7 +83,7 @@ public class PicToMindustry{
         }).padBottom(20f).visible(() -> oriImage != null).row();
         pt.cont.add(tTable);
         pt.cont.row();
-        pt.cont.button(uiLabelWithEmoji(uiLogicArtWebsite(), Blocks.logicDisplay.emoji()), () -> UIExt.openURI("https://buibiu.github.io/imageToMLogicPage/#/")).width(200f); // 原文本:逻辑画网站 {0}
+        pt.cont.button(VarsX.getUiTextBundle().labelWithEmoji(i("逻辑画网站"), Blocks.logicDisplay.emoji()), () -> UIExt.openURI("https://buibiu.github.io/imageToMLogicPage/#/")).width(200f); // 原文本:逻辑画网站 {0}
         pt.addCloseButton();
         pt.show();
     }
@@ -99,52 +100,52 @@ public class PicToMindustry{
         if(oriImage == null) return;
         int scaledW = (int)(oriImage.getWidth() * scale), scaledH = (int)(oriImage.getHeight() * scale);
         tTable.table(t -> {
-            t.add(uiPath()).color(Pal.accent).padRight(25f).padBottom(10f); // 原文本:路径
+            t.add(i("路径")).color(Pal.accent).padRight(25f).padBottom(10f); // 原文本:路径
             t.button("\uE874", () -> Core.app.setClipboardText(originFile.absolutePath()));
             t.add(originFile.absolutePath()).padBottom(10f).row();
 
-            t.add(uiName()).color(Pal.accent).padRight(25f).padBottom(10f); // 原文本:名称
+            t.add(i("名称")).color(Pal.accent).padRight(25f).padBottom(10f); // 原文本:名称
             t.button("\uE874", () -> Core.app.setClipboardText(originFile.name()));
             t.add(originFile.name()).padBottom(10f).row();
 
-            t.add(uiOriginalSize()).color(Pal.accent).padRight(25f); // 原文本:原始大小
+            t.add(i("原始大小")).color(Pal.accent).padRight(25f); // 原文本:原始大小
             t.add(formatNumber(oriImage.width) + "\uE815" + formatNumber(oriImage.height)).row();
 
-            t.add(uiScaledSize()).color(Pal.accent).padRight(25f); // 原文本:缩放后大小
+            t.add(i("缩放后大小")).color(Pal.accent).padRight(25f); // 原文本:缩放后大小
             t.add(formatNumber(scaledW) + "\uE815" + formatNumber(scaledH));
         }).padBottom(20f).row();
         tTable.table(t -> {
             t.table(tt -> {
                 int w = Mathf.ceil(scaledW * 1f / canvasSize), h = Mathf.ceil(scaledH * 1f / canvasSize);
-                tt.button(uiLabelWithEmoji(uiCanvas(), Blocks.canvas.emoji()), Styles.cleart, () -> { // 原文本:画板 {0}
+                tt.button(VarsX.getUiTextBundle().labelWithEmoji(i("画板"), Blocks.canvas.emoji()), Styles.cleart, () -> { // 原文本:画板 {0}
                     Pixmap image = Pixmaps.scale(oriImage, w * canvasSize, h * canvasSize, false);
                     image.replace((pixel) -> ArraysKt.minByOrThrow(palette, (it) -> diff_rbg(it, pixel)));
                     Schematic schem = canvasGenerator(image, w, h);
                     image.dispose();
                     saveSchem(schem, Blocks.canvas.emoji());
                 }).size(100, 50);
-                tt.add(mindustryX.bundles.UiTextBundle.bundle().sizeWithDimensions(String.valueOf(w), String.valueOf(h))); // 原文本:大小：
+                tt.add(VarsX.getUiTextBundle().sizeWithDimensions(String.valueOf(w), String.valueOf(h))); // 原文本:大小：
             });
             t.row();
             t.table(tt -> {
                 int w = Mathf.ceil(scaledW * 1f / canvasSize), h = Mathf.ceil(scaledH * 1f / canvasSize);
-                tt.button(uiLabelWithEmoji(uiArtboard(), Blocks.canvas.emoji()), Styles.cleart, () -> { // 原文本:画板++ {0}
+                tt.button(VarsX.getUiTextBundle().labelWithEmoji(i("画板++"), Blocks.canvas.emoji()), Styles.cleart, () -> { // 原文本:画板++ {0}
                     Pixmap image = Pixmaps.scale(oriImage, w * canvasSize, h * canvasSize, false);
                     mapPalettePlus(image);
                     Schematic schem = canvasGenerator(image, w, h);
                     image.dispose();
                     saveSchem(schem, Blocks.canvas.emoji());
                 }).size(100, 50);
-                tt.add(mindustryX.bundles.UiTextBundle.bundle().sizeWithDimensions(String.valueOf(w), String.valueOf(h))); // 原文本:大小：
+                tt.add(VarsX.getUiTextBundle().sizeWithDimensions(String.valueOf(w), String.valueOf(h))); // 原文本:大小：
             }).row();
             t.table(tt -> {
-                tt.button(uiLabelWithEmoji(uiPixelArt(), Blocks.sorter.emoji()), Styles.cleart, () -> { // 原文本:像素画 {0}
+                tt.button(VarsX.getUiTextBundle().labelWithEmoji(i("像素画"), Blocks.sorter.emoji()), Styles.cleart, () -> { // 原文本:像素画 {0}
                     Pixmap image = Pixmaps.scale(oriImage, scale);
                     Schematic schem = sorterGenerator(image);
                     image.dispose();
                     saveSchem(schem, Blocks.sorter.emoji());
                 }).size(100, 50);
-                tt.add(mindustryX.bundles.UiTextBundle.bundle().sizeWithDimensions(formatNumber(scaledW), formatNumber(scaledH))); // 原文本:大小：
+                tt.add(VarsX.getUiTextBundle().sizeWithDimensions(formatNumber(scaledW), formatNumber(scaledH))); // 原文本:大小：
             }).row();
         });
     }
@@ -196,7 +197,7 @@ public class PicToMindustry{
         schem.labels.add(l);
         if(Core.settings.getBool("autoSavePTM")){
             Vars.schematics.add(schem);
-            String text = uiSavedBlueprint(originFile.name()); // 原文本:已保存蓝图：{0}
+            String text = VarsX.getUiTextBundle().savedBlueprint(originFile.name()); // 原文本:已保存蓝图：{0}
             UIExt.announce(text, (float)10);
         }
         if(state.isGame()){

@@ -2,11 +2,10 @@ package mindustryX.bundles
 
 import arc.Core
 import arc.util.Strings
-import mindustryX.VarsX
 import java.util.Locale
 
 interface UiTextBundle {
-    fun i(key: String): String = key
+    fun simple(key: String): String = key
 
     fun mdtxReport(): String = "问题反馈"
     fun mdtxQqLink(): String = "QQ交流群"
@@ -148,7 +147,7 @@ interface UiTextBundle {
          * Keep this for no-arg static labels only; any text with variables/order/formatting must use typed bundle methods.
          */
         @JvmStatic
-        fun i(zh: String): String = default().i(zh)
+        fun i(zh: String): String = default().simple(zh)
 
         private val bundlesByLanguage: Map<String, UiTextBundle> = mapOf(
             Locale.CHINESE.language to ZH,
@@ -160,135 +159,5 @@ interface UiTextBundle {
             val language = (Core.bundle?.locale?.language ?: Locale.getDefault().language).lowercase(Locale.ROOT)
             return bundlesByLanguage[language] ?: EN
         }
-  
-        @JvmStatic
-        fun bundle(): UiTextBundle = VarsX.uiTextBundle
-
-            fun mdtxReport(): String = bundle().mdtxReport()
-            fun mdtxQqLink(): String = bundle().mdtxQqLink()
-            fun modsRecommendTitle(): String = bundle().modsRecommendTitle()
-            fun modsRecommendInfo(): String = bundle().modsRecommendInfo()
-            fun modsRecommendLastUpdated(value: String): String = bundle().modsRecommendLastUpdated(value)
-            fun modsRecommendModName(value: String): String = bundle().modsRecommendModName(value)
-            fun modsRecommendModAuthor(value: String): String = bundle().modsRecommendModAuthor(value)
-            fun modsRecommendModMinGameVersion(value: String): String = bundle().modsRecommendModMinGameVersion(value)
-            fun modsRecommendModLastUpdated(value: String): String = bundle().modsRecommendModLastUpdated(value)
-            fun modsRecommendModStars(value: String): String = bundle().modsRecommendModStars(value)
-            fun mdtxShareItem(name: String, stock: String, production: String): String = bundle().mdtxShareItem(name, stock, production)
-            fun mdtxShareUnit(name: String, count: String, limit: Int): String = bundle().mdtxShareUnit(name, count, limit)
-
-            @JvmStatic fun uiJavaWarnLog(javaVersion: String): String = bundle().javaWarnLog(javaVersion)
-            @JvmStatic fun uiJavaWarnDialog(javaVersion: String): String = bundle().javaWarnDialog(javaVersion)
-            @JvmStatic fun uiWindowTitle(version: String, enabledMods: Int, totalMods: Int, width: Int, height: Int): String =
-                bundle().windowTitle(version, enabledMods, totalMods, width, height)
-
-            @JvmStatic fun uiArcMessageCenter(): String = i("ARC-中央监控室")
-            @JvmStatic fun uiMaxChatHistoryHint(): String = i("最大储存聊天记录(过高可能导致卡顿)：")
-            @JvmStatic fun uiChatHistoryCleanupHint(): String = i("超出限制的聊天记录将在载入地图时清除")
-            @JvmStatic fun uiClear(): String = i("清空")
-            @JvmStatic fun uiExport(): String = i("导出")
-            @JvmStatic fun uiExportChatHistory(): String = i("导出聊天记录")
-            @JvmStatic fun uiLoadMap(mapName: String): String = bundle().loadMap(mapName)
-            @JvmStatic fun uiIntroduction(description: String): String = bundle().introduction(description)
-            @JvmStatic fun uiWaveEvent(wave: Int, detail: String): String = bundle().waveEvent(wave, detail)
-            @JvmStatic fun uiCopiedChatRecord(): String = i("已导出本条聊天记录")
-            @JvmStatic fun uiExportHeader(version: String): String = bundle().exportHeader(version)
-            @JvmStatic fun uiExportMap(mapName: String, mode: String): String = bundle().exportMap(mapName, mode)
-            @JvmStatic fun uiCurrentWave(wave: Int): String = bundle().currentWave(wave)
-            @JvmStatic fun uiExportCount(count: Int): String = bundle().exportCount(count)
-            @JvmStatic fun uiChatType(): String = i("聊天")
-            @JvmStatic fun uiServerMsgType(): String = i("服务器信息")
-            @JvmStatic fun uiMarkCoordinatesType(): String = i("标记~坐标")
-            @JvmStatic fun uiMarkPlayerType(): String = i("标记~玩家")
-            @JvmStatic fun uiCommandType(): String = i("指令")
-            @JvmStatic fun uiLogicNoticeType(): String = i("逻辑~通报")
-            @JvmStatic fun uiLogicAnnouncementType(): String = i("逻辑~公告")
-            @JvmStatic fun uiEventMapLoadType(): String = i("事件~载入地图")
-            @JvmStatic fun uiEventWaveType(): String = i("事件~波次")
-
-            @JvmStatic fun uiLogicHelperX(): String = i("逻辑辅助器[gold]X[]")
-            @JvmStatic fun uiHideLogicHelper(): String = i("隐藏逻辑辅助器")
-            @JvmStatic fun uiUpdatedEditedLogic(): String = i("[orange]已更新编辑的逻辑！")
-            @JvmStatic fun uiRefreshEditedLogic(): String = i("更新编辑的逻辑")
-            @JvmStatic fun uiOn(): String = i("开启")
-            @JvmStatic fun uiOff(): String = i("关闭")
-            @JvmStatic fun uiToggleState(label: String, state: String): String = bundle().toggleState(label, state)
-            @JvmStatic fun uiFlashOnChange(): String = i("变动闪烁")
-            @JvmStatic fun uiFlashOnVariableChange(): String = i("变量变动闪烁")
-            @JvmStatic fun uiAutoRefreshVariables(): String = i("变量自动更新")
-            @JvmStatic fun uiAutoRefreshVariablesHint(): String = i("自动刷新变量")
-            @JvmStatic fun uiPaused(): String = i("已暂停")
-            @JvmStatic fun uiGameResumed(): String = i("已继续游戏")
-            @JvmStatic fun uiPauseLogicGameExecution(): String = i("暂停逻辑(游戏)运行")
-            @JvmStatic fun uiRefreshInterval(): String = i("刷新间隔")
-            @JvmStatic fun uiCopiedVariableNameHint(value: String): String = bundle().copiedVariableNameHint(value)
-            @JvmStatic fun uiCopiedVariableAttributesHint(value: String): String = bundle().copiedVariableAttributesHint(value)
-            @JvmStatic fun uiCopiedPrintBufferHint(value: String): String = bundle().copiedPrintBufferHint(value)
-            @JvmStatic fun uiCopiedMemory(value: Double): String = bundle().copiedMemory(value)
-            @JvmStatic fun uiNoPermissionToEditViewOnly(): String = i("[yellow]当前无权编辑，仅供查阅")
-            @JvmStatic fun uiResetAllLinks(): String = i("重置所有链接")
-            @JvmStatic fun uiExtractCodeFromSchematic(): String = i("从蓝图中选择代码")
-            @JvmStatic fun uiSelectCode(): String = i("选择代码")
-            @JvmStatic fun uiTipAllSchematicsContainingProcessors(): String = i("TIP: 所有包含处理器的蓝图")
-
-            @JvmStatic fun uiBasic(): String = i("基础对比")
-            @JvmStatic fun uiSquared(): String = i("平方对比")
-            @JvmStatic fun uiArcImageConverter(): String = i("arc-图片转换器")
-            @JvmStatic fun uiSelectAndImportPictures(): String = i("选择并导入图片，可将其转成画板、像素画或是逻辑画")
-            @JvmStatic fun uiSelectImagePng(): String = i("选择图片[white](png)")
-            @JvmStatic fun uiWarnImageTooLarge(): String = i("[orange]警告：图片可能过大，请尝试压缩图片")
-            @JvmStatic fun uiFailedReadImage(error: Throwable): String = bundle().failedReadImage(error)
-            @JvmStatic fun uiAutomaticallySaveAsBlueprint(): String = i("自动保存为蓝图")
-            @JvmStatic fun uiZoomZoom(): String = i("缩放: ")
-            @JvmStatic fun uiHueMode(): String = i("色调函数:")
-            @JvmStatic fun uiLabelWithEmoji(label: String, emoji: String): String = bundle().labelWithEmoji(label, emoji)
-            @JvmStatic fun uiLogicArtWebsite(): String = i("逻辑画网站")
-            @JvmStatic fun uiPath(): String = i("路径")
-            @JvmStatic fun uiName(): String = i("名称")
-            @JvmStatic fun uiOriginalSize(): String = i("原始大小")
-            @JvmStatic fun uiScaledSize(): String = i("缩放后大小")
-            @JvmStatic fun uiCanvas(): String = i("画板")
-            @JvmStatic fun uiArtboard(): String = i("画板++")
-            @JvmStatic fun uiPixelArt(): String = i("像素画")
-            @JvmStatic fun uiSize(): String = i("大小：")
-            @JvmStatic fun uiSavedBlueprint(name: String): String = bundle().savedBlueprint(name)
-
-            @JvmStatic fun uiItemSelectionHeight(value: Int): String = bundle().itemSelectionHeight(value)
-            @JvmStatic fun uiItemSelectionWidth(value: Int): String = bundle().itemSelectionWidth(value)
-            @JvmStatic fun uiCurrentVersion(version: String): String = bundle().currentVersion(version)
-            @JvmStatic fun uiNewVersion(version: String): String = bundle().newVersion(version)
-            @JvmStatic fun uiInvalidBackgroundImage(path: String): String = bundle().invalidBackgroundImage(path)
-            @JvmStatic fun uiCurrentGameSpeed(speed: Float): String = bundle().currentGameSpeed(speed)
-            @JvmStatic fun uiFpsLockEnabled(targetFps: Int): String = bundle().fpsLockEnabled(targetFps)
-            @JvmStatic fun uiFpsLockCurrent(targetFps: Int): String = bundle().fpsLockCurrent(targetFps)
-            @JvmStatic fun uiFpsLockOff(gameSpeed: Float): String = bundle().fpsLockOff(gameSpeed)
-            @JvmStatic fun uiCurrentMap(mapName: String): String = bundle().currentMap(mapName)
-            @JvmStatic fun uiWorldProcessorSummary(processors: Int, instructions: Int, chars: Int): String =
-                bundle().worldProcessorSummary(processors, instructions, chars)
-
-            @JvmStatic fun uiRecording(path: String): String = bundle().recording(path)
-            @JvmStatic fun uiCoordinateDistance(x: Int, y: Int, distance: Int): String = bundle().coordinateDistance(x, y, distance)
-
-            @JvmStatic fun uiAtPlayer(playerName: String?): String = bundle().atPlayer(playerName)
-            @JvmStatic fun uiAtNoticeFrom(senderName: String): String = bundle().atNoticeFrom(senderName)
-            @JvmStatic fun uiShareCode(code: String): String = bundle().shareCode(code)
-            @JvmStatic fun uiShareHeader(version: String): String = bundle().shareHeader(version)
-            @JvmStatic fun uiWaveContains(ground: Int, air: Int): String = bundle().waveContains(ground, air)
-            @JvmStatic fun uiWaveTitle(wave: Int): String = bundle().waveTitle(wave)
-            @JvmStatic fun uiWaveEta(remainingWaves: Int, eta: String): String = bundle().waveEta(remainingWaves, eta)
-
-            @JvmStatic fun uiAbilityShieldCapacity(max: String, radius: String, recovery: String, cooldown: String): String =
-                bundle().shieldCapacity(max, radius, recovery, cooldown)
-
-            @JvmStatic fun uiAbilityLiquidExplode(total: String, liquidName: String, liquidEmoji: String, radius: String): String =
-                bundle().liquidExplode(total, liquidName, liquidEmoji, radius)
-
-            @JvmStatic fun uiAbilityLiquidRegen(absorb: String, liquidName: String, liquidEmoji: String, heal: String, maxHeal: String): String =
-                bundle().liquidRegen(absorb, liquidName, liquidEmoji, heal, maxHeal)
-
-            @JvmStatic fun uiAbilityLightning(probability: String, damage: String, length: String, speed: String): String =
-                bundle().lightning(probability, damage, length, speed)
-
-            @JvmStatic fun uiAbilityDurationTiles(seconds: String, tiles: String): String = bundle().durationTiles(seconds, tiles)
     }
 }

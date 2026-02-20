@@ -79,12 +79,12 @@ object VarsX {
     }
 
     @JvmField
-    val itemSelectionHeight = SliderPref("gameUI.itemSelectionHeight", 4, 4, 12) { mindustryX.bundles.UiTextBundle.uiItemSelectionHeight(it) }.apply {
+    val itemSelectionHeight = SliderPref("gameUI.itemSelectionHeight", 4, 4, 12) { uiTextBundle.itemSelectionHeight(it) }.apply {
         addFallbackName("itemSelectionHeight")
     }
 
     @JvmField
-    val itemSelectionWidth = SliderPref("gameUI.itemSelectionWidth", 4, 4, 12) { mindustryX.bundles.UiTextBundle.uiItemSelectionWidth(it) }.apply {
+    val itemSelectionWidth = SliderPref("gameUI.itemSelectionWidth", 4, 4, 12) { uiTextBundle.itemSelectionWidth(it) }.apply {
         addFallbackName("itemSelectionWidth")
     }
 

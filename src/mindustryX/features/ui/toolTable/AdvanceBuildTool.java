@@ -22,6 +22,7 @@ import mindustry.world.blocks.logic.*;
 import mindustry.world.blocks.power.*;
 import mindustry.world.blocks.production.*;
 import mindustry.world.blocks.storage.*;
+import mindustryX.VarsX;
 import mindustryX.features.*;
 import mindustryX.features.func.*;
 
@@ -151,7 +152,7 @@ public class AdvanceBuildTool extends Table{
     }
 
     public static void showWorldProcessorInfo(){
-        Log.info(mindustryX.bundles.UiTextBundle.uiCurrentMap(state.map.name()));
+        Log.info(VarsX.getUiTextBundle().currentMap(state.map.name()));
         int[] data = new int[3];
         Groups.build.each(b -> {
             if(b instanceof LogicBlock.LogicBuild lb && lb.block.privileged){
@@ -160,7 +161,7 @@ public class AdvanceBuildTool extends Table{
                 data[2] += lb.code.length();
             }
         });
-        String text = mindustryX.bundles.UiTextBundle.uiWorldProcessorSummary(data[0], data[1], data[2]);
+        String text = VarsX.getUiTextBundle().worldProcessorSummary(data[0], data[1], data[2]);
         Log.info(text);
         ui.announce(text, 10);
     }

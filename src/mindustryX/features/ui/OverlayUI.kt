@@ -31,6 +31,7 @@ import mindustry.gen.Icon
 import mindustry.gen.Tex
 import mindustry.graphics.Pal
 import mindustry.ui.Styles
+import mindustryX.VarsX
 import mindustryX.features.SettingsV2
 import mindustryX.features.SettingsV2.CheckPref
 import mindustryX.features.SettingsV2.PersistentProvider
@@ -88,7 +89,7 @@ object OverlayUI {
             }.tooltip(mindustryX.bundles.UiTextBundle.i("锁定")).padRight(4f).checked { value.pinned } // 原文本:锁定
             button(Icon.resizeSmall, myToggleI, Vars.iconSmall) {
                 UIExtKt.showFloatSettingsPanel {
-                    label { mindustryX.bundles.UiTextBundle.bundle().zoomScale(Strings.fixed(value.scale, 1)) }.center().row() // 原文本:缩放: x
+                    label { VarsX.uiTextBundle.zoomScale(Strings.fixed(value.scale, 1)) }.center().row() // 原文本:缩放: x
                     slider(0.2f, 3f, 0.1f, value.scale) {
                         set(value.copy(scale = it))
                     }.update { it.value = value.scale }.width(200f)

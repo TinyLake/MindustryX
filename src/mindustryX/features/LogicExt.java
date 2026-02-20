@@ -4,6 +4,7 @@ import arc.*;
 import mindustry.core.*;
 import mindustry.game.EventType.*;
 import mindustry.net.Packets.*;
+import mindustryX.VarsX;
 import mindustryX.features.SettingsV2.*;
 
 public class LogicExt{
@@ -24,7 +25,7 @@ public class LogicExt{
     public static final CheckPref reliableSync = new CheckPref("debug.reliableSync");
     public static final SliderPref limitUpdate = new SliderPref("debug.limitUpdate", 0, 0, 100, 1, (it) -> {
         if(it == 0) return mindustryX.bundles.UiTextBundle.i("关闭"); // 原文本:关闭
-        return mindustryX.bundles.UiTextBundle.bundle().tiles(it); // 原文本:格
+        return VarsX.getUiTextBundle().tiles(it); // 原文本:格
     });
     public static final CheckPref rotateCanvas = new CheckPref("block.rotateCanvas");
 

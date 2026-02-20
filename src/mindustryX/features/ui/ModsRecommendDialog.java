@@ -21,6 +21,7 @@ import mindustry.io.*;
 import mindustry.mod.*;
 import mindustry.ui.*;
 import mindustry.ui.dialogs.*;
+import mindustryX.VarsX;
 import mindustryX.features.ui.comp.*;
 
 import java.text.*;
@@ -100,9 +101,9 @@ public class ModsRecommendDialog extends BaseDialog{
             info.top();
             info.defaults().expandX().center();
 
-            info.add(mindustryX.bundles.UiTextBundle.bundle().modsRecommendTitle()).pad(12f).row();
-            info.add(mindustryX.bundles.UiTextBundle.bundle().modsRecommendLastUpdated(meta.lastUpdated)).pad(6f).row();
-            info.add(mindustryX.bundles.UiTextBundle.bundle().modsRecommendInfo()).pad(6f);
+            info.add(VarsX.getUiTextBundle().modsRecommendTitle()).pad(12f).row();
+            info.add(VarsX.getUiTextBundle().modsRecommendLastUpdated(meta.lastUpdated)).pad(6f).row();
+            info.add(VarsX.getUiTextBundle().modsRecommendInfo()).pad(6f);
 
             for(Element child : info.getChildren()){
                 if(child instanceof Label label){
@@ -182,11 +183,11 @@ public class ModsRecommendDialog extends BaseDialog{
     private Cell<?> addInfo(Table table, String bundle, Object value){
         String textValue = String.valueOf(value);
         String text = switch(bundle){
-            case "name" -> mindustryX.bundles.UiTextBundle.bundle().modsRecommendModName(textValue);
-            case "author" -> mindustryX.bundles.UiTextBundle.bundle().modsRecommendModAuthor(textValue);
-            case "minGameVersion" -> mindustryX.bundles.UiTextBundle.bundle().modsRecommendModMinGameVersion(textValue);
-            case "lastUpdated" -> mindustryX.bundles.UiTextBundle.bundle().modsRecommendModLastUpdated(textValue);
-            case "stars" -> mindustryX.bundles.UiTextBundle.bundle().modsRecommendModStars(textValue);
+            case "name" -> VarsX.getUiTextBundle().modsRecommendModName(textValue);
+            case "author" -> VarsX.getUiTextBundle().modsRecommendModAuthor(textValue);
+            case "minGameVersion" -> VarsX.getUiTextBundle().modsRecommendModMinGameVersion(textValue);
+            case "lastUpdated" -> VarsX.getUiTextBundle().modsRecommendModLastUpdated(textValue);
+            case "stars" -> VarsX.getUiTextBundle().modsRecommendModStars(textValue);
             default -> textValue;
         };
         Cell<?> cell = table.add(text).color(pink);

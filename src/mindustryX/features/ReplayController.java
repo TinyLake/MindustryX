@@ -12,6 +12,7 @@ import mindustry.gen.*;
 import mindustry.net.*;
 import mindustry.net.Packets.*;
 import mindustry.ui.dialogs.*;
+import mindustryX.VarsX;
 import mindustryX.features.SettingsV2.*;
 
 import java.io.*;
@@ -71,7 +72,7 @@ public class ReplayController{
         boolean anonymous = Core.settings.getBool("anonymous", false);
         ReplayData header = new ReplayData(Version.build, new Date(), anonymous ? "anonymous" : ip, anonymous ? "anonymous" : Vars.player.name.trim());
         writer.writeHeader(header);
-        Log.info(mindustryX.bundles.UiTextBundle.uiRecording(file.absolutePath()));
+        Log.info(VarsX.getUiTextBundle().recording(file.absolutePath()));
         ReplayController.writer = writer;
     }
 
@@ -166,19 +167,19 @@ public class ReplayController{
             return;
         }
         var replay = reader.getMeta();
-        dialog.cont.add(mindustryX.bundles.UiTextBundle.bundle().playbackVersion(String.valueOf(replay.getVersion()))).row(); // 原文本:回放版本:
-        dialog.cont.add(mindustryX.bundles.UiTextBundle.bundle().replayCreationTime(String.valueOf(replay.getTime()))).row(); // 原文本:回放创建时间:
-        dialog.cont.add(mindustryX.bundles.UiTextBundle.bundle().serverIp(replay.getServerIp())).row(); // 原文本:服务器ip:
-        dialog.cont.add(mindustryX.bundles.UiTextBundle.bundle().playerName(replay.getRecordPlayer())).row(); // 原文本:玩家名:
+        dialog.cont.add(VarsX.getUiTextBundle().playbackVersion(String.valueOf(replay.getVersion()))).row(); // 原文本:回放版本:
+        dialog.cont.add(VarsX.getUiTextBundle().replayCreationTime(String.valueOf(replay.getTime()))).row(); // 原文本:回放创建时间:
+        dialog.cont.add(VarsX.getUiTextBundle().serverIp(replay.getServerIp())).row(); // 原文本:服务器ip:
+        dialog.cont.add(VarsX.getUiTextBundle().playerName(replay.getRecordPlayer())).row(); // 原文本:玩家名:
 
         if(reader.getSource() != null){
             var tmpReader = new ReplayData.Reader(reader.getSource());
             var packets = tmpReader.allPacket();
             tmpReader.close();
 
-            dialog.cont.add(mindustryX.bundles.UiTextBundle.bundle().packetCount(packets.size())).row(); // 原文本:数据包总数：
+            dialog.cont.add(VarsX.getUiTextBundle().packetCount(packets.size())).row(); // 原文本:数据包总数：
             int secs = (int)(packets.get(packets.size() - 1).getOffset() / 60);
-            dialog.cont.add(mindustryX.bundles.UiTextBundle.bundle().playbackLength((secs / 3600) + ":" + (secs / 60 % 60) + ":" + (secs % 60))).row(); // 原文本:回放长度:
+            dialog.cont.add(VarsX.getUiTextBundle().playbackLength((secs / 3600) + ":" + (secs / 60 % 60) + ":" + (secs % 60))).row(); // 原文本:回放长度:
             dialog.cont.pane(t -> {
                 t.defaults().pad(2);
                 for(var packet : packets){

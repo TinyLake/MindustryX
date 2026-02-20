@@ -32,6 +32,7 @@ import mindustry.world.blocks.storage.CoreBlock
 import mindustry.world.blocks.storage.StorageBlock
 import mindustry.world.blocks.storage.Unloader
 import mindustry.world.blocks.units.UnitCargoUnloadPoint
+import mindustryX.VarsX
 import mindustryX.features.func.drawText
 
 /**
@@ -58,7 +59,7 @@ object NewTransferScanMode {
         Draw.z(Layer.overlayUI + 0.01f)
 
         val pos = Core.input.mouseWorld()
-        val text = mindustryX.bundles.UiTextBundle.uiCoordinateDistance(
+        val text = VarsX.uiTextBundle.coordinateDistance(
             (pos.x / tilesize).toInt(),
             (pos.y / tilesize).toInt(),
             (player.dst(pos) / tilesize).toInt()

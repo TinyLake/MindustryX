@@ -34,7 +34,7 @@ public class InternalMods{
     private static ModMeta meta(String id, String displayName, String version, String author){
         ModMeta meta = new ModMeta();
         meta.name = id;
-        meta.displayName = mindustryX.bundles.UiTextBundle.bundle().builtInDisplayName(displayName); // 原文本:[内置]
+        meta.displayName = VarsX.getUiTextBundle().builtInDisplayName(displayName); // 原文本:[内置]
         meta.version = version;
         meta.author = author;
         meta.minGameVersion = Version.buildString();

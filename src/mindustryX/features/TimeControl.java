@@ -8,6 +8,7 @@ import arc.util.*;
 import mindustry.Vars;
 import mindustry.game.EventType;
 import mindustry.ui.*;
+import mindustryX.VarsX;
 
 //move from mindustry.arcModule.TimeControl
 public class TimeControl{
@@ -41,9 +42,9 @@ public class TimeControl{
         gameSpeed = speed;
         if(fpsLock){
             fpsLock = false;
-            Vars.ui.announce(mindustryX.bundles.UiTextBundle.uiFpsLockOff(gameSpeed));
+            Vars.ui.announce(VarsX.getUiTextBundle().fpsLockOff(gameSpeed));
         }else{
-            Vars.ui.announce(mindustryX.bundles.UiTextBundle.uiCurrentGameSpeed(gameSpeed));
+            Vars.ui.announce(VarsX.getUiTextBundle().currentGameSpeed(gameSpeed));
         }
         Time.setDeltaProvider(gameSpeed == 1f ? origin : deltaProvider);
     }
@@ -51,7 +52,7 @@ public class TimeControl{
     public static void setFpsLock(){
         gameSpeedBalance.clear();
         fpsLock = true;
-        Vars.ui.announce(mindustryX.bundles.UiTextBundle.uiFpsLockEnabled(targetFps));
+        Vars.ui.announce(VarsX.getUiTextBundle().fpsLockEnabled(targetFps));
         Time.setDeltaProvider(deltaProvider);
     }
 
@@ -74,7 +75,7 @@ public class TimeControl{
             if(num < 2 || num > 10000) return;
             targetFps = num;
             if(fpsLock){
-                Vars.ui.announce(mindustryX.bundles.UiTextBundle.uiFpsLockCurrent(targetFps));
+                Vars.ui.announce(VarsX.getUiTextBundle().fpsLockCurrent(targetFps));
             }
         }).valid(s -> {
             if(!Strings.canParsePositiveInt(s)) return false;

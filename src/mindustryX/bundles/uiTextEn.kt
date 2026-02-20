@@ -127,7 +127,7 @@ internal object UiTextBundleEn : UiTextBundle {
                 else -> value.toString()
             }
 
-    override fun i(key: String): String = zhToEn[key] ?: key
+    override fun simple(key: String): String = zhToEn[key] ?: key
 
     private val zhToEn = hashMapOf(
             "\n[white]分走了单位:" to "\n[white] took units:",

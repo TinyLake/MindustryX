@@ -68,8 +68,8 @@ object AutoUpdate {
     fun initUI() {
         Vars.ui.menuGroup.fill { c ->
             c.bottom().right().defaults().size(200f, 60f)
-            c.button(UiTextBundle.bundle().mdtxReport(), Icon.github) { UIExt.openURI("https://github.com/${VarsX.repo}") }.row()
-            c.button(UiTextBundle.bundle().mdtxQqLink(), Icon.units) { UIExt.openURI(VarsX.qqLink) }.row()
+            c.button(VarsX.uiTextBundle.mdtxReport(), Icon.github) { UIExt.openURI("https://github.com/${VarsX.repo}") }.row()
+            c.button(VarsX.uiTextBundle.mdtxQqLink(), Icon.units) { UIExt.openURI(VarsX.qqLink) }.row()
             c.button("@be.check", Icon.refresh) { showDialog() }.update {
                 it.label.color.apply {
                     set(Color.white)
@@ -149,9 +149,9 @@ object AutoUpdate {
             }
 
             //width为整个Table最小宽度
-            add(mindustryX.bundles.UiTextBundle.uiCurrentVersion(VarsX.version)).labelAlign(Align.center).width(500f).wrap().row()
+            add(VarsX.uiTextBundle.currentVersion(VarsX.version)).labelAlign(Align.center).width(500f).wrap().row()
             newVersion?.let {
-                add(mindustryX.bundles.UiTextBundle.uiNewVersion(it.version)).labelAlign(Align.center).width(500f).wrap().row()
+                add(VarsX.uiTextBundle.newVersion(it.version)).labelAlign(Align.center).width(500f).wrap().row()
             }
             if (versions.isEmpty()) {
                 add(mindustryX.bundles.UiTextBundle.i("检查更新失败，请稍后再试")).labelAlign(Align.center).width(500f).wrap().row() // 原文本:检查更新失败，请稍后再试
