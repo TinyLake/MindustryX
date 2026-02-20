@@ -131,8 +131,8 @@ public class LogicSupport{
         for(var v : executor.allVars){
             if(v.name.startsWith("___")) continue;
             varsTable.table(Tex.paneSolid, table -> {
-                Label nameLabel = createCopyableLabel(v.name, null, mindustryX.bundles.UiTexts::uiCopiedVariableNameHint);
-                Label valueLabel = createCopyableLabel(arcVarsText(v), null, mindustryX.bundles.UiTexts::uiCopiedVariableAttributesHint);
+                Label nameLabel = createCopyableLabel(v.name, null, t -> uiCopiedVariableNameHint(t));
+                Label valueLabel = createCopyableLabel(arcVarsText(v), null, t -> uiCopiedVariableAttributesHint(t));
 
                 table.add(nameLabel).color(arcVarsColor(v)).ellipsis(true).wrap().expand(3, 1).fill().get();
                 table.add(valueLabel).ellipsis(true).wrap().padLeft(16f).expand(2, 1).fill().get();
@@ -154,7 +154,7 @@ public class LogicSupport{
         }
 
         varsTable.table(Tex.paneSolid, table -> {
-            Label label = createCopyableLabel("", table, mindustryX.bundles.UiTexts::uiCopiedPrintBufferHint);
+            Label label = createCopyableLabel("", table, t -> uiCopiedPrintBufferHint(t));
 
             table.add("@printbuffer").color(Color.goldenrod).center().row();
             table.add(label).labelAlign(Align.topLeft).wrap().minHeight(150).growX();
