@@ -113,7 +113,7 @@ object AdsorptionSystem {
 
     val scene = Element("scene").apply {
         updaters.add {
-            reset(0f, 0f, Core.scene.width, Core.scene.height)
+            reset(0f, 0f, Core.scene.root.width, Core.scene.root.height)
         }
     }
     val placementRect = Element("placementRect")

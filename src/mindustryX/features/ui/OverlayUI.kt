@@ -269,8 +269,8 @@ object OverlayUI {
 
             applyScale() //before any position/size operation
 
-            width = width.coerceAtMost(Core.scene.width)
-            height = height.coerceAtMost(Core.scene.height)
+            width = width.coerceAtMost(Core.scene.root.width)
+            height = height.coerceAtMost(Core.scene.root.height)
             if (state == State.Stable) {
                 data.value.center?.let { setPosition(it.x, it.y, Align.center) }
             }
@@ -529,9 +529,9 @@ object OverlayUI {
                 val target = c.targetPoint ?: return@forEach
                 val tar = target.computeAnchor(c.axis, c.type.targetAnchor)
                 if (c.axis == Axis.X) {
-                    Lines.dashLine(tar, 0f, tar, Core.scene.height, 64)
+                    Lines.dashLine(tar, 0f, tar, height, 64)
                 } else {
-                    Lines.dashLine(0f, tar, Core.scene.width, tar, 64)
+                    Lines.dashLine(0f, tar, width, tar, 64)
                 }
             }
             Draw.reset()
