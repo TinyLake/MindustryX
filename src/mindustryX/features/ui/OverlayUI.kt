@@ -83,13 +83,13 @@ object OverlayUI {
             }
             button(Icon.eyeSmall, myToggleI, Vars.iconSmall) {
                 set(value.copy(enabled = !value.enabled))
-            }.tooltip(mindustryX.bundles.UiTextBundle.i("开关")).padRight(4f).checked { value.enabled } // 原文本:开关
+            }.tooltip(mindustryX.bundles.UiTextBundle.i("开关")).padRight(4f).checked { value.enabled }
             button(Icon.lockSmall, myToggleI, Vars.iconSmall) {
                 set(value.copy(pinned = !value.pinned))
-            }.tooltip(mindustryX.bundles.UiTextBundle.i("锁定")).padRight(4f).checked { value.pinned } // 原文本:锁定
+            }.tooltip(mindustryX.bundles.UiTextBundle.i("锁定")).padRight(4f).checked { value.pinned }
             button(Icon.resizeSmall, myToggleI, Vars.iconSmall) {
                 UIExtKt.showFloatSettingsPanel {
-                    label { VarsX.uiTextBundle.zoomScale(Strings.fixed(value.scale, 1)) }.center().row() // 原文本:缩放: x
+                    label { VarsX.bundle.zoomScale(Strings.fixed(value.scale, 1)) }.center().row()
                     slider(0.2f, 3f, 0.1f, value.scale) {
                         set(value.copy(scale = it))
                     }.update { it.value = value.scale }.width(200f)
@@ -98,7 +98,7 @@ object OverlayUI {
                     }.disabled { Mathf.equal(value.scale, 1f) }.padTop(4f)
                     row()
                 }
-            }.tooltip(mindustryX.bundles.UiTextBundle.i("缩放")).padRight(4f).checked { !Mathf.equal(value.scale, 1f) } // 原文本:缩放
+            }.tooltip(mindustryX.bundles.UiTextBundle.i("缩放")).padRight(4f).checked { !Mathf.equal(value.scale, 1f) }
             addTools()
 
             row()
@@ -475,7 +475,7 @@ object OverlayUI {
             t.defaults().size(Vars.iconLarge).width(Vars.iconLarge * 1.5f).pad(4f)
             t.button(Icon.add) {
                 UIExtKt.showFloatSettingsPanel {
-                    add(mindustryX.bundles.UiTextBundle.i("添加面板")).color(Color.gold).align(Align.center).row() // 原文本:添加面板
+                    add(mindustryX.bundles.UiTextBundle.i("添加面板")).color(Color.gold).align(Align.center).row()
                     pane(Styles.smallPane, Table().apply {
                         defaults().minWidth(120f).fillX().pad(4f)
                         val notAvailable = mutableListOf<Window>()
@@ -492,7 +492,7 @@ object OverlayUI {
                             }).row()
                         }
                         if (notAvailable.isNotEmpty()) {
-                            add(mindustryX.bundles.UiTextBundle.i("当前不可用的面板:")).align(Align.center).row() // 原文本:当前不可用的面板:
+                            add(mindustryX.bundles.UiTextBundle.i("当前不可用的面板:")).align(Align.center).row()
                             notAvailable.forEach {
                                 add(TextButton(it.data.title).apply {
                                     label.setWrap(true)

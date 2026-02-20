@@ -68,8 +68,8 @@ object AutoUpdate {
     fun initUI() {
         Vars.ui.menuGroup.fill { c ->
             c.bottom().right().defaults().size(200f, 60f)
-            c.button(VarsX.uiTextBundle.mdtxReport(), Icon.github) { UIExt.openURI("https://github.com/${VarsX.repo}") }.row()
-            c.button(VarsX.uiTextBundle.mdtxQqLink(), Icon.units) { UIExt.openURI(VarsX.qqLink) }.row()
+            c.button(VarsX.bundle.mdtxReport(), Icon.github) { UIExt.openURI("https://github.com/${VarsX.repo}") }.row()
+            c.button(VarsX.bundle.mdtxQqLink(), Icon.units) { UIExt.openURI(VarsX.qqLink) }.row()
             c.button("@be.check", Icon.refresh) { showDialog() }.update {
                 it.label.color.apply {
                     set(Color.white)
@@ -122,7 +122,7 @@ object AutoUpdate {
     @JvmOverloads
     fun showDialog(version: Release? = latest) {
         checkUpdate()
-        val dialog = BaseDialog(mindustryX.bundles.UiTextBundle.i("自动更新")) // 原文本:自动更新
+        val dialog = BaseDialog(mindustryX.bundles.UiTextBundle.i("自动更新"))
         dialog.getCell(dialog.cont).setElement(ScrollPane(dialog.cont))
         dialog.cont.table().growY().get().apply {
             fun buildVersionList(versions: List<Release>) {
@@ -139,36 +139,36 @@ object AutoUpdate {
                                         p.add(it.description).labelAlign(Align.left)
                                     }.row()
                                 }
-                            }.tooltip(mindustryX.bundles.UiTextBundle.i("发布说明")).padRight(16f) // 原文本:发布说明
+                            }.tooltip(mindustryX.bundles.UiTextBundle.i("发布说明")).padRight(16f)
                         button(Icon.link, Styles.clearNonei, Vars.iconSmall) {
                             UIExt.openURI(it.url)
-                        }.tooltip(mindustryX.bundles.UiTextBundle.i("打开发布页面")).padRight(4f).row() // 原文本:打开发布页面
+                        }.tooltip(mindustryX.bundles.UiTextBundle.i("打开发布页面")).padRight(4f).row()
                     }
                 }
                 row()
             }
 
             //width为整个Table最小宽度
-            add(VarsX.uiTextBundle.currentVersion(VarsX.version)).labelAlign(Align.center).width(500f).wrap().row()
+            add(VarsX.bundle.currentVersion(VarsX.version)).labelAlign(Align.center).width(500f).wrap().row()
             newVersion?.let {
-                add(VarsX.uiTextBundle.newVersion(it.version)).labelAlign(Align.center).width(500f).wrap().row()
+                add(VarsX.bundle.newVersion(it.version)).labelAlign(Align.center).width(500f).wrap().row()
             }
             if (versions.isEmpty()) {
-                add(mindustryX.bundles.UiTextBundle.i("检查更新失败，请稍后再试")).labelAlign(Align.center).width(500f).wrap().row() // 原文本:检查更新失败，请稍后再试
+                add(mindustryX.bundles.UiTextBundle.i("检查更新失败，请稍后再试")).labelAlign(Align.center).width(500f).wrap().row()
                 return@apply
             }
 
             image().fillX().height(2f).row()
-            add(mindustryX.bundles.UiTextBundle.i("正式版")).labelAlign(Align.center).width(500f).wrap().row() // 原文本:正式版
+            add(mindustryX.bundles.UiTextBundle.i("正式版")).labelAlign(Align.center).width(500f).wrap().row()
             buildVersionList(versions.filter { it.isRelease })
 
             image().fillX().height(2f).row()
-            add(mindustryX.bundles.UiTextBundle.i("预览版(更新更快,新功能体验,BUG修复)")).labelAlign(Align.center).width(500f).wrap().row() // 原文本:预览版(更新更快,新功能体验,BUG修复)
+            add(mindustryX.bundles.UiTextBundle.i("预览版(更新更快,新功能体验,BUG修复)")).labelAlign(Align.center).width(500f).wrap().row()
             buildVersionList(versions.filter { !it.isRelease })
 
             image().fillX().height(2f).row()
             if (version == null) {
-                add(mindustryX.bundles.UiTextBundle.i("你已是最新版本，不需要更新！")).labelAlign(Align.center).width(500f).wrap() // 原文本:你已是最新版本，不需要更新！
+                add(mindustryX.bundles.UiTextBundle.i("你已是最新版本，不需要更新！")).labelAlign(Align.center).width(500f).wrap()
                 return@apply
             }
 
@@ -182,7 +182,7 @@ object AutoUpdate {
             }
             row()
 
-            button(mindustryX.bundles.UiTextBundle.i("自动下载更新")) { // 原文本:自动下载更新
+            button(mindustryX.bundles.UiTextBundle.i("自动下载更新")) {
                 if (asset == null) return@button
                 startDownload(asset.copy(url = url)) { file ->
                     if (VarsX.isLoader) {

@@ -74,7 +74,7 @@ class TeamsStatDisplay : Table() {
     }
 
     private fun openAddTeamDialog(onSelected: (Teams.TeamData) -> Unit) {
-        BaseDialog(mindustryX.bundles.UiTextBundle.i("添加队伍")).apply { // 原文本:添加队伍
+        BaseDialog(mindustryX.bundles.UiTextBundle.i("添加队伍")).apply {
             Vars.state.teams.active.forEach { team ->
                 cont.add(Button().apply {
                     add(Table().apply {

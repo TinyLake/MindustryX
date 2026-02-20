@@ -14,12 +14,12 @@ public class TeamSelectDialog extends BaseDialog{
     private Cons<Team> cons;
 
     public TeamSelectDialog(){
-        super(mindustryX.bundles.UiTextBundle.i("队伍选择器")); // 原文本:队伍选择器
+        super(mindustryX.bundles.UiTextBundle.i("队伍选择器"));
         cont.pane(td -> {
             for(Team team : Team.all){
                 if(team.id % 10 == 6){
                     td.row();
-                    td.add(VarsX.getUiTextBundle().teamRange(team.id)); // 原文本:队伍：
+                    td.add(VarsX.bundle.teamRange(team.id));
                 }
                 td.button(Tex.whiteui, Styles.clearTogglei, 36f, () -> {
                     lastTeam = team;

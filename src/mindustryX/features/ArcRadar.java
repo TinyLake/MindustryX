@@ -48,9 +48,9 @@ public class ArcRadar{
     private static Table t;
 
     private static final SettingsV2.Data<Integer>
-    mode = new SliderPref("arcExtra.radarMode", 1, 1, 30, 1, s -> VarsX.getUiTextBundle().radarSpeedMode(s)),
+    mode = new SliderPref("arcExtra.radarMode", 1, 1, 30, 1, s -> VarsX.bundle.radarSpeedMode(s)),
     size = new SliderPref("arcExtra.radarSize", 0, 0, 50, 1, s -> {
-        return VarsX.getUiTextBundle().radarSizeMode(s);
+        return VarsX.bundle.radarSizeMode(s);
     });
     public static List<SettingsV2.Data<?>> settings = CollectionsKt.listOf(mode, size);
 
@@ -86,7 +86,7 @@ public class ArcRadar{
         if(working && t == null){
             t = new Table(Styles.black3);
             t.touchable = Touchable.disabled;
-            t.margin(8f).add(mindustryX.bundles.UiTextBundle.i(">> 雷达扫描中 <<")).color(Pal.accent).style(Styles.outlineLabel); // 原文本:>> 雷达扫描中 <<
+            t.margin(8f).add(mindustryX.bundles.UiTextBundle.i(">> 雷达扫描中 <<")).color(Pal.accent).style(Styles.outlineLabel);
             t.pack();
             t.visible(() -> working);
             t.update(() -> t.setPosition(Core.graphics.getWidth() / 2f, Core.graphics.getHeight() * 0.1f, Align.center));

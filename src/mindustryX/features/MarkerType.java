@@ -42,7 +42,7 @@ public class MarkerType{
         fillParent = true;
         touchable = Touchable.enabled;
         background(((TextureRegionDrawable)Tex.whiteui).tint(0, 0, 0, 0.1f));
-        center().add(mindustryX.bundles.UiTextBundle.i("[cyan]标记模式,点击屏幕标记."), Styles.outlineLabel); // 原文本:[cyan]标记模式,点击屏幕标记.
+        center().add(mindustryX.bundles.UiTextBundle.i("[cyan]标记模式,点击屏幕标记."), Styles.outlineLabel);
         tapped(() -> {
             MarkerType.showPanUI();
             Core.app.post(this::remove);
@@ -213,7 +213,7 @@ public class MarkerType{
 
     public void markWithMessage(Vec2 pos){
         if(last != null && last.time < heatTime){
-            Vars.ui.announce(mindustryX.bundles.UiTextBundle.i("请不要频繁标记!")); // 原文本:请不要频繁标记!
+            Vars.ui.announce(mindustryX.bundles.UiTextBundle.i("请不要频繁标记!"));
             return;
         }
         last = at(pos);
@@ -222,7 +222,7 @@ public class MarkerType{
 
     public static void newMarkFromChat(String text, Vec2 pos){
         MarkerType type = mark;
-        if(text.contains(mindustryX.bundles.UiTextBundle.i("集合"))){ // 原文本:集合
+        if(text.contains(mindustryX.bundles.UiTextBundle.i("集合"))){
             type = gatherMark;
         }
         for(MarkerType it : allTypes){

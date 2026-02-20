@@ -59,7 +59,7 @@ object NewTransferScanMode {
         Draw.z(Layer.overlayUI + 0.01f)
 
         val pos = Core.input.mouseWorld()
-        val text = VarsX.uiTextBundle.coordinateDistance(
+        val text = VarsX.bundle.coordinateDistance(
             (pos.x / tilesize).toInt(),
             (pos.y / tilesize).toInt(),
             (player.dst(pos) / tilesize).toInt()

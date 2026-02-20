@@ -101,9 +101,9 @@ public class ModsRecommendDialog extends BaseDialog{
             info.top();
             info.defaults().expandX().center();
 
-            info.add(VarsX.getUiTextBundle().modsRecommendTitle()).pad(12f).row();
-            info.add(VarsX.getUiTextBundle().modsRecommendLastUpdated(meta.lastUpdated)).pad(6f).row();
-            info.add(VarsX.getUiTextBundle().modsRecommendInfo()).pad(6f);
+            info.add(VarsX.bundle.modsRecommendTitle()).pad(12f).row();
+            info.add(VarsX.bundle.modsRecommendLastUpdated(meta.lastUpdated)).pad(6f).row();
+            info.add(VarsX.bundle.modsRecommendInfo()).pad(6f);
 
             for(Element child : info.getChildren()){
                 if(child instanceof Label label){
@@ -147,11 +147,11 @@ public class ModsRecommendDialog extends BaseDialog{
                 info.top();
                 info.defaults().padTop(2f).expandX().left();
 
-                addInfo(info, "name", modListing.name).color(Pal.accent).pad(8f);
-                addInfo(info, "author", modListing.author).color(pink).padTop(4f);
-                addInfo(info, "minGameVersion", modListing.minGameVersion).color(lightBlue);
-                addInfo(info, "lastUpdated", getLastUpdatedTime(modListing)).color(lightBlue);
-                addInfo(info, "stars", modListing.stars).color(lightBlue);
+                addInfo(info, VarsX.bundle.modsRecommendModName(modListing.name)).color(Pal.accent).pad(8f);
+                addInfo(info, VarsX.bundle.modsRecommendModAuthor(modListing.author)).color(pink).padTop(4f);
+                addInfo(info, VarsX.bundle.modsRecommendModMinGameVersion(modListing.minGameVersion)).color(lightBlue);
+                addInfo(info, VarsX.bundle.modsRecommendModLastUpdated(getLastUpdatedTime(modListing))).color(lightBlue);
+                addInfo(info, VarsX.bundle.modsRecommendModStars(String.valueOf(modListing.stars))).color(lightBlue);
 
                 for(Element child : info.getChildren()){
                     if(child instanceof Label label){
@@ -180,16 +180,7 @@ public class ModsRecommendDialog extends BaseDialog{
         })).minHeight(48f).pad(8f);
     }
 
-    private Cell<?> addInfo(Table table, String bundle, Object value){
-        String textValue = String.valueOf(value);
-        String text = switch(bundle){
-            case "name" -> VarsX.getUiTextBundle().modsRecommendModName(textValue);
-            case "author" -> VarsX.getUiTextBundle().modsRecommendModAuthor(textValue);
-            case "minGameVersion" -> VarsX.getUiTextBundle().modsRecommendModMinGameVersion(textValue);
-            case "lastUpdated" -> VarsX.getUiTextBundle().modsRecommendModLastUpdated(textValue);
-            case "stars" -> VarsX.getUiTextBundle().modsRecommendModStars(textValue);
-            default -> textValue;
-        };
+    private Cell<?> addInfo(Table table, String text){
         Cell<?> cell = table.add(text).color(pink);
 
         table.row();

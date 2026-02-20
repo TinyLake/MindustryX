@@ -1,11 +1,10 @@
 package mindustryX.bundles
 
-import arc.Core
 import arc.util.Strings
-import java.util.Locale
+import mindustryX.VarsX
 
 interface UiTextBundle {
-    fun simple(key: String): String = key
+    fun i(key: String): String = key
 
     fun mdtxReport(): String = "问题反馈"
     fun mdtxQqLink(): String = "QQ交流群"
@@ -138,26 +137,7 @@ interface UiTextBundle {
     }
 
     companion object {
-        private object ZH : UiTextBundle
-
-        private val EN: UiTextBundle = UiTextBundleEn
-
-        /**
-         * Lightweight constant-text lookup.
-         * Keep this for no-arg static labels only; any text with variables/order/formatting must use typed bundle methods.
-         */
         @JvmStatic
-        fun i(zh: String): String = default().simple(zh)
-
-        private val bundlesByLanguage: Map<String, UiTextBundle> = mapOf(
-            Locale.CHINESE.language to ZH,
-            Locale.ENGLISH.language to EN,
-        )
-
-        @JvmStatic
-        fun default(): UiTextBundle {
-            val language = (Core.bundle?.locale?.language ?: Locale.getDefault().language).lowercase(Locale.ROOT)
-            return bundlesByLanguage[language] ?: EN
-        }
+        fun i(zh: String): String = VarsX.bundle.i(zh)
     }
 }

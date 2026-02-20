@@ -7,10 +7,13 @@ import arc.util.Log
 import arc.util.OS
 import arc.util.serialization.Jval
 import mindustry.Vars
+import mindustryX.bundles.UiTextBundle
+import mindustryX.bundles.UiTextBundleEn
 import mindustryX.features.SettingsV2
 import mindustryX.features.SettingsV2.CheckPref
 import mindustryX.features.SettingsV2.SliderPref
 import mindustryX.features.SettingsV2.map
+import java.util.Locale
 
 object VarsX {
     const val repo = "TinyLake/MindustryX"
@@ -25,11 +28,17 @@ object VarsX {
     @JvmField
     var isLoader: Boolean = false
 
-    @JvmStatic
-    val uiTextBundle: mindustryX.bundles.UiTextBundle
-        get() = mindustryX.bundles.UiTextBundle.default()
+    @JvmField
+    val bundle: UiTextBundle
 
     init {
+        val locale = Core.bundle?.locale ?: Locale.getDefault()
+        bundle = if (locale.language.equals(Locale.CHINESE.language, ignoreCase = true)) {
+            object : UiTextBundle {}
+        } else {
+            UiTextBundleEn
+        }
+
         val version = kotlin.runCatching {
             val file = if (OS.isAndroid || OS.isIos) Core.files.internal("mod.hjson") else Fi("mod.hjson", Files.FileType.internal)
             val meta = Jval.read(file.readString())
@@ -79,12 +88,12 @@ object VarsX {
     }
 
     @JvmField
-    val itemSelectionHeight = SliderPref("gameUI.itemSelectionHeight", 4, 4, 12) { uiTextBundle.itemSelectionHeight(it) }.apply {
+    val itemSelectionHeight = SliderPref("gameUI.itemSelectionHeight", 4, 4, 12) { bundle.itemSelectionHeight(it) }.apply {
         addFallbackName("itemSelectionHeight")
     }
 
     @JvmField
-    val itemSelectionWidth = SliderPref("gameUI.itemSelectionWidth", 4, 4, 12) { uiTextBundle.itemSelectionWidth(it) }.apply {
+    val itemSelectionWidth = SliderPref("gameUI.itemSelectionWidth", 4, 4, 12) { bundle.itemSelectionWidth(it) }.apply {
         addFallbackName("itemSelectionWidth")
     }
 
@@ -95,7 +104,7 @@ object VarsX {
 
     @JvmField
     val maxSchematicSize = SliderPref("maxSchematicSize", Vars.maxSchematicSize, 64, 257) {
-        if (it == 257) return@SliderPref mindustryX.bundles.UiTextBundle.i("无限制") // 原文本:无限制
+        if (it == 257) return@SliderPref mindustryX.bundles.UiTextBundle.i("无限制")
         "${it}x${it}"
     }
 
