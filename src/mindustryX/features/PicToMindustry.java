@@ -18,7 +18,7 @@ import mindustry.ui.dialogs.*;
 import mindustry.world.blocks.logic.*;
 import mindustry.world.blocks.logic.CanvasBlock.*;
 
-import static mindustryX.bundles.UiTexts.*;
+import static mindustryX.bundles.UiTextBundle.*;
 import static mindustry.Vars.*;
 
 //move from mindustry.arcModule.toolpack.picToMindustry
@@ -123,7 +123,7 @@ public class PicToMindustry{
                     image.dispose();
                     saveSchem(schem, Blocks.canvas.emoji());
                 }).size(100, 50);
-                tt.add(mindustryX.bundles.UiTexts.bundle().sizeWithDimensions(String.valueOf(w), String.valueOf(h))); // 原文本:大小：
+                tt.add(mindustryX.bundles.UiTextBundle.bundle().sizeWithDimensions(String.valueOf(w), String.valueOf(h))); // 原文本:大小：
             });
             t.row();
             t.table(tt -> {
@@ -135,7 +135,7 @@ public class PicToMindustry{
                     image.dispose();
                     saveSchem(schem, Blocks.canvas.emoji());
                 }).size(100, 50);
-                tt.add(mindustryX.bundles.UiTexts.bundle().sizeWithDimensions(String.valueOf(w), String.valueOf(h))); // 原文本:大小：
+                tt.add(mindustryX.bundles.UiTextBundle.bundle().sizeWithDimensions(String.valueOf(w), String.valueOf(h))); // 原文本:大小：
             }).row();
             t.table(tt -> {
                 tt.button(uiLabelWithEmoji(uiPixelArt(), Blocks.sorter.emoji()), Styles.cleart, () -> { // 原文本:像素画 {0}
@@ -144,7 +144,7 @@ public class PicToMindustry{
                     image.dispose();
                     saveSchem(schem, Blocks.sorter.emoji());
                 }).size(100, 50);
-                tt.add(mindustryX.bundles.UiTexts.bundle().sizeWithDimensions(formatNumber(scaledW), formatNumber(scaledH))); // 原文本:大小：
+                tt.add(mindustryX.bundles.UiTextBundle.bundle().sizeWithDimensions(formatNumber(scaledW), formatNumber(scaledH))); // 原文本:大小：
             }).row();
         });
     }

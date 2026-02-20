@@ -68,11 +68,11 @@ public class RenderExt{
 
     public static final SettingsV2.CheckPref renderSort0 = new CheckPref("debug.renderSort");
     public static final SettingsV2.CheckPref arcChoiceUiIcon0 = new CheckPref("block.arcChoiceUiIcon");
-    public static final SliderPref hiddenItemTransparency0 = new SliderPref("block.hiddenItemTransparency", 0, 0, 100, 2, v -> mindustryX.bundles.UiTexts.bundle().percentOrOff(v)); // 原文本:关闭
-    public static final SliderPref overdriveZoneTransparency0 = new SliderPref("block.overdriveZoneTransparency", 0, 0, 100, 2, v -> mindustryX.bundles.UiTexts.bundle().percentOrOff(v)); // 原文本:关闭
-    public static final SliderPref mendZoneTransparency0 = new SliderPref("block.mendZoneTransparency", 0, 0, 100, 2, v -> mindustryX.bundles.UiTexts.bundle().percentOrOff(v)); // 原文本:关闭
-    public static final SliderPref healthBarMinHealth = new SliderPref("block.healthBarMinHealth", 0, 0, 4000, 50, v -> mindustryX.bundles.UiTexts.bundle().hpOrAll(v)); // 原文本:全部显示
-    public static final ChoosePref blockRenderLevel0 = new ChoosePref("block.renderLevel", CollectionsKt.listOf(mindustryX.bundles.UiTexts.i("隐藏全部建筑"), mindustryX.bundles.UiTexts.i("只显示建筑状态"), mindustryX.bundles.UiTexts.i("全部显示")), 2); // 原文本:隐藏全部建筑 | 只显示建筑状态 | 全部显示
+    public static final SliderPref hiddenItemTransparency0 = new SliderPref("block.hiddenItemTransparency", 0, 0, 100, 2, v -> mindustryX.bundles.UiTextBundle.bundle().percentOrOff(v)); // 原文本:关闭
+    public static final SliderPref overdriveZoneTransparency0 = new SliderPref("block.overdriveZoneTransparency", 0, 0, 100, 2, v -> mindustryX.bundles.UiTextBundle.bundle().percentOrOff(v)); // 原文本:关闭
+    public static final SliderPref mendZoneTransparency0 = new SliderPref("block.mendZoneTransparency", 0, 0, 100, 2, v -> mindustryX.bundles.UiTextBundle.bundle().percentOrOff(v)); // 原文本:关闭
+    public static final SliderPref healthBarMinHealth = new SliderPref("block.healthBarMinHealth", 0, 0, 4000, 50, v -> mindustryX.bundles.UiTextBundle.bundle().hpOrAll(v)); // 原文本:全部显示
+    public static final ChoosePref blockRenderLevel0 = new ChoosePref("block.renderLevel", CollectionsKt.listOf(mindustryX.bundles.UiTextBundle.i("隐藏全部建筑"), mindustryX.bundles.UiTextBundle.i("只显示建筑状态"), mindustryX.bundles.UiTextBundle.i("全部显示")), 2); // 原文本:隐藏全部建筑 | 只显示建筑状态 | 全部显示
     public static final SettingsV2.CheckPref showOtherTeamState = new CheckPref("block.showOtherTeamState");
     public static final SettingsV2.CheckPref editOtherBlock0 = new CheckPref("block.editOtherBlock");
     public static final SettingsV2.CheckPref logicDisplayNoBorder0 = new CheckPref("block.logicDisplayNoBorder");
@@ -341,7 +341,7 @@ public class RenderExt{
                 count.increment(u.type);
             }
             StringBuilder builder = new StringBuilder();
-            builder.append("[gold][MDTX][]").append(player.name).append(mindustryX.bundles.UiTexts.i("\n[white]分走了单位:")).append(" "); // 原文本:\n[white]分走了单位: {0}
+            builder.append("[gold][MDTX][]").append(player.name).append(mindustryX.bundles.UiTextBundle.i("\n[white]分走了单位:")).append(" "); // 原文本:\n[white]分走了单位: {0}
             for(UnitType type : count.keys()){
                 builder.append(type.emoji()).append("x").append(count.get(type)).append(" ");
             }

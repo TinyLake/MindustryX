@@ -25,6 +25,9 @@ object VarsX {
     @JvmField
     var isLoader: Boolean = false
 
+    @JvmStatic
+    val uiTextBundle: mindustryX.bundles.UiTextBundle
+        get() = mindustryX.bundles.UiTextBundle.default()
 
     init {
         val version = kotlin.runCatching {
@@ -76,12 +79,12 @@ object VarsX {
     }
 
     @JvmField
-    val itemSelectionHeight = SliderPref("gameUI.itemSelectionHeight", 4, 4, 12) { mindustryX.bundles.UiTexts.uiItemSelectionHeight(it) }.apply {
+    val itemSelectionHeight = SliderPref("gameUI.itemSelectionHeight", 4, 4, 12) { mindustryX.bundles.UiTextBundle.uiItemSelectionHeight(it) }.apply {
         addFallbackName("itemSelectionHeight")
     }
 
     @JvmField
-    val itemSelectionWidth = SliderPref("gameUI.itemSelectionWidth", 4, 4, 12) { mindustryX.bundles.UiTexts.uiItemSelectionWidth(it) }.apply {
+    val itemSelectionWidth = SliderPref("gameUI.itemSelectionWidth", 4, 4, 12) { mindustryX.bundles.UiTextBundle.uiItemSelectionWidth(it) }.apply {
         addFallbackName("itemSelectionWidth")
     }
 
@@ -92,7 +95,7 @@ object VarsX {
 
     @JvmField
     val maxSchematicSize = SliderPref("maxSchematicSize", Vars.maxSchematicSize, 64, 257) {
-        if (it == 257) return@SliderPref mindustryX.bundles.UiTexts.i("无限制") // 原文本:无限制
+        if (it == 257) return@SliderPref mindustryX.bundles.UiTextBundle.i("无限制") // 原文本:无限制
         "${it}x${it}"
     }
 

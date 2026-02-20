@@ -22,7 +22,7 @@ import mindustry.world.blocks.logic.MemoryBlock.*;
 import mindustryX.features.SettingsV2.*;
 import mindustryX.features.*;
 
-import static mindustryX.bundles.UiTexts.*;
+import static mindustryX.bundles.UiTextBundle.*;
 import static mindustry.Vars.*;
 
 public class LogicSupport{
@@ -118,7 +118,7 @@ public class LogicSupport{
         var slider = new Slider(1, 60, 1, false);
         slider.setValue(refreshTime);
         slider.moved((res) -> refreshTime = res);
-        var label = new Label(() -> mindustryX.bundles.UiTexts.bundle().refreshInterval((int)refreshTime)); // 原文本:刷新间隔
+        var label = new Label(() -> mindustryX.bundles.UiTextBundle.bundle().refreshInterval((int)refreshTime)); // 原文本:刷新间隔
         label.touchable = Touchable.disabled;
         table.stack(slider, label).padLeft(8f).growX();
     }

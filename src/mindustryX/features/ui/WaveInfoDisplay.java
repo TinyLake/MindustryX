@@ -35,7 +35,7 @@ public class WaveInfoDisplay extends Table{
             buttons.defaults().size(32);
             buttons.add().growX();
 
-            buttons.button(Icon.waves, Styles.clearNonei, iconMed, waveInfoDialog::show).tooltip(mindustryX.bundles.UiTexts.i("波次信息")); // 原文本:波次信息
+            buttons.button(Icon.waves, Styles.clearNonei, iconMed, waveInfoDialog::show).tooltip(mindustryX.bundles.UiTextBundle.i("波次信息")); // 原文本:波次信息
 
             buttons.button("<", Styles.cleart, () -> shiftWaveOffset(-1));
             var i = buttons.button("", Styles.cleart, this::setWaveOffsetDialog).minHeight(48).maxWidth(160f).get();
@@ -43,18 +43,18 @@ public class WaveInfoDisplay extends Table{
             i.getLabel().setText(() -> "" + (state.wave + waveOffset));
             buttons.button(">", Styles.cleart, () -> shiftWaveOffset(1));
 
-            buttons.button("R", Styles.cleart, () -> setWaveOffset(0)).tooltip(mindustryX.bundles.UiTexts.i("恢复当前波次")); // 原文本:恢复当前波次
-            buttons.button("J", Styles.cleart, () -> ui.showConfirm(mindustryX.bundles.UiTexts.i("[red]这是一个作弊功能[]\n快速跳转到目标波次(不刷兵)"), () -> { // 原文本:[red]这是一个作弊功能[]\n快速跳转到目标波次(不刷兵)
+            buttons.button("R", Styles.cleart, () -> setWaveOffset(0)).tooltip(mindustryX.bundles.UiTextBundle.i("恢复当前波次")); // 原文本:恢复当前波次
+            buttons.button("J", Styles.cleart, () -> ui.showConfirm(mindustryX.bundles.UiTextBundle.i("[red]这是一个作弊功能[]\n快速跳转到目标波次(不刷兵)"), () -> { // 原文本:[red]这是一个作弊功能[]\n快速跳转到目标波次(不刷兵)
                 state.wave += waveOffset;
                 setWaveOffset(0);
-            })).tooltip(mindustryX.bundles.UiTexts.i("强制跳波")).disabled((b) -> net.client()); // 原文本:强制跳波
+            })).tooltip(mindustryX.bundles.UiTextBundle.i("强制跳波")).disabled((b) -> net.client()); // 原文本:强制跳波
 
             buttons.add().growX();
             buttons.add("♐>");
-            buttons.button(Icon.wavesSmall, Styles.clearNonei, iconMed, () -> ShareFeature.shareWaveInfo(state.wave + waveOffset)).tooltip(mindustryX.bundles.UiTexts.i("分享波次信息")); // 原文本:分享波次信息
-            buttons.button(Icon.powerSmall, Styles.clearNonei, iconMed, ShareFeature::shareTeamPower).tooltip(mindustryX.bundles.UiTexts.i("分享电力情况")); // 原文本:分享电力情况
-            buttons.button(new TextureRegionDrawable(Items.copper.uiIcon), Styles.clearNonei, iconSmall, ShareFeature::openShareItemDialog).tooltip(mindustryX.bundles.UiTexts.i("分享库存情况")); // 原文本:分享库存情况
-            buttons.button(Icon.unitsSmall, Styles.clearNonei, iconMed, ShareFeature::openShareUnitDialog).tooltip(mindustryX.bundles.UiTexts.i("分享单位数量")); // 原文本:分享单位数量
+            buttons.button(Icon.wavesSmall, Styles.clearNonei, iconMed, () -> ShareFeature.shareWaveInfo(state.wave + waveOffset)).tooltip(mindustryX.bundles.UiTextBundle.i("分享波次信息")); // 原文本:分享波次信息
+            buttons.button(Icon.powerSmall, Styles.clearNonei, iconMed, ShareFeature::shareTeamPower).tooltip(mindustryX.bundles.UiTextBundle.i("分享电力情况")); // 原文本:分享电力情况
+            buttons.button(new TextureRegionDrawable(Items.copper.uiIcon), Styles.clearNonei, iconSmall, ShareFeature::openShareItemDialog).tooltip(mindustryX.bundles.UiTextBundle.i("分享库存情况")); // 原文本:分享库存情况
+            buttons.button(Icon.unitsSmall, Styles.clearNonei, iconMed, ShareFeature::openShareUnitDialog).tooltip(mindustryX.bundles.UiTextBundle.i("分享单位数量")); // 原文本:分享单位数量
         }).fillX().row();
 
         waveInfo = new Table().left().top();
@@ -85,8 +85,8 @@ public class WaveInfoDisplay extends Table{
     }
 
     private void setWaveOffsetDialog(){
-        Dialog lsSet = new BaseDialog(mindustryX.bundles.UiTexts.i("波次设定")); // 原文本:波次设定
-        lsSet.cont.add(mindustryX.bundles.UiTexts.i("设定查询波次")).padRight(5f).left(); // 原文本:设定查询波次
+        Dialog lsSet = new BaseDialog(mindustryX.bundles.UiTextBundle.i("波次设定")); // 原文本:波次设定
+        lsSet.cont.add(mindustryX.bundles.UiTextBundle.i("设定查询波次")).padRight(5f).left(); // 原文本:设定查询波次
         TextField field = lsSet.cont.field(state.wave + waveOffset + "", text -> waveOffset = Integer.parseInt(text) - state.wave).size(320f, 54f).valid(Strings::canParsePositiveInt).maxTextLength(100).get();
         lsSet.cont.row();
         lsSet.cont.slider(1, ArcWaveSpawner.calWinWaveClamped(), 1, res -> {

@@ -100,9 +100,9 @@ public class ModsRecommendDialog extends BaseDialog{
             info.top();
             info.defaults().expandX().center();
 
-            info.add(mindustryX.bundles.UiTexts.bundle().modsRecommendTitle()).pad(12f).row();
-            info.add(mindustryX.bundles.UiTexts.bundle().modsRecommendLastUpdated(meta.lastUpdated)).pad(6f).row();
-            info.add(mindustryX.bundles.UiTexts.bundle().modsRecommendInfo()).pad(6f);
+            info.add(mindustryX.bundles.UiTextBundle.bundle().modsRecommendTitle()).pad(12f).row();
+            info.add(mindustryX.bundles.UiTextBundle.bundle().modsRecommendLastUpdated(meta.lastUpdated)).pad(6f).row();
+            info.add(mindustryX.bundles.UiTextBundle.bundle().modsRecommendInfo()).pad(6f);
 
             for(Element child : info.getChildren()){
                 if(child instanceof Label label){
@@ -182,11 +182,11 @@ public class ModsRecommendDialog extends BaseDialog{
     private Cell<?> addInfo(Table table, String bundle, Object value){
         String textValue = String.valueOf(value);
         String text = switch(bundle){
-            case "name" -> mindustryX.bundles.UiTexts.bundle().modsRecommendModName(textValue);
-            case "author" -> mindustryX.bundles.UiTexts.bundle().modsRecommendModAuthor(textValue);
-            case "minGameVersion" -> mindustryX.bundles.UiTexts.bundle().modsRecommendModMinGameVersion(textValue);
-            case "lastUpdated" -> mindustryX.bundles.UiTexts.bundle().modsRecommendModLastUpdated(textValue);
-            case "stars" -> mindustryX.bundles.UiTexts.bundle().modsRecommendModStars(textValue);
+            case "name" -> mindustryX.bundles.UiTextBundle.bundle().modsRecommendModName(textValue);
+            case "author" -> mindustryX.bundles.UiTextBundle.bundle().modsRecommendModAuthor(textValue);
+            case "minGameVersion" -> mindustryX.bundles.UiTextBundle.bundle().modsRecommendModMinGameVersion(textValue);
+            case "lastUpdated" -> mindustryX.bundles.UiTextBundle.bundle().modsRecommendModLastUpdated(textValue);
+            case "stars" -> mindustryX.bundles.UiTextBundle.bundle().modsRecommendModStars(textValue);
             default -> textValue;
         };
         Cell<?> cell = table.add(text).color(pink);

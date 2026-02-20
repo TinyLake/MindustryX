@@ -49,7 +49,7 @@ public class StatExt{
 
     public static @Nullable String description(Ability ability, UnitType unit){
         if(ability instanceof ForceFieldAbility a){
-            return mindustryX.bundles.UiTexts.uiAbilityShieldCapacity(
+            return mindustryX.bundles.UiTextBundle.uiAbilityShieldCapacity(
             statValue(a.max),
             statValue(a.radius / tilesize),
             statValue(a.regen * 60f),
@@ -57,14 +57,14 @@ public class StatExt{
             );
         }else if(ability instanceof LiquidExplodeAbility a){
             float rad = Math.max(unit.hitSize / tilesize * a.radScale, 1);
-            return mindustryX.bundles.UiTexts.uiAbilityLiquidExplode(
+            return mindustryX.bundles.UiTextBundle.uiAbilityLiquidExplode(
             statValue(1f / 3f * Math.PI * rad * rad * a.amount * a.radAmountScale),
             statValue(a.liquid.localizedName),
             statValue(a.liquid.emoji()),
             statValue(rad)
             );
         }else if(ability instanceof LiquidRegenAbility a){
-            return mindustryX.bundles.UiTexts.uiAbilityLiquidRegen(
+            return mindustryX.bundles.UiTextBundle.uiAbilityLiquidRegen(
             statValue(a.slurpSpeed),
             statValue(a.liquid.localizedName),
             statValue(a.liquid.emoji()),
@@ -72,14 +72,14 @@ public class StatExt{
             statValue(Math.PI * Math.pow(Math.max(unit.hitSize / tilesize * 0.6f, 1), 2) * a.slurpSpeed * a.regenPerSlurp)
             );
         }else if(ability instanceof MoveLightningAbility a){
-            return mindustryX.bundles.UiTexts.uiAbilityLightning(
+            return mindustryX.bundles.UiTextBundle.uiAbilityLightning(
             statValue(a.chance * 100),
             statValue(a.damage),
             statValue(a.length),
             statValue(a.maxSpeed)
             );
         }else if(ability instanceof SuppressionFieldAbility a){
-            return mindustryX.bundles.UiTexts.uiAbilityDurationTiles(
+            return mindustryX.bundles.UiTextBundle.uiAbilityDurationTiles(
             statValue(a.reload / 60f),
             statValue(a.range / tilesize)
             );

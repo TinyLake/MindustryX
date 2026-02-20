@@ -41,9 +41,9 @@ public class ReplayController{
         Events.on(ClientServerConnectEvent.class, (e) -> stopPlay());
         {
             Table buttons = Vars.ui.join.buttons;
-            buttons.button(mindustryX.bundles.UiTexts.i("加载回放文件"), Icon.file, () -> { // 原文本:加载回放文件
+            buttons.button(mindustryX.bundles.UiTextBundle.i("加载回放文件"), Icon.file, () -> { // 原文本:加载回放文件
                 FileChooser.setLastDirectory(saveDirectory);
-                platform.showFileChooser(true, mindustryX.bundles.UiTexts.i("打开回放文件"), "mrep", f -> Core.app.post(() -> ReplayController.startPlay(f))); // 原文本:打开回放文件
+                platform.showFileChooser(true, mindustryX.bundles.UiTextBundle.i("打开回放文件"), "mrep", f -> Core.app.post(() -> ReplayController.startPlay(f))); // 原文本:打开回放文件
             });
         }
         {
@@ -51,7 +51,7 @@ public class ReplayController{
             pausedDialog.shown(() -> {
                 if(!replaying) return;
                 pausedDialog.cont.row()
-                .button(mindustryX.bundles.UiTexts.i("查看录制信息"), Icon.fileImage, ReplayController::showInfo).name("ReplayInfo") // 原文本:查看录制信息
+                .button(mindustryX.bundles.UiTextBundle.i("查看录制信息"), Icon.fileImage, ReplayController::showInfo).name("ReplayInfo") // 原文本:查看录制信息
                 .size(0, 60).colspan(pausedDialog.cont.getColumns()).fill();
             });
         }
@@ -65,13 +65,13 @@ public class ReplayController{
         try{
             writer = new ReplayData.Writer(file.write(false, 8192));
         }catch(Exception e){
-            Log.err(mindustryX.bundles.UiTexts.i("创建回放出错!"), e); // 原文本:创建回放出错!
+            Log.err(mindustryX.bundles.UiTextBundle.i("创建回放出错!"), e); // 原文本:创建回放出错!
             return;
         }
         boolean anonymous = Core.settings.getBool("anonymous", false);
         ReplayData header = new ReplayData(Version.build, new Date(), anonymous ? "anonymous" : ip, anonymous ? "anonymous" : Vars.player.name.trim());
         writer.writeHeader(header);
-        Log.info(mindustryX.bundles.UiTexts.uiRecording(file.absolutePath()));
+        Log.info(mindustryX.bundles.UiTextBundle.uiRecording(file.absolutePath()));
         ReplayController.writer = writer;
     }
 
@@ -80,7 +80,7 @@ public class ReplayController{
         if(p instanceof Disconnect){
             writer.close();
             writer = null;
-            Log.info(mindustryX.bundles.UiTexts.i("录制结束")); // 原文本:录制结束
+            Log.info(mindustryX.bundles.UiTextBundle.i("录制结束")); // 原文本:录制结束
             return;
         }
         try{
@@ -88,7 +88,7 @@ public class ReplayController{
         }catch(Exception e){
             net.disconnect();
             Log.err(e);
-            Core.app.post(() -> ui.showException(mindustryX.bundles.UiTexts.i("录制出错!"), e)); // 原文本:录制出错!
+            Core.app.post(() -> ui.showException(mindustryX.bundles.UiTextBundle.i("录制出错!"), e)); // 原文本:录制出错!
         }
     }
 
@@ -99,7 +99,7 @@ public class ReplayController{
             reader = new ReplayData.Reader(input);
             Log.infoTag("Replay", reader.getMeta().toString());
         }catch(Exception e){
-            Core.app.post(() -> ui.showException(mindustryX.bundles.UiTexts.i("读取回放失败!"), e)); // 原文本:读取回放失败!
+            Core.app.post(() -> ui.showException(mindustryX.bundles.UiTextBundle.i("读取回放失败!"), e)); // 原文本:读取回放失败!
         }
 
         replaying = true;
@@ -160,25 +160,25 @@ public class ReplayController{
 
 
     public static void showInfo(){
-        BaseDialog dialog = new BaseDialog(mindustryX.bundles.UiTexts.i("回放统计")); // 原文本:回放统计
+        BaseDialog dialog = new BaseDialog(mindustryX.bundles.UiTextBundle.i("回放统计")); // 原文本:回放统计
         if(reader == null){
-            dialog.cont.add(mindustryX.bundles.UiTexts.i("未加载回放!")); // 原文本:未加载回放!
+            dialog.cont.add(mindustryX.bundles.UiTextBundle.i("未加载回放!")); // 原文本:未加载回放!
             return;
         }
         var replay = reader.getMeta();
-        dialog.cont.add(mindustryX.bundles.UiTexts.bundle().playbackVersion(String.valueOf(replay.getVersion()))).row(); // 原文本:回放版本:
-        dialog.cont.add(mindustryX.bundles.UiTexts.bundle().replayCreationTime(String.valueOf(replay.getTime()))).row(); // 原文本:回放创建时间:
-        dialog.cont.add(mindustryX.bundles.UiTexts.bundle().serverIp(replay.getServerIp())).row(); // 原文本:服务器ip:
-        dialog.cont.add(mindustryX.bundles.UiTexts.bundle().playerName(replay.getRecordPlayer())).row(); // 原文本:玩家名:
+        dialog.cont.add(mindustryX.bundles.UiTextBundle.bundle().playbackVersion(String.valueOf(replay.getVersion()))).row(); // 原文本:回放版本:
+        dialog.cont.add(mindustryX.bundles.UiTextBundle.bundle().replayCreationTime(String.valueOf(replay.getTime()))).row(); // 原文本:回放创建时间:
+        dialog.cont.add(mindustryX.bundles.UiTextBundle.bundle().serverIp(replay.getServerIp())).row(); // 原文本:服务器ip:
+        dialog.cont.add(mindustryX.bundles.UiTextBundle.bundle().playerName(replay.getRecordPlayer())).row(); // 原文本:玩家名:
 
         if(reader.getSource() != null){
             var tmpReader = new ReplayData.Reader(reader.getSource());
             var packets = tmpReader.allPacket();
             tmpReader.close();
 
-            dialog.cont.add(mindustryX.bundles.UiTexts.bundle().packetCount(packets.size())).row(); // 原文本:数据包总数：
+            dialog.cont.add(mindustryX.bundles.UiTextBundle.bundle().packetCount(packets.size())).row(); // 原文本:数据包总数：
             int secs = (int)(packets.get(packets.size() - 1).getOffset() / 60);
-            dialog.cont.add(mindustryX.bundles.UiTexts.bundle().playbackLength((secs / 3600) + ":" + (secs / 60 % 60) + ":" + (secs % 60))).row(); // 原文本:回放长度:
+            dialog.cont.add(mindustryX.bundles.UiTextBundle.bundle().playbackLength((secs / 3600) + ":" + (secs / 60 % 60) + ":" + (secs % 60))).row(); // 原文本:回放长度:
             dialog.cont.pane(t -> {
                 t.defaults().pad(2);
                 for(var packet : packets){

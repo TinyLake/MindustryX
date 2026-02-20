@@ -12,7 +12,7 @@ import mindustryX.features.*;
 import java.net.*;
 import java.util.*;
 
-import static mindustryX.bundles.UiTexts.*;
+import static mindustryX.bundles.UiTextBundle.*;
 import static mindustry.Vars.ui;
 
 public class Hooks implements ApplicationListener{

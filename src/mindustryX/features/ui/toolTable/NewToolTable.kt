@@ -35,41 +35,41 @@ object NewToolTable : Table() {
         add(gridTable).growX().row()
         gridTable.defaults().size(Vars.iconLarge)
 
-        button(mindustryX.bundles.UiTexts.i("信"), mindustryX.bundles.UiTexts.i("中央监控室")) { UIExt.arcMessageDialog.show() } // 原文本:信 | 中央监控室
-        button("S", mindustryX.bundles.UiTexts.i("同步一波")) { Call.sendChatMessage("/sync") } // 原文本:同步一波
-        button(mindustryX.bundles.UiTexts.i("观"), mindustryX.bundles.UiTexts.i("观察者模式")) { Call.sendChatMessage("/ob") } // 原文本:观 | 观察者模式
-        button(mindustryX.bundles.UiTexts.i("版"), mindustryX.bundles.UiTexts.i("服务器信息版")) { Call.sendChatMessage("/broad") } // 原文本:版 | 服务器信息版
-        toggle(mindustryX.bundles.UiTexts.i("雾"), mindustryX.bundles.UiTexts.i("战争迷雾"), { Vars.state.rules.fog }) { // 原文本:雾 | 战争迷雾
+        button(mindustryX.bundles.UiTextBundle.i("信"), mindustryX.bundles.UiTextBundle.i("中央监控室")) { UIExt.arcMessageDialog.show() } // 原文本:信 | 中央监控室
+        button("S", mindustryX.bundles.UiTextBundle.i("同步一波")) { Call.sendChatMessage("/sync") } // 原文本:同步一波
+        button(mindustryX.bundles.UiTextBundle.i("观"), mindustryX.bundles.UiTextBundle.i("观察者模式")) { Call.sendChatMessage("/ob") } // 原文本:观 | 观察者模式
+        button(mindustryX.bundles.UiTextBundle.i("版"), mindustryX.bundles.UiTextBundle.i("服务器信息版")) { Call.sendChatMessage("/broad") } // 原文本:版 | 服务器信息版
+        toggle(mindustryX.bundles.UiTextBundle.i("雾"), mindustryX.bundles.UiTextBundle.i("战争迷雾"), { Vars.state.rules.fog }) { // 原文本:雾 | 战争迷雾
             Vars.state.rules.fog = Vars.state.rules.fog xor true
         }.disabled { Vars.state.rules.pvp && Vars.player.team().id != 255 }
-        button(mindustryX.bundles.UiTexts.i("[white]法"), mindustryX.bundles.UiTexts.i("法国军礼")) { // 原文本:[white]法 | 法国军礼
-            Vars.ui.showConfirm(mindustryX.bundles.UiTexts.i("受不了，直接投降？")) { Call.sendChatMessage("/vote gameover") } // 原文本:受不了，直接投降？
+        button(mindustryX.bundles.UiTextBundle.i("[white]法"), mindustryX.bundles.UiTextBundle.i("法国军礼")) { // 原文本:[white]法 | 法国军礼
+            Vars.ui.showConfirm(mindustryX.bundles.UiTextBundle.i("受不了，直接投降？")) { Call.sendChatMessage("/vote gameover") } // 原文本:受不了，直接投降？
         }
-        toggle(mindustryX.bundles.UiTexts.i("扫"), mindustryX.bundles.UiTexts.i("扫描模式"), { RenderExt.transportScan.value }) { RenderExt.transportScan.toggle() } // 原文本:扫 | 扫描模式
+        toggle(mindustryX.bundles.UiTextBundle.i("扫"), mindustryX.bundles.UiTextBundle.i("扫描模式"), { RenderExt.transportScan.value }) { RenderExt.transportScan.toggle() } // 原文本:扫 | 扫描模式
 
-        toggle(mindustryX.bundles.UiTexts.i("块"), mindustryX.bundles.UiTexts.i("建筑显示"), { RenderExt.blockRenderLevel > 0 }) { RenderExt.blockRenderLevel0.cycle() } // 原文本:块 | 建筑显示
-        toggle(mindustryX.bundles.UiTexts.i("兵"), mindustryX.bundles.UiTexts.i("兵种显示"), { !RenderExt.unitHide.value }) { RenderExt.unitHide.toggle() } // 原文本:兵 | 兵种显示
-        toggle(mindustryX.bundles.UiTexts.i("弹"), mindustryX.bundles.UiTexts.i("子弹显示"), { !RenderExt.noBulletShow.value }) { RenderExt.noBulletShow.toggle() } // 原文本:弹 | 子弹显示
-        toggle(mindustryX.bundles.UiTexts.i("效"), mindustryX.bundles.UiTexts.i("特效显示"), { Vars.renderer.enableEffects }) { Settings.toggle("effects") } // 原文本:效 | 特效显示
-        toggle(mindustryX.bundles.UiTexts.i("墙"), mindustryX.bundles.UiTexts.i("墙体阴影显示"), { Vars.enableDarkness }) { Vars.enableDarkness = !Vars.enableDarkness } // 原文本:墙 | 墙体阴影显示
-        toggle("${Iconc.map}", mindustryX.bundles.UiTexts.i("小地图显示"), { Core.settings.getBool("minimap") }) { Settings.toggle("minimap") } // 原文本:小地图显示
-        toggle(mindustryX.bundles.UiTexts.i("箱"), mindustryX.bundles.UiTexts.i("碰撞箱显示"), { RenderExt.unitHitbox.value }) { RenderExt.unitHitbox.toggle() } // 原文本:箱 | 碰撞箱显示
+        toggle(mindustryX.bundles.UiTextBundle.i("块"), mindustryX.bundles.UiTextBundle.i("建筑显示"), { RenderExt.blockRenderLevel > 0 }) { RenderExt.blockRenderLevel0.cycle() } // 原文本:块 | 建筑显示
+        toggle(mindustryX.bundles.UiTextBundle.i("兵"), mindustryX.bundles.UiTextBundle.i("兵种显示"), { !RenderExt.unitHide.value }) { RenderExt.unitHide.toggle() } // 原文本:兵 | 兵种显示
+        toggle(mindustryX.bundles.UiTextBundle.i("弹"), mindustryX.bundles.UiTextBundle.i("子弹显示"), { !RenderExt.noBulletShow.value }) { RenderExt.noBulletShow.toggle() } // 原文本:弹 | 子弹显示
+        toggle(mindustryX.bundles.UiTextBundle.i("效"), mindustryX.bundles.UiTextBundle.i("特效显示"), { Vars.renderer.enableEffects }) { Settings.toggle("effects") } // 原文本:效 | 特效显示
+        toggle(mindustryX.bundles.UiTextBundle.i("墙"), mindustryX.bundles.UiTextBundle.i("墙体阴影显示"), { Vars.enableDarkness }) { Vars.enableDarkness = !Vars.enableDarkness } // 原文本:墙 | 墙体阴影显示
+        toggle("${Iconc.map}", mindustryX.bundles.UiTextBundle.i("小地图显示"), { Core.settings.getBool("minimap") }) { Settings.toggle("minimap") } // 原文本:小地图显示
+        toggle(mindustryX.bundles.UiTextBundle.i("箱"), mindustryX.bundles.UiTextBundle.i("碰撞箱显示"), { RenderExt.unitHitbox.value }) { RenderExt.unitHitbox.toggle() } // 原文本:箱 | 碰撞箱显示
 
-        button("${Iconc.blockRadar}", mindustryX.bundles.UiTexts.i("雷达开关")) { ArcRadar.mobileRadar = !ArcRadar.mobileRadar }.get().also { // 原文本:雷达开关
+        button("${Iconc.blockRadar}", mindustryX.bundles.UiTextBundle.i("雷达开关")) { ArcRadar.mobileRadar = !ArcRadar.mobileRadar }.get().also { // 原文本:雷达开关
             SettingsV2.bindQuickSettings(it, ArcRadar.settings)
         }
-        toggle("${Iconc.blockWorldProcessor}", mindustryX.bundles.UiTexts.i("移除逻辑锁定"), { Core.settings.getBool("removeLogicLock") }) { // 原文本:移除逻辑锁定
+        toggle("${Iconc.blockWorldProcessor}", mindustryX.bundles.UiTextBundle.i("移除逻辑锁定"), { Core.settings.getBool("removeLogicLock") }) { // 原文本:移除逻辑锁定
             Settings.toggle("removeLogicLock")
             if (Core.settings.getBool("removeLogicLock")) {
                 Vars.control.input.logicCutscene = false
-                Vars.ui.announce(mindustryX.bundles.UiTexts.i("已移除逻辑视角锁定")) // 原文本:已移除逻辑视角锁定
+                Vars.ui.announce(mindustryX.bundles.UiTextBundle.i("已移除逻辑视角锁定")) // 原文本:已移除逻辑视角锁定
             }
         }
-        toggle(Blocks.worldMessage.emoji(), mindustryX.bundles.UiTexts.i("信息板全显示"), { RenderExt.displayAllMessage }) { Settings.toggle("displayallmessage") } // 原文本:信息板全显示
-        button("${Iconc.itemCopper}", mindustryX.bundles.UiTexts.i("矿物信息")) { floorStatisticDialog() } // 原文本:矿物信息
+        toggle(Blocks.worldMessage.emoji(), mindustryX.bundles.UiTextBundle.i("信息板全显示"), { RenderExt.displayAllMessage }) { Settings.toggle("displayallmessage") } // 原文本:信息板全显示
+        button("${Iconc.itemCopper}", mindustryX.bundles.UiTextBundle.i("矿物信息")) { floorStatisticDialog() } // 原文本:矿物信息
 
-        button("${Iconc.fill}", mindustryX.bundles.UiTexts.i("特效大全")) { EffectsDialog.withAllEffects().show() } // 原文本:特效大全
-        button("${Iconc.star}", mindustryX.bundles.UiTexts.i("ui大全")) { uiTableDialog().show() } // 原文本:ui大全
+        button("${Iconc.fill}", mindustryX.bundles.UiTextBundle.i("特效大全")) { EffectsDialog.withAllEffects().show() } // 原文本:特效大全
+        button("${Iconc.star}", mindustryX.bundles.UiTextBundle.i("ui大全")) { uiTableDialog().show() } // 原文本:ui大全
 
 
         add(GridTable()).update { t: Table ->
@@ -114,7 +114,7 @@ object NewToolTable : Table() {
     data class Button(val icon: Drawable, val tooltip: String, val action: () -> Unit)
 
     data class CustomButton(val name: String, val content: String) {
-        constructor() : this("?", mindustryX.bundles.UiTexts.i("未输入指令")) // 原文本:未输入指令
+        constructor() : this("?", mindustryX.bundles.UiTextBundle.i("未输入指令")) // 原文本:未输入指令
 
         fun run() {
             if (content.startsWith("@js ")) {
@@ -168,7 +168,7 @@ object NewToolTable : Table() {
                 update {
                     if (changed()) clearChildren()
                     if (hasChildren()) return@update
-                    add(mindustryX.bundles.UiTexts.i("序号")); add(mindustryX.bundles.UiTexts.i("显示名")); add(mindustryX.bundles.UiTexts.i("消息(@js 开头为脚本)")); row() // 原文本:序号 | 显示名 | 消息(@js 开头为脚本)
+                    add(mindustryX.bundles.UiTextBundle.i("序号")); add(mindustryX.bundles.UiTextBundle.i("显示名")); add(mindustryX.bundles.UiTextBundle.i("消息(@js 开头为脚本)")); row() // 原文本:序号 | 显示名 | 消息(@js 开头为脚本)
                     value.forEachIndexed { i, d ->
                         var tmp = d
                         add(i.toString()).padRight(4f)
@@ -185,7 +185,7 @@ object NewToolTable : Table() {
                     button("@add", Icon.addSmall) {
                         set(value + CustomButton())
                     }.colspan(columns).fillX().row()
-                    add(mindustryX.bundles.UiTexts.i("[yellow]添加新指令前，请先保存编辑的指令")).colspan(columns).center().padTop(-4f).row() // 原文本:[yellow]添加新指令前，请先保存编辑的指令
+                    add(mindustryX.bundles.UiTextBundle.i("[yellow]添加新指令前，请先保存编辑的指令")).colspan(columns).center().padTop(-4f).row() // 原文本:[yellow]添加新指令前，请先保存编辑的指令
                 }
             }) { shown }.growX()
             table.row()
@@ -194,12 +194,12 @@ object NewToolTable : Table() {
 
 
     private fun floorStatisticDialog() {
-        val dialog = BaseDialog(mindustryX.bundles.UiTexts.i("ARC-矿物统计")) // 原文本:ARC-矿物统计
+        val dialog = BaseDialog(mindustryX.bundles.UiTextBundle.i("ARC-矿物统计")) // 原文本:ARC-矿物统计
         val table = dialog.cont
         table.clear()
 
         table.table { c: Table ->
-            c.add(mindustryX.bundles.UiTexts.i("矿物矿(地表/墙矿)")).color(Pal.accent).center().fillX().row() // 原文本:矿物矿(地表/墙矿)
+            c.add(mindustryX.bundles.UiTextBundle.i("矿物矿(地表/墙矿)")).color(Pal.accent).center().fillX().row() // 原文本:矿物矿(地表/墙矿)
             c.image().color(Pal.accent).fillX().row()
             c.table { list: Table ->
                 var i = 0
@@ -213,7 +213,7 @@ object NewToolTable : Table() {
                 }
             }.row()
 
-            c.add(mindustryX.bundles.UiTexts.i("液体")).color(Pal.accent).center().fillX().row() // 原文本:液体
+            c.add(mindustryX.bundles.UiTextBundle.i("液体")).color(Pal.accent).center().fillX().row() // 原文本:液体
             c.image().color(Pal.accent).fillX().row()
             c.table { list: Table ->
                 var i = 0
@@ -236,7 +236,7 @@ object NewToolTable : Table() {
     }
 
 
-    private fun uiTableDialog() = BaseDialog(mindustryX.bundles.UiTexts.i("UI图标大全")).apply { // 原文本:UI图标大全
+    private fun uiTableDialog() = BaseDialog(mindustryX.bundles.UiTextBundle.i("UI图标大全")).apply { // 原文本:UI图标大全
         cont.defaults().maxWidth(800f)
         var query = ""
         val sField = TextField()
@@ -246,7 +246,7 @@ object NewToolTable : Table() {
             field(query) { query = it }.pad(8f).grow().colspan(2).update { if (!it.hasKeyboard()) it.text = query }
             button(Icon.cancelSmall, Styles.cleari) { query = "" }.padLeft(16f).size(32f)
             row()
-            add(mindustryX.bundles.UiTexts.i("暂存区")).color(Pal.lightishGray).padRight(16f) // 原文本:暂存区
+            add(mindustryX.bundles.UiTextBundle.i("暂存区")).color(Pal.lightishGray).padRight(16f) // 原文本:暂存区
             add(sField).growX().get()
             button(Icon.copySmall, Styles.cleari) {
                 Core.app.clipboardText = sField.text
@@ -256,7 +256,7 @@ object NewToolTable : Table() {
         cont.row()
         Table().apply {
             defaults().minWidth(1f)
-            add(mindustryX.bundles.UiTexts.i("颜色")).color(Pal.accent).center().row() // 原文本:颜色
+            add(mindustryX.bundles.UiTextBundle.i("颜色")).color(Pal.accent).center().row() // 原文本:颜色
             image().color(Pal.accent).fillX().row()
             GridTable().apply {
                 defaults().height(32f).width(80f).pad(4f)
@@ -270,7 +270,7 @@ object NewToolTable : Table() {
                 }
             }.also { add(it).growX().row() }
 
-            add(mindustryX.bundles.UiTexts.i("物品")).color(Pal.accent).center().row() // 原文本:物品
+            add(mindustryX.bundles.UiTextBundle.i("物品")).color(Pal.accent).center().row() // 原文本:物品
             image().color(Pal.accent).fillX().row()
             GridTable().apply {
                 defaults().size(Vars.iconLarge)
@@ -287,7 +287,7 @@ object NewToolTable : Table() {
                 }
             }.also { add(it).growX().row() }
 
-            add(mindustryX.bundles.UiTexts.i("图标")).color(Pal.accent).center().row() // 原文本:图标
+            add(mindustryX.bundles.UiTextBundle.i("图标")).color(Pal.accent).center().row() // 原文本:图标
             image().color(Pal.accent).fillX().row()
             GridTable().apply {
                 defaults().size(Vars.iconLarge)
