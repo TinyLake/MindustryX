@@ -7,7 +7,6 @@ import arc.graphics.g2d.Fill
 import arc.graphics.g2d.Lines
 import arc.math.Mathf
 import arc.struct.IntSet
-import arc.util.Strings
 import arc.util.Tmp
 import mindustry.Vars.*
 import mindustry.content.Items
@@ -59,9 +58,9 @@ object NewTransferScanMode {
         Draw.z(Layer.overlayUI + 0.01f)
 
         val pos = Core.input.mouseWorld()
-        val text = Strings.format(
-            mindustryX.bundles.UiTexts.ui("arg_arg_ndistance_arg"), // 原文本:@,@\n距离: @
-            (pos.x / tilesize).toInt(), (pos.y / tilesize).toInt(),
+        val text = mindustryX.bundles.UiTexts.uiCoordinateDistance(
+            (pos.x / tilesize).toInt(),
+            (pos.y / tilesize).toInt(),
             (player.dst(pos) / tilesize).toInt()
         )
         drawText(pos, text)

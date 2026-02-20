@@ -76,12 +76,12 @@ object VarsX {
     }
 
     @JvmField
-    val itemSelectionHeight = SliderPref("gameUI.itemSelectionHeight", 4, 4, 12) { mindustryX.bundles.UiTexts.uiTemplate("itemSelectionHeight", it) }.apply { // 原文本:{0} 行
+    val itemSelectionHeight = SliderPref("gameUI.itemSelectionHeight", 4, 4, 12) { mindustryX.bundles.UiTexts.uiItemSelectionHeight(it) }.apply {
         addFallbackName("itemSelectionHeight")
     }
 
     @JvmField
-    val itemSelectionWidth = SliderPref("gameUI.itemSelectionWidth", 4, 4, 12) { mindustryX.bundles.UiTexts.uiTemplate("itemSelectionWidth", it) }.apply { // 原文本:{0} 列
+    val itemSelectionWidth = SliderPref("gameUI.itemSelectionWidth", 4, 4, 12) { mindustryX.bundles.UiTexts.uiItemSelectionWidth(it) }.apply {
         addFallbackName("itemSelectionWidth")
     }
 

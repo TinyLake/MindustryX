@@ -151,7 +151,7 @@ public class AdvanceBuildTool extends Table{
     }
 
     public static void showWorldProcessorInfo(){
-        Log.info(mindustryX.bundles.UiTexts.ui("current_map_arg"), state.map.name()); // 原文本:当前地图:@
+        Log.info(mindustryX.bundles.UiTexts.uiCurrentMap(state.map.name()));
         int[] data = new int[3];
         Groups.build.each(b -> {
             if(b instanceof LogicBlock.LogicBuild lb && lb.block.privileged){
@@ -160,8 +160,9 @@ public class AdvanceBuildTool extends Table{
                 data[2] += lb.code.length();
             }
         });
-        Log.info(mindustryX.bundles.UiTexts.ui("the_map_has_arg_world_processors_arg_instruction_lines_and_arg_characters"), data[0], data[1], data[2]); // 原文本:地图共有@个世处，总共@行指令，@个字符
-        ui.announce(Strings.format(mindustryX.bundles.UiTexts.ui("the_map_has_arg_world_processors_arg_instruction_lines_and_arg_characters"), data[0], data[1], data[2]), 10); // 原文本:地图共有@个世处，总共@行指令，@个字符
+        String text = mindustryX.bundles.UiTexts.uiWorldProcessorSummary(data[0], data[1], data[2]);
+        Log.info(text);
+        ui.announce(text, 10);
     }
 
     void replaceBlock(Block ori, Block re){

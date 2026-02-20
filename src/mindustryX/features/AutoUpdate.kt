@@ -149,9 +149,9 @@ object AutoUpdate {
             }
 
             //width为整个Table最小宽度
-            add(mindustryX.bundles.UiTexts.uiTemplate("currentVersion", VarsX.version)).labelAlign(Align.center).width(500f).wrap().row() // 原文本:当前版本号: {0}
+            add(mindustryX.bundles.UiTexts.uiCurrentVersion(VarsX.version)).labelAlign(Align.center).width(500f).wrap().row()
             newVersion?.let {
-                add(mindustryX.bundles.UiTexts.uiTemplate("newVersion", it.version)).labelAlign(Align.center).width(500f).wrap().row() // 原文本:[green]发现新版本[]: {0}
+                add(mindustryX.bundles.UiTexts.uiNewVersion(it.version)).labelAlign(Align.center).width(500f).wrap().row()
             }
             if (versions.isEmpty()) {
                 add(mindustryX.bundles.UiTexts.ui("could_not_check_for_updates_nplease_try_again_later")).labelAlign(Align.center).width(500f).wrap().row() // 原文本:检查更新失败，请稍后再试

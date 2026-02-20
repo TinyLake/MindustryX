@@ -71,7 +71,7 @@ public class ReplayController{
         boolean anonymous = Core.settings.getBool("anonymous", false);
         ReplayData header = new ReplayData(Version.build, new Date(), anonymous ? "anonymous" : ip, anonymous ? "anonymous" : Vars.player.name.trim());
         writer.writeHeader(header);
-        Log.info(mindustryX.bundles.UiTexts.ui("recording_arg"), file.absolutePath()); // 原文本:录制中: @
+        Log.info(mindustryX.bundles.UiTexts.uiRecording(file.absolutePath()));
         ReplayController.writer = writer;
     }
 

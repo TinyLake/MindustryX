@@ -131,8 +131,8 @@ public class LogicSupport{
         for(var v : executor.allVars){
             if(v.name.startsWith("___")) continue;
             varsTable.table(Tex.paneSolid, table -> {
-                Label nameLabel = createCopyableLabel(v.name, null, uiCopiedVariableNameHint()); // 原文本:复制变量名\n@
-                Label valueLabel = createCopyableLabel(arcVarsText(v), null, uiCopiedVariableAttributesHint()); // 原文本:复制变量属性\n@
+                Label nameLabel = createCopyableLabel(v.name, null, mindustryX.bundles.UiTexts::uiCopiedVariableNameHint);
+                Label valueLabel = createCopyableLabel(arcVarsText(v), null, mindustryX.bundles.UiTexts::uiCopiedVariableAttributesHint);
 
                 table.add(nameLabel).color(arcVarsColor(v)).ellipsis(true).wrap().expand(3, 1).fill().get();
                 table.add(valueLabel).ellipsis(true).wrap().padLeft(16f).expand(2, 1).fill().get();
@@ -154,7 +154,7 @@ public class LogicSupport{
         }
 
         varsTable.table(Tex.paneSolid, table -> {
-            Label label = createCopyableLabel("", table, uiCopiedPrintBufferHint()); // 原文本:复制信息版\n@
+            Label label = createCopyableLabel("", table, mindustryX.bundles.UiTexts::uiCopiedPrintBufferHint);
 
             table.add("@printbuffer").color(Color.goldenrod).center().row();
             table.add(label).labelAlign(Align.topLeft).wrap().minHeight(150).growX();
@@ -180,14 +180,14 @@ public class LogicSupport{
         return Tmp.c1.set(Color.white).lerp(Color.yellow, heat[0]);
     }
 
-    private static Label createCopyableLabel(String text, @Nullable Element hitter, String hint){
+    private static Label createCopyableLabel(String text, @Nullable Element hitter, Func<String, String> hintBuilder){
         Label label = new Label(text);
         hitter = hitter == null ? label : hitter;
         hitter.touchable = Touchable.enabled;
         hitter.tapped(() -> {
             String t = label.getText().toString();
             Core.app.setClipboardText(t);
-            UIExt.announce(Strings.format(hint, t));
+            UIExt.announce(hintBuilder.get(t));
         });
         return label;
     }

@@ -41,9 +41,9 @@ public class TimeControl{
         gameSpeed = speed;
         if(fpsLock){
             fpsLock = false;
-            Vars.ui.announce(Strings.format(mindustryX.bundles.UiTexts.ui("frame_rate_lock_mode_turned_off_ncurrent_game_speed_arg_times"), gameSpeed)); // 原文本:已关闭帧率锁定模式\n当前游戏速度：@倍
+            Vars.ui.announce(mindustryX.bundles.UiTexts.uiFpsLockOff(gameSpeed));
         }else{
-            Vars.ui.announce(Strings.format(mindustryX.bundles.UiTexts.ui("current_game_speed_arg_times"), gameSpeed)); // 原文本:当前游戏速度：@倍
+            Vars.ui.announce(mindustryX.bundles.UiTexts.uiCurrentGameSpeed(gameSpeed));
         }
         Time.setDeltaProvider(gameSpeed == 1f ? origin : deltaProvider);
     }
@@ -51,7 +51,7 @@ public class TimeControl{
     public static void setFpsLock(){
         gameSpeedBalance.clear();
         fpsLock = true;
-        Vars.ui.announce(Strings.format(mindustryX.bundles.UiTexts.ui("frame_rate_lock_mode_enabled_ncurrent_frame_rate_lock_arg"), targetFps)); // 原文本:已开启帧率锁定模式\n当前帧率锁定：@
+        Vars.ui.announce(mindustryX.bundles.UiTexts.uiFpsLockEnabled(targetFps));
         Time.setDeltaProvider(deltaProvider);
     }
 
@@ -74,7 +74,7 @@ public class TimeControl{
             if(num < 2 || num > 10000) return;
             targetFps = num;
             if(fpsLock){
-                Vars.ui.announce(Strings.format(mindustryX.bundles.UiTexts.ui("current_frame_rate_locked_arg"), targetFps)); // 原文本:当前帧率锁定：@
+                Vars.ui.announce(mindustryX.bundles.UiTexts.uiFpsLockCurrent(targetFps));
             }
         }).valid(s -> {
             if(!Strings.canParsePositiveInt(s)) return false;

@@ -61,7 +61,7 @@ public class ArcOld{
                     image.setDrawable(texture);
                 });
             }catch(Exception e){
-                Core.app.post(() -> ui.showException(mindustryX.bundles.UiTexts.uiTemplate("invalidBackgroundImage", file.path()), e)); // 原文本:背景图片无效: {0}
+                Core.app.post(() -> ui.showException(mindustryX.bundles.UiTexts.uiInvalidBackgroundImage(file.path()), e));
             }
         });
     }

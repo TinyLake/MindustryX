@@ -86,7 +86,7 @@ public class AuxiliaryTools extends Table{
 
             Core.settings.put(settingName, !setting);
             String state = setting ? mindustryX.bundles.UiTexts.ui("off") : mindustryX.bundles.UiTexts.ui("on"); // 原文本:关闭 | 开启
-            UIExt.announce(mindustryX.bundles.UiTexts.uiTemplate("toggleState", description, state)); // 原文本:{0}: {1}
+            UIExt.announce(mindustryX.bundles.UiTexts.uiToggleState(description, state));
         }).tooltip(description, true).checked(b -> Core.settings.getBool(settingName));
     }
 

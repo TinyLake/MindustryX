@@ -40,39 +40,48 @@ public class StatExt{
     ammoType = new Stat("ammo_type", StatCat.combat),
     ammoCapacity = new Stat("ammo_capacity", StatCat.combat);
 
-    private static String abilityFormat(String format, Object... values){
-        for(int i = 0; i < values.length; i++){
-            if(values[i] instanceof Number n)
-                values[i] = "[stat]" + Strings.autoFixed(n.floatValue(), 1) + "[]";
-            else
-                values[i] = "[white]" + values[i] + "[]";
+    private static String statValue(Object value){
+        if(value instanceof Number n){
+            return "[stat]" + Strings.autoFixed(n.floatValue(), 1) + "[]";
         }
-        return Strings.format("[lightgray]" + format.replace("~", "[accent]~[]"), values);
+        return "[white]" + value + "[]";
     }
 
     public static @Nullable String description(Ability ability, UnitType unit){
         if(ability instanceof ForceFieldAbility a){
-            return abilityFormat(mindustryX.bundles.UiTexts.ui("arg_shield_capacity_arg_grid_arg_recovery_arg_s_cooldown"), // 原文本:@盾容~@格~@恢复~@s冷却
-            a.max, a.radius / tilesize, a.regen * 60f, a.cooldown / 60f
+            return mindustryX.bundles.UiTexts.uiAbilityShieldCapacity(
+            statValue(a.max),
+            statValue(a.radius / tilesize),
+            statValue(a.regen * 60f),
+            statValue(a.cooldown / 60f)
             );
         }else if(ability instanceof LiquidExplodeAbility a){
             float rad = Math.max(unit.hitSize / tilesize * a.radScale, 1);
-            return abilityFormat(mindustryX.bundles.UiTexts.ui("total_arg_arg_arg_arg_tile_radius"), // 原文本:总计@@@~@格半径
-            1f / 3f * Math.PI * rad * rad * a.amount * a.radAmountScale,// 1/3πr²h
-            a.liquid.localizedName, a.liquid.emoji(), rad
+            return mindustryX.bundles.UiTexts.uiAbilityLiquidExplode(
+            statValue(1f / 3f * Math.PI * rad * rad * a.amount * a.radAmountScale),
+            statValue(a.liquid.localizedName),
+            statValue(a.liquid.emoji()),
+            statValue(rad)
             );
         }else if(ability instanceof LiquidRegenAbility a){
-            return abilityFormat(mindustryX.bundles.UiTexts.ui("each_cell_absorbs_arg_s_arg_arg_arg_s_and_returns_blood_maximum_arg_s"), // 原文本:每格吸收@/s@@~@/s回血~最大@/s
-            a.slurpSpeed, a.liquid.localizedName, a.liquid.emoji(), a.slurpSpeed * a.regenPerSlurp,
-            Math.PI * Math.pow(Math.max(unit.hitSize / tilesize * 0.6f, 1), 2) * a.slurpSpeed * a.regenPerSlurp
+            return mindustryX.bundles.UiTexts.uiAbilityLiquidRegen(
+            statValue(a.slurpSpeed),
+            statValue(a.liquid.localizedName),
+            statValue(a.liquid.emoji()),
+            statValue(a.slurpSpeed * a.regenPerSlurp),
+            statValue(Math.PI * Math.pow(Math.max(unit.hitSize / tilesize * 0.6f, 1), 2) * a.slurpSpeed * a.regenPerSlurp)
             );
         }else if(ability instanceof MoveLightningAbility a){
-            return abilityFormat(mindustryX.bundles.UiTexts.ui("lightning_arg_probability_arg_damage_arg_length_arg_x_speed"), // 原文本:闪电@概率~@伤害~@长度 @x速度
-            a.chance * 100, a.damage, a.length, a.maxSpeed
+            return mindustryX.bundles.UiTexts.uiAbilityLightning(
+            statValue(a.chance * 100),
+            statValue(a.damage),
+            statValue(a.length),
+            statValue(a.maxSpeed)
             );
         }else if(ability instanceof SuppressionFieldAbility a){
-            return abilityFormat(mindustryX.bundles.UiTexts.ui("arg_s_arg_tiles"), // 原文本:@s~@格
-            a.reload / 60f, a.range / tilesize
+            return mindustryX.bundles.UiTexts.uiAbilityDurationTiles(
+            statValue(a.reload / 60f),
+            statValue(a.range / tilesize)
             );
         }
         return null;

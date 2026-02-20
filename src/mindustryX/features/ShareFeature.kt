@@ -42,7 +42,7 @@ object ShareFeature {
 
     @JvmStatic
     fun at(playerName: String?) {
-        send('@', mindustryX.bundles.UiTexts.uiTemplate("atPlayer", playerName)) // 原文本:<AT>戳了{0}[white]一下，并提醒他留意对话框
+        send('@', mindustryX.bundles.UiTexts.uiAtPlayer(playerName))
     }
 
     @JvmStatic
@@ -50,7 +50,7 @@ object ShareFeature {
         uploadPasteBin(Vars.schematics.writeBase64(s)) { url ->
             if (url == null) return@uploadPasteBin
             val code = url.substring(url.lastIndexOf('/') + 1)
-            send(Iconc.paste, mindustryX.bundles.UiTexts.uiTemplate("shareCode", code)) // 原文本:<ARCxMDTX><Schem>[black]一坨兼容[] {0}
+            send(Iconc.paste, mindustryX.bundles.UiTexts.uiShareCode(code))
         }
     }
 
@@ -72,7 +72,7 @@ object ShareFeature {
     fun shareSchematicClipboard(schem: Schematic) {
         uploadPasteBin(Vars.schematics.writeBase64(schem)) { link: String? ->
             val msg = buildString {
-                append(mindustryX.bundles.UiTexts.uiTemplate("shareHeader", VarsX.version)) // 原文本:这是一条来自 MDTX-{0} 的分享记录\n
+                append(mindustryX.bundles.UiTexts.uiShareHeader(VarsX.version))
                 append(mindustryX.bundles.UiTexts.ui("blueprint_name")).append(schem.name()).append("\n") // 原文本:蓝图名：
                 append(mindustryX.bundles.UiTexts.ui("shared_by")).append(Vars.player.name).append("\n") // 原文本:分享者：
                 append(mindustryX.bundles.UiTexts.ui("blueprint_cost")) // 原文本:蓝图造价：
@@ -119,7 +119,7 @@ object ShareFeature {
     //因为ArcMessageDialog共用了，所以单独提取出来
     fun waveInfo(wave: Int) = buildString {
         val spawner = Vars.spawner
-        append(mindustryX.bundles.UiTexts.uiTemplate("waveContains", spawner.countGroundSpawns(), spawner.countFlyerSpawns())) // 原文本:包含(地×{0},空x{1}):
+        append(mindustryX.bundles.UiTexts.uiWaveContains(spawner.countGroundSpawns(), spawner.countFlyerSpawns()))
 
         for (group in Vars.state.rules.spawns) {
             val count = group.getSpawned(wave - 1)
@@ -140,11 +140,11 @@ object ShareFeature {
         if (!Vars.state.rules.waves) return
 
         val msg = buildString {
-            append(mindustryX.bundles.UiTexts.uiTemplate("waveTitle", wave)) // 原文本:第{0}波
+            append(mindustryX.bundles.UiTexts.uiWaveTitle(wave))
 
             if (wave >= Vars.state.wave) {
                 val timer = (Vars.state.wavetime + (wave - Vars.state.wave) * Vars.state.rules.waveSpacing).toInt()
-                append(mindustryX.bundles.UiTexts.uiTemplate("waveEta", wave - Vars.state.wave, duration(timer.toFloat() / 60))) // 原文本:(还有{0}波, {1})
+                append(mindustryX.bundles.UiTexts.uiWaveEta(wave - Vars.state.wave, duration(timer.toFloat() / 60)))
             }
 
             append("：").append(waveInfo(wave))
@@ -248,7 +248,7 @@ object ShareFeature {
         //Remove prefix
         message = message.substringAfter("<AT>").substringAfter(tag('@'))
         if (message.contains(Vars.player.name)) {
-            if (sender != null) Vars.ui.announce(mindustryX.bundles.UiTexts.uiTemplate("atNoticeFrom", sender.name), 10f) // 原文本:[gold]你被[white]{0}[gold]戳了一下，请注意查看信息框哦~
+            if (sender != null) Vars.ui.announce(mindustryX.bundles.UiTexts.uiAtNoticeFrom(sender.name), 10f)
             else Vars.ui.announce(mindustryX.bundles.UiTexts.ui("you_were_poked_please_pay_attention_to_the_information_box"), 10f) // 原文本:[orange]你被戳了一下，请注意查看信息框哦~
         }
 
