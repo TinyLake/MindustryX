@@ -264,13 +264,12 @@ interface UiTextBundle {
             }
         }
 
+        /**
+         * Lightweight constant-text lookup.
+         * Keep this for no-arg static labels only; any text with variables/order/formatting must use typed bundle methods.
+         */
         @JvmStatic
-        fun i(zh: String): String = if (isChineseLocale()) zh else zhToEn[zh] ?: zh
-
-        private fun isChineseLocale(): Boolean {
-            val language = Core.bundle.locale?.language ?: Locale.getDefault().language
-            return language == Locale.CHINESE.language
-        }
+        fun i(zh: String): String = if (Lang.isChinese()) zh else zhToEn[zh] ?: zh
 
         private val zhToEn = hashMapOf(
             "\n[white]分走了单位:" to "\n[white] took units:",
@@ -616,12 +615,25 @@ interface UiTextBundle {
             "Github收藏数：{0}" to "Github Stars: {0}",
             "{0}：库存 {1}，产量 {2}/秒" to "{0}: Stock {1}, Production {2}/s",
             "{0}：数量 {1}，上限 {2}" to "{0}: Count {1}, Limit {2}",
+        ).filterKeys(::isConstantTextKey).toMap()
+
+        private val placeholderBracePattern = Regex("\\{\\d+}")
+        private val placeholderAtPattern = Regex("(^|[^A-Za-z0-9])@($|[^A-Za-z0-9])")
+
+        private fun isConstantTextKey(key: String): Boolean {
+            if (placeholderBracePattern.containsMatchIn(key)) return false
+            if (placeholderAtPattern.containsMatchIn(key)) return false
+            return true
+        }
+
+        private val bundlesByLanguage: Map<String, UiTextBundle> = mapOf(
+            Locale.CHINESE.language to ZH,
         )
 
         @JvmStatic
         fun default(): UiTextBundle {
-            val language = Core.bundle.locale?.language ?: Locale.getDefault().language
-            return if (language == Locale.CHINESE.language) ZH else EN
+            val language = (Core.bundle?.locale?.language ?: Locale.getDefault().language).lowercase(Locale.ROOT)
+            return bundlesByLanguage[language] ?: EN
         }
     }
 }
