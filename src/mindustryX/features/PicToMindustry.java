@@ -123,7 +123,7 @@ public class PicToMindustry{
                     image.dispose();
                     saveSchem(schem, Blocks.canvas.emoji());
                 }).size(100, 50);
-                tt.add(uiSize() + w + "\uE815" + h); // 原文本:大小：
+                tt.add(mindustryX.bundles.UiTexts.bundle().sizeWithDimensions(w, h)); // 原文本:大小：
             });
             t.row();
             t.table(tt -> {
@@ -135,7 +135,7 @@ public class PicToMindustry{
                     image.dispose();
                     saveSchem(schem, Blocks.canvas.emoji());
                 }).size(100, 50);
-                tt.add(uiSize() + w + "\uE815" + h); // 原文本:大小：
+                tt.add(mindustryX.bundles.UiTexts.bundle().sizeWithDimensions(w, h)); // 原文本:大小：
             }).row();
             t.table(tt -> {
                 tt.button(uiLabelWithEmoji(uiPixelArt(), Blocks.sorter.emoji()), Styles.cleart, () -> { // 原文本:像素画 {0}
@@ -144,7 +144,7 @@ public class PicToMindustry{
                     image.dispose();
                     saveSchem(schem, Blocks.sorter.emoji());
                 }).size(100, 50);
-                tt.add(uiSize() + formatNumber(scaledW) + "\uE815" + formatNumber(scaledH)); // 原文本:大小：
+                tt.add(mindustryX.bundles.UiTexts.bundle().sizeWithDimensions(formatNumber(scaledW), formatNumber(scaledH))); // 原文本:大小：
             }).row();
         });
     }

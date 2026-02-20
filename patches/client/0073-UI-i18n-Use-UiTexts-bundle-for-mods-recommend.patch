@@ -1,0 +1,27 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: DeterMination-Wind <DeterMination-Wind@users.noreply.github.com>
+Date: Fri, 20 Feb 2026 16:52:56 +0800
+Subject: [PATCH] =?UTF-8?q?=E2=99=BB=EF=B8=8F=20i18n=20=E5=B0=86=E6=8E=A8?=
+ =?UTF-8?q?=E8=8D=90=E6=A8=A1=E7=BB=84=E6=8C=89=E9=92=AE=E6=94=B9=E4=B8=BA?=
+ =?UTF-8?q?UiTexts=E6=8E=A5=E5=8F=A3?=
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+---
+ core/src/mindustry/ui/dialogs/ModsDialog.java | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/core/src/mindustry/ui/dialogs/ModsDialog.java b/core/src/mindustry/ui/dialogs/ModsDialog.java
+index b25f5a8f0dd177bbc757d02696783e987524ad37..e0cc5c5fe576f92a3fb313c63bde3e6b0b0d2ead 100644
+--- a/core/src/mindustry/ui/dialogs/ModsDialog.java
++++ b/core/src/mindustry/ui/dialogs/ModsDialog.java
+@@ -250,7 +250,7 @@ public class ModsDialog extends BaseDialog{
+ 
+             buttons.row();
+ 
+-            buttons.button("@mods.recommend", Icon.list, style, UIExt.modsRecommend::show).colspan(2);
++            buttons.button(mindustryX.bundles.UiTexts.bundle().modsRecommendTitle(), Icon.list, style, UIExt.modsRecommend::show).colspan(2);
+         }).width(modCardWidth);
+ 
+         cont.row();

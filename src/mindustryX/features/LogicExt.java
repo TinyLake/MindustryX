@@ -23,8 +23,8 @@ public class LogicExt{
     public static final CheckPref terrainSchematic0 = new CheckPref("terrainSchematic");
     public static final CheckPref reliableSync = new CheckPref("debug.reliableSync");
     public static final SliderPref limitUpdate = new SliderPref("debug.limitUpdate", 0, 0, 100, 1, (it) -> {
-        if(it == 0) return mindustryX.bundles.UiTexts.ui("off"); // 原文本:关闭
-        return it + mindustryX.bundles.UiTexts.ui("tiles"); // 原文本:格
+        if(it == 0) return mindustryX.bundles.UiTexts.bundle().i("关闭"); // 原文本:关闭
+        return mindustryX.bundles.UiTexts.bundle().tiles(it); // 原文本:格
     });
     public static final CheckPref rotateCanvas = new CheckPref("block.rotateCanvas");
 

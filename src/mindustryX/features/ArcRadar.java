@@ -47,14 +47,9 @@ public class ArcRadar{
     private static Table t;
 
     private static final SettingsV2.Data<Integer>
-    mode = new SliderPref("arcExtra.radarMode", 1, 1, 30, 1, s -> switch(s){
-        case 0 -> mindustryX.bundles.UiTexts.ui("off"); // 原文本:关闭
-        case 30 -> mindustryX.bundles.UiTexts.ui("instant"); // 原文本:瞬间完成
-        default -> "[lightgray]x[white]" + Strings.autoFixed(s * 0.2f, 1) + mindustryX.bundles.UiTexts.ui("x_scan_speed"); // 原文本:倍搜索速度
-    }),
+    mode = new SliderPref("arcExtra.radarMode", 1, 1, 30, 1, s -> mindustryX.bundles.UiTexts.bundle().radarSpeedMode(s)),
     size = new SliderPref("arcExtra.radarSize", 0, 0, 50, 1, s -> {
-        if(s == 0) return mindustryX.bundles.UiTexts.ui("fixed_size"); // 原文本:固定大小
-        return "[lightgray]x[white]" + Strings.autoFixed(s * 0.1f, 1) + mindustryX.bundles.UiTexts.ui("placeholder_x"); // 原文本:倍
+        return mindustryX.bundles.UiTexts.bundle().radarSizeMode(s);
     });
     public static List<SettingsV2.Data<?>> settings = CollectionsKt.listOf(mode, size);
 
@@ -90,7 +85,7 @@ public class ArcRadar{
         if(working && t == null){
             t = new Table(Styles.black3);
             t.touchable = Touchable.disabled;
-            t.margin(8f).add(mindustryX.bundles.UiTexts.ui("radar_scanning")).color(Pal.accent).style(Styles.outlineLabel); // 原文本:>> 雷达扫描中 <<
+            t.margin(8f).add(mindustryX.bundles.UiTexts.bundle().i(">> 雷达扫描中 <<")).color(Pal.accent).style(Styles.outlineLabel); // 原文本:>> 雷达扫描中 <<
             t.pack();
             t.visible(() -> working);
             t.update(() -> t.setPosition(Core.graphics.getWidth() / 2f, Core.graphics.getHeight() * 0.1f, Align.center));

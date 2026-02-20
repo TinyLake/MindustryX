@@ -63,11 +63,11 @@ public class TimeControl{
     public static void draw(Table table){
         table.label(() -> "x" + Strings.autoFixed(getGameSpeed(), 2)).width(18f * 3);
 
-        table.button("/2", Styles.cleart, () -> setGameSpeed(gameSpeed * 0.5f)).tooltip(mindustryX.bundles.UiTexts.ui("slow_the_flow_of_time_to_half")).size(40f, 30f); // 原文本:将时间流速放慢到一半
-        table.button("×2", Styles.cleart, () -> setGameSpeed(gameSpeed * 2f)).tooltip(mindustryX.bundles.UiTexts.ui("speed_up_time_to_2x")).size(40f, 30f); // 原文本:将时间流速加快到两倍
-        table.button("[red]S", Styles.cleart, () -> setGameSpeed(0f)).tooltip(mindustryX.bundles.UiTexts.ui("pause_time")).size(30f, 30f); // 原文本:暂停时间
-        table.button("[green]N", Styles.cleart, () -> setGameSpeed(1f)).tooltip(mindustryX.bundles.UiTexts.ui("return_to_original_speed")).size(30f, 30f); // 原文本:恢复原速
-        table.button("[white]F", Styles.cleart, TimeControl::setFpsLock).tooltip(mindustryX.bundles.UiTexts.ui("frame_rate_simulation")).size(30f, 30f); // 原文本:帧率模拟
+        table.button("/2", Styles.cleart, () -> setGameSpeed(gameSpeed * 0.5f)).tooltip(mindustryX.bundles.UiTexts.bundle().i("将时间流速放慢到一半")).size(40f, 30f); // 原文本:将时间流速放慢到一半
+        table.button("×2", Styles.cleart, () -> setGameSpeed(gameSpeed * 2f)).tooltip(mindustryX.bundles.UiTexts.bundle().i("将时间流速加快到两倍")).size(40f, 30f); // 原文本:将时间流速加快到两倍
+        table.button("[red]S", Styles.cleart, () -> setGameSpeed(0f)).tooltip(mindustryX.bundles.UiTexts.bundle().i("暂停时间")).size(30f, 30f); // 原文本:暂停时间
+        table.button("[green]N", Styles.cleart, () -> setGameSpeed(1f)).tooltip(mindustryX.bundles.UiTexts.bundle().i("恢复原速")).size(30f, 30f); // 原文本:恢复原速
+        table.button("[white]F", Styles.cleart, TimeControl::setFpsLock).tooltip(mindustryX.bundles.UiTexts.bundle().i("帧率模拟")).size(30f, 30f); // 原文本:帧率模拟
 
         table.field(Integer.toString(targetFps), s -> {
             int num = Integer.parseInt(s);
@@ -80,6 +80,6 @@ public class TimeControl{
             if(!Strings.canParsePositiveInt(s)) return false;
             int num = Integer.parseInt(s);
             return 2 <= num && num < 10000;
-        }).tooltip(mindustryX.bundles.UiTexts.ui("allowed_range_2_9999")).size(80f, 30f); // 原文本:允许的范围：2~9999
+        }).tooltip(mindustryX.bundles.UiTexts.bundle().i("允许的范围：2~9999")).size(80f, 30f); // 原文本:允许的范围：2~9999
     }
 }

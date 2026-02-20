@@ -14,7 +14,7 @@ import static mindustry.Vars.modDirectory;
 public class InternalMods{
     public static Seq<LoadedMod> load(){
         Seq<LoadedMod> mods = new Seq<>();
-        mods.add(internalMod(meta("Kotlin", mindustryX.bundles.UiTexts.ui("kotlin_language_standard_library"), "1.9.20", "Jetbrains"))); // 原文本:Kotlin语言标准库
+        mods.add(internalMod(meta("Kotlin", mindustryX.bundles.UiTexts.bundle().i("Kotlin语言标准库"), "1.9.20", "Jetbrains"))); // 原文本:Kotlin语言标准库
         if(!VarsX.isLoader)
             mods.add(internalMod(meta("MindustryX", "MindustryX", VarsX.version, "")));
         return mods;
@@ -34,7 +34,7 @@ public class InternalMods{
     private static ModMeta meta(String id, String displayName, String version, String author){
         ModMeta meta = new ModMeta();
         meta.name = id;
-        meta.displayName = mindustryX.bundles.UiTexts.ui("built_in_prefix") + displayName; // 原文本:[内置]
+        meta.displayName = mindustryX.bundles.UiTexts.bundle().builtInDisplayName(displayName); // 原文本:[内置]
         meta.version = version;
         meta.author = author;
         meta.minGameVersion = Version.buildString();
