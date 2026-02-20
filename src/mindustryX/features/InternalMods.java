@@ -14,7 +14,7 @@ import static mindustry.Vars.modDirectory;
 public class InternalMods{
     public static Seq<LoadedMod> load(){
         Seq<LoadedMod> mods = new Seq<>();
-        mods.add(internalMod(meta("Kotlin", mindustryX.bundles.UiTexts.bundle().i("Kotlin语言标准库"), "1.9.20", "Jetbrains"))); // 原文本:Kotlin语言标准库
+        mods.add(internalMod(meta("Kotlin", mindustryX.bundles.UiTexts.i("Kotlin语言标准库"), "1.9.20", "Jetbrains"))); // 原文本:Kotlin语言标准库
         if(!VarsX.isLoader)
             mods.add(internalMod(meta("MindustryX", "MindustryX", VarsX.version, "")));
         return mods;

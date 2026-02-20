@@ -13,7 +13,7 @@ public class TeamSelectDialog extends BaseDialog{
     private Cons<Team> cons;
 
     public TeamSelectDialog(){
-        super(mindustryX.bundles.UiTexts.bundle().i("队伍选择器")); // 原文本:队伍选择器
+        super(mindustryX.bundles.UiTexts.i("队伍选择器")); // 原文本:队伍选择器
         cont.pane(td -> {
             for(Team team : Team.all){
                 if(team.id % 10 == 6){

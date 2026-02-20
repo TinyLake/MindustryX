@@ -85,7 +85,7 @@ public class ArcRadar{
         if(working && t == null){
             t = new Table(Styles.black3);
             t.touchable = Touchable.disabled;
-            t.margin(8f).add(mindustryX.bundles.UiTexts.bundle().i(">> 雷达扫描中 <<")).color(Pal.accent).style(Styles.outlineLabel); // 原文本:>> 雷达扫描中 <<
+            t.margin(8f).add(mindustryX.bundles.UiTexts.i(">> 雷达扫描中 <<")).color(Pal.accent).style(Styles.outlineLabel); // 原文本:>> 雷达扫描中 <<
             t.pack();
             t.visible(() -> working);
             t.update(() -> t.setPosition(Core.graphics.getWidth() / 2f, Core.graphics.getHeight() * 0.1f, Align.center));

@@ -5,133 +5,133 @@ import arc.util.Strings
 import java.util.Locale
 
 interface UiTextBundle {
-    fun i(zh: String): String = zh
+    fun mdtxReport(): String = "问题反馈"
+    fun mdtxQqLink(): String = "QQ交流群"
+    fun modsRecommendTitle(): String = "[accent]MdtX[]推荐辅助模组列表"
+    fun modsRecommendInfo(): String = "精选辅助模组"
+    fun modsRecommendLastUpdated(value: String): String = "推荐列表更新时间：$value"
+    fun modsRecommendModName(value: String): String = "模组：$value"
+    fun modsRecommendModAuthor(value: String): String = "作者：$value"
+    fun modsRecommendModMinGameVersion(value: String): String = "最低支持游戏版本：$value"
+    fun modsRecommendModLastUpdated(value: String): String = "上次更新时间：$value"
+    fun modsRecommendModStars(value: String): String = "Github收藏数：$value"
 
-    fun i(zh: String, vararg args: Any?): String {
-        val translated = i(zh)
-        if (args.isEmpty()) return translated
-        if (translated.contains("@")) return Strings.format(translated, *args)
-        var output = translated
-        args.forEachIndexed { index, arg ->
-            output = output.replace("{" + index + "}", arg?.toString() ?: "null")
-        }
-        return output
-    }
+    fun mdtxShareItem(name: String, stock: String, production: String): String = "$name：库存 $stock，产量 $production/秒"
+    fun mdtxShareUnit(name: String, count: String, limit: Int): String = "$name：数量 $count，上限 $limit"
 
-    fun mdtxReport(): String = i("问题反馈")
-    fun mdtxQqLink(): String = i("QQ交流群")
-    fun modsRecommendTitle(): String = i("[accent]MdtX[]推荐辅助模组列表")
-    fun modsRecommendInfo(): String = i("精选辅助模组")
-    fun modsRecommendLastUpdated(value: Any?): String = i("推荐列表更新时间：{0}", value)
-    fun modsRecommendModName(value: Any?): String = i("模组：{0}", value)
-    fun modsRecommendModAuthor(value: Any?): String = i("作者：{0}", value)
-    fun modsRecommendModMinGameVersion(value: Any?): String = i("最低支持游戏版本：{0}", value)
-    fun modsRecommendModLastUpdated(value: Any?): String = i("上次更新时间：{0}", value)
-    fun modsRecommendModStars(value: Any?): String = i("Github收藏数：{0}", value)
-
-    fun mdtxShareItem(name: Any?, stock: Any?, production: Any?): String = i("{0}：库存 {1}，产量 {2}/秒", name, stock, production)
-    fun mdtxShareUnit(name: Any?, count: Any?, limit: Any?): String = i("{0}：数量 {1}，上限 {2}", name, count, limit)
-
-    fun itemSelectionHeight(value: Int): String = i("{0} 行", value)
-    fun itemSelectionWidth(value: Int): String = i("{0} 列", value)
-    fun javaWarnLog(javaVersion: String): String = i("Java版本 {0} 过低，不受支持。请使用Java 17或更高版本运行MindustryX。", javaVersion)
-    fun javaWarnDialog(javaVersion: String): String = i("Java版本 {0} 过低，不受支持。\n[grey]该警告不存在设置，请更新Java版本。", javaVersion)
+    fun itemSelectionHeight(value: Int): String = "$value 行"
+    fun itemSelectionWidth(value: Int): String = "$value 列"
+    fun javaWarnLog(javaVersion: String): String = "Java版本 $javaVersion 过低，不受支持。请使用Java 17或更高版本运行MindustryX。"
+    fun javaWarnDialog(javaVersion: String): String = "Java版本 $javaVersion 过低，不受支持。\n[grey]该警告不存在设置，请更新Java版本。"
     fun windowTitle(version: String, enabledMods: Int, totalMods: Int, width: Int, height: Int): String =
-        i("MindustryX | 版本号 {0} | mod启用{1}/{2}", version, enabledMods, totalMods) + " | " + width + "x" + height
+        "MindustryX | 版本号 $version | mod启用$enabledMods/$totalMods | ${width}x$height"
 
-    fun currentVersion(version: String): String = i("当前版本号: {0}", version)
-    fun newVersion(version: String): String = i("[green]发现新版本[]: {0}", version)
-    fun loadMap(mapName: String): String = i("载入地图：{0}", mapName)
-    fun introduction(description: String): String = i("简介：{0}", description)
-    fun waveEvent(wave: Int, detail: String): String = i("波次：{0} | {1}", wave, detail)
-    fun exportHeader(version: String): String = i("下面是[MDTX-{0}] 导出的游戏内聊天记录", version)
-    fun exportMap(mapName: String, mode: String): String = i("*** 当前地图名称: {0}(模式: {1})\n", mapName, mode)
-    fun currentWave(wave: Int): String = i("*** 当前波次: {0}", wave)
-    fun exportCount(count: Int): String = i("成功选取共{0}条记录，如下：\n", count)
+    fun currentVersion(version: String): String = "当前版本号: $version"
+    fun newVersion(version: String): String = "[green]发现新版本[]: $version"
+    fun loadMap(mapName: String): String = "载入地图：$mapName"
+    fun introduction(description: String): String = "简介：$description"
+    fun waveEvent(wave: Int, detail: String): String = "波次：$wave | $detail"
+    fun exportHeader(version: String): String = "下面是[MDTX-$version] 导出的游戏内聊天记录"
+    fun exportMap(mapName: String, mode: String): String = "*** 当前地图名称: $mapName(模式: $mode)\n"
+    fun currentWave(wave: Int): String = "*** 当前波次: $wave"
+    fun exportCount(count: Int): String = "成功选取共${count}条记录，如下：\n"
 
-    fun toggleState(label: String, state: String): String = i("{0}: {1}", label, state)
-    fun copiedMemory(value: Double): String = i("[cyan]复制内存[white]\n {0}", value)
-    fun copiedVariableNameHint(value: String): String = i("复制变量名\n@", value)
-    fun copiedVariableAttributesHint(value: String): String = i("复制变量属性\n@", value)
-    fun copiedPrintBufferHint(value: String): String = i("复制信息版\n@", value)
+    fun toggleState(label: String, state: String): String = "$label: $state"
+    fun copiedMemory(value: Double): String = "[cyan]复制内存[white]\n $value"
+    fun copiedVariableNameHint(value: String): String = "复制变量名\n$value"
+    fun copiedVariableAttributesHint(value: String): String = "复制变量属性\n$value"
+    fun copiedPrintBufferHint(value: String): String = "复制信息版\n$value"
 
-    fun failedReadImage(error: Any?): String = i("读取图片失败，请尝试更换图片\n{0}", error)
-    fun invalidBackgroundImage(path: String): String = i("背景图片无效: {0}", path)
-    fun labelWithEmoji(label: String, emoji: String): String = i("{0} {1}", label, emoji)
-    fun savedBlueprint(name: String): String = i("已保存蓝图：{0}", name)
+    fun failedReadImage(error: Throwable): String = "读取图片失败，请尝试更换图片\n${error.message ?: error}"
+    fun invalidBackgroundImage(path: String): String = "背景图片无效: $path"
+    fun labelWithEmoji(label: String, emoji: String): String = "$label $emoji"
+    fun savedBlueprint(name: String): String = "已保存蓝图：$name"
 
-    fun fpsLockOff(gameSpeed: Float): String = i("已关闭帧率锁定模式\n当前游戏速度：@倍", gameSpeed)
-    fun currentGameSpeed(gameSpeed: Float): String = i("当前游戏速度：@倍", gameSpeed)
-    fun fpsLockEnabled(targetFps: Int): String = i("已开启帧率锁定模式\n当前帧率锁定：@", targetFps)
-    fun fpsLockCurrent(targetFps: Int): String = i("当前帧率锁定：@", targetFps)
-    fun currentMap(mapName: String): String = i("当前地图:@", mapName)
-    fun worldProcessorSummary(processors: Int, instructions: Int, chars: Int): String = i("地图共有@个世处，总共@行指令，@个字符", processors, instructions, chars)
+    fun fpsLockOff(gameSpeed: Float): String = "已关闭帧率锁定模式\n当前游戏速度：${gameSpeed}倍"
+    fun currentGameSpeed(gameSpeed: Float): String = "当前游戏速度：${gameSpeed}倍"
+    fun fpsLockEnabled(targetFps: Int): String = "已开启帧率锁定模式\n当前帧率锁定：$targetFps"
+    fun fpsLockCurrent(targetFps: Int): String = "当前帧率锁定：$targetFps"
+    fun currentMap(mapName: String): String = "当前地图:$mapName"
+    fun worldProcessorSummary(processors: Int, instructions: Int, chars: Int): String =
+        "地图共有${processors}个世处，总共${instructions}行指令，${chars}个字符"
 
-    fun recording(path: String): String = i("录制中: @", path)
-    fun coordinateDistance(x: Int, y: Int, distance: Int): String = i("@,@\n距离: @", x, y, distance)
+    fun recording(path: String): String = "录制中: $path"
+    fun coordinateDistance(x: Int, y: Int, distance: Int): String = "$x,$y\n距离: $distance"
 
-    fun atPlayer(playerName: String?): String = i("<AT>戳了{0}[white]一下，并提醒他留意对话框", playerName ?: "")
-    fun atNoticeFrom(senderName: String): String = i("[gold]你被[white]{0}[gold]戳了一下，请注意查看信息框哦~", senderName)
-    fun shareCode(code: String): String = i("<ARCxMDTX><Schem>[black]一坨兼容[] {0}", code)
-    fun shareHeader(version: String): String = i("这是一条来自 MDTX-{0} 的分享记录\n", version)
-    fun waveContains(ground: Int, air: Int): String = i("包含(地×{0},空x{1}):", ground, air)
-    fun waveTitle(wave: Int): String = i("第{0}波", wave)
-    fun waveEta(remainingWaves: Int, eta: String): String = i("(还有{0}波, {1})", remainingWaves, eta)
+    fun atPlayer(playerName: String?): String = "<AT>戳了${playerName ?: ""}[white]一下，并提醒他留意对话框"
+    fun atNoticeFrom(senderName: String): String = "[gold]你被[white]$senderName[gold]戳了一下，请注意查看信息框哦~"
+    fun shareCode(code: String): String = "<ARCxMDTX><Schem>[black]一坨兼容[] $code"
+    fun shareHeader(version: String): String = "这是一条来自 MDTX-$version 的分享记录\n"
+    fun waveContains(ground: Int, air: Int): String = "包含(地×$ground,空x$air):"
+    fun waveTitle(wave: Int): String = "第${wave}波"
+    fun waveEta(remainingWaves: Int, eta: String): String = "(还有${remainingWaves}波, $eta)"
 
-    fun shieldCapacity(max: String, radius: String, recovery: String, cooldown: String): String = i("@盾容~@格~@恢复~@s冷却", max, radius, recovery, cooldown)
-    fun liquidExplode(total: String, liquidName: String, liquidEmoji: String, radius: String): String = i("总计@@@~@格半径", total, liquidName, liquidEmoji, radius)
+    fun shieldCapacity(max: String, radius: String, recovery: String, cooldown: String): String =
+        "[lightgray]${max}盾容[accent]~[]${radius}格[accent]~[]${recovery}恢复[accent]~[]${cooldown}s冷却"
+
+    fun liquidExplode(total: String, liquidName: String, liquidEmoji: String, radius: String): String =
+        "[lightgray]总计${total}${liquidName}${liquidEmoji}[accent]~[]${radius}格半径"
+
     fun liquidRegen(absorb: String, liquidName: String, liquidEmoji: String, heal: String, maxHeal: String): String =
-        i("每格吸收@/s@@~@/s回血~最大@/s", absorb, liquidName, liquidEmoji, heal, maxHeal)
-    fun lightning(probability: String, damage: String, length: String, speed: String): String = i("闪电@概率~@伤害~@长度 @x速度", probability, damage, length, speed)
-    fun durationTiles(seconds: String, tiles: String): String = i("@s~@格", seconds, tiles)
+        "[lightgray]每格吸收${absorb}/s${liquidName}${liquidEmoji}[accent]~[]${heal}/s回血[accent]~[]最大${maxHeal}/s"
 
-    fun refreshInterval(value: Int): String = i("刷新间隔") + value
-    fun zoomScale(scale: String): String = i("缩放: x") + scale
-    fun teamRange(teamId: Int): String = i("队伍：") + teamId + "~" + (teamId + 9)
-    fun copiedSuccessfully(text: String): String = i("复制成功:") + text
-    fun builtInDisplayName(name: String): String = i("[内置]") + name
-    fun playbackVersion(value: Any?): String = i("回放版本:") + value
-    fun replayCreationTime(value: Any?): String = i("回放创建时间:") + value
-    fun serverIp(value: Any?): String = i("服务器ip:") + value
-    fun playerName(value: Any?): String = i("玩家名:") + value
-    fun packetCount(value: Any?): String = i("数据包总数：") + value
-    fun playbackLength(value: Any?): String = i("回放长度:") + value
-    fun sizeWithDimensions(width: Any?, height: Any?): String = i("大小：") + width + "\uE815" + height
-    fun tiles(value: Any?): String = value.toString() + i("格")
-    fun tilesOrOff(value: Int): String = if (value > 0) value.toString() + i("格") else i("关闭")
-    fun percentOrOff(value: Int): String = if (value > 0) value.toString() + "%" else i("关闭")
-    fun hpOrAll(value: Int): String = if (value > 0) value.toString() + "[red]HP" else i("全部显示")
+    fun lightning(probability: String, damage: String, length: String, speed: String): String =
+        "[lightgray]闪电${probability}概率[accent]~[]${damage}伤害[accent]~[]${length}长度 ${speed}x速度"
+
+    fun durationTiles(seconds: String, tiles: String): String = "[lightgray]${seconds}s[accent]~[]${tiles}格"
+
+    fun refreshInterval(value: Int): String = "刷新间隔$value"
+    fun zoomScale(scale: String): String = "缩放: x$scale"
+    fun teamRange(teamId: Int): String = "队伍：$teamId~${teamId + 9}"
+    fun copiedSuccessfully(text: String): String = "复制成功:$text"
+    fun builtInDisplayName(name: String): String = "[内置]$name"
+    fun playbackVersion(value: String): String = "回放版本:$value"
+    fun replayCreationTime(value: String): String = "回放创建时间:$value"
+    fun serverIp(value: String): String = "服务器ip:$value"
+    fun playerName(value: String): String = "玩家名:$value"
+    fun packetCount(value: Int): String = "数据包总数：$value"
+    fun playbackLength(value: String): String = "回放长度:$value"
+    fun sizeWithDimensions(width: String, height: String): String = "大小：$width\uE815$height"
+    fun tiles(value: Number): String = "${value}格"
+    fun tilesOrOff(value: Int): String = if (value > 0) "${value}格" else "关闭"
+    fun percentOrOff(value: Int): String = if (value > 0) "${value}%" else "关闭"
+    fun hpOrAll(value: Int): String = if (value > 0) "${value}[red]HP" else "全部显示"
     fun radarSpeedMode(value: Int): String = when (value) {
-        0 -> i("关闭")
-        30 -> i("瞬间完成")
-        else -> "[lightgray]x[white]" + Strings.autoFixed(value * 0.2f, 1) + i("倍搜索速度")
+        0 -> "关闭"
+        30 -> "瞬间完成"
+        else -> "[lightgray]x[white]" + Strings.autoFixed(value * 0.2f, 1) + "倍搜索速度"
     }
-    fun radarSizeMode(value: Int): String = if (value == 0) i("固定大小") else "[lightgray]x[white]" + Strings.autoFixed(value * 0.1f, 1) + i("倍")
+
+    fun radarSizeMode(value: Int): String = if (value == 0) "固定大小" else "[lightgray]x[white]" + Strings.autoFixed(value * 0.1f, 1) + "倍"
+
     fun turretShowRangeMode(value: Int): String = when (value) {
-        0 -> i("关闭")
-        1 -> i("仅对地")
-        2 -> i("仅对空")
-        3 -> i("全部")
+        0 -> "关闭"
+        1 -> "仅对地"
+        2 -> "仅对空"
+        3 -> "全部"
         else -> ""
     }
+
     fun unitWeaponRangeMode(value: Int): String = when (value) {
-        0 -> i("关闭")
-        30 -> i("一直开启")
-        else -> value.toString() + i("格")
+        0 -> "关闭"
+        30 -> "一直开启"
+        else -> "${value}格"
     }
+
     fun unitTargetTypeMode(value: Int): String = when (value) {
-        0 -> i("关闭")
-        1 -> i("虚圆")
-        2 -> i("攻击")
-        3 -> i("攻击去边框")
-        4 -> i("圆十字")
-        5 -> i("十字")
+        0 -> "关闭"
+        1 -> "虚圆"
+        2 -> "攻击"
+        3 -> "攻击去边框"
+        4 -> "圆十字"
+        5 -> "十字"
         else -> value.toString()
     }
+
     fun superUnitEffectMode(value: Int): String = when (value) {
-        0 -> i("关闭")
-        1 -> i("独一无二")
-        2 -> i("全部玩家")
+        0 -> "关闭"
+        1 -> "独一无二"
+        2 -> "全部玩家"
         else -> value.toString()
     }
 
@@ -139,7 +139,137 @@ interface UiTextBundle {
         private object ZH : UiTextBundle
 
         private object EN : UiTextBundle {
-            override fun i(zh: String): String = zhToEn[zh] ?: zh
+            override fun mdtxReport(): String = "Report Issue"
+            override fun mdtxQqLink(): String = "QQ Group"
+            override fun modsRecommendTitle(): String = "[accent]MdtX[]Recommended Mods List"
+            override fun modsRecommendInfo(): String = "Selected Mods"
+            override fun modsRecommendLastUpdated(value: String): String = "Recommended List Last Updated: $value"
+            override fun modsRecommendModName(value: String): String = "Mod: $value"
+            override fun modsRecommendModAuthor(value: String): String = "Author: $value"
+            override fun modsRecommendModMinGameVersion(value: String): String = "Minimum Supported Game Version: $value"
+            override fun modsRecommendModLastUpdated(value: String): String = "Last Updated: $value"
+            override fun modsRecommendModStars(value: String): String = "Github Stars: $value"
+            override fun mdtxShareItem(name: String, stock: String, production: String): String = "$name: Stock $stock, Production $production/s"
+            override fun mdtxShareUnit(name: String, count: String, limit: Int): String = "$name: Count $count, Limit $limit"
+            override fun itemSelectionHeight(value: Int): String = "$value rows"
+            override fun itemSelectionWidth(value: Int): String = "$value columns"
+            override fun javaWarnLog(javaVersion: String): String =
+                "Java version $javaVersion is too low and unsupported. Please use Java 17+ to run MindustryX."
+
+            override fun javaWarnDialog(javaVersion: String): String =
+                "Java version $javaVersion is too low and unsupported.\n[grey]This warning cannot be disabled; please update Java."
+
+            override fun windowTitle(version: String, enabledMods: Int, totalMods: Int, width: Int, height: Int): String =
+                "MindustryX | Version $version | mods enabled $enabledMods/$totalMods | ${width}x$height"
+
+            override fun currentVersion(version: String): String = "Current version: $version"
+            override fun newVersion(version: String): String = "[green]New version found[]: $version"
+            override fun loadMap(mapName: String): String = "Load map: $mapName"
+            override fun introduction(description: String): String = "Introduction: $description"
+            override fun waveEvent(wave: Int, detail: String): String = "Waves: $wave | $detail"
+            override fun exportHeader(version: String): String = "[MDTX-$version] Exported in-game chat history"
+            override fun exportMap(mapName: String, mode: String): String = "*** Current map name: $mapName (mode: $mode)\n"
+            override fun currentWave(wave: Int): String = "*** Current wave: $wave"
+            override fun exportCount(count: Int): String = "Successfully selected a total of $count records:\n"
+            override fun copiedMemory(value: Double): String = "[cyan]Copied memory[white]\n $value"
+            override fun copiedVariableNameHint(value: String): String = "Copied variable name\n$value"
+            override fun copiedVariableAttributesHint(value: String): String = "Copied variable attributes\n$value"
+            override fun copiedPrintBufferHint(value: String): String = "Copied print buffer\n$value"
+            override fun failedReadImage(error: Throwable): String = "Failed to read image, please try another image\n${error.message ?: error}"
+            override fun invalidBackgroundImage(path: String): String = "Invalid background image: $path"
+            override fun savedBlueprint(name: String): String = "Saved blueprint: $name"
+            override fun fpsLockOff(gameSpeed: Float): String = "Frame rate lock mode turned off \nCurrent game speed: $gameSpeed times"
+            override fun currentGameSpeed(gameSpeed: Float): String = "Current game speed: $gameSpeed times"
+            override fun fpsLockEnabled(targetFps: Int): String = "Frame rate lock mode enabled \nCurrent frame rate lock: $targetFps"
+            override fun fpsLockCurrent(targetFps: Int): String = "Current frame rate locked: $targetFps"
+            override fun currentMap(mapName: String): String = "Current map: $mapName"
+            override fun worldProcessorSummary(processors: Int, instructions: Int, chars: Int): String =
+                "The map has $processors world processors, $instructions instruction lines, and $chars characters."
+
+            override fun recording(path: String): String = "Recording: $path"
+            override fun coordinateDistance(x: Int, y: Int, distance: Int): String = "$x,$y\nDistance: $distance"
+            override fun atPlayer(playerName: String?): String = "<AT> poked ${playerName ?: ""}[white] to check their messages."
+            override fun atNoticeFrom(senderName: String): String = "[gold]You were poked by [white]$senderName[gold]! Check the message dialog."
+            override fun shareCode(code: String): String = "<ARCxMDTX><Schem>[black]compat code[] $code"
+            override fun shareHeader(version: String): String = "This is a share log from MDTX-$version\n"
+            override fun waveContains(ground: Int, air: Int): String = "Contains (ground x$ground, air x$air):"
+            override fun waveTitle(wave: Int): String = "Wave $wave"
+            override fun waveEta(remainingWaves: Int, eta: String): String = "(in $remainingWaves waves, $eta)"
+            override fun shieldCapacity(max: String, radius: String, recovery: String, cooldown: String): String =
+                "[lightgray]${max} shield capacity[accent]~[]${radius} grid[accent]~[]${recovery} recovery[accent]~[]${cooldown}s cooldown"
+
+            override fun liquidExplode(total: String, liquidName: String, liquidEmoji: String, radius: String): String =
+                "[lightgray]Total ${total}${liquidName}${liquidEmoji}[accent]~[]${radius} tile radius"
+
+            override fun liquidRegen(absorb: String, liquidName: String, liquidEmoji: String, heal: String, maxHeal: String): String =
+                "[lightgray]Each cell absorbs ${absorb}/s${liquidName}${liquidEmoji}[accent]~[]heals ${heal}/s[accent]~[]up to ${maxHeal}/s"
+
+            override fun lightning(probability: String, damage: String, length: String, speed: String): String =
+                "[lightgray]Lightning ${probability} probability[accent]~[]${damage} damage[accent]~[]${length} length ${speed}x speed"
+
+            override fun durationTiles(seconds: String, tiles: String): String = "[lightgray]${seconds}s[accent]~[]${tiles} tiles"
+            override fun refreshInterval(value: Int): String = "Refresh interval$value"
+            override fun zoomScale(scale: String): String = "Zoom: x$scale"
+            override fun teamRange(teamId: Int): String = "Team: $teamId~${teamId + 9}"
+            override fun copiedSuccessfully(text: String): String = "Copied successfully:$text"
+            override fun builtInDisplayName(name: String): String = "[Built-in]$name"
+            override fun playbackVersion(value: String): String = "Playback version:$value"
+            override fun replayCreationTime(value: String): String = "Replay creation time:$value"
+            override fun serverIp(value: String): String = "Server IP:$value"
+            override fun playerName(value: String): String = "Player name:$value"
+            override fun packetCount(value: Int): String = "Packet count:$value"
+            override fun playbackLength(value: String): String = "Playback length:$value"
+            override fun sizeWithDimensions(width: String, height: String): String = "Size:$width\uE815$height"
+            override fun tiles(value: Number): String = "$value tiles"
+            override fun tilesOrOff(value: Int): String = if (value > 0) "$value tiles" else "Off"
+            override fun percentOrOff(value: Int): String = if (value > 0) "$value%" else "Off"
+            override fun hpOrAll(value: Int): String = if (value > 0) "$value[red]HP" else "Show all"
+            override fun radarSpeedMode(value: Int): String = when (value) {
+                0 -> "Off"
+                30 -> "Instant"
+                else -> "[lightgray]x[white]" + Strings.autoFixed(value * 0.2f, 1) + "x scan speed"
+            }
+
+            override fun radarSizeMode(value: Int): String = if (value == 0) "Fixed size" else "[lightgray]x[white]" + Strings.autoFixed(value * 0.1f, 1) + "x"
+
+            override fun turretShowRangeMode(value: Int): String = when (value) {
+                0 -> "Off"
+                1 -> "Ground only"
+                2 -> "Air only"
+                3 -> "All"
+                else -> ""
+            }
+
+            override fun unitWeaponRangeMode(value: Int): String = when (value) {
+                0 -> "Off"
+                30 -> "Always On"
+                else -> "$value tiles"
+            }
+
+            override fun unitTargetTypeMode(value: Int): String = when (value) {
+                0 -> "Off"
+                1 -> "Ring"
+                2 -> "Attack"
+                3 -> "Attack (no border)"
+                4 -> "Ring Cross"
+                5 -> "Cross"
+                else -> value.toString()
+            }
+
+            override fun superUnitEffectMode(value: Int): String = when (value) {
+                0 -> "Off"
+                1 -> "Unique"
+                2 -> "All players"
+                else -> value.toString()
+            }
+        }
+
+        @JvmStatic
+        fun i(zh: String): String = if (isChineseLocale()) zh else zhToEn[zh] ?: zh
+
+        private fun isChineseLocale(): Boolean {
+            val language = Core.bundle.locale?.language ?: Locale.getDefault().language
+            return language == Locale.CHINESE.language
         }
 
         private val zhToEn = hashMapOf(
@@ -498,95 +628,98 @@ interface UiTextBundle {
 
 object UiTexts {
     @JvmStatic
+    fun i(zh: String): String = UiTextBundle.i(zh)
+
+    @JvmStatic
     fun bundle(): UiTextBundle = UiTextBundle.default()
 
     fun mdtxReport(): String = bundle().mdtxReport()
     fun mdtxQqLink(): String = bundle().mdtxQqLink()
     fun modsRecommendTitle(): String = bundle().modsRecommendTitle()
     fun modsRecommendInfo(): String = bundle().modsRecommendInfo()
-    fun modsRecommendLastUpdated(value: Any?): String = bundle().modsRecommendLastUpdated(value)
-    fun modsRecommendModName(value: Any?): String = bundle().modsRecommendModName(value)
-    fun modsRecommendModAuthor(value: Any?): String = bundle().modsRecommendModAuthor(value)
-    fun modsRecommendModMinGameVersion(value: Any?): String = bundle().modsRecommendModMinGameVersion(value)
-    fun modsRecommendModLastUpdated(value: Any?): String = bundle().modsRecommendModLastUpdated(value)
-    fun modsRecommendModStars(value: Any?): String = bundle().modsRecommendModStars(value)
-    fun mdtxShareItem(name: Any?, stock: Any?, production: Any?): String = bundle().mdtxShareItem(name, stock, production)
-    fun mdtxShareUnit(name: Any?, count: Any?, limit: Any?): String = bundle().mdtxShareUnit(name, count, limit)
+    fun modsRecommendLastUpdated(value: String): String = bundle().modsRecommendLastUpdated(value)
+    fun modsRecommendModName(value: String): String = bundle().modsRecommendModName(value)
+    fun modsRecommendModAuthor(value: String): String = bundle().modsRecommendModAuthor(value)
+    fun modsRecommendModMinGameVersion(value: String): String = bundle().modsRecommendModMinGameVersion(value)
+    fun modsRecommendModLastUpdated(value: String): String = bundle().modsRecommendModLastUpdated(value)
+    fun modsRecommendModStars(value: String): String = bundle().modsRecommendModStars(value)
+    fun mdtxShareItem(name: String, stock: String, production: String): String = bundle().mdtxShareItem(name, stock, production)
+    fun mdtxShareUnit(name: String, count: String, limit: Int): String = bundle().mdtxShareUnit(name, count, limit)
 
     @JvmStatic fun uiJavaWarnLog(javaVersion: String): String = bundle().javaWarnLog(javaVersion)
     @JvmStatic fun uiJavaWarnDialog(javaVersion: String): String = bundle().javaWarnDialog(javaVersion)
     @JvmStatic fun uiWindowTitle(version: String, enabledMods: Int, totalMods: Int, width: Int, height: Int): String =
         bundle().windowTitle(version, enabledMods, totalMods, width, height)
 
-    @JvmStatic fun uiArcMessageCenter(): String = bundle().i("ARC-中央监控室")
-    @JvmStatic fun uiMaxChatHistoryHint(): String = bundle().i("最大储存聊天记录(过高可能导致卡顿)：")
-    @JvmStatic fun uiChatHistoryCleanupHint(): String = bundle().i("超出限制的聊天记录将在载入地图时清除")
-    @JvmStatic fun uiClear(): String = bundle().i("清空")
-    @JvmStatic fun uiExport(): String = bundle().i("导出")
-    @JvmStatic fun uiExportChatHistory(): String = bundle().i("导出聊天记录")
+    @JvmStatic fun uiArcMessageCenter(): String = i("ARC-中央监控室")
+    @JvmStatic fun uiMaxChatHistoryHint(): String = i("最大储存聊天记录(过高可能导致卡顿)：")
+    @JvmStatic fun uiChatHistoryCleanupHint(): String = i("超出限制的聊天记录将在载入地图时清除")
+    @JvmStatic fun uiClear(): String = i("清空")
+    @JvmStatic fun uiExport(): String = i("导出")
+    @JvmStatic fun uiExportChatHistory(): String = i("导出聊天记录")
     @JvmStatic fun uiLoadMap(mapName: String): String = bundle().loadMap(mapName)
     @JvmStatic fun uiIntroduction(description: String): String = bundle().introduction(description)
     @JvmStatic fun uiWaveEvent(wave: Int, detail: String): String = bundle().waveEvent(wave, detail)
-    @JvmStatic fun uiCopiedChatRecord(): String = bundle().i("已导出本条聊天记录")
+    @JvmStatic fun uiCopiedChatRecord(): String = i("已导出本条聊天记录")
     @JvmStatic fun uiExportHeader(version: String): String = bundle().exportHeader(version)
     @JvmStatic fun uiExportMap(mapName: String, mode: String): String = bundle().exportMap(mapName, mode)
     @JvmStatic fun uiCurrentWave(wave: Int): String = bundle().currentWave(wave)
     @JvmStatic fun uiExportCount(count: Int): String = bundle().exportCount(count)
-    @JvmStatic fun uiChatType(): String = bundle().i("聊天")
-    @JvmStatic fun uiServerMsgType(): String = bundle().i("服务器信息")
-    @JvmStatic fun uiMarkCoordinatesType(): String = bundle().i("标记~坐标")
-    @JvmStatic fun uiMarkPlayerType(): String = bundle().i("标记~玩家")
-    @JvmStatic fun uiCommandType(): String = bundle().i("指令")
-    @JvmStatic fun uiLogicNoticeType(): String = bundle().i("逻辑~通报")
-    @JvmStatic fun uiLogicAnnouncementType(): String = bundle().i("逻辑~公告")
-    @JvmStatic fun uiEventMapLoadType(): String = bundle().i("事件~载入地图")
-    @JvmStatic fun uiEventWaveType(): String = bundle().i("事件~波次")
+    @JvmStatic fun uiChatType(): String = i("聊天")
+    @JvmStatic fun uiServerMsgType(): String = i("服务器信息")
+    @JvmStatic fun uiMarkCoordinatesType(): String = i("标记~坐标")
+    @JvmStatic fun uiMarkPlayerType(): String = i("标记~玩家")
+    @JvmStatic fun uiCommandType(): String = i("指令")
+    @JvmStatic fun uiLogicNoticeType(): String = i("逻辑~通报")
+    @JvmStatic fun uiLogicAnnouncementType(): String = i("逻辑~公告")
+    @JvmStatic fun uiEventMapLoadType(): String = i("事件~载入地图")
+    @JvmStatic fun uiEventWaveType(): String = i("事件~波次")
 
-    @JvmStatic fun uiLogicHelperX(): String = bundle().i("逻辑辅助器[gold]X[]")
-    @JvmStatic fun uiHideLogicHelper(): String = bundle().i("隐藏逻辑辅助器")
-    @JvmStatic fun uiUpdatedEditedLogic(): String = bundle().i("[orange]已更新编辑的逻辑！")
-    @JvmStatic fun uiRefreshEditedLogic(): String = bundle().i("更新编辑的逻辑")
-    @JvmStatic fun uiOn(): String = bundle().i("开启")
-    @JvmStatic fun uiOff(): String = bundle().i("关闭")
+    @JvmStatic fun uiLogicHelperX(): String = i("逻辑辅助器[gold]X[]")
+    @JvmStatic fun uiHideLogicHelper(): String = i("隐藏逻辑辅助器")
+    @JvmStatic fun uiUpdatedEditedLogic(): String = i("[orange]已更新编辑的逻辑！")
+    @JvmStatic fun uiRefreshEditedLogic(): String = i("更新编辑的逻辑")
+    @JvmStatic fun uiOn(): String = i("开启")
+    @JvmStatic fun uiOff(): String = i("关闭")
     @JvmStatic fun uiToggleState(label: String, state: String): String = bundle().toggleState(label, state)
-    @JvmStatic fun uiFlashOnChange(): String = bundle().i("变动闪烁")
-    @JvmStatic fun uiFlashOnVariableChange(): String = bundle().i("变量变动闪烁")
-    @JvmStatic fun uiAutoRefreshVariables(): String = bundle().i("变量自动更新")
-    @JvmStatic fun uiAutoRefreshVariablesHint(): String = bundle().i("自动刷新变量")
-    @JvmStatic fun uiPaused(): String = bundle().i("已暂停")
-    @JvmStatic fun uiGameResumed(): String = bundle().i("已继续游戏")
-    @JvmStatic fun uiPauseLogicGameExecution(): String = bundle().i("暂停逻辑(游戏)运行")
-    @JvmStatic fun uiRefreshInterval(): String = bundle().i("刷新间隔")
+    @JvmStatic fun uiFlashOnChange(): String = i("变动闪烁")
+    @JvmStatic fun uiFlashOnVariableChange(): String = i("变量变动闪烁")
+    @JvmStatic fun uiAutoRefreshVariables(): String = i("变量自动更新")
+    @JvmStatic fun uiAutoRefreshVariablesHint(): String = i("自动刷新变量")
+    @JvmStatic fun uiPaused(): String = i("已暂停")
+    @JvmStatic fun uiGameResumed(): String = i("已继续游戏")
+    @JvmStatic fun uiPauseLogicGameExecution(): String = i("暂停逻辑(游戏)运行")
+    @JvmStatic fun uiRefreshInterval(): String = i("刷新间隔")
     @JvmStatic fun uiCopiedVariableNameHint(value: String): String = bundle().copiedVariableNameHint(value)
     @JvmStatic fun uiCopiedVariableAttributesHint(value: String): String = bundle().copiedVariableAttributesHint(value)
     @JvmStatic fun uiCopiedPrintBufferHint(value: String): String = bundle().copiedPrintBufferHint(value)
     @JvmStatic fun uiCopiedMemory(value: Double): String = bundle().copiedMemory(value)
-    @JvmStatic fun uiNoPermissionToEditViewOnly(): String = bundle().i("[yellow]当前无权编辑，仅供查阅")
-    @JvmStatic fun uiResetAllLinks(): String = bundle().i("重置所有链接")
-    @JvmStatic fun uiExtractCodeFromSchematic(): String = bundle().i("从蓝图中选择代码")
-    @JvmStatic fun uiSelectCode(): String = bundle().i("选择代码")
-    @JvmStatic fun uiTipAllSchematicsContainingProcessors(): String = bundle().i("TIP: 所有包含处理器的蓝图")
+    @JvmStatic fun uiNoPermissionToEditViewOnly(): String = i("[yellow]当前无权编辑，仅供查阅")
+    @JvmStatic fun uiResetAllLinks(): String = i("重置所有链接")
+    @JvmStatic fun uiExtractCodeFromSchematic(): String = i("从蓝图中选择代码")
+    @JvmStatic fun uiSelectCode(): String = i("选择代码")
+    @JvmStatic fun uiTipAllSchematicsContainingProcessors(): String = i("TIP: 所有包含处理器的蓝图")
 
-    @JvmStatic fun uiBasic(): String = bundle().i("基础对比")
-    @JvmStatic fun uiSquared(): String = bundle().i("平方对比")
-    @JvmStatic fun uiArcImageConverter(): String = bundle().i("arc-图片转换器")
-    @JvmStatic fun uiSelectAndImportPictures(): String = bundle().i("选择并导入图片，可将其转成画板、像素画或是逻辑画")
-    @JvmStatic fun uiSelectImagePng(): String = bundle().i("选择图片[white](png)")
-    @JvmStatic fun uiWarnImageTooLarge(): String = bundle().i("[orange]警告：图片可能过大，请尝试压缩图片")
-    @JvmStatic fun uiFailedReadImage(error: Any?): String = bundle().failedReadImage(error)
-    @JvmStatic fun uiAutomaticallySaveAsBlueprint(): String = bundle().i("自动保存为蓝图")
-    @JvmStatic fun uiZoomZoom(): String = bundle().i("缩放: ")
-    @JvmStatic fun uiHueMode(): String = bundle().i("色调函数:")
+    @JvmStatic fun uiBasic(): String = i("基础对比")
+    @JvmStatic fun uiSquared(): String = i("平方对比")
+    @JvmStatic fun uiArcImageConverter(): String = i("arc-图片转换器")
+    @JvmStatic fun uiSelectAndImportPictures(): String = i("选择并导入图片，可将其转成画板、像素画或是逻辑画")
+    @JvmStatic fun uiSelectImagePng(): String = i("选择图片[white](png)")
+    @JvmStatic fun uiWarnImageTooLarge(): String = i("[orange]警告：图片可能过大，请尝试压缩图片")
+    @JvmStatic fun uiFailedReadImage(error: Throwable): String = bundle().failedReadImage(error)
+    @JvmStatic fun uiAutomaticallySaveAsBlueprint(): String = i("自动保存为蓝图")
+    @JvmStatic fun uiZoomZoom(): String = i("缩放: ")
+    @JvmStatic fun uiHueMode(): String = i("色调函数:")
     @JvmStatic fun uiLabelWithEmoji(label: String, emoji: String): String = bundle().labelWithEmoji(label, emoji)
-    @JvmStatic fun uiLogicArtWebsite(): String = bundle().i("逻辑画网站")
-    @JvmStatic fun uiPath(): String = bundle().i("路径")
-    @JvmStatic fun uiName(): String = bundle().i("名称")
-    @JvmStatic fun uiOriginalSize(): String = bundle().i("原始大小")
-    @JvmStatic fun uiScaledSize(): String = bundle().i("缩放后大小")
-    @JvmStatic fun uiCanvas(): String = bundle().i("画板")
-    @JvmStatic fun uiArtboard(): String = bundle().i("画板++")
-    @JvmStatic fun uiPixelArt(): String = bundle().i("像素画")
-    @JvmStatic fun uiSize(): String = bundle().i("大小：")
+    @JvmStatic fun uiLogicArtWebsite(): String = i("逻辑画网站")
+    @JvmStatic fun uiPath(): String = i("路径")
+    @JvmStatic fun uiName(): String = i("名称")
+    @JvmStatic fun uiOriginalSize(): String = i("原始大小")
+    @JvmStatic fun uiScaledSize(): String = i("缩放后大小")
+    @JvmStatic fun uiCanvas(): String = i("画板")
+    @JvmStatic fun uiArtboard(): String = i("画板++")
+    @JvmStatic fun uiPixelArt(): String = i("像素画")
+    @JvmStatic fun uiSize(): String = i("大小：")
     @JvmStatic fun uiSavedBlueprint(name: String): String = bundle().savedBlueprint(name)
 
     @JvmStatic fun uiItemSelectionHeight(value: Int): String = bundle().itemSelectionHeight(value)

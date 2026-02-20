@@ -92,7 +92,7 @@ object VarsX {
 
     @JvmField
     val maxSchematicSize = SliderPref("maxSchematicSize", Vars.maxSchematicSize, 64, 257) {
-        if (it == 257) return@SliderPref mindustryX.bundles.UiTexts.bundle().i("无限制") // 原文本:无限制
+        if (it == 257) return@SliderPref mindustryX.bundles.UiTexts.i("无限制") // 原文本:无限制
         "${it}x${it}"
     }
 

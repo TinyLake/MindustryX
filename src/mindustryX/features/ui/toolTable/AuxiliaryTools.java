@@ -39,10 +39,10 @@ public class AuxiliaryTools extends Table{
 
     protected void rebuild(){
         defaults().size(40);
-        aiButton(new ArcMinerAI(), UnitTypes.mono.region, mindustryX.bundles.UiTexts.bundle().i("矿机AI")); // 原文本:矿机AI
-        aiButton(new BuilderAI(), UnitTypes.poly.region, mindustryX.bundles.UiTexts.bundle().i("重建AI")); // 原文本:重建AI
-        aiButton(new RepairAI(), UnitTypes.mega.region, mindustryX.bundles.UiTexts.bundle().i("修复AI")); // 原文本:修复AI
-        aiButton(new DefenderAI(), UnitTypes.oct.region, mindustryX.bundles.UiTexts.bundle().i("保护AI")); // 原文本:保护AI
+        aiButton(new ArcMinerAI(), UnitTypes.mono.region, mindustryX.bundles.UiTexts.i("矿机AI")); // 原文本:矿机AI
+        aiButton(new BuilderAI(), UnitTypes.poly.region, mindustryX.bundles.UiTexts.i("重建AI")); // 原文本:重建AI
+        aiButton(new RepairAI(), UnitTypes.mega.region, mindustryX.bundles.UiTexts.i("修复AI")); // 原文本:修复AI
+        aiButton(new DefenderAI(), UnitTypes.oct.region, mindustryX.bundles.UiTexts.i("保护AI")); // 原文本:保护AI
         button(Icon.settingsSmall, Styles.clearNonei, iconMed, this::showAiSettingDialog);
 
         row();
@@ -55,20 +55,20 @@ public class AuxiliaryTools extends Table{
                     if(++count >= 255) break;
                 }
             }
-        }).tooltip(mindustryX.bundles.UiTexts.bundle().i("在建造列表加入被摧毁建筑")); // 原文本:在建造列表加入被摧毁建筑
-        var t = button(new TextureRegionDrawable(Items.copper.uiIcon), Styles.clearNoneTogglei, () -> AutoFill.enable ^= true).tooltip(mindustryX.bundles.UiTexts.bundle().i("一键装填")).checked((b) -> AutoFill.enable).get(); // 原文本:一键装填
+        }).tooltip(mindustryX.bundles.UiTexts.i("在建造列表加入被摧毁建筑")); // 原文本:在建造列表加入被摧毁建筑
+        var t = button(new TextureRegionDrawable(Items.copper.uiIcon), Styles.clearNoneTogglei, () -> AutoFill.enable ^= true).tooltip(mindustryX.bundles.UiTexts.i("一键装填")).checked((b) -> AutoFill.enable).get(); // 原文本:一键装填
         SettingsV2.bindQuickSettings(t, AutoFill.INSTANCE.getSettings());
-        toggleButton(Icon.modeAttack, "autotarget", mindustryX.bundles.UiTexts.bundle().i("自动攻击")); // 原文本:自动攻击
-        toggleButton(new TextureRegionDrawable(UnitTypes.vela.uiIcon), "forceBoost", mindustryX.bundles.UiTexts.bundle().i("强制助推")); // 原文本:强制助推
-        toggleButton(Icon.eyeSmall, "detach-camera", mindustryX.bundles.UiTexts.bundle().i("视角脱离玩家")); // 原文本:视角脱离玩家
+        toggleButton(Icon.modeAttack, "autotarget", mindustryX.bundles.UiTexts.i("自动攻击")); // 原文本:自动攻击
+        toggleButton(new TextureRegionDrawable(UnitTypes.vela.uiIcon), "forceBoost", mindustryX.bundles.UiTexts.i("强制助推")); // 原文本:强制助推
+        toggleButton(Icon.eyeSmall, "detach-camera", mindustryX.bundles.UiTexts.i("视角脱离玩家")); // 原文本:视角脱离玩家
 
         if(!mobile) return;
         row();
-        toggleButton(Icon.unitsSmall, mindustryX.bundles.UiTexts.bundle().i("指挥模式"), () -> control.input.commandMode = !control.input.commandMode).checked(b -> control.input.commandMode); // 原文本:指挥模式
-        toggleButton(Icon.pause, mindustryX.bundles.UiTexts.bundle().i("暂停建造"), () -> control.input.isBuilding = !control.input.isBuilding).checked(b -> control.input.isBuilding); // 原文本:暂停建造
-        scriptButton(Icon.up, mindustryX.bundles.UiTexts.bundle().i("捡起载荷"), () -> control.input.tryPickupPayload()); // 原文本:捡起载荷
-        scriptButton(Icon.down, mindustryX.bundles.UiTexts.bundle().i("丢下载荷"), () -> control.input.tryDropPayload()); // 原文本:丢下载荷
-        scriptButton(new TextureRegionDrawable(Blocks.payloadConveyor.uiIcon), mindustryX.bundles.UiTexts.bundle().i("进入传送带"), () -> { // 原文本:进入传送带
+        toggleButton(Icon.unitsSmall, mindustryX.bundles.UiTexts.i("指挥模式"), () -> control.input.commandMode = !control.input.commandMode).checked(b -> control.input.commandMode); // 原文本:指挥模式
+        toggleButton(Icon.pause, mindustryX.bundles.UiTexts.i("暂停建造"), () -> control.input.isBuilding = !control.input.isBuilding).checked(b -> control.input.isBuilding); // 原文本:暂停建造
+        scriptButton(Icon.up, mindustryX.bundles.UiTexts.i("捡起载荷"), () -> control.input.tryPickupPayload()); // 原文本:捡起载荷
+        scriptButton(Icon.down, mindustryX.bundles.UiTexts.i("丢下载荷"), () -> control.input.tryDropPayload()); // 原文本:丢下载荷
+        scriptButton(new TextureRegionDrawable(Blocks.payloadConveyor.uiIcon), mindustryX.bundles.UiTexts.i("进入传送带"), () -> { // 原文本:进入传送带
             Building build = player.buildOn();
             if(build == null || player.dead()) return;
             Call.unitBuildingControlSelect(player.unit(), build);
@@ -85,7 +85,7 @@ public class AuxiliaryTools extends Table{
             boolean setting = Core.settings.getBool(settingName);
 
             Core.settings.put(settingName, !setting);
-            String state = setting ? mindustryX.bundles.UiTexts.bundle().i("关闭") : mindustryX.bundles.UiTexts.bundle().i("开启"); // 原文本:关闭 | 开启
+            String state = setting ? mindustryX.bundles.UiTexts.i("关闭") : mindustryX.bundles.UiTexts.i("开启"); // 原文本:关闭 | 开启
             UIExt.announce(mindustryX.bundles.UiTexts.uiToggleState(description, state));
         }).tooltip(description, true).checked(b -> Core.settings.getBool(settingName));
     }
@@ -101,10 +101,10 @@ public class AuxiliaryTools extends Table{
     private void showAiSettingDialog(){
         int cols = (int)Math.max(Core.graphics.getWidth() / Scl.scl(480), 1);
 
-        BaseDialog dialog = new BaseDialog(mindustryX.bundles.UiTexts.bundle().i("ARC-AI设定器")); // 原文本:ARC-AI设定器
+        BaseDialog dialog = new BaseDialog(mindustryX.bundles.UiTexts.i("ARC-AI设定器")); // 原文本:ARC-AI设定器
 
         dialog.cont.table(t -> {
-            t.add(mindustryX.bundles.UiTexts.bundle().i("minerAI-矿物筛选器")).color(Pal.accent).pad(cols / 2f).center().row(); // 原文本:minerAI-矿物筛选器
+            t.add(mindustryX.bundles.UiTexts.i("minerAI-矿物筛选器")).color(Pal.accent).pad(cols / 2f).center().row(); // 原文本:minerAI-矿物筛选器
             t.image().color(Pal.accent).fillX().row();
             t.table(list -> {
                 int i = 0;

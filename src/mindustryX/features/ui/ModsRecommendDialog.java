@@ -180,13 +180,14 @@ public class ModsRecommendDialog extends BaseDialog{
     }
 
     private Cell<?> addInfo(Table table, String bundle, Object value){
+        String textValue = String.valueOf(value);
         String text = switch(bundle){
-            case "name" -> mindustryX.bundles.UiTexts.bundle().modsRecommendModName(value);
-            case "author" -> mindustryX.bundles.UiTexts.bundle().modsRecommendModAuthor(value);
-            case "minGameVersion" -> mindustryX.bundles.UiTexts.bundle().modsRecommendModMinGameVersion(value);
-            case "lastUpdated" -> mindustryX.bundles.UiTexts.bundle().modsRecommendModLastUpdated(value);
-            case "stars" -> mindustryX.bundles.UiTexts.bundle().modsRecommendModStars(value);
-            default -> String.valueOf(value);
+            case "name" -> mindustryX.bundles.UiTexts.bundle().modsRecommendModName(textValue);
+            case "author" -> mindustryX.bundles.UiTexts.bundle().modsRecommendModAuthor(textValue);
+            case "minGameVersion" -> mindustryX.bundles.UiTexts.bundle().modsRecommendModMinGameVersion(textValue);
+            case "lastUpdated" -> mindustryX.bundles.UiTexts.bundle().modsRecommendModLastUpdated(textValue);
+            case "stars" -> mindustryX.bundles.UiTexts.bundle().modsRecommendModStars(textValue);
+            default -> textValue;
         };
         Cell<?> cell = table.add(text).color(pink);
 
