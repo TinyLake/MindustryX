@@ -117,7 +117,7 @@ index 5be2d92ebc01f37351cc60c2b5c6f9296dabbc5b..a6e85108fb7feb7bb143f6dbbd6f2aff
          }
  
          /**
-@@ -122,11 +134,7 @@ public class Http{
+@@ -122,11 +134,11 @@ public class Http{
           * @return An {@link InputStream} with the {@link HttpResponse} data.
           */
          public InputStream getResultAsStream(){
@@ -126,7 +126,12 @@ index 5be2d92ebc01f37351cc60c2b5c6f9296dabbc5b..a6e85108fb7feb7bb143f6dbbd6f2aff
 -            }catch(IOException e){
 -                return connection.getErrorStream();
 -            }
-+            return new ByteArrayInputStream(ensureResultBytes());
++            if(cachedResult != null) return new ByteArrayInputStream(cachedResult);
++            try{
++                return connection.getInputStream();
++            }catch(IOException e){
++                return connection.getErrorStream();
++            }
          }
  
          /** @return the {@link HttpStatus} containing the statusCode of the HTTP response. */

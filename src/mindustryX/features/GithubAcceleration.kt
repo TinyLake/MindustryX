@@ -289,7 +289,10 @@ object GithubAcceleration {
 
     private fun isGithubUrl(url: String): Boolean = runCatching {
         val host = URL(url).host.lowercase()
-        host.contains("github.com") || host.contains("githubusercontent.com")
+        host == "github.com"
+                || host.endsWith(".github.com")
+                || host == "githubusercontent.com"
+                || host.endsWith(".githubusercontent.com")
     }.getOrDefault(false)
 
     private fun isApiUrl(url: String): Boolean = runCatching {
