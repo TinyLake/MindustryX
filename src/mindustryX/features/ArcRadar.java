@@ -13,13 +13,14 @@ import mindustry.graphics.*;
 import mindustry.ui.*;
 import mindustry.world.*;
 import mindustry.world.blocks.storage.*;
-import mindustryX.VarsX;
+import mindustryX.*;
 import mindustryX.features.SettingsV2.*;
 import mindustryX.features.func.*;
 
-import java.util.List;
+import java.util.*;
 
 import static mindustry.Vars.*;
+import static mindustryX.features.UIExt.i;
 
 //move from mindustry.arcModule.toolpack.arcScanner
 public class ArcRadar{
@@ -48,10 +49,8 @@ public class ArcRadar{
     private static Table t;
 
     private static final SettingsV2.Data<Integer>
-    mode = new SliderPref("arcExtra.radarMode", 1, 1, 30, 1, s -> VarsX.bundle.radarSpeedMode(s)),
-    size = new SliderPref("arcExtra.radarSize", 0, 0, 50, 1, s -> {
-        return VarsX.bundle.radarSizeMode(s);
-    });
+    mode = new SliderPref("arcExtra.radarMode", 1, 1, 30, 1, VarsX.bundle::radarSpeedMode),
+    size = new SliderPref("arcExtra.radarSize", 0, 0, 50, 1, VarsX.bundle::radarSizeMode);
     public static List<SettingsV2.Data<?>> settings = CollectionsKt.listOf(mode, size);
 
     static{
@@ -86,7 +85,7 @@ public class ArcRadar{
         if(working && t == null){
             t = new Table(Styles.black3);
             t.touchable = Touchable.disabled;
-            t.margin(8f).add(mindustryX.bundles.UiTextBundle.i(">> 雷达扫描中 <<")).color(Pal.accent).style(Styles.outlineLabel);
+            t.margin(8f).add(i(">> 雷达扫描中 <<")).color(Pal.accent).style(Styles.outlineLabel);
             t.pack();
             t.visible(() -> working);
             t.update(() -> t.setPosition(Core.graphics.getWidth() / 2f, Core.graphics.getHeight() * 0.1f, Align.center));

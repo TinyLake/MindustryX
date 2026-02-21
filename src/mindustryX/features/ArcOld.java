@@ -22,7 +22,7 @@ import mindustry.input.*;
 import mindustry.type.*;
 import mindustry.world.*;
 import mindustry.world.blocks.*;
-import mindustryX.VarsX;
+import mindustryX.*;
 import mindustryX.features.SettingsV2.*;
 
 import static arc.Core.settings;
@@ -110,16 +110,16 @@ public class ArcOld{
             c.addCategory("arcAddTurretInfo");
             c.checkPref("showTurretAmmo", false);
             c.checkPref("showTurretAmmoAmount", false);
-            c.sliderPref("turretShowRange", 0, 0, 3, 1, s -> VarsX.bundle.turretShowRangeMode(s));
+            c.sliderPref("turretShowRange", 0, 0, 3, 1, VarsX.bundle::turretShowRangeMode);
             c.checkPref("turretForceShowRange", false);
-            c.sliderPref("turretAlertRange", 0, 0, 30, 1, i -> VarsX.bundle.tilesOrOff(i));
+            c.sliderPref("turretAlertRange", 0, 0, 30, 1, VarsX.bundle::tilesOrOff);
             c.checkPref("blockWeaponTargetLine", false);
             c.checkPref("blockWeaponTargetLineWhenIdle", false);
 
             c.addCategory("arcAddUnitInfo");
             c.checkPref("unitHealthBar", false);
-            c.sliderPref("unitWeaponRange", settings.getInt("unitAlertRange", 0), 0, 30, 1, s -> VarsX.bundle.unitWeaponRangeMode(s));
-            c.sliderPref("unitWeaponRangeAlpha", settings.getInt("unitweapon_range", 0), 0, 100, 1, i -> VarsX.bundle.percentOrOff(i));
+            c.sliderPref("unitWeaponRange", settings.getInt("unitAlertRange", 0), 0, 30, 1, VarsX.bundle::unitWeaponRangeMode);
+            c.sliderPref("unitWeaponRangeAlpha", settings.getInt("unitweapon_range", 0), 0, 100, 1, VarsX.bundle::percentOrOff);
             c.checkPref("unitWeaponTargetLine", false);
             c.checkPref("unitItemCarried", true);
             c.checkPref("unitLogicMoveLine", false);
@@ -141,8 +141,8 @@ public class ArcOld{
                 c.textPref("playerEffectColor", "ffd37f", changed);
                 changed.get(settings.getString("playerEffectColor"));
             }
-            c.sliderPref("unitTargetType", 0, 0, 5, 1, s -> VarsX.bundle.unitTargetTypeMode(s));
-            c.sliderPref("superUnitEffect", 0, 0, 2, 1, s -> VarsX.bundle.superUnitEffectMode(s));
+            c.sliderPref("unitTargetType", 0, 0, 5, 1, VarsX.bundle::unitTargetTypeMode);
+            c.sliderPref("superUnitEffect", 0, 0, 2, 1, VarsX.bundle::superUnitEffectMode);
             c.sliderPref("playerEffectCurStroke", 0, 1, 30, 1, i -> (float)i / 10f + "Pixel(s)");
 
             c.addCategory("arcWeakCheat");

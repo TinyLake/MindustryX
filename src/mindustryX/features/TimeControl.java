@@ -1,14 +1,16 @@
 package mindustryX.features;
 
-import arc.Events;
-import arc.func.Floatp;
-import arc.math.WindowedMean;
+import arc.*;
+import arc.func.*;
+import arc.math.*;
 import arc.scene.ui.layout.*;
 import arc.util.*;
-import mindustry.Vars;
-import mindustry.game.EventType;
+import mindustry.*;
+import mindustry.game.*;
 import mindustry.ui.*;
-import mindustryX.VarsX;
+import mindustryX.*;
+
+import static mindustryX.features.UIExt.i;
 
 //move from mindustry.arcModule.TimeControl
 public class TimeControl{
@@ -64,11 +66,11 @@ public class TimeControl{
     public static void draw(Table table){
         table.label(() -> "x" + Strings.autoFixed(getGameSpeed(), 2)).width(18f * 3);
 
-        table.button("/2", Styles.cleart, () -> setGameSpeed(gameSpeed * 0.5f)).tooltip(mindustryX.bundles.UiTextBundle.i("将时间流速放慢到一半")).size(40f, 30f);
-        table.button("×2", Styles.cleart, () -> setGameSpeed(gameSpeed * 2f)).tooltip(mindustryX.bundles.UiTextBundle.i("将时间流速加快到两倍")).size(40f, 30f);
-        table.button("[red]S", Styles.cleart, () -> setGameSpeed(0f)).tooltip(mindustryX.bundles.UiTextBundle.i("暂停时间")).size(30f, 30f);
-        table.button("[green]N", Styles.cleart, () -> setGameSpeed(1f)).tooltip(mindustryX.bundles.UiTextBundle.i("恢复原速")).size(30f, 30f);
-        table.button("[white]F", Styles.cleart, TimeControl::setFpsLock).tooltip(mindustryX.bundles.UiTextBundle.i("帧率模拟")).size(30f, 30f);
+        table.button("/2", Styles.cleart, () -> setGameSpeed(gameSpeed * 0.5f)).tooltip(i("将时间流速放慢到一半")).size(40f, 30f);
+        table.button("×2", Styles.cleart, () -> setGameSpeed(gameSpeed * 2f)).tooltip(i("将时间流速加快到两倍")).size(40f, 30f);
+        table.button("[red]S", Styles.cleart, () -> setGameSpeed(0f)).tooltip(i("暂停时间")).size(30f, 30f);
+        table.button("[green]N", Styles.cleart, () -> setGameSpeed(1f)).tooltip(i("恢复原速")).size(30f, 30f);
+        table.button("[white]F", Styles.cleart, TimeControl::setFpsLock).tooltip(i("帧率模拟")).size(30f, 30f);
 
         table.field(Integer.toString(targetFps), s -> {
             int num = Integer.parseInt(s);
@@ -81,6 +83,6 @@ public class TimeControl{
             if(!Strings.canParsePositiveInt(s)) return false;
             int num = Integer.parseInt(s);
             return 2 <= num && num < 10000;
-        }).tooltip(mindustryX.bundles.UiTextBundle.i("允许的范围：2~9999")).size(80f, 30f);
+        }).tooltip(i("允许的范围：2~9999")).size(80f, 30f);
     }
 }

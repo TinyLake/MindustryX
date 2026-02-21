@@ -19,12 +19,12 @@ import mindustry.ui.dialogs.*;
 import mindustry.world.blocks.logic.*;
 import mindustry.world.blocks.logic.LogicBlock.*;
 import mindustry.world.blocks.logic.MemoryBlock.*;
-import mindustryX.VarsX;
+import mindustryX.*;
 import mindustryX.features.SettingsV2.*;
 import mindustryX.features.*;
 
-import static mindustryX.bundles.UiTextBundle.i;
 import static mindustry.Vars.*;
+import static mindustryX.features.UIExt.i;
 
 public class LogicSupport{
     public static final CheckPref visible = new CheckPref("logicSupport.visible", true);
@@ -132,8 +132,8 @@ public class LogicSupport{
         for(var v : executor.allVars){
             if(v.name.startsWith("___")) continue;
             varsTable.table(Tex.paneSolid, table -> {
-                Label nameLabel = createCopyableLabel(v.name, null, t -> VarsX.bundle.copiedVariableNameHint(t));
-                Label valueLabel = createCopyableLabel(arcVarsText(v), null, t -> VarsX.bundle.copiedVariableAttributesHint(t));
+                Label nameLabel = createCopyableLabel(v.name, null, VarsX.bundle::copiedVariableNameHint);
+                Label valueLabel = createCopyableLabel(arcVarsText(v), null, VarsX.bundle::copiedVariableAttributesHint);
 
                 table.add(nameLabel).color(arcVarsColor(v)).ellipsis(true).wrap().expand(3, 1).fill().get();
                 table.add(valueLabel).ellipsis(true).wrap().padLeft(16f).expand(2, 1).fill().get();
@@ -155,7 +155,7 @@ public class LogicSupport{
         }
 
         varsTable.table(Tex.paneSolid, table -> {
-            Label label = createCopyableLabel("", table, t -> VarsX.bundle.copiedPrintBufferHint(t));
+            Label label = createCopyableLabel("", table, VarsX.bundle::copiedPrintBufferHint);
 
             table.add("@printbuffer").color(Color.goldenrod).center().row();
             table.add(label).labelAlign(Align.topLeft).wrap().minHeight(150).growX();

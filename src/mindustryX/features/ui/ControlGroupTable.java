@@ -31,13 +31,9 @@ public class ControlGroupTable extends Table{
     public ControlGroupTable(){
         background(Styles.black3);
 
-        Events.on(WorldLoadEvent.class, e -> {
-            updateControlGroup();
-        });
+        Events.on(WorldLoadEvent.class, e -> updateControlGroup());
 
-        Events.on(SaveLoadEvent.class, e -> {
-            updateControlGroup();
-        });
+        Events.on(SaveLoadEvent.class, e -> updateControlGroup());
 
         Events.run(Trigger.unitCommandChange, () -> {
             if(models != null){
@@ -173,7 +169,8 @@ public class ControlGroupTable extends Table{
                     t.right().bottom();
                     t.label(() -> model.countSelect(type) + "/" + amount).style(Styles.outlineLabel).fontScale(0.75f);
                 });
-            }, Styles.clearNoneTogglei, () -> {})
+            }, Styles.clearNoneTogglei, () -> {
+            })
             .checked(b -> model.countSelect(type) > 0).tooltip(type.localizedName).get();
 
             btn.addListener(new ClickListener(){
@@ -189,7 +186,7 @@ public class ControlGroupTable extends Table{
 
                     if(getTapCount() >= 2){
                         model.removeType(type);
-                    }else {
+                    }else{
                         setControlUnits(model.units.toSeq().retainAll(u -> u.type == type));
                     }
                 }

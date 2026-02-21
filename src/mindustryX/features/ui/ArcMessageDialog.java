@@ -17,8 +17,8 @@ import mindustryX.features.ui.comp.*;
 import java.text.*;
 import java.util.*;
 
-import static mindustryX.bundles.UiTextBundle.i;
 import static mindustry.Vars.*;
+import static mindustryX.features.UIExt.i;
 
 //move from mindustry.arcModule.ui.dialogs.MessageDialog
 public class ArcMessageDialog extends BaseDialog{

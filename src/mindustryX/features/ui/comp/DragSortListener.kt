@@ -59,8 +59,8 @@ class DragSortListener(val swap: (Element, Element) -> Unit = ::swapCell) : Inpu
             val cellA = getCell(a) ?: return
             val cellB = getCell(b) ?: return
 
-            a.remove();b.remove()
-            cellA.setElement(b);cellB.setElement(a)
+            a.remove(); b.remove()
+            cellA.setElement(b); cellB.setElement(a)
         }
     }
 }

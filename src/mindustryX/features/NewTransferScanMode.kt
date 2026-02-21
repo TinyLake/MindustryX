@@ -224,7 +224,7 @@ object NewTransferScanMode {
         is LiquidVoid.LiquidVoidBuild -> liquidOnly { VoidAdaptor() }
 
         is Conveyor.ConveyorBuild, is Duct.DuctBuild -> itemOnly { ConveyorAdaptor(build) }
-        is Router.RouterBuild -> itemOnly{ RouterAdaptor(build) }
+        is Router.RouterBuild -> itemOnly { RouterAdaptor(build) }
         is Sorter.SorterBuild, is OverflowGate.OverflowGateBuild -> itemOnly { InstantAdaptor(build) }
         is ItemBridge.ItemBridgeBuild -> itemOnly { BridgeAdaptor(build) }
         is StackConveyor.StackConveyorBuild -> itemOnly { StackConveyorAdaptor(build) }
@@ -291,7 +291,7 @@ object NewTransferScanMode {
         override fun canInput(from: Building): Boolean = true
     }
 
-    private class InstantAdaptor(val build: Building): BuildingAdaptor() {
+    private class InstantAdaptor(val build: Building) : BuildingAdaptor() {
         override fun getOutputs(): List<Building> = build.proximity.toList()
         override fun getOutputs(from: Building): List<Building> = if (from.block.instantTransfer) build.proximity.filter { !it.block.instantTransfer } else getOutputs()
         override fun canInput(from: Building): Boolean = true
@@ -412,7 +412,7 @@ object NewTransferScanMode {
         override fun getOutputs(): List<Building> = build.proximity.toList()
     }
 
-    private class VoidAdaptor: BuildingAdaptor() {
+    private class VoidAdaptor : BuildingAdaptor() {
         override fun canInput(from: Building): Boolean = true
     }
 

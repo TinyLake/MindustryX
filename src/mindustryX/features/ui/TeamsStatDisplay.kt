@@ -20,6 +20,7 @@ import mindustry.gen.Icon
 import mindustry.graphics.Pal
 import mindustry.ui.Styles
 import mindustry.ui.dialogs.BaseDialog
+import mindustryX.features.UIExt.i
 import mindustryX.features.ui.FormatDefault.format
 
 //moved from mindustry.arcModule.ui.OtherCoreItemDisplay
@@ -74,14 +75,14 @@ class TeamsStatDisplay : Table() {
     }
 
     private fun openAddTeamDialog(onSelected: (Teams.TeamData) -> Unit) {
-        BaseDialog(mindustryX.bundles.UiTextBundle.i("添加队伍")).apply {
+        BaseDialog(i("添加队伍")).apply {
             Vars.state.teams.active.forEach { team ->
                 cont.add(Button().apply {
                     add(Table().apply {
                         image().color(team.team.color).size(Vars.iconMed)
                         add().width(16f)
                         add(team.team.coloredName())
-                        add("#"+team.team.id).color(team.team.color)
+                        add("#" + team.team.id).color(team.team.color)
                         add().growX()
                         image(Blocks.coreFoundation.uiIcon).size(Vars.iconSmall).padRight(4f)
                         label { team.cores.size.toString() }

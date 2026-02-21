@@ -17,10 +17,10 @@ import mindustry.ui.*;
 import mindustry.ui.dialogs.*;
 import mindustry.world.blocks.logic.*;
 import mindustry.world.blocks.logic.CanvasBlock.*;
-import mindustryX.VarsX;
+import mindustryX.*;
 
-import static mindustryX.bundles.UiTextBundle.i;
 import static mindustry.Vars.*;
+import static mindustryX.features.UIExt.i;
 
 //move from mindustry.arcModule.toolpack.picToMindustry
 public class PicToMindustry{

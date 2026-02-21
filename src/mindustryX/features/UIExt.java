@@ -11,6 +11,7 @@ import arc.scene.ui.layout.*;
 import arc.util.*;
 import mindustry.gen.*;
 import mindustry.ui.*;
+import mindustryX.*;
 import mindustryX.features.ui.*;
 import mindustryX.features.ui.toolTable.*;
 
@@ -35,6 +36,10 @@ public class UIExt{
         UIExtKt.init();
         Settings.addSettings();
         AutoUpdate.INSTANCE.initUI();
+    }
+
+    public static String i(String zh){
+        return VarsX.bundle.simple(zh);
     }
 
     public static void announce(String text){

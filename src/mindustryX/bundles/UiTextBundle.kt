@@ -1,10 +1,11 @@
 package mindustryX.bundles
 
 import arc.util.Strings
-import mindustryX.VarsX
 
 interface UiTextBundle {
-    fun i(key: String): String = key
+    object Zh : UiTextBundle
+
+    fun simple(key: String): String = key
 
     fun mdtxReport(): String = "问题反馈"
     fun mdtxQqLink(): String = "QQ交流群"
@@ -134,10 +135,5 @@ interface UiTextBundle {
         1 -> "独一无二"
         2 -> "全部玩家"
         else -> value.toString()
-    }
-
-    companion object {
-        @JvmStatic
-        fun i(zh: String): String = VarsX.bundle.i(zh)
     }
 }

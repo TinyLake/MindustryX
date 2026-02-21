@@ -4,8 +4,10 @@ import arc.*;
 import mindustry.core.*;
 import mindustry.game.EventType.*;
 import mindustry.net.Packets.*;
-import mindustryX.VarsX;
+import mindustryX.*;
 import mindustryX.features.SettingsV2.*;
+
+import static mindustryX.features.UIExt.i;
 
 public class LogicExt{
     public static boolean worldCreator = false;
@@ -24,7 +26,7 @@ public class LogicExt{
     public static final CheckPref terrainSchematic0 = new CheckPref("terrainSchematic");
     public static final CheckPref reliableSync = new CheckPref("debug.reliableSync");
     public static final SliderPref limitUpdate = new SliderPref("debug.limitUpdate", 0, 0, 100, 1, (it) -> {
-        if(it == 0) return mindustryX.bundles.UiTextBundle.i("关闭");
+        if(it == 0) return i("关闭");
         return VarsX.bundle.tiles(it);
     });
     public static final CheckPref rotateCanvas = new CheckPref("block.rotateCanvas");

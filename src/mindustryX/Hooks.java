@@ -26,9 +26,7 @@ public class Hooks implements ApplicationListener{
         //deprecated Java 8
         if(!OS.isAndroid && Strings.parseInt(OS.javaVersion.split("\\.")[0]) < 17){
             Log.warn(VarsX.bundle.javaWarnLog(OS.javaVersion));
-            Events.on(ClientLoadEvent.class, (e) -> {
-                ui.showInfo(VarsX.bundle.javaWarnDialog(OS.javaVersion));
-            });
+            Events.on(ClientLoadEvent.class, (e) -> ui.showInfo(VarsX.bundle.javaWarnDialog(OS.javaVersion)));
         }
         try{
             Http.onBeforeRequest = Hooks::onHttp;

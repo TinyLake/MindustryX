@@ -19,7 +19,7 @@ import mindustry.ui.Bar
 import mindustry.ui.Styles
 import mindustry.ui.dialogs.BaseDialog
 import mindustryX.VarsX
-import mindustryX.bundles.UiTextBundle
+import mindustryX.features.UIExt.i
 import mindustryX.features.ui.CommitsTable
 import mindustryX.features.ui.Format
 import java.time.Duration
@@ -122,7 +122,7 @@ object AutoUpdate {
     @JvmOverloads
     fun showDialog(version: Release? = latest) {
         checkUpdate()
-        val dialog = BaseDialog(mindustryX.bundles.UiTextBundle.i("自动更新"))
+        val dialog = BaseDialog(i("自动更新"))
         dialog.getCell(dialog.cont).setElement(ScrollPane(dialog.cont))
         dialog.cont.table().growY().get().apply {
             fun buildVersionList(versions: List<Release>) {
@@ -139,10 +139,10 @@ object AutoUpdate {
                                         p.add(it.description).labelAlign(Align.left)
                                     }.row()
                                 }
-                            }.tooltip(mindustryX.bundles.UiTextBundle.i("发布说明")).padRight(16f)
+                            }.tooltip(i("发布说明")).padRight(16f)
                         button(Icon.link, Styles.clearNonei, Vars.iconSmall) {
                             UIExt.openURI(it.url)
-                        }.tooltip(mindustryX.bundles.UiTextBundle.i("打开发布页面")).padRight(4f).row()
+                        }.tooltip(i("打开发布页面")).padRight(4f).row()
                     }
                 }
                 row()
@@ -154,21 +154,21 @@ object AutoUpdate {
                 add(VarsX.bundle.newVersion(it.version)).labelAlign(Align.center).width(500f).wrap().row()
             }
             if (versions.isEmpty()) {
-                add(mindustryX.bundles.UiTextBundle.i("检查更新失败，请稍后再试")).labelAlign(Align.center).width(500f).wrap().row()
+                add(i("检查更新失败，请稍后再试")).labelAlign(Align.center).width(500f).wrap().row()
                 return@apply
             }
 
             image().fillX().height(2f).row()
-            add(mindustryX.bundles.UiTextBundle.i("正式版")).labelAlign(Align.center).width(500f).wrap().row()
+            add(i("正式版")).labelAlign(Align.center).width(500f).wrap().row()
             buildVersionList(versions.filter { it.isRelease })
 
             image().fillX().height(2f).row()
-            add(mindustryX.bundles.UiTextBundle.i("预览版(更新更快,新功能体验,BUG修复)")).labelAlign(Align.center).width(500f).wrap().row()
+            add(i("预览版(更新更快,新功能体验,BUG修复)")).labelAlign(Align.center).width(500f).wrap().row()
             buildVersionList(versions.filter { !it.isRelease })
 
             image().fillX().height(2f).row()
             if (version == null) {
-                add(mindustryX.bundles.UiTextBundle.i("你已是最新版本，不需要更新！")).labelAlign(Align.center).width(500f).wrap()
+                add(i("你已是最新版本，不需要更新！")).labelAlign(Align.center).width(500f).wrap()
                 return@apply
             }
 
@@ -182,7 +182,7 @@ object AutoUpdate {
             }
             row()
 
-            button(mindustryX.bundles.UiTextBundle.i("自动下载更新")) {
+            button(i("自动下载更新")) {
                 if (asset == null) return@button
                 startDownload(asset.copy(url = url)) { file ->
                     if (VarsX.isLoader) {

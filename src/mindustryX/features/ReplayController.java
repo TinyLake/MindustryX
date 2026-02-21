@@ -12,13 +12,14 @@ import mindustry.gen.*;
 import mindustry.net.*;
 import mindustry.net.Packets.*;
 import mindustry.ui.dialogs.*;
-import mindustryX.VarsX;
+import mindustryX.*;
 import mindustryX.features.SettingsV2.*;
 
 import java.io.*;
 import java.util.*;
 
 import static mindustry.Vars.*;
+import static mindustryX.features.UIExt.i;
 
 /**
  * 回放录制
@@ -42,9 +43,9 @@ public class ReplayController{
         Events.on(ClientServerConnectEvent.class, (e) -> stopPlay());
         {
             Table buttons = Vars.ui.join.buttons;
-            buttons.button(mindustryX.bundles.UiTextBundle.i("加载回放文件"), Icon.file, () -> {
+            buttons.button(i("加载回放文件"), Icon.file, () -> {
                 FileChooser.setLastDirectory(saveDirectory);
-                platform.showFileChooser(true, mindustryX.bundles.UiTextBundle.i("打开回放文件"), "mrep", f -> Core.app.post(() -> ReplayController.startPlay(f)));
+                platform.showFileChooser(true, i("打开回放文件"), "mrep", f -> Core.app.post(() -> ReplayController.startPlay(f)));
             });
         }
         {
@@ -52,7 +53,7 @@ public class ReplayController{
             pausedDialog.shown(() -> {
                 if(!replaying) return;
                 pausedDialog.cont.row()
-                .button(mindustryX.bundles.UiTextBundle.i("查看录制信息"), Icon.fileImage, ReplayController::showInfo).name("ReplayInfo")
+                .button(i("查看录制信息"), Icon.fileImage, ReplayController::showInfo).name("ReplayInfo")
                 .size(0, 60).colspan(pausedDialog.cont.getColumns()).fill();
             });
         }
@@ -66,7 +67,7 @@ public class ReplayController{
         try{
             writer = new ReplayData.Writer(file.write(false, 8192));
         }catch(Exception e){
-            Log.err(mindustryX.bundles.UiTextBundle.i("创建回放出错!"), e);
+            Log.err(i("创建回放出错!"), e);
             return;
         }
         boolean anonymous = Core.settings.getBool("anonymous", false);
@@ -81,7 +82,7 @@ public class ReplayController{
         if(p instanceof Disconnect){
             writer.close();
             writer = null;
-            Log.info(mindustryX.bundles.UiTextBundle.i("录制结束"));
+            Log.info(i("录制结束"));
             return;
         }
         try{
@@ -89,7 +90,7 @@ public class ReplayController{
         }catch(Exception e){
             net.disconnect();
             Log.err(e);
-            Core.app.post(() -> ui.showException(mindustryX.bundles.UiTextBundle.i("录制出错!"), e));
+            Core.app.post(() -> ui.showException(i("录制出错!"), e));
         }
     }
 
@@ -100,7 +101,7 @@ public class ReplayController{
             reader = new ReplayData.Reader(input);
             Log.infoTag("Replay", reader.getMeta().toString());
         }catch(Exception e){
-            Core.app.post(() -> ui.showException(mindustryX.bundles.UiTextBundle.i("读取回放失败!"), e));
+            Core.app.post(() -> ui.showException(i("读取回放失败!"), e));
         }
 
         replaying = true;
@@ -161,9 +162,9 @@ public class ReplayController{
 
 
     public static void showInfo(){
-        BaseDialog dialog = new BaseDialog(mindustryX.bundles.UiTextBundle.i("回放统计"));
+        BaseDialog dialog = new BaseDialog(i("回放统计"));
         if(reader == null){
-            dialog.cont.add(mindustryX.bundles.UiTextBundle.i("未加载回放!"));
+            dialog.cont.add(i("未加载回放!"));
             return;
         }
         var replay = reader.getMeta();

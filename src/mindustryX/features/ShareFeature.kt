@@ -25,7 +25,7 @@ import mindustry.ui.Fonts
 import mindustry.ui.Styles
 import mindustry.ui.fragments.ChatFragment
 import mindustryX.VarsX
-import mindustryX.bundles.UiTextBundle
+import mindustryX.features.UIExt.i
 import mindustryX.features.UIExtKt.showFloatSettingsPanel
 import mindustryX.features.ui.ArcMessageDialog
 import mindustryX.features.ui.FormatDefault.duration
@@ -62,7 +62,7 @@ object ShareFeature {
         }
         req.error {
             Core.app.post {
-                Vars.ui.showException(mindustryX.bundles.UiTextBundle.i("上传失败，再重试一下？"), it)
+                Vars.ui.showException(i("上传失败，再重试一下？"), it)
                 Core.app.post { callback(null) }
             }
         }
@@ -73,15 +73,15 @@ object ShareFeature {
         uploadPasteBin(Vars.schematics.writeBase64(schem)) { link: String? ->
             val msg = buildString {
                 append(VarsX.bundle.shareHeader(VarsX.version))
-                append(mindustryX.bundles.UiTextBundle.i("蓝图名：")).append(schem.name()).append("\n")
-                append(mindustryX.bundles.UiTextBundle.i("分享者：")).append(Vars.player.name).append("\n")
-                append(mindustryX.bundles.UiTextBundle.i("蓝图造价："))
+                append(i("蓝图名：")).append(schem.name()).append("\n")
+                append(i("分享者：")).append(Vars.player.name).append("\n")
+                append(i("蓝图造价："))
                 val arr = schem.requirements()
                 for (stack in arr) {
                     append(stack.item.emoji()).append(stack.item.localizedName).append(stack.amount).append("|")
                 }
                 append("\n")
-                append(mindustryX.bundles.UiTextBundle.i("电力："))
+                append(i("电力："))
                 val cons = schem.powerConsumption() * 60
                 val prod = schem.powerProduction() * 60
                 if (!Mathf.zero(prod)) {
@@ -94,13 +94,13 @@ object ShareFeature {
                     append("-").append(Strings.autoFixed(cons, 2))
                 }
                 append("\n")
-                append(mindustryX.bundles.UiTextBundle.i("蓝图代码链接：")).append(link ?: "x").append("\n")
-                if (Vars.schematics.writeBase64(schem).length > 3500) append(mindustryX.bundles.UiTextBundle.i("蓝图代码过长，请点击链接查看"))
-                else append(mindustryX.bundles.UiTextBundle.i("蓝图代码：\n")).append(Vars.schematics.writeBase64(schem))
+                append(i("蓝图代码链接：")).append(link ?: "x").append("\n")
+                if (Vars.schematics.writeBase64(schem).length > 3500) append(i("蓝图代码过长，请点击链接查看"))
+                else append(i("蓝图代码：\n")).append(Vars.schematics.writeBase64(schem))
             }
 
             Core.app.setClipboardText(Strings.stripColors(msg))
-            UIExt.announce(mindustryX.bundles.UiTextBundle.i("已保存至剪贴板"))
+            UIExt.announce(i("已保存至剪贴板"))
         }
     }
 
@@ -229,16 +229,16 @@ object ShareFeature {
             checked = Tex.underlineOver //Over是黄色的
         }
         button("T", underlineToggleT) { Vars.ui.chatfrag.nextMode() }
-            .checked { _ -> Vars.ui.chatfrag.mode == ChatFragment.ChatMode.team }.tooltip(mindustryX.bundles.UiTextBundle.i("前缀添加/t"))
+            .checked { _ -> Vars.ui.chatfrag.mode == ChatFragment.ChatMode.team }.tooltip(i("前缀添加/t"))
         button(Icon.zoomSmall, Styles.clearNonei) { MarkerType.lockOnLastMark() }
-            .tooltip(mindustryX.bundles.UiTextBundle.i("锁定上个标记点"))
+            .tooltip(i("锁定上个标记点"))
 
         add("♐>").padRight(18f)
-        button(Icon.mapSmall, Styles.clearNonei, Vars.iconMed) { MarkerType.toggleMarkHitterUI() }.tooltip(mindustryX.bundles.UiTextBundle.i("标记地图位置"))
-        button(Icon.wavesSmall, Styles.clearNonei, Vars.iconMed) { shareWaveInfo(Vars.state.wave) }.tooltip(mindustryX.bundles.UiTextBundle.i("分享波次信息"))
-        button(Icon.powerSmall, Styles.clearNonei, Vars.iconMed) { shareTeamPower() }.tooltip(mindustryX.bundles.UiTextBundle.i("分享电力情况"))
-        button(TextureRegionDrawable(Items.copper.uiIcon), Styles.clearNonei, Vars.iconSmall) { openShareItemDialog() }.tooltip(mindustryX.bundles.UiTextBundle.i("分享库存情况"))
-        button(Icon.unitsSmall, Styles.clearNonei, Vars.iconMed) { openShareUnitDialog() }.tooltip(mindustryX.bundles.UiTextBundle.i("分享单位数量"))
+        button(Icon.mapSmall, Styles.clearNonei, Vars.iconMed) { MarkerType.toggleMarkHitterUI() }.tooltip(i("标记地图位置"))
+        button(Icon.wavesSmall, Styles.clearNonei, Vars.iconMed) { shareWaveInfo(Vars.state.wave) }.tooltip(i("分享波次信息"))
+        button(Icon.powerSmall, Styles.clearNonei, Vars.iconMed) { shareTeamPower() }.tooltip(i("分享电力情况"))
+        button(TextureRegionDrawable(Items.copper.uiIcon), Styles.clearNonei, Vars.iconSmall) { openShareItemDialog() }.tooltip(i("分享库存情况"))
+        button(Icon.unitsSmall, Styles.clearNonei, Vars.iconMed) { openShareUnitDialog() }.tooltip(i("分享单位数量"))
     }
 
     private fun resolveAt(message: String, sender: Player?): Boolean {
@@ -249,7 +249,7 @@ object ShareFeature {
         message = message.substringAfter("<AT>").substringAfter(tag('@'))
         if (message.contains(Vars.player.name)) {
             if (sender != null) Vars.ui.announce(VarsX.bundle.atNoticeFrom(sender.name), 10f)
-            else Vars.ui.announce(mindustryX.bundles.UiTextBundle.i("[orange]你被戳了一下，请注意查看信息框哦~"), 10f)
+            else Vars.ui.announce(i("[orange]你被戳了一下，请注意查看信息框哦~"), 10f)
         }
 
         return true

@@ -7,6 +7,8 @@ import mindustry.ui.*;
 import mindustry.ui.dialogs.*;
 import mindustryX.VarsX;
 
+import static mindustryX.features.UIExt.i;
+
 //move from mindustry.arcModule.ui.dialogs.TeamSelectDialog
 public class TeamSelectDialog extends BaseDialog{
     private Boolf<Team> checked;
@@ -14,7 +16,7 @@ public class TeamSelectDialog extends BaseDialog{
     private Cons<Team> cons;
 
     public TeamSelectDialog(){
-        super(mindustryX.bundles.UiTextBundle.i("队伍选择器"));
+        super(i("队伍选择器"));
         cont.pane(td -> {
             for(Team team : Team.all){
                 if(team.id % 10 == 6){

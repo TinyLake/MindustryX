@@ -2,7 +2,6 @@ package mindustryX.features;
 
 import arc.util.*;
 import mindustry.entities.abilities.*;
-import mindustry.entities.pattern.*;
 import mindustry.type.*;
 import mindustry.ui.*;
 import mindustry.world.*;
