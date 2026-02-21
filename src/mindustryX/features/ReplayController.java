@@ -14,6 +14,7 @@ import mindustry.net.Packets.*;
 import mindustry.ui.dialogs.*;
 import mindustryX.*;
 import mindustryX.features.SettingsV2.*;
+import mindustryX.features.ui.*;
 
 import java.io.*;
 import java.util.*;
@@ -33,6 +34,8 @@ public class ReplayController{
 
     private static ReplayData.Writer writer;
     private static ReplayData.Reader reader;
+    private static ReplayManagerDialog managerDialog;
+    private static boolean reopenManagerOnStop;
 
     public static void init(){
         Events.run(EventType.Trigger.update, () -> {
@@ -46,6 +49,10 @@ public class ReplayController{
             buttons.button(i("加载回放文件"), Icon.file, () -> {
                 FileChooser.setLastDirectory(saveDirectory);
                 platform.showFileChooser(true, i("打开回放文件"), "mrep", f -> Core.app.post(() -> ReplayController.startPlay(f)));
+            });
+            buttons.button(i("回放管理器"), Icon.file, () -> {
+                if(managerDialog == null) managerDialog = new ReplayManagerDialog();
+                managerDialog.show();
             });
         }
         {
@@ -97,11 +104,20 @@ public class ReplayController{
     //replay
 
     public static void startPlay(Fi input){
+        startPlay(input, false);
+    }
+
+    public static void startPlay(Fi input, boolean reopenManager){
+        reopenManagerOnStop = reopenManager;
         try{
             reader = new ReplayData.Reader(input);
             Log.infoTag("Replay", reader.getMeta().toString());
         }catch(Exception e){
             Core.app.post(() -> ui.showException(i("读取回放失败!"), e));
+            if(reopenManagerOnStop){
+                Core.app.post(ReplayController::showManagerDialog);
+            }
+            return;
         }
 
         replaying = true;
@@ -144,20 +160,29 @@ public class ReplayController{
     }
 
     public static void stopPlay(){
-        if(!replaying){
-            if(reader != null){
-                reader.close();
-                reader = null;
-            }
-            return;
-        }
-        Log.infoTag("Replay", "stop");
+        boolean wasActive = replaying || reader != null;
+        if(wasActive) Log.infoTag("Replay", "stop");
         replaying = false;
-        reader.close();
-        reader = null;
+        if(reader != null){
+            reader.close();
+            reader = null;
+        }
+        if(!wasActive) return;
+
         net.disconnect();
         ui.loadfrag.hide();
-        Core.app.post(() -> logic.reset());
+        Core.app.post(() -> {
+            logic.reset();
+            if(reopenManagerOnStop){
+                showManagerDialog();
+            }
+            reopenManagerOnStop = false;
+        });
+    }
+
+    private static void showManagerDialog(){
+        if(managerDialog == null) managerDialog = new ReplayManagerDialog();
+        managerDialog.show();
     }
 
 
