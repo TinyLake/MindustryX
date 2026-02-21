@@ -54,8 +54,6 @@ internal object UiTextBundleEn : UiTextBundle {
     override fun coordinateDistance(x: Int, y: Int, distance: Int): String = "$x,$y\nDistance: $distance"
     override fun atPlayer(playerName: String?): String = "<AT> poked ${playerName ?: ""}[white] to check their messages."
     override fun atNoticeFrom(senderName: String): String = "[gold]You were poked by [white]$senderName[gold]! Check the message dialog."
-    override fun shareCode(code: String): String = "<ARCxMDTX><Schem>[black]compat code[] $code"
-    override fun shareHeader(version: String): String = "This is a share log from MDTX-$version\n"
     override fun waveContains(ground: Int, air: Int): String = "Contains (ground x$ground, air x$air):"
     override fun waveTitle(wave: Int): String = "Wave $wave"
     override fun waveEta(remainingWaves: Int, eta: String): String = "(in $remainingWaves waves, $eta)"

@@ -50,7 +50,7 @@ object ShareFeature {
         uploadPasteBin(Vars.schematics.writeBase64(s)) { url ->
             if (url == null) return@uploadPasteBin
             val code = url.substring(url.lastIndexOf('/') + 1)
-            send(Iconc.paste, VarsX.bundle.shareCode(code))
+            send(Iconc.paste, "<ARCxMDTX><Schem>[black]一坨兼容[] $code")
         }
     }
 
@@ -71,34 +71,30 @@ object ShareFeature {
     @JvmStatic
     fun shareSchematicClipboard(schem: Schematic) {
         uploadPasteBin(Vars.schematics.writeBase64(schem)) { link: String? ->
-            val msg = buildString {
-                append(VarsX.bundle.shareHeader(VarsX.version))
-                append(i("蓝图名：")).append(schem.name()).append("\n")
-                append(i("分享者：")).append(Vars.player.name).append("\n")
-                append(i("蓝图造价："))
-                val arr = schem.requirements()
-                for (stack in arr) {
-                    append(stack.item.emoji()).append(stack.item.localizedName).append(stack.amount).append("|")
-                }
-                append("\n")
-                append(i("电力："))
-                val cons = schem.powerConsumption() * 60
-                val prod = schem.powerProduction() * 60
-                if (!Mathf.zero(prod)) {
-                    append("+").append(Strings.autoFixed(prod, 2))
-                    if (!Mathf.zero(cons)) {
-                        append("|")
+            val msg = VarsX.bundle.shareSchematic(
+                name = schem.name(),
+                playerName = Vars.player.name,
+                requirements = buildString {
+                    val arr = schem.requirements()
+                    for (stack in arr) {
+                        append(stack.item.emoji()).append(stack.item.localizedName).append(stack.amount).append("|")
                     }
-                }
-                if (!Mathf.zero(cons)) {
-                    append("-").append(Strings.autoFixed(cons, 2))
-                }
-                append("\n")
-                append(i("蓝图代码链接：")).append(link ?: "x").append("\n")
-                if (Vars.schematics.writeBase64(schem).length > 3500) append(i("蓝图代码过长，请点击链接查看"))
-                else append(i("蓝图代码：\n")).append(Vars.schematics.writeBase64(schem))
-            }
-
+                },
+                powerInfo = buildString {
+                    val cons = schem.powerConsumption() * 60
+                    val prod = schem.powerProduction() * 60
+                    if (!Mathf.zero(prod)) {
+                        append("+").append(Strings.autoFixed(prod, 2))
+                        if (!Mathf.zero(cons)) {
+                            append("|")
+                        }
+                    }
+                    if (!Mathf.zero(cons)) {
+                        append("-").append(Strings.autoFixed(cons, 2))
+                    }
+                },
+                link = link, code = Vars.schematics.writeBase64(schem)
+            )
             Core.app.setClipboardText(Strings.stripColors(msg))
             UIExt.announce(i("已保存至剪贴板"))
         }

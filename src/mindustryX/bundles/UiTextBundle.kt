@@ -1,6 +1,7 @@
 package mindustryX.bundles
 
 import arc.util.Strings
+import mindustryX.VarsX
 
 interface UiTextBundle {
     object Zh : UiTextBundle
@@ -62,8 +63,20 @@ interface UiTextBundle {
 
     fun atPlayer(playerName: String?): String = "<AT>戳了${playerName ?: ""}[white]一下，并提醒他留意对话框"
     fun atNoticeFrom(senderName: String): String = "[gold]你被[white]$senderName[gold]戳了一下，请注意查看信息框哦~"
-    fun shareCode(code: String): String = "<ARCxMDTX><Schem>[black]一坨兼容[] $code"
-    fun shareHeader(version: String): String = "这是一条来自 MDTX-$version 的分享记录\n"
+    fun shareSchematic(name: String, playerName: String?, requirements: String, powerInfo: String, link: String?, code: String): String = buildString {
+        appendLine("这是一条来自 MDTX-${VarsX.version} 的分享记录")
+        appendLine("蓝图名: $name")
+        appendLine("分享者: ${playerName ?: ""}")
+        appendLine("蓝图造价: $requirements")
+        appendLine("电力: $powerInfo")
+        appendLine("蓝图代码链接: ${link ?: "x"}")
+        if (code.length < 3500) {
+            append("蓝图代码：\n").append(code)
+        } else {
+            append("蓝图代码过长，请点击链接查看")
+        }
+    }
+
     fun waveContains(ground: Int, air: Int): String = "包含(地×$ground,空x$air):"
     fun waveTitle(wave: Int): String = "第${wave}波"
     fun waveEta(remainingWaves: Int, eta: String): String = "(还有${remainingWaves}波, $eta)"
