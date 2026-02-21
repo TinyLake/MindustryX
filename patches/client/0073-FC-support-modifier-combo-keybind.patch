@@ -1,0 +1,180 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: DeterMination-Wind <DeterMination-Wind@users.noreply.github.com>
+Date: Sat, 21 Feb 2026 14:07:41 +0800
+Subject: [PATCH] =?UTF-8?q?=E2=9C=A8=20=E6=94=AF=E6=8C=81=E7=BB=84?=
+ =?UTF-8?q?=E5=90=88=E4=BF=AE=E9=A5=B0=E9=94=AE=E5=BF=AB=E6=8D=B7=E9=94=AE?=
+ =?UTF-8?q?=E7=BB=91=E5=AE=9A?=
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+---
+ core/src/mindustry/input/DesktopInput.java    | 18 +++++-----
+ .../mindustry/ui/dialogs/KeybindDialog.java   | 33 +++++++++++++------
+ .../mindustry/ui/fragments/ChatFragment.java  |  2 +-
+ 3 files changed, 33 insertions(+), 20 deletions(-)
+
+diff --git a/core/src/mindustry/input/DesktopInput.java b/core/src/mindustry/input/DesktopInput.java
+index 7277ea1b02972a73a3124ef1c885fee91d9b6793..63716f439e55f21b698bb40d63e4a02583449cb6 100644
+--- a/core/src/mindustry/input/DesktopInput.java
++++ b/core/src/mindustry/input/DesktopInput.java
+@@ -94,14 +94,14 @@ public class DesktopInput extends InputHandler{
+                     if(!showHint()) return str;
+                     str.setLength(0);
+                     if(!isBuilding && !Core.settings.getBool("buildautopause") && !player.unit().isBuilding()){
+-                        str.append(Core.bundle.format("enablebuilding", Binding.pauseBuilding.value.key.toString()));
++                        str.append(Core.bundle.format("enablebuilding", KeyBind.keyName(Binding.pauseBuilding.value.key, Binding.pauseBuilding.value.modifiers)));
+                     }else if(player.unit().isBuilding()){
+-                        str.append(Core.bundle.format(isBuilding ? "pausebuilding" : "resumebuilding", Binding.pauseBuilding.value.key.toString()))
+-                            .append("\n").append(Core.bundle.format("cancelbuilding", Binding.clearBuilding.value.key.toString()))
+-                            .append("\n").append(Core.bundle.format("selectschematic", Binding.schematicSelect.value.key.toString()));
++                        str.append(Core.bundle.format(isBuilding ? "pausebuilding" : "resumebuilding", KeyBind.keyName(Binding.pauseBuilding.value.key, Binding.pauseBuilding.value.modifiers)))
++                            .append("\n").append(Core.bundle.format("cancelbuilding", KeyBind.keyName(Binding.clearBuilding.value.key, Binding.clearBuilding.value.modifiers)))
++                            .append("\n").append(Core.bundle.format("selectschematic", KeyBind.keyName(Binding.schematicSelect.value.key, Binding.schematicSelect.value.modifiers)));
+                     }
+                     if(!player.dead() && !player.unit().spawnedByCore()){
+-                        str.append(str.length() != 0 ? "\n" : "").append(Core.bundle.format("respawn", Binding.respawn.value.key.toString()));
++                        str.append(str.length() != 0 ? "\n" : "").append(Core.bundle.format("respawn", KeyBind.keyName(Binding.respawn.value.key, Binding.respawn.value.modifiers)));
+                     }
+                     return str;
+                 }).style(Styles.outlineLabel);
+@@ -115,8 +115,8 @@ public class DesktopInput extends InputHandler{
+             t.table(Styles.black6, b -> {
+                 b.defaults().left();
+                 b.label(() -> Core.bundle.format("schematic.flip",
+-                    Binding.schematicFlipX.value.key.toString(),
+-                    Binding.schematicFlipY.value.key.toString())).style(Styles.outlineLabel).visible(() -> Core.settings.getBool("hints"));
++                    KeyBind.keyName(Binding.schematicFlipX.value.key, Binding.schematicFlipX.value.modifiers),
++                    KeyBind.keyName(Binding.schematicFlipY.value.key, Binding.schematicFlipY.value.modifiers))).style(Styles.outlineLabel).visible(() -> Core.settings.getBool("hints"));
+                 b.row();
+                 b.table(a -> {
+                     a.button("@schematic.add", Icon.save, this::showSchematicSave).colspan(2).size(250f, 50f).disabled(f -> lastSchematic == null || lastSchematic.file != null);
+@@ -302,7 +302,7 @@ public class DesktopInput extends InputHandler{
+ 
+         if(!locked && block == null && !scene.hasField() && !scene.hasDialog() &&
+                 //disable command mode when player unit can boost and command mode binding is the same
+-                !(!player.dead() && player.unit().type.canBoost && Binding.commandMode.value.key == Binding.boost.value.key)){
++                !(!player.dead() && player.unit().type.canBoost && Binding.commandMode.value.equals(Binding.boost.value))){
+             if(settings.getBool("commandmodehold")){
+                 commandMode = input.keyDown(Binding.commandMode);
+             }else if(input.keyTap(Binding.commandMode)){
+@@ -916,7 +916,7 @@ public class DesktopInput extends InputHandler{
+             commandTap(x, y);
+         }
+ 
+-        if(button == Binding.commandQueue.value.key){
++        if(Binding.commandQueue.value.matches(Core.input, button)){
+             commandTap(x, y, true);
+         }
+ 
+diff --git a/core/src/mindustry/ui/dialogs/KeybindDialog.java b/core/src/mindustry/ui/dialogs/KeybindDialog.java
+index d3dd7592465f420eb7c225b7dc7218eada30abf8..fe49ae5cb22a53fa367c68522883278cb7c9b5dd 100644
+--- a/core/src/mindustry/ui/dialogs/KeybindDialog.java
++++ b/core/src/mindustry/ui/dialogs/KeybindDialog.java
+@@ -21,6 +21,8 @@ public class KeybindDialog extends Dialog{
+     protected boolean rebindAxis = false;
+     protected boolean rebindMin = true;
+     protected KeyCode minKey = null;
++    protected KeyCode pressedKey = null;
++    protected int pressedMods = 0;
+     protected Dialog rebindDialog;
+     protected Table bindsTable;
+     private String searchText = "";
+@@ -97,7 +99,7 @@ public class KeybindDialog extends Dialog{
+ 
+                 table.labelWrap(() -> {
+                     Axis axis = keybind.value;
+-                    return axis.key != null ? axis.key.getName() : axis.min.getName() + " [red]/[] " + axis.max.getName();
++                    return axis.key != null ? KeyBind.keyName(axis.key, axis.modifiers) : axis.min.getName() + " [red]/[] " + axis.max.getName();
+                 }).color(Pal.accent).left().minWidth(90).fillX().padRight(20);
+ 
+                 table.button("@settings.rebind", tstyle, () -> {
+@@ -107,8 +109,8 @@ public class KeybindDialog extends Dialog{
+                 }).size(bw, bh);
+             }else{
+                 table.add(bundle.get("keybind." + keybind.name + ".name", Strings.capitalize(keybind.name)), Color.white).left().padRight(40).padLeft(8);
+-                table.add(keybind.value.key.getName()).update(l -> {
+-                    l.setText(keybind.value.key.getName());
++                table.add(KeyBind.keyName(keybind.value.key, keybind.value.modifiers)).update(l -> {
++                    l.setText(KeyBind.keyName(keybind.value.key, keybind.value.modifiers));
+                     l.setColor(keybind.value.key == KeyCode.unset ? Color.darkGray : Pal.accent);
+                 }).color(Pal.accent).left().minWidth(90).padRight(20);
+ 
+@@ -129,17 +131,18 @@ public class KeybindDialog extends Dialog{
+         table.button("@settings.reset", Icon.refresh, tstyle, KeyBind::resetAll).minWidth(200f).colspan(5).padTop(4).margin(10f).height(50f).fill();//MDTX: fix colspan for unbind
+     }
+ 
+-    void rebind(KeyBind bind, KeyCode newKey){
++    void rebind(KeyBind bind, KeyCode newKey, int modifiers){
+         if(rebindKey == null) return;
+         rebindDialog.hide();
+         boolean isAxis = bind.defaultValue instanceof Axis;
++        int sanitizedMods = KeyBind.sanitizeModifiers(newKey, modifiers);
+ 
+         if(isAxis){
+             if(newKey.axis || !rebindMin){
+-                bind.value = newKey.axis ? new Axis(newKey) : new Axis(minKey, newKey);
++                bind.value = newKey.axis ? new Axis(newKey, sanitizedMods) : new Axis(minKey, newKey);
+             }
+         }else{
+-            bind.value = new Axis(newKey);
++            bind.value = new Axis(newKey, sanitizedMods);
+         }
+         bind.save();
+ 
+@@ -157,28 +160,38 @@ public class KeybindDialog extends Dialog{
+         rebindDialog = new Dialog(rebindAxis ? bundle.get("keybind.press.axis") : bundle.get("keybind.press"));
+ 
+         rebindKey = name;
++        pressedKey = null;
++        pressedMods = 0;
+ 
+         rebindDialog.titleTable.getCells().first().pad(4);
+         rebindDialog.addListener(new InputListener(){
+             @Override
+             public boolean touchDown(InputEvent event, float x, float y, int pointer, KeyCode button){
+                 if(Core.app.isAndroid()) return false;
+-                rebind(name, button);
++                rebind(name, button, KeyBind.currentModifiers(Core.input));
+                 return false;
+             }
+ 
+             @Override
+             public boolean keyDown(InputEvent event, KeyCode keycode){
++                pressedKey = keycode;
++                pressedMods = KeyBind.sanitizeModifiers(keycode, KeyBind.currentModifiers(Core.input));
++                return true;
++            }
++
++            @Override
++            public boolean keyUp(InputEvent event, KeyCode keycode){
++                if(pressedKey == null || keycode != pressedKey) return false;
+                 rebindDialog.hide();
+-                rebind(name, keycode);
+-                return false;
++                rebind(name, keycode, pressedMods);
++                return true;
+             }
+ 
+             @Override
+             public boolean scrolled(InputEvent event, float x, float y, float amountX, float amountY){
+                 if(!rebindAxis) return false;
+                 rebindDialog.hide();
+-                rebind(name, KeyCode.scroll);
++                rebind(name, KeyCode.scroll, KeyBind.currentModifiers(Core.input));
+                 return false;
+             }
+         });
+diff --git a/core/src/mindustry/ui/fragments/ChatFragment.java b/core/src/mindustry/ui/fragments/ChatFragment.java
+index dce4a6cfa280bd84ef2aac4c4d576744f29420d6..adf90427467508af4a2d2fbae1a40cd24417591a 100644
+--- a/core/src/mindustry/ui/fragments/ChatFragment.java
++++ b/core/src/mindustry/ui/fragments/ChatFragment.java
+@@ -76,7 +76,7 @@ public class ChatFragment extends Table{
+                     updateChat();
+                 }
+                 //MDTX: disable FocusTraversal when tab is used as chat_mode
+-                chatfield.setFocusTraversal(Binding.chatMode.value.key != KeyCode.tab);
++                chatfield.setFocusTraversal(!(Binding.chatMode.value.key == KeyCode.tab && Binding.chatMode.value.modifiers == 0));
+                 if(input.keyTap(Binding.chatMode)){
+                     nextMode();
+                 }
