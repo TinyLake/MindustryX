@@ -4,10 +4,13 @@ import arc.util.Strings
 import mindustryX.VarsX
 
 interface UiTextBundle {
+    //region 特殊的函数
     object Zh : UiTextBundle
 
     fun simple(key: String): String = key
+    val labelsResFile: String get() = "labels"
 
+    //region 后续为正常翻译项
     fun mdtxReport(): String = "问题反馈"
     fun mdtxQqLink(): String = "QQ交流群"
     fun modsRecommendTitle(): String = "[accent]MdtX[]推荐辅助模组列表"
@@ -149,4 +152,6 @@ interface UiTextBundle {
         2 -> "全部玩家"
         else -> value.toString()
     }
+
+    fun kotlinModName(): String = "Kotlin语言标准库"
 }

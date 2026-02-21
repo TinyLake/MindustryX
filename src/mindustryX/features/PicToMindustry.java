@@ -65,7 +65,7 @@ public class PicToMindustry{
             t.check(i("自动保存为蓝图"), Core.settings.getBool("autoSavePTM"), ta -> Core.settings.put("autoSavePTM", ta));
         }).padBottom(20f).row();
         pt.cont.table(t -> {
-            t.add(i("缩放: "));
+            t.add(i("缩放: \uE815 "));
             Label zoom = t.add(String.valueOf(scale)).padRight(20f).get();
             t.slider(0, scaleList.length - 1, 1, 11, s -> {
                 scale = scaleList[(int)s];

@@ -63,18 +63,12 @@ class AdvanceToolTable : Table() {
 
         row().add(i("队伍："))
         with(table().growX().get()) {
-            defaults().pad(4f)
-            var count = 0
+            defaults().size(Vars.iconMed).pad(4f)
             for (team in Team.baseTeams) {
-                if (count > 0 && count % 4 == 0) row()
                 button(String.format("[#%s]%s", team.color, team.localized()), Styles.flatToggleMenut) { Vars.player.team(team) }
-                    .minWidth(88f).height(Vars.iconMed)
                     .checked { Vars.player.team() === team }
-                count++
             }
-            if (count > 0 && count % 4 == 0) row()
             button("+", Styles.flatToggleMenut) { UIExt.teamSelect.pickOne({ team: Team? -> Vars.player.team(team) }, Vars.player.team()) }
-                .minWidth(88f).height(Vars.iconMed)
                 .checked { !Seq.with(*Team.baseTeams).contains(Vars.player.team()) }
                 .tooltip(i("更多队伍选择"))
         }
@@ -83,14 +77,12 @@ class AdvanceToolTable : Table() {
         with(table().growX().get()) {
             defaults().pad(4f)
             button(i("创世神"), Styles.flatToggleMenut) { LogicExt.worldCreator0.toggle() }
-                .minWidth(120f).height(Vars.iconMed)
                 .checked { LogicExt.worldCreator }.wrapLabel(true)
             button(i("解禁"), Styles.flatToggleMenut) {
                 VarsX.allUnlocked.toggle()
-            }.minWidth(120f).height(Vars.iconMed).checked { VarsX.allUnlocked.value }.tooltip(i("显示并允许建造所有物品")).wrapLabel(true).row()
+            }.checked { VarsX.allUnlocked.value }.tooltip(i("显示并允许建造所有物品")).wrapLabel(false)
             button(i("地形蓝图"), Styles.flatToggleMenut) { LogicExt.terrainSchematic0.toggle() }
-                .minWidth(120f).height(Vars.iconMed)
-                .checked { LogicExt.terrainSchematic }.wrapLabel(true)
+                .checked { LogicExt.terrainSchematic }.wrapLabel(false)
             button(i("瞬间完成"), Styles.cleart) {
                 Vars.player.unit()?.apply {
                     if (!canBuild()) {
@@ -102,7 +94,7 @@ class AdvanceToolTable : Table() {
                     repeat(10000) { updateBuildLogic() }
                     updateBuilding = bak
                 }
-            }.minWidth(120f).height(Vars.iconMed).disabled { Vars.net.client() }.wrapLabel(true)
+            }.wrapLabel(false).disabled { Vars.net.client() }
         }
 
         row().add(i("规则："))

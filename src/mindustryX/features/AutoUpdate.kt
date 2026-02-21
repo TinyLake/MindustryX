@@ -149,26 +149,26 @@ object AutoUpdate {
             }
 
             //width为整个Table最小宽度
-            add(VarsX.bundle.currentVersion(VarsX.version)).labelAlign(Align.center).width(500f).wrap().row()
+            add(VarsX.bundle.currentVersion(VarsX.version)).labelAlign(Align.center).width(500f).row()
             newVersion?.let {
-                add(VarsX.bundle.newVersion(it.version)).labelAlign(Align.center).width(500f).wrap().row()
+                add(VarsX.bundle.newVersion(it.version)).row()
             }
             if (versions.isEmpty()) {
-                add(i("检查更新失败，请稍后再试")).labelAlign(Align.center).width(500f).wrap().row()
+                add(i("检查更新失败，请稍后再试")).row()
                 return@apply
             }
 
             image().fillX().height(2f).row()
-            add(i("正式版")).labelAlign(Align.center).width(500f).wrap().row()
+            add(i("正式版")).row()
             buildVersionList(versions.filter { it.isRelease })
 
             image().fillX().height(2f).row()
-            add(i("预览版(更新更快,新功能体验,BUG修复)")).labelAlign(Align.center).width(500f).wrap().row()
+            add(i("预览版(更新更快,新功能体验,BUG修复)")).row()
             buildVersionList(versions.filter { !it.isRelease })
 
             image().fillX().height(2f).row()
             if (version == null) {
-                add(i("你已是最新版本，不需要更新！")).labelAlign(Align.center).width(500f).wrap()
+                add(i("你已是最新版本，不需要更新！"))
                 return@apply
             }
 
