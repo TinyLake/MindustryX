@@ -12,9 +12,9 @@ Content-Transfer-Encoding: 8bit
  core/src/mindustry/ui/dialogs/DatabaseDialog.java      | 9 +++++++--
  core/src/mindustry/ui/fragments/PlacementFragment.java | 9 ++++++++-
  core/src/mindustry/world/Block.java                    | 4 ++--
- core/src/mindustry/world/Build.java                    | 6 ++++++
+ core/src/mindustry/world/Build.java                    | 8 ++++++++
  core/src/mindustry/world/blocks/ItemSelection.java     | 3 ++-
- 6 files changed, 28 insertions(+), 8 deletions(-)
+ 6 files changed, 30 insertions(+), 8 deletions(-)
 
 diff --git a/core/src/mindustry/ctype/UnlockableContent.java b/core/src/mindustry/ctype/UnlockableContent.java
 index 380fd844426820615fd6d2f88899d2f5ec20ac2a..caf6a100865d862a4d75ccf55741f45b6efe6935 100644
@@ -141,7 +141,7 @@ index 20d4447eef00bda4e70beb18a456f4610e65062c..bc542170478ef7796a88b2e13b5cb786
  
      @Override
 diff --git a/core/src/mindustry/world/Build.java b/core/src/mindustry/world/Build.java
-index d883b6c00bb2beba1d3f957168bd65d85cd4f9a1..0a8b5d7c1118b44f742c3c9e23fa2caab6a92377 100644
+index d883b6c00bb2beba1d3f957168bd65d85cd4f9a1..c0951480531268e91a50065552b1e06b51395760 100644
 --- a/core/src/mindustry/world/Build.java
 +++ b/core/src/mindustry/world/Build.java
 @@ -15,6 +15,7 @@ import mindustry.gen.*;
@@ -152,22 +152,24 @@ index d883b6c00bb2beba1d3f957168bd65d85cd4f9a1..0a8b5d7c1118b44f742c3c9e23fa2caa
  
  import static mindustry.Vars.*;
  
-@@ -181,6 +182,10 @@ public class Build{
+@@ -181,6 +182,12 @@ public class Build{
  
      /** @return whether a tile can be placed at this location by this team. Ignores units at this location. */
      public static boolean validPlaceIgnoreUnits(Block type, Team team, int x, int y, int rotation, boolean checkVisible, boolean checkCoreRadius){
-+        if (LogicExt.worldCreator) {
-+            Tile tile = world.tile(x, y);
-+            return tile != null;
++        if(LogicExt.worldCreator){
++            if(type == null) return false;
++            Tile a = world.tile(x + type.sizeOffset, y + type.sizeOffset),
++            b = world.tile(x + type.size + type.sizeOffset - 1, y + type.size - 1 + type.sizeOffset);
++            return a != null && b != null;
 +        }
          //the wave team can build whatever they want as long as it's visible - banned blocks are not applicable
          if(type == null || (!state.rules.editor && (checkVisible && (!type.environmentBuildable() || (!type.isPlaceable() && !(state.rules.waves && team == state.rules.waveTeam && type.isVisible())))))){
              return false;
-@@ -313,6 +318,7 @@ public class Build{
+@@ -313,6 +320,7 @@ public class Build{
      /** @return whether the tile at this position is breakable by this team */
      public static boolean validBreak(Team team, int x, int y){
          Tile tile = world.tile(x, y);
-+        if(LogicExt.worldCreator && tile.block() != Blocks.air) return true;
++        if(LogicExt.worldCreator && tile != null && tile.block() != Blocks.air) return true;
          return tile != null && tile.block() != Blocks.air && (tile.block().canBreak(tile) && (tile.breakable() || state.rules.allowEnvironmentDeconstruct)) && tile.interactable(team);
      }
  }
