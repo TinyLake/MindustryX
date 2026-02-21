@@ -169,7 +169,7 @@ public class ReplayManagerDialog extends BaseDialog{
     private String buildMetaInfo(ReplayMeta meta){
         return "录制时间: " + formatDate(meta.time)
         + "  |  玩家: " + meta.player
-        + "  |  服务器: " + meta.serverIp
+        + "  [white]|  服务器: " + meta.serverIp
         + "  |  版本: " + meta.version;
     }
 
