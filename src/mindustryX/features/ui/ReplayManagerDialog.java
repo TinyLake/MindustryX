@@ -22,6 +22,9 @@ import static mindustry.Vars.*;
 public class ReplayManagerDialog extends BaseDialog{
     private static final DateTimeFormatter dateFormat = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
     private static final ReplayMeta unreadableMeta = new ReplayMeta(false, null, "", "", 0);
+    private static final float compactDesktopWidth = 620f;
+    private static final float compactMobileWidth = 460f;
+    private static final float compactHeight = 520f;
 
     private final Table list = new Table();
     private final ScrollPane pane = new ScrollPane(list, Styles.noBarPane);
@@ -33,6 +36,7 @@ public class ReplayManagerDialog extends BaseDialog{
     private boolean rebuildPosted;
     private String search;
     private TextField searchField;
+    private Cell<ScrollPane> paneCell;
 
     public ReplayManagerDialog(){
         super("回放管理器");
@@ -43,17 +47,21 @@ public class ReplayManagerDialog extends BaseDialog{
         shown(() -> {
             search = null;
             if(searchField != null) searchField.setText("");
+            applyCompactLayout();
             refreshReplayFiles();
             rebuildList();
         });
-        onResize(this::rebuildList);
+        onResize(() -> {
+            applyCompactLayout();
+            rebuildList();
+        });
     }
 
     private void setup(){
         cont.clear();
 
         cont.table(tools -> {
-            tools.defaults().height(54f);
+            tools.defaults().height(46f);
             tools.image(Icon.zoom).padRight(6f);
             searchField = tools.field("", text -> {
                 String value = text.trim().toLowerCase(Locale.ROOT);
@@ -63,13 +71,22 @@ public class ReplayManagerDialog extends BaseDialog{
             searchField.setMessageText("搜索回放");
 
             tools.button("加载外部回放", Icon.upload, this::loadExternalReplay).padRight(8f);
-            tools.button(Icon.refresh, Styles.cleari, this::refreshAndRebuild).size(54f);
+            tools.button(Icon.refresh, Styles.cleari, this::refreshAndRebuild).size(46f);
         }).growX().row();
 
         pane.setFadeScrollBars(false);
         pane.setScrollingDisabled(true, false);
-        list.margin(8f);
-        cont.add(pane).grow().minHeight(420f);
+        list.margin(6f);
+        paneCell = cont.add(pane).width(compactDesktopWidth).height(compactHeight);
+    }
+
+    private void applyCompactLayout(){
+        if(paneCell == null) return;
+        float scaledWidth = Core.graphics.getWidth() / Scl.scl();
+        float scaledHeight = Core.graphics.getHeight() / Scl.scl();
+        float targetWidth = Math.min(mobile ? compactMobileWidth : compactDesktopWidth, Math.max(320f, scaledWidth - 28f));
+        float targetHeight = Math.min(compactHeight, Math.max(340f, scaledHeight - 180f));
+        paneCell.width(targetWidth).height(targetHeight);
     }
 
     private void rebuildList(){
@@ -141,7 +158,7 @@ public class ReplayManagerDialog extends BaseDialog{
 
                 title.table(buttons -> {
                     buttons.right();
-                    buttons.defaults().size(40f);
+                    buttons.defaults().size(36f);
                     boolean exists = file.exists();
                     buttons.button(Icon.play, Styles.emptyi, () -> playReplay(file)).disabled(b -> !exists);
                     buttons.button(Icon.trash, Styles.emptyi, () -> confirmDelete(file));
