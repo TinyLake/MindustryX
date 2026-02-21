@@ -35,6 +35,7 @@ public class ReplayController{
     private static ReplayData.Writer writer;
     private static ReplayData.Reader reader;
     private static ReplayManagerDialog managerDialog;
+    private static boolean reopenManagerOnStop;
 
     public static void init(){
         Events.run(EventType.Trigger.update, () -> {
@@ -103,11 +104,19 @@ public class ReplayController{
     //replay
 
     public static void startPlay(Fi input){
+        startPlay(input, false);
+    }
+
+    public static void startPlay(Fi input, boolean reopenManager){
+        reopenManagerOnStop = reopenManager;
         try{
             reader = new ReplayData.Reader(input);
             Log.infoTag("Replay", reader.getMeta().toString());
         }catch(Exception e){
             Core.app.post(() -> ui.showException(i("读取回放失败!"), e));
+            if(reopenManagerOnStop){
+                Core.app.post(ReplayController::showManagerDialog);
+            }
             return;
         }
 
@@ -151,22 +160,29 @@ public class ReplayController{
     }
 
     public static void stopPlay(){
-        if(!replaying){
-            if(reader != null){
-                reader.close();
-                reader = null;
-            }
-            return;
-        }
-        Log.infoTag("Replay", "stop");
+        boolean wasActive = replaying || reader != null;
+        if(wasActive) Log.infoTag("Replay", "stop");
         replaying = false;
         if(reader != null){
             reader.close();
             reader = null;
         }
+        if(!wasActive) return;
+
         net.disconnect();
         ui.loadfrag.hide();
-        Core.app.post(() -> logic.reset());
+        Core.app.post(() -> {
+            logic.reset();
+            if(reopenManagerOnStop){
+                showManagerDialog();
+            }
+            reopenManagerOnStop = false;
+        });
+    }
+
+    private static void showManagerDialog(){
+        if(managerDialog == null) managerDialog = new ReplayManagerDialog();
+        managerDialog.show();
     }
 
 
