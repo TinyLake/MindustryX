@@ -4,14 +4,149 @@ Date: Fri, 12 Dec 2025 14:49:28 +0800
 Subject: [PATCH] API: Http.onBeforeRequest
 
 ---
- arc-core/src/arc/util/Http.java | 6 ++++++
- 1 file changed, 6 insertions(+)
+ arc-core/src/arc/util/Http.java | 102 ++++++++++++++++++++++++++--------------
+ 1 file changed, 67 insertions(+), 35 deletions(-)
 
 diff --git a/arc-core/src/arc/util/Http.java b/arc-core/src/arc/util/Http.java
-index 5be2d92ebc01f37351cc60c2b5c6f9296dabbc5b..e15e644138b4e7ea07ad0d3d483fcb8b640a7a00 100644
+index 5be2d92ebc01f37351cc60c2b5c6f9296dabbc5b..a6e85108fb7feb7bb143f6dbbd6f2aff9cd4fdb3 100644
 --- a/arc-core/src/arc/util/Http.java
 +++ b/arc-core/src/arc/util/Http.java
-@@ -157,6 +157,8 @@ public class Http{
+@@ -6,6 +6,7 @@ import arc.util.io.*;
+ 
+ import java.io.*;
+ import java.net.*;
++import java.nio.charset.StandardCharsets;
+ import java.util.*;
+ import java.util.concurrent.*;
+ 
+@@ -54,15 +55,52 @@ public class Http{
+     public static class HttpResponse{
+         private final HttpURLConnection connection;
+         private HttpStatus status;
++        private byte[] cachedResult;
+ 
+         protected HttpResponse(HttpURLConnection connection) throws IOException{
+             this.connection = connection;
+             this.status = HttpStatus.byCode(connection.getResponseCode());
+         }
+ 
++        protected HttpResponse(HttpStatus status, byte[] result){
++            this.connection = null;
++            this.status = status;
++            this.cachedResult = result == null ? Streams.emptyBytes : result;
++        }
++
++        public static HttpResponse ofBytes(int statusCode, byte[] result){
++            return new HttpResponse(HttpStatus.byCode(statusCode), result);
++        }
++
++        private InputStream openStream(){
++            if(connection == null) return new ByteArrayInputStream(cachedResult == null ? Streams.emptyBytes : cachedResult);
++            try{
++                return connection.getInputStream();
++            }catch(IOException e){
++                return connection.getErrorStream();
++            }
++        }
++
++        private byte[] ensureResultBytes(){
++            if(cachedResult != null) return cachedResult;
++
++            InputStream input = openStream();
++            if(input == null) return cachedResult = Streams.emptyBytes;
++
++            try{
++                cachedResult = Streams.copyBytes(input, connection == null ? 0 : connection.getContentLength());
++                return cachedResult;
++            }catch(IOException e){
++                return cachedResult = Streams.emptyBytes;
++            }finally{
++                Streams.close(input);
++            }
++        }
++
+         /** @return the length of received content in bytes as a long. May throw an exception (?) */
+         public long getContentLength(){
+-            return connection.getContentLength();
++            if(cachedResult != null) return cachedResult.length;
++            return connection == null ? 0 : connection.getContentLength();
+         }
+ 
+         /**
+@@ -74,20 +112,7 @@ public class Http{
+          * timeout is specified when creating the HTTP request, with {@link HttpRequest#timeout(int)}
+          */
+         public byte[] getResult(){
+-            InputStream input = getResultAsStream();
+-
+-            // If the response does not contain any content, input will be null.
+-            if(input == null){
+-                return Streams.emptyBytes;
+-            }
+-
+-            try{
+-                return Streams.copyBytes(input, connection.getContentLength());
+-            }catch(IOException e){
+-                return Streams.emptyBytes;
+-            }finally{
+-                Streams.close(input);
+-            }
++            return ensureResultBytes();
+         }
+ 
+         /**
+@@ -99,20 +124,7 @@ public class Http{
+          * timeout is specified when creating the HTTP request, with {@link HttpRequest#timeout(int)}
+          */
+         public String getResultAsString(){
+-            InputStream input = getResultAsStream();
+-
+-            // If the response does not contain any content, input will be null.
+-            if(input == null){
+-                return "";
+-            }
+-
+-            try{
+-                return Streams.copyString(input, connection.getContentLength());
+-            }catch(IOException e){
+-                return "";
+-            }finally{
+-                Streams.close(input);
+-            }
++            return new String(ensureResultBytes(), StandardCharsets.UTF_8);
+         }
+ 
+         /**
+@@ -122,11 +134,7 @@ public class Http{
+          * @return An {@link InputStream} with the {@link HttpResponse} data.
+          */
+         public InputStream getResultAsStream(){
+-            try{
+-                return connection.getInputStream();
+-            }catch(IOException e){
+-                return connection.getErrorStream();
+-            }
++            return new ByteArrayInputStream(ensureResultBytes());
+         }
+ 
+         /** @return the {@link HttpStatus} containing the statusCode of the HTTP response. */
+@@ -136,6 +144,7 @@ public class Http{
+ 
+         /** @return the value of the header with the given name as a {@link String}, or null if the header is not set. */
+         public String getHeader(String name){
++            if(connection == null) return null;
+             return connection.getHeaderField(name);
+         }
+ 
+@@ -144,6 +153,7 @@ public class Http{
+          * represent the corresponding header values.
+          */
+         public ObjectMap<String, Seq<String>> getHeaders(){
++            if(connection == null) return new ObjectMap<>();
+             //convert between the struct types
+             ObjectMap<String, Seq<String>> out = new ObjectMap<>();
+             Map<String, List<String>> fields = connection.getHeaderFields();
+@@ -157,10 +167,16 @@ public class Http{
  
      }
  
@@ -20,14 +155,50 @@ index 5be2d92ebc01f37351cc60c2b5c6f9296dabbc5b..e15e644138b4e7ea07ad0d3d483fcb8b
      public static class HttpRequest{
          public HttpMethod method = HttpMethod.GET;
          /** The URL to send this request to.*/
-@@ -247,6 +249,10 @@ public class Http{
+         public String url;
++        /** Success callback for this request; set by submit/block. */
++        public ConsT<HttpResponse, Exception> success;
++        /** If set in onBeforeRequest, this response is returned without network access. */
++        public HttpResponse directResponse;
+         public ObjectMap<String, String> headers = new ObjectMap<>();
+         /**The time to wait for the HTTP request to be processed, use 0 to block until it is done. The timeout is used for both
+          * the timeout when establishing TCP connection, and the timeout until the first byte of data is received.*/
+@@ -237,6 +253,7 @@ public class Http{
+ 
+         /** Submits this request asynchronously. */
+         public void submit(ConsT<HttpResponse, Exception> success){
++            this.success = success;
+             Http.exec.submit(() -> block(success));
+         }
+ 
+@@ -247,6 +264,21 @@ public class Http{
                  return;
              }
  
++            this.success = success;
++
 +            if(onBeforeRequest != null){
 +                onBeforeRequest.get(this);
++            }
++
++            if(directResponse != null){
++                try{
++                    this.success.get(directResponse);
++                }catch(Exception e){
++                    errorHandler.get(e);
++                }
++                return;
 +            }
 +
              try{
                  URL url;
  
+@@ -301,7 +333,7 @@ public class Http{
+                             HttpStatus status = HttpStatus.byCode(code);
+                             errorHandler.get(new HttpStatusException("HTTP request failed with error: " + code + " (" + status + ", URL = " + url + ")", status, new HttpResponse(connection)));
+                         }else{
+-                            success.get(new HttpResponse(connection));
++                            this.success.get(new HttpResponse(connection));
+                         }
+ 
+                     }finally{

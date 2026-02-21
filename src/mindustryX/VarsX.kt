@@ -80,10 +80,6 @@ object VarsX {
     @JvmField
     val noPlayerHitBox = CheckPref("noPlayerHitBox")
 
-    @JvmField
-    val githubMirror = CheckPref("githubMirror")
-
-    @JvmField
     val arcSpecificInfoTable = CheckPref("gameUI.arcSpecificTable").apply {
         addFallbackName("arcSpecificTable")
     }
