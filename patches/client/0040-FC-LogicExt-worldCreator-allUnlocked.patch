@@ -152,13 +152,23 @@ index d883b6c00bb2beba1d3f957168bd65d85cd4f9a1..0a8b5d7c1118b44f742c3c9e23fa2caa
  
  import static mindustry.Vars.*;
  
-@@ -181,6 +182,10 @@ public class Build{
+@@ -181,6 +182,19 @@ public class Build{
  
      /** @return whether a tile can be placed at this location by this team. Ignores units at this location. */
      public static boolean validPlaceIgnoreUnits(Block type, Team team, int x, int y, int rotation, boolean checkVisible, boolean checkCoreRadius){
-+        if (LogicExt.worldCreator) {
-+            Tile tile = world.tile(x, y);
-+            return tile != null;
++        if(LogicExt.worldCreator){
++            if(type == null) return false;
++            int offsetx = -(type.size - 1) / 2;
++            int offsety = -(type.size - 1) / 2;
++
++            for(int dx = 0; dx < type.size; dx++){
++                for(int dy = 0; dy < type.size; dy++){
++                    if(world.tile(x + dx + offsetx, y + dy + offsety) == null){
++                        return false;
++                    }
++                }
++            }
++            return true;
 +        }
          //the wave team can build whatever they want as long as it's visible - banned blocks are not applicable
          if(type == null || (!state.rules.editor && (checkVisible && (!type.environmentBuildable() || (!type.isPlaceable() && !(state.rules.waves && team == state.rules.waveTeam && type.isVisible())))))){
@@ -167,7 +177,7 @@ index d883b6c00bb2beba1d3f957168bd65d85cd4f9a1..0a8b5d7c1118b44f742c3c9e23fa2caa
      /** @return whether the tile at this position is breakable by this team */
      public static boolean validBreak(Team team, int x, int y){
          Tile tile = world.tile(x, y);
-+        if(LogicExt.worldCreator && tile.block() != Blocks.air) return true;
++        if(LogicExt.worldCreator && tile != null && tile.block() != Blocks.air) return true;
          return tile != null && tile.block() != Blocks.air && (tile.block().canBreak(tile) && (tile.breakable() || state.rules.allowEnvironmentDeconstruct)) && tile.interactable(team);
      }
  }
