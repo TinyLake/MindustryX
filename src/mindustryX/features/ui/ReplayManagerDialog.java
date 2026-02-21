@@ -22,9 +22,10 @@ import static mindustry.Vars.*;
 public class ReplayManagerDialog extends BaseDialog{
     private static final DateTimeFormatter dateFormat = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
     private static final ReplayMeta unreadableMeta = new ReplayMeta(false, null, "", "", 0);
-    private static final float compactDesktopWidth = 620f;
-    private static final float compactMobileWidth = 460f;
-    private static final float compactHeight = 520f;
+    private static final float minPaneWidth = 320f;
+    private static final float maxPaneWidth = 680f;
+    private static final float minPaneHeight = 340f;
+    private static final float maxPaneHeight = 640f;
 
     private final Table list = new Table();
     private final ScrollPane pane = new ScrollPane(list, Styles.noBarPane);
@@ -47,12 +48,12 @@ public class ReplayManagerDialog extends BaseDialog{
         shown(() -> {
             search = null;
             if(searchField != null) searchField.setText("");
-            applyCompactLayout();
+            applyAdaptiveLayout();
             refreshReplayFiles();
             rebuildList();
         });
         onResize(() -> {
-            applyCompactLayout();
+            applyAdaptiveLayout();
             rebuildList();
         });
     }
@@ -77,15 +78,22 @@ public class ReplayManagerDialog extends BaseDialog{
         pane.setFadeScrollBars(false);
         pane.setScrollingDisabled(true, false);
         list.margin(6f);
-        paneCell = cont.add(pane).width(compactDesktopWidth).height(compactHeight);
+        paneCell = cont.add(pane).growX().minWidth(minPaneWidth).maxWidth(maxPaneWidth).minHeight(minPaneHeight);
     }
 
-    private void applyCompactLayout(){
+    private void applyAdaptiveLayout(){
         if(paneCell == null) return;
         float scaledWidth = Core.graphics.getWidth() / Scl.scl();
         float scaledHeight = Core.graphics.getHeight() / Scl.scl();
-        float targetWidth = Math.min(mobile ? compactMobileWidth : compactDesktopWidth, Math.max(320f, scaledWidth - 28f));
-        float targetHeight = Math.min(compactHeight, Math.max(340f, scaledHeight - 180f));
+
+        float widthRatio = mobile ? 0.94f : (scaledWidth < 900f ? 0.74f : 0.6f);
+        float targetWidth = Math.max(minPaneWidth, Math.min(maxPaneWidth, scaledWidth * widthRatio));
+
+        float heightRatio = mobile ? 0.78f : 0.68f;
+        float visibleSpace = scaledHeight - (mobile ? 110f : 140f);
+        float targetHeight = Math.min(scaledHeight * heightRatio, visibleSpace);
+        targetHeight = Math.max(minPaneHeight, Math.min(maxPaneHeight, targetHeight));
+
         paneCell.width(targetWidth).height(targetHeight);
     }
 
