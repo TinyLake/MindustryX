@@ -486,8 +486,7 @@ object OverlayUI {
                                 return@forEach
                             }
                             add(TextButton(it.data.title).apply {
-                                label.setWrap(true)
-                                label.setAlignment(Align.left)
+                                label.setWrap(false)
                                 setDisabled { it.data.enabled }
                                 changed { it.data.enabled = true }
                             }).row()
@@ -496,8 +495,7 @@ object OverlayUI {
                             add(i("当前不可用的面板:")).align(Align.center).row()
                             notAvailable.forEach {
                                 add(TextButton(it.data.title).apply {
-                                    label.setWrap(true)
-                                    label.setAlignment(Align.left)
+                                    label.setWrap(false)
                                     isDisabled = true
                                 }).row()
                             }
