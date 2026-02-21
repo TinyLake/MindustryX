@@ -228,14 +228,14 @@ public class ReplayManagerDialog extends BaseDialog{
             return;
         }
         hide();
-        ReplayController.startPlay(file);
+        ReplayController.startPlay(file, true);
     }
 
     private void loadExternalReplay(){
         FileChooser.setLastDirectory(saveDirectory);
         platform.showFileChooser(true, "打开回放文件", "mrep", file -> Core.app.post(() -> {
             hide();
-            ReplayController.startPlay(file);
+            ReplayController.startPlay(file, true);
         }));
     }
 
