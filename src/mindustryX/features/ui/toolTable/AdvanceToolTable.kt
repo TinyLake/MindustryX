@@ -63,10 +63,12 @@ class AdvanceToolTable : Table() {
 
         row().add(i("队伍："))
         with(table().growX().get()) {
-            defaults().size(Vars.iconMed).pad(4f)
+            defaults().size(Vars.iconMed).maxWidth(120f).pad(4f).padRight(8f)
             for (team in Team.baseTeams) {
-                button(String.format("[#%s]%s", team.color, team.localized()), Styles.flatToggleMenut) { Vars.player.team(team) }
-                    .checked { Vars.player.team() === team }
+                button(team.localized(), Styles.flatToggleMenut) { Vars.player.team(team) }
+                    .checked { Vars.player.team() === team }.get().apply {
+                        label.apply { setWrap(false); setColor(team.color) }
+                    }
             }
             button("+", Styles.flatToggleMenut) { UIExt.teamSelect.pickOne({ team: Team? -> Vars.player.team(team) }, Vars.player.team()) }
                 .checked { !Seq.with(*Team.baseTeams).contains(Vars.player.team()) }
@@ -75,9 +77,9 @@ class AdvanceToolTable : Table() {
 
         row().add(i("建筑："))
         with(table().growX().get()) {
-            defaults().pad(4f)
+            defaults().pad(4f).padRight(8f)
             button(i("创世神"), Styles.flatToggleMenut) { LogicExt.worldCreator0.toggle() }
-                .checked { LogicExt.worldCreator }.wrapLabel(true)
+                .checked { LogicExt.worldCreator }.wrapLabel(false)
             button(i("解禁"), Styles.flatToggleMenut) {
                 VarsX.allUnlocked.toggle()
             }.checked { VarsX.allUnlocked.value }.tooltip(i("显示并允许建造所有物品")).wrapLabel(false)
@@ -100,7 +102,7 @@ class AdvanceToolTable : Table() {
         row().add(i("规则："))
         with(table().growX().get()) {
             defaults().pad(4f)
-            button(Iconc.map.toString(), Styles.cleart) { mapInfoDialog.show() }.width(40f)
+            button(Iconc.map.toString(), Styles.cleart) { mapInfoDialog.show() }.width(Vars.iconMed)
             button(i("无限火力"), Styles.flatToggleMenut) { Vars.player.team().rules().cheat = !Vars.player.team().rules().cheat }
                 .checked { Vars.player.team().rules().cheat }.tooltip(i("开关自己队的无限火力")).wrapLabel(false)
             button(i("编辑器"), Styles.flatToggleMenut) { Vars.state.rules.editor = !Vars.state.rules.editor }

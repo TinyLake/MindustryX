@@ -128,14 +128,6 @@ internal object UiTextBundleEn : UiTextBundle {
     override fun simple(key: String): String = zhToEn[key] ?: key
     override val labelsResFile: String get() = "labels_en"
 
-    private val placeholderBracePattern = Regex("""\{\d+}""")
-    private val placeholderAtPattern = Regex("(^|[^A-Za-z0-9])@($|[^A-Za-z0-9])")
-    private fun isConstantTextKey(key: String): Boolean {
-        if (placeholderBracePattern.containsMatchIn(key)) return false
-        if (placeholderAtPattern.containsMatchIn(key)) return false
-        return true
-    }
-
     private val zhToEn = hashMapOf(
         "\n[white]分走了单位:" to "\n[white] took units:",
         "<永久状态>" to "<Permanent Status>",
@@ -380,6 +372,4 @@ internal object UiTextBundleEn : UiTextBundle {
         "颜色" to "Color",
         "飞行模式" to "Flight mode",
     )
-        .filterKeys(::isConstantTextKey)
-        .toMap()
 }
