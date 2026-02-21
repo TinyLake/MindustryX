@@ -22,10 +22,8 @@ import static mindustry.Vars.*;
 public class ReplayManagerDialog extends BaseDialog{
     private static final DateTimeFormatter dateFormat = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
     private static final ReplayMeta unreadableMeta = new ReplayMeta(false, null, "", "", 0);
-    private static final float minPaneWidth = 320f;
-    private static final float maxPaneWidth = 680f;
+    private static final float minPaneWidth = 360f;
     private static final float minPaneHeight = 340f;
-    private static final float maxPaneHeight = 640f;
 
     private final Table list = new Table();
     private final ScrollPane pane = new ScrollPane(list, Styles.noBarPane);
@@ -65,34 +63,40 @@ public class ReplayManagerDialog extends BaseDialog{
             tools.defaults().height(46f);
             tools.image(Icon.zoom).padRight(6f);
             searchField = tools.field("", text -> {
-                String value = text.trim().toLowerCase(Locale.ROOT);
-                search = value.isEmpty() ? null : value;
+                applySearchText(text);
                 rebuildList();
-            }).maxTextLength(80).growX().padRight(8f).get();
+            }).maxTextLength(80).growX().minWidth(220f).padRight(8f).get();
             searchField.setMessageText("搜索回放");
+            searchField.setTextFieldListener((field, c) -> {
+                if(c == '\n' || c == '\r'){
+                    applySearchText(field.getText());
+                    rebuildList();
+                }
+            });
 
-            tools.button("加载外部回放", Icon.upload, this::loadExternalReplay).padRight(8f);
+            tools.button("加载外部回放", Icon.upload, this::loadExternalReplay).minWidth(mobile ? 132f : 168f).padRight(8f);
             tools.button(Icon.refresh, Styles.cleari, this::refreshAndRebuild).size(46f);
         }).growX().row();
 
         pane.setFadeScrollBars(false);
         pane.setScrollingDisabled(true, false);
         list.margin(6f);
-        paneCell = cont.add(pane).growX().minWidth(minPaneWidth).maxWidth(maxPaneWidth).minHeight(minPaneHeight);
+        paneCell = cont.add(pane).growX().minWidth(minPaneWidth).minHeight(minPaneHeight);
     }
 
     private void applyAdaptiveLayout(){
         if(paneCell == null) return;
         float scaledWidth = Core.graphics.getWidth() / Scl.scl();
         float scaledHeight = Core.graphics.getHeight() / Scl.scl();
+        float maxWidth = Math.max(minPaneWidth, scaledWidth - 28f);
+        float maxHeight = Math.max(minPaneHeight, scaledHeight - (mobile ? 110f : 140f));
 
-        float widthRatio = mobile ? 0.94f : (scaledWidth < 900f ? 0.74f : 0.6f);
-        float targetWidth = Math.max(minPaneWidth, Math.min(maxPaneWidth, scaledWidth * widthRatio));
+        boolean desktopLandscape = !mobile && scaledWidth > scaledHeight;
+        float widthRatio = mobile ? 0.94f : (desktopLandscape ? 0.78f : 0.72f);
+        float targetWidth = Math.max(minPaneWidth, Math.min(maxWidth, scaledWidth * widthRatio));
 
-        float heightRatio = mobile ? 0.78f : 0.68f;
-        float visibleSpace = scaledHeight - (mobile ? 110f : 140f);
-        float targetHeight = Math.min(scaledHeight * heightRatio, visibleSpace);
-        targetHeight = Math.max(minPaneHeight, Math.min(maxPaneHeight, targetHeight));
+        float heightRatio = mobile ? 0.78f : (desktopLandscape ? 0.72f : 0.74f);
+        float targetHeight = Math.max(minPaneHeight, Math.min(maxHeight, scaledHeight * heightRatio));
 
         paneCell.width(targetWidth).height(targetHeight);
     }
@@ -120,6 +124,11 @@ public class ReplayManagerDialog extends BaseDialog{
     private void refreshAndRebuild(){
         refreshReplayFiles();
         rebuildList();
+    }
+
+    private void applySearchText(String text){
+        String value = text.trim().toLowerCase(Locale.ROOT);
+        search = value.isEmpty() ? null : value;
     }
 
     private void refreshReplayFiles(){
