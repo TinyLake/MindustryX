@@ -1,0 +1,209 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: DeterMination-Wind <DeterMination-Wind@users.noreply.github.com>
+Date: Sat, 21 Feb 2026 14:06:04 +0800
+Subject: [PATCH] FC: support modifier combinations in keybinds
+
+---
+ arc-core/src/arc/Input.java         |  8 +--
+ arc-core/src/arc/input/KeyBind.java | 79 +++++++++++++++++++++++++++--
+ 2 files changed, 80 insertions(+), 7 deletions(-)
+
+diff --git a/arc-core/src/arc/Input.java b/arc-core/src/arc/Input.java
+index 2ecc5c547cac9927f196d598d50669647d4b113b..cd52d0f0c2ed17e1280e66094bd77ba9bd1e9687 100644
+--- a/arc-core/src/arc/Input.java
++++ b/arc-core/src/arc/Input.java
+@@ -193,23 +193,24 @@ public abstract class Input{
+ 
+     /** Returns whether the keybind is pressed. */
+     public boolean keyDown(KeyBind key){
+-        return key.value.key != null && keyboard.isPressed(key.value.key);
++        return key.value.key != null && keyboard.isPressed(key.value.key) && KeyBind.hasModifiers(this, key.value.modifiers);
+     }
+ 
+     /** Returns whether the key has just been pressed. */
+     public boolean keyTap(KeyBind key){
+-        return key.value.key != null && keyboard.isTapped(key.value.key);
++        return key.value.key != null && keyboard.isTapped(key.value.key) && KeyBind.hasModifiers(this, key.value.modifiers);
+     }
+ 
+     /** Returns whether the key has just been released. */
+     public boolean keyRelease(KeyBind key){
+-        return key.value.key != null && keyboard.isReleased(key.value.key);
++        return key.value.key != null && keyboard.isReleased(key.value.key) && KeyBind.hasModifiers(this, key.value.modifiers);
+     }
+ 
+     /** Returns the [-1, 1] axis value of a key. */
+     public float axis(KeyBind key){
+         Axis axis = key.value;
+         if(axis.key != null){
++            if(!KeyBind.hasModifiers(this, axis.modifiers)) return 0f;
+             return keyboard.getAxis(axis.key);
+         }else{
+             return keyboard.isPressed(axis.min) && keyboard.isPressed(axis.max) ? 0 :
+@@ -222,6 +223,7 @@ public abstract class Input{
+     public float axisTap(KeyBind key){
+         Axis axis = key.value;
+         if(axis.key != null){
++            if(!KeyBind.hasModifiers(this, axis.modifiers)) return 0f;
+             return keyboard.getAxis(axis.key);
+         }else{
+             return keyboard.isTapped(axis.min) ? -1 : keyboard.isTapped(axis.max) ? 1 : 0;
+diff --git a/arc-core/src/arc/input/KeyBind.java b/arc-core/src/arc/input/KeyBind.java
+index e62d626a07bd61ada7fee19547355f5ee36cc7b9..bbd67d3760950b66e8d1a8ff4f4b3111a43b5b06 100644
+--- a/arc-core/src/arc/input/KeyBind.java
++++ b/arc-core/src/arc/input/KeyBind.java
+@@ -7,6 +7,10 @@ import static arc.Core.*;
+ 
+ public class KeyBind{
+     public static final Seq<KeyBind> all = new Seq<>();
++    public static final int modifierShift = 1;
++    public static final int modifierCtrl = 1 << 1;
++    public static final int modifierAlt = 1 << 2;
++    public static final int modifierMeta = 1 << 3;
+ 
+     public final String name;
+     public final KeybindValue defaultValue;
+@@ -56,9 +60,11 @@ public class KeyBind{
+ 
+         if(value.key != null){
+             settings.put(name + "-key", value.key.ordinal());
++            settings.put(name + "-mods", value.modifiers);
+         }else{
+             settings.put(name + "-min", value.min.ordinal());
+             settings.put(name + "-max", value.max.ordinal());
++            settings.remove(name + "-mods");
+         }
+     }
+ 
+@@ -70,7 +76,8 @@ public class KeyBind{
+         String name = settingsKey();
+         if(settings.getBool(name + "-single", true)){
+             KeyCode key = KeyCode.byOrdinal(settings.getInt(name + "-key", KeyCode.useDefault.ordinal()));
+-            loaded = key == KeyCode.useDefault ? null : new Axis(key);
++            int modifiers = settings.getInt(name + "-mods", 0);
++            loaded = key == KeyCode.useDefault ? null : new Axis(key, modifiers);
+         }else{
+             KeyCode min = KeyCode.byOrdinal(settings.getInt(name + "-min", KeyCode.useDefault.ordinal()));
+             KeyCode max = KeyCode.byOrdinal(settings.getInt(name + "-max", KeyCode.useDefault.ordinal()));
+@@ -86,12 +93,13 @@ public class KeyBind{
+         String name = settingsKey();
+         settings.remove(name + "-single");
+         settings.remove(name + "-key");
++        settings.remove(name + "-mods");
+         settings.remove(name + "-min");
+         settings.remove(name + "-max");
+ 
+         if(defaultValue instanceof Axis){
+             if(((Axis)defaultValue).min == null){
+-                value = new Axis(((Axis)defaultValue).key);
++                value = new Axis(((Axis)defaultValue).key, ((Axis)defaultValue).modifiers);
+             }else{
+                 value = new Axis(((Axis)defaultValue).min, ((Axis)defaultValue).max);
+             }
+@@ -103,7 +111,7 @@ public class KeyBind{
+     public boolean isDefault(){
+         if(defaultValue instanceof Axis){
+             if(((Axis)defaultValue).min == null){
+-                return ((Axis)defaultValue).key == value.key;
++                return ((Axis)defaultValue).key == value.key && ((Axis)defaultValue).modifiers == value.modifiers;
+             }else{
+                 return ((Axis)defaultValue).max == value.max && ((Axis)defaultValue).min == value.min;
+             }
+@@ -112,6 +120,53 @@ public class KeyBind{
+         }
+     }
+ 
++    public static boolean isModifierKey(KeyCode key){
++        return key == KeyCode.shiftLeft || key == KeyCode.shiftRight ||
++        key == KeyCode.controlLeft || key == KeyCode.controlRight ||
++        key == KeyCode.altLeft || key == KeyCode.altRight ||
++        key == KeyCode.sym;
++    }
++
++    public static int modifierBit(KeyCode key){
++        if(key == KeyCode.shiftLeft || key == KeyCode.shiftRight) return modifierShift;
++        if(key == KeyCode.controlLeft || key == KeyCode.controlRight) return modifierCtrl;
++        if(key == KeyCode.altLeft || key == KeyCode.altRight) return modifierAlt;
++        if(key == KeyCode.sym) return modifierMeta;
++        return 0;
++    }
++
++    public static int sanitizeModifiers(KeyCode key, int modifiers){
++        return modifiers & ~modifierBit(key);
++    }
++
++    public static int currentModifiers(arc.Input input){
++        int out = 0;
++        if(input.keyDown(KeyCode.shiftLeft) || input.keyDown(KeyCode.shiftRight)) out |= modifierShift;
++        if(input.keyDown(KeyCode.controlLeft) || input.keyDown(KeyCode.controlRight)) out |= modifierCtrl;
++        if(input.keyDown(KeyCode.altLeft) || input.keyDown(KeyCode.altRight)) out |= modifierAlt;
++        if(input.keyDown(KeyCode.sym)) out |= modifierMeta;
++        return out;
++    }
++
++    public static boolean hasModifiers(arc.Input input, int modifiers){
++        return ((modifiers & modifierShift) == 0 || (input.keyDown(KeyCode.shiftLeft) || input.keyDown(KeyCode.shiftRight)))
++        && ((modifiers & modifierCtrl) == 0 || (input.keyDown(KeyCode.controlLeft) || input.keyDown(KeyCode.controlRight)))
++        && ((modifiers & modifierAlt) == 0 || (input.keyDown(KeyCode.altLeft) || input.keyDown(KeyCode.altRight)))
++        && ((modifiers & modifierMeta) == 0 || input.keyDown(KeyCode.sym));
++    }
++
++    public static String keyName(@Nullable KeyCode key, int modifiers){
++        if(key == null) return "";
++
++        StringBuilder builder = new StringBuilder();
++        if((modifiers & modifierCtrl) != 0) builder.append("Ctrl+");
++        if((modifiers & modifierAlt) != 0) builder.append("Alt+");
++        if((modifiers & modifierMeta) != 0) builder.append("Win/Cmd+");
++        if((modifiers & modifierShift) != 0) builder.append("Shift+");
++        builder.append(key.getName());
++        return builder.toString();
++    }
++
+     String settingsKey(){
+         return "keybind-default-keyboard-" + name;
+     }
+@@ -122,11 +177,18 @@ public class KeyBind{
+     public static class Axis implements KeybindValue{
+         public @Nullable KeyCode min, max;
+         public @Nullable KeyCode key;
++        public int modifiers;
+ 
+         /** Cosntructor for axis-type keys only. */
+         public Axis(KeyCode key){
++            this(key, 0);
++        }
++
++        /** Constructor for keybinds with optional modifiers. */
++        public Axis(KeyCode key, int modifiers){
+             this.key = key;
+             this.min = max = null;
++            this.modifiers = sanitizeModifiers(key, modifiers);
+         }
+ 
+         /** Constructor for keyboards/mice, or multiple buttons on a controller. */
+@@ -134,6 +196,15 @@ public class KeyBind{
+             this.min = min;
+             this.max = max;
+             this.key = null;
++            this.modifiers = 0;
++        }
++
++        public boolean matches(arc.Input input, KeyCode key){
++            return this.key == key && hasModifiers(input, modifiers);
++        }
++
++        public String keyName(){
++            return KeyBind.keyName(key, modifiers);
+         }
+ 
+         @Override
+@@ -142,7 +213,7 @@ public class KeyBind{
+             if(o == null || getClass() != o.getClass()) return false;
+ 
+             Axis axis = (Axis)o;
+-            return min == axis.min && max == axis.max && key == axis.key;
++            return min == axis.min && max == axis.max && key == axis.key && modifiers == axis.modifiers;
+         }
+     }
+ }
