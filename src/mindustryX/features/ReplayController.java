@@ -14,6 +14,7 @@ import mindustry.net.Packets.*;
 import mindustry.ui.dialogs.*;
 import mindustryX.*;
 import mindustryX.features.SettingsV2.*;
+import mindustryX.features.ui.*;
 
 import java.io.*;
 import java.util.*;
@@ -33,6 +34,7 @@ public class ReplayController{
 
     private static ReplayData.Writer writer;
     private static ReplayData.Reader reader;
+    private static ReplayManagerDialog managerDialog;
 
     public static void init(){
         Events.run(EventType.Trigger.update, () -> {
@@ -46,6 +48,10 @@ public class ReplayController{
             buttons.button(i("加载回放文件"), Icon.file, () -> {
                 FileChooser.setLastDirectory(saveDirectory);
                 platform.showFileChooser(true, i("打开回放文件"), "mrep", f -> Core.app.post(() -> ReplayController.startPlay(f)));
+            });
+            buttons.button(i("回放管理器"), Icon.file, () -> {
+                if(managerDialog == null) managerDialog = new ReplayManagerDialog();
+                managerDialog.show();
             });
         }
         {
@@ -102,6 +108,7 @@ public class ReplayController{
             Log.infoTag("Replay", reader.getMeta().toString());
         }catch(Exception e){
             Core.app.post(() -> ui.showException(i("读取回放失败!"), e));
+            return;
         }
 
         replaying = true;
@@ -153,8 +160,10 @@ public class ReplayController{
         }
         Log.infoTag("Replay", "stop");
         replaying = false;
-        reader.close();
-        reader = null;
+        if(reader != null){
+            reader.close();
+            reader = null;
+        }
         net.disconnect();
         ui.loadfrag.hide();
         Core.app.post(() -> logic.reset());
