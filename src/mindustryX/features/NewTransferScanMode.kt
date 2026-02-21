@@ -7,7 +7,6 @@ import arc.graphics.g2d.Fill
 import arc.graphics.g2d.Lines
 import arc.math.Mathf
 import arc.struct.IntSet
-import arc.util.Strings
 import arc.util.Tmp
 import mindustry.Vars.*
 import mindustry.content.Items
@@ -33,6 +32,7 @@ import mindustry.world.blocks.storage.CoreBlock
 import mindustry.world.blocks.storage.StorageBlock
 import mindustry.world.blocks.storage.Unloader
 import mindustry.world.blocks.units.UnitCargoUnloadPoint
+import mindustryX.VarsX
 import mindustryX.features.func.drawText
 
 /**
@@ -59,9 +59,9 @@ object NewTransferScanMode {
         Draw.z(Layer.overlayUI + 0.01f)
 
         val pos = Core.input.mouseWorld()
-        val text = Strings.format(
-            "@,@\n距离: @",
-            (pos.x / tilesize).toInt(), (pos.y / tilesize).toInt(),
+        val text = VarsX.bundle.coordinateDistance(
+            (pos.x / tilesize).toInt(),
+            (pos.y / tilesize).toInt(),
             (player.dst(pos) / tilesize).toInt()
         )
         drawText(pos, text)
@@ -224,7 +224,7 @@ object NewTransferScanMode {
         is LiquidVoid.LiquidVoidBuild -> liquidOnly { VoidAdaptor() }
 
         is Conveyor.ConveyorBuild, is Duct.DuctBuild -> itemOnly { ConveyorAdaptor(build) }
-        is Router.RouterBuild -> itemOnly{ RouterAdaptor(build) }
+        is Router.RouterBuild -> itemOnly { RouterAdaptor(build) }
         is Sorter.SorterBuild, is OverflowGate.OverflowGateBuild -> itemOnly { InstantAdaptor(build) }
         is ItemBridge.ItemBridgeBuild -> itemOnly { BridgeAdaptor(build) }
         is StackConveyor.StackConveyorBuild -> itemOnly { StackConveyorAdaptor(build) }
@@ -291,7 +291,7 @@ object NewTransferScanMode {
         override fun canInput(from: Building): Boolean = true
     }
 
-    private class InstantAdaptor(val build: Building): BuildingAdaptor() {
+    private class InstantAdaptor(val build: Building) : BuildingAdaptor() {
         override fun getOutputs(): List<Building> = build.proximity.toList()
         override fun getOutputs(from: Building): List<Building> = if (from.block.instantTransfer) build.proximity.filter { !it.block.instantTransfer } else getOutputs()
         override fun canInput(from: Building): Boolean = true
@@ -412,7 +412,7 @@ object NewTransferScanMode {
         override fun getOutputs(): List<Building> = build.proximity.toList()
     }
 
-    private class VoidAdaptor: BuildingAdaptor() {
+    private class VoidAdaptor : BuildingAdaptor() {
         override fun canInput(from: Building): Boolean = true
     }
 

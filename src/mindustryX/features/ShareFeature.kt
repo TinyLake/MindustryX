@@ -25,6 +25,7 @@ import mindustry.ui.Fonts
 import mindustry.ui.Styles
 import mindustry.ui.fragments.ChatFragment
 import mindustryX.VarsX
+import mindustryX.features.UIExt.i
 import mindustryX.features.UIExtKt.showFloatSettingsPanel
 import mindustryX.features.ui.ArcMessageDialog
 import mindustryX.features.ui.FormatDefault.duration
@@ -41,7 +42,7 @@ object ShareFeature {
 
     @JvmStatic
     fun at(playerName: String?) {
-        send('@', "<AT>戳了$playerName[white]一下，并提醒他留意对话框")
+        send('@', VarsX.bundle.atPlayer(playerName))
     }
 
     @JvmStatic
@@ -61,7 +62,7 @@ object ShareFeature {
         }
         req.error {
             Core.app.post {
-                Vars.ui.showException("上传失败，再重试一下？", it)
+                Vars.ui.showException(i("上传失败，再重试一下？"), it)
                 Core.app.post { callback(null) }
             }
         }
@@ -70,36 +71,32 @@ object ShareFeature {
     @JvmStatic
     fun shareSchematicClipboard(schem: Schematic) {
         uploadPasteBin(Vars.schematics.writeBase64(schem)) { link: String? ->
-            val msg = buildString {
-                append("这是一条来自 MDTX-").append(VarsX.version).append("的分享记录\n")
-                append("蓝图名：").append(schem.name()).append("\n")
-                append("分享者：").append(Vars.player.name).append("\n")
-                append("蓝图造价：")
-                val arr = schem.requirements()
-                for (stack in arr) {
-                    append(stack.item.emoji()).append(stack.item.localizedName).append(stack.amount).append("|")
-                }
-                append("\n")
-                append("电力：")
-                val cons = schem.powerConsumption() * 60
-                val prod = schem.powerProduction() * 60
-                if (!Mathf.zero(prod)) {
-                    append("+").append(Strings.autoFixed(prod, 2))
-                    if (!Mathf.zero(cons)) {
-                        append("|")
+            val msg = VarsX.bundle.shareSchematic(
+                name = schem.name(),
+                playerName = Vars.player.name,
+                requirements = buildString {
+                    val arr = schem.requirements()
+                    for (stack in arr) {
+                        append(stack.item.emoji()).append(stack.item.localizedName).append(stack.amount).append("|")
                     }
-                }
-                if (!Mathf.zero(cons)) {
-                    append("-").append(Strings.autoFixed(cons, 2))
-                }
-                append("\n")
-                append("蓝图代码链接：").append(link ?: "x").append("\n")
-                if (Vars.schematics.writeBase64(schem).length > 3500) append("蓝图代码过长，请点击链接查看")
-                else append("蓝图代码：\n").append(Vars.schematics.writeBase64(schem))
-            }
-
+                },
+                powerInfo = buildString {
+                    val cons = schem.powerConsumption() * 60
+                    val prod = schem.powerProduction() * 60
+                    if (!Mathf.zero(prod)) {
+                        append("+").append(Strings.autoFixed(prod, 2))
+                        if (!Mathf.zero(cons)) {
+                            append("|")
+                        }
+                    }
+                    if (!Mathf.zero(cons)) {
+                        append("-").append(Strings.autoFixed(cons, 2))
+                    }
+                },
+                link = link, code = Vars.schematics.writeBase64(schem)
+            )
             Core.app.setClipboardText(Strings.stripColors(msg))
-            UIExt.announce("已保存至剪贴板")
+            UIExt.announce(i("已保存至剪贴板"))
         }
     }
 
@@ -118,8 +115,7 @@ object ShareFeature {
     //因为ArcMessageDialog共用了，所以单独提取出来
     fun waveInfo(wave: Int) = buildString {
         val spawner = Vars.spawner
-        append("包含(地×").append(spawner.countGroundSpawns())
-        append(",空x").append(spawner.countFlyerSpawns()).append("):")
+        append(VarsX.bundle.waveContains(spawner.countGroundSpawns(), spawner.countFlyerSpawns()))
 
         for (group in Vars.state.rules.spawns) {
             val count = group.getSpawned(wave - 1)
@@ -140,12 +136,11 @@ object ShareFeature {
         if (!Vars.state.rules.waves) return
 
         val msg = buildString {
-            append("第").append(wave).append("波")
+            append(VarsX.bundle.waveTitle(wave))
 
             if (wave >= Vars.state.wave) {
                 val timer = (Vars.state.wavetime + (wave - Vars.state.wave) * Vars.state.rules.waveSpacing).toInt()
-                append("(").append("还有").append(wave - Vars.state.wave).append("波, ")
-                append(duration(timer.toFloat() / 60)).append(")")
+                append(VarsX.bundle.waveEta(wave - Vars.state.wave, duration(timer.toFloat() / 60)))
             }
 
             append("：").append(waveInfo(wave))
@@ -188,8 +183,8 @@ object ShareFeature {
         val (amount, delta) = UIExt.coreItems.itemInfo(item)
         send(
             item.emoji().firstOrNull() ?: Iconc.itemCopper,
-            Core.bundle.format(
-                "mdtx.share.item", item.localizedName,
+            VarsX.bundle.mdtxShareItem(
+                item.localizedName,
                 (if (amount > 100) format(amount.toLong()) else "[red]$amount[]"),
                 (if (delta > 0) "[accent]+" else "[red]") + format(delta.toLong()) + "[]"
             )
@@ -217,7 +212,7 @@ object ShareFeature {
         val color = (if (count == limit) "orange" else if (count < 10) "red" else "accent")
         send(
             unit.emoji().firstOrNull() ?: Iconc.units,
-            Core.bundle.format("mdtx.share.unit", unit.localizedName, "[$color]$count[]", limit)
+            VarsX.bundle.mdtxShareUnit(unit.localizedName, "[$color]$count[]", limit)
         )
     }
 
@@ -230,16 +225,16 @@ object ShareFeature {
             checked = Tex.underlineOver //Over是黄色的
         }
         button("T", underlineToggleT) { Vars.ui.chatfrag.nextMode() }
-            .checked { _ -> Vars.ui.chatfrag.mode == ChatFragment.ChatMode.team }.tooltip("前缀添加/t")
+            .checked { _ -> Vars.ui.chatfrag.mode == ChatFragment.ChatMode.team }.tooltip(i("前缀添加/t"))
         button(Icon.zoomSmall, Styles.clearNonei) { MarkerType.lockOnLastMark() }
-            .tooltip("锁定上个标记点")
+            .tooltip(i("锁定上个标记点"))
 
         add("♐>").padRight(18f)
-        button(Icon.mapSmall, Styles.clearNonei, Vars.iconMed) { MarkerType.toggleMarkHitterUI() }.tooltip("标记地图位置")
-        button(Icon.wavesSmall, Styles.clearNonei, Vars.iconMed) { shareWaveInfo(Vars.state.wave) }.tooltip("分享波次信息")
-        button(Icon.powerSmall, Styles.clearNonei, Vars.iconMed) { shareTeamPower() }.tooltip("分享电力情况")
-        button(TextureRegionDrawable(Items.copper.uiIcon), Styles.clearNonei, Vars.iconSmall) { openShareItemDialog() }.tooltip("分享库存情况")
-        button(Icon.unitsSmall, Styles.clearNonei, Vars.iconMed) { openShareUnitDialog() }.tooltip("分享单位数量")
+        button(Icon.mapSmall, Styles.clearNonei, Vars.iconMed) { MarkerType.toggleMarkHitterUI() }.tooltip(i("标记地图位置"))
+        button(Icon.wavesSmall, Styles.clearNonei, Vars.iconMed) { shareWaveInfo(Vars.state.wave) }.tooltip(i("分享波次信息"))
+        button(Icon.powerSmall, Styles.clearNonei, Vars.iconMed) { shareTeamPower() }.tooltip(i("分享电力情况"))
+        button(TextureRegionDrawable(Items.copper.uiIcon), Styles.clearNonei, Vars.iconSmall) { openShareItemDialog() }.tooltip(i("分享库存情况"))
+        button(Icon.unitsSmall, Styles.clearNonei, Vars.iconMed) { openShareUnitDialog() }.tooltip(i("分享单位数量"))
     }
 
     private fun resolveAt(message: String, sender: Player?): Boolean {
@@ -249,8 +244,8 @@ object ShareFeature {
         //Remove prefix
         message = message.substringAfter("<AT>").substringAfter(tag('@'))
         if (message.contains(Vars.player.name)) {
-            if (sender != null) Vars.ui.announce("[gold]你被[white] " + sender.name + " [gold]戳了一下，请注意查看信息框哦~", 10f)
-            else Vars.ui.announce("[orange]你被戳了一下，请注意查看信息框哦~", 10f)
+            if (sender != null) Vars.ui.announce(VarsX.bundle.atNoticeFrom(sender.name), 10f)
+            else Vars.ui.announce(i("[orange]你被戳了一下，请注意查看信息框哦~"), 10f)
         }
 
         return true

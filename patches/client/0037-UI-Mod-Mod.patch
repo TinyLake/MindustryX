@@ -8,11 +8,11 @@ Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 
 ---
- core/src/mindustry/ui/dialogs/ModsDialog.java | 266 +++++++++++-------
- 1 file changed, 162 insertions(+), 104 deletions(-)
+ core/src/mindustry/ui/dialogs/ModsDialog.java | 267 +++++++++++-------
+ 1 file changed, 163 insertions(+), 104 deletions(-)
 
 diff --git a/core/src/mindustry/ui/dialogs/ModsDialog.java b/core/src/mindustry/ui/dialogs/ModsDialog.java
-index 96bab6f64b46a2a698e24cc44d8f78cc6ee8a6a0..b64eb5f99ffad6f5f6fbf33304989806c997b6b9 100644
+index 96bab6f64b46a2a698e24cc44d8f78cc6ee8a6a0..b0897579bae4c5ddfc863a8e47b8fbe03774d841 100644
 --- a/core/src/mindustry/ui/dialogs/ModsDialog.java
 +++ b/core/src/mindustry/ui/dialogs/ModsDialog.java
 @@ -1,6 +1,7 @@
@@ -23,16 +23,17 @@ index 96bab6f64b46a2a698e24cc44d8f78cc6ee8a6a0..b64eb5f99ffad6f5f6fbf33304989806
  import arc.files.*;
  import arc.func.*;
  import arc.graphics.*;
-@@ -27,6 +28,8 @@ import mindustry.io.*;
+@@ -27,6 +28,9 @@ import mindustry.io.*;
  import mindustry.mod.*;
  import mindustry.mod.Mods.*;
  import mindustry.ui.*;
++import mindustryX.*;
 +import mindustryX.features.*;
 +import mindustryX.features.ui.comp.*;
  
  import java.text.*;
  import java.util.*;
-@@ -45,6 +48,12 @@ public class ModsDialog extends BaseDialog{
+@@ -45,6 +49,12 @@ public class ModsDialog extends BaseDialog{
  
      private BaseDialog browser;
      private Table browserTable;
@@ -45,7 +46,7 @@ index 96bab6f64b46a2a698e24cc44d8f78cc6ee8a6a0..b64eb5f99ffad6f5f6fbf33304989806
      private float scroll = 0f;
  
      public ModsDialog(){
-@@ -52,6 +61,7 @@ public class ModsDialog extends BaseDialog{
+@@ -52,6 +62,7 @@ public class ModsDialog extends BaseDialog{
          addCloseButton();
  
          browser = new BaseDialog("@mods.browser");
@@ -53,7 +54,7 @@ index 96bab6f64b46a2a698e24cc44d8f78cc6ee8a6a0..b64eb5f99ffad6f5f6fbf33304989806
  
          browser.cont.table(table -> {
              table.left();
-@@ -119,7 +129,7 @@ public class ModsDialog extends BaseDialog{
+@@ -119,7 +130,7 @@ public class ModsDialog extends BaseDialog{
          getModList(0, listener);
      }
  
@@ -62,7 +63,7 @@ index 96bab6f64b46a2a698e24cc44d8f78cc6ee8a6a0..b64eb5f99ffad6f5f6fbf33304989806
          if(index >= modJsonURLs.length) return;
  
          if(modList != null){
-@@ -165,8 +175,19 @@ public class ModsDialog extends BaseDialog{
+@@ -165,8 +176,19 @@ public class ModsDialog extends BaseDialog{
      }
  
      void setup(){
@@ -84,7 +85,7 @@ index 96bab6f64b46a2a698e24cc44d8f78cc6ee8a6a0..b64eb5f99ffad6f5f6fbf33304989806
  
          cont.clear();
          cont.defaults().width(Math.min(Core.graphics.getWidth() / Scl.scl(1.05f), 556f)).pad(4);
-@@ -175,9 +196,9 @@ public class ModsDialog extends BaseDialog{
+@@ -175,9 +197,9 @@ public class ModsDialog extends BaseDialog{
  
          cont.table(buttons -> {
              buttons.left().defaults().growX().height(60f).uniformX();
@@ -95,7 +96,7 @@ index 96bab6f64b46a2a698e24cc44d8f78cc6ee8a6a0..b64eb5f99ffad6f5f6fbf33304989806
  
              buttons.button("@mod.import", Icon.add, style, () -> {
                  BaseDialog dialog = new BaseDialog("@mod.import");
-@@ -222,125 +243,162 @@ public class ModsDialog extends BaseDialog{
+@@ -222,125 +244,162 @@ public class ModsDialog extends BaseDialog{
  
                  dialog.show();
  
@@ -108,7 +109,7 @@ index 96bab6f64b46a2a698e24cc44d8f78cc6ee8a6a0..b64eb5f99ffad6f5f6fbf33304989806
 -        }).width(w);
 +            buttons.row();
 +
-+            buttons.button("@mods.recommend", Icon.list, style, UIExt.modsRecommend::show).colspan(2);
++            buttons.button(VarsX.bundle.modsRecommendTitle(), Icon.list, style, UIExt.modsRecommend::show).colspan(2);
 +        }).width(modCardWidth);
  
          cont.row();

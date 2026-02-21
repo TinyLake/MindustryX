@@ -19,6 +19,7 @@ import mindustry.ui.Bar
 import mindustry.ui.Styles
 import mindustry.ui.dialogs.BaseDialog
 import mindustryX.VarsX
+import mindustryX.features.UIExt.i
 import mindustryX.features.ui.CommitsTable
 import mindustryX.features.ui.Format
 import java.time.Duration
@@ -67,8 +68,8 @@ object AutoUpdate {
     fun initUI() {
         Vars.ui.menuGroup.fill { c ->
             c.bottom().right().defaults().size(200f, 60f)
-            c.button("@mdtx.report", Icon.github) { UIExt.openURI("https://github.com/${VarsX.repo}") }.row()
-            c.button("@mdtx.qqLink", Icon.units) { UIExt.openURI(VarsX.qqLink) }.row()
+            c.button(VarsX.bundle.mdtxReport(), Icon.github) { UIExt.openURI("https://github.com/${VarsX.repo}") }.row()
+            c.button(VarsX.bundle.mdtxQqLink(), Icon.units) { UIExt.openURI(VarsX.qqLink) }.row()
             c.button("@be.check", Icon.refresh) { showDialog() }.update {
                 it.label.color.apply {
                     set(Color.white)
@@ -121,7 +122,7 @@ object AutoUpdate {
     @JvmOverloads
     fun showDialog(version: Release? = latest) {
         checkUpdate()
-        val dialog = BaseDialog("自动更新")
+        val dialog = BaseDialog(i("自动更新"))
         dialog.getCell(dialog.cont).setElement(ScrollPane(dialog.cont))
         dialog.cont.table().growY().get().apply {
             fun buildVersionList(versions: List<Release>) {
@@ -138,36 +139,36 @@ object AutoUpdate {
                                         p.add(it.description).labelAlign(Align.left)
                                     }.row()
                                 }
-                            }.tooltip("发布说明").padRight(16f)
+                            }.tooltip(i("发布说明")).padRight(16f)
                         button(Icon.link, Styles.clearNonei, Vars.iconSmall) {
                             UIExt.openURI(it.url)
-                        }.tooltip("打开发布页面").padRight(4f).row()
+                        }.tooltip(i("打开发布页面")).padRight(4f).row()
                     }
                 }
                 row()
             }
 
             //width为整个Table最小宽度
-            add("当前版本号: ${VarsX.version}").labelAlign(Align.center).width(500f).row()
+            add(VarsX.bundle.currentVersion(VarsX.version)).labelAlign(Align.center).width(500f).wrap().row()
             newVersion?.let {
-                add("[green]发现新版本[]: ${it.version}").row()
+                add(VarsX.bundle.newVersion(it.version)).labelAlign(Align.center).width(500f).wrap().row()
             }
             if (versions.isEmpty()) {
-                add("检查更新失败，请稍后再试").row()
+                add(i("检查更新失败，请稍后再试")).labelAlign(Align.center).width(500f).wrap().row()
                 return@apply
             }
 
             image().fillX().height(2f).row()
-            add("正式版").row()
+            add(i("正式版")).labelAlign(Align.center).width(500f).wrap().row()
             buildVersionList(versions.filter { it.isRelease })
 
             image().fillX().height(2f).row()
-            add("预览版(更新更快,新功能体验,BUG修复)").row()
+            add(i("预览版(更新更快,新功能体验,BUG修复)")).labelAlign(Align.center).width(500f).wrap().row()
             buildVersionList(versions.filter { !it.isRelease })
 
             image().fillX().height(2f).row()
             if (version == null) {
-                add("你已是最新版本，不需要更新！")
+                add(i("你已是最新版本，不需要更新！")).labelAlign(Align.center).width(500f).wrap()
                 return@apply
             }
 
@@ -181,7 +182,7 @@ object AutoUpdate {
             }
             row()
 
-            button("自动下载更新") {
+            button(i("自动下载更新")) {
                 if (asset == null) return@button
                 startDownload(asset.copy(url = url)) { file ->
                     if (VarsX.isLoader) {
@@ -204,7 +205,7 @@ object AutoUpdate {
                         dialog.hide()
                     }.growX()
                     button(ignoreUntil.title) {
-                        ignoreOnce.set((Instant.now() + Duration.ofDays(7)).toString())
+                        ignoreUntil.set((Instant.now() + Duration.ofDays(7)).toString())
                         dialog.hide()
                     }.growX()
                 }.row()

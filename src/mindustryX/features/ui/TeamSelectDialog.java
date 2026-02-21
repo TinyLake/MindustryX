@@ -5,6 +5,9 @@ import mindustry.game.*;
 import mindustry.gen.*;
 import mindustry.ui.*;
 import mindustry.ui.dialogs.*;
+import mindustryX.VarsX;
+
+import static mindustryX.features.UIExt.i;
 
 //move from mindustry.arcModule.ui.dialogs.TeamSelectDialog
 public class TeamSelectDialog extends BaseDialog{
@@ -13,12 +16,12 @@ public class TeamSelectDialog extends BaseDialog{
     private Cons<Team> cons;
 
     public TeamSelectDialog(){
-        super("队伍选择器");
+        super(i("队伍选择器"));
         cont.pane(td -> {
             for(Team team : Team.all){
                 if(team.id % 10 == 6){
                     td.row();
-                    td.add("队伍：" + team.id + "~" + (team.id + 9));
+                    td.add(VarsX.bundle.teamRange(team.id));
                 }
                 td.button(Tex.whiteui, Styles.clearTogglei, 36f, () -> {
                     lastTeam = team;

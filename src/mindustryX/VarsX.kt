@@ -7,10 +7,14 @@ import arc.util.Log
 import arc.util.OS
 import arc.util.serialization.Jval
 import mindustry.Vars
+import mindustryX.bundles.UiTextBundle
+import mindustryX.bundles.UiTextBundleEn
 import mindustryX.features.SettingsV2
 import mindustryX.features.SettingsV2.CheckPref
 import mindustryX.features.SettingsV2.SliderPref
 import mindustryX.features.SettingsV2.map
+import mindustryX.features.UIExt.i
+import java.util.*
 
 object VarsX {
     const val repo = "TinyLake/MindustryX"
@@ -25,6 +29,8 @@ object VarsX {
     @JvmField
     var isLoader: Boolean = false
 
+    @JvmField
+    val bundle: UiTextBundle
 
     init {
         val version = kotlin.runCatching {
@@ -37,6 +43,13 @@ object VarsX {
         }
         this.version = version
         devVersion = version.endsWith("-dev")
+
+        val locale = Core.bundle?.locale ?: Locale.getDefault()
+        bundle = if (locale.language.equals(Locale.CHINESE.language, ignoreCase = true)) {
+            UiTextBundle.Zh
+        } else {
+            UiTextBundleEn
+        }
     }
 
     //此处存储所有需要在features外使用的设置项。
@@ -76,12 +89,12 @@ object VarsX {
     }
 
     @JvmField
-    val itemSelectionHeight = SliderPref("gameUI.itemSelectionHeight", 4, 4, 12) { "$it 行" }.apply {
+    val itemSelectionHeight = SliderPref("gameUI.itemSelectionHeight", 4, 4, 12) { bundle.itemSelectionHeight(it) }.apply {
         addFallbackName("itemSelectionHeight")
     }
 
     @JvmField
-    val itemSelectionWidth = SliderPref("gameUI.itemSelectionWidth", 4, 4, 12) { "$it 列" }.apply {
+    val itemSelectionWidth = SliderPref("gameUI.itemSelectionWidth", 4, 4, 12) { bundle.itemSelectionWidth(it) }.apply {
         addFallbackName("itemSelectionWidth")
     }
 
@@ -92,7 +105,7 @@ object VarsX {
 
     @JvmField
     val maxSchematicSize = SliderPref("maxSchematicSize", Vars.maxSchematicSize, 64, 257) {
-        if (it == 257) return@SliderPref "无限制"
+        if (it == 257) return@SliderPref i("无限制")
         "${it}x${it}"
     }
 

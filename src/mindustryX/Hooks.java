@@ -25,10 +25,8 @@ public class Hooks implements ApplicationListener{
         Events.on(ClientLoadEvent.class, (e) -> MetricCollector.INSTANCE.onLaunch());
         //deprecated Java 8
         if(!OS.isAndroid && Strings.parseInt(OS.javaVersion.split("\\.")[0]) < 17){
-            Log.warn("Java版本过低，不受支持(" + OS.javaVersion + ")。请使用Java 17或更高版本运行MindustryX。");
-            Events.on(ClientLoadEvent.class, (e) -> {
-                ui.showInfo("Java版本过低，不受支持(" + OS.javaVersion + ")。请使用Java 17或更高版本运行MindustryX。\n[grey]该警告不存在设置，请更新Java版本。");
-            });
+            Log.warn(VarsX.bundle.javaWarnLog(OS.javaVersion));
+            Events.on(ClientLoadEvent.class, (e) -> ui.showInfo(VarsX.bundle.javaWarnDialog(OS.javaVersion)));
         }
         try{
             Http.onBeforeRequest = Hooks::onHttp;
@@ -128,9 +126,7 @@ public class Hooks implements ApplicationListener{
     private void updateTitle(){
         if(Core.graphics == null) return;
         var mod = Vars.mods.orderedMods();
-        var title = "MindustryX | 版本号 " + VarsX.version +
-        " | mod启用" + mod.count(Mods.LoadedMod::enabled) + "/" + mod.size +
-        " | " + Core.graphics.getWidth() + "x" + Core.graphics.getHeight();
+        var title = VarsX.bundle.windowTitle(VarsX.version, mod.count(Mods.LoadedMod::enabled), mod.size, Core.graphics.getWidth(), Core.graphics.getHeight());
         if(!title.equals(lastTitle)){
             lastTitle = title;
             Core.graphics.setTitle(title);

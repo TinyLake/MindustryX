@@ -22,6 +22,7 @@ import mindustry.input.*;
 import mindustry.type.*;
 import mindustry.world.*;
 import mindustry.world.blocks.*;
+import mindustryX.*;
 import mindustryX.features.SettingsV2.*;
 
 import static arc.Core.settings;
@@ -61,7 +62,7 @@ public class ArcOld{
                     image.setDrawable(texture);
                 });
             }catch(Exception e){
-                Core.app.post(() -> ui.showException("背景图片无效:" + file.path(), e));
+                Core.app.post(() -> ui.showException(VarsX.bundle.invalidBackgroundImage(file.path()), e));
             }
         });
     }
@@ -93,7 +94,7 @@ public class ArcOld{
             c.checkPref("arcdrillmode", false);
 
             c.checkPref("mass_driver_line", true);
-            c.sliderPref("mass_driver_line_interval", 40, 8, 400, 4, i -> i / 8f + "格");
+            c.sliderPref("mass_driver_line_interval", 40, 8, 400, 4, i -> VarsX.bundle.tiles(i / 8f));
             {
                 Cons<String> changed = (t) -> {
                     try{
@@ -109,26 +110,16 @@ public class ArcOld{
             c.addCategory("arcAddTurretInfo");
             c.checkPref("showTurretAmmo", false);
             c.checkPref("showTurretAmmoAmount", false);
-            c.sliderPref("turretShowRange", 0, 0, 3, 1, s -> switch(s){
-                case 0 -> "关闭";
-                case 1 -> "仅对地";
-                case 2 -> "仅对空";
-                case 3 -> "全部";
-                default -> "";
-            });
+            c.sliderPref("turretShowRange", 0, 0, 3, 1, VarsX.bundle::turretShowRangeMode);
             c.checkPref("turretForceShowRange", false);
-            c.sliderPref("turretAlertRange", 0, 0, 30, 1, i -> i > 0 ? i + "格" : "关闭");
+            c.sliderPref("turretAlertRange", 0, 0, 30, 1, VarsX.bundle::tilesOrOff);
             c.checkPref("blockWeaponTargetLine", false);
             c.checkPref("blockWeaponTargetLineWhenIdle", false);
 
             c.addCategory("arcAddUnitInfo");
             c.checkPref("unitHealthBar", false);
-            c.sliderPref("unitWeaponRange", settings.getInt("unitAlertRange", 0), 0, 30, 1, s -> switch(s){
-                case 0 -> "关闭";
-                case 30 -> "一直开启";
-                default -> s + "格";
-            });
-            c.sliderPref("unitWeaponRangeAlpha", settings.getInt("unitweapon_range", 0), 0, 100, 1, i -> i > 0 ? i + "%" : "关闭");
+            c.sliderPref("unitWeaponRange", settings.getInt("unitAlertRange", 0), 0, 30, 1, VarsX.bundle::unitWeaponRangeMode);
+            c.sliderPref("unitWeaponRangeAlpha", settings.getInt("unitweapon_range", 0), 0, 100, 1, VarsX.bundle::percentOrOff);
             c.checkPref("unitWeaponTargetLine", false);
             c.checkPref("unitItemCarried", true);
             c.checkPref("unitLogicMoveLine", false);
@@ -150,21 +141,8 @@ public class ArcOld{
                 c.textPref("playerEffectColor", "ffd37f", changed);
                 changed.get(settings.getString("playerEffectColor"));
             }
-            c.sliderPref("unitTargetType", 0, 0, 5, 1, s -> switch(s){
-                case 0 -> "关闭";
-                case 1 -> "虚圆";
-                case 2 -> "攻击";
-                case 3 -> "攻击去边框";
-                case 4 -> "圆十字";
-                case 5 -> "十字";
-                default -> s + "";
-            });
-            c.sliderPref("superUnitEffect", 0, 0, 2, 1, s -> switch(s){
-                case 0 -> "关闭";
-                case 1 -> "独一无二";
-                case 2 -> "全部玩家";
-                default -> s + "";
-            });
+            c.sliderPref("unitTargetType", 0, 0, 5, 1, VarsX.bundle::unitTargetTypeMode);
+            c.sliderPref("superUnitEffect", 0, 0, 2, 1, VarsX.bundle::superUnitEffectMode);
             c.sliderPref("playerEffectCurStroke", 0, 1, 30, 1, i -> (float)i / 10f + "Pixel(s)");
 
             c.addCategory("arcWeakCheat");

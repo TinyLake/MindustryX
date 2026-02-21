@@ -36,7 +36,7 @@ public class ContentSelectDialog extends BaseDialog{
             }).size(64f);
 
             queryTable.update(() -> {
-                if(Core.scene.getKeyboardFocus()==this)
+                if(Core.scene.getKeyboardFocus() == this)
                     Core.scene.setKeyboardFocus(field);
                 if(Core.input.keyTap(Binding.chat) && Core.scene.getKeyboardFocus() == field){
                     var first = contentTable.firstElement();

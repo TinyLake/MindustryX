@@ -31,9 +31,11 @@ import mindustry.gen.Icon
 import mindustry.gen.Tex
 import mindustry.graphics.Pal
 import mindustry.ui.Styles
+import mindustryX.VarsX
 import mindustryX.features.SettingsV2
 import mindustryX.features.SettingsV2.CheckPref
 import mindustryX.features.SettingsV2.PersistentProvider
+import mindustryX.features.UIExt.i
 import mindustryX.features.UIExtKt
 import mindustryX.features.ui.AdsorptionSystem.Axis
 import kotlin.math.roundToInt
@@ -61,7 +63,8 @@ object OverlayUI {
 
         override fun buildUI() = Table().apply {
             image(Icon.listSmall).color(Color.lightGray).padRight(4f)
-            add(title).width(148f).padRight(8f)
+            // Prevent long window names from drawing into the position column.
+            add(title).width(148f).padRight(8f).ellipsis(true).left()
 
             val builder = StringBuilder()
             label {
@@ -81,13 +84,13 @@ object OverlayUI {
             }
             button(Icon.eyeSmall, myToggleI, Vars.iconSmall) {
                 set(value.copy(enabled = !value.enabled))
-            }.tooltip("开关").padRight(4f).checked { value.enabled }
+            }.tooltip(i("开关")).padRight(4f).checked { value.enabled }
             button(Icon.lockSmall, myToggleI, Vars.iconSmall) {
                 set(value.copy(pinned = !value.pinned))
-            }.tooltip("锁定").padRight(4f).checked { value.pinned }
+            }.tooltip(i("锁定")).padRight(4f).checked { value.pinned }
             button(Icon.resizeSmall, myToggleI, Vars.iconSmall) {
                 UIExtKt.showFloatSettingsPanel {
-                    label { "缩放: x" + Strings.fixed(value.scale, 1) }.center().row()
+                    label { VarsX.bundle.zoomScale(Strings.fixed(value.scale, 1)) }.center().row()
                     slider(0.2f, 3f, 0.1f, value.scale) {
                         set(value.copy(scale = it))
                     }.update { it.value = value.scale }.width(200f)
@@ -96,7 +99,7 @@ object OverlayUI {
                     }.disabled { Mathf.equal(value.scale, 1f) }.padTop(4f)
                     row()
                 }
-            }.tooltip("缩放").padRight(4f).checked { !Mathf.equal(value.scale, 1f) }
+            }.tooltip(i("缩放")).padRight(4f).checked { !Mathf.equal(value.scale, 1f) }
             addTools()
 
             row()
@@ -473,7 +476,7 @@ object OverlayUI {
             t.defaults().size(Vars.iconLarge).width(Vars.iconLarge * 1.5f).pad(4f)
             t.button(Icon.add) {
                 UIExtKt.showFloatSettingsPanel {
-                    add("添加面板").color(Color.gold).align(Align.center).row()
+                    add(i("添加面板")).color(Color.gold).align(Align.center).row()
                     pane(Styles.smallPane, Table().apply {
                         defaults().minWidth(120f).fillX().pad(4f)
                         val notAvailable = mutableListOf<Window>()
@@ -489,7 +492,7 @@ object OverlayUI {
                             }).row()
                         }
                         if (notAvailable.isNotEmpty()) {
-                            add("当前不可用的面板:").align(Align.center).row()
+                            add(i("当前不可用的面板:")).align(Align.center).row()
                             notAvailable.forEach {
                                 add(TextButton(it.data.title).apply {
                                     label.setWrap(false)

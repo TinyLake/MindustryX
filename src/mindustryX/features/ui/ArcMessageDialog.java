@@ -18,6 +18,7 @@ import java.text.*;
 import java.util.*;
 
 import static mindustry.Vars.*;
+import static mindustryX.features.UIExt.i;
 
 //move from mindustry.arcModule.ui.dialogs.MessageDialog
 public class ArcMessageDialog extends BaseDialog{
@@ -30,7 +31,7 @@ public class ArcMessageDialog extends BaseDialog{
     private static final GridTable chooseTable = new GridTable();
 
     public ArcMessageDialog(){
-        super("ARC-中央监控室");
+        super(i("ARC-中央监控室"));
         if(Core.settings.getInt("maxMsgRecorded") == 0) Core.settings.put("maxMsgRecorded", 500);
         maxMsgRecorded = Core.settings.getInt("maxMsgRecorded");
 
@@ -48,29 +49,29 @@ public class ArcMessageDialog extends BaseDialog{
         msgTable.defaults().minWidth(600).growX().padBottom(15f);
 
         cont.table(t -> {
-            t.add("最大储存聊天记录(过高可能导致卡顿)：");
+            t.add(i("最大储存聊天记录(过高可能导致卡顿)："));
             t.field(maxMsgRecorded + "", text -> {
                 int record = Math.min(Math.max(Integer.parseInt(text), 1), 9999);
                 maxMsgRecorded = record;
                 Core.settings.put("maxMsgRecorded", record);
             }).valid(Strings::canParsePositiveInt).width(200f).get();
             t.row();
-            t.add("超出限制的聊天记录将在载入地图时清除").color(Color.lightGray).colspan(2);
+            t.add(i("超出限制的聊天记录将在载入地图时清除")).color(Color.lightGray).colspan(2);
         }).row();
 
         addCloseButton();
-        buttons.button("清空", Icon.trash, msgTable::clearChildren);
-        buttons.button("导出", Icon.upload, this::exportMsg).name("导出聊天记录");
+        buttons.button(i("清空"), Icon.trash, msgTable::clearChildren);
+        buttons.button(i("导出"), Icon.upload, this::exportMsg).name(i("导出聊天记录"));
 
         Events.on(EventType.WorldLoadEvent.class, e -> {
-            addMsg(new Msg(Type.eventWorldLoad, "载入地图： " + state.map.name()));
-            addMsg(new Msg(Type.eventWorldLoad, "简介： " + state.map.description()));
+            addMsg(new Msg(Type.eventWorldLoad, VarsX.bundle.loadMap(state.map.name())));
+            addMsg(new Msg(Type.eventWorldLoad, VarsX.bundle.introduction(state.map.description())));
             while(msgTable.getChildren().size >= maxMsgRecorded) msgTable.getChildren().get(0).remove();
         });
 
         Events.on(EventType.WaveEvent.class, e -> {
             if(state.wavetime < 60f) return;
-            addMsg(new Msg(Type.eventWave, "波次： " + state.wave + " | " + ShareFeature.INSTANCE.waveInfo(state.wave)));
+            addMsg(new Msg(Type.eventWave, VarsX.bundle.waveEvent(state.wave, ShareFeature.INSTANCE.waveInfo(state.wave))));
         });
     }
 
@@ -106,7 +107,7 @@ public class ArcMessageDialog extends BaseDialog{
 
                 tt.button(Icon.copy, Styles.logici, () -> {
                     Core.app.setClipboardText(msg.message);
-                    ui.announce("已导出本条聊天记录");
+                    ui.announce(i("已导出本条聊天记录"));
                 }).size(24f).padRight(6);
                 tt.button(Icon.cancel, Styles.logici, t::remove).size(24f);
 
@@ -127,10 +128,10 @@ public class ArcMessageDialog extends BaseDialog{
 
     void exportMsg(){
         StringBuilder messageHis = new StringBuilder();
-        messageHis.append("下面是[MDTX-").append(VarsX.version).append("] 导出的游戏内聊天记录").append("\n");
-        messageHis.append("*** 当前地图名称: ").append(state.map.name()).append("（模式：").append(state.rules.modeName).append("）\n");
-        messageHis.append("*** 当前波次: ").append(state.wave).append("\n");
-        messageHis.append("成功选取共 ").append(msgList.size).append(" 条记录，如下：\n");
+        messageHis.append(VarsX.bundle.exportHeader(VarsX.version)).append("\n");
+        messageHis.append(VarsX.bundle.exportMap(state.map.name(), state.rules.modeName));
+        messageHis.append(VarsX.bundle.currentWave(state.wave)).append("\n");
+        messageHis.append(VarsX.bundle.exportCount(msgList.size));
         for(var msg : msgList){
             messageHis.append(Strings.stripColors(msg.message)).append("\n");
         }
@@ -165,19 +166,19 @@ public class ArcMessageDialog extends BaseDialog{
     }
 
     public enum Type{
-        chat("聊天", Color.gray),
-        serverMsg("服务器信息", Color.valueOf("#cefdce")),
+        chat(i("聊天"), Color.gray),
+        serverMsg(i("服务器信息"), Color.valueOf("#cefdce")),
 
-        markLoc("标记~坐标", Color.valueOf("#7FFFD4")),
-        markPlayer("标记~玩家", Color.valueOf("#7FFFD4")),
+        markLoc(i("标记~坐标"), Color.valueOf("#7FFFD4")),
+        markPlayer(i("标记~玩家"), Color.valueOf("#7FFFD4")),
 
-        console("指令", Color.gold),
+        console(i("指令"), Color.gold),
 
-        logicNotify("逻辑~通报", Color.valueOf("#ffccff")),
-        logicAnnounce("逻辑~公告", Color.valueOf("#ffccff")),
+        logicNotify(i("逻辑~通报"), Color.valueOf("#ffccff")),
+        logicAnnounce(i("逻辑~公告"), Color.valueOf("#ffccff")),
 
-        eventWorldLoad("事件~载入地图", Color.valueOf("#ff9999")),
-        eventWave("事件~波次", Color.valueOf("#ffcc99"));
+        eventWorldLoad(i("事件~载入地图"), Color.valueOf("#ff9999")),
+        eventWave(i("事件~波次"), Color.valueOf("#ffcc99"));
 
         public final String name;
         public final Color color;

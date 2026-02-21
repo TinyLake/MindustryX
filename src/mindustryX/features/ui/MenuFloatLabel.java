@@ -7,6 +7,8 @@ import arc.scene.ui.layout.*;
 import arc.util.*;
 import mindustryX.features.SettingsV2.*;
 
+import java.util.Locale;
+
 public class MenuFloatLabel extends WidgetGroup{
     private static final CheckPref enable = new CheckPref("gameUI.menuFloatText", true);
     private static final float period = 75f, varSize = 0.8f;
@@ -33,7 +35,19 @@ public class MenuFloatLabel extends WidgetGroup{
             }
             lastVisible = Core.graphics.getFrameId();
         });
-        labels = Core.files.internal("labels").readString("UTF-8").replace("\r", "").replace("\\n", "\n").replace("/n", "\n").split("\n");
+        String labelFile = "labels";
+        try{
+            var locale = Core.bundle == null ? null : Core.bundle.getLocale();
+            // Use English slogans for non-Chinese locales when available.
+            String language = locale == null ? null : locale.getLanguage();
+            boolean chinese = language != null && language.equalsIgnoreCase(Locale.CHINESE.getLanguage());
+            if(!chinese && Core.files.internal("labels_en").exists()){
+                labelFile = "labels_en";
+            }
+        }catch(Throwable ignored){
+            // Fallback to default labels file.
+        }
+        labels = Core.files.internal(labelFile).readString("UTF-8").replace("\r", "").replace("\\n", "\n").replace("/n", "\n").split("\n");
         randomLabel();
     }
 

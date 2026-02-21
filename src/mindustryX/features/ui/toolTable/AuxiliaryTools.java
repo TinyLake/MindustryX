@@ -14,10 +14,12 @@ import mindustry.graphics.*;
 import mindustry.type.*;
 import mindustry.ui.*;
 import mindustry.ui.dialogs.*;
+import mindustryX.*;
 import mindustryX.features.*;
 import mindustryX.features.ui.toolTable.ai.*;
 
 import static mindustry.Vars.*;
+import static mindustryX.features.UIExt.i;
 
 public class AuxiliaryTools extends Table{
     private AIController selectAI;
@@ -39,10 +41,10 @@ public class AuxiliaryTools extends Table{
 
     protected void rebuild(){
         defaults().size(40);
-        aiButton(new ArcMinerAI(), UnitTypes.mono.region, "矿机AI");
-        aiButton(new BuilderAI(), UnitTypes.poly.region, "重建AI");
-        aiButton(new RepairAI(), UnitTypes.mega.region, "修复AI");
-        aiButton(new DefenderAI(), UnitTypes.oct.region, "保护AI");
+        aiButton(new ArcMinerAI(), UnitTypes.mono.region, i("矿机AI"));
+        aiButton(new BuilderAI(), UnitTypes.poly.region, i("重建AI"));
+        aiButton(new RepairAI(), UnitTypes.mega.region, i("修复AI"));
+        aiButton(new DefenderAI(), UnitTypes.oct.region, i("保护AI"));
         button(Icon.settingsSmall, Styles.clearNonei, iconMed, this::showAiSettingDialog);
 
         row();
@@ -55,20 +57,20 @@ public class AuxiliaryTools extends Table{
                     if(++count >= 255) break;
                 }
             }
-        }).tooltip("在建造列表加入被摧毁建筑");
-        var t = button(new TextureRegionDrawable(Items.copper.uiIcon), Styles.clearNoneTogglei, () -> AutoFill.enable ^= true).tooltip("一键装填").checked((b) -> AutoFill.enable).get();
+        }).tooltip(i("在建造列表加入被摧毁建筑"));
+        var t = button(new TextureRegionDrawable(Items.copper.uiIcon), Styles.clearNoneTogglei, () -> AutoFill.enable ^= true).tooltip(i("一键装填")).checked((b) -> AutoFill.enable).get();
         SettingsV2.bindQuickSettings(t, AutoFill.INSTANCE.getSettings());
-        toggleButton(Icon.modeAttack, "autotarget", "自动攻击");
-        toggleButton(new TextureRegionDrawable(UnitTypes.vela.uiIcon), "forceBoost", "强制助推");
-        toggleButton(Icon.eyeSmall, "detach-camera", "视角脱离玩家");
+        toggleButton(Icon.modeAttack, "autotarget", i("自动攻击"));
+        toggleButton(new TextureRegionDrawable(UnitTypes.vela.uiIcon), "forceBoost", i("强制助推"));
+        toggleButton(Icon.eyeSmall, "detach-camera", i("视角脱离玩家"));
 
         if(!mobile) return;
         row();
-        toggleButton(Icon.unitsSmall, "指挥模式", () -> control.input.commandMode = !control.input.commandMode).checked(b -> control.input.commandMode);
-        toggleButton(Icon.pause, "暂停建造", () -> control.input.isBuilding = !control.input.isBuilding).checked(b -> control.input.isBuilding);
-        scriptButton(Icon.up, "捡起载荷", () -> control.input.tryPickupPayload());
-        scriptButton(Icon.down, "丢下载荷", () -> control.input.tryDropPayload());
-        scriptButton(new TextureRegionDrawable(Blocks.payloadConveyor.uiIcon), "进入传送带", () -> {
+        toggleButton(Icon.unitsSmall, i("指挥模式"), () -> control.input.commandMode = !control.input.commandMode).checked(b -> control.input.commandMode);
+        toggleButton(Icon.pause, i("暂停建造"), () -> control.input.isBuilding = !control.input.isBuilding).checked(b -> control.input.isBuilding);
+        scriptButton(Icon.up, i("捡起载荷"), () -> control.input.tryPickupPayload());
+        scriptButton(Icon.down, i("丢下载荷"), () -> control.input.tryDropPayload());
+        scriptButton(new TextureRegionDrawable(Blocks.payloadConveyor.uiIcon), i("进入传送带"), () -> {
             Building build = player.buildOn();
             if(build == null || player.dead()) return;
             Call.unitBuildingControlSelect(player.unit(), build);
@@ -85,7 +87,8 @@ public class AuxiliaryTools extends Table{
             boolean setting = Core.settings.getBool(settingName);
 
             Core.settings.put(settingName, !setting);
-            UIExt.announce("已" + (setting ? "取消" : "开启") + description);
+            String state = setting ? i("关闭") : i("开启");
+            UIExt.announce(VarsX.bundle.toggleState(description, state));
         }).tooltip(description, true).checked(b -> Core.settings.getBool(settingName));
     }
 
@@ -100,10 +103,10 @@ public class AuxiliaryTools extends Table{
     private void showAiSettingDialog(){
         int cols = (int)Math.max(Core.graphics.getWidth() / Scl.scl(480), 1);
 
-        BaseDialog dialog = new BaseDialog("ARC-AI设定器");
+        BaseDialog dialog = new BaseDialog(i("ARC-AI设定器"));
 
         dialog.cont.table(t -> {
-            t.add("minerAI-矿物筛选器").color(Pal.accent).pad(cols / 2f).center().row();
+            t.add(i("minerAI-矿物筛选器")).color(Pal.accent).pad(cols / 2f).center().row();
             t.image().color(Pal.accent).fillX().row();
             t.table(list -> {
                 int i = 0;

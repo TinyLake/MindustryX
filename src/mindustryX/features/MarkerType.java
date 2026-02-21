@@ -27,6 +27,7 @@ import java.util.regex.*;
 import static arc.graphics.g2d.Draw.color;
 import static arc.graphics.g2d.Lines.stroke;
 import static mindustry.Vars.*;
+import static mindustryX.features.UIExt.i;
 
 public class MarkerType{
     private static final Pattern posPattern = Pattern.compile("(?<type><[A-Za-z]+>)?\\((?<x>\\d+),(?<y>\\d+)\\)");
@@ -42,7 +43,7 @@ public class MarkerType{
         fillParent = true;
         touchable = Touchable.enabled;
         background(((TextureRegionDrawable)Tex.whiteui).tint(0, 0, 0, 0.1f));
-        center().add("[cyan]标记模式,点击屏幕标记.", Styles.outlineLabel);
+        center().add(i("[cyan]标记模式,点击屏幕标记."), Styles.outlineLabel);
         tapped(() -> {
             MarkerType.showPanUI();
             Core.app.post(this::remove);
@@ -213,7 +214,7 @@ public class MarkerType{
 
     public void markWithMessage(Vec2 pos){
         if(last != null && last.time < heatTime){
-            Vars.ui.announce("请不要频繁标记!");
+            Vars.ui.announce(i("请不要频繁标记!"));
             return;
         }
         last = at(pos);
@@ -222,7 +223,7 @@ public class MarkerType{
 
     public static void newMarkFromChat(String text, Vec2 pos){
         MarkerType type = mark;
-        if(text.contains("集合")){
+        if(text.contains(i("集合"))){
             type = gatherMark;
         }
         for(MarkerType it : allTypes){
