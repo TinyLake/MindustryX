@@ -12,21 +12,25 @@ import mindustry.ui.*;
 import mindustry.ui.dialogs.*;
 import mindustryX.features.*;
 
-import java.text.*;
+import java.time.*;
+import java.time.format.*;
 import java.util.*;
 import java.util.concurrent.*;
 
 import static mindustry.Vars.*;
 
 public class ReplayManagerDialog extends BaseDialog{
-    private static final DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+    private static final DateTimeFormatter dateFormat = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
     private static final ReplayMeta unreadableMeta = new ReplayMeta(false, null, "", "", 0);
 
     private final Table list = new Table();
     private final ScrollPane pane = new ScrollPane(list, Styles.noBarPane);
+    private final Seq<Fi> replayFiles = new Seq<>();
     private final Map<String, ReplayMeta> metaCache = new ConcurrentHashMap<>();
     private final Set<String> loadingMeta = ConcurrentHashMap.newKeySet();
+    private final ExecutorService metaLoader = Threads.executor("Replay Meta Loader", 1);
 
+    private boolean rebuildPosted;
     private String search;
     private TextField searchField;
 
@@ -39,6 +43,7 @@ public class ReplayManagerDialog extends BaseDialog{
         shown(() -> {
             search = null;
             if(searchField != null) searchField.setText("");
+            refreshReplayFiles();
             rebuildList();
         });
         onResize(this::rebuildList);
@@ -58,7 +63,7 @@ public class ReplayManagerDialog extends BaseDialog{
             searchField.setMessageText("搜索回放");
 
             tools.button("加载外部回放", Icon.upload, this::loadExternalReplay).padRight(8f);
-            tools.button(Icon.refresh, Styles.cleari, this::rebuildList).size(54f);
+            tools.button(Icon.refresh, Styles.cleari, this::refreshAndRebuild).size(54f);
         }).growX().row();
 
         pane.setFadeScrollBars(false);
@@ -70,14 +75,13 @@ public class ReplayManagerDialog extends BaseDialog{
     private void rebuildList(){
         list.clearChildren();
 
-        Seq<Fi> files = scanReplayFiles();
-        if(files.isEmpty()){
+        if(replayFiles.isEmpty()){
             list.add("没有可管理的回放文件").pad(12f).color(Color.lightGray);
             return;
         }
 
         int shown = 0;
-        for(Fi file : files){
+        for(Fi file : replayFiles){
             if(!matchesSearch(file)) continue;
             shown++;
             addReplayItem(file);
@@ -86,6 +90,23 @@ public class ReplayManagerDialog extends BaseDialog{
         if(shown == 0){
             list.add("没有匹配的回放文件").pad(12f).color(Color.lightGray);
         }
+    }
+
+    private void refreshAndRebuild(){
+        refreshReplayFiles();
+        rebuildList();
+    }
+
+    private void refreshReplayFiles(){
+        replayFiles.clear();
+        replayFiles.addAll(scanReplayFiles());
+
+        HashSet<String> aliveFiles = new HashSet<>();
+        for(Fi file : replayFiles){
+            aliveFiles.add(file.absolutePath());
+        }
+        metaCache.keySet().removeIf(key -> !aliveFiles.contains(key));
+        loadingMeta.removeIf(key -> !aliveFiles.contains(key));
     }
 
     private Seq<Fi> scanReplayFiles(){
@@ -121,7 +142,8 @@ public class ReplayManagerDialog extends BaseDialog{
                 title.table(buttons -> {
                     buttons.right();
                     buttons.defaults().size(40f);
-                    buttons.button(Icon.play, Styles.emptyi, () -> playReplay(file)).disabled(b -> !file.exists());
+                    boolean exists = file.exists();
+                    buttons.button(Icon.play, Styles.emptyi, () -> playReplay(file)).disabled(b -> !exists);
                     buttons.button(Icon.trash, Styles.emptyi, () -> confirmDelete(file));
                 }).right();
             }).growX().row();
@@ -141,11 +163,11 @@ public class ReplayManagerDialog extends BaseDialog{
     }
 
     private String buildBaseInfo(Fi file){
-        return "修改时间: " + dateFormat.format(new Date(file.lastModified())) + "  |  文件大小: " + formatSize(file.length());
+        return "修改时间: " + formatDate(new Date(file.lastModified())) + "  |  文件大小: " + formatSize(file.length());
     }
 
     private String buildMetaInfo(ReplayMeta meta){
-        return "录制时间: " + dateFormat.format(meta.time)
+        return "录制时间: " + formatDate(meta.time)
         + "  |  玩家: " + meta.player
         + "  |  服务器: " + meta.serverIp
         + "  |  版本: " + meta.version;
@@ -155,7 +177,7 @@ public class ReplayManagerDialog extends BaseDialog{
         String key = file.absolutePath();
         if(metaCache.containsKey(key) || !loadingMeta.add(key)) return;
 
-        Threads.daemon("Replay Meta Loader", () -> {
+        metaLoader.execute(() -> {
             ReplayMeta meta = unreadableMeta;
             try(ReplayData.Reader reader = new ReplayData.Reader(file)){
                 ReplayData header = reader.getMeta();
@@ -167,9 +189,22 @@ public class ReplayManagerDialog extends BaseDialog{
             Core.app.post(() -> {
                 loadingMeta.remove(key);
                 metaCache.put(key, finalMeta);
-                rebuildList();
+                queueRebuild();
             });
         });
+    }
+
+    private void queueRebuild(){
+        if(rebuildPosted) return;
+        rebuildPosted = true;
+        Core.app.post(() -> {
+            rebuildPosted = false;
+            rebuildList();
+        });
+    }
+
+    private String formatDate(Date date){
+        return date.toInstant().atZone(ZoneId.systemDefault()).format(dateFormat);
     }
 
     private void confirmDelete(Fi file){
@@ -181,6 +216,7 @@ public class ReplayManagerDialog extends BaseDialog{
             String key = file.absolutePath();
             metaCache.remove(key);
             loadingMeta.remove(key);
+            replayFiles.remove(file);
             rebuildList();
         });
     }
