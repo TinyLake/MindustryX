@@ -118,7 +118,7 @@ public class Main extends Mod{
         Log.logger = new NoopLogHandler();
         try{
             Thread.currentThread().setContextClassLoader(classLoader);
-            Reflect.set(classLoader.loadClass("mindustryX.VarsX"), "isLoader", true);
+            System.setProperty("mdtx.loader", "1");
             impl.launch(classLoader);
             Thread.currentThread().interrupt();
         }catch(Exception e){

@@ -27,7 +27,7 @@ object VarsX {
     var devVersion: Boolean
 
     @JvmField
-    var isLoader: Boolean = false
+    var isLoader: Boolean = System.getProperty("mdtx.loader", "0") == "1"
 
     @JvmField
     val bundle: UiTextBundle
