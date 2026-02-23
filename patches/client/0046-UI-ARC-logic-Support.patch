@@ -271,7 +271,7 @@ index 51c8576d8b41d43e25eb86400d169b9a108e6642..de370177beb5fec5b3b00abbb3dd8e2c
      }
  }
 diff --git a/core/src/mindustry/world/blocks/logic/LogicBlock.java b/core/src/mindustry/world/blocks/logic/LogicBlock.java
-index 5084bbc41f2630d7d19e948a519e3ed682de7e6a..b959fe31b2db9f6597cb145ca7ae99d11058efe8 100644
+index 5084bbc41f2630d7d19e948a519e3ed682de7e6a..e9c7a2ac63b75bcdbdba27c5001dcda92cfb063a 100644
 --- a/core/src/mindustry/world/blocks/logic/LogicBlock.java
 +++ b/core/src/mindustry/world/blocks/logic/LogicBlock.java
 @@ -16,17 +16,21 @@ import arc.util.io.*;
@@ -306,11 +306,11 @@ index 5084bbc41f2630d7d19e948a519e3ed682de7e6a..b959fe31b2db9f6597cb145ca7ae99d1
  
      public boolean accessible(){
 -        return !privileged || state.rules.editor || state.playtestingMap != null || state.rules.allowEditWorldProcessors;
-+        return !privileged || state.rules.editor || state.playtestingMap != null || state.rules.allowEditWorldProcessors || RenderExt.editOtherBlock;
++        return !privileged || state.rules.editor || state.playtestingMap != null || state.rules.allowEditWorldProcessors || LogicExt.editOtherBlock;
 +    }
 +
 +    private boolean accessibleRead(){
-+        return accessible() || RenderExt.showOtherInfo;
++        return accessible() || (!headless && RenderExt.showOtherInfo);
      }
  
      @Override

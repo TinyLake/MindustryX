@@ -426,7 +426,7 @@ index a142f890eaf5c8252a04201c8485ecb0e260d3f6..2fdaf89d8bfafa089c5a6de09115ec81
  
      @Override
 diff --git a/core/src/mindustry/world/blocks/production/GenericCrafter.java b/core/src/mindustry/world/blocks/production/GenericCrafter.java
-index 79b7bb451100f5f66ffd77e409f8ac1c73e139b5..44174463d8030e1d2abcfa89518ed0e6ea8b9f0c 100644
+index 6efd4520d2e239abfa845ba9938754a425331c9e..eac0839b3ca229b9b74d6bcbadb0816956d8b978 100644
 --- a/core/src/mindustry/world/blocks/production/GenericCrafter.java
 +++ b/core/src/mindustry/world/blocks/production/GenericCrafter.java
 @@ -1,5 +1,6 @@
@@ -436,7 +436,7 @@ index 79b7bb451100f5f66ffd77e409f8ac1c73e139b5..44174463d8030e1d2abcfa89518ed0e6
  import arc.graphics.g2d.*;
  import arc.math.*;
  import arc.math.geom.*;
-@@ -13,11 +14,14 @@ import mindustry.gen.*;
+@@ -13,10 +14,13 @@ import mindustry.gen.*;
  import mindustry.logic.*;
  import mindustry.mod.*;
  import mindustry.type.*;
@@ -446,12 +446,11 @@ index 79b7bb451100f5f66ffd77e409f8ac1c73e139b5..44174463d8030e1d2abcfa89518ed0e6
  import mindustry.world.blocks.liquid.Conduit.*;
  import mindustry.world.draw.*;
  import mindustry.world.meta.*;
- import mindustryX.features.*;
 +import mindustryX.features.ui.*;
  
  import static mindustry.Vars.*;
  
-@@ -362,5 +366,15 @@ public class GenericCrafter extends Block{
+@@ -359,5 +363,15 @@ public class GenericCrafter extends Block{
              warmup = read.f();
              if(legacyReadWarmup) read.f();
          }

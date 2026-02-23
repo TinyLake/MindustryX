@@ -50,7 +50,7 @@ public class ArcBuilds{
         Draw.color();
     }
 
-    public static void arcTurret(BaseTurret.BaseTurretBuild build){
+    public static void turretDraw(BaseTurret.BaseTurretBuild build){
         if(build == null || !(build.team == player.team() || RenderExt.showOtherInfo)) return;
 
         Vec2 targetPos = Vec2.ZERO;

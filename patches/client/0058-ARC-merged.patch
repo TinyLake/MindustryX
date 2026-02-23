@@ -154,7 +154,7 @@ index b4f56d136b632aae1841fcfb6f745018d40b9199..6e38c85a35901a80d632191502f10063
                      hide();
                  }).marginLeft(10f);
 diff --git a/core/src/mindustry/entities/comp/BuildingComp.java b/core/src/mindustry/entities/comp/BuildingComp.java
-index 61da0b079538c7ecd3972ae3cc30588c58f881ad..98c318dffbc1b24b2e4fa2fbf85b2b3892209fb1 100644
+index 3e9916420e993dde4a56a1439319f7b87c2a5495..6592dcd12d62489246ef9609ae22d00f87fd2765 100644
 --- a/core/src/mindustry/entities/comp/BuildingComp.java
 +++ b/core/src/mindustry/entities/comp/BuildingComp.java
 @@ -41,6 +41,7 @@ import mindustry.world.blocks.power.*;
@@ -178,7 +178,7 @@ index 61da0b079538c7ecd3972ae3cc30588c58f881ad..98c318dffbc1b24b2e4fa2fbf85b2b38
  
      public boolean interactable(Team team){
 -        return state.teams.canInteract(team, team());
-+        return state.teams.canInteract(team, team()) || RenderExt.editOtherBlock;
++        return state.teams.canInteract(team, team()) || LogicExt.editOtherBlock;
      }
  
      public float timeScale(){

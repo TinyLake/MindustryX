@@ -55,7 +55,7 @@ index 48e42b4e5fcdb86d678ceb75355c72415634f36b..b115b9617204ed997e8337248f9562b4
              lines.add(new Vec2(x + Mathf.range(3f), y + Mathf.range(3f)));
  
 diff --git a/core/src/mindustry/entities/bullet/BulletType.java b/core/src/mindustry/entities/bullet/BulletType.java
-index 98089bbba9a894d22186461e0fbb2ef2b538ce01..c3221269ae4b90487b4c2b35683dc3dd5530e917 100644
+index a812d38d7f3145213778bd6eaab61194824eb58b..4c868d381c92a0b998f0c2b456ae293ab27a1859 100644
 --- a/core/src/mindustry/entities/bullet/BulletType.java
 +++ b/core/src/mindustry/entities/bullet/BulletType.java
 @@ -23,6 +23,7 @@ import mindustry.graphics.*;
@@ -102,7 +102,7 @@ index 98089bbba9a894d22186461e0fbb2ef2b538ce01..c3221269ae4b90487b4c2b35683dc3dd
                      other.heal(healPercent / 100f * other.maxHealth() + healAmount);
                  });
 diff --git a/core/src/mindustry/entities/comp/BuildingComp.java b/core/src/mindustry/entities/comp/BuildingComp.java
-index 98c318dffbc1b24b2e4fa2fbf85b2b3892209fb1..757210fd75da811050dd809eadf9b9a7a9731ab8 100644
+index 6592dcd12d62489246ef9609ae22d00f87fd2765..aca66ed25bb8fa6b02700475f8c64b56a9036ff2 100644
 --- a/core/src/mindustry/entities/comp/BuildingComp.java
 +++ b/core/src/mindustry/entities/comp/BuildingComp.java
 @@ -41,6 +41,7 @@ import mindustry.world.blocks.power.*;

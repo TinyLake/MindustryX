@@ -48,7 +48,7 @@ public class RenderExt{
     public static int massDriverLineInterval;
     public static boolean drawBars, drawBarsMend;
     public static boolean drawBlockDisabled;
-    public static boolean showOtherInfo, editOtherBlock;
+    public static boolean showOtherInfo;
     public static boolean unitWeaponTargetLine, unitItemCarried;
 
     public static Color massDriverLineColor = Color.clear;
@@ -75,11 +75,11 @@ public class RenderExt{
     public static final SliderPref healthBarMinHealth = new SliderPref("block.healthBarMinHealth", 0, 0, 4000, 50, VarsX.bundle::hpOrAll);
     public static final ChoosePref blockRenderLevel0 = new ChoosePref("block.renderLevel", CollectionsKt.listOf(i("隐藏全部建筑"), i("只显示建筑状态"), i("全部显示")), 2);
     public static final SettingsV2.CheckPref showOtherTeamState = new CheckPref("block.showOtherTeamState");
-    public static final SettingsV2.CheckPref editOtherBlock0 = new CheckPref("block.editOtherBlock");
     public static final SettingsV2.CheckPref logicDisplayNoBorder0 = new CheckPref("block.logicDisplayNoBorder");
 
 
     static{
+        if(headless) throw new RuntimeException("RenderExt should not access in Headless");
         noBulletShow.addFallback(SettingsV2.INSTANCE.map(new PersistentProvider.Arc<Boolean>("bulletShow"), it -> !it));
         unitHitbox.addFallbackName("unithitbox");
         unitHitbox.addFallbackName("payloadpreview");
@@ -97,7 +97,6 @@ public class RenderExt{
         healthBarMinHealth.addFallbackName("blockbarminhealth");
         blockRenderLevel0.addFallbackName("blockRenderLevel");
         showOtherTeamState.addFallbackName("showOtherTeamState");
-        editOtherBlock0.addFallbackName("editOtherBlock");
         logicDisplayNoBorder0.addFallbackName("logicDisplayNoBorder");
     }
 
@@ -132,8 +131,6 @@ public class RenderExt{
             drawBarsMend = Core.settings.getBool("blockBars_mend");
             drawBlockDisabled = Core.settings.getBool("blockdisabled");
             showOtherInfo = showOtherTeamState.get();
-            editOtherBlock = editOtherBlock0.get();
-            editOtherBlock &= !net.client();
 
             unitWeaponTargetLine = Core.settings.getBool("unitWeaponTargetLine");
             unitItemCarried = Core.settings.getBool("unitItemCarried");
@@ -212,7 +209,7 @@ public class RenderExt{
         }
         if(build instanceof BaseTurretBuild turretBuild){
             Draw.z(Layer.turret);
-            ArcBuilds.arcTurret(turretBuild);
+            ArcBuilds.turretDraw(turretBuild);
         }
     }
 

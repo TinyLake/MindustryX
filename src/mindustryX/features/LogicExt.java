@@ -3,10 +3,12 @@ package mindustryX.features;
 import arc.*;
 import mindustry.core.*;
 import mindustry.game.EventType.*;
+import mindustry.gen.*;
 import mindustry.net.Packets.*;
 import mindustryX.*;
 import mindustryX.features.SettingsV2.*;
 
+import static mindustry.Vars.net;
 import static mindustryX.features.UIExt.i;
 
 public class LogicExt{
@@ -30,12 +32,16 @@ public class LogicExt{
         return VarsX.bundle.tiles(it);
     });
     public static final CheckPref rotateCanvas = new CheckPref("block.rotateCanvas");
+    public static final SettingsV2.CheckPref editOtherBlock0 = new CheckPref("block.editOtherBlock");
 
     public static int limitUpdateTimer = 10;
+    public static boolean editOtherBlock;
+    public static Building currentBuilding;
 
     public static void init(){
         invertMapClick0.addFallbackName("invertMapClick");
         reliableSync.addFallbackName("reliableSync");
+        editOtherBlock0.addFallbackName("editOtherBlock");
 
 
         Events.run(Trigger.update, () -> {
@@ -46,6 +52,9 @@ public class LogicExt{
             mockProtocol = ConnectPacket.clientVersion > 0 ? ConnectPacket.clientVersion : Version.build;
             v146Mode = mockProtocol == 146;
             contentsCompatibleMode = mockProtocol != Version.build;
+
+            editOtherBlock = editOtherBlock0.get();
+            editOtherBlock &= !net.client();
         });
     }
 }
