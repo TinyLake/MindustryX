@@ -81,7 +81,7 @@ object VarsX {
     val noPlayerHitBox = CheckPref("noPlayerHitBox")
 
     @JvmField
-    val githubMirror = CheckPref("githubMirror", true)
+    val githubMirror = CheckPref("githubMirror")
 
     @JvmField
     val arcSpecificInfoTable = CheckPref("gameUI.arcSpecificTable").apply {
