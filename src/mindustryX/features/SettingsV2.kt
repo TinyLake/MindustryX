@@ -511,11 +511,7 @@ object SettingsV2 {
     fun isHiddenSettingKeybind(bind: KeyBind): Boolean = bind.name.startsWith(hiddenShortcutPrefix)
 
     private fun hiddenShortcutName(name: String): String {
-        val safeName = buildString {
-            name.forEach {
-                append(if (it.isLetterOrDigit()) it else '_')
-            }
-        }
+        val safeName = name.map { if (it.isLetterOrDigit()) it else '_' }.joinToString("")
         return "$hiddenShortcutPrefix$safeName-${Integer.toUnsignedString(name.hashCode(), 16)}"
     }
 }
