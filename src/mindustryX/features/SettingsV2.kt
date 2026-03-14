@@ -322,11 +322,9 @@ object SettingsV2 {
                     val down = Core.input.keyDown(shortcutBind)
                     if (down && !holdActive) {
                         holdRestoreValue = value
-                        holdAppliedValue = true
-                        if (value != holdAppliedValue) {
-                            holdActive = true
-                            set(holdAppliedValue)
-                        }
+                        holdAppliedValue = !value
+                        holdActive = true
+                        set(holdAppliedValue)
                     } else if (!down && holdActive) {
                         releaseHeldShortcut()
                     }
