@@ -211,6 +211,16 @@ object SettingsV2 {
     }
 
     class CheckPref @JvmOverloads constructor(name: String, def: Boolean = false) : Data<Boolean>(name, def) {
+        companion object {
+            private val shortcutButtonStyle by lazy {
+                ImageButtonStyle(Styles.clearNonei).apply {
+                    imageUpColor = Color.white
+                    imageCheckedColor = Pal.accent
+                    imageDisabledColor = Color.darkGray
+                }
+            }
+        }
+
         private val shortcutBind = KeyBind.add(hiddenShortcutName(name), KeyCode.unset)
         private val shortcutModeProvider = PersistentProvider.Arc<Int>("settingV2-shortcut-mode-$name")
         private var shortcutModeLoaded = false
@@ -221,7 +231,6 @@ object SettingsV2 {
 
         init {
             shortcutPrefs += this
-            if (Core.settings != null) shortcutBind.load()
         }
 
         fun toggle() {
@@ -286,12 +295,7 @@ object SettingsV2 {
         }
 
         override fun Table.addShortcutTool() {
-            val style = ImageButtonStyle(Styles.clearNonei).apply {
-                imageUpColor = Color.white
-                imageCheckedColor = Pal.accent
-                imageDisabledColor = Color.darkGray
-            }
-            val shortcutButton = button(Icon.commandRallySmall, style, Vars.iconSmall) {
+            val shortcutButton = button(Icon.commandRallySmall, shortcutButtonStyle, Vars.iconSmall) {
                 KeybindDialog.showRebindDialog(shortcutBind)
             }.tooltip("@settingV2.shortcut").padLeft(4f).checked { hasShortcut() }.get()
             shortcutButton.addListener(object : ClickListener(KeyCode.mouseRight) {
