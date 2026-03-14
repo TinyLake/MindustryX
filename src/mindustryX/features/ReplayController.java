@@ -14,8 +14,10 @@ import mindustry.net.Packets.*;
 import mindustry.ui.dialogs.*;
 import mindustryX.*;
 import mindustryX.features.SettingsV2.*;
+import mindustryX.features.ui.*;
 
 import java.io.*;
+import java.text.*;
 import java.util.*;
 
 import static mindustry.Vars.*;
@@ -27,12 +29,14 @@ import static mindustryX.features.UIExt.i;
  * WayZer修改优化
  */
 public class ReplayController{
+    public static final String extension = "mrep";
     private static final CheckPref enable = new CheckPref("replayRecord");
 
     public static boolean replaying;
 
     private static ReplayData.Writer writer;
     private static ReplayData.Reader reader;
+    private static ReplayManagerDialog managerDialog;
 
     public static void init(){
         Events.run(EventType.Trigger.update, () -> {
@@ -43,10 +47,7 @@ public class ReplayController{
         Events.on(ClientServerConnectEvent.class, (e) -> stopPlay());
         {
             Table buttons = Vars.ui.join.buttons;
-            buttons.button(i("加载回放文件"), Icon.file, () -> {
-                FileChooser.setLastDirectory(saveDirectory);
-                platform.showFileChooser(true, i("打开回放文件"), "mrep", f -> Core.app.post(() -> ReplayController.startPlay(f)));
-            });
+            buttons.button(i("回放管理器"), Icon.file, ReplayController::showManagerDialog);
         }
         {
             var pausedDialog = Vars.ui.paused;
@@ -62,7 +63,8 @@ public class ReplayController{
     public static void onConnect(String ip){
         if(!enable.get() || LogicExt.contentsCompatibleMode) return;
         if(replaying) return;
-        var file = saveDirectory.child(new Date().getTime() + ".mrep");
+        var format = new SimpleDateFormat("yyyy-MM-dd_HH-mm-ss", Locale.ROOT);
+        var file = saveDirectory.child(format.format(new Date()) + "." + extension);
         ReplayData.Writer writer;
         try{
             writer = new ReplayData.Writer(file.write(false, 8192));
@@ -101,7 +103,11 @@ public class ReplayController{
             reader = new ReplayData.Reader(input);
             Log.infoTag("Replay", reader.getMeta().toString());
         }catch(Exception e){
-            Core.app.post(() -> ui.showException(i("读取回放失败!"), e));
+            Core.app.post(() -> {
+                ReplayController.showManagerDialog();
+                ui.showException(i("读取回放失败!"), e);
+            });
+            return;
         }
 
         replaying = true;
@@ -144,20 +150,26 @@ public class ReplayController{
     }
 
     public static void stopPlay(){
-        if(!replaying){
-            if(reader != null){
-                reader.close();
-                reader = null;
-            }
-            return;
-        }
-        Log.infoTag("Replay", "stop");
+        boolean wasActive = replaying || reader != null;
+        if(wasActive) Log.infoTag("Replay", "stop");
         replaying = false;
-        reader.close();
-        reader = null;
+        if(reader != null){
+            reader.close();
+            reader = null;
+        }
+        if(!wasActive) return;
+
         net.disconnect();
         ui.loadfrag.hide();
-        Core.app.post(() -> logic.reset());
+        Core.app.post(() -> {
+            logic.reset();
+            showManagerDialog();
+        });
+    }
+
+    private static void showManagerDialog(){
+        if(managerDialog == null) managerDialog = new ReplayManagerDialog();
+        managerDialog.show();
     }
 
 

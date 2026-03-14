@@ -4,6 +4,9 @@ import arc.math.Mathf
 import arc.math.geom.Position
 import arc.util.Strings
 import mindustry.core.World
+import java.text.SimpleDateFormat
+import java.time.Instant
+import java.util.*
 import kotlin.math.abs
 
 @Suppress("MemberVisibilityCanBePrivate")
@@ -65,6 +68,13 @@ data class Format @JvmOverloads constructor(var decimal: Int = 2, var fixDecimal
         return "(${World.toTile(pos.x)},${World.toTile(pos.y)})"
     }
 
+    fun fileSize(bytes: Long): String {
+        if (bytes < 1024) return "$bytes B"
+        if (bytes < 1024L * 1024L) return format(bytes / 1024f) + " KB"
+        if (bytes < 1024L * 1024L * 1024L) return format(bytes / 1024f / 1024f) + " MB"
+        return format(bytes / 1024f / 1024f / 1024f) + " GB"
+    }
+
     fun duration(seconds: Float, unit: Boolean = true) = buildString {
         append(if (seconds > 0) "[orange]" else "[acid]")
         val s = abs(seconds)
@@ -100,6 +110,7 @@ data class Format @JvmOverloads constructor(var decimal: Int = 2, var fixDecimal
     }
 }
 
+@Suppress("ConstantLocale")
 object FormatDefault {
     @JvmOverloads
     @JvmStatic
@@ -120,4 +131,30 @@ object FormatDefault {
     @JvmOverloads
     @JvmStatic
     fun duration(seconds: Float, unit: Boolean = true): String = Format.default.duration(seconds, unit)
+
+    @JvmStatic
+    fun fileSize(bytes: Long): String = Format.default.fileSize(bytes)
+
+    private val dateFormat = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
+    private val datetimeFormat = SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault())
+
+    @JvmStatic
+    fun date(date: Instant): String {
+        return dateFormat.format(date)
+    }
+
+    @JvmStatic
+    fun date(date: Date): String {
+        return dateFormat.format(date)
+    }
+
+    @JvmStatic
+    fun datetime(date: Instant): String {
+        return datetimeFormat.format(date)
+    }
+
+    @JvmStatic
+    fun datetime(date: Date): String {
+        return datetimeFormat.format(date)
+    }
 }
