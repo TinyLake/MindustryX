@@ -118,6 +118,7 @@ public class ReplayManagerDialog extends BaseDialog{
                     meta = reader.getMeta();
                 }catch(Exception e){
                     Log.warn("Failed to read replay meta for '@': @", file.name(), e.toString());
+                    Log.debug(e);
                 }
 
                 ReplayData finalMeta = meta;

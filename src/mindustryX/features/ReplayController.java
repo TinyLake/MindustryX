@@ -17,6 +17,7 @@ import mindustryX.features.SettingsV2.*;
 import mindustryX.features.ui.*;
 
 import java.io.*;
+import java.text.*;
 import java.util.*;
 
 import static mindustry.Vars.*;
@@ -62,7 +63,8 @@ public class ReplayController{
     public static void onConnect(String ip){
         if(!enable.get() || LogicExt.contentsCompatibleMode) return;
         if(replaying) return;
-        var file = saveDirectory.child(FormatDefault.datetime(new Date()) + "." + extension);
+        var format = new SimpleDateFormat("yyyy-MM-dd_HH-mm-ss", Locale.ROOT);
+        var file = saveDirectory.child(format.format(new Date()) + "." + extension);
         ReplayData.Writer writer;
         try{
             writer = new ReplayData.Writer(file.write(false, 8192));
