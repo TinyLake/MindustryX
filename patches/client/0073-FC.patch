@@ -1,0 +1,127 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: DeterMination-Wind <DeterMination-Wind@users.noreply.github.com>
+Date: Sat, 21 Feb 2026 14:07:41 +0800
+Subject: [PATCH] =?UTF-8?q?FC:=20=E6=94=AF=E6=8C=81=E7=BB=84=E5=90=88?=
+ =?UTF-8?q?=E4=BF=AE=E9=A5=B0=E9=94=AE=E5=BF=AB=E6=8D=B7=E9=94=AE=E7=BB=91?=
+ =?UTF-8?q?=E5=AE=9A?=
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+---
+ core/src/mindustry/input/DesktopInput.java     | 18 +++++++++---------
+ .../mindustry/ui/dialogs/KeybindDialog.java    | 18 +++++++++++++-----
+ 2 files changed, 22 insertions(+), 14 deletions(-)
+
+diff --git a/core/src/mindustry/input/DesktopInput.java b/core/src/mindustry/input/DesktopInput.java
+index 7277ea1b02972a73a3124ef1c885fee91d9b6793..696b3e626c7a2548e0716daf2a5707d0f6c0eecd 100644
+--- a/core/src/mindustry/input/DesktopInput.java
++++ b/core/src/mindustry/input/DesktopInput.java
+@@ -94,14 +94,14 @@ public class DesktopInput extends InputHandler{
+                     if(!showHint()) return str;
+                     str.setLength(0);
+                     if(!isBuilding && !Core.settings.getBool("buildautopause") && !player.unit().isBuilding()){
+-                        str.append(Core.bundle.format("enablebuilding", Binding.pauseBuilding.value.key.toString()));
++                        str.append(Core.bundle.format("enablebuilding", Binding.pauseBuilding.value.keyName()));
+                     }else if(player.unit().isBuilding()){
+-                        str.append(Core.bundle.format(isBuilding ? "pausebuilding" : "resumebuilding", Binding.pauseBuilding.value.key.toString()))
+-                            .append("\n").append(Core.bundle.format("cancelbuilding", Binding.clearBuilding.value.key.toString()))
+-                            .append("\n").append(Core.bundle.format("selectschematic", Binding.schematicSelect.value.key.toString()));
++                        str.append(Core.bundle.format(isBuilding ? "pausebuilding" : "resumebuilding", Binding.pauseBuilding.value.keyName()))
++                            .append("\n").append(Core.bundle.format("cancelbuilding", Binding.clearBuilding.value.keyName()))
++                            .append("\n").append(Core.bundle.format("selectschematic", Binding.schematicSelect.value.keyName()));
+                     }
+                     if(!player.dead() && !player.unit().spawnedByCore()){
+-                        str.append(str.length() != 0 ? "\n" : "").append(Core.bundle.format("respawn", Binding.respawn.value.key.toString()));
++                        str.append(str.length() != 0 ? "\n" : "").append(Core.bundle.format("respawn", Binding.respawn.value.keyName()));
+                     }
+                     return str;
+                 }).style(Styles.outlineLabel);
+@@ -115,8 +115,8 @@ public class DesktopInput extends InputHandler{
+             t.table(Styles.black6, b -> {
+                 b.defaults().left();
+                 b.label(() -> Core.bundle.format("schematic.flip",
+-                    Binding.schematicFlipX.value.key.toString(),
+-                    Binding.schematicFlipY.value.key.toString())).style(Styles.outlineLabel).visible(() -> Core.settings.getBool("hints"));
++                    Binding.schematicFlipX.value.toString(),
++                    Binding.schematicFlipY.value.toString())).style(Styles.outlineLabel).visible(() -> Core.settings.getBool("hints"));
+                 b.row();
+                 b.table(a -> {
+                     a.button("@schematic.add", Icon.save, this::showSchematicSave).colspan(2).size(250f, 50f).disabled(f -> lastSchematic == null || lastSchematic.file != null);
+@@ -302,7 +302,7 @@ public class DesktopInput extends InputHandler{
+ 
+         if(!locked && block == null && !scene.hasField() && !scene.hasDialog() &&
+                 //disable command mode when player unit can boost and command mode binding is the same
+-                !(!player.dead() && player.unit().type.canBoost && Binding.commandMode.value.key == Binding.boost.value.key)){
++                !(!player.dead() && player.unit().type.canBoost && Binding.commandMode.value.equals(Binding.boost.value))){
+             if(settings.getBool("commandmodehold")){
+                 commandMode = input.keyDown(Binding.commandMode);
+             }else if(input.keyTap(Binding.commandMode)){
+@@ -916,7 +916,7 @@ public class DesktopInput extends InputHandler{
+             commandTap(x, y);
+         }
+ 
+-        if(button == Binding.commandQueue.value.key){
++        if(button == Binding.commandQueue.value.key && input.modifiers() == Binding.commandQueue.value.modifiers){
+             commandTap(x, y, true);
+         }
+ 
+diff --git a/core/src/mindustry/ui/dialogs/KeybindDialog.java b/core/src/mindustry/ui/dialogs/KeybindDialog.java
+index d3dd7592465f420eb7c225b7dc7218eada30abf8..acdff149bc567c1b43d3130aecbcbddfe82ce265 100644
+--- a/core/src/mindustry/ui/dialogs/KeybindDialog.java
++++ b/core/src/mindustry/ui/dialogs/KeybindDialog.java
+@@ -97,7 +97,7 @@ public class KeybindDialog extends Dialog{
+ 
+                 table.labelWrap(() -> {
+                     Axis axis = keybind.value;
+-                    return axis.key != null ? axis.key.getName() : axis.min.getName() + " [red]/[] " + axis.max.getName();
++                    return axis.key != null ? axis.keyName() : axis.min.getName() + " [red]/[] " + axis.max.getName();
+                 }).color(Pal.accent).left().minWidth(90).fillX().padRight(20);
+ 
+                 table.button("@settings.rebind", tstyle, () -> {
+@@ -107,8 +107,8 @@ public class KeybindDialog extends Dialog{
+                 }).size(bw, bh);
+             }else{
+                 table.add(bundle.get("keybind." + keybind.name + ".name", Strings.capitalize(keybind.name)), Color.white).left().padRight(40).padLeft(8);
+-                table.add(keybind.value.key.getName()).update(l -> {
+-                    l.setText(keybind.value.key.getName());
++                table.add(keybind.value.keyName()).update(l -> {
++                    l.setText(keybind.value.keyName());
+                     l.setColor(keybind.value.key == KeyCode.unset ? Color.darkGray : Pal.accent);
+                 }).color(Pal.accent).left().minWidth(90).padRight(20);
+ 
+@@ -139,7 +139,7 @@ public class KeybindDialog extends Dialog{
+                 bind.value = newKey.axis ? new Axis(newKey) : new Axis(minKey, newKey);
+             }
+         }else{
+-            bind.value = new Axis(newKey);
++            bind.value = new Axis(newKey, input.modifiers());
+         }
+         bind.save();
+ 
+@@ -160,6 +160,7 @@ public class KeybindDialog extends Dialog{
+ 
+         rebindDialog.titleTable.getCells().first().pad(4);
+         rebindDialog.addListener(new InputListener(){
++            private KeyCode pressedKey = null;
+             @Override
+             public boolean touchDown(InputEvent event, float x, float y, int pointer, KeyCode button){
+                 if(Core.app.isAndroid()) return false;
+@@ -169,9 +170,16 @@ public class KeybindDialog extends Dialog{
+ 
+             @Override
+             public boolean keyDown(InputEvent event, KeyCode keycode){
++                pressedKey = keycode;
++                return true;
++            }
++
++            @Override
++            public boolean keyUp(InputEvent event, KeyCode keycode){
++                if(pressedKey == null || keycode != pressedKey) return false;
+                 rebindDialog.hide();
+                 rebind(name, keycode);
+-                return false;
++                return true;
+             }
+ 
+             @Override

@@ -4,52 +4,64 @@ Date: Sat, 21 Feb 2026 14:06:04 +0800
 Subject: [PATCH] FC: support modifier combinations in keybinds
 
 ---
- arc-core/src/arc/Input.java         |  8 +--
- arc-core/src/arc/input/KeyBind.java | 79 +++++++++++++++++++++++++++--
- 2 files changed, 80 insertions(+), 7 deletions(-)
+ arc-core/src/arc/Input.java                | 12 +++-
+ arc-core/src/arc/input/KeyBind.java        | 71 ++++++++++++++++++++--
+ arc-core/src/arc/input/KeyboardDevice.java |  7 +++
+ 3 files changed, 83 insertions(+), 7 deletions(-)
 
 diff --git a/arc-core/src/arc/Input.java b/arc-core/src/arc/Input.java
-index 2ecc5c547cac9927f196d598d50669647d4b113b..cd52d0f0c2ed17e1280e66094bd77ba9bd1e9687 100644
+index 2ecc5c547cac9927f196d598d50669647d4b113b..dbcec061ee66bb642467dcbc315f00567ba24aa5 100644
 --- a/arc-core/src/arc/Input.java
 +++ b/arc-core/src/arc/Input.java
-@@ -193,23 +193,24 @@ public abstract class Input{
+@@ -32,6 +32,10 @@ public abstract class Input{
+     /** Whether to use keyboard controls on Android. */
+     protected boolean useKeyboard;
+ 
++    public int modifiers(){
++        return keyboard.modifiers();
++    }
++
+     /**Returns the unprojected mouse position (screen -> world).*/
+     public Vec2 mouseWorld(float x, float y){
+         return Core.camera.unproject(mouseReturn.set(x, y));
+@@ -193,23 +197,24 @@ public abstract class Input{
  
      /** Returns whether the keybind is pressed. */
      public boolean keyDown(KeyBind key){
 -        return key.value.key != null && keyboard.isPressed(key.value.key);
-+        return key.value.key != null && keyboard.isPressed(key.value.key) && KeyBind.hasModifiers(this, key.value.modifiers);
++        return key.value.key != null && keyboard.isPressed(key.value.key) && modifiers() == key.value.modifiers;
      }
  
      /** Returns whether the key has just been pressed. */
      public boolean keyTap(KeyBind key){
 -        return key.value.key != null && keyboard.isTapped(key.value.key);
-+        return key.value.key != null && keyboard.isTapped(key.value.key) && KeyBind.hasModifiers(this, key.value.modifiers);
++        return key.value.key != null && keyboard.isTapped(key.value.key) && modifiers() == key.value.modifiers;
      }
  
      /** Returns whether the key has just been released. */
      public boolean keyRelease(KeyBind key){
 -        return key.value.key != null && keyboard.isReleased(key.value.key);
-+        return key.value.key != null && keyboard.isReleased(key.value.key) && KeyBind.hasModifiers(this, key.value.modifiers);
++        return key.value.key != null && keyboard.isReleased(key.value.key) && modifiers()== key.value.modifiers;
      }
  
      /** Returns the [-1, 1] axis value of a key. */
      public float axis(KeyBind key){
          Axis axis = key.value;
          if(axis.key != null){
-+            if(!KeyBind.hasModifiers(this, axis.modifiers)) return 0f;
++            if(modifiers() != key.value.modifiers) return 0f;
              return keyboard.getAxis(axis.key);
          }else{
              return keyboard.isPressed(axis.min) && keyboard.isPressed(axis.max) ? 0 :
-@@ -222,6 +223,7 @@ public abstract class Input{
+@@ -222,6 +227,7 @@ public abstract class Input{
      public float axisTap(KeyBind key){
          Axis axis = key.value;
          if(axis.key != null){
-+            if(!KeyBind.hasModifiers(this, axis.modifiers)) return 0f;
++            if(modifiers() != key.value.modifiers) return 0f;
              return keyboard.getAxis(axis.key);
          }else{
              return keyboard.isTapped(axis.min) ? -1 : keyboard.isTapped(axis.max) ? 1 : 0;
 diff --git a/arc-core/src/arc/input/KeyBind.java b/arc-core/src/arc/input/KeyBind.java
-index e62d626a07bd61ada7fee19547355f5ee36cc7b9..bbd67d3760950b66e8d1a8ff4f4b3111a43b5b06 100644
+index e62d626a07bd61ada7fee19547355f5ee36cc7b9..c1a3293d44aa366eb24cdc510ef9a0a9503c1ddf 100644
 --- a/arc-core/src/arc/input/KeyBind.java
 +++ b/arc-core/src/arc/input/KeyBind.java
 @@ -7,6 +7,10 @@ import static arc.Core.*;
@@ -109,17 +121,10 @@ index e62d626a07bd61ada7fee19547355f5ee36cc7b9..bbd67d3760950b66e8d1a8ff4f4b3111
              }else{
                  return ((Axis)defaultValue).max == value.max && ((Axis)defaultValue).min == value.min;
              }
-@@ -112,6 +120,53 @@ public class KeyBind{
+@@ -112,6 +120,14 @@ public class KeyBind{
          }
      }
  
-+    public static boolean isModifierKey(KeyCode key){
-+        return key == KeyCode.shiftLeft || key == KeyCode.shiftRight ||
-+        key == KeyCode.controlLeft || key == KeyCode.controlRight ||
-+        key == KeyCode.altLeft || key == KeyCode.altRight ||
-+        key == KeyCode.sym;
-+    }
-+
 +    public static int modifierBit(KeyCode key){
 +        if(key == KeyCode.shiftLeft || key == KeyCode.shiftRight) return modifierShift;
 +        if(key == KeyCode.controlLeft || key == KeyCode.controlRight) return modifierCtrl;
@@ -128,42 +133,10 @@ index e62d626a07bd61ada7fee19547355f5ee36cc7b9..bbd67d3760950b66e8d1a8ff4f4b3111
 +        return 0;
 +    }
 +
-+    public static int sanitizeModifiers(KeyCode key, int modifiers){
-+        return modifiers & ~modifierBit(key);
-+    }
-+
-+    public static int currentModifiers(arc.Input input){
-+        int out = 0;
-+        if(input.keyDown(KeyCode.shiftLeft) || input.keyDown(KeyCode.shiftRight)) out |= modifierShift;
-+        if(input.keyDown(KeyCode.controlLeft) || input.keyDown(KeyCode.controlRight)) out |= modifierCtrl;
-+        if(input.keyDown(KeyCode.altLeft) || input.keyDown(KeyCode.altRight)) out |= modifierAlt;
-+        if(input.keyDown(KeyCode.sym)) out |= modifierMeta;
-+        return out;
-+    }
-+
-+    public static boolean hasModifiers(arc.Input input, int modifiers){
-+        return ((modifiers & modifierShift) == 0 || (input.keyDown(KeyCode.shiftLeft) || input.keyDown(KeyCode.shiftRight)))
-+        && ((modifiers & modifierCtrl) == 0 || (input.keyDown(KeyCode.controlLeft) || input.keyDown(KeyCode.controlRight)))
-+        && ((modifiers & modifierAlt) == 0 || (input.keyDown(KeyCode.altLeft) || input.keyDown(KeyCode.altRight)))
-+        && ((modifiers & modifierMeta) == 0 || input.keyDown(KeyCode.sym));
-+    }
-+
-+    public static String keyName(@Nullable KeyCode key, int modifiers){
-+        if(key == null) return "";
-+
-+        StringBuilder builder = new StringBuilder();
-+        if((modifiers & modifierCtrl) != 0) builder.append("Ctrl+");
-+        if((modifiers & modifierAlt) != 0) builder.append("Alt+");
-+        if((modifiers & modifierMeta) != 0) builder.append("Win/Cmd+");
-+        if((modifiers & modifierShift) != 0) builder.append("Shift+");
-+        builder.append(key.getName());
-+        return builder.toString();
-+    }
-+
      String settingsKey(){
          return "keybind-default-keyboard-" + name;
      }
-@@ -122,11 +177,18 @@ public class KeyBind{
+@@ -122,11 +138,18 @@ public class KeyBind{
      public static class Axis implements KeybindValue{
          public @Nullable KeyCode min, max;
          public @Nullable KeyCode key;
@@ -178,27 +151,58 @@ index e62d626a07bd61ada7fee19547355f5ee36cc7b9..bbd67d3760950b66e8d1a8ff4f4b3111
 +        public Axis(KeyCode key, int modifiers){
              this.key = key;
              this.min = max = null;
-+            this.modifiers = sanitizeModifiers(key, modifiers);
++            this.modifiers = modifiers;
          }
  
          /** Constructor for keyboards/mice, or multiple buttons on a controller. */
-@@ -134,6 +196,15 @@ public class KeyBind{
+@@ -134,6 +157,46 @@ public class KeyBind{
              this.min = min;
              this.max = max;
              this.key = null;
 +            this.modifiers = 0;
 +        }
 +
-+        public boolean matches(arc.Input input, KeyCode key){
-+            return this.key == key && hasModifiers(input, modifiers);
++        public boolean modifier(KeyCode key){
++            switch(key){
++                case shiftLeft:
++                case shiftRight:
++                    return (modifierShift & modifiers) != 0;
++                case controlLeft:
++                case controlRight:
++                    return (modifierCtrl & modifiers) != 0;
++                case altLeft:
++                case altRight:
++                    return (modifierAlt & modifiers) != 0;
++                case sym:
++                    return (modifierMeta & modifiers) != 0;
++                default:
++                    return false;
++            }
++        }
++
++        @Override
++        public String toString(){
++            return keyName();
 +        }
 +
 +        public String keyName(){
-+            return KeyBind.keyName(key, modifiers);
++            if(key == null){
++                assert min != null && max != null;
++                return min.getName() + " / " + max.getName();
++            }
++            if(modifiers == 0) return key.getName();
++
++            StringBuilder builder = new StringBuilder();
++            if((modifiers & modifierCtrl) != 0) builder.append("Ctrl+");
++            if((modifiers & modifierAlt) != 0) builder.append("Alt+");
++            if((modifiers & modifierMeta) != 0) builder.append("Win/Cmd+");
++            if((modifiers & modifierShift) != 0) builder.append("Shift+");
++            builder.append(key.getName());
++            return builder.toString();
          }
  
          @Override
-@@ -142,7 +213,7 @@ public class KeyBind{
+@@ -142,7 +205,7 @@ public class KeyBind{
              if(o == null || getClass() != o.getClass()) return false;
  
              Axis axis = (Axis)o;
@@ -207,3 +211,42 @@ index e62d626a07bd61ada7fee19547355f5ee36cc7b9..bbd67d3760950b66e8d1a8ff4f4b3111
          }
      }
  }
+diff --git a/arc-core/src/arc/input/KeyboardDevice.java b/arc-core/src/arc/input/KeyboardDevice.java
+index ce3424a30915dc5184218cfcdbab36d6ccf06047..f4b8cf81de1f55ca97b2e3e366832b5d38b051b1 100644
+--- a/arc-core/src/arc/input/KeyboardDevice.java
++++ b/arc-core/src/arc/input/KeyboardDevice.java
+@@ -7,6 +7,7 @@ public class KeyboardDevice implements InputProcessor{
+     private final IntSet lastFramePressed = new IntSet();
+     private final IntSet justPressed = new IntSet();
+     private final IntFloatMap axes = new IntFloatMap();
++    private int modifiers = 0;
+ 
+     public void postUpdate(){
+         lastFramePressed.clear();
+@@ -26,6 +27,10 @@ public class KeyboardDevice implements InputProcessor{
+         return justPressed.contains(key.ordinal());
+     }
+ 
++    public int modifiers(){
++        return modifiers;
++    }
++
+     public boolean isReleased(KeyCode key){
+         return justReleased.contains(key.ordinal());
+     }
+@@ -38,6 +43,7 @@ public class KeyboardDevice implements InputProcessor{
+     public boolean keyDown(KeyCode key){
+         pressed.add(key.ordinal());
+         justPressed.add(key.ordinal());
++        modifiers |= KeyBind.modifierBit(key);
+         return false;
+     }
+ 
+@@ -45,6 +51,7 @@ public class KeyboardDevice implements InputProcessor{
+     public boolean keyUp(KeyCode key){
+         pressed.remove(key.ordinal());
+         justReleased.add(key.ordinal());
++        modifiers &= ~KeyBind.modifierBit(key);
+         return false;
+     }
+ 
