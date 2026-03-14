@@ -29,7 +29,7 @@ MindustryX/
 - Gradle 构建要求 JDK 17 及以上；但项目多数 Java 模块仍以 Java 8 目标发布，新增代码不要随意引入高版本 Java API。
 - 首次展开补丁链或需要重置展开源码时，在仓库根目录运行：
 
-```powershell
+```bash
 bash ./scripts/applyPatches.sh
 ```
 
