@@ -202,23 +202,28 @@ public class ReplayManagerDialog extends BaseDialog{
     }
 
     private void buildBaseInfo(Table table, Fi file){
-        table.defaults().left().padRight(8f);
+        table.left().top();
+        table.defaults().growX();
         addInfoPair(table, i("修改时间"), formatDate(new Date(file.lastModified())));
         addInfoPair(table, i("文件大小"), formatSize(file.length()));
     }
 
     private void buildMetaInfo(Table table, ReplayData meta){
-        table.defaults().left().padRight(8f);
+        table.left().top();
+        table.defaults().growX();
         addInfoPair(table, i("录制时间"), formatDate(meta.getTime()));
         addInfoPair(table, i("玩家"), meta.getRecordPlayer());
-        table.row();
         addInfoPair(table, i("服务器"), meta.getServerIp());
         addInfoPair(table, i("版本"), String.valueOf(meta.getVersion()));
     }
 
     private void addInfoPair(Table table, String key, String value){
-        table.add("[lightgray]" + key + ":[]").padRight(4f);
-        table.add(value).color(Color.lightGray).wrap();
+        table.table(row -> {
+            row.left().top();
+            row.defaults().left().top();
+            row.add("[lightgray]" + key + ":[]").padRight(6f);
+            row.labelWrap(value == null ? "" : value).color(Color.lightGray).growX().minWidth(0f);
+        }).growX().row();
     }
 
     private void buildActionButtons(Table buttons, Fi file){
