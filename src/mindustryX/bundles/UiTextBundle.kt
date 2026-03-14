@@ -154,4 +154,6 @@ interface UiTextBundle {
     }
 
     fun kotlinModName(): String = "Kotlin语言标准库"
+    fun confirmDeleteFile(filename: String): String = "确认删除文件?\n$filename"
+    fun fileNotFound(filename: String): String = "文件不存在：$filename"
 }

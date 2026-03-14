@@ -28,6 +28,7 @@ import static mindustryX.features.UIExt.i;
  * WayZer修改优化
  */
 public class ReplayController{
+    public static final String extension = "mrep";
     private static final CheckPref enable = new CheckPref("replayRecord");
 
     public static boolean replaying;
@@ -61,7 +62,7 @@ public class ReplayController{
     public static void onConnect(String ip){
         if(!enable.get() || LogicExt.contentsCompatibleMode) return;
         if(replaying) return;
-        var file = saveDirectory.child(new Date().getTime() + ".mrep");
+        var file = saveDirectory.child(FormatDefault.datetime(new Date()) + "." + extension);
         ReplayData.Writer writer;
         try{
             writer = new ReplayData.Writer(file.write(false, 8192));
@@ -100,7 +101,10 @@ public class ReplayController{
             reader = new ReplayData.Reader(input);
             Log.infoTag("Replay", reader.getMeta().toString());
         }catch(Exception e){
-            Core.app.post(() -> ui.showException(i("读取回放失败!"), e));
+            Core.app.post(() -> {
+                ReplayController.showManagerDialog();
+                ui.showException(i("读取回放失败!"), e);
+            });
             return;
         }
 
@@ -157,6 +161,7 @@ public class ReplayController{
         ui.loadfrag.hide();
         Core.app.post(() -> {
             logic.reset();
+            showManagerDialog();
         });
     }
 
