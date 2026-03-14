@@ -50,10 +50,7 @@ public class ReplayController{
                 FileChooser.setLastDirectory(saveDirectory);
                 platform.showFileChooser(true, i("打开回放文件"), "mrep", f -> Core.app.post(() -> ReplayController.startPlay(f)));
             });
-            buttons.button(i("回放管理器"), Icon.file, () -> {
-                if(managerDialog == null) managerDialog = new ReplayManagerDialog();
-                managerDialog.show();
-            });
+            buttons.button(i("回放管理器"), Icon.file, ReplayController::showManagerDialog);
         }
         {
             var pausedDialog = Vars.ui.paused;

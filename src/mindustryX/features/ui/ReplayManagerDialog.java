@@ -8,6 +8,7 @@ import arc.scene.ui.layout.*;
 import arc.struct.*;
 import arc.util.*;
 import mindustry.gen.*;
+import mindustry.game.EventType.*;
 import mindustry.ui.*;
 import mindustry.ui.dialogs.*;
 import mindustryX.features.*;
@@ -39,6 +40,8 @@ public class ReplayManagerDialog extends BaseDialog{
 
     public ReplayManagerDialog(){
         super("回放管理器");
+
+        Events.on(DisposeEvent.class, e -> metaLoader.shutdown());
 
         setup();
         addCloseButton();
@@ -216,7 +219,8 @@ public class ReplayManagerDialog extends BaseDialog{
             try(ReplayData.Reader reader = new ReplayData.Reader(file)){
                 ReplayData header = reader.getMeta();
                 meta = new ReplayMeta(true, header.getTime(), header.getServerIp(), header.getRecordPlayer(), header.getVersion());
-            }catch(Throwable ignored){
+            }catch(Exception e){
+                Log.warn("Failed to read replay meta for '@': @", file.name(), e.toString());
             }
 
             ReplayMeta finalMeta = meta;
