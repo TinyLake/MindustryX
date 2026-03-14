@@ -131,7 +131,7 @@ public class ReplayManagerDialog extends BaseDialog{
         for(Fi file : replayFiles){
             if(!matchesSearch(file)) continue;
             shown++;
-            addReplayItem(file);
+            list.add(new ReplayItem(file));
         }
 
         if(shown == 0){
@@ -195,10 +195,6 @@ public class ReplayManagerDialog extends BaseDialog{
         if(meta == null || meta == unreadableMeta) return false;
         return meta.getServerIp().toLowerCase(Locale.ROOT).contains(search)
         || meta.getRecordPlayer().toLowerCase(Locale.ROOT).contains(search);
-    }
-
-    private void addReplayItem(Fi file){
-        list.add(new ReplayItem(file));
     }
 
     private void buildBaseInfo(Table table, Fi file){
