@@ -46,7 +46,7 @@ cd work
 - 完整 CI 风格构建会组合执行 `desktop:dist server:dist core:genLoaderModAll android:assembleRelease`；只有在确实需要覆盖多产物时才跑全量。
 - 修改 `work/` 或 `Arc/` 后，需要回到根目录重新生成补丁：
 
-```powershell
+```bash
 bash ./scripts/genPatches.sh
 ```
 
