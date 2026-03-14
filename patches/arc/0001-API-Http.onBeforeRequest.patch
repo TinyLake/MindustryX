@@ -40,23 +40,20 @@ index 5be2d92ebc01f37351cc60c2b5c6f9296dabbc5b..a6e85108fb7feb7bb143f6dbbd6f2aff
 +            return new HttpResponse(HttpStatus.byCode(statusCode), result);
 +        }
 +
-+        private InputStream openStream(){
-+            if(connection == null) return new ByteArrayInputStream(cachedResult == null ? Streams.emptyBytes : cachedResult);
-+            try{
-+                return connection.getInputStream();
-+            }catch(IOException e){
-+                return connection.getErrorStream();
-+            }
-+        }
-+
 +        private byte[] ensureResultBytes(){
 +            if(cachedResult != null) return cachedResult;
++            if(connection == null) return cachedResult = Streams.emptyBytes;
 +
-+            InputStream input = openStream();
++            InputStream input;
++            try{
++                input = connection.getInputStream();
++            }catch(IOException e){
++                input = connection.getErrorStream();
++            }
 +            if(input == null) return cachedResult = Streams.emptyBytes;
 +
 +            try{
-+                cachedResult = Streams.copyBytes(input, connection == null ? 0 : connection.getContentLength());
++                cachedResult = Streams.copyBytes(input, connection.getContentLength());
 +                return cachedResult;
 +            }catch(IOException e){
 +                return cachedResult = Streams.emptyBytes;

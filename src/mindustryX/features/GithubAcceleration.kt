@@ -56,10 +56,6 @@ object GithubAcceleration {
             persistentProvider = PersistentProvider.AsUBJson(PersistentProvider.Arc(name), List::class.java, ProxyConfig::class.java)
         }
 
-        override fun set(value: List<ProxyConfig>) {
-            super.set(normalize(value))
-        }
-
         override fun buildUI() = Table().let { root ->
             var shown = false
             root.button(title) { shown = !shown }.growX().height(55f).padBottom(2f).get().apply {
@@ -118,10 +114,10 @@ object GithubAcceleration {
                                 ops.image(Icon.lock).size(Vars.iconSmall)
                             } else {
                                 ops.button(Icon.trashSmall, Styles.clearNonei, Vars.iconMed) {
-                                    set(value.filterNot { it === proxy })
+                                    saveProxyList(value.filterNot { it === proxy })
                                 }
                                 ops.button(Icon.saveSmall, Styles.clearNonei, Vars.iconMed) {
-                                    set(value.map { if (it === proxy) edited else it })
+                                    saveProxyList(value.map { if (it === proxy) edited else it })
                                 }.disabled { edited == proxy }
                             }
                         }.width(78f)
@@ -130,7 +126,7 @@ object GithubAcceleration {
 
                     button("@add", Icon.addSmall) {
                         val nextId = (value.maxOfOrNull { it.id } ?: 0) + 1
-                        set(value + ProxyConfig(nextId, "自建代理", "https://", true, true, true, false))
+                        saveProxyList(value + ProxyConfig(nextId, "自建代理", "https://", true, true, true, false))
                     }.colspan(columns).fillX().row()
                     add("[yellow]修改配置后，请点击保存图标生效").colspan(columns).center().padTop(-4f).row()
                     button("清空缓存", Icon.trash) { clearCache() }.colspan(columns).fillX()
@@ -148,25 +144,19 @@ object GithubAcceleration {
         Vars.dataDirectory.child("cache").child("gh-acceleration").also { it.mkdirs() }
     }
 
-    init {
-        settings.forEach { SettingsV2.categoryOverride[it.name] = "githubAcceleration" }
-        Http.onBeforeRequest = arc.func.Cons { onBeforeRequest(it) }
-    }
-
     @JvmStatic
     fun init() {
-        loadProxies()
-    }
-
-    @JvmStatic
-    fun loadProxies() {
-        proxyList.set(proxyList.value)
+        saveProxyList(proxyList.value)
     }
 
     @JvmStatic
     fun clearCache() {
         cacheRoot.list().forEach { it.delete() }
         Log.info("GitHub acceleration cache cleared")
+    }
+
+    private fun saveProxyList(value: List<ProxyConfig>) {
+        proxyList.set(normalize(value))
     }
 
     private fun normalize(raw: List<ProxyConfig>): List<ProxyConfig> {
@@ -201,7 +191,8 @@ object GithubAcceleration {
         return "https://$trimmed"
     }
 
-    private fun onBeforeRequest(req: Http.HttpRequest) {
+    @JvmStatic
+    fun beforeRequest(req: Http.HttpRequest) {
         if (!enabled.value) return
 
         val requestUrl = unwrapProxyUrl(req.url)
