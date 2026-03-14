@@ -1,0 +1,47 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Wind-DeterMination-backup
+ <Wind-DeterMination-backup@users.noreply.github.com>
+Date: Sat, 14 Mar 2026 22:05:49 +0800
+Subject: [PATCH] fix: route scoreboard overlay handling through info popups
+
+---
+ core/src/mindustry/core/UI.java  | 5 ++++-
+ core/src/mindustry/ui/Menus.java | 2 +-
+ 2 files changed, 5 insertions(+), 2 deletions(-)
+
+diff --git a/core/src/mindustry/core/UI.java b/core/src/mindustry/core/UI.java
+index 9a3763d18ea8fe6ad194887daac47c42984d4589..5a6721b074292bf200b37851d82df3ba78b991f8 100644
+--- a/core/src/mindustry/core/UI.java
++++ b/core/src/mindustry/core/UI.java
+@@ -391,6 +391,9 @@ public class UI implements ApplicationListener, Loadable{
+ 
+     /** Shows a label at some position on the screen. Does not fade. */
+     public void showInfoPopup(String info, float duration, int align, int top, int left, int bottom, int right){
++        info = mindustryX.Hooks.onHandleInfoPopup(info, duration, align, top, left, bottom, right);
++        if(info == null) return;
++        String finalInfo = info;
+         Table table = new Table();
+         table.setFillParent(true);
+         table.touchable = Touchable.disabled;
+@@ -398,7 +401,7 @@ public class UI implements ApplicationListener, Loadable{
+             if(state.isMenu()) table.remove();
+         });
+         table.actions(Actions.delay(duration), Actions.remove());
+-        table.align(align).table(Styles.black3, t -> t.margin(4).add(info).style(Styles.outlineLabel)).pad(top, left, bottom, right);
++        table.align(align).table(Styles.black3, t -> t.margin(4).add(finalInfo).style(Styles.outlineLabel)).pad(top, left, bottom, right);
+         Core.scene.add(table);
+     }
+ 
+diff --git a/core/src/mindustry/ui/Menus.java b/core/src/mindustry/ui/Menus.java
+index 6533f455e17d6f9bdd39aa57ab701965bca52344..ce8ca11fa7d16b25d4aca4cfee85a0f8729ecc7e 100644
+--- a/core/src/mindustry/ui/Menus.java
++++ b/core/src/mindustry/ui/Menus.java
+@@ -128,7 +128,7 @@ public class Menus{
+         ui.showInfoPopup(message, duration, align, top, left, bottom, right);
+     }
+ 
+-    @Remote(variants = Variant.both, unreliable = true)
++    @Remote(variants = Variant.both)
+     public static void label(String message, float duration, float worldx, float worldy){
+         if(message == null) return;
+ 

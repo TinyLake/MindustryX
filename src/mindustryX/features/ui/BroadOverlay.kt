@@ -43,13 +43,18 @@ object BroadOverlay {
     }
 
     @JvmStatic
-    fun tryHandle(message: String): Boolean {
+    fun tryHandleInfoPopup(message: String?, duration: Float, align: Int, top: Int, left: Int, bottom: Int, right: Int): Boolean {
+        if (message == null) return false
         if (!message.startsWith(prefix)) return false
 
-        content = message.removePrefix(prefix).trimStart().trimEnd()
-        updatedAt = System.currentTimeMillis()
-        formattedUpdatedAt = timeFormat.format(Date(updatedAt))
-        UIExt.arcMessageDialog.addMsg(ArcMessageDialog.Msg(ArcMessageDialog.Type.serverMsg, content))
+        val newContent = message.removePrefix(prefix).trimStart().trimEnd()
+        val changed = newContent != content
+        content = newContent
+        if (changed) {
+            updatedAt = System.currentTimeMillis()
+            formattedUpdatedAt = timeFormat.format(Date(updatedAt))
+            UIExt.arcMessageDialog.addMsg(ArcMessageDialog.Msg(ArcMessageDialog.Type.serverMsg, content))
+        }
 
         if (!window.data.enabled && !window.data.pinned && window.data.value.center == null) {
             window.data.set(window.data.value.copy(enabled = true, pinned = true))

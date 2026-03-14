@@ -75,9 +75,6 @@ public class Hooks implements ApplicationListener{
     public static @Nullable String onHandleSendMessage(String message, @Nullable Player sender){
         if(message == null) return null;
         if(Vars.ui != null){
-            if(sender == null && BroadOverlay.tryHandle(message)){
-                return null;
-            }
             ShareFeature.resolve(message, sender);
 
             if(sender != null){
@@ -91,6 +88,13 @@ public class Hooks implements ApplicationListener{
                 builder.append(" ").append(message);
                 message = builder.toString();
             }
+        }
+        return message;
+    }
+
+    public static @Nullable String onHandleInfoPopup(@Nullable String message, float duration, int align, int top, int left, int bottom, int right){
+        if(Vars.ui != null && BroadOverlay.tryHandleInfoPopup(message, duration, align, top, left, bottom, right)){
+            return null;
         }
         return message;
     }

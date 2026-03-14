@@ -1,0 +1,23 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Wind-DeterMination-backup
+ <Wind-DeterMination-backup@users.noreply.github.com>
+Date: Sat, 14 Mar 2026 22:06:54 +0800
+Subject: [PATCH] fix: keep world labels on unreliable channel
+
+---
+ core/src/mindustry/ui/Menus.java | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/core/src/mindustry/ui/Menus.java b/core/src/mindustry/ui/Menus.java
+index ce8ca11fa7d16b25d4aca4cfee85a0f8729ecc7e..6533f455e17d6f9bdd39aa57ab701965bca52344 100644
+--- a/core/src/mindustry/ui/Menus.java
++++ b/core/src/mindustry/ui/Menus.java
+@@ -128,7 +128,7 @@ public class Menus{
+         ui.showInfoPopup(message, duration, align, top, left, bottom, right);
+     }
+ 
+-    @Remote(variants = Variant.both)
++    @Remote(variants = Variant.both, unreliable = true)
+     public static void label(String message, float duration, float worldx, float worldy){
+         if(message == null) return;
+ 
