@@ -25,14 +25,14 @@ import static mindustryX.features.UIExt.i;
 
 public class ReplayManagerDialog extends BaseDialog{
     private static final DateTimeFormatter dateFormat = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
-    private static final ReplayMeta unreadableMeta = new ReplayMeta(false, null, "", "", 0);
+    private static final ReplayData unreadableMeta = new ReplayData(-1, new Date(0), "", "");
     private static final float minCardWidth = 360f;
     private static final float minPaneHeight = 340f;
 
     private final GridTable list = new GridTable();
     private final ScrollPane pane = new ScrollPane(list, Styles.noBarPane);
     private final Seq<Fi> replayFiles = new Seq<>();
-    private final ObjectMap<String, ReplayMeta> metaCache = new ObjectMap<>();
+    private final ObjectMap<String, ReplayData> metaCache = new ObjectMap<>();
     private final ObjectSet<String> loadingMeta = new ObjectSet<>();
     private final ExecutorService metaLoader = Threads.executor("Replay Meta Loader", 1);
 
@@ -191,45 +191,34 @@ public class ReplayManagerDialog extends BaseDialog{
         if(search == null) return true;
         if(file.name().toLowerCase(Locale.ROOT).contains(search)) return true;
 
-        ReplayMeta meta = metaCache.get(file.absolutePath());
-        if(meta == null || !meta.readable) return false;
-        return meta.serverIp.toLowerCase(Locale.ROOT).contains(search)
-        || meta.player.toLowerCase(Locale.ROOT).contains(search);
+        ReplayData meta = metaCache.get(file.absolutePath());
+        if(meta == null || meta == unreadableMeta) return false;
+        return meta.getServerIp().toLowerCase(Locale.ROOT).contains(search)
+        || meta.getRecordPlayer().toLowerCase(Locale.ROOT).contains(search);
     }
 
     private void addReplayItem(Fi file){
-        list.table(Styles.grayPanel, item -> {
-            item.top().margin(10f);
-            item.defaults().left().growX();
+        list.add(new ReplayItem(file));
+    }
 
-            if(portraitLayout){
-                item.add("[accent]" + file.nameWithoutExtension() + "[]").wrap().row();
-                item.table(buttons -> buildActionButtons(buttons, file)).growX().padTop(8f).row();
-            }else{
-                item.table(title -> {
-                    title.defaults().left();
-                    title.add("[accent]" + file.nameWithoutExtension() + "[]").growX().wrap();
-                    title.add().growX();
-                    title.table(buttons -> buildActionButtons(buttons, file)).right();
-                }).growX().row();
-            }
+    private void buildBaseInfo(Table table, Fi file){
+        table.defaults().left().padRight(8f);
+        addInfoPair(table, i("修改时间"), formatDate(new Date(file.lastModified())));
+        addInfoPair(table, i("文件大小"), formatSize(file.length()));
+    }
 
-                item.add(i("修改时间") + ": " + formatDate(new Date(file.lastModified())) + "  |  " + i("文件大小") + ": " + formatSize(file.length()))
-            .color(Color.lightGray).wrap().row();
+    private void buildMetaInfo(Table table, ReplayData meta){
+        table.defaults().left().padRight(8f);
+        addInfoPair(table, i("录制时间"), formatDate(meta.getTime()));
+        addInfoPair(table, i("玩家"), meta.getRecordPlayer());
+        table.row();
+        addInfoPair(table, i("服务器"), meta.getServerIp());
+        addInfoPair(table, i("版本"), String.valueOf(meta.getVersion()));
+    }
 
-            ReplayMeta meta = metaCache.get(file.absolutePath());
-            if(meta == null){
-                item.add("[lightgray]" + i("读取回放头信息中...") + "[]").growX().wrap();
-                requestMeta(file);
-            }else if(meta.readable){
-                item.add(i("录制时间") + ": " + formatDate(meta.time)
-                + "  |  " + i("玩家") + ": " + meta.player
-                + "  [white]|  " + i("服务器") + ": " + meta.serverIp
-                + "  |  " + i("版本") + ": " + meta.version).color(Color.lightGray).growX().wrap();
-            }else{
-                item.add("[lightgray]" + i("无法读取回放头信息") + "[]").growX().wrap();
-            }
-        });
+    private void addInfoPair(Table table, String key, String value){
+        table.add("[lightgray]" + key + ":[]").padRight(4f);
+        table.add(value).color(Color.lightGray).wrap();
     }
 
     private void buildActionButtons(Table buttons, Fi file){
@@ -245,15 +234,14 @@ public class ReplayManagerDialog extends BaseDialog{
         loadingMeta.add(key);
 
         metaLoader.execute(() -> {
-            ReplayMeta meta = unreadableMeta;
+            ReplayData meta = unreadableMeta;
             try(ReplayData.Reader reader = new ReplayData.Reader(file)){
-                ReplayData header = reader.getMeta();
-                meta = new ReplayMeta(true, header.getTime(), header.getServerIp(), header.getRecordPlayer(), header.getVersion());
+                meta = reader.getMeta();
             }catch(Exception e){
                 Log.warn("Failed to read replay meta for '@': @", file.name(), e.toString());
             }
 
-            ReplayMeta finalMeta = meta;
+            ReplayData finalMeta = meta;
             Core.app.post(() -> {
                 loadingMeta.remove(key);
                 metaCache.put(key, finalMeta);
@@ -296,14 +284,14 @@ public class ReplayManagerDialog extends BaseDialog{
             return;
         }
         hide();
-        ReplayController.startPlay(file, true);
+        ReplayController.startPlay(file);
     }
 
     private void loadExternalReplay(){
         FileChooser.setLastDirectory(saveDirectory);
         platform.showFileChooser(true, i("打开回放文件"), "mrep", file -> Core.app.post(() -> {
             hide();
-            ReplayController.startPlay(file, true);
+            ReplayController.startPlay(file);
         }));
     }
 
@@ -314,19 +302,44 @@ public class ReplayManagerDialog extends BaseDialog{
         return Strings.fixed(bytes / 1024f / 1024f / 1024f, 1) + " GB";
     }
 
-    private static class ReplayMeta{
-        final boolean readable;
-        final Date time;
-        final String serverIp;
-        final String player;
-        final int version;
+    private class ReplayItem extends Table{
+        private final Fi file;
 
-        ReplayMeta(boolean readable, Date time, String serverIp, String player, int version){
-            this.readable = readable;
-            this.time = time;
-            this.serverIp = serverIp;
-            this.player = player;
-            this.version = version;
+        private ReplayItem(Fi file){
+            super(Styles.grayPanel);
+            this.file = file;
+            rebuild();
+        }
+
+        private void rebuild(){
+            clearChildren();
+            top().margin(10f);
+            defaults().left().growX();
+
+            if(portraitLayout){
+                add("[accent]" + file.nameWithoutExtension() + "[]").wrap().row();
+                table(buttons -> buildActionButtons(buttons, file)).growX().padTop(8f).row();
+            }else{
+                table(title -> {
+                    title.defaults().left();
+                    title.add("[accent]" + file.nameWithoutExtension() + "[]").growX().wrap();
+                    title.add().growX();
+                    title.table(buttons -> buildActionButtons(buttons, file)).right();
+                }).growX().row();
+            }
+
+            table(info -> buildBaseInfo(info, file)).growX().padTop(4f).row();
+
+            ReplayData meta = metaCache.get(file.absolutePath());
+            if(meta == null){
+                add("[lightgray]" + i("读取回放头信息中...") + "[]").growX().wrap();
+                requestMeta(file);
+            }else if(meta == unreadableMeta){
+                add("[lightgray]" + i("无法读取回放头信息") + "[]").growX().wrap();
+            }else{
+                table(info -> buildMetaInfo(info, meta)).growX().padTop(2f).row();
+            }
         }
     }
+
 }

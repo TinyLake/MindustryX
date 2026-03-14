@@ -35,7 +35,6 @@ public class ReplayController{
     private static ReplayData.Writer writer;
     private static ReplayData.Reader reader;
     private static ReplayManagerDialog managerDialog;
-    private static boolean reopenManagerOnStop;
 
     public static void init(){
         Events.run(EventType.Trigger.update, () -> {
@@ -46,10 +45,6 @@ public class ReplayController{
         Events.on(ClientServerConnectEvent.class, (e) -> stopPlay());
         {
             Table buttons = Vars.ui.join.buttons;
-            buttons.button(i("加载回放文件"), Icon.file, () -> {
-                FileChooser.setLastDirectory(saveDirectory);
-                platform.showFileChooser(true, i("打开回放文件"), "mrep", f -> Core.app.post(() -> ReplayController.startPlay(f)));
-            });
             buttons.button(i("回放管理器"), Icon.file, ReplayController::showManagerDialog);
         }
         {
@@ -101,19 +96,11 @@ public class ReplayController{
     //replay
 
     public static void startPlay(Fi input){
-        startPlay(input, false);
-    }
-
-    public static void startPlay(Fi input, boolean reopenManager){
-        reopenManagerOnStop = reopenManager;
         try{
             reader = new ReplayData.Reader(input);
             Log.infoTag("Replay", reader.getMeta().toString());
         }catch(Exception e){
             Core.app.post(() -> ui.showException(i("读取回放失败!"), e));
-            if(reopenManagerOnStop){
-                Core.app.post(ReplayController::showManagerDialog);
-            }
             return;
         }
 
@@ -170,10 +157,6 @@ public class ReplayController{
         ui.loadfrag.hide();
         Core.app.post(() -> {
             logic.reset();
-            if(reopenManagerOnStop){
-                showManagerDialog();
-            }
-            reopenManagerOnStop = false;
         });
     }
 
