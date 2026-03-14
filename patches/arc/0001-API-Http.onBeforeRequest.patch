@@ -11,15 +11,7 @@ diff --git a/arc-core/src/arc/util/Http.java b/arc-core/src/arc/util/Http.java
 index 5be2d92ebc01f37351cc60c2b5c6f9296dabbc5b..a6e85108fb7feb7bb143f6dbbd6f2aff9cd4fdb3 100644
 --- a/arc-core/src/arc/util/Http.java
 +++ b/arc-core/src/arc/util/Http.java
-@@ -6,6 +6,7 @@ import arc.util.io.*;
- 
- import java.io.*;
- import java.net.*;
-+import java.nio.charset.StandardCharsets;
- import java.util.*;
- import java.util.concurrent.*;
- 
-@@ -54,15 +55,52 @@ public class Http{
+@@ -54,15 +55,40 @@ public class Http{
      public static class HttpResponse{
          private final HttpURLConnection connection;
          private HttpStatus status;
@@ -39,29 +31,6 @@ index 5be2d92ebc01f37351cc60c2b5c6f9296dabbc5b..a6e85108fb7feb7bb143f6dbbd6f2aff
 +        public static HttpResponse ofBytes(int statusCode, byte[] result){
 +            return new HttpResponse(HttpStatus.byCode(statusCode), result);
 +        }
-+
-+        private byte[] ensureResultBytes(){
-+            if(cachedResult != null) return cachedResult;
-+            if(connection == null) return cachedResult = Streams.emptyBytes;
-+
-+            InputStream input;
-+            try{
-+                input = connection.getInputStream();
-+            }catch(IOException e){
-+                input = connection.getErrorStream();
-+            }
-+            if(input == null) return cachedResult = Streams.emptyBytes;
-+
-+            try{
-+                cachedResult = Streams.copyBytes(input, connection.getContentLength());
-+                return cachedResult;
-+            }catch(IOException e){
-+                return cachedResult = Streams.emptyBytes;
-+            }finally{
-+                Streams.close(input);
-+            }
-+        }
-+
          /** @return the length of received content in bytes as a long. May throw an exception (?) */
          public long getContentLength(){
 -            return connection.getContentLength();
@@ -88,11 +57,27 @@ index 5be2d92ebc01f37351cc60c2b5c6f9296dabbc5b..a6e85108fb7feb7bb143f6dbbd6f2aff
 -            }finally{
 -                Streams.close(input);
 -            }
-+            return ensureResultBytes();
++            if(cachedResult != null) return cachedResult;
++            if(connection == null) return cachedResult = Streams.emptyBytes;
++
++            InputStream input = getResultAsStream();
++
++            // If the response does not contain any content, input will be null.
++            if(input == null){
++                return cachedResult = Streams.emptyBytes;
++            }
++
++            try{
++                return cachedResult = Streams.copyBytes(input, connection.getContentLength());
++            }catch(IOException e){
++                return cachedResult = Streams.emptyBytes;
++            }finally{
++                Streams.close(input);
++            }
          }
  
          /**
-@@ -99,20 +124,7 @@ public class Http{
+@@ -99,20 +124,10 @@ public class Http{
           * timeout is specified when creating the HTTP request, with {@link HttpRequest#timeout(int)}
           */
          public String getResultAsString(){
@@ -110,7 +95,17 @@ index 5be2d92ebc01f37351cc60c2b5c6f9296dabbc5b..a6e85108fb7feb7bb143f6dbbd6f2aff
 -            }finally{
 -                Streams.close(input);
 -            }
-+            return new String(ensureResultBytes(), StandardCharsets.UTF_8);
++            if(cachedResult != null) return new String(cachedResult);
++            if(connection == null) return "";
++            InputStream input = getResultAsStream();
++            if(input == null) return "";
++            try{
++                return Streams.copyString(input, connection.getContentLength());
++            }catch(IOException e){
++                return "";
++            }finally{
++                Streams.close(input);
++            }
          }
  
          /**

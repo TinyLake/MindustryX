@@ -21,7 +21,6 @@ public class Hooks implements ApplicationListener{
         SettingsV2.INSTANCE.init();
         DebugUtil.init();//this is safe, and better at beforeInit,
         BindingExt.init();
-        GithubAcceleration.INSTANCE.init();
         Http.onBeforeRequest = req -> GithubAcceleration.beforeRequest(req);
         Events.on(ClientLoadEvent.class, (e) -> MetricCollector.INSTANCE.onLaunch());
         //deprecated Java 8
