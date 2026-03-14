@@ -269,7 +269,6 @@ object ShareFeature {
         val sourceType = match.groupValues[1]
         val baseUrl = match.groupValues[2]
         val id = match.groupValues[3]
-        val key = match.groupValues.getOrNull(4)?.takeIf { it.isNotBlank() }
 
         PastebinShare.download(
             sourceType = sourceType,

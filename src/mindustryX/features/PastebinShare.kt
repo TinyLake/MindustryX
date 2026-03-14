@@ -12,6 +12,7 @@ import mindustryX.VarsX
 import java.net.URL
 import java.net.URLEncoder
 import java.nio.charset.StandardCharsets
+import java.util.UUID
 
 object PastebinShare {
     private const val typePastebin = "pastebin"
@@ -21,12 +22,12 @@ object PastebinShare {
     private var preferredSourceId = 0
 
     data class Source(
-        var id: Int,
-        var name: String,
-        var baseUrl: String,
-        var enabled: Boolean,
-        var type: String,
-        var expire: String
+        val id: Int,
+        val name: String,
+        val baseUrl: String,
+        val enabled: Boolean,
+        val type: String,
+        val expire: String
     ) {
         constructor() : this(0, "", "https://pastebin.com", true, typePastebin, "10M")
 
@@ -254,10 +255,11 @@ object PastebinShare {
     ) {
         val baseUrl = source.normalizedBaseUrl()
         val expire = source.normalizedExpire()
-        val boundary = "----MindustryX${System.currentTimeMillis()}"
+        val timestamp = System.currentTimeMillis()
+        val boundary = "----MindustryX${UUID.randomUUID()}"
         val body = buildString {
             append("--").append(boundary).append("\r\n")
-            append("Content-Disposition: form-data; name=\"file\"; filename=\"schematic-").append(System.currentTimeMillis()).append(".txt\"\r\n")
+            append("Content-Disposition: form-data; name=\"file\"; filename=\"schematic-").append(timestamp).append(".txt\"\r\n")
             append("Content-Type: text/plain; charset=UTF-8\r\n\r\n")
             append(content).append("\r\n")
 
