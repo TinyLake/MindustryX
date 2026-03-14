@@ -79,4 +79,4 @@ bash ./scripts/genPatches.sh
 - 交付时如果同时涉及展开源码与生成补丁，应同时检查 `work/`/`Arc/` 中的实际修改点，以及根目录 `patches/` 的生成结果。
 
 ## 命令约定
-- 在 Windows 上优先使用 PowerShell 7（`pwsh`）执行日常命令；需要运行仓库脚本时显式调用 `bash`.
+- 在 Windows 上优先使用 PowerShell 7（`pwsh`）执行日常命令；需要运行仓库脚本时显式调用 `bash`。
