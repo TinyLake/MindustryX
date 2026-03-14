@@ -33,6 +33,9 @@ import mindustryX.features.ui.FormatDefault.format
 import mindustryX.features.ui.comp.GridTable
 
 object ShareFeature {
+    @Suppress("unused")
+    private val pastebinShare = PastebinShare
+
     private fun tag(icon: Char) = "<MDTX $icon>"
 
     @JvmStatic
@@ -47,30 +50,15 @@ object ShareFeature {
 
     @JvmStatic
     fun shareSchematic(s: Schematic?) {
-        uploadPasteBin(Vars.schematics.writeBase64(s)) { url ->
-            if (url == null) return@uploadPasteBin
-            val code = url.substring(url.lastIndexOf('/') + 1)
-            send(Iconc.paste, "<ARCxMDTX><Schem>[black]一坨兼容[] $code")
-        }
-    }
-
-    private fun uploadPasteBin(content: String, callback: (String?) -> Unit) {
-        val req = Http.post("https://pastebin.com/api/api_post.php", "api_dev_key=sdBDjI5mWBnHl9vBEDMNiYQ3IZe0LFEk&api_option=paste&api_paste_expire_date=10M&api_paste_code=$content")
-        req.submit { res ->
-            val code = res!!.getResultAsString()
-            Core.app.post { callback(code) }
-        }
-        req.error {
-            Core.app.post {
-                Vars.ui.showException(i("上传失败，再重试一下？"), it)
-                Core.app.post { callback(null) }
-            }
+        PastebinShare.upload(Vars.schematics.writeBase64(s)) { shareLink ->
+            if (shareLink == null) return@upload
+            send(if (shareLink.useLegacyMessage()) Iconc.paste else Iconc.link, shareLink.chatPayload())
         }
     }
 
     @JvmStatic
     fun shareSchematicClipboard(schem: Schematic) {
-        uploadPasteBin(Vars.schematics.writeBase64(schem)) { link: String? ->
+        PastebinShare.upload(Vars.schematics.writeBase64(schem)) { shareLink ->
             val msg = VarsX.bundle.shareSchematic(
                 name = schem.name(),
                 playerName = Vars.player.name,
@@ -93,7 +81,7 @@ object ShareFeature {
                         append("-").append(Strings.autoFixed(cons, 2))
                     }
                 },
-                link = link, code = Vars.schematics.writeBase64(schem)
+                link = shareLink?.link, code = Vars.schematics.writeBase64(schem)
             )
             Core.app.setClipboardText(Strings.stripColors(msg))
             UIExt.announce(i("已保存至剪贴板"))
@@ -273,6 +261,30 @@ object ShareFeature {
         return true
     }
 
+    private val schematicV2Pattern = Regex("""<SchemV2>\s+(\S+)\s+(\S+)\s+(\S+)(?:\s+(\S+))?""")
+    private fun resolveSchematicShareV2(message: String, sender: Player?): Boolean {
+        if (!ArcOld.schematicShare.get()) return false
+
+        val match = schematicV2Pattern.find(message) ?: return false
+        val sourceType = match.groupValues[1]
+        val baseUrl = match.groupValues[2]
+        val id = match.groupValues[3]
+        val key = match.groupValues.getOrNull(4)?.takeIf { it.isNotBlank() }
+
+        PastebinShare.download(
+            sourceType = sourceType,
+            baseUrl = baseUrl,
+            id = id,
+            key = key,
+            callback = { content ->
+                runCatching { Vars.ui.schematics.readShare(content, sender) }
+                    .onFailure { Log.err("Fail read schematic share v2: ", it) }
+            },
+            failed = { Log.err("Fail fetch schematic share v2: ", it) }
+        )
+        return true
+    }
+
     private val posPattern = Regex("\\((\\d+),(\\d+)\\)")
     private fun resolvePositionShare(message: String): Vec2? {
         val match = posPattern.find(message) ?: return null
@@ -291,6 +303,7 @@ object ShareFeature {
                 ArcMessageDialog.Msg(ArcMessageDialog.Type.markPlayer, message, sender).add()
             }
 
+            resolveSchematicShareV2(message, sender) -> {}
             resolveSchematicShare(message, sender) -> {}
             else -> {
                 if (sender == null) {
