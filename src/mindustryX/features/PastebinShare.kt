@@ -462,6 +462,10 @@ object PastebinShare {
     private object PrivateBinCodec {
         data class EncryptedPaste(val requestJson: String, val passcode: String)
 
+        init {
+            runSelfCheck()
+        }
+
         fun encrypt(content: String, expire: String): EncryptedPaste {
             val iv = ByteArray(privateBinTagBytes).also(secureRandom::nextBytes)
             val salt = ByteArray(privateBinSaltBytes).also(secureRandom::nextBytes)
@@ -542,6 +546,30 @@ object PastebinShare {
                 }
             }
             return output.copyOf(length)
+        }
+
+        // PrivateBin compatibility depends on these low-level helpers being byte-exact.
+        private fun runSelfCheck() {
+            val password = hexToBytes("000102030405060708090a0b0c0d0e0f101112131415161718191a1b1c1d1e1f")
+            val salt = hexToBytes("0001020304050607")
+            check(
+                pbkdf2Sha256(password, salt, privateBinIterations, privateBinKeyBytes)
+                    .contentEquals(hexToBytes("0c22cef0bac57e3665d31565b9bbd940a6c110f0b11945d1cb6c6520cec59d4f"))
+            ) { "PrivateBin PBKDF2 self-check failed" }
+
+            check(Base58.encode(password) == "1thX6LZfHDZZKUs92febYZhYRcXddmzfzF2NvTkPNE") {
+                "PrivateBin Base58 encode self-check failed"
+            }
+            check(Base58.decode("112VfUX").contentEquals(hexToBytes("000001020304"))) {
+                "PrivateBin Base58 decode self-check failed"
+            }
+        }
+
+        private fun hexToBytes(hex: String): ByteArray {
+            require(hex.length % 2 == 0) { "Invalid hex length" }
+            return ByteArray(hex.length / 2) { index ->
+                hex.substring(index * 2, index * 2 + 2).toInt(16).toByte()
+            }
         }
     }
 
