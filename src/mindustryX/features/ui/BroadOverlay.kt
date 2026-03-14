@@ -24,6 +24,7 @@ object BroadOverlay {
 
     private var content = ""
     private var updatedAt = 0L
+    private var formattedUpdatedAt = ""
     private lateinit var window: OverlayUI.Window
 
     init {
@@ -47,6 +48,7 @@ object BroadOverlay {
 
         content = message.removePrefix(prefix).trimStart().trimEnd()
         updatedAt = System.currentTimeMillis()
+        formattedUpdatedAt = timeFormat.format(Date(updatedAt))
         UIExt.arcMessageDialog.addMsg(ArcMessageDialog.Msg(ArcMessageDialog.Type.serverMsg, content))
 
         if (!window.data.enabled && !window.data.pinned && window.data.value.center == null) {
@@ -62,14 +64,12 @@ object BroadOverlay {
 
     fun displayContent(): String = content
 
-    fun displayUpdatedAt(): String {
-        if (updatedAt == 0L) return ""
-        return timeFormat.format(Date(updatedAt))
-    }
+    fun displayUpdatedAt(): String = formattedUpdatedAt
 
     private fun clear() {
         content = ""
         updatedAt = 0L
+        formattedUpdatedAt = ""
         if (::window.isInitialized) {
             window.updateVisibility()
         }
