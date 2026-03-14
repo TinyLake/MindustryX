@@ -275,7 +275,6 @@ object ShareFeature {
             sourceType = sourceType,
             baseUrl = baseUrl,
             id = id,
-            key = key,
             callback = { content ->
                 runCatching { Vars.ui.schematics.readShare(content, sender) }
                     .onFailure { Log.err("Fail read schematic share v2: ", it) }

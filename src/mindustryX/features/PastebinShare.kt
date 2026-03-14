@@ -5,36 +5,19 @@ import arc.scene.ui.CheckBox
 import arc.scene.ui.TextButton
 import arc.scene.ui.layout.Table
 import arc.util.Http
-import arc.util.Log
-import arc.util.serialization.Jval
 import mindustry.Vars
 import mindustry.gen.Icon
 import mindustry.ui.Styles
+import mindustryX.VarsX
 import java.net.URL
 import java.net.URLEncoder
-import java.nio.ByteBuffer
 import java.nio.charset.StandardCharsets
-import java.security.SecureRandom
-import java.util.Base64
-import javax.crypto.Cipher
-import javax.crypto.Mac
-import javax.crypto.spec.GCMParameterSpec
-import javax.crypto.spec.SecretKeySpec
 
 object PastebinShare {
     private const val typePastebin = "pastebin"
-    private const val typePrivateBin = "privatebin"
+    private const val typeDirect = "direct"
     private const val pastebinDevKey = "sdBDjI5mWBnHl9vBEDMNiYQ3IZe0LFEk"
-    private const val privateBinRequestedWith = "JSONHttpRequest"
-    private const val privateBinIterations = 100000
-    private const val privateBinKeyBits = 256
-    private const val privateBinKeyBytes = privateBinKeyBits / 8
-    private const val privateBinTagBits = 128
-    private const val privateBinTagBytes = privateBinTagBits / 8
-    private const val privateBinSaltBytes = 8
-    private val secureRandom = SecureRandom()
-    private val base64 = Base64.getEncoder()
-    private val base64Decoder = Base64.getDecoder()
+    private const val directUploadUserAgent = "MindustryX-schematic-share"
     private var preferredSourceId = 0
 
     data class Source(
@@ -65,8 +48,7 @@ object PastebinShare {
     data class ShareLink(
         val source: Source,
         val id: String,
-        val link: String,
-        val key: String? = null
+        val link: String
     ) {
         val baseUrl: String get() = source.normalizedBaseUrl()
         val sourceType: String get() = source.normalizedType()
@@ -77,15 +59,7 @@ object PastebinShare {
             return if (useLegacyMessage()) {
                 "<ARCxMDTX><Schem>[black]一坨兼容[] $id"
             } else {
-                buildString {
-                    append("<ARCxMDTX><SchemV2> ")
-                    append(sourceType).append(' ')
-                    append(baseUrl).append(' ')
-                    append(id)
-                    key?.takeIf { it.isNotBlank() }?.let {
-                        append(' ').append(it)
-                    }
-                }
+                "<ARCxMDTX><SchemV2> $sourceType $baseUrl $id"
             }
         }
     }
@@ -170,7 +144,7 @@ object PastebinShare {
                         val nextId = (value.maxOfOrNull { it.id } ?: -1) + 1
                         set(value + Source(nextId, "新分享源", "https://", true, typePastebin, "10M"))
                     }.colspan(columns).fillX().row()
-                    add("[yellow]修改后请点击保存图标，PrivateBin 需携带解密 key").colspan(columns).center().padTop(-4f).row()
+                    add("[yellow]0x0.st 直链更稳定，但仍是公共文件托管服务").colspan(columns).center().padTop(-4f).row()
                 }
             }) { shown }.growX()
             root.row()
@@ -195,12 +169,11 @@ object PastebinShare {
         sourceType: String,
         baseUrl: String,
         id: String,
-        key: String?,
         callback: (String) -> Unit,
         failed: (Throwable) -> Unit
     ) {
         when (normalizeType(sourceType)) {
-            typePrivateBin -> downloadPrivateBin(baseUrl, id, key, callback, failed)
+            typeDirect -> downloadDirect(baseUrl, id, callback, failed)
             else -> downloadPastebinLike(baseUrl, id, callback, failed)
         }
     }
@@ -234,8 +207,8 @@ object PastebinShare {
             tryUpload(candidates, index + 1, content, failures, callback)
         }
 
-        if (source.normalizedType() == typePrivateBin) {
-            uploadPrivateBin(source, content, callback, onFailure)
+        if (source.normalizedType() == typeDirect) {
+            uploadDirectHost(source, content, callback, onFailure)
         } else {
             uploadPastebinLike(source, content, callback, onFailure)
         }
@@ -273,7 +246,7 @@ object PastebinShare {
             }
     }
 
-    private fun uploadPrivateBin(
+    private fun uploadDirectHost(
         source: Source,
         content: String,
         callback: (ShareLink?) -> Unit,
@@ -281,40 +254,41 @@ object PastebinShare {
     ) {
         val baseUrl = source.normalizedBaseUrl()
         val expire = source.normalizedExpire()
-        val encrypted = runCatching { PrivateBinCodec.encrypt(content, expire) }
-            .getOrElse {
-                failed(it.message ?: it.toString())
-                return
+        val boundary = "----MindustryX${System.currentTimeMillis()}"
+        val body = buildString {
+            append("--").append(boundary).append("\r\n")
+            append("Content-Disposition: form-data; name=\"file\"; filename=\"schematic-").append(System.currentTimeMillis()).append(".txt\"\r\n")
+            append("Content-Type: text/plain; charset=UTF-8\r\n\r\n")
+            append(content).append("\r\n")
+
+            append("--").append(boundary).append("\r\n")
+            append("Content-Disposition: form-data; name=\"secret\"\r\n\r\n")
+            append("1\r\n")
+
+            if (expire.isNotBlank()) {
+                append("--").append(boundary).append("\r\n")
+                append("Content-Disposition: form-data; name=\"expires\"\r\n\r\n")
+                append(expire).append("\r\n")
             }
 
+            append("--").append(boundary).append("--\r\n")
+        }
+
         Http.post(baseUrl)
-            .header("Content-Type", "application/json")
-            .header("X-Requested-With", privateBinRequestedWith)
-            .content(encrypted.requestJson)
-            .timeout(10000)
+            .header("Content-Type", "multipart/form-data; boundary=$boundary")
+            .header("User-Agent", "$directUploadUserAgent/${VarsX.version}")
+            .content(body)
+            .timeout(15000)
             .error { failed(extractHttpError(it)) }
             .submit { res ->
-                val raw = res.resultAsString
-                val id = runCatching {
-                    val json = Jval.read(raw)
-                    if (json.getInt("status", -1) != 0) error(json.getString("message", "PrivateBin 返回失败"))
-                    json.getString("id", "").takeIf { it.isNotBlank() } ?: error("PrivateBin 未返回 id")
-                }.getOrElse {
-                    failed(it.message ?: it.toString())
+                val raw = res.resultAsString.trim()
+                val shareLink = parseDirectResponse(source, raw)
+                if (shareLink == null) {
+                    failed(raw.ifBlank { "返回内容为空" })
                     return@submit
                 }
-
                 preferredSourceId = source.id
-                Core.app.post {
-                    callback(
-                        ShareLink(
-                            source = source,
-                            id = id,
-                            link = "$baseUrl/?$id#${encrypted.passcode}",
-                            key = encrypted.passcode
-                        )
-                    )
-                }
+                Core.app.post { callback(shareLink) }
             }
     }
 
@@ -333,29 +307,17 @@ object PastebinShare {
             }
     }
 
-    private fun downloadPrivateBin(
+    private fun downloadDirect(
         baseUrl: String,
         id: String,
-        key: String?,
         callback: (String) -> Unit,
         failed: (Throwable) -> Unit
     ) {
-        if (key.isNullOrBlank()) {
-            failed(IllegalArgumentException("PrivateBin 分享缺少解密 key"))
-            return
-        }
-
-        Http.get("${normalizeBaseUrl(baseUrl)}/?pasteid=$id")
-            .header("X-Requested-With", privateBinRequestedWith)
+        Http.get("${normalizeBaseUrl(baseUrl)}/$id")
             .timeout(10000)
             .error(failed)
             .submit { res ->
-                val content = runCatching {
-                    PrivateBinCodec.decrypt(res.resultAsString, key).replace(" ", "+")
-                }.getOrElse {
-                    failed(it)
-                    return@submit
-                }
+                val content = res.resultAsString.replace(" ", "+")
                 Core.app.post { callback(content) }
             }
     }
@@ -372,6 +334,14 @@ object PastebinShare {
 
         val baseUrl = source.normalizedBaseUrl()
         return ShareLink(source, id, "$baseUrl/$id")
+    }
+
+    private fun parseDirectResponse(source: Source, raw: String): ShareLink? {
+        if (!raw.startsWith("http://") && !raw.startsWith("https://")) return null
+
+        val url = runCatching { URL(raw) }.getOrNull() ?: return null
+        val path = url.path.trim('/').takeIf { it.isNotBlank() } ?: return null
+        return ShareLink(source, path, raw)
     }
 
     private fun orderedEnabledSources(): List<Source> {
@@ -401,18 +371,18 @@ object PastebinShare {
 
     private fun defaults(): List<Source> = listOf(
         Source(0, "pastebin.com", "https://pastebin.com", true, typePastebin, "10M"),
-        Source(1, "PrivateBin 备用", "https://8.136.36.61:8080/", true, typePrivateBin, "1day")
+        Source(1, "0x0.st 备用", "https://0x0.st", true, typeDirect, "24")
     )
 
-    private fun nextType(type: String): String = if (normalizeType(type) == typePastebin) typePrivateBin else typePastebin
+    private fun nextType(type: String): String = if (normalizeType(type) == typePastebin) typeDirect else typePastebin
 
     private fun typeLabel(type: String): String = when (normalizeType(type)) {
-        typePrivateBin -> "PrivateBin"
+        typeDirect -> "0x0.st"
         else -> "Pastebin"
     }
 
     private fun defaultExpire(type: String): String = when (normalizeType(type)) {
-        typePrivateBin -> "1day"
+        typeDirect -> "24"
         else -> "10M"
     }
 
@@ -422,7 +392,7 @@ object PastebinShare {
     }
 
     private fun normalizeType(type: String): String {
-        return if (type.equals(typePrivateBin, ignoreCase = true)) typePrivateBin else typePastebin
+        return if (type.equals(typeDirect, ignoreCase = true)) typeDirect else typePastebin
     }
 
     private fun normalizeBaseUrl(raw: String): String {
@@ -457,195 +427,5 @@ object PastebinShare {
             }
         }
         return error.message ?: error.toString()
-    }
-
-    private object PrivateBinCodec {
-        data class EncryptedPaste(val requestJson: String, val passcode: String)
-
-        init {
-            runSelfCheck()
-        }
-
-        fun encrypt(content: String, expire: String): EncryptedPaste {
-            val iv = ByteArray(privateBinTagBytes).also(secureRandom::nextBytes)
-            val salt = ByteArray(privateBinSaltBytes).also(secureRandom::nextBytes)
-            val passphrase = ByteArray(privateBinKeyBytes).also(secureRandom::nextBytes)
-            val adata = buildAdata(iv, salt)
-            val derivedKey = deriveKey(passphrase, salt)
-            val plaintext = Jval.newObject().put("paste", content).toString().toByteArray(StandardCharsets.UTF_8)
-            val encrypted = crypt(Cipher.ENCRYPT_MODE, derivedKey, iv, adata.toString(), plaintext)
-            val json = Jval.newObject()
-                .put("v", 2)
-                .put("ct", base64.encodeToString(encrypted))
-                .put("adata", adata)
-                .put("meta", Jval.newObject().put("expire", expire))
-                .toString()
-            return EncryptedPaste(json, Base58.encode(passphrase))
-        }
-
-        fun decrypt(raw: String, passcode: String): String {
-            val json = Jval.read(raw)
-            if (json.getInt("status", 0) != 0) error(json.getString("message", "PrivateBin 返回失败"))
-
-            val adata = json.get("adata")
-            val params = adata.asArray().get(0).asArray()
-            val iv = base64Decoder.decode(params.get(0).asString())
-            val salt = base64Decoder.decode(params.get(1).asString())
-            val compression = params.get(7).asString()
-            require(compression == "none") { "不支持的 PrivateBin 压缩方式: $compression" }
-
-            val derivedKey = deriveKey(Base58.decode(passcode), salt)
-            val encrypted = base64Decoder.decode(json.getString("ct", ""))
-            val decrypted = crypt(Cipher.DECRYPT_MODE, derivedKey, iv, adata.toString(), encrypted)
-            return Jval.read(String(decrypted, StandardCharsets.UTF_8)).getString("paste", "")
-        }
-
-        private fun buildAdata(iv: ByteArray, salt: ByteArray): Jval {
-            return Jval.newArray()
-                .add(
-                    Jval.newArray()
-                        .add(base64.encodeToString(iv))
-                        .add(base64.encodeToString(salt))
-                        .add(privateBinIterations)
-                        .add(privateBinKeyBits)
-                        .add(privateBinTagBits)
-                        .add("aes")
-                        .add("gcm")
-                        .add("none")
-                )
-                .add("plaintext")
-                .add(0)
-                .add(0)
-        }
-
-        private fun deriveKey(passphrase: ByteArray, salt: ByteArray): ByteArray {
-            return pbkdf2Sha256(passphrase, salt, privateBinIterations, privateBinKeyBytes)
-        }
-
-        private fun crypt(mode: Int, key: ByteArray, iv: ByteArray, aad: String, input: ByteArray): ByteArray {
-            val cipher = Cipher.getInstance("AES/GCM/NoPadding")
-            cipher.init(mode, SecretKeySpec(key, "AES"), GCMParameterSpec(privateBinTagBits, iv))
-            cipher.updateAAD(aad.toByteArray(StandardCharsets.UTF_8))
-            return cipher.doFinal(input)
-        }
-
-        private fun pbkdf2Sha256(password: ByteArray, salt: ByteArray, iterations: Int, length: Int): ByteArray {
-            val mac = Mac.getInstance("HmacSHA256")
-            mac.init(SecretKeySpec(password, "HmacSHA256"))
-
-            val block = ByteBuffer.allocate(salt.size + 4)
-                .put(salt)
-                .putInt(1)
-                .array()
-            var u = mac.doFinal(block)
-            val output = u.copyOf()
-            repeat(iterations - 1) {
-                u = mac.doFinal(u)
-                for (i in output.indices) {
-                    output[i] = (output[i].toInt() xor u[i].toInt()).toByte()
-                }
-            }
-            return output.copyOf(length)
-        }
-
-        // PrivateBin compatibility depends on these low-level helpers being byte-exact.
-        private fun runSelfCheck() {
-            val password = hexToBytes("000102030405060708090a0b0c0d0e0f101112131415161718191a1b1c1d1e1f")
-            val salt = hexToBytes("0001020304050607")
-            check(
-                pbkdf2Sha256(password, salt, privateBinIterations, privateBinKeyBytes)
-                    .contentEquals(hexToBytes("0c22cef0bac57e3665d31565b9bbd940a6c110f0b11945d1cb6c6520cec59d4f"))
-            ) { "PrivateBin PBKDF2 self-check failed" }
-
-            check(Base58.encode(password) == "1thX6LZfHDZZKUs92febYZhYRcXddmzfzF2NvTkPNE") {
-                "PrivateBin Base58 encode self-check failed"
-            }
-            check(Base58.decode("112VfUX").contentEquals(hexToBytes("000001020304"))) {
-                "PrivateBin Base58 decode self-check failed"
-            }
-        }
-
-        private fun hexToBytes(hex: String): ByteArray {
-            require(hex.length % 2 == 0) { "Invalid hex length" }
-            return ByteArray(hex.length / 2) { index ->
-                hex.substring(index * 2, index * 2 + 2).toInt(16).toByte()
-            }
-        }
-    }
-
-    private object Base58 {
-        private const val alphabet = "123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz"
-        private val indexes = IntArray(128) { -1 }.also { table ->
-            alphabet.forEachIndexed { index, c -> table[c.code] = index }
-        }
-
-        fun encode(input: ByteArray): String {
-            if (input.isEmpty()) return ""
-
-            var zeros = 0
-            while (zeros < input.size && input[zeros].toInt() == 0) zeros++
-
-            val encoded = CharArray(input.size * 2)
-            val copy = input.copyOf()
-            var outputStart = encoded.size
-            var startAt = zeros
-            while (startAt < copy.size) {
-                val mod = divmod58(copy, startAt)
-                if (copy[startAt].toInt() == 0) startAt++
-                encoded[--outputStart] = alphabet[mod]
-            }
-            while (outputStart < encoded.size && encoded[outputStart] == alphabet[0]) outputStart++
-            repeat(zeros) { encoded[--outputStart] = alphabet[0] }
-            return String(encoded, outputStart, encoded.size - outputStart)
-        }
-
-        fun decode(input: String): ByteArray {
-            if (input.isEmpty()) return ByteArray(0)
-
-            val input58 = ByteArray(input.length)
-            input.forEachIndexed { index, c ->
-                val value = if (c.code < indexes.size) indexes[c.code] else -1
-                require(value >= 0) { "非法的 PrivateBin key" }
-                input58[index] = value.toByte()
-            }
-
-            var zeros = 0
-            while (zeros < input58.size && input58[zeros].toInt() == 0) zeros++
-
-            val decoded = ByteArray(input.length)
-            var outputStart = decoded.size
-            var startAt = zeros
-            while (startAt < input58.size) {
-                val mod = divmod256(input58, startAt)
-                if (input58[startAt].toInt() == 0) startAt++
-                decoded[--outputStart] = mod.toByte()
-            }
-            while (outputStart < decoded.size && decoded[outputStart].toInt() == 0) outputStart++
-            return ByteArray(decoded.size - outputStart + zeros).also { result ->
-                decoded.copyInto(result, zeros, outputStart, decoded.size)
-            }
-        }
-
-        private fun divmod58(number: ByteArray, startAt: Int): Int {
-            var remainder = 0
-            for (i in startAt until number.size) {
-                val digit = number[i].toInt() and 0xff
-                val temp = remainder * 256 + digit
-                number[i] = (temp / 58).toByte()
-                remainder = temp % 58
-            }
-            return remainder
-        }
-
-        private fun divmod256(number58: ByteArray, startAt: Int): Int {
-            var remainder = 0
-            for (i in startAt until number58.size) {
-                val digit = number58[i].toInt() and 0xff
-                val temp = remainder * 58 + digit
-                number58[i] = (temp / 256).toByte()
-                remainder = temp % 256
-            }
-            return remainder
-        }
     }
 }
