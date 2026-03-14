@@ -274,7 +274,7 @@ object SettingsV2 {
             BaseDialog("$title / ${Core.bundle.get("settingV2.shortcut")}").apply {
                 cont.defaults().minWidth(180f).fillX().pad(4f)
                 cont.add(title).color(Pal.accent).wrap().growX().row()
-                cont.label { shortcutName() }.wrap().left().growX().row()
+                cont.label { shortcutName() }.wrap().left().growX().update { it.setText(shortcutName()) }.row()
                 cont.button("@settings.rebind", Styles.grayt) {
                     KeybindDialog.showRebindDialog(shortcutBind)
                 }.growX().row()
@@ -283,12 +283,12 @@ object SettingsV2 {
                     ShortcutMode.entries.forEach { mode ->
                         modes.button(Core.bundle.get(mode.bundleKey), Styles.flatTogglet) {
                             setShortcutMode(mode)
-                        }.checked { ensureShortcutMode() == mode }
+                        }.update { it.isChecked = ensureShortcutMode() == mode }
                     }
                 }.growX().row()
                 cont.button("@settingV2.shortcut.unbind", Styles.grayt) {
                     clearShortcut()
-                }.disabled { !hasShortcut() }.growX().row()
+                }.update { it.isDisabled = !hasShortcut() }.growX().row()
                 addCloseButton()
                 show()
             }
@@ -297,7 +297,7 @@ object SettingsV2 {
         override fun Table.addShortcutTool() {
             val shortcutButton = button(Icon.commandRallySmall, shortcutButtonStyle, Vars.iconSmall) {
                 KeybindDialog.showRebindDialog(shortcutBind)
-            }.tooltip("@settingV2.shortcut").padLeft(4f).checked { hasShortcut() }.get()
+            }.tooltip("@settingV2.shortcut").padLeft(4f).update { it.isChecked = hasShortcut() }.get()
             shortcutButton.addListener(object : ClickListener(KeyCode.mouseRight) {
                 override fun clicked(event: InputEvent, x: Float, y: Float) {
                     super.clicked(event, x, y)
