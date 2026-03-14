@@ -11,7 +11,9 @@ import mindustry.gen.*;
 import mindustry.game.EventType.*;
 import mindustry.ui.*;
 import mindustry.ui.dialogs.*;
+import mindustryX.*;
 import mindustryX.features.*;
+import mindustryX.features.ui.comp.*;
 
 import java.time.*;
 import java.time.format.*;
@@ -19,136 +21,96 @@ import java.util.*;
 import java.util.concurrent.*;
 
 import static mindustry.Vars.*;
+import static mindustryX.features.UIExt.i;
 
 public class ReplayManagerDialog extends BaseDialog{
     private static final DateTimeFormatter dateFormat = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
     private static final ReplayMeta unreadableMeta = new ReplayMeta(false, null, "", "", 0);
-    private static final float minPaneWidth = 360f;
+    private static final float minCardWidth = 360f;
     private static final float minPaneHeight = 340f;
-    private static final float compactToolbarWidth = 540f;
-    private static final float compactItemWidth = 460f;
 
-    private final Table tools = new Table();
-    private final Table list = new Table();
+    private final GridTable list = new GridTable();
     private final ScrollPane pane = new ScrollPane(list, Styles.noBarPane);
     private final Seq<Fi> replayFiles = new Seq<>();
-    private final Map<String, ReplayMeta> metaCache = new ConcurrentHashMap<>();
-    private final Set<String> loadingMeta = ConcurrentHashMap.newKeySet();
+    private final ObjectMap<String, ReplayMeta> metaCache = new ObjectMap<>();
+    private final ObjectSet<String> loadingMeta = new ObjectSet<>();
     private final ExecutorService metaLoader = Threads.executor("Replay Meta Loader", 1);
 
     private boolean rebuildPosted;
-    private boolean compactToolbar;
-    private boolean compactItems;
+    private boolean portraitLayout;
     private String search;
     private String searchText = "";
     private TextField searchField;
-    private Cell<Table> toolsCell;
-    private Cell<ScrollPane> paneCell;
 
     public ReplayManagerDialog(){
-        super("回放管理器");
+        super(i("回放管理器"));
+
+        pane.setFadeScrollBars(false);
+        pane.setScrollingDisabled(true, false);
+        list.top().left().margin(6f);
+        list.defaults().minWidth(minCardWidth).growX().pad(4f);
 
         Events.on(DisposeEvent.class, e -> metaLoader.shutdown());
 
-        setup();
         addCloseButton();
 
         shown(() -> {
             search = null;
-            if(searchField != null) searchField.setText("");
-            applyAdaptiveLayout();
+            searchText = "";
             refreshReplayFiles();
-            rebuildList();
+            rebuildLayout();
         });
-        onResize(() -> {
-            applyAdaptiveLayout();
-            rebuildList();
-        });
+        resized(this::rebuildLayout);
     }
 
-    private void setup(){
-        cont.clear();
+    private void rebuildLayout(){
+        portraitLayout = Core.graphics.isPortrait();
+
+        float availableWidth = Math.max(minCardWidth, Core.scene.getWidth() / Scl.scl() - 32f);
+        float availableHeight = Math.max(minPaneHeight, Core.scene.getHeight() / Scl.scl() - (mobile ? 110f : 140f));
+
+        cont.clearChildren();
+        cont.top();
         cont.defaults().growX();
 
-        toolsCell = cont.add(tools).growX();
-        cont.row();
+        buildToolbar();
+        cont.add(pane).width(availableWidth).height(availableHeight).growX().row();
 
-        pane.setFadeScrollBars(false);
-        pane.setScrollingDisabled(true, false);
-        list.margin(6f);
-        paneCell = cont.add(pane).growX().minWidth(minPaneWidth).minHeight(minPaneHeight);
-
-        rebuildToolbar();
-    }
-
-    private void applyAdaptiveLayout(){
-        if(paneCell == null) return;
-        float scaledWidth = Core.graphics.getWidth() / Scl.scl();
-        float scaledHeight = Core.graphics.getHeight() / Scl.scl();
-        float maxWidth = Math.max(minPaneWidth, scaledWidth - 28f);
-        float maxHeight = Math.max(minPaneHeight, scaledHeight - (mobile ? 110f : 140f));
-
-        boolean desktopLandscape = !mobile && scaledWidth > scaledHeight;
-        float widthRatio = mobile ? 0.94f : (desktopLandscape ? 0.78f : 0.72f);
-        float targetWidth = Math.max(minPaneWidth, Math.min(maxWidth, scaledWidth * widthRatio));
-
-        float heightRatio = mobile ? 0.78f : (desktopLandscape ? 0.72f : 0.74f);
-        float targetHeight = Math.max(minPaneHeight, Math.min(maxHeight, scaledHeight * heightRatio));
-
-        paneCell.width(targetWidth).height(targetHeight);
-
-        boolean compactToolbar = targetWidth <= compactToolbarWidth;
-        boolean compactItems = targetWidth <= compactItemWidth;
-        if(this.compactToolbar != compactToolbar){
-            this.compactToolbar = compactToolbar;
-            rebuildToolbar();
-        }
-        this.compactItems = compactItems;
         cont.invalidateHierarchy();
+        rebuildList();
     }
 
-    private void rebuildToolbar(){
-        if(toolsCell == null) return;
-
-        String currentText = searchField == null ? searchText : searchField.getText();
-        tools.clearChildren();
-        tools.left().top();
-
-        if(compactToolbar){
-            tools.defaults().growX().padBottom(8f);
-            tools.table(searchRow -> {
+    private void buildToolbar(){
+        if(portraitLayout){
+            cont.table(searchRow -> {
                 searchRow.defaults().height(46f);
                 searchRow.image(Icon.zoom).padRight(6f);
                 buildSearchField(searchRow);
             }).growX().row();
 
-            tools.table(buttonRow -> {
-                buttonRow.defaults().height(46f);
-                buttonRow.button("加载外部回放", Icon.upload, this::loadExternalReplay).growX().minWidth(0f).padRight(8f);
-                buttonRow.button(Icon.refresh, Styles.cleari, this::refreshAndRebuild).size(46f);
-            }).growX();
+            cont.table(actionRow -> {
+                actionRow.defaults().height(46f);
+                actionRow.button(i("加载外部回放"), Icon.upload, this::loadExternalReplay).growX();
+                actionRow.button(Icon.refresh, Styles.cleari, this::refreshAndRebuild).size(46f).padLeft(8f);
+            }).growX().padTop(8f).row();
         }else{
-            tools.defaults().height(46f);
-            tools.image(Icon.zoom).padRight(6f);
-            buildSearchField(tools);
-            tools.button("加载外部回放", Icon.upload, this::loadExternalReplay).minWidth(mobile ? 132f : 168f).padLeft(8f).padRight(8f);
-            tools.button(Icon.refresh, Styles.cleari, this::refreshAndRebuild).size(46f);
+            cont.table(toolbar -> {
+                toolbar.defaults().height(46f);
+                toolbar.image(Icon.zoom).padRight(6f);
+                buildSearchField(toolbar);
+                toolbar.button(i("加载外部回放"), Icon.upload, this::loadExternalReplay).padLeft(8f).padRight(8f);
+                toolbar.button(Icon.refresh, Styles.cleari, this::refreshAndRebuild).size(46f);
+            }).growX().row();
         }
-
-        if(!currentText.equals(searchText)) searchText = currentText;
-        if(searchField != null && !searchText.equals(searchField.getText())){
-            searchField.setText(searchText);
-            searchField.setCursorPosition(searchText.length());
-        }
-        tools.invalidateHierarchy();
     }
 
-    private void buildSearchField(Table parent){
-        searchField = parent.field(searchText, text -> {
+    private void buildSearchField(Table table){
+        searchField = table.field(searchText, text -> {
             applySearchText(text);
             rebuildList();
-        }).maxTextLength(80).growX().minWidth(compactToolbar ? 0f : 220f).get();
-        searchField.setMessageText("搜索回放");
+        }).maxTextLength(80).growX().get();
+        searchField.setMessageText(i("搜索回放"));
+        searchField.setCursorPosition(searchText.length());
         searchField.setTextFieldListener((field, c) -> {
             if(c == '\n' || c == '\r'){
                 applySearchText(field.getText());
@@ -161,7 +123,7 @@ public class ReplayManagerDialog extends BaseDialog{
         list.clearChildren();
 
         if(replayFiles.isEmpty()){
-            list.add("没有可管理的回放文件").pad(12f).color(Color.lightGray);
+            list.add(i("没有可管理的回放文件")).pad(12f).color(Color.lightGray);
             return;
         }
 
@@ -173,7 +135,7 @@ public class ReplayManagerDialog extends BaseDialog{
         }
 
         if(shown == 0){
-            list.add("没有匹配的回放文件").pad(12f).color(Color.lightGray);
+            list.add(i("没有匹配的回放文件")).pad(12f).color(Color.lightGray);
         }
     }
 
@@ -192,12 +154,26 @@ public class ReplayManagerDialog extends BaseDialog{
         replayFiles.clear();
         replayFiles.addAll(scanReplayFiles());
 
-        HashSet<String> aliveFiles = new HashSet<>();
+        ObjectSet<String> aliveFiles = new ObjectSet<>();
         for(Fi file : replayFiles){
             aliveFiles.add(file.absolutePath());
         }
-        metaCache.keySet().removeIf(key -> !aliveFiles.contains(key));
-        loadingMeta.removeIf(key -> !aliveFiles.contains(key));
+
+        Seq<String> staleKeys = new Seq<>();
+        for(String key : metaCache.keys()){
+            if(!aliveFiles.contains(key)) staleKeys.add(key);
+        }
+        for(String key : staleKeys){
+            metaCache.remove(key);
+        }
+
+        staleKeys.clear();
+        for(String key : loadingMeta){
+            if(!aliveFiles.contains(key)) staleKeys.add(key);
+        }
+        for(String key : staleKeys){
+            loadingMeta.remove(key);
+        }
     }
 
     private Seq<Fi> scanReplayFiles(){
@@ -223,61 +199,50 @@ public class ReplayManagerDialog extends BaseDialog{
 
     private void addReplayItem(Fi file){
         list.table(Styles.grayPanel, item -> {
-            item.margin(10f);
-            item.defaults().left();
+            item.top().margin(10f);
+            item.defaults().left().growX();
 
-            if(compactItems){
-                item.add("[accent]" + file.nameWithoutExtension() + "[]").growX().wrap().row();
-                item.table(buttons -> {
-                    buttons.right();
-                    buttons.defaults().size(42f);
-                    boolean exists = file.exists();
-                    buttons.button("播放", Icon.play, Styles.flatt, () -> playReplay(file)).growX().minWidth(120f).disabled(b -> !exists);
-                    buttons.button(Icon.trash, Styles.cleari, () -> confirmDelete(file)).size(42f).padLeft(8f);
-                }).growX().padTop(8f).row();
+            if(portraitLayout){
+                item.add("[accent]" + file.nameWithoutExtension() + "[]").wrap().row();
+                item.table(buttons -> buildActionButtons(buttons, file)).growX().padTop(8f).row();
             }else{
                 item.table(title -> {
                     title.defaults().left();
-                    title.add("[accent]" + file.nameWithoutExtension() + "[]").growX().padRight(8f).wrap();
-
-                    title.table(buttons -> {
-                        buttons.right();
-                        buttons.defaults().size(36f);
-                        boolean exists = file.exists();
-                        buttons.button(Icon.play, Styles.emptyi, () -> playReplay(file)).disabled(b -> !exists);
-                        buttons.button(Icon.trash, Styles.emptyi, () -> confirmDelete(file));
-                    }).right();
+                    title.add("[accent]" + file.nameWithoutExtension() + "[]").growX().wrap();
+                    title.add().growX();
+                    title.table(buttons -> buildActionButtons(buttons, file)).right();
                 }).growX().row();
             }
 
-            item.add(buildBaseInfo(file)).color(Color.lightGray).growX().wrap().row();
+                item.add(i("修改时间") + ": " + formatDate(new Date(file.lastModified())) + "  |  " + i("文件大小") + ": " + formatSize(file.length()))
+            .color(Color.lightGray).wrap().row();
 
             ReplayMeta meta = metaCache.get(file.absolutePath());
             if(meta == null){
-                item.add("[lightgray]读取回放头信息中...[]").growX().wrap();
+                item.add("[lightgray]" + i("读取回放头信息中...") + "[]").growX().wrap();
                 requestMeta(file);
             }else if(meta.readable){
-                item.add(buildMetaInfo(meta)).color(Color.lightGray).growX().wrap();
+                item.add(i("录制时间") + ": " + formatDate(meta.time)
+                + "  |  " + i("玩家") + ": " + meta.player
+                + "  [white]|  " + i("服务器") + ": " + meta.serverIp
+                + "  |  " + i("版本") + ": " + meta.version).color(Color.lightGray).growX().wrap();
             }else{
-                item.add("[lightgray]无法读取回放头信息[]").growX().wrap();
+                item.add("[lightgray]" + i("无法读取回放头信息") + "[]").growX().wrap();
             }
-        }).growX().pad(4f).row();
+        });
     }
 
-    private String buildBaseInfo(Fi file){
-        return "修改时间: " + formatDate(new Date(file.lastModified())) + "  |  文件大小: " + formatSize(file.length());
-    }
-
-    private String buildMetaInfo(ReplayMeta meta){
-        return "录制时间: " + formatDate(meta.time)
-        + "  |  玩家: " + meta.player
-        + "  [white]|  服务器: " + meta.serverIp
-        + "  |  版本: " + meta.version;
+    private void buildActionButtons(Table buttons, Fi file){
+        buttons.defaults().size(portraitLayout ? 42f : 36f);
+        boolean exists = file.exists();
+        buttons.button(Icon.play, Styles.emptyi, () -> playReplay(file)).disabled(b -> !exists);
+        buttons.button(Icon.trash, Styles.emptyi, () -> confirmDelete(file)).padLeft(8f);
     }
 
     private void requestMeta(Fi file){
         String key = file.absolutePath();
-        if(metaCache.containsKey(key) || !loadingMeta.add(key)) return;
+        if(metaCache.containsKey(key) || loadingMeta.contains(key)) return;
+        loadingMeta.add(key);
 
         metaLoader.execute(() -> {
             ReplayMeta meta = unreadableMeta;
@@ -311,9 +276,9 @@ public class ReplayManagerDialog extends BaseDialog{
     }
 
     private void confirmDelete(Fi file){
-        ui.showConfirm("@confirm", "确认删除回放文件?\n" + file.name(), () -> {
+        ui.showConfirm("@confirm", i("确认删除回放文件?") + "\n" + file.name(), () -> {
             if(!file.delete()){
-                ui.showErrorMessage("删除回放文件失败: " + file.name());
+                ui.showErrorMessage(i("删除回放文件失败") + ": " + file.name());
                 return;
             }
             String key = file.absolutePath();
@@ -326,7 +291,7 @@ public class ReplayManagerDialog extends BaseDialog{
 
     private void playReplay(Fi file){
         if(!file.exists()){
-            ui.showErrorMessage("回放文件不存在: " + file.name());
+            ui.showErrorMessage(i("回放文件不存在") + ": " + file.name());
             rebuildList();
             return;
         }
@@ -336,7 +301,7 @@ public class ReplayManagerDialog extends BaseDialog{
 
     private void loadExternalReplay(){
         FileChooser.setLastDirectory(saveDirectory);
-        platform.showFileChooser(true, "打开回放文件", "mrep", file -> Core.app.post(() -> {
+        platform.showFileChooser(true, i("打开回放文件"), "mrep", file -> Core.app.post(() -> {
             hide();
             ReplayController.startPlay(file, true);
         }));
