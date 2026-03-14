@@ -8,6 +8,7 @@ import mindustry.game.EventType.*;
 import mindustry.gen.*;
 import mindustry.mod.*;
 import mindustryX.features.*;
+import mindustryX.features.ui.*;
 
 import java.net.*;
 import java.util.*;
@@ -74,6 +75,9 @@ public class Hooks implements ApplicationListener{
     public static @Nullable String onHandleSendMessage(String message, @Nullable Player sender){
         if(message == null) return null;
         if(Vars.ui != null){
+            if(sender == null && BroadOverlay.tryHandle(message)){
+                return null;
+            }
             ShareFeature.resolve(message, sender);
 
             if(sender != null){
