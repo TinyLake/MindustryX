@@ -25,7 +25,10 @@ public class ReplayManagerDialog extends BaseDialog{
     private static final ReplayMeta unreadableMeta = new ReplayMeta(false, null, "", "", 0);
     private static final float minPaneWidth = 360f;
     private static final float minPaneHeight = 340f;
+    private static final float compactToolbarWidth = 540f;
+    private static final float compactItemWidth = 460f;
 
+    private final Table tools = new Table();
     private final Table list = new Table();
     private final ScrollPane pane = new ScrollPane(list, Styles.noBarPane);
     private final Seq<Fi> replayFiles = new Seq<>();
@@ -34,8 +37,12 @@ public class ReplayManagerDialog extends BaseDialog{
     private final ExecutorService metaLoader = Threads.executor("Replay Meta Loader", 1);
 
     private boolean rebuildPosted;
+    private boolean compactToolbar;
+    private boolean compactItems;
     private String search;
+    private String searchText = "";
     private TextField searchField;
+    private Cell<Table> toolsCell;
     private Cell<ScrollPane> paneCell;
 
     public ReplayManagerDialog(){
@@ -61,30 +68,17 @@ public class ReplayManagerDialog extends BaseDialog{
 
     private void setup(){
         cont.clear();
+        cont.defaults().growX();
 
-        cont.table(tools -> {
-            tools.defaults().height(46f);
-            tools.image(Icon.zoom).padRight(6f);
-            searchField = tools.field("", text -> {
-                applySearchText(text);
-                rebuildList();
-            }).maxTextLength(80).growX().minWidth(220f).padRight(8f).get();
-            searchField.setMessageText("搜索回放");
-            searchField.setTextFieldListener((field, c) -> {
-                if(c == '\n' || c == '\r'){
-                    applySearchText(field.getText());
-                    rebuildList();
-                }
-            });
-
-            tools.button("加载外部回放", Icon.upload, this::loadExternalReplay).minWidth(mobile ? 132f : 168f).padRight(8f);
-            tools.button(Icon.refresh, Styles.cleari, this::refreshAndRebuild).size(46f);
-        }).growX().row();
+        toolsCell = cont.add(tools).growX();
+        cont.row();
 
         pane.setFadeScrollBars(false);
         pane.setScrollingDisabled(true, false);
         list.margin(6f);
         paneCell = cont.add(pane).growX().minWidth(minPaneWidth).minHeight(minPaneHeight);
+
+        rebuildToolbar();
     }
 
     private void applyAdaptiveLayout(){
@@ -102,6 +96,65 @@ public class ReplayManagerDialog extends BaseDialog{
         float targetHeight = Math.max(minPaneHeight, Math.min(maxHeight, scaledHeight * heightRatio));
 
         paneCell.width(targetWidth).height(targetHeight);
+
+        boolean compactToolbar = targetWidth <= compactToolbarWidth;
+        boolean compactItems = targetWidth <= compactItemWidth;
+        if(this.compactToolbar != compactToolbar){
+            this.compactToolbar = compactToolbar;
+            rebuildToolbar();
+        }
+        this.compactItems = compactItems;
+        cont.invalidateHierarchy();
+    }
+
+    private void rebuildToolbar(){
+        if(toolsCell == null) return;
+
+        String currentText = searchField == null ? searchText : searchField.getText();
+        tools.clearChildren();
+        tools.left().top();
+
+        if(compactToolbar){
+            tools.defaults().growX().padBottom(8f);
+            tools.table(searchRow -> {
+                searchRow.defaults().height(46f);
+                searchRow.image(Icon.zoom).padRight(6f);
+                buildSearchField(searchRow);
+            }).growX().row();
+
+            tools.table(buttonRow -> {
+                buttonRow.defaults().height(46f);
+                buttonRow.button("加载外部回放", Icon.upload, this::loadExternalReplay).growX().minWidth(0f).padRight(8f);
+                buttonRow.button(Icon.refresh, Styles.cleari, this::refreshAndRebuild).size(46f);
+            }).growX();
+        }else{
+            tools.defaults().height(46f);
+            tools.image(Icon.zoom).padRight(6f);
+            buildSearchField(tools);
+            tools.button("加载外部回放", Icon.upload, this::loadExternalReplay).minWidth(mobile ? 132f : 168f).padLeft(8f).padRight(8f);
+            tools.button(Icon.refresh, Styles.cleari, this::refreshAndRebuild).size(46f);
+        }
+
+        if(!currentText.equals(searchText)) searchText = currentText;
+        if(searchField != null && !searchText.equals(searchField.getText())){
+            searchField.setText(searchText);
+            searchField.setCursorPosition(searchText.length());
+        }
+        tools.invalidateHierarchy();
+    }
+
+    private void buildSearchField(Table parent){
+        searchField = parent.field(searchText, text -> {
+            applySearchText(text);
+            rebuildList();
+        }).maxTextLength(80).growX().minWidth(compactToolbar ? 0f : 220f).get();
+        searchField.setMessageText("搜索回放");
+        searchField.setTextFieldListener((field, c) -> {
+            if(c == '\n' || c == '\r'){
+                applySearchText(field.getText());
+                rebuildList();
+            }
+        });
     }
 
     private void rebuildList(){
@@ -130,6 +183,7 @@ public class ReplayManagerDialog extends BaseDialog{
     }
 
     private void applySearchText(String text){
+        searchText = text;
         String value = text.trim().toLowerCase(Locale.ROOT);
         search = value.isEmpty() ? null : value;
     }
@@ -172,18 +226,29 @@ public class ReplayManagerDialog extends BaseDialog{
             item.margin(10f);
             item.defaults().left();
 
-            item.table(title -> {
-                title.defaults().left();
-                title.add("[accent]" + file.nameWithoutExtension() + "[]").growX().padRight(8f).wrap();
-
-                title.table(buttons -> {
+            if(compactItems){
+                item.add("[accent]" + file.nameWithoutExtension() + "[]").growX().wrap().row();
+                item.table(buttons -> {
                     buttons.right();
-                    buttons.defaults().size(36f);
+                    buttons.defaults().size(42f);
                     boolean exists = file.exists();
-                    buttons.button(Icon.play, Styles.emptyi, () -> playReplay(file)).disabled(b -> !exists);
-                    buttons.button(Icon.trash, Styles.emptyi, () -> confirmDelete(file));
-                }).right();
-            }).growX().row();
+                    buttons.button("播放", Icon.play, Styles.flatt, () -> playReplay(file)).growX().minWidth(120f).disabled(b -> !exists);
+                    buttons.button(Icon.trash, Styles.cleari, () -> confirmDelete(file)).size(42f).padLeft(8f);
+                }).growX().padTop(8f).row();
+            }else{
+                item.table(title -> {
+                    title.defaults().left();
+                    title.add("[accent]" + file.nameWithoutExtension() + "[]").growX().padRight(8f).wrap();
+
+                    title.table(buttons -> {
+                        buttons.right();
+                        buttons.defaults().size(36f);
+                        boolean exists = file.exists();
+                        buttons.button(Icon.play, Styles.emptyi, () -> playReplay(file)).disabled(b -> !exists);
+                        buttons.button(Icon.trash, Styles.emptyi, () -> confirmDelete(file));
+                    }).right();
+                }).growX().row();
+            }
 
             item.add(buildBaseInfo(file)).color(Color.lightGray).growX().wrap().row();
 
