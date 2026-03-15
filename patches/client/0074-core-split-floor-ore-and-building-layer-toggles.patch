@@ -1,0 +1,841 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Wind-DeterMination-backup
+ <Wind-DeterMination-backup@users.noreply.github.com>
+Date: Sun, 15 Mar 2026 11:26:20 +0800
+Subject: [PATCH] core: split floor, ore, and building layer toggles
+
+---
+ core/src/mindustry/core/Renderer.java         |  23 ++-
+ core/src/mindustry/entities/Effect.java       |   2 +-
+ .../mindustry/entities/comp/BuilderComp.java  |  22 +-
+ core/src/mindustry/game/Schematics.java       |  34 +++-
+ .../src/mindustry/graphics/BlockRenderer.java | 189 +++++++++++-------
+ .../blocks/environment/CharacterOverlay.java  |   2 +
+ .../world/blocks/environment/Cliff.java       |  12 ++
+ .../blocks/environment/ColoredFloor.java      |   6 +
+ .../world/blocks/environment/EmptyFloor.java  |   7 +-
+ .../world/blocks/environment/Floor.java       |  24 ++-
+ .../blocks/environment/OverlayFloor.java      |   2 +
+ .../world/blocks/environment/RuneOverlay.java |   2 +
+ .../world/blocks/environment/StaticTree.java  |  12 ++
+ .../world/blocks/environment/StaticWall.java  |  49 +++--
+ .../world/blocks/environment/TiledWall.java   |  12 ++
+ 15 files changed, 272 insertions(+), 126 deletions(-)
+
+diff --git a/core/src/mindustry/core/Renderer.java b/core/src/mindustry/core/Renderer.java
+index 099efb2bcdd709d3a328471a0a434165c665446c..df968f590516c0482fe43d7851e3df4a03ce03ea 100644
+--- a/core/src/mindustry/core/Renderer.java
++++ b/core/src/mindustry/core/Renderer.java
+@@ -330,14 +330,23 @@ public class Renderer implements ApplicationListener{
+             pixelator.register();
+         }
+ 
++        boolean renderFloor = RenderExt.shouldDrawFloorLayer();
++        boolean renderOre = RenderExt.shouldDrawOreLayer();
++        boolean renderBuildings = RenderExt.shouldDrawBuildingLayer();
++        boolean renderBuildingBase = RenderExt.shouldDrawBuildingBase();
++
+         Draw.draw(Layer.background, this::drawBackground);
+-        Draw.draw(Layer.floor, blocks.floor::drawFloor);
+-        if(RenderExt.blockRenderLevel > 0)
++        if(renderFloor || renderOre){
++            Draw.draw(Layer.floor, blocks.floor::drawFloor);
++        }
++        if(renderBuildingBase)
+             Draw.draw(Layer.block - 1, blocks::drawShadows);
+-        Draw.draw(Layer.block - 0.09f, () -> {
+-            blocks.floor.beginDraw();
+-            blocks.floor.drawLayer(CacheLayer.walls);
+-        });
++        if(renderBuildingBase || renderOre){
++            Draw.draw(Layer.block - 0.09f, () -> {
++                blocks.floor.beginDraw();
++                blocks.floor.drawLayer(CacheLayer.walls);
++            });
++        }
+ 
+         Draw.drawRange(Layer.blockBuilding, () -> Draw.shader(Shaders.blockbuild, true), Draw::shader);
+ 
+@@ -418,7 +427,7 @@ public class Renderer implements ApplicationListener{
+         }
+ 
+         Events.fire(Trigger.drawOver);
+-        if(RenderExt.blockRenderLevel > 0)
++        if(renderBuildings || lights.enabled() && (renderFloor || renderOre))
+             blocks.drawBlocks();
+ 
+         Groups.draw.draw(RenderExt::onGroupDraw);
+diff --git a/core/src/mindustry/entities/Effect.java b/core/src/mindustry/entities/Effect.java
+index 341ca42edb3cdadba7cfe6fbb8a9b5e83a2f39c4..a683c9078cb1285e9e8ae618d92896ddc38afe35 100644
+--- a/core/src/mindustry/entities/Effect.java
++++ b/core/src/mindustry/entities/Effect.java
+@@ -142,7 +142,7 @@ public class Effect{
+     public boolean shouldCreate(){
+         return !headless && this != Fx.none && Vars.renderer.enableEffects
+         //MDTX: hidden effects in buildings with low render level
+-        && (RenderExt.blockRenderLevel > 1 || LogicExt.currentBuilding == null);
++        && (LogicExt.currentBuilding == null || RenderExt.shouldDrawBuildingBase());
+     }
+ 
+     public void create(float x, float y, float rotation, Color color, Object data){
+diff --git a/core/src/mindustry/entities/comp/BuilderComp.java b/core/src/mindustry/entities/comp/BuilderComp.java
+index 12749bfe3d52e249656ad3fa74f015f779a78844..ae8df77a9da859e170e9abbd3adf9eed4caf399e 100644
+--- a/core/src/mindustry/entities/comp/BuilderComp.java
++++ b/core/src/mindustry/entities/comp/BuilderComp.java
+@@ -293,16 +293,15 @@ abstract class BuilderComp implements Posc, Statusc, Teamc, Rotc{
+     void addBuild(BuildPlan place, boolean tail){
+         if(!canBuild()) return;
+ 
+-        BuildPlan replace = null;
+-        for(BuildPlan plan : plans){
+-            if(plan.x == place.x && plan.y == place.y){
+-                replace = plan;
+-                break;
++        for(Iterator<BuildPlan> it = plans.iterator(); it.hasNext();){
++            BuildPlan plan = it.next();
++            if(plan.x == place.x && plan.y == place.y && shouldReplacePlan(plan, place)){
++                it.remove();
++                if(!LogicExt.terrainSchematic){
++                    break;
++                }
+             }
+         }
+-        if(!LogicExt.terrainSchematic && replace != null){
+-            plans.remove(replace);
+-        }
+         Tile tile = world.tile(place.x, place.y);
+         if(tile != null && tile.build instanceof ConstructBuild cons){
+             place.progress = cons.progress;
+@@ -314,6 +313,13 @@ abstract class BuilderComp implements Posc, Statusc, Teamc, Rotc{
+         }
+     }
+ 
++    private boolean shouldReplacePlan(BuildPlan existing, BuildPlan next){
++        if(!LogicExt.terrainSchematic || existing.breaking || next.breaking || existing.block == null || next.block == null){
++            return true;
++        }
++        return LogicExt.classifyBlockLayer(existing.block) == LogicExt.classifyBlockLayer(next.block);
++    }
++
+     boolean activelyBuilding(){
+         //not actively building when not near the build plan
+         if(isBuilding()){
+diff --git a/core/src/mindustry/game/Schematics.java b/core/src/mindustry/game/Schematics.java
+index 8f4025d426b4ea94db5c1122ee95e079a0ab8863..c68feb59486ee5961f1ef20d1a6f7f322150056d 100644
+--- a/core/src/mindustry/game/Schematics.java
++++ b/core/src/mindustry/game/Schematics.java
+@@ -298,7 +298,8 @@ public class Schematics implements Loadable{
+     /** Creates an array of build plans from a schematic's data, centered on the provided x,y coordinates. */
+     public Seq<BuildPlan> toPlans(Schematic schem, int x, int y, boolean checkHidden){
+         return schem.tiles.map(t -> new BuildPlan(t.x + x - schem.width/2, t.y + y - schem.height/2, t.rotation, t.block, t.config))
+-            .removeAll(s -> !LogicExt.terrainSchematic && ((checkHidden && !s.block.isVisible() && !(s.block instanceof CoreBlock)) || !s.block.unlockedNow())).sort(Structs.comparingInt(s -> -s.block.schematicPriority));
++            .removeAll(s -> !shouldIncludeInSchematicPlan(s.block) || !LogicExt.terrainSchematic && ((checkHidden && !s.block.isVisible() && !(s.block instanceof CoreBlock)) || !s.block.unlockedNow()))
++            .sort(Structs.comparingInt(s -> -s.block.schematicPriority));
+     }
+ 
+     /** @return all the valid loadouts for a specific core type. */
+@@ -388,6 +389,12 @@ public class Schematics implements Loadable{
+     /** Creates a schematic from a world selection. */
+     public Schematic create(int x, int y, int x2, int y2){
+         Team team = headless ? null : Vars.player.team();
++        boolean includeTerrainFloor = LogicExt.shouldIncludeFloorInTerrainSchematic();
++        boolean includeTerrainOre = LogicExt.shouldIncludeOreInTerrainSchematic();
++        boolean includeTerrainBlock = LogicExt.shouldIncludeBlockInTerrainSchematic();
++        boolean includeTerrainBlocks = !LogicExt.terrainSchematic || includeTerrainBlock;
++        boolean includeTerrainSurface = includeTerrainFloor || includeTerrainOre;
++        boolean includeTerrain = includeTerrainSurface || includeTerrainBlock;
+         NormalizeResult result = Placement.normalizeArea(x, y, x2, y2, 0, false, maxSchematicSize);
+         x = Mathf.clamp(result.x, 0, world.width() - 1);
+         y = Mathf.clamp(result.y, 0, world.height() - 1);
+@@ -407,7 +414,7 @@ public class Schematics implements Loadable{
+ 
+                 Block realBlock = linked == null ? null : linked instanceof ConstructBuild cons ? cons.current : linked.block;
+ 
+-                if(linked != null && realBlock != null && (realBlock.isVisible() || realBlock instanceof CoreBlock)){
++                if(includeTerrainBlocks && linked != null && realBlock != null && (realBlock.isVisible() || realBlock instanceof CoreBlock)){
+                     int top = realBlock.size/2;
+                     int bot = realBlock.size % 2 == 1 ? -realBlock.size/2 : -(realBlock.size - 1)/2;
+                     minx = Math.min(linked.tileX() + bot, minx);
+@@ -419,25 +426,30 @@ public class Schematics implements Loadable{
+             }
+         }
+ 
+-        if(found || LogicExt.terrainSchematic){
++        if(found){
+             x = minx;
+             y = miny;
+             x2 = maxx;
+             y2 = maxy;
+-        }else{
++        }else if(!includeTerrain){
+             return new Schematic(new Seq<>(), new StringMap(), 1, 1);
+         }
+ 
+-        if(LogicExt.terrainSchematic){
++        if(includeTerrainSurface && found){
+             x = Math.min(x, ox + 1);
+             x2 = Math.max(x2, ox2 - 1);
+             y = Math.min(y, oy + 1);
+             y2 = Math.max(y2, oy2 - 1);
++        }
++
++        if(includeTerrainSurface){
+             for(int cx = ox; cx <= ox2; cx++){
+                 for(int cy = oy; cy <= oy2; cy++){
+                     Tile tile = world.tile(cx, cy);
+-                    tiles.add(new Stile(tile.floor(), tile.x - x, tile.y - y, tile.floor().getConfig(tile), (byte)0));
+-                    if(!tile.overlay().isAir())
++                    if(includeTerrainFloor){
++                        tiles.add(new Stile(tile.floor(), tile.x - x, tile.y - y, tile.floor().getConfig(tile), (byte)0));
++                    }
++                    if(includeTerrainOre && !tile.overlay().isAir())
+                         tiles.add(new Stile(tile.overlay(), tile.x - x, tile.y - y, tile.overlay().getConfig(tile), (byte)0));
+                 }
+             }
+@@ -451,7 +463,7 @@ public class Schematics implements Loadable{
+                 if(tile != null && (!tile.isDiscovered(team) || !tile.wasVisible)) continue;
+                 Block realBlock = tile == null ? null : tile instanceof ConstructBuild cons ? cons.current : tile.block;
+ 
+-                if(tile != null && !counted.contains(tile.pos()) && realBlock != null
++                if(includeTerrainBlocks && tile != null && !counted.contains(tile.pos()) && realBlock != null
+                     && (realBlock.isVisible() || realBlock instanceof CoreBlock)){
+                     Object config = tile instanceof ConstructBuild cons ? cons.lastConfig : tile.config();
+ 
+@@ -460,7 +472,7 @@ public class Schematics implements Loadable{
+                 }
+             }
+         }
+-        if(LogicExt.terrainSchematic){
++        if(includeTerrainBlock){
+             for(int cx = ox; cx <= ox2; cx++){
+                 for(int cy = oy; cy <= oy2; cy++){
+                     Tile tile = world.tile(cx, cy);
+@@ -474,6 +486,10 @@ public class Schematics implements Loadable{
+         return new Schematic(tiles, new StringMap(), width, height);
+     }
+ 
++    private static boolean shouldIncludeInSchematicPlan(Block block){
++        return !LogicExt.terrainSchematic ? LogicExt.isBlockLayer(block) : LogicExt.isLayerEnabled(block);
++    }
++
+     /** Converts a schematic to base64. Note that the result of this will always start with 'bXNjaAB'.*/
+     public String writeBase64(Schematic schematic){
+         try{
+diff --git a/core/src/mindustry/graphics/BlockRenderer.java b/core/src/mindustry/graphics/BlockRenderer.java
+index dd7ecf412161221e344115af74b10fa35f64fefa..a70ea7f113d07c32114f6489a0a8bcd40be5e272 100644
+--- a/core/src/mindustry/graphics/BlockRenderer.java
++++ b/core/src/mindustry/graphics/BlockRenderer.java
+@@ -41,6 +41,7 @@ public class BlockRenderer{
+     private Seq<UpdateRenderState> updateFloors = new Seq<>(UpdateRenderState.class);
+ 
+     private boolean hadMapLimit;
++    private boolean lastRenderFloor, lastRenderOre, lastRenderBlock, lastRenderBlockBase, lastRenderLights;
+     private int lastCamX, lastCamY, lastRangeX, lastRangeY;
+     private float brokenFade = 0f;
+     private FrameBuffer shadows = new FrameBuffer();
+@@ -390,6 +391,15 @@ public class BlockRenderer{
+ 
+         int rangex = (int)(camera.width / tilesize / 2);
+         int rangey = (int)(camera.height / tilesize / 2);
++        boolean renderFloor = RenderExt.shouldDrawFloorLayer();
++        boolean renderOre = RenderExt.shouldDrawOreLayer();
++        boolean renderBuildings = RenderExt.shouldDrawBuildingLayer();
++        boolean renderBuildingBase = RenderExt.shouldDrawBuildingBase();
++        boolean renderLights = renderer.lights.enabled() && (renderFloor || renderOre || renderBuildings);
++
++        if(renderFloor != lastRenderFloor || renderOre != lastRenderOre || renderBuildingBase != lastRenderBlockBase){
++            floor.reload();
++        }
+ 
+         if(!state.isPaused()){
+             int updates = updateFloors.size;
+@@ -401,7 +411,21 @@ public class BlockRenderer{
+         }
+ 
+ 
+-        if(RenderExt.blockRenderLevel <= 0 || avgx == lastCamX && avgy == lastCamY && lastRangeX == rangex && lastRangeY == rangey){
++        if(!renderBuildings && !renderLights){
++            tileview.clear();
++            lightview.clear();
++            lastRenderFloor = renderFloor;
++            lastRenderOre = renderOre;
++            lastRenderBlock = renderBuildings;
++            lastRenderBlockBase = renderBuildingBase;
++            lastRenderLights = renderLights;
++            return;
++        }
++
++        if(avgx == lastCamX && avgy == lastCamY && lastRangeX == rangex && lastRangeY == rangey &&
++            renderFloor == lastRenderFloor && renderOre == lastRenderOre &&
++            renderBuildings == lastRenderBlock && renderBuildingBase == lastRenderBlockBase &&
++            renderLights == lastRenderLights){
+             return;
+         }
+ 
+@@ -412,34 +436,47 @@ public class BlockRenderer{
+ 
+         var bounds = camera.bounds(Tmp.r3).grow(tilesize * 2f);
+ 
+-        //draw floor lights
+-        floorTree.intersect(bounds, lightview::add);
+-        overlayTree.intersect(bounds, lightview::add);
+-
+-        blockLightTree.intersect(bounds, tile -> {
+-            if(tile.block().emitLight && (tile.build == null || procLights.add(tile.build.pos()))){
+-                lightview.add(tile);
++        if(renderLights){
++            if(renderFloor){
++                floorTree.intersect(bounds, lightview::add);
+             }
+-        });
+-
+-        blockTree.intersect(bounds, tile -> {
+-            if(tile.build == null || procLinks.add(tile.build.id)){
+-                tileview.add(tile);
++            if(renderOre){
++                overlayTree.intersect(bounds, lightview::add);
+             }
++            if(renderBuildings){
++                blockLightTree.intersect(bounds, tile -> {
++                    if(tile.block().emitLight && (tile.build == null || procLights.add(tile.build.pos()))){
++                        lightview.add(tile);
++                    }
++                });
++            }
++        }
++
++        if(renderBuildings){
++            blockTree.intersect(bounds, tile -> {
++                if(tile.build == null || procLinks.add(tile.build.id)){
++                    tileview.add(tile);
++                }
+ 
+-            if(tile.build != null && tile.build.power != null && tile.build.power.links.size > 0){
+-                for(Building other : tile.build.getPowerConnections(outArray2)){
+-                    if(other.block instanceof PowerNode && procLinks.add(other.id)){ //TODO need a generic way to render connections!
+-                        tileview.add(other.tile);
++                if(tile.build != null && tile.build.power != null && tile.build.power.links.size > 0){
++                    for(Building other : tile.build.getPowerConnections(outArray2)){
++                        if(other.block instanceof PowerNode && procLinks.add(other.id)){ //TODO need a generic way to render connections!
++                            tileview.add(other.tile);
++                        }
+                     }
+                 }
+-            }
+-        });
++            });
++        }
+ 
+         lastCamX = avgx;
+         lastCamY = avgy;
+         lastRangeX = rangex;
+         lastRangeY = rangey;
++        lastRenderFloor = renderFloor;
++        lastRenderOre = renderOre;
++        lastRenderBlock = renderBuildings;
++        lastRenderBlockBase = renderBuildingBase;
++        lastRenderLights = renderLights;
+     }
+ 
+     //debug method for drawing block bounds
+@@ -465,67 +502,73 @@ public class BlockRenderer{
+ 
+     public void drawBlocks(){
+         Team pteam = player.team();
++        boolean renderBuildings = RenderExt.shouldDrawBuildingLayer();
++        boolean renderBuildingBase = RenderExt.shouldDrawBuildingBase();
++        boolean renderFloor = RenderExt.shouldDrawFloorLayer();
++        boolean renderOre = RenderExt.shouldDrawOreLayer();
+ 
+-        drawDestroyed();
+-
+-        //draw most tile stuff
+-        for(int i = 0; i < tileview.size; i++){
+-            Tile tile = tileview.items[i];
+-            Block block = tile.block();
+-            Building build = tile.build;
+-
+-            Draw.z(Layer.block);
++        if(renderBuildings){
++            drawDestroyed();
+ 
+-            boolean visible = (build == null || !build.inFogTo(pteam));
++            //draw most tile stuff
++            for(int i = 0; i < tileview.size; i++){
++                Tile tile = tileview.items[i];
++                Block block = tile.block();
++                Building build = tile.build;
+ 
+-            //comment wasVisible part for hiding?
+-            if(block != Blocks.air && (visible || build.wasVisible)){
+-                RenderExt.onBlockDraw(tile, block, build);
+-                Draw.reset();
+                 Draw.z(Layer.block);
+ 
+-                if(block.customShadow){
+-                    Draw.z(Layer.block - 1);
+-                    block.drawShadow(tile);
+-                    Draw.z(Layer.block);
+-                }
++                boolean visible = (build == null || !build.inFogTo(pteam));
+ 
+-                if(build != null){
+-                    if(visible){
+-                        build.visibleFlags |= (1L << pteam.id);
+-                        if(!build.wasVisible){
+-                            build.wasVisible = true;
+-                            updateShadow(build);
+-                            renderer.minimap.update(tile);
+-                        }
+-                    }
++                //comment wasVisible part for hiding?
++                if(block != Blocks.air && (visible || build.wasVisible)){
++                    RenderExt.onBlockDraw(tile, block, build);
++                    Draw.reset();
++                    Draw.z(Layer.block);
+ 
+-                    if(build.damaged()){
+-                        Draw.z(Layer.blockCracks);
+-                        build.drawCracks();
++                    if(renderBuildingBase && block.customShadow){
++                        Draw.z(Layer.block - 1);
++                        block.drawShadow(tile);
+                         Draw.z(Layer.block);
+                     }
+ 
+-                    if(build.team != pteam && build.block.drawTeamOverlay){
+-                        Draw.z(Layer.block + 0.01f);
+-                        build.drawTeam();
+-                    }
+-                    if(build.team == player.team() || RenderExt.showOtherInfo){
+-                        if(renderer.drawStatus && block.hasConsumers){
+-                            build.drawStatus();
++                    if(build != null){
++                        if(visible){
++                            build.visibleFlags |= (1L << pteam.id);
++                            if(!build.wasVisible){
++                                build.wasVisible = true;
++                                updateShadow(build);
++                                renderer.minimap.update(tile);
++                            }
+                         }
+-                        if(RenderExt.drawBlockDisabled && !build.enabled){
+-                            Draw.z(Layer.power + 1);
+-                            build.drawDisabled();
++
++                        if(build.damaged()){
++                            Draw.z(Layer.blockCracks);
++                            build.drawCracks();
++                            Draw.z(Layer.block);
++                        }
++
++                        if(build.team != pteam && build.block.drawTeamOverlay){
++                            Draw.z(Layer.block + 0.01f);
++                            build.drawTeam();
++                        }
++                        if(build.team == player.team() || RenderExt.showOtherInfo){
++                            if(renderer.drawStatus && block.hasConsumers){
++                                build.drawStatus();
++                            }
++                            if(RenderExt.drawBlockDisabled && !build.enabled){
++                                Draw.z(Layer.power + 1);
++                                build.drawDisabled();
++                            }
+                         }
+                     }
++                    Draw.reset();
++                }else if(!visible){
++                    //TODO here is the question: should buildings you lost sight of remain rendered? if so, how should this information be stored?
++                    //uncomment lines below for buggy persistence
++                    //if(build.wasVisible) updateShadow(build);
++                    //build.wasVisible = false;
+                 }
+-                Draw.reset();
+-            }else if(!visible){
+-                //TODO here is the question: should buildings you lost sight of remain rendered? if so, how should this information be stored?
+-                //uncomment lines below for buggy persistence
+-                //if(build.wasVisible) updateShadow(build);
+-                //build.wasVisible = false;
+             }
+         }
+ 
+@@ -535,20 +578,22 @@ public class BlockRenderer{
+                 Tile tile = lightview.items[i];
+                 Building entity = tile.build;
+ 
+-                if(entity != null){
+-                    entity.drawLight();
+-                }else if(tile.block().emitLight){
+-                    tile.block().drawEnvironmentLight(tile);
++                if(renderBuildings){
++                    if(entity != null){
++                        entity.drawLight();
++                    }else if(tile.block().emitLight){
++                        tile.block().drawEnvironmentLight(tile);
++                    }
+                 }
+ 
+                 if(!tile.block().obstructsLight){
+                     Floor floor = tile.floor();
+                     Floor overlay = tile.overlay();
+ 
+-                    if(!floor.obstructsLight && overlay.emitLight){
++                    if(renderOre && !floor.obstructsLight && overlay.emitLight){
+                         overlay.drawEnvironmentLight(tile);
+                     }
+-                    if(floor.forceDrawLight || (!overlay.obstructsLight && floor.emitLight)){
++                    if(renderFloor && (floor.forceDrawLight || (!overlay.obstructsLight && floor.emitLight))){
+                         floor.drawEnvironmentLight(tile);
+                     }
+                 }
+diff --git a/core/src/mindustry/world/blocks/environment/CharacterOverlay.java b/core/src/mindustry/world/blocks/environment/CharacterOverlay.java
+index 3c02614d32f5da6bc801f9abf543ff8d84b51898..0aeb3d8bb0f219563e9b3d172223bae6269cfa3a 100644
+--- a/core/src/mindustry/world/blocks/environment/CharacterOverlay.java
++++ b/core/src/mindustry/world/blocks/environment/CharacterOverlay.java
+@@ -9,6 +9,7 @@ import mindustry.annotations.Annotations.*;
+ import mindustry.entities.units.*;
+ import mindustry.gen.*;
+ import mindustry.world.*;
++import mindustryX.features.*;
+ 
+ public class CharacterOverlay extends OverlayFloor{
+     /** This is a special reduced character set that fits in 6 bits! It is not ASCII! */
+@@ -29,6 +30,7 @@ public class CharacterOverlay extends OverlayFloor{
+ 
+     @Override
+     public void drawBase(Tile tile){
++        if(!RenderExt.shouldDrawOreLayer()) return;
+         Draw.color(color);
+         int letterChar = CharOverlayData.character(tile.overlayData);
+         Draw.rect(letterRegions[letterChar], tile.worldx(), tile.worldy(), CharOverlayData.rotation(tile.overlayData) * 90f);
+diff --git a/core/src/mindustry/world/blocks/environment/Cliff.java b/core/src/mindustry/world/blocks/environment/Cliff.java
+index fe73e5fddaf205acac6ba2a1f6227587f7a7c251..89119b53d5873ea3d6ff083d9aabc2456d0ef69c 100644
+--- a/core/src/mindustry/world/blocks/environment/Cliff.java
++++ b/core/src/mindustry/world/blocks/environment/Cliff.java
+@@ -7,6 +7,7 @@ import mindustry.annotations.Annotations.*;
+ import mindustry.gen.*;
+ import mindustry.graphics.*;
+ import mindustry.world.*;
++import mindustryX.features.*;
+ 
+ import static mindustry.Vars.world;
+ 
+@@ -25,9 +26,20 @@ public class Cliff extends Block{
+ 
+     @Override
+     public void drawBase(Tile tile){
++        if(!RenderExt.shouldDrawBuildingBase()){
++            if(RenderExt.shouldDrawOreLayer() && tile.overlay().wallOre){
++                tile.overlay().drawBase(tile);
++            }
++            return;
++        }
++
+         Draw.color(Tmp.c1.set(tile.floor().mapColor).mul(1.6f));
+         Draw.rect(tile.data != 0 ? cliffs[tile.data & 0xff] : region, tile.worldx(), tile.worldy());
+         Draw.color();
++
++        if(RenderExt.shouldDrawOreLayer() && tile.overlay().wallOre){
++            tile.overlay().drawBase(tile);
++        }
+     }
+ 
+     @Override
+diff --git a/core/src/mindustry/world/blocks/environment/ColoredFloor.java b/core/src/mindustry/world/blocks/environment/ColoredFloor.java
+index 719fa37178119c67282d1802fa4817920c7ec9b7..fc5b209308300ef7922edef6b4884791e679f3e9 100644
+--- a/core/src/mindustry/world/blocks/environment/ColoredFloor.java
++++ b/core/src/mindustry/world/blocks/environment/ColoredFloor.java
+@@ -11,6 +11,7 @@ import mindustry.gen.*;
+ import mindustry.ui.*;
+ import mindustry.world.*;
+ import mindustry.world.blocks.*;
++import mindustryX.features.*;
+ 
+ import static mindustry.Vars.*;
+ 
+@@ -69,6 +70,11 @@ public class ColoredFloor extends Floor{
+ 
+     @Override
+     public void drawBase(Tile tile){
++        if(!RenderExt.shouldDrawFloorLayer()){
++            drawOverlay(tile);
++            return;
++        }
++
+         //make sure to mask out the alpha channel - it's generally undesirable, and leads to invisible blocks when the data is not initialized
+         Draw.color(tile.extraData | 0xff);
+         if((tile.extraData & 0xff) == flagSmoothBlend && autotile){
+diff --git a/core/src/mindustry/world/blocks/environment/EmptyFloor.java b/core/src/mindustry/world/blocks/environment/EmptyFloor.java
+index 5812c0847a09250d3cdc7e079a990333ad33edfd..f564346479933925bf7296c60618fdb258ec31c9 100644
+--- a/core/src/mindustry/world/blocks/environment/EmptyFloor.java
++++ b/core/src/mindustry/world/blocks/environment/EmptyFloor.java
+@@ -2,6 +2,7 @@ package mindustry.world.blocks.environment;
+ 
+ import mindustry.content.*;
+ import mindustry.world.*;
++import mindustryX.features.*;
+ 
+ /** Empty floor is *not* equivalent to air. Unlike air, it is solid, and still draws neighboring tile edges. */
+ public class EmptyFloor extends Floor{
+@@ -18,10 +19,12 @@ public class EmptyFloor extends Floor{
+     @Override
+     public void drawBase(Tile tile){
+         //draws only edges, never itself
+-        drawEdges(tile);
++        if(RenderExt.shouldDrawFloorLayer()){
++            drawEdges(tile);
++        }
+ 
+         Floor floor = tile.overlay();
+-        if(floor != Blocks.air && floor != this){
++        if(RenderExt.shouldDrawOreLayer() && floor != Blocks.air && floor != this){
+             floor.drawBase(tile);
+         }
+     }
+diff --git a/core/src/mindustry/world/blocks/environment/Floor.java b/core/src/mindustry/world/blocks/environment/Floor.java
+index 87a6c7318ee93ad7ee4647e314a49e27f91dfd7c..05379b968b8eb8e33b8d185cb79dcac07074eb9b 100644
+--- a/core/src/mindustry/world/blocks/environment/Floor.java
++++ b/core/src/mindustry/world/blocks/environment/Floor.java
+@@ -16,6 +16,7 @@ import mindustry.graphics.MultiPacker.*;
+ import mindustry.type.*;
+ import mindustry.world.*;
+ import mindustry.world.blocks.*;
++import mindustryX.features.*;
+ 
+ import java.util.*;
+ 
+@@ -237,14 +238,25 @@ public class Floor extends Block{
+ 
+     @Override
+     public void drawBase(Tile tile){
+-        drawMain(tile);
++        boolean renderMain = RenderExt.shouldDraw(this);
++        boolean renderOverlay = !isOverlay() && RenderExt.shouldDraw(tile.overlay());
+ 
+-        if(drawEdgeIn){
++        if(!renderMain && !renderOverlay){
++            return;
++        }
++
++        if(renderMain){
++            drawMain(tile);
++        }
++
++        if(renderMain && drawEdgeIn){
+             drawEdges(tile);
+         }
+-        drawOverlay(tile);
++        if(renderOverlay){
++            drawOverlay(tile);
++        }
+ 
+-        if(tile.overlay() != Blocks.air && tile.floor() == this && isLiquid){
++        if(renderMain && tile.overlay() != Blocks.air && tile.floor() == this && isLiquid){
+             Draw.alpha(1f - overlayAlpha);
+             drawMain(tile);
+             Draw.color();
+@@ -293,7 +305,7 @@ public class Floor extends Block{
+ 
+     public void drawOverlay(Tile tile){
+         Floor floor = tile.overlay();
+-        if(floor != Blocks.air && floor != this){
++        if(floor != Blocks.air && floor != this && RenderExt.shouldDraw(floor)){
+             floor.drawBase(tile);
+         }
+     }
+@@ -331,6 +343,8 @@ public class Floor extends Block{
+     }
+ 
+     public void drawNonLayer(Tile tile, CacheLayer layer){
++        if(!RenderExt.shouldDraw(this)) return;
++
+         Arrays.fill(dirs, 0);
+         blenders.clear();
+         blended.clear();
+diff --git a/core/src/mindustry/world/blocks/environment/OverlayFloor.java b/core/src/mindustry/world/blocks/environment/OverlayFloor.java
+index c7d5a10f2849812da42bf3e12cf751d0e5886f25..de3daa3807900f419159c71c49e500aeca4cacef 100644
+--- a/core/src/mindustry/world/blocks/environment/OverlayFloor.java
++++ b/core/src/mindustry/world/blocks/environment/OverlayFloor.java
+@@ -4,6 +4,7 @@ import arc.graphics.g2d.*;
+ import arc.math.*;
+ import mindustry.game.*;
+ import mindustry.world.*;
++import mindustryX.features.*;
+ 
+ /**A type of floor that is overlaid on top of other floors.*/
+ public class OverlayFloor extends Floor{
+@@ -20,6 +21,7 @@ public class OverlayFloor extends Floor{
+ 
+     @Override
+     public void drawBase(Tile tile){
++        if(!RenderExt.shouldDrawOreLayer()) return;
+         Draw.rect(variantRegions[Mathf.randomSeed(tile.pos(), 0, Math.max(0, variantRegions.length - 1))], tile.worldx(), tile.worldy());
+     }
+ }
+diff --git a/core/src/mindustry/world/blocks/environment/RuneOverlay.java b/core/src/mindustry/world/blocks/environment/RuneOverlay.java
+index a571c645223196468a5d73e8becead0ee2e9792d..41cbbb6b36ca0d1241ec6d4c93ba924db653d396 100644
+--- a/core/src/mindustry/world/blocks/environment/RuneOverlay.java
++++ b/core/src/mindustry/world/blocks/environment/RuneOverlay.java
+@@ -9,6 +9,7 @@ import mindustry.annotations.Annotations.*;
+ import mindustry.entities.units.*;
+ import mindustry.gen.*;
+ import mindustry.world.*;
++import mindustryX.features.*;
+ 
+ public class RuneOverlay extends OverlayFloor{
+     public static final int characters = 109;
+@@ -45,6 +46,7 @@ public class RuneOverlay extends OverlayFloor{
+ 
+     @Override
+     public void drawBase(Tile tile){
++        if(!RenderExt.shouldDrawOreLayer()) return;
+         Draw.color(color);
+         if((tile.overlayData & 0xff) < characters){
+             Draw.rect(letterRegions[tile.overlayData & 0xff], tile.worldx(), tile.worldy());
+diff --git a/core/src/mindustry/world/blocks/environment/StaticTree.java b/core/src/mindustry/world/blocks/environment/StaticTree.java
+index 7ec5984513d9f051ad4254b536854b7e5104a2ed..35fa2ec5a9ec0a720be480069d9e492bf95ff473 100644
+--- a/core/src/mindustry/world/blocks/environment/StaticTree.java
++++ b/core/src/mindustry/world/blocks/environment/StaticTree.java
+@@ -4,6 +4,7 @@ import arc.graphics.g2d.*;
+ import arc.math.*;
+ import arc.util.*;
+ import mindustry.world.*;
++import mindustryX.features.*;
+ 
+ import static mindustry.Vars.*;
+ 
+@@ -16,6 +17,13 @@ public class StaticTree extends StaticWall{
+ 
+     @Override
+     public void drawBase(Tile tile){
++        if(!RenderExt.shouldDrawBuildingBase()){
++            if(RenderExt.shouldDrawOreLayer() && tile.overlay().wallOre){
++                tile.overlay().drawBase(tile);
++            }
++            return;
++        }
++
+         TextureRegion reg = variants > 0 ? variantRegions[Mathf.randomSeed(tile.pos(), 0, Math.max(0, variantRegions.length - 1))] : region;
+ 
+         TextureRegion r = Tmp.tr1;
+@@ -43,5 +51,9 @@ public class StaticTree extends StaticWall{
+             }
+         }
+         Draw.rect(r, tile.drawx() + ox * Draw.scl, tile.drawy() + oy * Draw.scl);
++
++        if(RenderExt.shouldDrawOreLayer() && tile.overlay().wallOre){
++            tile.overlay().drawBase(tile);
++        }
+     }
+ }
+diff --git a/core/src/mindustry/world/blocks/environment/StaticWall.java b/core/src/mindustry/world/blocks/environment/StaticWall.java
+index 06b7be64bcd37d6877c60144968f547d28aef3a4..d60da6137f8ba26f161c972cb37f1f983150781b 100644
+--- a/core/src/mindustry/world/blocks/environment/StaticWall.java
++++ b/core/src/mindustry/world/blocks/environment/StaticWall.java
+@@ -10,6 +10,7 @@ import mindustry.content.*;
+ import mindustry.graphics.*;
+ import mindustry.world.*;
+ import mindustry.world.blocks.*;
++import mindustryX.features.*;
+ 
+ import static mindustry.Vars.*;
+ 
+@@ -38,36 +39,40 @@ public class StaticWall extends Prop{
+ 
+     @Override
+     public void drawBase(Tile tile){
+-        if(autotile){
+-            int bits = 0;
+-
+-            for(int i = 0; i < 8; i++){
+-                Tile other = tile.nearby(Geometry.d8[i]);
+-                if(checkAutotileSame(tile, other)){
+-                    bits |= (1 << i);
++        boolean renderBlock = RenderExt.shouldDrawBuildingBase();
++        boolean renderOre = tile.overlay().wallOre && RenderExt.shouldDraw(tile.overlay());
++
++        if(renderBlock){
++            if(autotile){
++                int bits = 0;
++
++                for(int i = 0; i < 8; i++){
++                    Tile other = tile.nearby(Geometry.d8[i]);
++                    if(checkAutotileSame(tile, other)){
++                        bits |= (1 << i);
++                    }
+                 }
+-            }
+-
+-            int bit = TileBitmask.values[bits];
+ 
+-            TextureRegion region = bit == 13 && autotileMidVariants > 1 ? autotileMidRegions[variant(tile.x, tile.y, autotileMidRegions.length)] : autotileRegions[bit];
++                int bit = TileBitmask.values[bits];
+ 
+-            Draw.rect(region, tile.worldx(), tile.worldy());
+-        }else{
+-            int rx = tile.x / 2 * 2;
+-            int ry = tile.y / 2 * 2;
++                TextureRegion region = bit == 13 && autotileMidVariants > 1 ? autotileMidRegions[variant(tile.x, tile.y, autotileMidRegions.length)] : autotileRegions[bit];
+ 
+-            if(Core.atlas.isFound(large) && eq(rx, ry) && Mathf.randomSeed(Point2.pack(rx, ry)) < 0.5 && split.length >= 2 && split[0].length >= 2){
+-                Draw.rect(split[tile.x % 2][1 - tile.y % 2], tile.worldx(), tile.worldy());
+-            }else if(variants > 0){
+-                Draw.rect(variantRegions[Mathf.randomSeed(tile.pos(), 0, Math.max(0, variantRegions.length - 1))], tile.worldx(), tile.worldy());
+-            }else{
+                 Draw.rect(region, tile.worldx(), tile.worldy());
++            }else{
++                int rx = tile.x / 2 * 2;
++                int ry = tile.y / 2 * 2;
++
++                if(Core.atlas.isFound(large) && eq(rx, ry) && Mathf.randomSeed(Point2.pack(rx, ry)) < 0.5 && split.length >= 2 && split[0].length >= 2){
++                    Draw.rect(split[tile.x % 2][1 - tile.y % 2], tile.worldx(), tile.worldy());
++                }else if(variants > 0){
++                    Draw.rect(variantRegions[Mathf.randomSeed(tile.pos(), 0, Math.max(0, variantRegions.length - 1))], tile.worldx(), tile.worldy());
++                }else{
++                    Draw.rect(region, tile.worldx(), tile.worldy());
++                }
+             }
+         }
+ 
+-        //draw ore on top
+-        if(tile.overlay().wallOre){
++        if(renderOre){
+             tile.overlay().drawBase(tile);
+         }
+     }
+diff --git a/core/src/mindustry/world/blocks/environment/TiledWall.java b/core/src/mindustry/world/blocks/environment/TiledWall.java
+index 22d3695547121eb91e220e27cead8e552bdf1923..8af233412bd50939bc0476d5cc9f062a0cebca3d 100644
+--- a/core/src/mindustry/world/blocks/environment/TiledWall.java
++++ b/core/src/mindustry/world/blocks/environment/TiledWall.java
+@@ -5,6 +5,7 @@ import arc.graphics.g2d.*;
+ import arc.math.*;
+ import mindustry.gen.*;
+ import mindustry.world.*;
++import mindustryX.features.*;
+ 
+ import static mindustry.Vars.*;
+ 
+@@ -100,6 +101,13 @@ public class TiledWall extends StaticWall{
+ 
+     @Override
+     public void drawBase(Tile tile){
++        if(!RenderExt.shouldDrawBuildingBase()){
++            if(RenderExt.shouldDrawOreLayer() && tile.overlay().wallOre){
++                tile.overlay().drawBase(tile);
++            }
++            return;
++        }
++
+         long state = state(tile);
+         //stale state, start scanning.
+         if(TiledState.changes(state) != world.tileChanges){
+@@ -115,5 +123,9 @@ public class TiledWall extends StaticWall{
+         TextureRegion[][] regions = sizedRegions[size][variant];
+ 
+         Draw.rect(regions[Mathf.clamp(cx, 0, regions.length - 1)][Mathf.clamp(size - 1 - cy, 0, regions[0].length - 1)], tile.worldx(), tile.worldy());
++
++        if(RenderExt.shouldDrawOreLayer() && tile.overlay().wallOre){
++            tile.overlay().drawBase(tile);
++        }
+     }
+ }

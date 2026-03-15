@@ -85,6 +85,12 @@ class AdvanceToolTable : Table() {
             }.checked { VarsX.allUnlocked.value }.tooltip(i("显示并允许建造所有物品")).wrapLabel(false)
             button(i("地形蓝图"), Styles.flatToggleMenut) { LogicExt.terrainSchematic0.toggle() }
                 .checked { LogicExt.terrainSchematic }.wrapLabel(false)
+            button(i("地板"), Styles.flatToggleMenut) { LogicExt.floorLayerEnabled0.toggle() }
+                .checked { LogicExt.isFloorLayerEnabled() }.wrapLabel(false)
+            button(i("矿物"), Styles.flatToggleMenut) { LogicExt.oreLayerEnabled0.toggle() }
+                .checked { LogicExt.isOreLayerEnabled() }.wrapLabel(false)
+            button(i("建筑"), Styles.flatToggleMenut) { LogicExt.blockLayerEnabled0.toggle() }
+                .checked { LogicExt.isBlockLayerEnabled() }.wrapLabel(false)
             button(i("瞬间完成"), Styles.cleart) {
                 Vars.player.unit()?.apply {
                     if (!canBuild()) {
