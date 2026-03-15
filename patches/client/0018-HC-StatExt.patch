@@ -141,7 +141,7 @@ index e47316c1a1b7495f3e8b4672f89f89ba0bc8c82b..ede5dc36c5e133c3f1033c00f678d64c
 +        }
  
          if(mineTier >= 1){
-+            stats.add(StatExt.mineLevel, "@级", mineTier);
++            stats.add(StatExt.mineLevel, Core.bundle.get("ui.simple.level-format"), mineTier);
              stats.addPercent(Stat.mineSpeed, mineSpeed);
 -            stats.add(Stat.mineTier, StatValues.drillables(mineSpeed, 1f, 1, null, b ->
 +            stats.add(Stat.mineTier, StatValues.drillables(mineHardnessScaling ? 50 : 65, mineHardnessScaling ? 1 : 0, mineSpeed, null, b ->
@@ -177,14 +177,14 @@ index eedcaa20c7b63b6c41d647cead5febc8b8c2dacb..c527a7c4e0164fcbb22240880692f58b
  
      public void addStats(UnitType u, Table t){
 +        t.row();
-+        t.add("[lightgray]武器范围: [stat]" + String.format("%.1f", bullet.range/8f) + " []格");
++        t.add(Core.bundle.format("ui.simple.weapon-range", String.format("%.1f", bullet.range / 8f)));
 +
 +        if (rotate) {
 +            t.row();
-+            t.add("[lightgray]旋转速度: [stat]" + String.format("%.0f", rotateSpeed * 60f) + " []°/s");
++            t.add(Core.bundle.format("ui.simple.rotation-speed", String.format("%.0f", rotateSpeed * 60f)));
 +            if (rotationLimit < 361f) {
 +                t.row();
-+                t.add("[lightgray]旋转范围: [stat]" + String.format("%.0f", rotationLimit) + " []" + StatUnit.degrees.localized());
++                t.add(Core.bundle.format("ui.simple.rotation-range", String.format("%.0f", rotationLimit), StatUnit.degrees.localized()));
 +            }
 +        }
 +
@@ -597,12 +597,12 @@ index 58134e5c84363b261f6270c44802fbf471128261..72207f49403881823181169657a797fe
  
                      if(type.buildingDamageMultiplier != 1){
 -                        sep(bt, Core.bundle.format("bullet.buildingdamage", ammoStat((int)(type.buildingDamageMultiplier * 100 - 100))));
-+                        sep(bt, multStat(type.buildingDamageMultiplier) + "[lightgray]x建筑伤害");
++                        sep(bt, multStat(type.buildingDamageMultiplier) + Core.bundle.get("ui.simple.building-damage-multiplier"));
                      }
  
                      if(type.rangeChange != 0 && !compact){
 -                        sep(bt, Core.bundle.format("bullet.range", ammoStat(type.rangeChange / tilesize)));
-+                        sep(bt, "[lightgray]射程 " + ammoStat(type.rangeChange / tilesize) + " [lightgray]格");
++                        sep(bt, Core.bundle.format("ui.simple.range-tiles", ammoStat(type.rangeChange / tilesize)));
                      }
  
                      if(type.shieldDamageMultiplier != 1){
@@ -612,7 +612,7 @@ index 58134e5c84363b261f6270c44802fbf471128261..72207f49403881823181169657a797fe
                      if(!compact && !Mathf.equal(type.reloadMultiplier, 1f)){
 -                        int val = (int)(type.reloadMultiplier * 100 - 100);
 -                        sep(bt, Core.bundle.format("bullet.reload", ammoStat(val)));
-+                        sep(bt, multStat(type.reloadMultiplier) + "[lightgray]x射速");
++                        sep(bt, multStat(type.reloadMultiplier) + Core.bundle.get("ui.simple.reload-multiplier"));
                      }
  
                      if(type.knockback > 0){
@@ -628,17 +628,17 @@ index 58134e5c84363b261f6270c44802fbf471128261..72207f49403881823181169657a797fe
 +                        boolean pierceUnit = type.pierce;
 +                        StringBuilder str = new StringBuilder("[stat]");
 +                        if(type instanceof RailBulletType rail){
-+                            str.append(Strings.autoFixed(rail.pierceDamageFactor * 100f, 1) + "%衰减");
++                            str.append(Core.bundle.format("ui.simple.percent-falloff", Strings.autoFixed(rail.pierceDamageFactor * 100f, 1)));
 +                        }else{
-+                            str.append(type.pierceCap == -1 ? "无限" : type.pierceCap + "x");
++                            str.append(type.pierceCap == -1 ? Core.bundle.get("ui.simple.infinite-pierce") : type.pierceCap + "x");
 +                        }
-+                        str.append("穿透[lightgray]");
++                        str.append(Core.bundle.get("ui.simple.pierce-label"));
 +                        if(pierceBuilding && pierceUnit){
-+                            str.append("建筑与单位");
++                            str.append(Core.bundle.get("ui.simple.buildings-and-units"));
 +                        }else{
-+                            str.append(pierceBuilding ? "建筑" : "单位");
++                            str.append(pierceBuilding ? Core.bundle.get("ui.simple.building") : Core.bundle.get("ui.simple.unit"));
 +                        }
-+                        if(laserPierce) str.append("[stat](电性)");
++                        if(laserPierce) str.append(Core.bundle.get("ui.simple.electric-property"));
 +                        sep(bt, str.toString());
                      }
  
@@ -648,7 +648,7 @@ index 58134e5c84363b261f6270c44802fbf471128261..72207f49403881823181169657a797fe
  
                      if(type.homingPower > 0.01f){
 -                        sep(bt, "@bullet.homing");
-+                        sep(bt, "[stat]追踪[lightgray]~[]" + Strings.autoFixed(type.homingPower * 50 * Time.toSeconds, 1) + "°/s[lightgray]~[]" + Strings.fixed(type.homingRange / tilesize, 1) + "[lightgray]格");
++                        sep(bt, Core.bundle.format("ui.simple.homing-detail", Strings.autoFixed(type.homingPower * 50 * Time.toSeconds, 1), Strings.fixed(type.homingRange / tilesize, 1)));
                      }
  
 -                    if(type.lightning > 0){
@@ -672,7 +672,7 @@ index 58134e5c84363b261f6270c44802fbf471128261..72207f49403881823181169657a797fe
                      }
  
 +                    if(type instanceof EmpBulletType eb){
-+                        collapse(bt, Strings.format("[stat]EMP~@[lightgray]格[]~[white]\uE810[]@%/[white]\uE86D[]@%~[white]\uF899[][green]@%[]/[negstat]@%[]",
++                        collapse(bt, Core.bundle.format("ui.simple.emp-summary",
 +                        Strings.autoFixed(eb.radius / tilesize, 0),
 +                        Strings.autoFixed(eb.powerDamageScl * 100, 0),
 +                        Strings.autoFixed(eb.unitDamageScl * 100, 0),
@@ -680,10 +680,10 @@ index 58134e5c84363b261f6270c44802fbf471128261..72207f49403881823181169657a797fe
 +                        Strings.autoFixed(eb.powerSclDecrease * 100, 0)
 +                        ), ec -> {
 +                            ec.defaults().padLeft(5f);
-+                            sep(ec, Strings.format("[stat]对敌方电网建筑造成@%子弹伤害", Strings.autoFixed(eb.powerDamageScl * 100, 0)));
-+                            sep(ec, Strings.format("[stat]对敌方单位造成@%子弹伤害", Strings.autoFixed(eb.unitDamageScl * 100, 0)));
-+                            sep(ec, Strings.format("[stat]对我方耗电建筑超速至@%", Strings.autoFixed(eb.timeIncrease * 100, 0)));
-+                            sep(ec, Strings.format("[stat]对敌方电网建筑减速至@%", Strings.autoFixed(eb.powerSclDecrease * 100, 0)));
++                            sep(ec, Core.bundle.format("ui.simple.emp-damages-power", Strings.autoFixed(eb.powerDamageScl * 100, 0)));
++                            sep(ec, Core.bundle.format("ui.simple.emp-damages-units", Strings.autoFixed(eb.unitDamageScl * 100, 0)));
++                            sep(ec, Core.bundle.format("ui.simple.emp-speeds-friendly-power", Strings.autoFixed(eb.timeIncrease * 100, 0)));
++                            sep(ec, Core.bundle.format("ui.simple.emp-slows-enemy-power", Strings.autoFixed(eb.powerSclDecrease * 100, 0)));
 +                        });
 +                    }
 +
@@ -700,11 +700,11 @@ index 58134e5c84363b261f6270c44802fbf471128261..72207f49403881823181169657a797fe
 +            if(shots > 0){
 +                str += String.format("[stat]%d[]x", shots);
 +            }
-+            str += String.format("闪电~[stat]%s[]伤害~", Strings.autoFixed(damage, 1));
++            str += Core.bundle.format("ui.simple.lightning-damage", Strings.autoFixed(damage, 1));
 +            if(lengthRand > 0){
-+                str += String.format("[stat]%d~%d[]长度", length, length + lengthRand);
++                str += Core.bundle.format("ui.simple.lightning-length-range", length, length + lengthRand);
 +            }else{
-+                str += String.format("[stat]%d[]长度", length);
++                str += Core.bundle.format("ui.simple.lightning-length", length);
 +            }
 +            sep(table, str);
 +        };

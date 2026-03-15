@@ -88,7 +88,7 @@ index 74fb32ff56eec0fcf565cb7cf7aedf1335c978cc..39f29b027fe979cea410e52b2b8cd695
 +                Seq<LStatement> lsStatement = LAssembler.read(code, privileged);
 +                LStatement stNew = lsStatement.first();
 +                if(stNew instanceof InvalidStatement){
-+                    UIExt.announce("[orange]警告：转换失败，请输入正确格式");
++                    UIExt.announce(Core.bundle.get("ui.simple.orange-convert-failed"));
 +                    return;
 +                }
 +                newElem = new StatementElem(stNew);
@@ -194,7 +194,7 @@ index 4f172c5f66736634dac190b115827695ab7993f7..ecbe2ed06b45257a1deb16ce7dbab495
 +                    var scroll = (ScrollPane)canvas.parent;
 +                    scroll.setScrollY(scroll.getMaxY() - dest.y + scroll.getHeight() * 0.5f);
 +                    saveUI();
-+                    UIExt.announce("[gold]跳转行号:[] " + destIndex);
++                    UIExt.announce(Core.bundle.format("ui.simple.jump-to-line", destIndex));
 +
 +                    Element header = dest.getChildren().first();
 +                    dest.clearActions();
@@ -254,7 +254,7 @@ index 51c8576d8b41d43e25eb86400d169b9a108e6642..de370177beb5fec5b3b00abbb3dd8e2c
                      }).marginLeft(12f);
 -
 +                    t.row();
-+                    t.button("[orange]丢弃更改", Icon.cancel,style, () -> ui.showConfirm("确认丢弃?", () -> {
++                    t.button(Core.bundle.get("ui.simple.discard-changes"), Icon.cancel,style, () -> ui.showConfirm(Core.bundle.get("ui.simple.confirm-discard"), () -> {
 +                        noSave = true;
 +                        dialog.hide();
 +                        hide();

@@ -54,7 +54,7 @@ index 55e675caa05e8b7fb43b92bc2460e19daae7840e..f4467612284dc20feb6447a4953dff25
              dialog.show();
          }).size(250f, 64f);
  
-+        buttons.button("切换显示模式", () -> {
++        buttons.button(Core.bundle.get("ui.simple.toggle-display-mode"), () -> {
 +            wavesListMode = !wavesListMode;
 +            wavesListCell.setElement(wavesListMode ? wavesListPane : graph);
 +        }).width(200f);
@@ -87,14 +87,14 @@ index 55e675caa05e8b7fb43b92bc2460e19daae7840e..f4467612284dc20feb6447a4953dff25
 +
 +        wavesList.clearChildren();
 +        wavesList.margin(0).defaults().pad(5).growX();
-+        wavesList.table(Tex.button, t -> t.add("\uE86D 为单位数量；\uE813 为单位血+盾；\uE810 为计算buff的血+盾；\uE86E 为预估DPS。在游戏中时会考虑地图出怪点数目").color(Pal.accent)).scrollX(false).growX().row();
++        wavesList.table(Tex.button, t -> t.add(Core.bundle.get("ui.simple.wave-list-legend")).color(Pal.accent)).scrollX(false).growX().row();
 +        float firstWaveTime = state.rules.initialWaveSpacing <= 0 ? (2 * state.rules.waveSpacing) : state.rules.initialWaveSpacing;
 +        int winWave = this.winWave;
 +        for(int waveI = 0; waveI < winWave; waveI++){
 +            WaveInfo wave = ArcWaveSpawner.getOrInit(waveI);
 +            wavesList.table(Tex.button, t -> {
 +                t.table(tt -> {
-+                    tt.add("第[accent]" + (wave.wave + 1) + "[]波").row();
++                    tt.add(Core.bundle.format("ui.simple.wave-number", wave.wave + 1)).row();
 +                    int thisTime = (int)(wave.wave * state.rules.waveSpacing + firstWaveTime);
 +                    tt.add(FormatDefault.duration(thisTime / 60f, false)).row();
 +                    tt.label(() -> {
@@ -105,14 +105,14 @@ index 55e675caa05e8b7fb43b92bc2460e19daae7840e..f4467612284dc20feb6447a4953dff25
 +                }).width(120f).left();
 +                if(wave.amount == 0){
 +                    t.add();
-+                    t.add("该波次没有敌人");
++                    t.add(Core.bundle.get("ui.simple.there-are-no-enemies-in-this-wave"));
 +                }else{
 +                    t.add(wave.proTable(true, -1, group -> true));
 +                    t.pane(wave.unitTable(-1, group -> true, mobile ? 8 : 15)).scrollX(true).scrollY(false).growX();
 +                }
 +            }).growX().row();
 +        }
-+        wavesList.button("加载更多波次", () -> {
++        wavesList.button(Core.bundle.get("ui.simple.load-more-waves"), () -> {
 +            this.winWave *= 2;
 +            buildWavesList();
 +        }).disabled(winWave == maxWaves).fillX().height(32f);
@@ -169,11 +169,11 @@ index 55e675caa05e8b7fb43b92bc2460e19daae7840e..f4467612284dc20feb6447a4953dff25
 +
 +                        t.table(a -> {
 +                            a.defaults().pad(2);
-+                            a.add("携带物品[gold]X[]: ");
++                            a.add(Core.bundle.get("ui.simple.carried-item-x"));
 +
 +                            a.button((group.items != null ? new TextureRegionDrawable(group.items.item.uiIcon) : Icon.noneSmall), Styles.emptyi, iconSmall, () -> {
 +                                if(group.type.itemCapacity <= 0){
-+                                    UIExt.announce("[red]该单位不可携带物品");
++                                    UIExt.announce(Core.bundle.get("ui.simple.red-unit-cannot-carry-items"));
 +                                    return;
 +                                }
 +                                var dialog = new ContentSelectDialog();
@@ -204,7 +204,7 @@ index 55e675caa05e8b7fb43b92bc2460e19daae7840e..f4467612284dc20feb6447a4953dff25
 +
 +                        t.table(a -> {
 +                            a.defaults().pad(2);
-+                            a.add("携带载荷[gold]X[]: ");
++                            a.add(Core.bundle.get("ui.simple.carried-payload-x"));
 +
 +                            if(group.payloads != null)
 +                                for(var it : group.payloads){
@@ -214,7 +214,7 @@ index 55e675caa05e8b7fb43b92bc2460e19daae7840e..f4467612284dc20feb6447a4953dff25
 +                            a.add().growX();
 +                            a.button(Icon.addSmall, Styles.emptyi, iconSmall, () -> showUnits((type) -> {
 +                                if(group.type.payloadCapacity <= 0){
-+                                    UIExt.announce("[red]该单位不可携带载荷");
++                                    UIExt.announce(Core.bundle.get("ui.simple.red-unit-cannot-carry-payloads"));
 +                                    return;
 +                                }
 +                                if(group.payloads == null) group.payloads = Seq.with();
