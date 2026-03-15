@@ -11,7 +11,7 @@ Subject: [PATCH] HC: ReplayController world data bridge
  4 files changed, 121 insertions(+), 10 deletions(-)
 
 diff --git a/core/src/mindustry/core/NetClient.java b/core/src/mindustry/core/NetClient.java
-index 52088c330e65c9fa30d0bab87f9e020fb022f4b2..77388f59ed5beae422a72e92720ee05d6811f390 100644
+index 52088c330e65c9fa30d0bab87f9e020fb022f4b2..739c9babdafd0218bc3d62f18130a781f1e20189 100644
 --- a/core/src/mindustry/core/NetClient.java
 +++ b/core/src/mindustry/core/NetClient.java
 @@ -149,8 +148,19 @@ public class NetClient implements ApplicationListener{
@@ -22,11 +22,12 @@ index 52088c330e65c9fa30d0bab87f9e020fb022f4b2..77388f59ed5beae422a72e92720ee05d
 -            NetworkIO.loadWorld(new InflaterInputStream(data.stream));
 +            byte[] bytes;
 +            try{
-+                bytes = new byte[data.stream.available()];
-+                int read = data.stream.read(bytes);
-+                if(read < bytes.length){
-+                    bytes = Arrays.copyOf(bytes, Math.max(read, 0));
++                ByteArrayOutputStream stream = new ByteArrayOutputStream(Math.max(data.stream.available(), 32));
++                byte[] buffer = new byte[4096];
++                for(int read; (read = data.stream.read(buffer)) != -1; ){
++                    stream.write(buffer, 0, read);
 +                }
++                bytes = stream.toByteArray();
 +            }catch(IOException e){
 +                throw new RuntimeException("Failed to read world data stream.", e);
 +            }
@@ -85,7 +86,7 @@ index f2bf3bba1bf733159746729bc1aa7499d205affd..61def2d060c475fc248ac295c01b4503
              }catch(Exception e){
                  Log.err(e);
 diff --git a/core/src/mindustry/net/Net.java b/core/src/mindustry/net/Net.java
-index cb76e9e2a90af2d54aa5668def238828a236c876..ac89aa7c3c26b71436322e401f4e2540c224a027 100644
+index cb76e9e2a90af2d54aa5668def238828a236c876..df5e7707a10e3ad84a4d9092c000b9c977c7b825 100644
 --- a/core/src/mindustry/net/Net.java
 +++ b/core/src/mindustry/net/Net.java
 @@ -17,6 +17,7 @@ import mindustryX.features.*;
@@ -100,7 +101,7 @@ index cb76e9e2a90af2d54aa5668def238828a236c876..ac89aa7c3c26b71436322e401f4e2540
      private static Seq<Prov<? extends Packet>> packetProvs = new Seq<>();
      private static Seq<Class<? extends Packet>> packetClasses = new Seq<>();
      private static ObjectIntMap<Class<?>> packetToId = new ObjectIntMap<>();
-+    private static Packet replayServerDispatchPacket;
++    private static final ThreadLocal<Packet> replayServerDispatchPacket = new ThreadLocal<>();
  
      private boolean server;
      private boolean active;
@@ -166,8 +167,10 @@ index cb76e9e2a90af2d54aa5668def238828a236c876..ac89aa7c3c26b71436322e401f4e2540
 -                if(!con.hasBegunConnecting) continue;
 -                con.send(object, reliable);
 +            Packet packet = object instanceof Packet p ? p : null;
++            Packet previousReplayServerDispatchPacket = null;
 +            if(packet != null){
-+                replayServerDispatchPacket = packet;
++                previousReplayServerDispatchPacket = replayServerDispatchPacket.get();
++                replayServerDispatchPacket.set(packet);
 +            }
 +            try{
 +                boolean recorded = false;
@@ -180,8 +183,12 @@ index cb76e9e2a90af2d54aa5668def238828a236c876..ac89aa7c3c26b71436322e401f4e2540
 +                    con.send(object, reliable);
 +                }
 +            }finally{
-+                if(replayServerDispatchPacket == packet){
-+                    replayServerDispatchPacket = null;
++                if(packet != null){
++                    if(previousReplayServerDispatchPacket == null){
++                        replayServerDispatchPacket.remove();
++                    }else{
++                        replayServerDispatchPacket.set(previousReplayServerDispatchPacket);
++                    }
 +                }
              }
          }else{
@@ -194,8 +201,10 @@ index cb76e9e2a90af2d54aa5668def238828a236c876..ac89aa7c3c26b71436322e401f4e2540
 -            if(con != except && con.hasBegunConnecting){
 -                con.send(object, reliable);
 +        Packet packet = object instanceof Packet p ? p : null;
++        Packet previousReplayServerDispatchPacket = null;
 +        if(packet != null){
-+            replayServerDispatchPacket = packet;
++            previousReplayServerDispatchPacket = replayServerDispatchPacket.get();
++            replayServerDispatchPacket.set(packet);
 +        }
 +        try{
 +            for(NetConnection con : getConnections()){
@@ -207,8 +216,12 @@ index cb76e9e2a90af2d54aa5668def238828a236c876..ac89aa7c3c26b71436322e401f4e2540
 +                }
 +            }
 +        }finally{
-+            if(replayServerDispatchPacket == packet){
-+                replayServerDispatchPacket = null;
++            if(packet != null){
++                if(previousReplayServerDispatchPacket == null){
++                    replayServerDispatchPacket.remove();
++                }else{
++                    replayServerDispatchPacket.set(previousReplayServerDispatchPacket);
++                }
              }
          }
      }
@@ -238,7 +251,7 @@ index cb76e9e2a90af2d54aa5668def238828a236c876..ac89aa7c3c26b71436322e401f4e2540
 +    }
 +
 +    public static void notifyReplayServerPacket(NetConnection connection, Packet packet){
-+        if(packet == null || replayServerDispatchPacket == packet) return;
++        if(packet == null || replayServerDispatchPacket.get() == packet) return;
 +        ReplayBridge.invoke(ReplayBridge.onServerPacket, connection, packet);
 +    }
 +
