@@ -85,10 +85,6 @@ public class LogicExt{
         return shouldIncludeInTerrainSchematic(BlockLayer.BLOCK);
     }
 
-    public static boolean shouldIncludeAnyTerrainSchematicSurface(){
-        return shouldIncludeFloorInTerrainSchematic() || shouldIncludeOreInTerrainSchematic();
-    }
-
     public static boolean isFloorLayer(Block block){
         return block instanceof Floor floor && !(floor instanceof OverlayFloor) && !floor.oreDefault && !floor.wallOre;
     }
@@ -135,7 +131,4 @@ public class LogicExt{
         return terrainSchematic && isLayerEnabled(layer);
     }
 
-    public static boolean shouldIncludeInTerrainSchematic(Block block){
-        return terrainSchematic && isLayerEnabled(block);
-    }
 }
