@@ -28,7 +28,7 @@ public class ReplayManagerDialog extends BaseDialog{
     private String search;
 
     public ReplayManagerDialog(){
-        super(i("回放管理器"));
+        super(i("ui.simple.replay-manager"));
 
         cont.table(searchRow -> {
             searchRow.image(Icon.zoom).size(iconMed).padRight(6f);
@@ -36,14 +36,14 @@ public class ReplayManagerDialog extends BaseDialog{
                 String value = text.trim().toLowerCase(Locale.ROOT);
                 search = value.isEmpty() ? null : value;
             }).maxTextLength(80).growX().get();
-            searchField.setMessageText(i("搜索回放"));
+            searchField.setMessageText(i("ui.simple.search-replays"));
         }).growX().row();
         cont.pane(Styles.noBarPane, list).scrollX(false).pad(8f).grow().row();
 
         addCloseButton();
-        buttons.button(i("加载外部回放"), Icon.upload, () -> {
+        buttons.button(i("ui.simple.load-external-replay"), Icon.upload, () -> {
             FileChooser.setLastDirectory(saveDirectory);
-            platform.showFileChooser(true, i("打开回放文件"), ReplayController.extension, file -> Core.app.post(() -> {
+            platform.showFileChooser(true, i("ui.simple.open-playback-file"), ReplayController.extension, file -> Core.app.post(() -> {
                 hide();
                 ReplayController.startPlay(file);
             }));
@@ -139,18 +139,18 @@ public class ReplayManagerDialog extends BaseDialog{
                 buildActionButtons(title);
             }).growX().row();
 
-            addInfoPair(this, i("修改时间"), FormatDefault.datetime(new Date(file.lastModified())));
-            addInfoPair(this, i("文件大小"), FormatDefault.fileSize(file.length()));
+            addInfoPair(this, i("ui.simple.modified"), FormatDefault.datetime(new Date(file.lastModified())));
+            addInfoPair(this, i("ui.simple.size"), FormatDefault.fileSize(file.length()));
 
             if(meta == null){
-                add(i("读取回放头信息中...")).color(Color.lightGray).growX().wrap();
+                add(i("ui.simple.reading-replay-header")).color(Color.lightGray).growX().wrap();
             }else if(meta == unreadableMeta){
-                add(i("无法读取回放头信息")).color(Color.lightGray).growX().wrap();
+                add(i("ui.simple.failed-to-read-replay-header")).color(Color.lightGray).growX().wrap();
             }else{
-                addInfoPair(this, i("录制时间"), FormatDefault.datetime(meta.getTime()));
-                addInfoPair(this, i("玩家"), meta.getRecordPlayer());
-                addInfoPair(this, i("服务器"), meta.getServerIp());
-                addInfoPair(this, i("版本"), String.valueOf(meta.getVersion()));
+                addInfoPair(this, i("ui.simple.recorded"), FormatDefault.datetime(meta.getTime()));
+                addInfoPair(this, i("ui.simple.player"), meta.getRecordPlayer());
+                addInfoPair(this, i("ui.simple.server"), meta.getServerIp());
+                addInfoPair(this, i("ui.simple.version"), String.valueOf(meta.getVersion()));
             }
         }
 

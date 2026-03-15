@@ -54,8 +54,8 @@ public class LogicSupport{
         Table main = new Table(Styles.grayPanel);
         main.margin(4f);
 
-        main.add(i("逻辑辅助器[gold]X[]")).style(Styles.outlineLabel).pad(8f).padBottom(12f).row();
-        main.fill(tt -> tt.top().right().button(Icon.cancel, Styles.clearNonei, iconMed, visible::toggle).tooltip(i("隐藏逻辑辅助器")));
+        main.add(i("ui.simple.logic-helper-gold-x")).style(Styles.outlineLabel).pad(8f).padBottom(12f).row();
+        main.fill(tt -> tt.top().right().button(Icon.cancel, Styles.clearNonei, iconMed, visible::toggle).tooltip(i("ui.simple.hide-logic-helper")));
 
         main.table(LogicSupport::buildConfigTable).fillX().row();
         main.pane(Styles.noBarPane, varsTable).growY().fillX().scrollX(false).width(400f).padTop(8f);
@@ -93,27 +93,27 @@ public class LogicSupport{
         table.button(Icon.downloadSmall, Styles.cleari, () -> {
             if(refreshExecutor != null){
                 refreshExecutor.run();
-                UIExt.announce(i("[orange]已更新编辑的逻辑！"));
+                UIExt.announce(i("ui.simple.orange-updated-edited-logic"));
             }
-        }).tooltip(i("更新编辑的逻辑")).disabled(b -> refreshExecutor == null);
+        }).tooltip(i("ui.simple.refresh-edited-logic")).disabled(b -> refreshExecutor == null);
         table.button(Icon.eyeSmall, Styles.clearTogglei, () -> {
             changeSplash.toggle();
-            String state = changeSplash.get() ? i("开启") : i("关闭");
-            String text = VarsX.bundle.toggleState(i("变动闪烁"), state);
+            String state = changeSplash.get() ? i("ui.simple.on") : i("ui.simple.off");
+            String text = VarsX.bundle.toggleState(i("ui.simple.flash-on-change"), state);
             UIExt.announce(text);
-        }).checked((b) -> changeSplash.get()).tooltip(i("变量变动闪烁"));
+        }).checked((b) -> changeSplash.get()).tooltip(i("settingV2.logicSupport.changeSplash.name"));
         table.button(Icon.refreshSmall, Styles.clearTogglei, () -> {
             autoRefresh = !autoRefresh;
-            String state = autoRefresh ? i("开启") : i("关闭");
-            String text = VarsX.bundle.toggleState(i("变量自动更新"), state);
+            String state = autoRefresh ? i("ui.simple.on") : i("ui.simple.off");
+            String text = VarsX.bundle.toggleState(i("ui.simple.auto-refresh-variables"), state);
             UIExt.announce(text);
-        }).checked((b) -> autoRefresh).tooltip(i("自动刷新变量"));
+        }).checked((b) -> autoRefresh).tooltip(i("ui.simple.automatically-refresh-variables"));
         table.button(Icon.pause, Styles.clearTogglei, () -> {
             if(state.isPaused()) state.set(State.playing);
             else state.set(State.paused);
-            String text = state.isPaused() ? i("已暂停") : i("已继续游戏");
+            String text = state.isPaused() ? i("ui.simple.paused") : i("ui.simple.game-resumed");
             UIExt.announce(text);
-        }).checked((b) -> state.isPaused()).tooltip(i("暂停逻辑(游戏)运行"));
+        }).checked((b) -> state.isPaused()).tooltip(i("ui.simple.pause-logic-game-execution"));
 
         table.defaults().reset();
         var slider = new Slider(1, 60, 1, false);
@@ -259,7 +259,7 @@ public class LogicSupport{
             t.defaults().size(40);
             t.button(Icon.pencil, Styles.cleari, () -> {
                 if(!block.accessible())
-                    UIExt.announce(i("[yellow]当前无权编辑，仅供查阅"));
+                    UIExt.announce(i("ui.simple.yellow-no-permission-to-edit-view-only"));
                 build.showEditDialog();
             });
             t.button(Icon.info, Styles.cleari, () -> {
@@ -270,8 +270,8 @@ public class LogicSupport{
             t.button(Icon.trash, Styles.cleari, () -> {
                 build.links.clear();
                 build.updateCode(build.code, true, null);
-            }).disabled(b -> net.client()).tooltip(i("重置所有链接"));
-            t.button(Icon.paste, Styles.cleari, () -> showLogicCodePickDialog(block, build)).tooltip(i("从蓝图中选择代码"));
+            }).disabled(b -> net.client()).tooltip(i("ui.simple.reset-all-links"));
+            t.button(Icon.paste, Styles.cleari, () -> showLogicCodePickDialog(block, build)).tooltip(i("ui.simple.extract-code-from-schematic"));
         });
         table.row().pane(Styles.noBarPane, vars).pad(4).maxHeight(400f).touchable(Touchable.disabled).get().setScrollingDisabledX(true);
         if(showVars) buildLogicVarTable(vars, build.executor);
@@ -279,10 +279,10 @@ public class LogicSupport{
 
     private static void showLogicCodePickDialog(LogicBlock block, LogicBuild build){
         var all = schematics.all().select(it -> it.tiles.contains(s -> s.block instanceof LogicBlock));
-        new BaseDialog(i("选择代码")){{
+        new BaseDialog(i("ui.simple.select-code")){{
             addCloseButton();
             closeOnBack();
-            cont.add(i("TIP: 所有包含处理器的蓝图")).row();
+            cont.add(i("ui.simple.tip-all-schematics-containing-processors")).row();
             cont.pane(tt -> {
                 for(var schem : all){
                     tt.button(schem.name(), () -> {

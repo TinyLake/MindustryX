@@ -16,7 +16,7 @@ public class TeamSelectDialog extends BaseDialog{
     private Cons<Team> cons;
 
     public TeamSelectDialog(){
-        super(i("队伍选择器"));
+        super(i("ui.simple.team-selector"));
         cont.pane(td -> {
             for(Team team : Team.all){
                 if(team.id % 10 == 6){

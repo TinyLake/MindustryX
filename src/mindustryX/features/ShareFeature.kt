@@ -62,7 +62,7 @@ object ShareFeature {
         }
         req.error {
             Core.app.post {
-                Vars.ui.showException(i("上传失败，再重试一下？"), it)
+                Vars.ui.showException(i("ui.simple.upload-failed-try-again"), it)
                 Core.app.post { callback(null) }
             }
         }
@@ -96,7 +96,7 @@ object ShareFeature {
                 link = link, code = Vars.schematics.writeBase64(schem)
             )
             Core.app.setClipboardText(Strings.stripColors(msg))
-            UIExt.announce(i("已保存至剪贴板"))
+            UIExt.announce(i("ui.simple.saved-to-clipboard"))
         }
     }
 
@@ -225,16 +225,16 @@ object ShareFeature {
             checked = Tex.underlineOver //Over是黄色的
         }
         button("T", underlineToggleT) { Vars.ui.chatfrag.nextMode() }
-            .checked { _ -> Vars.ui.chatfrag.mode == ChatFragment.ChatMode.team }.tooltip(i("前缀添加/t"))
+            .checked { _ -> Vars.ui.chatfrag.mode == ChatFragment.ChatMode.team }.tooltip(i("ui.simple.add-prefix-t"))
         button(Icon.zoomSmall, Styles.clearNonei) { MarkerType.lockOnLastMark() }
-            .tooltip(i("锁定上个标记点"))
+            .tooltip(i("ui.simple.lock-the-last-marked-point"))
 
         add("♐>").padRight(18f)
-        button(Icon.mapSmall, Styles.clearNonei, Vars.iconMed) { MarkerType.toggleMarkHitterUI() }.tooltip(i("标记地图位置"))
-        button(Icon.wavesSmall, Styles.clearNonei, Vars.iconMed) { shareWaveInfo(Vars.state.wave) }.tooltip(i("分享波次信息"))
-        button(Icon.powerSmall, Styles.clearNonei, Vars.iconMed) { shareTeamPower() }.tooltip(i("分享电力情况"))
-        button(TextureRegionDrawable(Items.copper.uiIcon), Styles.clearNonei, Vars.iconSmall) { openShareItemDialog() }.tooltip(i("分享库存情况"))
-        button(Icon.unitsSmall, Styles.clearNonei, Vars.iconMed) { openShareUnitDialog() }.tooltip(i("分享单位数量"))
+        button(Icon.mapSmall, Styles.clearNonei, Vars.iconMed) { MarkerType.toggleMarkHitterUI() }.tooltip(i("ui.simple.mark-map-location"))
+        button(Icon.wavesSmall, Styles.clearNonei, Vars.iconMed) { shareWaveInfo(Vars.state.wave) }.tooltip(i("ui.simple.share-wave-information"))
+        button(Icon.powerSmall, Styles.clearNonei, Vars.iconMed) { shareTeamPower() }.tooltip(i("ui.simple.share-power-status"))
+        button(TextureRegionDrawable(Items.copper.uiIcon), Styles.clearNonei, Vars.iconSmall) { openShareItemDialog() }.tooltip(i("ui.simple.share-inventory-status"))
+        button(Icon.unitsSmall, Styles.clearNonei, Vars.iconMed) { openShareUnitDialog() }.tooltip(i("ui.simple.share-unit-count"))
     }
 
     private fun resolveAt(message: String, sender: Player?): Boolean {
@@ -245,7 +245,7 @@ object ShareFeature {
         message = message.substringAfter("<AT>").substringAfter(tag('@'))
         if (message.contains(Vars.player.name)) {
             if (sender != null) Vars.ui.announce(VarsX.bundle.atNoticeFrom(sender.name), 10f)
-            else Vars.ui.announce(i("[orange]你被戳了一下，请注意查看信息框哦~"), 10f)
+            else Vars.ui.announce(i("ui.simple.orange-you-were-poked-please-check-the-message-d"), 10f)
         }
 
         return true

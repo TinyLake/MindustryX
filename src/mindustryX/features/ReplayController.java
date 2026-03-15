@@ -47,14 +47,14 @@ public class ReplayController{
         Events.on(ClientServerConnectEvent.class, (e) -> stopPlay());
         {
             Table buttons = Vars.ui.join.buttons;
-            buttons.button(i("回放管理器"), Icon.file, ReplayController::showManagerDialog);
+            buttons.button(i("ui.simple.replay-manager"), Icon.file, ReplayController::showManagerDialog);
         }
         {
             var pausedDialog = Vars.ui.paused;
             pausedDialog.shown(() -> {
                 if(!replaying) return;
                 pausedDialog.cont.row()
-                .button(i("查看录制信息"), Icon.fileImage, ReplayController::showInfo).name("ReplayInfo")
+                .button(i("ui.simple.view-recording-info"), Icon.fileImage, ReplayController::showInfo).name("ReplayInfo")
                 .size(0, 60).colspan(pausedDialog.cont.getColumns()).fill();
             });
         }
@@ -69,7 +69,7 @@ public class ReplayController{
         try{
             writer = new ReplayData.Writer(file.write(false, 8192));
         }catch(Exception e){
-            Log.err(i("创建回放出错!"), e);
+            Log.err(i("ui.simple.failed-to-create-replay"), e);
             return;
         }
         boolean anonymous = Core.settings.getBool("anonymous", false);
@@ -84,7 +84,7 @@ public class ReplayController{
         if(p instanceof Disconnect){
             writer.close();
             writer = null;
-            Log.info(i("录制结束"));
+            Log.info(i("ui.simple.recording-ended"));
             return;
         }
         try{
@@ -92,7 +92,7 @@ public class ReplayController{
         }catch(Exception e){
             net.disconnect();
             Log.err(e);
-            Core.app.post(() -> ui.showException(i("录制出错!"), e));
+            Core.app.post(() -> ui.showException(i("ui.simple.recording-error"), e));
         }
     }
 
@@ -105,7 +105,7 @@ public class ReplayController{
         }catch(Exception e){
             Core.app.post(() -> {
                 ReplayController.showManagerDialog();
-                ui.showException(i("读取回放失败!"), e);
+                ui.showException(i("ui.simple.failed-to-read-playback"), e);
             });
             return;
         }
@@ -174,9 +174,9 @@ public class ReplayController{
 
 
     public static void showInfo(){
-        BaseDialog dialog = new BaseDialog(i("回放统计"));
+        BaseDialog dialog = new BaseDialog(i("ui.simple.replay-stats"));
         if(reader == null){
-            dialog.cont.add(i("未加载回放!"));
+            dialog.cont.add(i("ui.simple.replay-not-loaded"));
             return;
         }
         var replay = reader.getMeta();

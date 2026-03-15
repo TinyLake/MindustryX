@@ -84,10 +84,10 @@ object OverlayUI {
             }
             button(Icon.eyeSmall, myToggleI, Vars.iconSmall) {
                 set(value.copy(enabled = !value.enabled))
-            }.tooltip(i("开关")).padRight(4f).checked { value.enabled }
+            }.tooltip(i("ui.simple.toggle")).padRight(4f).checked { value.enabled }
             button(Icon.lockSmall, myToggleI, Vars.iconSmall) {
                 set(value.copy(pinned = !value.pinned))
-            }.tooltip(i("锁定")).padRight(4f).checked { value.pinned }
+            }.tooltip(i("ui.simple.lock")).padRight(4f).checked { value.pinned }
             button(Icon.resizeSmall, myToggleI, Vars.iconSmall) {
                 UIExtKt.showFloatSettingsPanel {
                     label { VarsX.bundle.zoomScale(Strings.fixed(value.scale, 1)) }.center().row()
@@ -99,7 +99,7 @@ object OverlayUI {
                     }.disabled { Mathf.equal(value.scale, 1f) }.padTop(4f)
                     row()
                 }
-            }.tooltip(i("缩放")).padRight(4f).checked { !Mathf.equal(value.scale, 1f) }
+            }.tooltip(i("ui.simple.zoom")).padRight(4f).checked { !Mathf.equal(value.scale, 1f) }
             addTools()
 
             row()
@@ -476,7 +476,7 @@ object OverlayUI {
             t.defaults().size(Vars.iconLarge).width(Vars.iconLarge * 1.5f).pad(4f)
             t.button(Icon.add) {
                 UIExtKt.showFloatSettingsPanel {
-                    add(i("添加面板")).color(Color.gold).align(Align.center).row()
+                    add(i("ui.simple.add-panel")).color(Color.gold).align(Align.center).row()
                     pane(Styles.smallPane, Table().apply {
                         defaults().minWidth(120f).fillX().pad(4f)
                         val notAvailable = mutableListOf<Window>()
@@ -492,7 +492,7 @@ object OverlayUI {
                             }).row()
                         }
                         if (notAvailable.isNotEmpty()) {
-                            add(i("当前不可用的面板:")).align(Align.center).row()
+                            add(i("ui.simple.panels-currently-unavailable")).align(Align.center).row()
                             notAvailable.forEach {
                                 add(TextButton(it.data.title).apply {
                                     label.setWrap(false)
