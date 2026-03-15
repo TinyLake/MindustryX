@@ -79,7 +79,7 @@ index f2bf3bba1bf733159746729bc1aa7499d205affd..61def2d060c475fc248ac295c01b4503
                          connection.sendUDP(object);
                      }
 +                    if(object instanceof Packet packet){
-+                        Net.notifyReplayServerPacket(this, packet);
++                        Net.notifyReplayServerPacket((NetConnection)this, packet);
 +                    }
                  }
              }catch(Exception e){
