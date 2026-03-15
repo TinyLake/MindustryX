@@ -81,6 +81,8 @@ internal object UiTextBundleEn : UiTextBundle {
     override fun playerName(value: String): String = "Player name:$value"
     override fun packetCount(value: Int): String = "Packet count:$value"
     override fun playbackLength(value: String): String = "Playback length:$value"
+    override fun replayRewindToCheckpoint(): String = "Rewind to previous checkpoint"
+    override fun replayNoCheckpoint(): String = "No replay checkpoint is available yet"
     override fun sizeWithDimensions(width: String, height: String): String = "Size:$width\uE815$height"
     override fun tiles(value: Number): String = "$value tiles"
     override fun tilesOrOff(value: Int): String = if (value > 0) "$value tiles" else "Off"
