@@ -215,7 +215,7 @@ index 8f4025d426b4ea94db5c1122ee95e079a0ab8863..c68feb59486ee5961f1ef20d1a6f7f32
      }
  
 +    private static boolean shouldIncludeInSchematicPlan(Block block){
-+        return !LogicExt.terrainSchematic ? LogicExt.isBlockLayer(block) : LogicExt.isLayerEnabled(block);
++        return !LogicExt.terrainSchematic || LogicExt.isLayerEnabled(block);
 +    }
 +
      /** Converts a schematic to base64. Note that the result of this will always start with 'bXNjaAB'.*/
