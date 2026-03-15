@@ -141,7 +141,7 @@ public class UnitFactoryDialog extends BaseDialog{
             settings.add(countTable).row();
             settings.table(randDstTable -> {
                 randDstTable.add(i("ui.simple.spawn-range"));
-                randDstTable.field(Strings.autoFixed(unitRandDst, 3), text -> unitRandDst = Float.parseFloat(text)).valid(Strings::canParsePositiveFloat).tooltip(i("ui.simple.randomly-generated-within-this-range-near-the-ta")).maxTextLength(6).padLeft(4f);
+                randDstTable.field(Strings.autoFixed(unitRandDst, 3), text -> unitRandDst = Float.parseFloat(text)).valid(Strings::canParsePositiveFloat).tooltip(i("ui.simple.spawn-range-tooltip")).maxTextLength(6).padLeft(4f);
                 randDstTable.add(i("ui.simple.tiles")).expandX().left();
             }).row();
             settings.add(itemTable).row();

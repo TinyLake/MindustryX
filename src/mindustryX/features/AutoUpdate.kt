@@ -154,7 +154,7 @@ object AutoUpdate {
                 add(VarsX.bundle.newVersion(it.version)).row()
             }
             if (versions.isEmpty()) {
-                add(i("ui.simple.could-not-check-for-updates-please-try-again-lat")).row()
+                add(i("ui.simple.update-check-failed")).row()
                 return@apply
             }
 
@@ -163,7 +163,7 @@ object AutoUpdate {
             buildVersionList(versions.filter { it.isRelease })
 
             image().fillX().height(2f).row()
-            add(i("ui.simple.preview-releases-faster-updates-new-features-bug")).row()
+            add(i("ui.simple.preview-releases-description")).row()
             buildVersionList(versions.filter { !it.isRelease })
 
             image().fillX().height(2f).row()

@@ -45,7 +45,7 @@ public class PicToMindustry{
     public static void show(){
         Dialog pt = new BaseDialog(i("ui.simple.arc-image-converter"));
         pt.cont.table(t -> {
-            t.add(i("ui.simple.select-and-import-pictures-which-can-be-converte")).padBottom(20f).row();
+            t.add(i("ui.simple.image-import-description")).padBottom(20f).row();
             t.button(i("ui.simple.select-image-white-png"), () -> Vars.platform.showFileChooser(true, "png", file -> {
                 if(oriImage != null){
                     oriImage.dispose();
@@ -65,7 +65,7 @@ public class PicToMindustry{
             t.check(i("ui.simple.automatically-save-as-blueprint"), Core.settings.getBool("autoSavePTM"), ta -> Core.settings.put("autoSavePTM", ta));
         }).padBottom(20f).row();
         pt.cont.table(t -> {
-            t.add(i("ui.simple.x-4589808e82"));
+            t.add(i("ui.simple.zoom-icon-label"));
             Label zoom = t.add(String.valueOf(scale)).padRight(20f).get();
             t.slider(0, scaleList.length - 1, 1, 11, s -> {
                 scale = scaleList[(int)s];

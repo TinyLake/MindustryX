@@ -186,7 +186,7 @@ object NewToolTable : Table() {
                     button("@add", Icon.addSmall) {
                         set(value + CustomButton())
                     }.colspan(columns).fillX().row()
-                    add(i("ui.simple.yellow-before-adding-new-instructions-please-sav")).colspan(columns).center().padTop(-4f).row()
+                    add(i("ui.simple.save-before-add-instruction-warning")).colspan(columns).center().padTop(-4f).row()
                 }
             }) { shown }.growX()
             table.row()

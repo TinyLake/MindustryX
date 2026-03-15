@@ -245,7 +245,7 @@ object ShareFeature {
         message = message.substringAfter("<AT>").substringAfter(tag('@'))
         if (message.contains(Vars.player.name)) {
             if (sender != null) Vars.ui.announce(VarsX.bundle.atNoticeFrom(sender.name), 10f)
-            else Vars.ui.announce(i("ui.simple.orange-you-were-poked-please-check-the-message-d"), 10f)
+            else Vars.ui.announce(i("ui.simple.poked-notification"), 10f)
         }
 
         return true

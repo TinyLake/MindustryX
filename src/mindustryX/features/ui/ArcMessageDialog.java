@@ -49,7 +49,7 @@ public class ArcMessageDialog extends BaseDialog{
         msgTable.defaults().minWidth(600).growX().padBottom(15f);
 
         cont.table(t -> {
-            t.add(i("ui.simple.maximum-storage-of-chat-history-too-high-may-cau"));
+            t.add(i("ui.simple.max-chat-history-setting"));
             t.field(maxMsgRecorded + "", text -> {
                 int record = Math.min(Math.max(Integer.parseInt(text), 1), 9999);
                 maxMsgRecorded = record;

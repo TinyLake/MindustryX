@@ -147,7 +147,7 @@ public class AdvanceBuildTool extends Table{
             var plans = player.unit().plans();
             if(plans.size > 1000){
                 while(plans.size > 1000) plans.removeLast();
-                UIExt.announce(i("ui.simple.yellow-there-are-too-many-buildings-to-avoid-lag"));
+                UIExt.announce(i("ui.simple.too-many-buildings-warning"));
             }
         }).tooltip(i("ui.simple.place-replace")).size(30f);
     }

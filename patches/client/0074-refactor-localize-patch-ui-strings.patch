@@ -1,0 +1,794 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Wind-DeterMination-backup
+ <Wind-DeterMination-backup@users.noreply.github.com>
+Date: Sun, 15 Mar 2026 17:50:49 +0800
+Subject: [PATCH] refactor: localize patch ui strings
+
+---
+ .../src/mindustry/editor/MapEditorDialog.java |  6 ++--
+ core/src/mindustry/editor/WaveInfoDialog.java | 20 +++++------
+ core/src/mindustry/logic/LCanvas.java         |  2 +-
+ core/src/mindustry/logic/LStatements.java     |  2 +-
+ core/src/mindustry/logic/LogicDialog.java     |  2 +-
+ core/src/mindustry/type/UnitType.java         | 18 +++++-----
+ core/src/mindustry/type/Weapon.java           |  6 ++--
+ .../ui/dialogs/ContentInfoDialog.java         |  4 +--
+ .../ui/dialogs/CustomRulesDialog.java         | 22 ++++++------
+ .../mindustry/ui/dialogs/DatabaseDialog.java  |  2 +-
+ core/src/mindustry/ui/dialogs/JoinDialog.java |  2 +-
+ .../mindustry/ui/dialogs/KeybindDialog.java   |  2 +-
+ .../mindustry/ui/dialogs/PlanetDialog.java    |  4 +--
+ .../mindustry/ui/dialogs/ResearchDialog.java  |  2 +-
+ .../ui/dialogs/SchematicsDialog.java          | 28 +++++++--------
+ .../mindustry/ui/fragments/HudFragment.java   | 14 ++++----
+ .../ui/fragments/PlacementFragment.java       | 18 +++++-----
+ .../ui/fragments/PlayerListFragment.java      |  2 +-
+ .../world/blocks/defense/MendProjector.java   |  2 +-
+ .../blocks/defense/OverdriveProjector.java    |  2 +-
+ .../world/blocks/production/BeamDrill.java    |  2 +-
+ .../world/blocks/production/WallCrafter.java  |  2 +-
+ core/src/mindustry/world/meta/StatValues.java | 36 +++++++++----------
+ 23 files changed, 100 insertions(+), 100 deletions(-)
+
+diff --git a/core/src/mindustry/editor/MapEditorDialog.java b/core/src/mindustry/editor/MapEditorDialog.java
+index 0910b33d4b97886c5c6333b0235794e89f32da8f..a54ab9a16d02bf8b22fcd41b7ea7d3247a7c8d5f 100644
+--- a/core/src/mindustry/editor/MapEditorDialog.java
++++ b/core/src/mindustry/editor/MapEditorDialog.java
+@@ -670,7 +670,7 @@ public class MapEditorDialog extends Dialog implements Disposable{
+ 
+                     if(i++ % 3 == 2) tools.row();
+                 }
+-                tools.button("[violet]其他队伍", Styles.flatToggleMenut, () -> UIExt.teamSelect.pickOne(team -> editor.drawTeam = team))
++                tools.button(Core.bundle.get("ui.simple.other-teams"), Styles.flatToggleMenut, () -> UIExt.teamSelect.pickOne(team -> editor.drawTeam = team))
+                 .update(b->{
+                     boolean checked = !Seq.with(Team.baseTeams).contains(editor.drawTeam);
+                     b.setColor(checked ? editor.drawTeam.color : Color.violet);
+@@ -682,13 +682,13 @@ public class MapEditorDialog extends Dialog implements Disposable{
+                 mid.row();
+ 
+                 mid.table(t -> {
+-                    t.add("辅助线：");
++                    t.add(Core.bundle.get("ui.simple.guide-line"));
+                     t.field(Integer.toString(editor.interval), TextField.TextFieldFilter.digitsOnly, value -> editor.interval = Integer.parseInt(value))
+                     .valid(Strings::canParsePositiveInt).maxTextLength(4).width(100f);
+                 }).row();
+ 
+                 var brushField = mid.table().get()
+-                .add("笔刷：").getTable()
++                .add(Core.bundle.get("ui.simple.brush")).getTable()
+                 .field(Float.toString(editor.brushSize), value -> editor.brushSize = Float.parseFloat(value)).valid(Strings::canParsePositiveFloat).maxTextLength(4).width(100f).get();
+                 mid.row();
+                 mid.table(Tex.underline, t -> {
+diff --git a/core/src/mindustry/editor/WaveInfoDialog.java b/core/src/mindustry/editor/WaveInfoDialog.java
+index f4467612284dc20feb6447a4953dff25274a7fa7..25da736d2f020009c4c1037d1fe4608cd2c64033 100644
+--- a/core/src/mindustry/editor/WaveInfoDialog.java
++++ b/core/src/mindustry/editor/WaveInfoDialog.java
+@@ -101,7 +101,7 @@ public class WaveInfoDialog extends BaseDialog{
+             dialog.show();
+         }).size(250f, 64f);
+ 
+-        buttons.button("切换显示模式", () -> {
++        buttons.button(Core.bundle.get("ui.simple.toggle-display-mode"), () -> {
+             wavesListMode = !wavesListMode;
+             wavesListCell.setElement(wavesListMode ? wavesListPane : graph);
+         }).width(200f);
+@@ -185,14 +185,14 @@ public class WaveInfoDialog extends BaseDialog{
+ 
+         wavesList.clearChildren();
+         wavesList.margin(0).defaults().pad(5).growX();
+-        wavesList.table(Tex.button, t -> t.add("\uE86D 为单位数量；\uE813 为单位血+盾；\uE810 为计算buff的血+盾；\uE86E 为预估DPS。在游戏中时会考虑地图出怪点数目").color(Pal.accent)).scrollX(false).growX().row();
++        wavesList.table(Tex.button, t -> t.add(Core.bundle.get("ui.simple.wave-list-legend")).color(Pal.accent)).scrollX(false).growX().row();
+         float firstWaveTime = state.rules.initialWaveSpacing <= 0 ? (2 * state.rules.waveSpacing) : state.rules.initialWaveSpacing;
+         int winWave = this.winWave;
+         for(int waveI = 0; waveI < winWave; waveI++){
+             WaveInfo wave = ArcWaveSpawner.getOrInit(waveI);
+             wavesList.table(Tex.button, t -> {
+                 t.table(tt -> {
+-                    tt.add("第[accent]" + (wave.wave + 1) + "[]波").row();
++                    tt.add(Core.bundle.format("ui.simple.wave-number", wave.wave + 1)).row();
+                     int thisTime = (int)(wave.wave * state.rules.waveSpacing + firstWaveTime);
+                     tt.add(FormatDefault.duration(thisTime / 60f, false)).row();
+                     tt.label(() -> {
+@@ -203,14 +203,14 @@ public class WaveInfoDialog extends BaseDialog{
+                 }).width(120f).left();
+                 if(wave.amount == 0){
+                     t.add();
+-                    t.add("该波次没有敌人");
++                    t.add(Core.bundle.get("ui.simple.there-are-no-enemies-in-this-wave"));
+                 }else{
+                     t.add(wave.proTable(true, -1, group -> true));
+                     t.pane(wave.unitTable(-1, group -> true, mobile ? 8 : 15)).scrollX(true).scrollY(false).growX();
+                 }
+             }).growX().row();
+         }
+-        wavesList.button("加载更多波次", () -> {
++        wavesList.button(Core.bundle.get("ui.simple.load-more-waves"), () -> {
+             this.winWave *= 2;
+             buildWavesList();
+         }).disabled(winWave == maxWaves).fillX().height(32f);
+@@ -423,11 +423,11 @@ public class WaveInfoDialog extends BaseDialog{
+ 
+                         t.table(a -> {
+                             a.defaults().pad(2);
+-                            a.add("携带物品[gold]X[]: ");
++                            a.add(Core.bundle.get("ui.simple.carried-item-x"));
+ 
+                             a.button((group.items != null ? new TextureRegionDrawable(group.items.item.uiIcon) : Icon.noneSmall), Styles.emptyi, iconSmall, () -> {
+                                 if(group.type.itemCapacity <= 0){
+-                                    UIExt.announce("[red]该单位不可携带物品");
++                                    UIExt.announce(Core.bundle.get("ui.simple.red-unit-cannot-carry-items"));
+                                     return;
+                                 }
+                                 var dialog = new ContentSelectDialog();
+@@ -458,7 +458,7 @@ public class WaveInfoDialog extends BaseDialog{
+ 
+                         t.table(a -> {
+                             a.defaults().pad(2);
+-                            a.add("携带载荷[gold]X[]: ");
++                            a.add(Core.bundle.get("ui.simple.carried-payload-x"));
+ 
+                             if(group.payloads != null)
+                                 for(var it : group.payloads){
+@@ -468,7 +468,7 @@ public class WaveInfoDialog extends BaseDialog{
+                             a.add().growX();
+                             a.button(Icon.addSmall, Styles.emptyi, iconSmall, () -> showUnits((type) -> {
+                                 if(group.type.payloadCapacity <= 0){
+-                                    UIExt.announce("[red]该单位不可携带载荷");
++                                    UIExt.announce(Core.bundle.get("ui.simple.red-unit-cannot-carry-payloads"));
+                                     return;
+                                 }
+                                 if(group.payloads == null) group.payloads = Seq.with();
+@@ -549,4 +549,4 @@ public class WaveInfoDialog extends BaseDialog{
+         ArcWaveSpawner.reload(groups);
+         buildWavesList();
+     }
+-}
+\ No newline at end of file
++}
+diff --git a/core/src/mindustry/logic/LCanvas.java b/core/src/mindustry/logic/LCanvas.java
+index 39f29b027fe979cea410e52b2b8cd695d1c60211..0cf593eb935893b166001424420206738956c18b 100644
+--- a/core/src/mindustry/logic/LCanvas.java
++++ b/core/src/mindustry/logic/LCanvas.java
+@@ -543,7 +543,7 @@ public class LCanvas extends Table{
+                 Seq<LStatement> lsStatement = LAssembler.read(code, privileged);
+                 LStatement stNew = lsStatement.first();
+                 if(stNew instanceof InvalidStatement){
+-                    UIExt.announce("[orange]警告：转换失败，请输入正确格式");
++                    UIExt.announce(Core.bundle.get("ui.simple.orange-convert-failed"));
+                     return;
+                 }
+                 newElem = new StatementElem(stNew);
+diff --git a/core/src/mindustry/logic/LStatements.java b/core/src/mindustry/logic/LStatements.java
+index ecbe2ed06b45257a1deb16ce7dbab49508cb0987..11bd42653fc2594ef1c38da073e01c934a926dff 100644
+--- a/core/src/mindustry/logic/LStatements.java
++++ b/core/src/mindustry/logic/LStatements.java
+@@ -1023,7 +1023,7 @@ public class LStatements{
+                     var scroll = (ScrollPane)canvas.parent;
+                     scroll.setScrollY(scroll.getMaxY() - dest.y + scroll.getHeight() * 0.5f);
+                     saveUI();
+-                    UIExt.announce("[gold]跳转行号:[] " + destIndex);
++                    UIExt.announce(Core.bundle.format("ui.simple.jump-to-line", destIndex));
+ 
+                     Element header = dest.getChildren().first();
+                     dest.clearActions();
+diff --git a/core/src/mindustry/logic/LogicDialog.java b/core/src/mindustry/logic/LogicDialog.java
+index de370177beb5fec5b3b00abbb3dd8e2c608610de..da847d292035b325ed3e7ffec5a7b0860954ea14 100644
+--- a/core/src/mindustry/logic/LogicDialog.java
++++ b/core/src/mindustry/logic/LogicDialog.java
+@@ -157,7 +157,7 @@ public class LogicDialog extends BaseDialog{
+                         hide();
+                     }).marginLeft(12f);
+                     t.row();
+-                    t.button("[orange]丢弃更改", Icon.cancel,style, () -> ui.showConfirm("确认丢弃?", () -> {
++                    t.button(Core.bundle.get("ui.simple.discard-changes"), Icon.cancel,style, () -> ui.showConfirm(Core.bundle.get("ui.simple.confirm-discard"), () -> {
+                         noSave = true;
+                         dialog.hide();
+                         hide();
+diff --git a/core/src/mindustry/type/UnitType.java b/core/src/mindustry/type/UnitType.java
+index 4db27739bf896ee6d9dbf1a8d7549cd14dca237b..e5d83db220a5a043fd973e6468480b7fde154786 100644
+--- a/core/src/mindustry/type/UnitType.java
++++ b/core/src/mindustry/type/UnitType.java
+@@ -740,7 +740,7 @@ public class UnitType extends UnlockableContent implements Senseable{
+             }
+ 
+             if(payloadCapacity > 0 && unit instanceof Payloadc payload){
+-                bars.add(new Bar(() -> Strings.format("装载：@/@ @",
++                bars.add(new Bar(() -> Core.bundle.format("ui.simple.payload-bar",
+                 Strings.autoFixed(payload.payloadUsed() / tilesize / tilesize, 4),
+                 Strings.autoFixed(payloadCapacity / tilesize / tilesize, 4),
+                 StatUnit.blocksSquared.localized()), () -> Pal.items, () -> payload.payloadUsed() / payloadCapacity));
+@@ -773,10 +773,10 @@ public class UnitType extends UnlockableContent implements Senseable{
+             });
+             table.row().table(tt -> {
+                 tt.defaults().pad(0, 8, 0, 8);
+-                tt.add("血量");
+-                tt.add("伤害");
+-                tt.add("攻速");
+-                tt.add("移速");
++                tt.add(Core.bundle.get("ui.simple.health"));
++                tt.add(Core.bundle.get("ui.simple.damage"));
++                tt.add(Core.bundle.get("ui.simple.attack-speed"));
++                tt.add(Core.bundle.get("ui.simple.movement-speed"));
+                 tt.row();
+                 tt.add(FormatDefault.format(unit.healthMultiplier));
+                 tt.add(FormatDefault.format(unit.damageMultiplier));
+@@ -785,9 +785,9 @@ public class UnitType extends UnlockableContent implements Senseable{
+             }).growX().row();
+             table.row().table(tt -> {
+                 tt.defaults().pad(0, 8, 0, 8);
+-                tt.add("建速");
+-                tt.add("阻力");
+-                tt.add("装甲");
++                tt.add(Core.bundle.get("ui.simple.build-speed"));
++                tt.add(Core.bundle.get("ui.simple.resistance"));
++                tt.add(Core.bundle.get("ui.simple.armor"));
+                 tt.row();
+                 tt.add(FormatDefault.format(unit.buildSpeedMultiplier));
+                 tt.add(FormatDefault.format(unit.dragMultiplier));
+@@ -901,7 +901,7 @@ public class UnitType extends UnlockableContent implements Senseable{
+         }
+ 
+         if(mineTier >= 1){
+-            stats.add(StatExt.mineLevel, "@级", mineTier);
++            stats.add(StatExt.mineLevel, Core.bundle.get("ui.simple.level-format"), mineTier);
+             stats.addPercent(Stat.mineSpeed, mineSpeed);
+             stats.add(Stat.mineTier, StatValues.drillables(mineHardnessScaling ? 50 : 65, mineHardnessScaling ? 1 : 0, mineSpeed, null, b ->
+                 b.itemDrop != null &&
+diff --git a/core/src/mindustry/type/Weapon.java b/core/src/mindustry/type/Weapon.java
+index 8fcde8c4b7b20822269628c3c56d03de71a71960..e99b1bf71f936b9224d13ede63a8fdebe7915c0c 100644
+--- a/core/src/mindustry/type/Weapon.java
++++ b/core/src/mindustry/type/Weapon.java
+@@ -178,14 +178,14 @@ public class Weapon implements Cloneable{
+ 
+     public void addStats(UnitType u, Table t){
+         t.row();
+-        t.add("[lightgray]武器范围: [stat]" + String.format("%.1f", bullet.range/8f) + " []格");
++        t.add(Core.bundle.format("ui.simple.weapon-range", String.format("%.1f", bullet.range / 8f)));
+ 
+         if (rotate) {
+             t.row();
+-            t.add("[lightgray]旋转速度: [stat]" + String.format("%.0f", rotateSpeed * 60f) + " []°/s");
++            t.add(Core.bundle.format("ui.simple.rotation-speed", String.format("%.0f", rotateSpeed * 60f)));
+             if (rotationLimit < 361f) {
+                 t.row();
+-                t.add("[lightgray]旋转范围: [stat]" + String.format("%.0f", rotationLimit) + " []" + StatUnit.degrees.localized());
++                t.add(Core.bundle.format("ui.simple.rotation-range", String.format("%.0f", rotationLimit), StatUnit.degrees.localized()));
+             }
+         }
+ 
+diff --git a/core/src/mindustry/ui/dialogs/ContentInfoDialog.java b/core/src/mindustry/ui/dialogs/ContentInfoDialog.java
+index 261f809504eed3624ebc850a485ff9ea19e04637..47d73eeffc59c132e1353df02fbb5034638f8ba4 100644
+--- a/core/src/mindustry/ui/dialogs/ContentInfoDialog.java
++++ b/core/src/mindustry/ui/dialogs/ContentInfoDialog.java
+@@ -133,8 +133,8 @@ public class ContentInfoDialog extends BaseDialog{
+                 t.button(Icon.book, Styles.clearNonei, () -> Core.app.setClipboardText(content.description)).tooltip(content.description);
+ 
+             if(net.active()){
+-                t.button("♐简", Styles.cleart, () -> ShareFeature.shareContent(content, false)).width(60f);
+-                t.button("♐详", Styles.cleart, () -> ShareFeature.shareContent(content, true)).width(60f);
++                t.button(Core.bundle.get("ui.simple.brief-share"), Styles.cleart, () -> ShareFeature.shareContent(content, false)).width(60f);
++                t.button(Core.bundle.get("ui.simple.detailed-share"), Styles.cleart, () -> ShareFeature.shareContent(content, true)).width(60f);
+             }
+         }).fillX().padLeft(10);
+ 
+diff --git a/core/src/mindustry/ui/dialogs/CustomRulesDialog.java b/core/src/mindustry/ui/dialogs/CustomRulesDialog.java
+index 135c8690779426c469a74894db89f795426fa236..447c815f28e6a85ac8c81384fb6d199b4ba83be7 100644
+--- a/core/src/mindustry/ui/dialogs/CustomRulesDialog.java
++++ b/core/src/mindustry/ui/dialogs/CustomRulesDialog.java
+@@ -284,8 +284,8 @@ public class CustomRulesDialog extends BaseDialog{
+         check("@rules.coreDestroyClear", b -> rules.coreDestroyClear = b, () -> rules.coreDestroyClear);
+         check("@rules.unitPayloadUpdate", b -> rules.unitPayloadUpdate = b, () -> rules.unitPayloadUpdate);
+         check("@rules.showSpawns", b -> rules.showSpawns = b, () -> rules.showSpawns);
+-        check("允许控制单位", b -> rules.possessionAllowed = b, () -> rules.possessionAllowed);
+-        check("禁用重建", b -> rules.ghostBlocks = !b, () -> !rules.ghostBlocks);
++        check(Core.bundle.get("ui.simple.possession-allowed"), b -> rules.possessionAllowed = b, () -> rules.possessionAllowed);
++        check(Core.bundle.get("ui.simple.disable-rebuild"), b -> rules.ghostBlocks = !b, () -> !rules.ghostBlocks);
+ 
+         check("@rules.limitarea", b -> rules.limitMapArea = b, () -> rules.limitMapArea);
+         numberi("x", x -> state.rules.limitX = x, () -> state.rules.limitX, () -> state.rules.limitMapArea, 0, 10000);
+@@ -326,13 +326,13 @@ public class CustomRulesDialog extends BaseDialog{
+         if(showRuleEditRule){
+             check("@rules.allowedit", b -> rules.allowEditRules = b, () -> rules.allowEditRules);
+         }
+-        current.button("所有队伍开启无限火力", () -> {
++        current.button(Core.bundle.get("ui.simple.enable-all-teams-cheat"), () -> {
+             for(Team team : Team.all){
+                 team.rules().cheat = true;
+             }
+             setup();
+         }).width(256f).height(32f).row();
+-        current.button("所有队伍关闭无限火力", () -> {
++        current.button(Core.bundle.get("ui.simple.disable-all-teams-cheat"), () -> {
+             for(Team team : Team.all){
+                 team.rules().cheat = false;
+             }
+@@ -342,7 +342,7 @@ public class CustomRulesDialog extends BaseDialog{
+         team("@rules.playerteam", t -> rules.defaultTeam = t, () -> rules.defaultTeam);
+         team("@rules.enemyteam", t -> rules.waveTeam = t, () -> rules.waveTeam);
+ 
+-        current.button("更多队伍设置", Styles.flatBordert, () -> UIExt.teamSelect.select(team -> teams.contains(team), team -> {
++        current.button(Core.bundle.get("ui.simple.more-team-settings"), Styles.flatBordert, () -> UIExt.teamSelect.select(team -> teams.contains(team), team -> {
+             if(teams.contains(team)) teams.remove(team);
+             else teams.add(team);
+             setup();
+@@ -408,7 +408,7 @@ public class CustomRulesDialog extends BaseDialog{
+             }, () -> shown[0]).left().growX().row();
+         }
+ 
+-        check("自定义背景[lightgray](需要设置空地板)", t -> {
++        check(Core.bundle.get("ui.simple.custom-background-requires-empty-floor"), t -> {
+             rules.planetBackground = t ? new PlanetParams(){{planet = Planets.sun;zoom=1f;camPos = new Vec3(1.2388899f, 1.6047299f, 2.4758825f);}} : null;
+             setup();
+         }, () -> rules.planetBackground != null);
+@@ -427,10 +427,10 @@ public class CustomRulesDialog extends BaseDialog{
+                     }
+                 }
+             }).left().fill(false).expand(false, false).row();
+-            number("放缩", f -> rules.planetBackground.zoom = f, () -> rules.planetBackground.zoom, 0.0001f, 999);
+-            number("位置x", f -> rules.planetBackground.camPos.x = f, () -> rules.planetBackground.camPos.x);
+-            number("位置y", f -> rules.planetBackground.camPos.y = f, () -> rules.planetBackground.camPos.y);
+-            number("位置z", f -> rules.planetBackground.camPos.z = f, () -> rules.planetBackground.camPos.z);
++            number(Core.bundle.get("ui.simple.zoom-factor"), f -> rules.planetBackground.zoom = f, () -> rules.planetBackground.zoom, 0.0001f, 999);
++            number(Core.bundle.get("ui.simple.position-x"), f -> rules.planetBackground.camPos.x = f, () -> rules.planetBackground.camPos.x);
++            number(Core.bundle.get("ui.simple.position-y"), f -> rules.planetBackground.camPos.y = f, () -> rules.planetBackground.camPos.y);
++            number(Core.bundle.get("ui.simple.position-z"), f -> rules.planetBackground.camPos.z = f, () -> rules.planetBackground.camPos.z);
+         }
+ 
+ 
+@@ -468,7 +468,7 @@ public class CustomRulesDialog extends BaseDialog{
+                     cons.get(team);
+                 }).pad(1f).checked(b -> prov.get() == team).size(60f).tooltip(team.coloredName()).with(i -> i.getStyle().imageUpColor = team.color);
+             }
+-            t.button(Icon.add, Styles.squareTogglei, 38f, () -> UIExt.teamSelect.pickOne(cons, prov.get())).pad(1f).checked(b -> !Seq.with(Team.baseTeams).contains(prov.get())).size(60f).tooltip("更多队伍选择");
++            t.button(Icon.add, Styles.squareTogglei, 38f, () -> UIExt.teamSelect.pickOne(cons, prov.get())).pad(1f).checked(b -> !Seq.with(Team.baseTeams).contains(prov.get())).size(60f).tooltip(Core.bundle.get("ui.simple.more-teams"));
+         }).padTop(0).row();
+     }
+ 
+diff --git a/core/src/mindustry/ui/dialogs/DatabaseDialog.java b/core/src/mindustry/ui/dialogs/DatabaseDialog.java
+index ba19ab884b440747864f6ccd84164e9b48490445..6b549fe319ea0675370c7c455c14497b1b5fba80 100644
+--- a/core/src/mindustry/ui/dialogs/DatabaseDialog.java
++++ b/core/src/mindustry/ui/dialogs/DatabaseDialog.java
+@@ -51,7 +51,7 @@ public class DatabaseDialog extends BaseDialog{
+         });
+         onResize(this::rebuild);
+ 
+-        buttons.button("解禁", Styles.togglet, () -> {
++        buttons.button(Core.bundle.get("ui.simple.unlock"), Styles.togglet, () -> {
+             mindustryX.VarsX.allUnlocked.toggle();
+             rebuild();
+         }).checked((b) -> mindustryX.VarsX.allUnlocked.get());
+diff --git a/core/src/mindustry/ui/dialogs/JoinDialog.java b/core/src/mindustry/ui/dialogs/JoinDialog.java
+index 1ce5f93c14fb17e4cbc176d1406188251af1d70a..97a470c4b999bb3d8486836678c30f86242a09cc 100644
+--- a/core/src/mindustry/ui/dialogs/JoinDialog.java
++++ b/core/src/mindustry/ui/dialogs/JoinDialog.java
+@@ -644,7 +644,7 @@ public class JoinDialog extends BaseDialog{
+                 cont.row();
+                 cont.add("@forceJoin.tips").row();
+                 cont.pack();
+-                buttons.button("强制加入", () -> {
++                buttons.button(Core.bundle.get("ui.simple.force-join"), () -> {
+                     hide();
+                     ConnectPacket.clientVersion = version;
+                     connect(ip, port);
+diff --git a/core/src/mindustry/ui/dialogs/KeybindDialog.java b/core/src/mindustry/ui/dialogs/KeybindDialog.java
+index acdff149bc567c1b43d3130aecbcbddfe82ce265..284232d5d96c2a05183e808fe5f23b3b8366d6ab 100644
+--- a/core/src/mindustry/ui/dialogs/KeybindDialog.java
++++ b/core/src/mindustry/ui/dialogs/KeybindDialog.java
+@@ -118,7 +118,7 @@ public class KeybindDialog extends Dialog{
+                     openDialog(keybind);
+                 }).size(bw, bh);
+             }
+-            table.button("取消绑定", tstyle, () -> {
++            table.button(Core.bundle.get("ui.simple.cancel-binding"), tstyle, () -> {
+                 keybind.value = new Axis(KeyCode.unset);
+                 keybind.save();
+             }).size(bw, bh).pad(2f).padLeft(4f);
+diff --git a/core/src/mindustry/ui/dialogs/PlanetDialog.java b/core/src/mindustry/ui/dialogs/PlanetDialog.java
+index 4630bb8d182e0b71a1e2490f7de8e0f3b378cf55..9380bfd8152eb747cb9f92bdc5363df614cc5c8f 100644
+--- a/core/src/mindustry/ui/dialogs/PlanetDialog.java
++++ b/core/src/mindustry/ui/dialogs/PlanetDialog.java
+@@ -301,14 +301,14 @@ public class PlanetDialog extends BaseDialog implements PlanetInterfaceRenderer{
+         if(Core.graphics.isPortrait()){
+             buttons.add(sectorTop).colspan(2).fillX().row();
+             addBack();
+-            buttons.button("区块名称", Icon.bookOpen, () -> alwaysShowName = !alwaysShowName).size(100f, 54f).pad(2).bottom();
++            buttons.button(Core.bundle.get("ui.simple.sector-name"), Icon.bookOpen, () -> alwaysShowName = !alwaysShowName).size(100f, 54f).pad(2).bottom();
+             addTech();
+         }else{
+             addBack();
+             buttons.add().growX();
+             buttons.add(sectorTop).minWidth(230f);
+             buttons.add().growX();
+-            buttons.button("区块名称", Icon.bookOpen, () -> alwaysShowName = !alwaysShowName).size(100f, 54f).pad(2).bottom();
++            buttons.button(Core.bundle.get("ui.simple.sector-name"), Icon.bookOpen, () -> alwaysShowName = !alwaysShowName).size(100f, 54f).pad(2).bottom();
+             addTech();
+         }
+     }
+diff --git a/core/src/mindustry/ui/dialogs/ResearchDialog.java b/core/src/mindustry/ui/dialogs/ResearchDialog.java
+index fbf8dde06bdf66cb336cee8eb3bbe246e43210a5..cefc33e92cd8fd0a89f08c88a9ead16b383afe34 100644
+--- a/core/src/mindustry/ui/dialogs/ResearchDialog.java
++++ b/core/src/mindustry/ui/dialogs/ResearchDialog.java
+@@ -654,7 +654,7 @@ public class ResearchDialog extends BaseDialog{
+                 b.add().grow();
+                 b.table(desc -> {
+                     desc.left().defaults().left();
+-                    desc.add(selectable ? node.content.localizedName : RenderExt.researchViewer ? node.content.localizedName + "\n[red]未满足前置科技" : "[accent]???");
++                    desc.add(selectable ? node.content.localizedName : RenderExt.researchViewer ? node.content.localizedName + Core.bundle.get("ui.simple.unmet-prerequisite-tech") : "[accent]???");
+                     desc.row();
+                     if(locked(node) || (debugShowRequirements && !net.client())){
+ 
+diff --git a/core/src/mindustry/ui/dialogs/SchematicsDialog.java b/core/src/mindustry/ui/dialogs/SchematicsDialog.java
+index aecd5fa9c1d0d9f564421c2acd57c0ed21d6fded..b886f992ab5436f396c5e26cc2056ef5c3b906c0 100644
+--- a/core/src/mindustry/ui/dialogs/SchematicsDialog.java
++++ b/core/src/mindustry/ui/dialogs/SchematicsDialog.java
+@@ -59,8 +59,8 @@ public class SchematicsDialog extends BaseDialog{
+         addCloseButton();
+         buttons.button("@schematic.import", Icon.download, this::showImport);
+         if (mobile) buttons.row();
+-        buttons.button("蓝图档案馆", Icon.link, () -> UIExt.openURI("https://docs.qq.com/sheet/DVHNoS3lIcm1NbFFS"));
+-        buttons.button("图片转换器" + Blocks.canvas.emoji() + Blocks.logicDisplay.emoji() + Blocks.sorter.emoji(), Icon.image, PicToMindustry::show);
++        buttons.button(Core.bundle.get("ui.simple.schematic-archive"), Icon.link, () -> UIExt.openURI("https://docs.qq.com/sheet/DVHNoS3lIcm1NbFFS"));
++        buttons.button(Core.bundle.get("ui.simple.image-converter") + Blocks.canvas.emoji() + Blocks.logicDisplay.emoji() + Blocks.sorter.emoji(), Icon.image, PicToMindustry::show);
+         makeButtonOverlay();
+         shown(this::setup);
+         onResize(this::setup);
+@@ -126,7 +126,7 @@ public class SchematicsDialog extends BaseDialog{
+ 
+         cont.row().table(in -> {
+             in.left();
+-            in.add("科技树：").padRight(4);
++            in.add(Core.bundle.get("ui.simple.tech-tree")).padRight(4);
+             for(var tag : content.planets().select(it -> it.alwaysUnlocked)){
+                 in.button(tag.localizedName, Styles.togglet, () -> {
+                     if(selectedPlanet == tag) selectedPlanet = null;
+@@ -135,17 +135,17 @@ public class SchematicsDialog extends BaseDialog{
+                 }).checked((t) -> selectedPlanet == tag).get().getLabel().setWrap(false);
+             }
+ 
+-            in.add("辅助筛选：").padLeft(20f).padRight(4);
++            in.add(Core.bundle.get("ui.simple.advanced-filter")).padLeft(20f).padRight(4);
+             in.button(Items.copper.emoji(), Styles.togglet, () -> {
+                 Core.settings.put("arcSchematicCanBuild", !Core.settings.getBool("arcSchematicCanBuild"));
+                 rebuildPane.run();
+-            }).size(tagh).pad(2).tooltip("可建造(核心有此类资源+地图未禁用)").checked(t -> Core.settings.getBool("arcSchematicCanBuild"));
+-            in.add("蓝图包含：").padLeft(20f).padRight(4);
++            }).size(tagh).pad(2).tooltip(Core.bundle.get("ui.simple.can-build-schematic-tooltip")).checked(t -> Core.settings.getBool("arcSchematicCanBuild"));
++            in.add(Core.bundle.get("ui.simple.schematic-contains")).padLeft(20f).padRight(4);
+             in.button(control.input.block == null ? "[red]\uE815" : control.input.block.emoji(), Styles.togglet, () -> {
+                 if(control.input.block == null) return;
+                 mindustryX.VarsX.autoSelectSchematic.toggle();
+                 rebuildPane.run();
+-            }).size(tagh).pad(2).tooltip("蓝图需包含此建筑").checked(t -> control.input.block != null && mindustryX.VarsX.autoSelectSchematic.get());
++            }).size(tagh).pad(2).tooltip(Core.bundle.get("ui.simple.schematic-contains-tooltip")).checked(t -> control.input.block != null && mindustryX.VarsX.autoSelectSchematic.get());
+         }).height(tagh).fillX();
+ 
+         cont.row();
+@@ -256,7 +256,7 @@ public class SchematicsDialog extends BaseDialog{
+         }).grow().scrollX(false);
+ 
+         if(mindustryX.VarsX.autoSelectSchematic.get() && control.input.block!=null){
+-            String text = "[orange]蓝图筛选模式[white]:蓝图必须包含 "+control.input.block.emoji();
++            String text = Core.bundle.format("ui.simple.schematic-filter-mode", control.input.block.emoji());
+             UIExt.announce(text, 5f);
+         }
+     }
+@@ -339,11 +339,11 @@ public class SchematicsDialog extends BaseDialog{
+                     dialog.hide();
+                     platform.export(s.name(), schematicExtension, file -> Schematics.write(s, file));
+                 }).marginLeft(12f).row();
+-                t.button("聊天分享蓝图", Icon.chat, style, () -> {
++                t.button(Core.bundle.get("ui.simple.share-schematic-to-chat"), Icon.chat, style, () -> {
+                     dialog.hide();
+                     ShareFeature.shareSchematic(s);
+                 }).marginLeft(12f).row();
+-                t.button("复制到剪切板(高级版，含介绍)", Icon.star, style, () -> {
++                t.button(Core.bundle.get("ui.simple.copy-to-clipboard-with-description"), Icon.star, style, () -> {
+                     dialog.hide();
+                     ShareFeature.shareSchematicClipboard(s);
+                 }).marginLeft(12f);
+@@ -358,7 +358,7 @@ public class SchematicsDialog extends BaseDialog{
+         try{
+             Schematic s = Schematics.readBase64(base64);
+             s.removeSteamID();
+-            s.tags.put("name", sender == null ? "来自服务器的蓝图" : "来自" + sender.plainName() + "的蓝图");
++            s.tags.put("name", sender == null ? Core.bundle.get("ui.simple.schematic-from-server") : Core.bundle.format("ui.simple.schematic-from-player", sender.plainName()));
+             fromShare = true;
+             SchematicsDialog.this.showInfo(s);
+         }catch(Throwable e){
+@@ -650,7 +650,7 @@ public class SchematicsDialog extends BaseDialog{
+                 p.row();
+                 p.table(t -> {
+                     t.left().defaults().fillX().height(tagh).pad(2);
+-                    t.button("自动标签", Icon.add, () -> arcAutoTags(rebuild[0])).wrapLabel(false).get().getLabelCell().padLeft(5);
++                    t.button(Core.bundle.get("ui.simple.auto-tag"), Icon.add, () -> arcAutoTags(rebuild[0])).wrapLabel(false).get().getLabelCell().padLeft(5);
+                 });
+ 
+             };
+@@ -962,7 +962,7 @@ public class SchematicsDialog extends BaseDialog{
+                             if(codeString.isEmpty()) return;
+                             t.button(logicBlock.emoji(), Styles.cleart, () -> {
+                                 Core.app.setClipboardText(codeString);
+-                                UIExt.announce("已复制逻辑代码");
++                                UIExt.announce(Core.bundle.get("ui.simple.copied-logic-code"));
+                             }).tooltip(Strings.truncate(codeString, 500, "\n...")).size(40f);
+                             if(t.getChildren().size % 15 == 0) t.row();
+                         }
+@@ -1030,4 +1030,4 @@ public class SchematicsDialog extends BaseDialog{
+             show();
+         }
+     }
+-}
+\ No newline at end of file
++}
+diff --git a/core/src/mindustry/ui/fragments/HudFragment.java b/core/src/mindustry/ui/fragments/HudFragment.java
+index d12decb19afe61bb1a7a4a5f8c8521ebffd655b7..04e7722d4271f662fce3a8fdf4802fd6663aaf2c 100644
+--- a/core/src/mindustry/ui/fragments/HudFragment.java
++++ b/core/src/mindustry/ui/fragments/HudFragment.java
+@@ -330,10 +330,10 @@ public class HudFragment{
+                 .visible(() -> Core.settings.getBool("position") || Core.settings.getBool("mouseposition"))
+                 .touchable(Touchable.disabled).style(Styles.outlineLabel).minWidth(120f);
+ 
+-                tt.button("♐", Styles.cleart, MarkerType::toggleMarkHitterUI).size(iconMed).tooltip("进入标记模式");
++                tt.button("♐", Styles.cleart, MarkerType::toggleMarkHitterUI).size(iconMed).tooltip(Core.bundle.get("ui.simple.enter-mark-mode"));
+                 tt.button("T", Styles.cleart, () -> ui.chatfrag.nextMode())
+-                .checked(b -> ui.chatfrag.mode == ChatFragment.ChatMode.team).size(iconMed).tooltip("前缀添加/t");
+-                tt.button("" + Iconc.zoom, Styles.cleart, MarkerType::lockOnLastMark).size(iconMed).tooltip("锁定上个标记点");
++                .checked(b -> ui.chatfrag.mode == ChatFragment.ChatMode.team).size(iconMed).tooltip(Core.bundle.get("ui.simple.add-prefix-t"));
++                tt.button("" + Iconc.zoom, Styles.cleart, MarkerType::lockOnLastMark).size(iconMed).tooltip(Core.bundle.get("ui.simple.lock-the-last-marked-point"));
+             }).name("position");
+             t.top().right();
+         });
+@@ -493,7 +493,7 @@ public class HudFragment{
+                         button.getStyle().imageUpColor = team.color;
+                         button.update(() -> button.setChecked(player.team() == team));
+                     }
+-                    teams.button("更多", () -> UIExt.teamSelect.pickOne(team -> Call.setPlayerTeamEditor(player, team), player.team())).center().row();
++                    teams.button(Core.bundle.get("ui.simple.more"), () -> UIExt.teamSelect.pickOne(team -> Call.setPlayerTeamEditor(player, team), player.team())).center().row();
+                     teams.button(Icon.downOpen, Styles.emptyi, () -> Core.settings.put("editor-blocks-shown", !Core.settings.getBool("editor-blocks-shown")))
+                     .size(45f).update(m -> m.getStyle().imageUp = (Core.settings.getBool("editor-blocks-shown") ? Icon.upOpen : Icon.downOpen));
+                 }).top().left().row();
+@@ -535,7 +535,7 @@ public class HudFragment{
+                 info.row();
+ 
+                 if (!android){
+-                    info.label(() -> "缩放: " + String.format("%.2f", renderer.getScale())).left().style(Styles.outlineLabel);
++                    info.label(() -> VarsX.bundle.zoomScale(String.format("%.2f", renderer.getScale()))).left().style(Styles.outlineLabel);
+                     info.row();
+                 }
+ 
+@@ -1196,7 +1196,7 @@ public class HudFragment{
+                     if(!state.rules.waves){
+                         if(state.rules.attackMode){
+                             int sum = Math.max(state.teams.present.sum(t -> t.team != player.team() ? t.cores.size : 0), 1);
+-                            return "敌人核心：[orange]" + sum;
++                            return Core.bundle.format("ui.simple.enemy-core", sum);
+                         }
+ 
+                         if(state.isCampaign()){
+@@ -1208,7 +1208,7 @@ public class HudFragment{
+                     if(state.wave <= state.rules.winWave){
+                         return "[orange]" + state.wave + "[white]/[yellow]" + state.rules.winWave;
+                     }else{
+-                        return "波次：[orange]" + state.wave;
++                        return Core.bundle.format("ui.simple.current-wave", state.wave);
+                     }
+                 },
+                 () -> Color.valueOf("ccffcc"),
+diff --git a/core/src/mindustry/ui/fragments/PlacementFragment.java b/core/src/mindustry/ui/fragments/PlacementFragment.java
+index 16b717a8e71224b45aa05148b8ce9edda3c4fd8f..e03b979826f2b7bd55ae980cb434d1f77ed9204c 100644
+--- a/core/src/mindustry/ui/fragments/PlacementFragment.java
++++ b/core/src/mindustry/ui/fragments/PlacementFragment.java
+@@ -647,16 +647,16 @@ public class PlacementFragment{
+                                         float wound = (float) Core.settings.getInt("rtsWoundUnit") / 100f;
+                                         if (units.contains(unit -> unit.health >= unit.maxHealth * wound) && units.contains(unit -> unit.health < unit.maxHealth * wound)){
+                                             sp.table(spp->{
+-                                                arcSelectUnits(spp,"[green]\uE813","高血量单位", unit -> unit.health >= unit.maxHealth * wound);
+-                                                arcSelectUnits(spp,"[red]\uE80F","低血量单位", unit -> unit.health < unit.maxHealth * wound);
++                                                arcSelectUnits(spp,"[green]\uE813", Core.bundle.get("ui.simple.high-health-units"), unit -> unit.health >= unit.maxHealth * wound);
++                                                arcSelectUnits(spp,"[red]\uE80F", Core.bundle.get("ui.simple.low-health-units"), unit -> unit.health < unit.maxHealth * wound);
+                                             });
+                                         }
+ 
+                                         int assistCount = units.count(unit -> unit.type.commands.contains(UnitCommand.assistCommand));
+                                         if(assistCount > 0 && assistCount != units.size){
+                                             sp.table(spp -> {
+-                                                arcSelectUnits(spp, "\uE86E", "进攻性单位", unit -> !unit.type.commands.contains(UnitCommand.assistCommand));
+-                                                arcSelectUnits(spp, "\uE86B", "辅助性单位", unit -> unit.type.commands.contains(UnitCommand.assistCommand));
++                                                arcSelectUnits(spp, "\uE86E", Core.bundle.get("ui.simple.offensive-units"), unit -> !unit.type.commands.contains(UnitCommand.assistCommand));
++                                                arcSelectUnits(spp, "\uE86B", Core.bundle.get("ui.simple.support-units"), unit -> unit.type.commands.contains(UnitCommand.assistCommand));
+                                             });
+                                         }
+ 
+@@ -665,9 +665,9 @@ public class PlacementFragment{
+                                         hasNaval = units.contains(unit -> unit.type.naval);
+                                         if((hasFlyer ? 1 : 0) + (hasLand ? 1 : 0) + (hasNaval ? 1 : 0) >= 2){
+                                             sp.table(spp -> {
+-                                                if(hasFlyer) arcSelectUnits(spp, UnitTypes.flare.emoji(), "飞行单位", Unitc::isFlying);
+-                                                if(hasLand) arcSelectUnits(spp, UnitTypes.crawler.emoji(), "陆军单位", unit -> !unit.isFlying() && !unit.type.naval);
+-                                                if(hasNaval) arcSelectUnits(spp, UnitTypes.retusa.emoji(), "海军单位", unit -> unit.type.naval);
++                                                if(hasFlyer) arcSelectUnits(spp, UnitTypes.flare.emoji(), Core.bundle.get("ui.simple.flying-units"), Unitc::isFlying);
++                                                if(hasLand) arcSelectUnits(spp, UnitTypes.crawler.emoji(), Core.bundle.get("ui.simple.ground-units"), unit -> !unit.isFlying() && !unit.type.naval);
++                                                if(hasNaval) arcSelectUnits(spp, UnitTypes.retusa.emoji(), Core.bundle.get("ui.simple.naval-units"), unit -> unit.type.naval);
+                                             });
+                                         }
+                                     }).fillX().padTop(4f).left();
+@@ -903,13 +903,13 @@ public class PlacementFragment{
+             b.clicked(KeyCode.mouseLeft, () -> {
+                 control.input.selectedUnits = control.input.selectedUnits.select(cons);
+                 Events.fire(Trigger.unitCommandChange);
+-                UIExt.announce("RTS控制器：选择" + info + "！");
++                UIExt.announce(Core.bundle.format("ui.simple.rts-select", info));
+             });
+             //right click -> remove
+             b.clicked(KeyCode.mouseRight, () -> {
+                 control.input.selectedUnits.removeAll(cons);
+                 Events.fire(Trigger.unitCommandChange);
+-                UIExt.announce("RTS控制器：移除" + info + "！");
++                UIExt.announce(Core.bundle.format("ui.simple.rts-remove", info));
+             });
+ 
+             b.addListener(listener);
+diff --git a/core/src/mindustry/ui/fragments/PlayerListFragment.java b/core/src/mindustry/ui/fragments/PlayerListFragment.java
+index b0e3d09b0a8bea3bd0b32e958a05c5bc2b24ab32..a6d2c984fe9094d1ecdc594361010bd258bf847b 100644
+--- a/core/src/mindustry/ui/fragments/PlayerListFragment.java
++++ b/core/src/mindustry/ui/fragments/PlayerListFragment.java
+@@ -150,7 +150,7 @@ public class PlayerListFragment{
+ 
+             button.button(Icon.copySmall, ustyle, () -> {
+                 Core.app.setClipboardText(user.name);
+-                UIExt.announce("已复制昵称：" + user.name);
++                UIExt.announce(Core.bundle.format("ui.simple.copied-nickname", user.name));
+             }).size(iconMed);
+             button.button(Icon.linkSmall, ustyle, () -> ShareFeature.at(user.name)).size(iconMed);
+ 
+diff --git a/core/src/mindustry/world/blocks/defense/MendProjector.java b/core/src/mindustry/world/blocks/defense/MendProjector.java
+index 1e832f9fbd028bc2e19f381fcdec7e51deb5317d..3c789914623577ff2dc194ee19de171aa62877e1 100644
+--- a/core/src/mindustry/world/blocks/defense/MendProjector.java
++++ b/core/src/mindustry/world/blocks/defense/MendProjector.java
+@@ -79,7 +79,7 @@ public class MendProjector extends Block{
+     @Override
+     public void setBars(){
+         super.setBars();
+-        addBar("charge", (MendBuild entity) -> new Bar(() -> ("充能: " + (int)entity.charge + " / " + reload), () -> Pal.items, () -> (entity.charge / reload)));
++        addBar("charge", (MendBuild entity) -> new Bar(() -> Core.bundle.format("ui.simple.charge-bar", (int)entity.charge, reload), () -> Pal.items, () -> (entity.charge / reload)));
+     }
+ 
+     @Override
+diff --git a/core/src/mindustry/world/blocks/defense/OverdriveProjector.java b/core/src/mindustry/world/blocks/defense/OverdriveProjector.java
+index 76f9b2cedb83d84b444a0860b88218267e58aab8..766f0314d3c1f31824216a508df983c5cda0ff32 100644
+--- a/core/src/mindustry/world/blocks/defense/OverdriveProjector.java
++++ b/core/src/mindustry/world/blocks/defense/OverdriveProjector.java
+@@ -89,7 +89,7 @@ public class OverdriveProjector extends Block{
+     public void setBars(){
+         super.setBars();
+         addBar("boost", (OverdriveBuild entity) -> new Bar(() ->
+-                "超速：" + (entity.realBoost() <= 1 ? "[red]\uE815": "+" + (int)((entity.realBoost() - 1) * 100) + "%"),
++                Core.bundle.get("ui.simple.overdrive") + (entity.realBoost() <= 1 ? "[red]\uE815": "+" + (int)((entity.realBoost() - 1) * 100) + "%"),
+                 () -> Pal.accent, () -> entity.realBoost() / (hasBoost ? speedBoost + speedBoostPhase : speedBoost)));
+     }
+ 
+diff --git a/core/src/mindustry/world/blocks/production/BeamDrill.java b/core/src/mindustry/world/blocks/production/BeamDrill.java
+index 2c2882cf82b66d37706fb5283b7b1b83effacf94..96bdca025862111ad8b38673b497dd0f538a3d4f 100644
+--- a/core/src/mindustry/world/blocks/production/BeamDrill.java
++++ b/core/src/mindustry/world/blocks/production/BeamDrill.java
+@@ -91,7 +91,7 @@ public class BeamDrill extends Block{
+         super.setBars();
+ 
+         addBar("drillspeed", (BeamDrillBuild e) ->
+-            new Bar(() -> (e.lastItem == null ? "挖掘速度：0.00/s" : e.lastItem.emoji() +" "+ Strings.fixed(e.lastDrillSpeed * 60 , 2) + "/s"), () -> Pal.ammo, () -> e.warmup));
++            new Bar(() -> (e.lastItem == null ? Core.bundle.get("ui.simple.drill-speed-empty") : Core.bundle.get("ui.simple.drill-speed") + e.lastItem.emoji() + " " + Strings.fixed(e.lastDrillSpeed * 60, 2) + "/s"), () -> Pal.ammo, () -> e.warmup));
+     }
+ 
+     @Override
+diff --git a/core/src/mindustry/world/blocks/production/WallCrafter.java b/core/src/mindustry/world/blocks/production/WallCrafter.java
+index e13f83f830269f8485351d2a52c2edffd1651905..79cddde4c9dd397babeeb77f2847390ffb1355f7 100644
+--- a/core/src/mindustry/world/blocks/production/WallCrafter.java
++++ b/core/src/mindustry/world/blocks/production/WallCrafter.java
+@@ -69,7 +69,7 @@ public class WallCrafter extends Block{
+         super.setBars();
+ 
+         addBar("drillspeed", (WallCrafterBuild e) ->
+-            new Bar(() -> (output == null ? "挖掘速度：" : output.emoji()) +" "+ Strings.fixed(e.lastEfficiency * 60 / drillTime, 2) + "/s", () -> Pal.ammo, () -> e.warmup));
++            new Bar(() -> (output == null ? Core.bundle.get("ui.simple.drill-speed") : output.emoji()) + " " + Strings.fixed(e.lastEfficiency * 60 / drillTime, 2) + "/s", () -> Pal.ammo, () -> e.warmup));
+     }
+ 
+     @Override
+diff --git a/core/src/mindustry/world/meta/StatValues.java b/core/src/mindustry/world/meta/StatValues.java
+index 72207f49403881823181169657a797fe879678cc..c851b264b7fbedc03fc0a19f716a561c44be3924 100644
+--- a/core/src/mindustry/world/meta/StatValues.java
++++ b/core/src/mindustry/world/meta/StatValues.java
+@@ -677,11 +677,11 @@ public class StatValues{
+                     }
+ 
+                     if(type.buildingDamageMultiplier != 1){
+-                        sep(bt, multStat(type.buildingDamageMultiplier) + "[lightgray]x建筑伤害");
++                        sep(bt, multStat(type.buildingDamageMultiplier) + Core.bundle.get("ui.simple.building-damage-multiplier"));
+                     }
+ 
+                     if(type.rangeChange != 0 && !compact){
+-                        sep(bt, "[lightgray]射程 " + ammoStat(type.rangeChange / tilesize) + " [lightgray]格");
++                        sep(bt, Core.bundle.format("ui.simple.range-tiles", ammoStat(type.rangeChange / tilesize)));
+                     }
+ 
+                     if(type.shieldDamageMultiplier != 1){
+@@ -697,7 +697,7 @@ public class StatValues{
+                     }
+ 
+                     if(!compact && !Mathf.equal(type.reloadMultiplier, 1f)){
+-                        sep(bt, multStat(type.reloadMultiplier) + "[lightgray]x射速");
++                        sep(bt, multStat(type.reloadMultiplier) + Core.bundle.get("ui.simple.reload-multiplier"));
+                     }
+ 
+                     if(type.knockback > 0){
+@@ -718,17 +718,17 @@ public class StatValues{
+                         boolean pierceUnit = type.pierce;
+                         StringBuilder str = new StringBuilder("[stat]");
+                         if(type instanceof RailBulletType rail){
+-                            str.append(Strings.autoFixed(rail.pierceDamageFactor * 100f, 1) + "%衰减");
++                            str.append(Core.bundle.format("ui.simple.percent-falloff", Strings.autoFixed(rail.pierceDamageFactor * 100f, 1)));
+                         }else{
+-                            str.append(type.pierceCap == -1 ? "无限" : type.pierceCap + "x");
++                            str.append(type.pierceCap == -1 ? Core.bundle.get("ui.simple.infinite-pierce") : type.pierceCap + "x");
+                         }
+-                        str.append("穿透[lightgray]");
++                        str.append(Core.bundle.get("ui.simple.pierce-label"));
+                         if(pierceBuilding && pierceUnit){
+-                            str.append("建筑与单位");
++                            str.append(Core.bundle.get("ui.simple.buildings-and-units"));
+                         }else{
+-                            str.append(pierceBuilding ? "建筑" : "单位");
++                            str.append(pierceBuilding ? Core.bundle.get("ui.simple.building") : Core.bundle.get("ui.simple.unit"));
+                         }
+-                        if(laserPierce) str.append("[stat](电性)");
++                        if(laserPierce) str.append(Core.bundle.get("ui.simple.electric-property"));
+                         sep(bt, str.toString());
+                     }
+ 
+@@ -737,7 +737,7 @@ public class StatValues{
+                     }
+ 
+                     if(type.homingPower > 0.01f){
+-                        sep(bt, "[stat]追踪[lightgray]~[]" + Strings.autoFixed(type.homingPower * 50 * Time.toSeconds, 1) + "°/s[lightgray]~[]" + Strings.fixed(type.homingRange / tilesize, 1) + "[lightgray]格");
++                        sep(bt, Core.bundle.format("ui.simple.homing-detail", Strings.autoFixed(type.homingPower * 50 * Time.toSeconds, 1), Strings.fixed(type.homingRange / tilesize, 1)));
+                     }
+ 
+                     if(!(type instanceof LightningBulletType) && type.lightning > 0){
+@@ -825,7 +825,7 @@ public class StatValues{
+                     }
+ 
+                     if(type instanceof EmpBulletType eb){
+-                        collapse(bt, Strings.format("[stat]EMP~@[lightgray]格[]~[white]\uE810[]@%/[white]\uE86D[]@%~[white]\uF899[][green]@%[]/[negstat]@%[]",
++                        collapse(bt, Core.bundle.format("ui.simple.emp-summary",
+                         Strings.autoFixed(eb.radius / tilesize, 0),
+                         Strings.autoFixed(eb.powerDamageScl * 100, 0),
+                         Strings.autoFixed(eb.unitDamageScl * 100, 0),
+@@ -833,10 +833,10 @@ public class StatValues{
+                         Strings.autoFixed(eb.powerSclDecrease * 100, 0)
+                         ), ec -> {
+                             ec.defaults().padLeft(5f);
+-                            sep(ec, Strings.format("[stat]对敌方电网建筑造成@%子弹伤害", Strings.autoFixed(eb.powerDamageScl * 100, 0)));
+-                            sep(ec, Strings.format("[stat]对敌方单位造成@%子弹伤害", Strings.autoFixed(eb.unitDamageScl * 100, 0)));
+-                            sep(ec, Strings.format("[stat]对我方耗电建筑超速至@%", Strings.autoFixed(eb.timeIncrease * 100, 0)));
+-                            sep(ec, Strings.format("[stat]对敌方电网建筑减速至@%", Strings.autoFixed(eb.powerSclDecrease * 100, 0)));
++                            sep(ec, Core.bundle.format("ui.simple.emp-damages-power", Strings.autoFixed(eb.powerDamageScl * 100, 0)));
++                            sep(ec, Core.bundle.format("ui.simple.emp-damages-units", Strings.autoFixed(eb.unitDamageScl * 100, 0)));
++                            sep(ec, Core.bundle.format("ui.simple.emp-speeds-friendly-power", Strings.autoFixed(eb.timeIncrease * 100, 0)));
++                            sep(ec, Core.bundle.format("ui.simple.emp-slows-enemy-power", Strings.autoFixed(eb.powerSclDecrease * 100, 0)));
+                         });
+                     }
+ 
+@@ -890,11 +890,11 @@ public class StatValues{
+             if(shots > 0){
+                 str += String.format("[stat]%d[]x", shots);
+             }
+-            str += String.format("闪电~[stat]%s[]伤害~", Strings.autoFixed(damage, 1));
++            str += Core.bundle.format("ui.simple.lightning-damage", Strings.autoFixed(damage, 1));
+             if(lengthRand > 0){
+-                str += String.format("[stat]%d~%d[]长度", length, length + lengthRand);
++                str += Core.bundle.format("ui.simple.lightning-length-range", length, length + lengthRand);
+             }else{
+-                str += String.format("[stat]%d[]长度", length);
++                str += Core.bundle.format("ui.simple.lightning-length", length);
+             }
+             sep(table, str);
+         };

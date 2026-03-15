@@ -45,7 +45,7 @@ public class WaveInfoDisplay extends Table{
             buttons.button(">", Styles.cleart, () -> shiftWaveOffset(1));
 
             buttons.button("R", Styles.cleart, () -> setWaveOffset(0)).tooltip(i("ui.simple.restore-current-wave"));
-            buttons.button("J", Styles.cleart, () -> ui.showConfirm(i("ui.simple.red-this-is-a-cheat-feature-jump-to-the-target-w"), () -> {
+            buttons.button("J", Styles.cleart, () -> ui.showConfirm(i("ui.simple.skip-to-wave-warning"), () -> {
                 state.wave += waveOffset;
                 setWaveOffset(0);
             })).tooltip(i("ui.simple.force-skip-waves")).disabled((b) -> net.client());
