@@ -192,32 +192,16 @@ public class RenderExt{
         return LogicExt.isFloorLayerEnabled();
     }
 
-    public static boolean shouldRenderFloor(){
-        return shouldDrawFloorLayer();
-    }
-
     public static boolean shouldDrawOreLayer(){
         return LogicExt.isOreLayerEnabled();
-    }
-
-    public static boolean shouldRenderOre(){
-        return shouldDrawOreLayer();
     }
 
     public static boolean shouldDrawBuildingLayer(){
         return LogicExt.isBlockLayerEnabled() && blockRenderLevel > 0;
     }
 
-    public static boolean shouldRenderBlock(){
-        return shouldDrawBuildingLayer();
-    }
-
     public static boolean shouldDrawBuildingBase(){
         return LogicExt.isBlockLayerEnabled() && blockRenderLevel > 1;
-    }
-
-    public static boolean shouldRenderBlockBase(){
-        return shouldDrawBuildingBase();
     }
 
     public static boolean shouldDraw(LogicExt.BlockLayer layer){
@@ -228,16 +212,8 @@ public class RenderExt{
         };
     }
 
-    public static boolean shouldRender(LogicExt.BlockLayer layer){
-        return shouldDraw(layer);
-    }
-
     public static boolean shouldDraw(Block block){
         return block != null && !block.isAir() && shouldDraw(LogicExt.classifyBlockLayer(block));
-    }
-
-    public static boolean shouldRender(Block block){
-        return shouldDraw(block);
     }
 
     public static void cycleBuildingVisibility(){
