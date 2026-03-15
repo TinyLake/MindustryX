@@ -10,7 +10,6 @@ import arc.util.Threads;
 import arc.util.Time;
 import mindustry.Vars;
 import mindustry.core.GameState.State;
-import mindustry.core.NetClient;
 import mindustry.game.EventType;
 import mindustry.gen.Icon;
 import mindustry.net.Net;
@@ -470,7 +469,7 @@ public class ReplayController{
         if(record instanceof ReplayData.PlaybackRecord.Packet packet){
             net.handleClientReceived(packet.getPacket());
         }else if(record instanceof ReplayData.PlaybackRecord.WorldData worldData){
-            NetClient.worldDataBegin();
+            netClient.worldDataBegin();
             WorldStream data = new WorldStream();
             data.stream = new ByteArrayInputStream(worldData.getData());
             net.handleClientReceived(data);
