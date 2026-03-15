@@ -221,13 +221,7 @@ object SettingsV2 {
             }
         }
 
-        private val shortcutBind = KeyBind.add(hiddenShortcutName(name), KeyCode.unset)
-        private val shortcutModeProvider = PersistentProvider.Arc<Int>("settingV2-shortcut-mode-$name")
-        private var shortcutModeLoaded = false
-        private var shortcutMode = ShortcutMode.toggle
-        private var holdActive = false
-        private var holdRestoreValue = false
-        private var holdAppliedValue = false
+        private val shortcut = ShortcutHandler()
 
         init {
             shortcutPrefs += this
@@ -237,99 +231,12 @@ object SettingsV2 {
             set(!value)
         }
 
-        private fun ensureShortcutMode(): ShortcutMode {
-            if (!shortcutModeLoaded) {
-                shortcutMode = ShortcutMode.entries.getOrElse(shortcutModeProvider.get() ?: 0) { ShortcutMode.toggle }
-                shortcutModeLoaded = true
-            }
-            return shortcutMode
-        }
-
-        private fun setShortcutMode(mode: ShortcutMode) {
-            if (ensureShortcutMode() == mode) return
-            if (holdActive) releaseHeldShortcut()
-            shortcutMode = mode
-            shortcutModeProvider.set(mode.ordinal)
-        }
-
-        private fun releaseHeldShortcut() {
-            if (!holdActive) return
-            holdActive = false
-            if (value == holdAppliedValue) set(holdRestoreValue)
-        }
-
-        private fun hasShortcut(): Boolean = shortcutBind.value.key != KeyCode.unset
-
-        private fun shortcutName(): String {
-            return if (hasShortcut()) shortcutBind.value.keyName() else Core.bundle.get("settingV2.shortcut.unset")
-        }
-
-        private fun clearShortcut() {
-            releaseHeldShortcut()
-            shortcutBind.value = Axis(KeyCode.unset)
-            shortcutBind.save()
-        }
-
-        private fun showShortcutPanel() {
-            BaseDialog("$title / ${Core.bundle.get("settingV2.shortcut")}").apply {
-                cont.defaults().minWidth(180f).fillX().pad(4f)
-                cont.add(title).color(Pal.accent).wrap().growX().row()
-                cont.label { shortcutName() }.wrap().left().growX().update { it.setText(shortcutName()) }.row()
-                cont.button("@settings.rebind", Styles.grayt) {
-                    KeybindDialog.showRebindDialog(shortcutBind)
-                }.growX().row()
-                cont.table { modes ->
-                    modes.defaults().growX().height(48f).pad(2f)
-                    ShortcutMode.entries.forEach { mode ->
-                        modes.button(Core.bundle.get(mode.bundleKey), Styles.flatTogglet) {
-                            setShortcutMode(mode)
-                        }.update { it.isChecked = ensureShortcutMode() == mode }
-                    }
-                }.growX().row()
-                cont.button("@settingV2.shortcut.unbind", Styles.grayt) {
-                    clearShortcut()
-                }.update { it.isDisabled = !hasShortcut() }.growX().row()
-                addCloseButton()
-                show()
-            }
-        }
-
         override fun Table.addShortcutTool() {
-            val shortcutButton = button(Icon.commandRallySmall, shortcutButtonStyle, Vars.iconSmall) {
-                KeybindDialog.showRebindDialog(shortcutBind)
-            }.tooltip("@settingV2.shortcut").padLeft(4f).update { it.isChecked = hasShortcut() }.get()
-            shortcutButton.addListener(object : ClickListener(KeyCode.mouseRight) {
-                override fun clicked(event: InputEvent, x: Float, y: Float) {
-                    super.clicked(event, x, y)
-                    showShortcutPanel()
-                }
-            })
+            shortcut.addTool(this)
         }
 
         internal fun pollShortcut() {
-            if (!hasShortcut()) {
-                releaseHeldShortcut()
-                return
-            }
-
-            when (ensureShortcutMode()) {
-                ShortcutMode.toggle -> {
-                    releaseHeldShortcut()
-                    if (Core.input.keyTap(shortcutBind)) toggle()
-                }
-
-                ShortcutMode.hold -> {
-                    val down = Core.input.keyDown(shortcutBind)
-                    if (down && !holdActive) {
-                        holdRestoreValue = value
-                        holdAppliedValue = !value
-                        holdActive = true
-                        set(holdAppliedValue)
-                    } else if (!down && holdActive) {
-                        releaseHeldShortcut()
-                    }
-                }
-            }
+            shortcut.poll()
         }
 
         fun uiElement(): Element {
@@ -343,6 +250,111 @@ object SettingsV2 {
             add(uiElement())
             add().expandX()
             addTools()
+        }
+
+        private inner class ShortcutHandler {
+            private val shortcutBind = KeyBind.add(hiddenShortcutName(name), KeyCode.unset)
+            private val shortcutModeProvider = PersistentProvider.Arc<Int>("settingV2-shortcut-mode-$name")
+            private var shortcutModeLoaded = false
+            private var shortcutMode = ShortcutMode.toggle
+            private var holdActive = false
+            private var holdRestoreValue = false
+            private var holdAppliedValue = false
+
+            private fun ensureShortcutMode(): ShortcutMode {
+                if (!shortcutModeLoaded) {
+                    shortcutMode = ShortcutMode.entries.getOrElse(shortcutModeProvider.get() ?: 0) { ShortcutMode.toggle }
+                    shortcutModeLoaded = true
+                }
+                return shortcutMode
+            }
+
+            private fun setShortcutMode(mode: ShortcutMode) {
+                if (ensureShortcutMode() == mode) return
+                if (holdActive) releaseHeldShortcut()
+                shortcutMode = mode
+                shortcutModeProvider.set(mode.ordinal)
+            }
+
+            private fun releaseHeldShortcut() {
+                if (!holdActive) return
+                holdActive = false
+                if (value == holdAppliedValue) set(holdRestoreValue)
+            }
+
+            private fun hasShortcut(): Boolean = shortcutBind.value.key != KeyCode.unset
+
+            private fun shortcutName(): String {
+                return if (hasShortcut()) shortcutBind.value.keyName() else Core.bundle.get("settingV2.shortcut.unset")
+            }
+
+            private fun clearShortcut() {
+                releaseHeldShortcut()
+                shortcutBind.value = Axis(KeyCode.unset)
+                shortcutBind.save()
+            }
+
+            private fun showShortcutPanel() {
+                BaseDialog("$title / ${Core.bundle.get("settingV2.shortcut")}").apply {
+                    cont.defaults().minWidth(180f).fillX().pad(4f)
+                    cont.add(title).color(Pal.accent).wrap().growX().row()
+                    cont.label { shortcutName() }.wrap().left().growX().update { it.setText(shortcutName()) }.row()
+                    cont.button("@settings.rebind", Styles.grayt) {
+                        KeybindDialog.showRebindDialog(shortcutBind)
+                    }.growX().row()
+                    cont.table { modes ->
+                        modes.defaults().growX().height(48f).pad(2f)
+                        ShortcutMode.entries.forEach { mode ->
+                            modes.button(Core.bundle.get(mode.bundleKey), Styles.flatTogglet) {
+                                setShortcutMode(mode)
+                            }.update { it.isChecked = ensureShortcutMode() == mode }
+                        }
+                    }.growX().row()
+                    cont.button("@settingV2.shortcut.unbind", Styles.grayt) {
+                        clearShortcut()
+                    }.update { it.isDisabled = !hasShortcut() }.growX().row()
+                    addCloseButton()
+                    show()
+                }
+            }
+
+            fun addTool(table: Table) {
+                val shortcutButton = table.button(Icon.commandRallySmall, shortcutButtonStyle, Vars.iconSmall) {
+                    KeybindDialog.showRebindDialog(shortcutBind)
+                }.tooltip("@settingV2.shortcut").padLeft(4f).update { it.isChecked = hasShortcut() }.get()
+                shortcutButton.addListener(object : ClickListener(KeyCode.mouseRight) {
+                    override fun clicked(event: InputEvent, x: Float, y: Float) {
+                        super.clicked(event, x, y)
+                        showShortcutPanel()
+                    }
+                })
+            }
+
+            fun poll() {
+                if (!hasShortcut()) {
+                    releaseHeldShortcut()
+                    return
+                }
+
+                when (ensureShortcutMode()) {
+                    ShortcutMode.toggle -> {
+                        releaseHeldShortcut()
+                        if (Core.input.keyTap(shortcutBind)) toggle()
+                    }
+
+                    ShortcutMode.hold -> {
+                        val down = Core.input.keyDown(shortcutBind)
+                        if (down && !holdActive) {
+                            holdRestoreValue = value
+                            holdAppliedValue = !value
+                            holdActive = true
+                            set(holdAppliedValue)
+                        } else if (!down && holdActive) {
+                            releaseHeldShortcut()
+                        }
+                    }
+                }
+            }
         }
     }
 
