@@ -1,0 +1,65 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Wind-DeterMination-backup
+ <Wind-DeterMination-backup@users.noreply.github.com>
+Date: Sun, 15 Mar 2026 02:32:14 +0800
+Subject: [PATCH] refactor: simplify rebind session flow
+
+---
+ core/src/mindustry/ui/dialogs/KeybindDialog.java | 16 ++++++++--------
+ 1 file changed, 8 insertions(+), 8 deletions(-)
+
+diff --git a/core/src/mindustry/ui/dialogs/KeybindDialog.java b/core/src/mindustry/ui/dialogs/KeybindDialog.java
+index 78ae50701ad9ab1c45217116ea658e330f9f41d2..9b337367bb8aec755e0cb813ebb50f6c7eac13c7 100644
+--- a/core/src/mindustry/ui/dialogs/KeybindDialog.java
++++ b/core/src/mindustry/ui/dialogs/KeybindDialog.java
+@@ -164,11 +164,11 @@ public class KeybindDialog extends Dialog{
+             openDialog(bind);
+         }
+ 
+-        boolean rebind(KeyBind bind, KeyCode newKey){
++        boolean rebind(KeyCode newKey){
+             if(rebindKey == null || !isBindable(newKey)) return false;
+ 
+             rebindDialog.hide();
+-            boolean isAxis = bind.defaultValue instanceof Axis;
++            boolean isAxis = rebindKey.defaultValue instanceof Axis;
+             Axis reboundValue = null;
+ 
+             if(isAxis){
+@@ -180,9 +180,9 @@ public class KeybindDialog extends Dialog{
+             }
+ 
+             if(reboundValue != null){
+-                clearConflictingBinds(bind, reboundValue);
+-                bind.value = reboundValue;
+-                bind.save();
++                clearConflictingBinds(rebindKey, reboundValue);
++                rebindKey.value = reboundValue;
++                rebindKey.save();
+             }
+ 
+             if(rebindAxis && isAxis && rebindMin && !newKey.axis){
+@@ -211,7 +211,7 @@ public class KeybindDialog extends Dialog{
+                 @Override
+                 public boolean touchDown(InputEvent event, float x, float y, int pointer, KeyCode button){
+                     if(Core.app.isAndroid()) return false;
+-                    return rebind(name, button);
++                    return rebind(button);
+                 }
+ 
+                 @Override
+@@ -223,12 +223,12 @@ public class KeybindDialog extends Dialog{
+                 @Override
+                 public boolean keyUp(InputEvent event, KeyCode keycode){
+                     if(pressedKey == null || keycode != pressedKey) return false;
+-                    return rebind(name, keycode);
++                    return rebind(keycode);
+                 }
+ 
+                 @Override
+                 public boolean scrolled(InputEvent event, float x, float y, float amountX, float amountY){
+-                    return rebindAxis && rebind(name, KeyCode.scroll);
++                    return rebindAxis && rebind(KeyCode.scroll);
+                 }
+             });
+ 
