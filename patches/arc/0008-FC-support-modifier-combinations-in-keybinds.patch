@@ -4,10 +4,10 @@ Date: Sat, 21 Feb 2026 14:06:04 +0800
 Subject: [PATCH] FC: support modifier combinations in keybinds
 
 ---
- arc-core/src/arc/Input.java                | 19 +++++-
- arc-core/src/arc/input/KeyBind.java        | 77 ++++++++++++++++++++--
- arc-core/src/arc/input/KeyboardDevice.java |  7 ++
- 3 files changed, 94 insertions(+), 9 deletions(-)
+ arc-core/src/arc/Input.java                | 19 +++++--
+ arc-core/src/arc/input/KeyBind.java        | 60 +++++++++++++++++++---
+ arc-core/src/arc/input/KeyboardDevice.java |  7 +++
+ 3 files changed, 77 insertions(+), 9 deletions(-)
 
 diff --git a/arc-core/src/arc/Input.java b/arc-core/src/arc/Input.java
 index 2ecc5c547cac9927f196d598d50669647d4b113b..be53f73875953db87a4a5221bbed9529fdea406b 100644
@@ -68,7 +68,7 @@ index 2ecc5c547cac9927f196d598d50669647d4b113b..be53f73875953db87a4a5221bbed9529
          }else{
              return keyboard.isTapped(axis.min) ? -1 : keyboard.isTapped(axis.max) ? 1 : 0;
 diff --git a/arc-core/src/arc/input/KeyBind.java b/arc-core/src/arc/input/KeyBind.java
-index e62d626a07bd61ada7fee19547355f5ee36cc7b9..a2e6bd5e6ec58815203d773b9932f614efb80748 100644
+index e62d626a07bd61ada7fee19547355f5ee36cc7b9..e37199540fdc1538dafadc03ba4f927d60928d37 100644
 --- a/arc-core/src/arc/input/KeyBind.java
 +++ b/arc-core/src/arc/input/KeyBind.java
 @@ -3,10 +3,15 @@ package arc.input;
@@ -173,7 +173,7 @@ index e62d626a07bd61ada7fee19547355f5ee36cc7b9..a2e6bd5e6ec58815203d773b9932f614
          }
  
          /** Constructor for keyboards/mice, or multiple buttons on a controller. */
-@@ -134,6 +159,46 @@ public class KeyBind{
+@@ -134,6 +159,29 @@ public class KeyBind{
              this.min = min;
              this.max = max;
              this.key = null;
@@ -198,29 +198,12 @@ index e62d626a07bd61ada7fee19547355f5ee36cc7b9..a2e6bd5e6ec58815203d773b9932f614
 +            }
 +        }
 +
-+        @Override
-+        public String toString(){
-+            return keyName();
-+        }
-+
-+        public String keyName(){
-+            if(key == null){
-+                assert min != null && max != null;
-+                return min.getName() + " / " + max.getName();
-+            }
-+            if(modifiers == 0 || (modifiers & modifierBit(key)) != 0) return key.getName();
-+
-+            StringBuilder builder = new StringBuilder();
-+            if((modifiers & modifierCtrl) != 0) builder.append("Ctrl+");
-+            if((modifiers & modifierAlt) != 0) builder.append("Alt+");
-+            if((modifiers & modifierMeta) != 0) builder.append("Win/Cmd+");
-+            if((modifiers & modifierShift) != 0) builder.append("Shift+");
-+            builder.append(key.getName());
-+            return builder.toString();
++        public boolean matchExact(){
++            return (modifierExact & modifiers) != 0;
          }
  
          @Override
-@@ -142,7 +207,7 @@ public class KeyBind{
+@@ -142,7 +190,7 @@ public class KeyBind{
              if(o == null || getClass() != o.getClass()) return false;
  
              Axis axis = (Axis)o;
