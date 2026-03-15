@@ -1,8 +1,8 @@
 From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
 From: Wind-DeterMination-backup
  <Wind-DeterMination-backup@users.noreply.github.com>
-Date: Sun, 15 Mar 2026 11:26:20 +0800
-Subject: [PATCH] core: split floor, ore, and building layer toggles
+Date: Sun, 15 Mar 2026 12:17:08 +0800
+Subject: [PATCH] refactor: finalize wall ore overlay layering
 
 ---
  core/src/mindustry/core/Renderer.java         |  23 ++-
@@ -11,16 +11,16 @@ Subject: [PATCH] core: split floor, ore, and building layer toggles
  core/src/mindustry/game/Schematics.java       |  34 +++-
  .../src/mindustry/graphics/BlockRenderer.java | 189 +++++++++++-------
  .../blocks/environment/CharacterOverlay.java  |   2 +
- .../world/blocks/environment/Cliff.java       |  12 ++
+ .../world/blocks/environment/Cliff.java       |  16 +-
  .../blocks/environment/ColoredFloor.java      |   6 +
  .../world/blocks/environment/EmptyFloor.java  |   7 +-
  .../world/blocks/environment/Floor.java       |  24 ++-
  .../blocks/environment/OverlayFloor.java      |   2 +
  .../world/blocks/environment/RuneOverlay.java |   2 +
- .../world/blocks/environment/StaticTree.java  |  12 ++
+ .../world/blocks/environment/StaticTree.java  |  58 +++---
  .../world/blocks/environment/StaticWall.java  |  49 +++--
- .../world/blocks/environment/TiledWall.java   |  12 ++
- 15 files changed, 272 insertions(+), 126 deletions(-)
+ .../world/blocks/environment/TiledWall.java   |  34 ++--
+ 15 files changed, 305 insertions(+), 165 deletions(-)
 
 diff --git a/core/src/mindustry/core/Renderer.java b/core/src/mindustry/core/Renderer.java
 index 099efb2bcdd709d3a328471a0a434165c665446c..df968f590516c0482fe43d7851e3df4a03ce03ea 100644
@@ -509,7 +509,7 @@ index 3c02614d32f5da6bc801f9abf543ff8d84b51898..0aeb3d8bb0f219563e9b3d172223bae6
          int letterChar = CharOverlayData.character(tile.overlayData);
          Draw.rect(letterRegions[letterChar], tile.worldx(), tile.worldy(), CharOverlayData.rotation(tile.overlayData) * 90f);
 diff --git a/core/src/mindustry/world/blocks/environment/Cliff.java b/core/src/mindustry/world/blocks/environment/Cliff.java
-index fe73e5fddaf205acac6ba2a1f6227587f7a7c251..89119b53d5873ea3d6ff083d9aabc2456d0ef69c 100644
+index fe73e5fddaf205acac6ba2a1f6227587f7a7c251..5b855a21d8ddaff7bab5927c7ca405e8d9bf113a 100644
 --- a/core/src/mindustry/world/blocks/environment/Cliff.java
 +++ b/core/src/mindustry/world/blocks/environment/Cliff.java
 @@ -7,6 +7,7 @@ import mindustry.annotations.Annotations.*;
@@ -520,22 +520,23 @@ index fe73e5fddaf205acac6ba2a1f6227587f7a7c251..89119b53d5873ea3d6ff083d9aabc245
  
  import static mindustry.Vars.world;
  
-@@ -25,9 +26,20 @@ public class Cliff extends Block{
+@@ -25,9 +26,18 @@ public class Cliff extends Block{
  
      @Override
      public void drawBase(Tile tile){
-+        if(!RenderExt.shouldDrawBuildingBase()){
-+            if(RenderExt.shouldDrawOreLayer() && tile.overlay().wallOre){
-+                tile.overlay().drawBase(tile);
-+            }
-+            return;
+-        Draw.color(Tmp.c1.set(tile.floor().mapColor).mul(1.6f));
+-        Draw.rect(tile.data != 0 ? cliffs[tile.data & 0xff] : region, tile.worldx(), tile.worldy());
+-        Draw.color();
++        boolean renderBlock = RenderExt.shouldDrawBuildingBase();
++        boolean renderOre = tile.overlay().wallOre && RenderExt.shouldDraw(tile.overlay());
++
++        if(renderBlock){
++            Draw.color(Tmp.c1.set(tile.floor().mapColor).mul(1.6f));
++            Draw.rect(tile.data != 0 ? cliffs[tile.data & 0xff] : region, tile.worldx(), tile.worldy());
++            Draw.color();
 +        }
 +
-         Draw.color(Tmp.c1.set(tile.floor().mapColor).mul(1.6f));
-         Draw.rect(tile.data != 0 ? cliffs[tile.data & 0xff] : region, tile.worldx(), tile.worldy());
-         Draw.color();
-+
-+        if(RenderExt.shouldDrawOreLayer() && tile.overlay().wallOre){
++        if(renderOre){
 +            tile.overlay().drawBase(tile);
 +        }
      }
@@ -693,7 +694,7 @@ index a571c645223196468a5d73e8becead0ee2e9792d..41cbbb6b36ca0d1241ec6d4c93ba924d
          if((tile.overlayData & 0xff) < characters){
              Draw.rect(letterRegions[tile.overlayData & 0xff], tile.worldx(), tile.worldy());
 diff --git a/core/src/mindustry/world/blocks/environment/StaticTree.java b/core/src/mindustry/world/blocks/environment/StaticTree.java
-index 7ec5984513d9f051ad4254b536854b7e5104a2ed..35fa2ec5a9ec0a720be480069d9e492bf95ff473 100644
+index 7ec5984513d9f051ad4254b536854b7e5104a2ed..a040e0d4b25155140f7aea174aefb996b07dc31d 100644
 --- a/core/src/mindustry/world/blocks/environment/StaticTree.java
 +++ b/core/src/mindustry/world/blocks/environment/StaticTree.java
 @@ -4,6 +4,7 @@ import arc.graphics.g2d.*;
@@ -704,28 +705,70 @@ index 7ec5984513d9f051ad4254b536854b7e5104a2ed..35fa2ec5a9ec0a720be480069d9e492b
  
  import static mindustry.Vars.*;
  
-@@ -16,6 +17,13 @@ public class StaticTree extends StaticWall{
+@@ -16,32 +17,41 @@ public class StaticTree extends StaticWall{
  
      @Override
      public void drawBase(Tile tile){
-+        if(!RenderExt.shouldDrawBuildingBase()){
-+            if(RenderExt.shouldDrawOreLayer() && tile.overlay().wallOre){
-+                tile.overlay().drawBase(tile);
-+            }
-+            return;
-+        }
+-        TextureRegion reg = variants > 0 ? variantRegions[Mathf.randomSeed(tile.pos(), 0, Math.max(0, variantRegions.length - 1))] : region;
+-
+-        TextureRegion r = Tmp.tr1;
+-        r.set(reg);
+-        int crop = (r.width - tilesize*4) / 2;
+-        float ox = 0;
+-        float oy = 0;
+-
+-        for(int i = 0; i < 4; i++){
+-            if(tile.nearby(i) != null && tile.nearby(i).block() instanceof StaticWall){
+-
+-                if(i == 0){
+-                    r.setWidth(r.width - crop);
+-                    ox -= crop /2f;
+-                }else if(i == 1){
+-                    r.setY(r.getY() + crop);
+-                    oy -= crop /2f;
+-                }else if(i == 2){
+-                    r.setX(r.getX() + crop);
+-                    ox += crop /2f;
+-                }else{
+-                    r.setHeight(r.height - crop);
+-                    oy += crop /2f;
++        boolean renderBlock = RenderExt.shouldDrawBuildingBase();
++        boolean renderOre = tile.overlay().wallOre && RenderExt.shouldDraw(tile.overlay());
 +
-         TextureRegion reg = variants > 0 ? variantRegions[Mathf.randomSeed(tile.pos(), 0, Math.max(0, variantRegions.length - 1))] : region;
- 
-         TextureRegion r = Tmp.tr1;
-@@ -43,5 +51,9 @@ public class StaticTree extends StaticWall{
++        if(renderBlock){
++            TextureRegion reg = variants > 0 ? variantRegions[Mathf.randomSeed(tile.pos(), 0, Math.max(0, variantRegions.length - 1))] : region;
++
++            TextureRegion r = Tmp.tr1;
++            r.set(reg);
++            int crop = (r.width - tilesize*4) / 2;
++            float ox = 0;
++            float oy = 0;
++
++            for(int i = 0; i < 4; i++){
++                if(tile.nearby(i) != null && tile.nearby(i).block() instanceof StaticWall){
++
++                    if(i == 0){
++                        r.setWidth(r.width - crop);
++                        ox -= crop /2f;
++                    }else if(i == 1){
++                        r.setY(r.getY() + crop);
++                        oy -= crop /2f;
++                    }else if(i == 2){
++                        r.setX(r.getX() + crop);
++                        ox += crop /2f;
++                    }else{
++                        r.setHeight(r.height - crop);
++                        oy += crop /2f;
++                    }
+                 }
              }
-         }
-         Draw.rect(r, tile.drawx() + ox * Draw.scl, tile.drawy() + oy * Draw.scl);
-+
-+        if(RenderExt.shouldDrawOreLayer() && tile.overlay().wallOre){
-+            tile.overlay().drawBase(tile);
++            Draw.rect(r, tile.drawx() + ox * Draw.scl, tile.drawy() + oy * Draw.scl);
 +        }
++
++        if(renderOre){
++            tile.overlay().drawBase(tile);
+         }
+-        Draw.rect(r, tile.drawx() + ox * Draw.scl, tile.drawy() + oy * Draw.scl);
      }
  }
 diff --git a/core/src/mindustry/world/blocks/environment/StaticWall.java b/core/src/mindustry/world/blocks/environment/StaticWall.java
@@ -804,7 +847,7 @@ index 06b7be64bcd37d6877c60144968f547d28aef3a4..d60da6137f8ba26f161c972cb37f1f98
          }
      }
 diff --git a/core/src/mindustry/world/blocks/environment/TiledWall.java b/core/src/mindustry/world/blocks/environment/TiledWall.java
-index 22d3695547121eb91e220e27cead8e552bdf1923..8af233412bd50939bc0476d5cc9f062a0cebca3d 100644
+index 22d3695547121eb91e220e27cead8e552bdf1923..89b4498d207c908676465b9c8afe783f739ac1bc 100644
 --- a/core/src/mindustry/world/blocks/environment/TiledWall.java
 +++ b/core/src/mindustry/world/blocks/environment/TiledWall.java
 @@ -5,6 +5,7 @@ import arc.graphics.g2d.*;
@@ -815,26 +858,44 @@ index 22d3695547121eb91e220e27cead8e552bdf1923..8af233412bd50939bc0476d5cc9f062a
  
  import static mindustry.Vars.*;
  
-@@ -100,6 +101,13 @@ public class TiledWall extends StaticWall{
+@@ -100,20 +101,29 @@ public class TiledWall extends StaticWall{
  
      @Override
      public void drawBase(Tile tile){
-+        if(!RenderExt.shouldDrawBuildingBase()){
-+            if(RenderExt.shouldDrawOreLayer() && tile.overlay().wallOre){
-+                tile.overlay().drawBase(tile);
+-        long state = state(tile);
+-        //stale state, start scanning.
+-        if(TiledState.changes(state) != world.tileChanges){
+-            scan(tile);
+-            //state has most likely updated
+-            state = state(tile);
+-        }
++        boolean renderBlock = RenderExt.shouldDrawBuildingBase();
++        boolean renderOre = tile.overlay().wallOre && RenderExt.shouldDraw(tile.overlay());
++
++        if(renderBlock){
++            long state = state(tile);
++            //stale state, start scanning.
++            if(TiledState.changes(state) != world.tileChanges){
++                scan(tile);
++                //state has most likely updated
++                state = state(tile);
 +            }
-+            return;
+ 
+-        int size = Mathf.clamp(TiledState.size(state), 1, maxSize);
+-        int cx = TiledState.x(state), cy = TiledState.y(state);
+-        int variant = variant(tile.x - cx, tile.y - cy, variants);
++            int size = Mathf.clamp(TiledState.size(state), 1, maxSize);
++            int cx = TiledState.x(state), cy = TiledState.y(state);
++            int variant = variant(tile.x - cx, tile.y - cy, variants);
+ 
+-        TextureRegion[][] regions = sizedRegions[size][variant];
++            TextureRegion[][] regions = sizedRegions[size][variant];
+ 
+-        Draw.rect(regions[Mathf.clamp(cx, 0, regions.length - 1)][Mathf.clamp(size - 1 - cy, 0, regions[0].length - 1)], tile.worldx(), tile.worldy());
++            Draw.rect(regions[Mathf.clamp(cx, 0, regions.length - 1)][Mathf.clamp(size - 1 - cy, 0, regions[0].length - 1)], tile.worldx(), tile.worldy());
 +        }
 +
-         long state = state(tile);
-         //stale state, start scanning.
-         if(TiledState.changes(state) != world.tileChanges){
-@@ -115,5 +123,9 @@ public class TiledWall extends StaticWall{
-         TextureRegion[][] regions = sizedRegions[size][variant];
- 
-         Draw.rect(regions[Mathf.clamp(cx, 0, regions.length - 1)][Mathf.clamp(size - 1 - cy, 0, regions[0].length - 1)], tile.worldx(), tile.worldy());
-+
-+        if(RenderExt.shouldDrawOreLayer() && tile.overlay().wallOre){
++        if(renderOre){
 +            tile.overlay().drawBase(tile);
 +        }
      }
