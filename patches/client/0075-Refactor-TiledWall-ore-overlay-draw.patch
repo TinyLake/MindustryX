@@ -1,0 +1,62 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Wind-DeterMination-backup
+ <Wind-DeterMination-backup@users.noreply.github.com>
+Date: Sun, 15 Mar 2026 11:46:33 +0800
+Subject: [PATCH] Refactor TiledWall ore overlay draw
+
+---
+ .../world/blocks/environment/TiledWall.java   | 36 +++++++++----------
+ 1 file changed, 17 insertions(+), 19 deletions(-)
+
+diff --git a/core/src/mindustry/world/blocks/environment/TiledWall.java b/core/src/mindustry/world/blocks/environment/TiledWall.java
+index 8af233412bd50939bc0476d5cc9f062a0cebca3d..89b4498d207c908676465b9c8afe783f739ac1bc 100644
+--- a/core/src/mindustry/world/blocks/environment/TiledWall.java
++++ b/core/src/mindustry/world/blocks/environment/TiledWall.java
+@@ -101,30 +101,28 @@ public class TiledWall extends StaticWall{
+ 
+     @Override
+     public void drawBase(Tile tile){
+-        if(!RenderExt.shouldDrawBuildingBase()){
+-            if(RenderExt.shouldDrawOreLayer() && tile.overlay().wallOre){
+-                tile.overlay().drawBase(tile);
++        boolean renderBlock = RenderExt.shouldDrawBuildingBase();
++        boolean renderOre = tile.overlay().wallOre && RenderExt.shouldDraw(tile.overlay());
++
++        if(renderBlock){
++            long state = state(tile);
++            //stale state, start scanning.
++            if(TiledState.changes(state) != world.tileChanges){
++                scan(tile);
++                //state has most likely updated
++                state = state(tile);
+             }
+-            return;
+-        }
+ 
+-        long state = state(tile);
+-        //stale state, start scanning.
+-        if(TiledState.changes(state) != world.tileChanges){
+-            scan(tile);
+-            //state has most likely updated
+-            state = state(tile);
+-        }
++            int size = Mathf.clamp(TiledState.size(state), 1, maxSize);
++            int cx = TiledState.x(state), cy = TiledState.y(state);
++            int variant = variant(tile.x - cx, tile.y - cy, variants);
+ 
+-        int size = Mathf.clamp(TiledState.size(state), 1, maxSize);
+-        int cx = TiledState.x(state), cy = TiledState.y(state);
+-        int variant = variant(tile.x - cx, tile.y - cy, variants);
++            TextureRegion[][] regions = sizedRegions[size][variant];
+ 
+-        TextureRegion[][] regions = sizedRegions[size][variant];
+-
+-        Draw.rect(regions[Mathf.clamp(cx, 0, regions.length - 1)][Mathf.clamp(size - 1 - cy, 0, regions[0].length - 1)], tile.worldx(), tile.worldy());
++            Draw.rect(regions[Mathf.clamp(cx, 0, regions.length - 1)][Mathf.clamp(size - 1 - cy, 0, regions[0].length - 1)], tile.worldx(), tile.worldy());
++        }
+ 
+-        if(RenderExt.shouldDrawOreLayer() && tile.overlay().wallOre){
++        if(renderOre){
+             tile.overlay().drawBase(tile);
+         }
+     }
