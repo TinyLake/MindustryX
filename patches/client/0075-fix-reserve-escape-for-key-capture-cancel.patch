@@ -1,0 +1,23 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Wind-DeterMination-backup
+ <Wind-DeterMination-backup@users.noreply.github.com>
+Date: Sun, 15 Mar 2026 02:27:27 +0800
+Subject: [PATCH] fix: reserve escape for key capture cancel
+
+---
+ core/src/mindustry/ui/dialogs/KeybindDialog.java | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/core/src/mindustry/ui/dialogs/KeybindDialog.java b/core/src/mindustry/ui/dialogs/KeybindDialog.java
+index f8f1378dee632932f46efb1378413c945ea2331c..78ae50701ad9ab1c45217116ea658e330f9f41d2 100644
+--- a/core/src/mindustry/ui/dialogs/KeybindDialog.java
++++ b/core/src/mindustry/ui/dialogs/KeybindDialog.java
+@@ -197,7 +197,7 @@ public class KeybindDialog extends Dialog{
+         }
+ 
+         private boolean isBindable(KeyCode newKey){
+-            return newKey != null && newKey != KeyCode.anyKey && newKey != KeyCode.unknown && newKey != KeyCode.unset;
++            return newKey != null && newKey != KeyCode.anyKey && newKey != KeyCode.unknown && newKey != KeyCode.unset && newKey != KeyCode.escape;
+         }
+ 
+         private void openDialog(KeyBind name){

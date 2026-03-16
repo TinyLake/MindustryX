@@ -2,12 +2,15 @@ package mindustryX.features
 
 import arc.Core
 import arc.graphics.Color
+import arc.input.KeyBind
+import arc.input.KeyBind.Axis
 import arc.input.KeyCode
 import arc.scene.Element
 import arc.scene.event.ClickListener
 import arc.scene.event.InputEvent
 import arc.scene.event.Touchable
 import arc.scene.ui.*
+import arc.scene.ui.ImageButton.ImageButtonStyle
 import arc.scene.ui.layout.Stack
 import arc.scene.ui.layout.Table
 import arc.util.Align
@@ -19,6 +22,8 @@ import mindustry.gen.Icon
 import mindustry.graphics.Pal
 import mindustry.io.JsonIO
 import mindustry.ui.Styles
+import mindustry.ui.dialogs.BaseDialog
+import mindustry.ui.dialogs.KeybindDialog
 import java.io.ByteArrayInputStream
 import java.io.ByteArrayOutputStream
 import java.io.DataInputStream
@@ -31,19 +36,26 @@ import java.io.DataOutputStream
  */
 
 object SettingsV2 {
+    private const val hiddenShortcutPrefix = "settingV2-bind-"
+    private val shortcutPrefs = mutableListOf<CheckPref>()
+
+    enum class ShortcutMode(val bundleKey: String) {
+        toggle("settingV2.shortcut.mode.toggle"),
+        hold("settingV2.shortcut.mode.hold")
+    }
+
     open class ReactiveCore<T>(def: T) {
         private var _value: T = def
         private val listeners = mutableListOf<(T) -> Unit>()
         private val changedSet = mutableSetOf<String>()
 
         open val value: T get() = _value
-        fun get(): T = value //for java usage
+        fun get(): T = value
         open fun set(value: T) {
             if (value == _value) return
             _value = value
             notifyChanged()
         }
-
 
         fun notifyChanged() {
             changedSet.clear()
@@ -52,12 +64,10 @@ object SettingsV2 {
             }
         }
 
-        /** Notify Style changes */
         fun addListener(listener: (T) -> Unit) {
             listeners.add(listener)
         }
 
-        /** Poll Style changes */
         @JvmOverloads
         fun changed(name: String = "DEFAULT"): Boolean {
             return changedSet.add(name)
@@ -83,13 +93,13 @@ object SettingsV2 {
 
         init {
             addListener { (persistentProvider as? PersistentProvider.Savable)?.set(value) }
-            if (name in ALL)
-                Log.warn("Settings initialized!: $name")
+            if (name in ALL) Log.warn("Settings initialized!: $name")
             @Suppress("LeakingThis")
             ALL[name] = this
         }
 
         val modified get() = value != def
+
         fun resetDefault() {
             set(def)
             persistentProvider.reset()
@@ -116,8 +126,6 @@ object SettingsV2 {
             }
         }
 
-        // UI fields
-
         val category: String get() = categoryOverride[name] ?: name.substringBefore('.', "")
         val title: String get() = Core.bundle.get("settingV2.${name}.name", name)
         val description: String? get() = Core.bundle.getOrNull("settingV2.${name}.description")
@@ -128,7 +136,16 @@ object SettingsV2 {
             addTools()
         }
 
+        protected open fun Table.addShortcutTool() {
+            button(Icon.commandRallySmall, Styles.clearNonei) { }
+                .tooltip("@settingV2.shortcut.unsupported")
+                .fillY()
+                .padLeft(8f)
+                .disabled { true }
+        }
+
         protected fun Table.addTools() {
+            addShortcutTool()
             val help = description
             button(Icon.info, Styles.clearNonei) { Vars.ui.showInfo(help) }.tooltip(help ?: "@none")
                 .fillY().padLeft(8f).disabled { help == null }
@@ -140,6 +157,7 @@ object SettingsV2 {
     interface PersistentProvider<out T> {
         fun get(): T?
         fun reset()
+
         interface Savable<T> : PersistentProvider<T> {
             fun set(value: T)
 
@@ -156,6 +174,7 @@ object SettingsV2 {
         class Arc<T>(val name: String) : PersistentProvider<T>, Savable<T> {
             @Suppress("UNCHECKED_CAST")
             override fun get(): T? = Core.settings.get(name, null) as T?
+
             override fun set(value: T) {
                 Core.settings.put(name, value)
             }
@@ -192,15 +211,38 @@ object SettingsV2 {
     }
 
     class CheckPref @JvmOverloads constructor(name: String, def: Boolean = false) : Data<Boolean>(name, def) {
+        companion object {
+            private val shortcutButtonStyle by lazy {
+                ImageButtonStyle(Styles.clearNonei).apply {
+                    imageUpColor = Color.white
+                    imageCheckedColor = Pal.accent
+                    imageDisabledColor = Color.darkGray
+                }
+            }
+        }
+
+        private val shortcut = ShortcutHandler()
+
+        init {
+            shortcutPrefs += this
+        }
+
         fun toggle() {
             set(!value)
+        }
+
+        override fun Table.addShortcutTool() {
+            shortcut.addTool(this)
+        }
+
+        internal fun pollShortcut() {
+            shortcut.poll()
         }
 
         fun uiElement(): Element {
             val box = CheckBox(title)
             box.changed { set(box.isChecked) }
             box.update { box.isChecked = value }
-
             return box
         }
 
@@ -208,6 +250,111 @@ object SettingsV2 {
             add(uiElement())
             add().expandX()
             addTools()
+        }
+
+        private inner class ShortcutHandler {
+            private val shortcutBind = KeyBind.add(hiddenShortcutName(name), KeyCode.unset)
+            private val shortcutModeProvider = PersistentProvider.Arc<Int>("settingV2-shortcut-mode-$name")
+            private var shortcutModeLoaded = false
+            private var shortcutMode = ShortcutMode.toggle
+            private var holdActive = false
+            private var holdRestoreValue = false
+            private var holdAppliedValue = false
+
+            private fun ensureShortcutMode(): ShortcutMode {
+                if (!shortcutModeLoaded) {
+                    shortcutMode = ShortcutMode.entries.getOrElse(shortcutModeProvider.get() ?: 0) { ShortcutMode.toggle }
+                    shortcutModeLoaded = true
+                }
+                return shortcutMode
+            }
+
+            private fun setShortcutMode(mode: ShortcutMode) {
+                if (ensureShortcutMode() == mode) return
+                if (holdActive) releaseHeldShortcut()
+                shortcutMode = mode
+                shortcutModeProvider.set(mode.ordinal)
+            }
+
+            private fun releaseHeldShortcut() {
+                if (!holdActive) return
+                holdActive = false
+                if (value == holdAppliedValue) set(holdRestoreValue)
+            }
+
+            private fun hasShortcut(): Boolean = shortcutBind.value.key != KeyCode.unset
+
+            private fun shortcutName(): String {
+                return if (hasShortcut()) shortcutBind.value.keyName() else Core.bundle.get("settingV2.shortcut.unset")
+            }
+
+            private fun clearShortcut() {
+                releaseHeldShortcut()
+                shortcutBind.value = Axis(KeyCode.unset)
+                shortcutBind.save()
+            }
+
+            private fun showShortcutPanel() {
+                BaseDialog("$title / ${Core.bundle.get("settingV2.shortcut")}").apply {
+                    cont.defaults().minWidth(180f).fillX().pad(4f)
+                    cont.add(title).color(Pal.accent).wrap().growX().row()
+                    cont.label { shortcutName() }.wrap().left().growX().update { it.setText(shortcutName()) }.row()
+                    cont.button("@settings.rebind", Styles.grayt) {
+                        KeybindDialog.showRebindDialog(shortcutBind)
+                    }.growX().row()
+                    cont.table { modes ->
+                        modes.defaults().growX().height(48f).pad(2f)
+                        ShortcutMode.entries.forEach { mode ->
+                            modes.button(Core.bundle.get(mode.bundleKey), Styles.flatTogglet) {
+                                setShortcutMode(mode)
+                            }.update { it.isChecked = ensureShortcutMode() == mode }
+                        }
+                    }.growX().row()
+                    cont.button("@settingV2.shortcut.unbind", Styles.grayt) {
+                        clearShortcut()
+                    }.update { it.isDisabled = !hasShortcut() }.growX().row()
+                    addCloseButton()
+                    show()
+                }
+            }
+
+            fun addTool(table: Table) {
+                val shortcutButton = table.button(Icon.commandRallySmall, shortcutButtonStyle, Vars.iconSmall) {
+                    KeybindDialog.showRebindDialog(shortcutBind)
+                }.tooltip("@settingV2.shortcut").padLeft(4f).update { it.isChecked = hasShortcut() }.get()
+                shortcutButton.addListener(object : ClickListener(KeyCode.mouseRight) {
+                    override fun clicked(event: InputEvent, x: Float, y: Float) {
+                        super.clicked(event, x, y)
+                        showShortcutPanel()
+                    }
+                })
+            }
+
+            fun poll() {
+                if (!hasShortcut()) {
+                    releaseHeldShortcut()
+                    return
+                }
+
+                when (ensureShortcutMode()) {
+                    ShortcutMode.toggle -> {
+                        releaseHeldShortcut()
+                        if (Core.input.keyTap(shortcutBind)) toggle()
+                    }
+
+                    ShortcutMode.hold -> {
+                        val down = Core.input.keyDown(shortcutBind)
+                        if (down && !holdActive) {
+                            holdRestoreValue = value
+                            holdAppliedValue = !value
+                            holdActive = true
+                            set(holdAppliedValue)
+                        } else if (!down && holdActive) {
+                            releaseHeldShortcut()
+                        }
+                    }
+                }
+            }
         }
     }
 
@@ -310,9 +457,9 @@ object SettingsV2 {
             settings.forEach { setting ->
                 val category = categories.getOrPut(setting.category) { CategoryUI(setting.category) }
                 val match = (!onlyModified || setting.modified) && (
-                        category.key.contains(settingSearch, ignoreCase = true) || category.title.contains(settingSearch, ignoreCase = true)
-                                || setting.name.contains(settingSearch, true) || setting.title.contains(settingSearch, true)
-                        )
+                    category.key.contains(settingSearch, ignoreCase = true) || category.title.contains(settingSearch, ignoreCase = true)
+                        || setting.name.contains(settingSearch, true) || setting.title.contains(settingSearch, true)
+                    )
                 if (match) {
                     category.children.add(setting)
                 }
@@ -340,6 +487,7 @@ object SettingsV2 {
         button.removeListener(button.clickListener)
         Reflect.set(Button::class.java, button, "clickListener", object : ClickListener() {
             private var startTime: Long = Long.MAX_VALUE
+
             override fun touchDown(event: InputEvent?, x: Float, y: Float, pointer: Int, button: KeyCode?): Boolean {
                 if (super.touchDown(event, x, y, pointer, button)) {
                     startTime = Time.millis()
@@ -363,5 +511,19 @@ object SettingsV2 {
             }
         })
         button.addListener(button.clickListener)
+    }
+
+    @JvmStatic
+    fun pollShortcuts() {
+        if (Vars.headless || Core.scene.hasField() || KeybindDialog.isCapturing()) return
+        shortcutPrefs.forEach { it.pollShortcut() }
+    }
+
+    @JvmStatic
+    fun isHiddenSettingKeybind(bind: KeyBind): Boolean = bind.name.startsWith(hiddenShortcutPrefix)
+
+    private fun hiddenShortcutName(name: String): String {
+        val safeName = name.map { if (it.isLetterOrDigit()) it else '_' }.joinToString("")
+        return "$hiddenShortcutPrefix$safeName-${Integer.toUnsignedString(name.hashCode(), 16)}"
     }
 }

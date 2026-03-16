@@ -6,6 +6,7 @@ import arc.input.KeyBind.KeybindValue
 import arc.input.KeyCode
 import mindustry.Vars
 import mindustry.input.Binding
+import mindustry.ui.dialogs.KeybindDialog
 import mindustryX.features.ui.OverlayUI
 
 @Suppress("EnumEntryName")
@@ -26,7 +27,7 @@ enum class BindingExt(val default: KeybindValue = KeyCode.unset, val category: S
     placeRouterReplacement(KeyCode.shiftLeft),
     overlayUI(KeyCode.z, onTap = onTap@{
         if (Core.input.keyTap(Binding.schematicFlipX) && !Vars.control.input.selectPlans.isEmpty)
-            return@onTap // avoid conflict with schematic flip
+            return@onTap
         if (!Core.input.ctrl()) OverlayUI.toggle()
     }),
     ;
@@ -43,7 +44,7 @@ enum class BindingExt(val default: KeybindValue = KeyCode.unset, val category: S
 
         @JvmStatic
         fun pollKeys() {
-            if (Vars.headless || Core.scene.hasField()) return
+            if (Vars.headless || Core.scene.hasField() || KeybindDialog.isCapturing()) return
             BindingExt.entries.forEach {
                 val onTap = it.onTap ?: return@forEach
                 if (it.keyTap()) onTap()
