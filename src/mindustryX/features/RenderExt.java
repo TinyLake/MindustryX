@@ -73,7 +73,7 @@ public class RenderExt{
     public static final SliderPref overdriveZoneTransparency0 = new SliderPref("block.overdriveZoneTransparency", 0, 0, 100, 2, VarsX.bundle::percentOrOff);
     public static final SliderPref mendZoneTransparency0 = new SliderPref("block.mendZoneTransparency", 0, 0, 100, 2, VarsX.bundle::percentOrOff);
     public static final SliderPref healthBarMinHealth = new SliderPref("block.healthBarMinHealth", 0, 0, 4000, 50, VarsX.bundle::hpOrAll);
-    public static final ChoosePref blockRenderLevel0 = new ChoosePref("block.renderLevel", CollectionsKt.listOf(i("隐藏全部建筑"), i("只显示建筑状态"), i("全部显示")), 2);
+    public static final ChoosePref blockRenderLevel0 = new ChoosePref("block.renderLevel", CollectionsKt.listOf(i("ui.simple.hide-all-buildings"), i("ui.simple.show-building-status-only"), i("ui.simple.show-all")), 2);
     public static final SettingsV2.CheckPref showOtherTeamState = new CheckPref("block.showOtherTeamState");
     public static final SettingsV2.CheckPref logicDisplayNoBorder0 = new CheckPref("block.logicDisplayNoBorder");
 
@@ -339,7 +339,7 @@ public class RenderExt{
                 count.increment(u.type);
             }
             StringBuilder builder = new StringBuilder();
-            builder.append("[gold][MDTX][]").append(player.name).append(i("\n[white]分走了单位:")).append(" ");
+            builder.append("[gold][MDTX][]").append(player.name).append(i("ui.simple.white-took-units")).append(" ");
             for(UnitType type : count.keys()){
                 builder.append(type.emoji()).append("x").append(count.get(type)).append(" ");
             }

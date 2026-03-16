@@ -36,41 +36,41 @@ object NewToolTable : Table() {
         add(gridTable).growX().row()
         gridTable.defaults().size(Vars.iconLarge)
 
-        button(i("信"), i("中央监控室")) { UIExt.arcMessageDialog.show() }
-        button("S", i("同步一波")) { Call.sendChatMessage("/sync") }
-        button(i("观"), i("观察者模式")) { Call.sendChatMessage("/ob") }
-        button(i("版"), i("服务器信息版")) { Call.sendChatMessage("/broad") }
-        toggle(i("雾"), i("战争迷雾"), { Vars.state.rules.fog }) {
+        button(i("ui.simple.m"), i("ui.simple.message-center")) { UIExt.arcMessageDialog.show() }
+        button("S", i("ui.simple.sync-a-wave")) { Call.sendChatMessage("/sync") }
+        button(i("ui.simple.o"), i("ui.simple.observer-mode")) { Call.sendChatMessage("/ob") }
+        button(i("ui.simple.v"), i("ui.simple.server-info-build")) { Call.sendChatMessage("/broad") }
+        toggle(i("ui.simple.f"), i("ui.simple.fog-of-war"), { Vars.state.rules.fog }) {
             Vars.state.rules.fog = Vars.state.rules.fog xor true
         }.disabled { Vars.state.rules.pvp && Vars.player.team().id != 255 }
-        button(i("[white]法"), i("法国军礼")) {
-            Vars.ui.showConfirm(i("受不了，直接投降？")) { Call.sendChatMessage("/vote gameover") }
+        button(i("ui.simple.white-s"), i("ui.simple.surrender-vote")) {
+            Vars.ui.showConfirm(i("ui.simple.are-you-sure-you-want-to-surrender")) { Call.sendChatMessage("/vote gameover") }
         }
-        toggle(i("扫"), i("扫描模式"), { RenderExt.transportScan.value }) { RenderExt.transportScan.toggle() }
+        toggle(i("ui.simple.s"), i("ui.simple.scan-mode"), { RenderExt.transportScan.value }) { RenderExt.transportScan.toggle() }
 
-        toggle(i("块"), i("建筑显示"), { RenderExt.blockRenderLevel > 0 }) { RenderExt.blockRenderLevel0.cycle() }
-        toggle(i("兵"), i("兵种显示"), { !RenderExt.unitHide.value }) { RenderExt.unitHide.toggle() }
-        toggle(i("弹"), i("子弹显示"), { !RenderExt.noBulletShow.value }) { RenderExt.noBulletShow.toggle() }
-        toggle(i("效"), i("特效显示"), { Vars.renderer.enableEffects }) { Settings.toggle("effects") }
-        toggle(i("墙"), i("墙体阴影显示"), { Vars.enableDarkness }) { Vars.enableDarkness = !Vars.enableDarkness }
-        toggle("${Iconc.map}", i("小地图显示"), { Core.settings.getBool("minimap") }) { Settings.toggle("minimap") }
-        toggle(i("箱"), i("碰撞箱显示"), { RenderExt.unitHitbox.value }) { RenderExt.unitHitbox.toggle() }
+        toggle(i("ui.simple.b"), i("category.arcCDisplayBlock.name"), { RenderExt.blockRenderLevel > 0 }) { RenderExt.blockRenderLevel0.cycle() }
+        toggle(i("ui.simple.u"), i("ui.simple.unit-rendering"), { !RenderExt.unitHide.value }) { RenderExt.unitHide.toggle() }
+        toggle(i("ui.simple.p"), i("ui.simple.bullet-rendering"), { !RenderExt.noBulletShow.value }) { RenderExt.noBulletShow.toggle() }
+        toggle(i("ui.simple.fx"), i("ui.simple.effects-rendering"), { Vars.renderer.enableEffects }) { Settings.toggle("effects") }
+        toggle(i("ui.simple.w"), i("ui.simple.wall-shadow-rendering"), { Vars.enableDarkness }) { Vars.enableDarkness = !Vars.enableDarkness }
+        toggle("${Iconc.map}", i("ui.simple.minimap"), { Core.settings.getBool("minimap") }) { Settings.toggle("minimap") }
+        toggle(i("ui.simple.h"), i("ui.simple.hitbox-overlay"), { RenderExt.unitHitbox.value }) { RenderExt.unitHitbox.toggle() }
 
-        button("${Iconc.blockRadar}", i("雷达开关")) { ArcRadar.mobileRadar = !ArcRadar.mobileRadar }.get().also {
+        button("${Iconc.blockRadar}", i("ui.simple.radar-toggle")) { ArcRadar.mobileRadar = !ArcRadar.mobileRadar }.get().also {
             SettingsV2.bindQuickSettings(it, ArcRadar.settings)
         }
-        toggle("${Iconc.blockWorldProcessor}", i("移除逻辑锁定"), { Core.settings.getBool("removeLogicLock") }) {
+        toggle("${Iconc.blockWorldProcessor}", i("ui.simple.remove-logic-lock"), { Core.settings.getBool("removeLogicLock") }) {
             Settings.toggle("removeLogicLock")
             if (Core.settings.getBool("removeLogicLock")) {
                 Vars.control.input.logicCutscene = false
-                Vars.ui.announce(i("已移除逻辑视角锁定"))
+                Vars.ui.announce(i("ui.simple.logic-camera-lock-removed"))
             }
         }
-        toggle(Blocks.worldMessage.emoji(), i("信息板全显示"), { RenderExt.displayAllMessage }) { Settings.toggle("displayallmessage") }
-        button("${Iconc.itemCopper}", i("矿物信息")) { floorStatisticDialog() }
+        toggle(Blocks.worldMessage.emoji(), i("ui.simple.show-all-message-blocks"), { RenderExt.displayAllMessage }) { Settings.toggle("displayallmessage") }
+        button("${Iconc.itemCopper}", i("ui.simple.ore-info")) { floorStatisticDialog() }
 
-        button("${Iconc.fill}", i("特效大全")) { EffectsDialog.withAllEffects().show() }
-        button("${Iconc.star}", i("ui大全")) { uiTableDialog().show() }
+        button("${Iconc.fill}", i("ui.simple.effects-library")) { EffectsDialog.withAllEffects().show() }
+        button("${Iconc.star}", i("ui.simple.ui-toolkit")) { uiTableDialog().show() }
 
 
         add(GridTable()).update { t: Table ->
@@ -115,7 +115,7 @@ object NewToolTable : Table() {
     data class Button(val icon: Drawable, val tooltip: String, val action: () -> Unit)
 
     data class CustomButton(val name: String, val content: String) {
-        constructor() : this("?", i("未输入指令"))
+        constructor() : this("?", i("ui.simple.no-command-entered"))
 
         fun run() {
             if (content.startsWith("@js ")) {
@@ -169,7 +169,7 @@ object NewToolTable : Table() {
                 update {
                     if (changed()) clearChildren()
                     if (hasChildren()) return@update
-                    add(i("序号")); add(i("显示名")); add(i("消息(@js 开头为脚本)")); row()
+                    add(i("ui.simple.index")); add(i("ui.simple.display-name")); add(i("ui.simple.message-js-starts-with-script")); row()
                     value.forEachIndexed { i, d ->
                         var tmp = d
                         add(i.toString()).padRight(4f)
@@ -186,7 +186,7 @@ object NewToolTable : Table() {
                     button("@add", Icon.addSmall) {
                         set(value + CustomButton())
                     }.colspan(columns).fillX().row()
-                    add(i("[yellow]添加新指令前，请先保存编辑的指令")).colspan(columns).center().padTop(-4f).row()
+                    add(i("ui.simple.save-before-add-instruction-warning")).colspan(columns).center().padTop(-4f).row()
                 }
             }) { shown }.growX()
             table.row()
@@ -195,12 +195,12 @@ object NewToolTable : Table() {
 
 
     private fun floorStatisticDialog() {
-        val dialog = BaseDialog(i("ARC-矿物统计"))
+        val dialog = BaseDialog(i("ui.simple.arc-ore-statistics"))
         val table = dialog.cont
         table.clear()
 
         table.table { c: Table ->
-            c.add(i("矿物矿(地表/墙矿)")).color(Pal.accent).center().fillX().row()
+            c.add(i("ui.simple.ore-count-surface-wall")).color(Pal.accent).center().fillX().row()
             c.image().color(Pal.accent).fillX().row()
             c.table { list: Table ->
                 var i = 0
@@ -214,7 +214,7 @@ object NewToolTable : Table() {
                 }
             }.row()
 
-            c.add(i("液体")).color(Pal.accent).center().fillX().row()
+            c.add(i("ui.simple.liquids")).color(Pal.accent).center().fillX().row()
             c.image().color(Pal.accent).fillX().row()
             c.table { list: Table ->
                 var i = 0
@@ -237,7 +237,7 @@ object NewToolTable : Table() {
     }
 
 
-    private fun uiTableDialog() = BaseDialog(i("UI图标大全")).apply {
+    private fun uiTableDialog() = BaseDialog(i("ui.simple.ui-icon-library")).apply {
         cont.defaults().maxWidth(800f)
         var query = ""
         val sField = TextField()
@@ -247,7 +247,7 @@ object NewToolTable : Table() {
             field(query) { query = it }.pad(8f).grow().colspan(2).update { if (!it.hasKeyboard()) it.text = query }
             button(Icon.cancelSmall, Styles.cleari) { query = "" }.padLeft(16f).size(32f)
             row()
-            add(i("暂存区")).color(Pal.lightishGray).padRight(16f)
+            add(i("ui.simple.staging-area")).color(Pal.lightishGray).padRight(16f)
             add(sField).growX().get()
             button(Icon.copySmall, Styles.cleari) {
                 Core.app.clipboardText = sField.text
@@ -257,7 +257,7 @@ object NewToolTable : Table() {
         cont.row()
         Table().apply {
             defaults().minWidth(1f)
-            add(i("颜色")).color(Pal.accent).center().row()
+            add(i("ui.simple.color")).color(Pal.accent).center().row()
             image().color(Pal.accent).fillX().row()
             GridTable().apply {
                 defaults().height(32f).width(80f).pad(4f)
@@ -271,7 +271,7 @@ object NewToolTable : Table() {
                 }
             }.also { add(it).growX().row() }
 
-            add(i("物品")).color(Pal.accent).center().row()
+            add(i("ui.simple.item")).color(Pal.accent).center().row()
             image().color(Pal.accent).fillX().row()
             GridTable().apply {
                 defaults().size(Vars.iconLarge)
@@ -288,7 +288,7 @@ object NewToolTable : Table() {
                 }
             }.also { add(it).growX().row() }
 
-            add(i("图标")).color(Pal.accent).center().row()
+            add(i("ui.simple.icon")).color(Pal.accent).center().row()
             image().color(Pal.accent).fillX().row()
             GridTable().apply {
                 defaults().size(Vars.iconLarge)

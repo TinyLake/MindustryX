@@ -54,7 +54,7 @@ index 078026a393a19b36a66577a962f5984310375570..dfc6b9f31bdb9d1f890acc21f4ecca33
          });
          onResize(this::rebuild);
  
-+        buttons.button("解禁", Styles.togglet, () -> {
++        buttons.button(Core.bundle.get("ui.simple.unlock"), Styles.togglet, () -> {
 +            mindustryX.VarsX.allUnlocked.toggle();
 +            rebuild();
 +        }).checked((b) -> mindustryX.VarsX.allUnlocked.get());

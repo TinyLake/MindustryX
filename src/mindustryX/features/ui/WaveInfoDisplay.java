@@ -36,7 +36,7 @@ public class WaveInfoDisplay extends Table{
             buttons.defaults().size(32);
             buttons.add().growX();
 
-            buttons.button(Icon.waves, Styles.clearNonei, iconMed, waveInfoDialog::show).tooltip(i("波次信息"));
+            buttons.button(Icon.waves, Styles.clearNonei, iconMed, waveInfoDialog::show).tooltip(i("ui.simple.wave-info"));
 
             buttons.button("<", Styles.cleart, () -> shiftWaveOffset(-1));
             var i = buttons.button("", Styles.cleart, this::setWaveOffsetDialog).minHeight(48).maxWidth(160f).get();
@@ -44,18 +44,18 @@ public class WaveInfoDisplay extends Table{
             i.getLabel().setText(() -> "" + (state.wave + waveOffset));
             buttons.button(">", Styles.cleart, () -> shiftWaveOffset(1));
 
-            buttons.button("R", Styles.cleart, () -> setWaveOffset(0)).tooltip(i("恢复当前波次"));
-            buttons.button("J", Styles.cleart, () -> ui.showConfirm(i("[red]这是一个作弊功能[]\n快速跳转到目标波次(不刷兵)"), () -> {
+            buttons.button("R", Styles.cleart, () -> setWaveOffset(0)).tooltip(i("ui.simple.restore-current-wave"));
+            buttons.button("J", Styles.cleart, () -> ui.showConfirm(i("ui.simple.skip-to-wave-warning"), () -> {
                 state.wave += waveOffset;
                 setWaveOffset(0);
-            })).tooltip(i("强制跳波")).disabled((b) -> net.client());
+            })).tooltip(i("ui.simple.force-skip-waves")).disabled((b) -> net.client());
 
             buttons.add().growX();
             buttons.add("♐>");
-            buttons.button(Icon.wavesSmall, Styles.clearNonei, iconMed, () -> ShareFeature.shareWaveInfo(state.wave + waveOffset)).tooltip(i("分享波次信息"));
-            buttons.button(Icon.powerSmall, Styles.clearNonei, iconMed, ShareFeature::shareTeamPower).tooltip(i("分享电力情况"));
-            buttons.button(new TextureRegionDrawable(Items.copper.uiIcon), Styles.clearNonei, iconSmall, ShareFeature::openShareItemDialog).tooltip(i("分享库存情况"));
-            buttons.button(Icon.unitsSmall, Styles.clearNonei, iconMed, ShareFeature::openShareUnitDialog).tooltip(i("分享单位数量"));
+            buttons.button(Icon.wavesSmall, Styles.clearNonei, iconMed, () -> ShareFeature.shareWaveInfo(state.wave + waveOffset)).tooltip(i("ui.simple.share-wave-information"));
+            buttons.button(Icon.powerSmall, Styles.clearNonei, iconMed, ShareFeature::shareTeamPower).tooltip(i("ui.simple.share-power-status"));
+            buttons.button(new TextureRegionDrawable(Items.copper.uiIcon), Styles.clearNonei, iconSmall, ShareFeature::openShareItemDialog).tooltip(i("ui.simple.share-inventory-status"));
+            buttons.button(Icon.unitsSmall, Styles.clearNonei, iconMed, ShareFeature::openShareUnitDialog).tooltip(i("ui.simple.share-unit-count"));
         }).fillX().row();
 
         waveInfo = new Table().left().top();
@@ -86,8 +86,8 @@ public class WaveInfoDisplay extends Table{
     }
 
     private void setWaveOffsetDialog(){
-        Dialog lsSet = new BaseDialog(i("波次设定"));
-        lsSet.cont.add(i("设定查询波次")).padRight(5f).left();
+        Dialog lsSet = new BaseDialog(i("ui.simple.wave-settings"));
+        lsSet.cont.add(i("ui.simple.set-target-wave")).padRight(5f).left();
         TextField field = lsSet.cont.field(state.wave + waveOffset + "", text -> waveOffset = Integer.parseInt(text) - state.wave).size(320f, 54f).valid(Strings::canParsePositiveInt).maxTextLength(100).get();
         lsSet.cont.row();
         lsSet.cont.slider(1, ArcWaveSpawner.calWinWaveClamped(), 1, res -> {

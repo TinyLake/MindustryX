@@ -348,7 +348,7 @@ index d14fd47e8d0afa17a76b9112eb89cca4badeb2b8..d3dd7592465f420eb7c225b7dc7218ea
                      openDialog(keybind);
                  }).size(bw, bh);
              }
-+            table.button("取消绑定", tstyle, () -> {
++            table.button(Core.bundle.get("ui.simple.cancel-binding"), tstyle, () -> {
 +                keybind.value = new Axis(KeyCode.unset);
 +                keybind.save();
 +            }).size(bw, bh).pad(2f).padLeft(4f);

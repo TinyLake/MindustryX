@@ -99,7 +99,7 @@ public class ArcWaveSpawner{
                 dps += group.dpsT;
             }
 
-            if(amount == 0) return new Table(t -> t.add(i("该波次没有敌人")));
+            if(amount == 0) return new Table(t -> t.add(i("ui.simple.there-are-no-enemies-in-this-wave")));
             Table t = new Table();
             t.add("\uE86D").width(50f);
             t.add("[accent]" + amount).growX().padRight(50f);

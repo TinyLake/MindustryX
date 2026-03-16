@@ -105,7 +105,7 @@ object VarsX {
 
     @JvmField
     val maxSchematicSize = SliderPref("maxSchematicSize", Vars.maxSchematicSize, 64, 257) {
-        if (it == 257) return@SliderPref i("无限制")
+        if (it == 257) return@SliderPref i("ui.simple.unlimited")
         "${it}x${it}"
     }
 

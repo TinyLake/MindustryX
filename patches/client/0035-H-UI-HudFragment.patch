@@ -39,10 +39,10 @@ index d6c8321377b26ee05636c41588fdaa6a0787e97a..44204c8e8383d5854e40654e42d599a8
 +                .visible(() -> Core.settings.getBool("position") || Core.settings.getBool("mouseposition"))
 +                .touchable(Touchable.disabled).style(Styles.outlineLabel).minWidth(120f);
 +
-+                tt.button("♐", Styles.cleart, MarkerType::toggleMarkHitterUI).size(iconMed).tooltip("进入标记模式");
++                tt.button("♐", Styles.cleart, MarkerType::toggleMarkHitterUI).size(iconMed).tooltip(Core.bundle.get("ui.simple.enter-mark-mode"));
 +                tt.button("T", Styles.cleart, () -> ui.chatfrag.nextMode())
-+                .checked(b -> ui.chatfrag.mode == ChatFragment.ChatMode.team).size(iconMed).tooltip("前缀添加/t");
-+                tt.button("" + Iconc.zoom, Styles.cleart, MarkerType::lockOnLastMark).size(iconMed).tooltip("锁定上个标记点");
++                .checked(b -> ui.chatfrag.mode == ChatFragment.ChatMode.team).size(iconMed).tooltip(Core.bundle.get("ui.simple.add-prefix-t"));
++                tt.button("" + Iconc.zoom, Styles.cleart, MarkerType::lockOnLastMark).size(iconMed).tooltip(Core.bundle.get("ui.simple.lock-the-last-marked-point"));
 +            }).name("position");
              t.top().right();
          });
@@ -60,7 +60,7 @@ index d6c8321377b26ee05636c41588fdaa6a0787e97a..44204c8e8383d5854e40654e42d599a8
                  info.row();
  
 +                if (!android){
-+                    info.label(() -> "缩放: " + String.format("%.2f", renderer.getScale())).left().style(Styles.outlineLabel);
++                    info.label(() -> VarsX.bundle.zoomScale(String.format("%.2f", renderer.getScale()))).left().style(Styles.outlineLabel);
 +                    info.row();
 +                }
 +

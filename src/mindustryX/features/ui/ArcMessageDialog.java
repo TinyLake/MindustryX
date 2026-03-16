@@ -31,7 +31,7 @@ public class ArcMessageDialog extends BaseDialog{
     private static final GridTable chooseTable = new GridTable();
 
     public ArcMessageDialog(){
-        super(i("ARC-中央监控室"));
+        super(i("ui.simple.arc-message-center"));
         if(Core.settings.getInt("maxMsgRecorded") == 0) Core.settings.put("maxMsgRecorded", 500);
         maxMsgRecorded = Core.settings.getInt("maxMsgRecorded");
 
@@ -49,19 +49,19 @@ public class ArcMessageDialog extends BaseDialog{
         msgTable.defaults().minWidth(600).growX().padBottom(15f);
 
         cont.table(t -> {
-            t.add(i("最大储存聊天记录(过高可能导致卡顿)："));
+            t.add(i("ui.simple.max-chat-history-setting"));
             t.field(maxMsgRecorded + "", text -> {
                 int record = Math.min(Math.max(Integer.parseInt(text), 1), 9999);
                 maxMsgRecorded = record;
                 Core.settings.put("maxMsgRecorded", record);
             }).valid(Strings::canParsePositiveInt).width(200f).get();
             t.row();
-            t.add(i("超出限制的聊天记录将在载入地图时清除")).color(Color.lightGray).colspan(2);
+            t.add(i("ui.simple.chat-history-exceeding-the-limit-will-be-cleared")).color(Color.lightGray).colspan(2);
         }).row();
 
         addCloseButton();
-        buttons.button(i("清空"), Icon.trash, msgTable::clearChildren);
-        buttons.button(i("导出"), Icon.upload, this::exportMsg).name(i("导出聊天记录"));
+        buttons.button(i("ui.simple.clear"), Icon.trash, msgTable::clearChildren);
+        buttons.button(i("ui.simple.export"), Icon.upload, this::exportMsg).name(i("ui.simple.export-chat-history"));
 
         Events.on(EventType.WorldLoadEvent.class, e -> {
             addMsg(new Msg(Type.eventWorldLoad, VarsX.bundle.loadMap(state.map.name())));
@@ -107,7 +107,7 @@ public class ArcMessageDialog extends BaseDialog{
 
                 tt.button(Icon.copy, Styles.logici, () -> {
                     Core.app.setClipboardText(msg.message);
-                    ui.announce(i("已导出本条聊天记录"));
+                    ui.announce(i("ui.simple.copied-this-chat-record"));
                 }).size(24f).padRight(6);
                 tt.button(Icon.cancel, Styles.logici, t::remove).size(24f);
 
@@ -166,19 +166,19 @@ public class ArcMessageDialog extends BaseDialog{
     }
 
     public enum Type{
-        chat(i("聊天"), Color.gray),
-        serverMsg(i("服务器信息"), Color.valueOf("#cefdce")),
+        chat(i("ui.simple.chat"), Color.gray),
+        serverMsg(i("ui.simple.server-msg"), Color.valueOf("#cefdce")),
 
-        markLoc(i("标记~坐标"), Color.valueOf("#7FFFD4")),
-        markPlayer(i("标记~玩家"), Color.valueOf("#7FFFD4")),
+        markLoc(i("ui.simple.mark-coordinates"), Color.valueOf("#7FFFD4")),
+        markPlayer(i("ui.simple.mark-player"), Color.valueOf("#7FFFD4")),
 
-        console(i("指令"), Color.gold),
+        console(i("ui.simple.command"), Color.gold),
 
-        logicNotify(i("逻辑~通报"), Color.valueOf("#ffccff")),
-        logicAnnounce(i("逻辑~公告"), Color.valueOf("#ffccff")),
+        logicNotify(i("ui.simple.logic-notice"), Color.valueOf("#ffccff")),
+        logicAnnounce(i("ui.simple.logic-announcement"), Color.valueOf("#ffccff")),
 
-        eventWorldLoad(i("事件~载入地图"), Color.valueOf("#ff9999")),
-        eventWave(i("事件~波次"), Color.valueOf("#ffcc99"));
+        eventWorldLoad(i("ui.simple.event-map-load"), Color.valueOf("#ff9999")),
+        eventWave(i("ui.simple.event-wave"), Color.valueOf("#ffcc99"));
 
         public final String name;
         public final Color color;

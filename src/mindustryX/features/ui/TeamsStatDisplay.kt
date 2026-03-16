@@ -75,7 +75,7 @@ class TeamsStatDisplay : Table() {
     }
 
     private fun openAddTeamDialog(onSelected: (Teams.TeamData) -> Unit) {
-        BaseDialog(i("添加队伍")).apply {
+        BaseDialog(i("ui.simple.add-team")).apply {
             Vars.state.teams.active.forEach { team ->
                 cont.add(Button().apply {
                     add(Table().apply {

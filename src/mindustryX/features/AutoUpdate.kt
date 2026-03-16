@@ -122,7 +122,7 @@ object AutoUpdate {
     @JvmOverloads
     fun showDialog(version: Release? = latest) {
         checkUpdate()
-        val dialog = BaseDialog(i("自动更新"))
+        val dialog = BaseDialog(i("settingV2.AutoUpdate.category"))
         dialog.getCell(dialog.cont).setElement(ScrollPane(dialog.cont))
         dialog.cont.table().growY().get().apply {
             fun buildVersionList(versions: List<Release>) {
@@ -139,10 +139,10 @@ object AutoUpdate {
                                         p.add(it.description).labelAlign(Align.left)
                                     }.row()
                                 }
-                            }.tooltip(i("发布说明")).padRight(16f)
+                            }.tooltip(i("ui.simple.release-notes")).padRight(16f)
                         button(Icon.link, Styles.clearNonei, Vars.iconSmall) {
                             UIExt.openURI(it.url)
-                        }.tooltip(i("打开发布页面")).padRight(4f).row()
+                        }.tooltip(i("ui.simple.open-release-page")).padRight(4f).row()
                     }
                 }
                 row()
@@ -154,21 +154,21 @@ object AutoUpdate {
                 add(VarsX.bundle.newVersion(it.version)).row()
             }
             if (versions.isEmpty()) {
-                add(i("检查更新失败，请稍后再试")).row()
+                add(i("ui.simple.update-check-failed")).row()
                 return@apply
             }
 
             image().fillX().height(2f).row()
-            add(i("正式版")).row()
+            add(i("ui.simple.stable-releases")).row()
             buildVersionList(versions.filter { it.isRelease })
 
             image().fillX().height(2f).row()
-            add(i("预览版(更新更快,新功能体验,BUG修复)")).row()
+            add(i("ui.simple.preview-releases-description")).row()
             buildVersionList(versions.filter { !it.isRelease })
 
             image().fillX().height(2f).row()
             if (version == null) {
-                add(i("你已是最新版本，不需要更新！"))
+                add(i("ui.simple.you-are-already-on-the-latest-version"))
                 return@apply
             }
 
@@ -182,7 +182,7 @@ object AutoUpdate {
             }
             row()
 
-            button(i("自动下载更新")) {
+            button(i("ui.simple.download-and-install-update")) {
                 if (asset == null) return@button
                 startDownload(asset.copy(url = url)) { file ->
                     if (VarsX.isLoader) {

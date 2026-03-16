@@ -39,11 +39,11 @@ public class UIExt{
     }
 
     /**
-     * 用于简单文本的国际化替换
-     * 仅可用于UI构建，简单文本不应该包含变量
+     * 用于简单文本的国际化替换。
+     * 仅可用于UI构建，简单文本不应该包含变量。
      */
-    public static String i(String zh){
-        return VarsX.bundle.simple(zh);
+    public static String i(String key){
+        return Core.bundle.get(key, key);
     }
 
     public static void announce(String text){

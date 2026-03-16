@@ -27,7 +27,7 @@ public class PicToMindustry{
     static final int[] palette;
     static final int canvasSize;
     static final float[] scaleList = {0.02f, 0.05f, 0.1f, 0.15f, 0.2f, 0.25f, 0.3f, 0.4f, 0.5f, 0.65f, 0.8f, 1f, 1.25f, 1.5f, 2f, 3f, 5f};
-    static final String[] disFunList = {i("基础对比"), i("平方对比"), "LAB"};
+    static final String[] disFunList = {i("ui.simple.basic"), i("ui.simple.squared"), "LAB"};
 
     static{
         CanvasBlock canva = (CanvasBlock)Blocks.canvas;
@@ -43,10 +43,10 @@ public class PicToMindustry{
 
 
     public static void show(){
-        Dialog pt = new BaseDialog(i("arc-图片转换器"));
+        Dialog pt = new BaseDialog(i("ui.simple.arc-image-converter"));
         pt.cont.table(t -> {
-            t.add(i("选择并导入图片，可将其转成画板、像素画或是逻辑画")).padBottom(20f).row();
-            t.button(i("选择图片[white](png)"), () -> Vars.platform.showFileChooser(true, "png", file -> {
+            t.add(i("ui.simple.image-import-description")).padBottom(20f).row();
+            t.button(i("ui.simple.select-image-white-png"), () -> Vars.platform.showFileChooser(true, "png", file -> {
                 if(oriImage != null){
                     oriImage.dispose();
                     oriImage = null;
@@ -56,16 +56,16 @@ public class PicToMindustry{
                     byte[] bytes = file.readBytes();
                     oriImage = new Pixmap(bytes);
                     if(oriImage.width > 500 || oriImage.height > 500)
-                        UIExt.announce(i("[orange]警告：图片可能过大，请尝试压缩图片"), (float)5);
+                        UIExt.announce(i("ui.simple.orange-warning-image-may-be-too-large-please-try"), (float)5);
                 }catch(Throwable e){
                     UIExt.announce(VarsX.bundle.failedReadImage(e));
                 }
                 rebuilt();
             })).size(240, 50).padBottom(20f).row();
-            t.check(i("自动保存为蓝图"), Core.settings.getBool("autoSavePTM"), ta -> Core.settings.put("autoSavePTM", ta));
+            t.check(i("ui.simple.automatically-save-as-blueprint"), Core.settings.getBool("autoSavePTM"), ta -> Core.settings.put("autoSavePTM", ta));
         }).padBottom(20f).row();
         pt.cont.table(t -> {
-            t.add(i("缩放: \uE815 "));
+            t.add(i("ui.simple.zoom-icon-label"));
             Label zoom = t.add(String.valueOf(scale)).padRight(20f).get();
             t.slider(0, scaleList.length - 1, 1, 11, s -> {
                 scale = scaleList[(int)s];
@@ -74,7 +74,7 @@ public class PicToMindustry{
             }).width(200f);
         }).padBottom(20f).visible(() -> oriImage != null).row();
         pt.cont.table(t -> {
-            t.add(i("色调函数:"));
+            t.add(i("ui.simple.hue-mode"));
             Label zoom = t.add(disFunList[0]).padRight(20f).get();
             t.slider(0, disFunList.length - 1, 1, 0, s -> {
                 colorDisFun = (int)s;
@@ -83,7 +83,7 @@ public class PicToMindustry{
         }).padBottom(20f).visible(() -> oriImage != null).row();
         pt.cont.add(tTable);
         pt.cont.row();
-        pt.cont.button(VarsX.bundle.labelWithEmoji(i("逻辑画网站"), Blocks.logicDisplay.emoji()), () -> UIExt.openURI("https://buibiu.github.io/imageToMLogicPage/#/")).width(200f);
+        pt.cont.button(VarsX.bundle.labelWithEmoji(i("ui.simple.logic-art-website"), Blocks.logicDisplay.emoji()), () -> UIExt.openURI("https://buibiu.github.io/imageToMLogicPage/#/")).width(200f);
         pt.addCloseButton();
         pt.show();
     }
@@ -100,24 +100,24 @@ public class PicToMindustry{
         if(oriImage == null) return;
         int scaledW = (int)(oriImage.getWidth() * scale), scaledH = (int)(oriImage.getHeight() * scale);
         tTable.table(t -> {
-            t.add(i("路径")).color(Pal.accent).padRight(25f).padBottom(10f);
+            t.add(i("ui.simple.path")).color(Pal.accent).padRight(25f).padBottom(10f);
             t.button("\uE874", () -> Core.app.setClipboardText(originFile.absolutePath()));
             t.add(originFile.absolutePath()).padBottom(10f).row();
 
-            t.add(i("名称")).color(Pal.accent).padRight(25f).padBottom(10f);
+            t.add(i("ui.simple.name")).color(Pal.accent).padRight(25f).padBottom(10f);
             t.button("\uE874", () -> Core.app.setClipboardText(originFile.name()));
             t.add(originFile.name()).padBottom(10f).row();
 
-            t.add(i("原始大小")).color(Pal.accent).padRight(25f);
+            t.add(i("ui.simple.original-size")).color(Pal.accent).padRight(25f);
             t.add(formatNumber(oriImage.width) + "\uE815" + formatNumber(oriImage.height)).row();
 
-            t.add(i("缩放后大小")).color(Pal.accent).padRight(25f);
+            t.add(i("ui.simple.scaled-size")).color(Pal.accent).padRight(25f);
             t.add(formatNumber(scaledW) + "\uE815" + formatNumber(scaledH));
         }).padBottom(20f).row();
         tTable.table(t -> {
             t.table(tt -> {
                 int w = Mathf.ceil(scaledW * 1f / canvasSize), h = Mathf.ceil(scaledH * 1f / canvasSize);
-                tt.button(VarsX.bundle.labelWithEmoji(i("画板"), Blocks.canvas.emoji()), Styles.cleart, () -> {
+                tt.button(VarsX.bundle.labelWithEmoji(i("ui.simple.canvas"), Blocks.canvas.emoji()), Styles.cleart, () -> {
                     Pixmap image = Pixmaps.scale(oriImage, w * canvasSize, h * canvasSize, false);
                     image.replace((pixel) -> ArraysKt.minByOrThrow(palette, (it) -> diff_rbg(it, pixel)));
                     Schematic schem = canvasGenerator(image, w, h);
@@ -129,7 +129,7 @@ public class PicToMindustry{
             t.row();
             t.table(tt -> {
                 int w = Mathf.ceil(scaledW * 1f / canvasSize), h = Mathf.ceil(scaledH * 1f / canvasSize);
-                tt.button(VarsX.bundle.labelWithEmoji(i("画板++"), Blocks.canvas.emoji()), Styles.cleart, () -> {
+                tt.button(VarsX.bundle.labelWithEmoji(i("ui.simple.artboard"), Blocks.canvas.emoji()), Styles.cleart, () -> {
                     Pixmap image = Pixmaps.scale(oriImage, w * canvasSize, h * canvasSize, false);
                     mapPalettePlus(image);
                     Schematic schem = canvasGenerator(image, w, h);
@@ -139,7 +139,7 @@ public class PicToMindustry{
                 tt.add(VarsX.bundle.sizeWithDimensions(String.valueOf(w), String.valueOf(h)));
             }).row();
             t.table(tt -> {
-                tt.button(VarsX.bundle.labelWithEmoji(i("像素画"), Blocks.sorter.emoji()), Styles.cleart, () -> {
+                tt.button(VarsX.bundle.labelWithEmoji(i("ui.simple.pixel-art"), Blocks.sorter.emoji()), Styles.cleart, () -> {
                     Pixmap image = Pixmaps.scale(oriImage, scale);
                     Schematic schem = sorterGenerator(image);
                     image.dispose();

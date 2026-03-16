@@ -152,7 +152,7 @@ index 3c7b9653a58a5d4e92f9ba050de2f44757d91be2..dc337d182b0679e533c2389640b8edc7
 +    @Override
 +    public void setBars(){
 +        super.setBars();
-+        addBar("charge", (MendBuild entity) -> new Bar(() -> ("充能: " + (int)entity.charge + " / " + reload), () -> Pal.items, () -> (entity.charge / reload)));
++        addBar("charge", (MendBuild entity) -> new Bar(() -> Core.bundle.format("ui.simple.charge-bar", (int)entity.charge, reload), () -> Pal.items, () -> (entity.charge / reload)));
 +    }
 +
      @Override
@@ -168,7 +168,7 @@ index c2a1f10f2fe32c093cb0142a7f1d93dabadb4e2f..31b67b7837d1c1b6c4c3ec00982478b5
          super.setBars();
 -        addBar("boost", (OverdriveBuild entity) -> new Bar(() -> Core.bundle.format("bar.boost", Mathf.round(Math.max((entity.realBoost() * 100 - 100), 0))), () -> Pal.accent, () -> entity.realBoost() / (hasBoost ? speedBoost + speedBoostPhase : speedBoost)));
 +        addBar("boost", (OverdriveBuild entity) -> new Bar(() ->
-+                "超速：" + (entity.realBoost() <= 1 ? "[red]\uE815": "+" + (int)((entity.realBoost() - 1) * 100) + "%"),
++                Core.bundle.get("ui.simple.overdrive") + (entity.realBoost() <= 1 ? "[red]\uE815": "+" + (int)((entity.realBoost() - 1) * 100) + "%"),
 +                () -> Pal.accent, () -> entity.realBoost() / (hasBoost ? speedBoost + speedBoostPhase : speedBoost)));
      }
  
@@ -421,7 +421,7 @@ index a142f890eaf5c8252a04201c8485ecb0e260d3f6..2fdaf89d8bfafa089c5a6de09115ec81
  
          addBar("drillspeed", (BeamDrillBuild e) ->
 -            new Bar(() -> Core.bundle.format("bar.drillspeed", Strings.fixed(e.lastDrillSpeed * 60, 2)), () -> Pal.ammo, () -> e.warmup));
-+            new Bar(() -> (e.lastItem == null ? "挖掘速度：0.00/s" : e.lastItem.emoji() +" "+ Strings.fixed(e.lastDrillSpeed * 60 , 2) + "/s"), () -> Pal.ammo, () -> e.warmup));
++            new Bar(() -> (e.lastItem == null ? Core.bundle.get("ui.simple.drill-speed-empty") : Core.bundle.get("ui.simple.drill-speed") + e.lastItem.emoji() + " " + Strings.fixed(e.lastDrillSpeed * 60, 2) + "/s"), () -> Pal.ammo, () -> e.warmup));
      }
  
      @Override
@@ -498,7 +498,7 @@ index 9ae3c98364c860ed47d03592f9d660d1af1b753c..e13f83f830269f8485351d2a52c2edff
  
          addBar("drillspeed", (WallCrafterBuild e) ->
 -            new Bar(() -> Core.bundle.format("bar.drillspeed", Strings.fixed(e.lastEfficiency * 60 / drillTime, 2)), () -> Pal.ammo, () -> e.warmup));
-+            new Bar(() -> (output == null ? "挖掘速度：" : output.emoji()) +" "+ Strings.fixed(e.lastEfficiency * 60 / drillTime, 2) + "/s", () -> Pal.ammo, () -> e.warmup));
++            new Bar(() -> (output == null ? Core.bundle.get("ui.simple.drill-speed") : output.emoji()) + " " + Strings.fixed(e.lastEfficiency * 60 / drillTime, 2) + "/s", () -> Pal.ammo, () -> e.warmup));
      }
  
      @Override

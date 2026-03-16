@@ -59,9 +59,9 @@ index 4bc5fa841571cfe3e7948f7a74a9f08c4d2a6cb9..497406bf761dfa63cdbbe554289c00f4
 +                title.setAlignment(Align.center);
 +                cont.add(Core.bundle.format("server.versions", Version.build, version)).row();
 +                cont.row();
-+                cont.add("[gold]MDTX[]: 目标版本可能兼容，你可以选择伪装版本强制加入。\n如果出现[red]网络错误[]或其他问题，表示无法兼容。").row();
++                cont.add("@forceJoin.tips").row();
 +                cont.pack();
-+                buttons.button("强制加入", () -> {
++                buttons.button(Core.bundle.get("ui.simple.force-join"), () -> {
 +                    hide();
 +                    ConnectPacket.clientVersion = version;
 +                    connect(ip, port);

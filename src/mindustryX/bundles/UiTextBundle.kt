@@ -7,7 +7,6 @@ interface UiTextBundle {
     //region 特殊的函数
     object Zh : UiTextBundle
 
-    fun simple(key: String): String = key
     val labelsResFile: String get() = "labels"
 
     //region 后续为正常翻译项
