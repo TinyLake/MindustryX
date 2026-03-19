@@ -31,81 +31,175 @@ import java.io.DataOutputStream
  */
 
 object SettingsV2 {
-    open class ReactiveCore<T>(def: T) {
-        private var _value: T = def
-        private val listeners = mutableListOf<(T) -> Unit>()
-        private val changedSet = mutableSetOf<String>()
+    interface IData<T> {
+        val default: T
+        val value: T get() = get()
+        fun get(): T
+        fun set(value: T)
+        fun reset()
+        fun changed(key: Any): Boolean
+        fun changed(): Boolean = changed(Unit)
+    }
 
-        open val value: T get() = _value
-        fun get(): T = value //for java usage
-        open fun set(value: T) {
+    class MemoryStore<T>(override val default: T) : IData<T> {
+        private var _value: T = default
+        private val changedSet = mutableSetOf<Any>()
+
+        override val value: T get() = _value
+        override fun get(): T = value //for java usage
+        override fun set(value: T) {
             if (value == _value) return
             _value = value
             notifyChanged()
         }
 
+        fun notifyChanged() = changedSet.clear()
+        override fun reset() = set(default)
+        override fun changed(key: Any): Boolean = changedSet.add(key)
+    }
 
-        fun notifyChanged() {
-            changedSet.clear()
-            value?.let { v ->
-                listeners.forEach { it.invoke(v) }
+    abstract class Computed<T, R>(val core: IData<T>, final override val default: R) : IData<R> {
+        private var _value: R = default
+        abstract fun compute(t: T): R
+        abstract fun computeR(r: R): T
+        override fun get(): R {
+            if (core.changed(this)) {
+                _value = compute(core.get())
             }
+            return _value
         }
 
-        /** Notify Style changes */
-        fun addListener(listener: (T) -> Unit) {
-            listeners.add(listener)
+        override fun set(value: R) {
+            if (get() == value) return
+            core.set(computeR(value))
+            core.changed(this)//consume, not dirty
+            this._value = value
         }
 
-        /** Poll Style changes */
-        @JvmOverloads
-        fun changed(name: String = "DEFAULT"): Boolean {
-            return changedSet.add(name)
+        override fun reset() {
+            core.reset()
+            core.changed(this)//consume, not dirty
+            _value = default
+        }
+
+        override fun changed(key: Any): Boolean = core.changed(key)
+    }
+
+    data class ArcSetting<T>(val key: String, override val default: T) : IData<T> {
+        private val core = MemoryStore(default)
+        private var loaded = false
+
+        @Suppress("UNCHECKED_CAST")
+        override fun get(): T {
+            if (!loaded) {
+                core.set(Core.settings.get(key, default) as T)
+                loaded = true
+            }
+            return core.get()
+        }
+
+        override fun set(value: T) {
+            if (core.get() == value) return
+            set(value)
+            Core.settings.put(key, value)
+        }
+
+        override fun reset() {
+            if (core.get() == default) return
+            set(default)
+            Core.settings.remove(key)
+        }
+
+        override fun changed(key: Any): Boolean = core.changed(key)
+    }
+
+    class UBJsonMapped<T>(core: IData<ByteArray?>, default: T, val cls: Class<T>, val elementClass: Class<*>? = null) : Computed<ByteArray?, T>(core, default) {
+        constructor(key: String, default: T, cls: Class<T>, elementClass: Class<*>? = null) : this(ArcSetting(key, null), default, cls, elementClass)
+
+        override fun compute(t: ByteArray?): T {
+            if (t == null) return default
+            return JsonIO.readBytes(cls, elementClass, DataInputStream(ByteArrayInputStream(t)))
+        }
+
+        override fun computeR(r: T): ByteArray? {
+            return ByteArrayOutputStream().use {
+                JsonIO.writeBytes(r, elementClass, DataOutputStream(it))
+                it.toByteArray()
+            }
         }
     }
 
-    interface UIBuilder {
+    fun interface UIBuilder {
         fun buildUI(): Table
     }
 
-    open class Data<T>(val name: String, val def: T) : ReactiveCore<T>(def), UIBuilder {
-        private var init = false
-        var persistentProvider: PersistentProvider<T> = PersistentProvider.Arc(name)
 
-        override val value: T
-            get() {
-                if (!init) {
-                    persistentProvider.get()?.let { super.set(it) }
-                    init = true
-                }
-                return super.value
+    interface PersistentProvider<out T> {
+        fun get(): T?
+        fun reset()
+        class Arc<T>(val name: String) : PersistentProvider<T> {
+            @Suppress("UNCHECKED_CAST")
+            override fun get(): T? = Core.settings.get(name, null) as T?
+            override fun reset() {
+                Core.settings.remove(name)
             }
+        }
+    }
+
+    fun Table.addHelpButton(help: String) {
+        button(Icon.info, Styles.clearNonei) { Vars.ui.showInfo(help) }.tooltip(help)
+            .fillY().padLeft(8f)
+    }
+
+    fun <T> Table.addResetButton(data: IData<T>) {
+        button(Icon.undo, Styles.clearNonei) { data.set(data.default) }.tooltip("@settingV2.reset")
+            .fillY().disabled { data.get() == data.default }
+    }
+
+    open class Data<T>(val name: String, val core: IData<T>) : IData<T> by core {
+        constructor(name: String, def: T) : this(name, ArcSetting<T>(name, def))
+        constructor(name: String, cls: Class<T>, def: T) : this(name, UBJsonMapped(name, def, cls))
+
+        val category: String get() = categoryOverride[name] ?: name.substringBefore('.', "")
+        val title: String get() = Core.bundle.get("settingV2.${name}.name", name)
+        val description: String? get() = Core.bundle.getOrNull("settingV2.${name}.description")
+        open var ui: UIBuilder = UIBuilder {
+            Table().apply {
+                add(title).padRight(8f)
+                label { get().toString() }.ellipsis(true).color(Color.gray).labelAlign(Align.left).growX()
+                addTools()
+            }
+        }
+
 
         init {
-            addListener { (persistentProvider as? PersistentProvider.Savable)?.set(value) }
             if (name in ALL)
                 Log.warn("Settings initialized!: $name")
             @Suppress("LeakingThis")
             ALL[name] = this
         }
 
-        val modified get() = value != def
-        fun resetDefault() {
-            set(def)
-            persistentProvider.reset()
-        }
+        val modified get() = get() != core.default
 
         fun addFallback(provider: PersistentProvider<T>) {
             mayLaterInit {
                 if (!modified) {
-                    set(provider.get() ?: def)
+                    set(provider.get() ?: core.default)
                 }
-                (provider as? PersistentProvider.Savable)?.reset()
+                provider.reset()
             }
         }
 
         fun addFallbackName(name: String) {
             addFallback(PersistentProvider.Arc(name))
+        }
+
+        fun <O> addFallback(name: String, map: (O) -> T) {
+            val arc = PersistentProvider.Arc<O>(name)
+            addFallback(object : PersistentProvider<T> {
+                override fun get(): T? = arc.get()?.let<O, T> { it: O -> map(it) }
+                override fun reset() = arc.reset()
+            })
         }
 
         private inline fun mayLaterInit(crossinline action: () -> Unit) {
@@ -116,129 +210,83 @@ object SettingsV2 {
             }
         }
 
-        // UI fields
-
-        val category: String get() = categoryOverride[name] ?: name.substringBefore('.', "")
-        val title: String get() = Core.bundle.get("settingV2.${name}.name", name)
-        val description: String? get() = Core.bundle.getOrNull("settingV2.${name}.description")
-
-        override fun buildUI() = Table().apply {
-            add(title).padRight(8f)
-            label { value.toString() }.ellipsis(true).color(Color.gray).labelAlign(Align.left).growX()
-            addTools()
-        }
-
         protected fun Table.addTools() {
-            val help = description
-            button(Icon.info, Styles.clearNonei) { Vars.ui.showInfo(help) }.tooltip(help ?: "@none")
-                .fillY().padLeft(8f).disabled { help == null }
-            button(Icon.undo, Styles.clearNonei) { resetDefault() }.tooltip("@settingV2.reset")
-                .fillY().disabled { !modified }
+            description?.let { addHelpButton(it) }
+            addResetButton(this@Data)
         }
     }
 
-    interface PersistentProvider<out T> {
-        fun get(): T?
-        fun reset()
-        interface Savable<T> : PersistentProvider<T> {
-            fun set(value: T)
+    @Suppress("UNCHECKED_CAST")
+    open class ListData<T>(name: String, cls: Class<T>, def: List<T> = emptyList()) :
+        Data<List<T>>(name, UBJsonMapped(name, def, List::class.java as Class<List<T>>, cls))
 
-            fun setOrReset(value: T?) {
-                if (value == null) reset() else set(value)
-            }
-        }
+    class CheckPref(name: String, core: IData<Boolean>) : Data<Boolean>(name, core) {
+        @JvmOverloads
+        constructor(name: String, def: Boolean = false) : this(name, ArcSetting(name, def))
 
-        data object Noop : PersistentProvider<Nothing> {
-            override fun get(): Nothing? = null
-            override fun reset() {}
-        }
-
-        class Arc<T>(val name: String) : PersistentProvider<T>, Savable<T> {
-            @Suppress("UNCHECKED_CAST")
-            override fun get(): T? = Core.settings.get(name, null) as T?
-            override fun set(value: T) {
-                Core.settings.put(name, value)
-            }
-
-            override fun reset() {
-                Core.settings.remove(name)
-            }
-        }
-
-        class AsUBJson<T>(private val base: Savable<ByteArray>, val cls: Class<*>, val elementClass: Class<*>? = null) : Savable<T> {
-            override fun get(): T? {
-                val bs = base.get() ?: return null
-                @Suppress("UNCHECKED_CAST")
-                return JsonIO.readBytes(cls as Class<T>, elementClass, DataInputStream(ByteArrayInputStream(bs)))
-            }
-
-            override fun set(value: T) {
-                val bs = ByteArrayOutputStream().use {
-                    JsonIO.writeBytes(value, elementClass, DataOutputStream(it))
-                    it.toByteArray()
-                }
-                base.set(bs)
-            }
-
-            override fun reset() {
-                base.reset()
-            }
-        }
-    }
-
-    fun <T, R> PersistentProvider<T>.map(mapper: (T) -> R): PersistentProvider<R> = object : PersistentProvider<R> {
-        override fun get(): R? = this@map.get()?.let(mapper)
-        override fun reset() = this@map.reset()
-    }
-
-    class CheckPref @JvmOverloads constructor(name: String, def: Boolean = false) : Data<Boolean>(name, def) {
         fun toggle() {
-            set(!value)
+            set(!get())
         }
 
-        fun uiElement(): Element {
-            val box = CheckBox(title)
-            box.changed { set(box.isChecked) }
-            box.update { box.isChecked = value }
+        override var ui: UIBuilder = UI()
 
-            return box
-        }
+        inner class UI : UIBuilder {
+            fun uiElement(): Element {
+                val box = CheckBox(title)
+                box.changed { core.set(box.isChecked) }
+                box.update { box.isChecked = core.get() }
 
-        override fun buildUI() = Table().apply {
-            add(uiElement())
-            add().expandX()
-            addTools()
-        }
-    }
-
-    open class SliderPref @JvmOverloads constructor(name: String, def: Int, val min: Int, val max: Int, val step: Int = 1, val labelMap: (Int) -> String = { it.toString() }) : Data<Int>(name, def) {
-        override fun set(value: Int) {
-            super.set(value.coerceIn(min, max))
-        }
-
-        fun uiElement(): Element {
-            val elem = Slider(min.toFloat(), max.toFloat(), step.toFloat(), false)
-            elem.changed { set(elem.value.toInt()) }
-            elem.update { elem.value = value.toFloat() }
-
-            val content = Table().apply {
-                touchable = Touchable.disabled
-                add(title, Styles.outlineLabel).left().growX().wrap()
-                label { labelMap(value) }.style(Styles.outlineLabel).padLeft(10f).right().get()
+                return box
             }
 
-            return Stack(elem, content)
-        }
-
-        override fun buildUI() = Table().apply {
-            add(uiElement()).minWidth(220f).growX()
-            addTools()
+            override fun buildUI() = Table().apply {
+                add(uiElement())
+                add().expandX()
+                description?.let { addHelpButton(it) }
+                addResetButton(core)
+            }
         }
     }
+
+    open class SliderPref @JvmOverloads constructor(
+        name: String, def: Int, val min: Int, val max: Int, val step: Int = 1,
+        val labelMap: (Int) -> String = { it.toString() }
+    ) : Data<Int>(name, def) {
+        override fun set(value: Int) {
+            core.set(value.coerceIn(min, max))
+        }
+
+        override var ui: UIBuilder = UI()
+
+        //old usage
+        fun uiElement() = UI().uiElement()
+
+        inner class UI : UIBuilder {
+            fun uiElement(): Element {
+                val elem = Slider(min.toFloat(), max.toFloat(), step.toFloat(), false)
+                elem.changed { core.set(elem.value.toInt()) }
+                elem.update { elem.value = core.get().toFloat() }
+
+                val content = Table().apply {
+                    touchable = Touchable.disabled
+                    add(title, Styles.outlineLabel).left().growX().wrap()
+                    label { labelMap(core.get()) }.style(Styles.outlineLabel).padLeft(10f).right().get()
+                }
+
+                return Stack(elem, content)
+            }
+
+            override fun buildUI() = Table().apply {
+                add(uiElement()).minWidth(220f).growX()
+                addTools()
+            }
+        }
+    }
+
 
     class ChoosePref @JvmOverloads constructor(name: String, val values: List<String>, def: Int = 0) : SliderPref(name, def, 0, values.size - 1, labelMap = { values[it] }) {
         fun cycle() {
-            set((value + 1) % values.size)
+            set((get() + 1) % values.size)
         }
     }
 
@@ -247,24 +295,28 @@ object SettingsV2 {
             super.set(value.trim())
         }
 
-        fun uiElement(): Element {
-            val elem = if (prefRows <= 1) TextField("") else TextArea("").apply {
-                setPrefRows(prefRows.toFloat())
-            }
-            elem.changed { set(elem.text) }
-            elem.update { if (!elem.hasKeyboard()) elem.text = value }
-            return elem
-        }
+        override var ui: UIBuilder = UI()
 
-        override fun buildUI() = Table().apply {
-            if (prefRows > 1) {
-                add(title).left().expandX()
-                addTools()
-                row().add(uiElement()).colspan(columns).growX()
-            } else {
-                add(title).padRight(8f)
-                add(uiElement()).growX()
-                addTools()
+        inner class UI : UIBuilder {
+            fun uiElement(): Element {
+                val elem = if (prefRows <= 1) TextField("") else TextArea("").apply {
+                    setPrefRows(prefRows.toFloat())
+                }
+                elem.changed { set(elem.text) }
+                elem.update { if (!elem.hasKeyboard()) elem.text = get() }
+                return elem
+            }
+
+            override fun buildUI() = Table().apply {
+                if (prefRows > 1) {
+                    add(title).left().expandX()
+                    addTools()
+                    row().add(uiElement()).colspan(columns).growX()
+                } else {
+                    add(title).padRight(8f)
+                    add(uiElement()).growX()
+                    addTools()
+                }
             }
         }
     }
@@ -314,7 +366,7 @@ object SettingsV2 {
                                 || setting.name.contains(settingSearch, true) || setting.title.contains(settingSearch, true)
                         )
                 if (match) {
-                    category.children.add(setting)
+                    category.children.add(setting.ui)
                 }
             }
             categories.entries.sortedBy { it.key }.forEach {
@@ -352,7 +404,7 @@ object SettingsV2 {
                 if (Core.input.keyDown(KeyCode.shiftLeft) || Time.timeSinceMillis(startTime) > 500) {
                     UIExtKt.showFloatSettingsPanel {
                         settings.forEach {
-                            add(it.buildUI()).growX().padBottom(4f).row()
+                            add(it.ui.buildUI()).growX().padBottom(4f).row()
                         }
                     }
                 } else {

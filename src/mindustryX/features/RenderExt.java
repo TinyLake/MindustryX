@@ -58,7 +58,7 @@ public class RenderExt{
     public static final SettingsV2.CheckPref unitHitbox = new CheckPref("entityRender.unitHitbox");
     public static final SettingsV2.CheckPref payloadPreview = new CheckPref("entityRender.payloadPreview");
 
-    public static final SettingsV2.CheckPref unitHide = new CheckPref("entityRender.unitHide");
+    public static final SettingsV2.CheckPref unitHide = new CheckPref("entityRender.unitHide", new MemoryStore<>(false));
     public static final SettingsV2.CheckPref unitHideExcludePlayers = new CheckPref("entityRender.unitHideExcludePlayers", true);
     public static final SliderPref unitHideMinHealth = new SliderPref("entityRender.unitHideMinHealth", 0, 0, 4000, 50, v -> v + "[red]HP");
 
@@ -80,12 +80,10 @@ public class RenderExt{
 
     static{
         if(headless) throw new RuntimeException("RenderExt should not access in Headless");
-        noBulletShow.addFallback(SettingsV2.INSTANCE.map(new PersistentProvider.Arc<Boolean>("bulletShow"), it -> !it));
+        noBulletShow.addFallback("bulletShow", (Boolean it) -> !it);
         unitHitbox.addFallbackName("unithitbox");
         unitHitbox.addFallbackName("payloadpreview");
 
-        //noinspection unchecked
-        unitHide.setPersistentProvider(PersistentProvider.Noop.INSTANCE);
         unitHideExcludePlayers.addFallbackName("unitHideExcludePlayers");
         unitHideMinHealth.addFallbackName("unitDrawMinHealth");
 

@@ -127,7 +127,7 @@ object NewToolTable : Table() {
     }
 
     private class OldCustomButtonSettings : SettingsV2.PersistentProvider<List<CustomButton>> {
-        val num = SettingsV2.PersistentProvider.Arc<Int>("arcQuickMsg")
+        val num = SettingsV2.ArcSetting<Int?>("arcQuickMsg", null)
         override fun get(): List<CustomButton>? {
             val num = num.get() ?: return null
             return List(num) { i ->
@@ -150,46 +150,49 @@ object NewToolTable : Table() {
     }
 
     @JvmField
-    val customButtons = object : SettingsV2.Data<List<CustomButton>>("quickButtons.customButtons", emptyList()) {
+    val customButtons = object : SettingsV2.ListData<CustomButton>("quickButtons.customButtons", CustomButton::class.java) {
         init {
-            persistentProvider = SettingsV2.PersistentProvider.AsUBJson(SettingsV2.PersistentProvider.Arc(name), List::class.java, CustomButton::class.java)
             addFallback(OldCustomButtonSettings())
         }
 
-        override fun buildUI() = Table().let { table ->
-            var shown = false
-            table.button(title) { shown = !shown }.growX().height(55f).padBottom(2f).get().apply {
-                imageDraw { if (shown) Icon.downOpen else Icon.upOpen }.size(Vars.iconMed)
-                cells.reverse()
-                update { isChecked = shown }
-            }
-            table.row()
-            table.collapser(Table().apply {
-                defaults().pad(2f)
-                update {
-                    if (changed()) clearChildren()
-                    if (hasChildren()) return@update
-                    add(i("序号")); add(i("显示名")); add(i("消息(@js 开头为脚本)")); row()
-                    value.forEachIndexed { i, d ->
-                        var tmp = d
-                        add(i.toString()).padRight(4f)
-                        field(d.name) { v -> tmp = tmp.copy(name = v) }.maxTextLength(10)
-                        field(d.content) { v -> tmp = tmp.copy(content = v) }.maxTextLength(300).growX()
-                        button(Icon.trashSmall, Styles.clearNonei, Vars.iconMed) {
-                            set(value.filterNot { it === d })
-                        }
-                        button(Icon.saveSmall, Styles.clearNonei, Vars.iconMed) {
-                            set(value.map { if (it === d) tmp else it })
-                        }.disabled { tmp === d }
-                        row()
-                    }
-                    button("@add", Icon.addSmall) {
-                        set(value + CustomButton())
-                    }.colspan(columns).fillX().row()
-                    add(i("[yellow]添加新指令前，请先保存编辑的指令")).colspan(columns).center().padTop(-4f).row()
+        override var ui: SettingsV2.UIBuilder = UI()
+
+        inner class UI : SettingsV2.UIBuilder {
+            override fun buildUI() = Table().let { table ->
+                var shown = false
+                table.button(title) { shown = !shown }.growX().height(55f).padBottom(2f).get().apply {
+                    imageDraw { if (shown) Icon.downOpen else Icon.upOpen }.size(Vars.iconMed)
+                    cells.reverse()
+                    update { isChecked = shown }
                 }
-            }) { shown }.growX()
-            table.row()
+                table.row()
+                table.collapser(Table().apply {
+                    defaults().pad(2f)
+                    update {
+                        if (changed()) clearChildren()
+                        if (hasChildren()) return@update
+                        add(i("序号")); add(i("显示名")); add(i("消息(@js 开头为脚本)")); row()
+                        value.forEachIndexed { i, d ->
+                            var tmp = d
+                            add(i.toString()).padRight(4f)
+                            field(d.name) { v -> tmp = tmp.copy(name = v) }.maxTextLength(10)
+                            field(d.content) { v -> tmp = tmp.copy(content = v) }.maxTextLength(300).growX()
+                            button(Icon.trashSmall, Styles.clearNonei, Vars.iconMed) {
+                                set(value.filterNot { it === d })
+                            }
+                            button(Icon.saveSmall, Styles.clearNonei, Vars.iconMed) {
+                                set(value.map { if (it === d) tmp else it })
+                            }.disabled { tmp === d }
+                            row()
+                        }
+                        button("@add", Icon.addSmall) {
+                            set(value + CustomButton())
+                        }.colspan(columns).fillX().row()
+                        add(i("[yellow]添加新指令前，请先保存编辑的指令")).colspan(columns).center().padTop(-4f).row()
+                    }
+                }) { shown }.growX()
+                table.row()
+            }
         }
     }
 

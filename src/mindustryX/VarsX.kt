@@ -9,10 +9,8 @@ import arc.util.serialization.Jval
 import mindustry.Vars
 import mindustryX.bundles.UiTextBundle
 import mindustryX.bundles.UiTextBundleEn
-import mindustryX.features.SettingsV2
 import mindustryX.features.SettingsV2.CheckPref
 import mindustryX.features.SettingsV2.SliderPref
-import mindustryX.features.SettingsV2.map
 import mindustryX.features.UIExt.i
 import java.util.*
 
@@ -57,9 +55,7 @@ object VarsX {
 
     @JvmField
     val additionInventoryColumns = SliderPref("additionInventoryColumns", 0, 0, 12).apply {
-        addFallback(SettingsV2.PersistentProvider.Arc<Int>("blockInventoryWidth").map {
-            it - 3
-        })
+        addFallback<Int>("blockInventoryWidth") { it - 3 }
     }
 
     @JvmField

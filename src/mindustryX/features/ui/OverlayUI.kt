@@ -34,7 +34,6 @@ import mindustry.ui.Styles
 import mindustryX.VarsX
 import mindustryX.features.SettingsV2
 import mindustryX.features.SettingsV2.CheckPref
-import mindustryX.features.SettingsV2.PersistentProvider
 import mindustryX.features.UIExt.i
 import mindustryX.features.UIExtKt
 import mindustryX.features.ui.AdsorptionSystem.Axis
@@ -53,70 +52,8 @@ object OverlayUI {
         val scale: Float = 1f
     )
 
-    class WindowSetting(name: String) : SettingsV2.Data<WindowData>(name, WindowData()) {
-        init {
-            persistentProvider = PersistentProvider.AsUBJson(
-                PersistentProvider.Arc(name),
-                WindowData::class.java
-            )
-        }
-
-        override fun buildUI() = Table().apply {
-            image(Icon.listSmall).color(Color.lightGray).padRight(4f)
-            // Prevent long window names from drawing into the position column.
-            add(title).width(148f).padRight(8f).ellipsis(true).left()
-
-            val builder = StringBuilder()
-            label {
-                builder.clear()
-                val center = value.center ?: return@label "[grey][UNUSED]"
-                builder.append("[${center.x.roundToInt()},${center.y.roundToInt()}]")
-                value.size?.let {
-                    builder.append("[${it.x.roundToInt()}x${it.y.roundToInt()}]")
-                }
-                builder
-            }.expandX().left()
-
-            val myToggleI = ImageButtonStyle(Styles.clearNonei).apply {
-                imageUpColor = Color.white
-                imageCheckedColor = Pal.accent
-                imageDisabledColor = Color.darkGray
-            }
-            button(Icon.eyeSmall, myToggleI, Vars.iconSmall) {
-                set(value.copy(enabled = !value.enabled))
-            }.tooltip(i("开关")).padRight(4f).checked { value.enabled }
-            button(Icon.lockSmall, myToggleI, Vars.iconSmall) {
-                set(value.copy(pinned = !value.pinned))
-            }.tooltip(i("锁定")).padRight(4f).checked { value.pinned }
-            button(Icon.resizeSmall, myToggleI, Vars.iconSmall) {
-                UIExtKt.showFloatSettingsPanel {
-                    label { VarsX.bundle.zoomScale(Strings.fixed(value.scale, 1)) }.center().row()
-                    slider(0.2f, 3f, 0.1f, value.scale) {
-                        set(value.copy(scale = it))
-                    }.update { it.value = value.scale }.width(200f)
-                    button(Icon.undo, Styles.clearNonei) {
-                        set(value.copy(scale = 1f))
-                    }.disabled { Mathf.equal(value.scale, 1f) }.padTop(4f)
-                    row()
-                }
-            }.tooltip(i("缩放")).padRight(4f).checked { !Mathf.equal(value.scale, 1f) }
-            addTools()
-
-            row()
-            value.constraintX?.let {
-                add()
-                label {
-                    "X: ${it.type.name} to [${it.target}]"
-                }.colspan(columns - 1).left().row()
-            }
-            value.constraintY?.let {
-                add()
-                label {
-                    "Y: ${it.type.name} to [${it.target}]"
-                }.colspan(columns - 1).left().row()
-            }
-        }
-
+    class WindowSetting(name: String) : SettingsV2.Data<WindowData>(name, WindowData::class.java, WindowData()) {
+        override var ui: SettingsV2.UIBuilder = UI()
         var enabled: Boolean
             get() = value.enabled
             set(v) {
@@ -128,6 +65,64 @@ object OverlayUI {
             set(v) {
                 set(value.copy(pinned = v))
             }
+
+        inner class UI : SettingsV2.UIBuilder {
+            override fun buildUI() = Table().apply {
+                image(Icon.listSmall).color(Color.lightGray).padRight(4f)
+                // Prevent long window names from drawing into the position column.
+                add(title).width(148f).padRight(8f).ellipsis(true).left()
+
+                val builder = StringBuilder()
+                label {
+                    builder.clear()
+                    val center = value.center ?: return@label "[grey][UNUSED]"
+                    builder.append("[${center.x.roundToInt()},${center.y.roundToInt()}]")
+                    value.size?.let {
+                        builder.append("[${it.x.roundToInt()}x${it.y.roundToInt()}]")
+                    }
+                    builder
+                }.expandX().left()
+
+                val myToggleI = ImageButtonStyle(Styles.clearNonei).apply {
+                    imageUpColor = Color.white
+                    imageCheckedColor = Pal.accent
+                    imageDisabledColor = Color.darkGray
+                }
+                button(Icon.eyeSmall, myToggleI, Vars.iconSmall) {
+                    set(value.copy(enabled = !value.enabled))
+                }.tooltip(i("开关")).padRight(4f).checked { value.enabled }
+                button(Icon.lockSmall, myToggleI, Vars.iconSmall) {
+                    set(value.copy(pinned = !value.pinned))
+                }.tooltip(i("锁定")).padRight(4f).checked { value.pinned }
+                button(Icon.resizeSmall, myToggleI, Vars.iconSmall) {
+                    UIExtKt.showFloatSettingsPanel {
+                        label { VarsX.bundle.zoomScale(Strings.fixed(value.scale, 1)) }.center().row()
+                        slider(0.2f, 3f, 0.1f, value.scale) {
+                            set(value.copy(scale = it))
+                        }.update { it.value = value.scale }.width(200f)
+                        button(Icon.undo, Styles.clearNonei) {
+                            set(value.copy(scale = 1f))
+                        }.disabled { Mathf.equal(value.scale, 1f) }.padTop(4f)
+                        row()
+                    }
+                }.tooltip(i("缩放")).padRight(4f).checked { !Mathf.equal(value.scale, 1f) }
+                addTools()
+
+                row()
+                value.constraintX?.let {
+                    add()
+                    label {
+                        "X: ${it.type.name} to [${it.target}]"
+                    }.colspan(columns - 1).left().row()
+                }
+                value.constraintY?.let {
+                    add()
+                    label {
+                        "Y: ${it.type.name} to [${it.target}]"
+                    }.colspan(columns - 1).left().row()
+                }
+            }
+        }
     }
 
     class Window(name: String, val table: Table) : Table() {
@@ -346,7 +341,7 @@ object OverlayUI {
                         UIExtKt.showFloatSettingsPanel {
                             defaults().minWidth(120f).pad(4f)
                             settings.forEach { setting ->
-                                add(setting.buildUI()).growX().padBottom(4f).row()
+                                add(setting.ui.buildUI()).growX().padBottom(4f).row()
                             }
                         }
                     }

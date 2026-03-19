@@ -18,8 +18,8 @@ object MetricCollector {
         RuntimeException("Exception related to mod '${mod.name}': $message", cause)
 
     private val enable = SettingsV2.CheckPref("collectMetrics", true)
-    private val lastTime = SettingsV2.PersistentProvider.Arc<Long>("MetricCollector.lastPost")
-    private val lastCrashMod = SettingsV2.PersistentProvider.Arc<String>("MetricCollector.lastCrashMod")
+    private val lastTime = SettingsV2.ArcSetting("MetricCollector.lastPost", 0L)
+    private val lastCrashMod = SettingsV2.ArcSetting("MetricCollector.lastCrashMod", "")
     private var task: Thread? = null
 
     private fun postLog(data: Jval) {
@@ -91,7 +91,7 @@ object MetricCollector {
 
     private fun getSettings() = Jval.newObject().apply {
         SettingsV2.ALL.values.forEach {
-            if (it.value == it.def) return@forEach
+            if (!it.modified) return@forEach
             put(it.name, Strings.truncate(it.value.toString(), 20, "...")) //limit to 20 chars
         }
     }
@@ -124,7 +124,7 @@ object MetricCollector {
             Log.warn("MetricCollector: Exception occurred, but likely cause mod '${likelyCause}' has already been reported.")
             return
         } else {
-            lastCrashMod.setOrReset(likelyCause)
+            lastCrashMod.set(likelyCause ?: "unknown")
         }
         val data = getBaseInfo().apply {
             put("cause", e.stackTraceToString())
