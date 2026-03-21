@@ -1,0 +1,22 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: way-zer <himc.wicp@gmail.com>
+Date: Sun, 22 Mar 2026 00:46:24 +0800
+Subject: [PATCH] H.BUILD: MindustryX group for publish
+
+---
+ build.gradle | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/build.gradle b/build.gradle
+index a489753797c24ac3931390bb4e557729a3b3d800..51337f900d45103652c4e738b018fe2959444e59 100644
+--- a/build.gradle
++++ b/build.gradle
+@@ -59,7 +59,7 @@ libraries.lwjgl = [
+ 
+ allprojects{
+     apply plugin: 'maven-publish'
+-    group = 'com.github.Anuken'
++    group = 'com.github.TinyLake.MindustryX'
+     version = '1.0'
+ 
+     repositories{
