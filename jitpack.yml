@@ -8,4 +8,5 @@ install:
   - git config --global user.email "ci@noreply.example.com"
   - git config --global user.name "jitpack"
   - bash scripts/applyPatches.sh
-  - cd work/ && ./gradlew publishToMavenLocal Arc:publishToMavenLocal
+  - cd work/ && ./gradlew publishToMavenLocal; cd ..
+  - cd Arc/ && ./gradlew publishToMavenLocal; cd ..
