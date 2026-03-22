@@ -1,9 +1,9 @@
 jdk:
   - openjdk17
 install:
-#  - rm -rf ./work #重建submodule,jitpack有问题
   - git version && git status
-  - git submodule update --init --recursive --depth 1
+  - git submodule deinit -f Arc work || true #重建submodule,jitpack有问题
+  - git submodule update --init --recursive --depth 10
 #  - cd work/ && git fetch origin v145.1 && git reset --hard FETCH_HEAD && cd ..
   - git config --global user.email "ci@noreply.example.com"
   - git config --global user.name "jitpack"
