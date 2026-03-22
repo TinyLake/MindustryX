@@ -100,7 +100,7 @@ object SettingsV2 {
 
         override fun set(value: T) {
             if (core.get() == value) return
-            set(value)
+            core.set(value)
             Core.settings.put(key, value)
         }
 
