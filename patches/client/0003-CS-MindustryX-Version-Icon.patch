@@ -12,14 +12,14 @@ way-zer <himc.wicp@gmail.com> on 2024/9/8
  .gitignore                                         | 1 +
  android/build.gradle                               | 2 +-
  android/res/values/strings.xml                     | 2 +-
- build.gradle                                       | 5 ++---
+ build.gradle                                       | 8 ++++++--
  core/build.gradle.kts                              | 2 +-
  core/src/mindustry/Vars.java                       | 2 +-
  core/src/mindustry/core/NetClient.java             | 2 ++
  core/src/mindustry/core/Version.java               | 4 +++-
  core/src/mindustry/net/NetworkIO.java              | 2 +-
  desktop/src/mindustry/desktop/DesktopLauncher.java | 2 +-
- 10 files changed, 14 insertions(+), 10 deletions(-)
+ 10 files changed, 18 insertions(+), 9 deletions(-)
 
 diff --git a/.gitignore b/.gitignore
 index b5b2a237c2f5343aab2fb668337c2bc47a45c1b8..308ff12c92a06e11c18b33f540098a0f1347ab5e 100644
@@ -57,22 +57,23 @@ index d42ffe6d4a318ce558f1010eae46140f88ed5c99..bf44ead5c58abfb79c500e6daae30c3e
 +    <string name="app_name">MindustryX</string>
  </resources>
 diff --git a/build.gradle b/build.gradle
-index a340b6d96ad764e992412eb90aea5f83223fabe0..124022dea9c6e3eaaa2cb493906399bf381a191e 100644
+index a340b6d96ad764e992412eb90aea5f83223fabe0..9c6d7e53095d2e9c7f3397e8e339b53f7df9036c 100644
 --- a/build.gradle
 +++ b/build.gradle
-@@ -4,10 +4,9 @@ buildscript{
-         localArc = new File(rootDir.parent, 'Arc').exists() && !project.hasProperty("noLocalArc")
- 
-         arcModule = { String name ->
--            def useLocalArc = localArc
+@@ -7,7 +7,11 @@ buildscript{
+             def useLocalArc = localArc
              //skip to last submodule
              name = name.substring(name.lastIndexOf(':') + 1)
 -            return "com.github.Anuken${useLocalArc ? "" : ".Arc"}:$name:$arcHash"
-+            return "com.github.TinyLake.MindustryX:$name:$arcHash"
++            if(useLocalArc){
++                return "com.github.TinyLake.MindustryX:$name:$arcHash"
++            }else{
++                return "com.github.Anuken.Arc:$name:$arcHash"
++            }
          }
      }
  }
-@@ -21,7 +20,7 @@ allprojects{
+@@ -21,7 +25,7 @@ allprojects{
      apply plugin: 'maven-publish'
  
      version = project.hasProperty("packageVersion") ? project.getProperty("packageVersion") : 'release'
