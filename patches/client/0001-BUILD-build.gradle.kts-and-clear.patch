@@ -7,23 +7,23 @@ clear and replce jabel(Support record)
 way-zer <himc.wicp@gmail.com> on 2024/6/9
 ---
  .gitignore                                    |   2 +-
- android/build.gradle                          | 123 +++----
+ android/build.gradle                          | 121 +++----
  android/proguard-rules.pro                    |   4 +
  .../com/github/bsideup/jabel/Desugar.java     |  13 +
  .../javax.annotation.processing.Processor     |   6 +
- build.gradle                                  | 309 +++---------------
+ build.gradle                                  | 301 +++---------------
  core/build.gradle                             |   2 -
  core/build.gradle.kts                         |  67 ++++
- desktop/build.gradle                          | 174 +---------
+ desktop/build.gradle                          | 159 +--------
  gradle.properties                             |   5 +-
- gradlew                                       | 284 ++++++++++------
+ gradlew                                       | 284 ++++++++++-------
  gradlew.bat                                   |  37 ++-
  ios/build.gradle                              |   2 +-
- server/build.gradle                           |  44 +--
+ server/build.gradle                           |  45 +--
  settings.gradle                               |  11 +-
- tools/build.gradle                            |  82 +++--
+ tools/build.gradle                            |  56 ++--
  tools/src/mindustry/tools/Generators.java     |   2 +-
- 17 files changed, 445 insertions(+), 722 deletions(-)
+ 17 files changed, 428 insertions(+), 689 deletions(-)
  create mode 100644 annotations/src/main/java/com/github/bsideup/jabel/Desugar.java
  create mode 100644 annotations/src/main/resources/META-INF/services/javax.annotation.processing.Processor
  delete mode 100644 core/build.gradle
@@ -50,7 +50,7 @@ index 5e3b7987ef4f776a0bc35dde58fb2c74f4acdb07..b5b2a237c2f5343aab2fb668337c2bc4
  /core/assets/locales
  /core/assets/cache/
 diff --git a/android/build.gradle b/android/build.gradle
-index 7e66a790f120b4838f02c57752395072dc998aa0..13e9a69de55f1ceb51409c317b9b1c5db56b86b3 100644
+index ce3a5d4374a991e979a4c5fe936eff7dd22704c8..13e9a69de55f1ceb51409c317b9b1c5db56b86b3 100644
 --- a/android/build.gradle
 +++ b/android/build.gradle
 @@ -1,50 +1,24 @@
@@ -74,7 +74,7 @@ index 7e66a790f120b4838f02c57752395072dc998aa0..13e9a69de55f1ceb51409c317b9b1c5d
  
  repositories{
      mavenCentral()
--    maven{ url "https://maven.google.com" }
+-    maven{ url = "https://maven.google.com" }
 -}
 -
 -task deploy(type: Copy){
@@ -137,7 +137,7 @@ index 7e66a790f120b4838f02c57752395072dc998aa0..13e9a69de55f1ceb51409c317b9b1c5d
          }
 -        props.store(file('../core/assets/version.properties').newWriter(), null)
 -
--        multiDexEnabled true
+-        multiDexEnabled = true
      }
  
      compileOptions{
@@ -165,7 +165,7 @@ index 7e66a790f120b4838f02c57752395072dc998aa0..13e9a69de55f1ceb51409c317b9b1c5d
              //TODO without these lines (r8 enabled), Mindustry crashes with missing default interface method errors.
              //WHY THE HELL ARE DEFAULT INTERFACES NOT BEING DESUGARED? WHY DID UPDATING AGP MAKE THIS HAPPEN?
              //When I ENABLE shrinking, r8 goes and REMOVES ALL DEFAULT INTERFACE CLASSES, which breaks mods. Why?
-@@ -108,13 +81,8 @@ android{
+@@ -108,12 +81,7 @@ android{
              minifyEnabled = true
              shrinkResources = true
              proguardFiles("proguard-rules.pro")
@@ -175,12 +175,10 @@ index 7e66a790f120b4838f02c57752395072dc998aa0..13e9a69de55f1ceb51409c317b9b1c5d
 -    if(project.hasProperty("RELEASE_STORE_FILE") || System.getenv("CI") == "true"){
 -        buildTypes{
 -            release{
--                signingConfig signingConfigs.release
 +            if(project.hasProperty("RELEASE_STORE_FILE") || System.getenv("CI") == "true"){
-+                signingConfig = signingConfigs.release
+                 signingConfig = signingConfigs.release
              }
          }
-     }
 @@ -125,42 +93,31 @@ dependencies{
  
      implementation arcModule("backends:backend-android")
@@ -292,7 +290,7 @@ index 0000000000000000000000000000000000000000..181b87c1d5f3755f16a01c0528d0a89f
 +mindustry.annotations.misc.LogicStatementProcessor
 +mindustry.annotations.remote.RemoteProcess
 diff --git a/build.gradle b/build.gradle
-index 936da47050ee603a8f659893881d78978163e2e8..6c544fd32053b3e4beded879bbc9d7b0fc7d3fde 100644
+index 4899a68958320ec45ed0aa7dc558e58506066255..d1c9edec56bee76a62dff09e0c136dadc8963451 100644
 --- a/build.gradle
 +++ b/build.gradle
 @@ -1,29 +1,15 @@
@@ -318,7 +316,7 @@ index 936da47050ee603a8f659893881d78978163e2e8..6c544fd32053b3e4beded879bbc9d7b0
 -        mavenLocal()
 -        mavenCentral()
 -        google()
--        maven{ url 'https://jitpack.io' }
+-        maven{ url = 'https://jitpack.io' }
 -    }
 -
 -    dependencies{
@@ -328,7 +326,7 @@ index 936da47050ee603a8f659893881d78978163e2e8..6c544fd32053b3e4beded879bbc9d7b0
  }
  
  plugins{
-@@ -49,184 +35,42 @@ allprojects{
+@@ -49,132 +35,10 @@ allprojects{
              return new Properties().with{p -> p.load(file('../core/assets/version.properties').newReader()); return p }
          }
  
@@ -461,20 +459,14 @@ index 936da47050ee603a8f659893881d78978163e2e8..6c544fd32053b3e4beded879bbc9d7b0
      }
  
      repositories{
-         mavenLocal()
-         mavenCentral()
--        maven{ url "https://central.sonatype.com/repository/maven-snapshots" }
--        maven{ url 'https://jitpack.io' }
--    }
--
+@@ -184,49 +48,29 @@ allprojects{
+         maven{ url = 'https://jitpack.io' }
+     }
+ 
 -    task clearCache{
 -        doFirst{
 -            delete{
 -                delete "$rootDir/core/assets/cache"
-+        maven{ url = "https://central.sonatype.com/repository/maven-snapshots" }
-+        maven{ url = 'https://jitpack.io' }
-+    }
-+
 +    tasks.withType(JavaCompile).configureEach{
 +        if(project.name == "annotations"){
 +            sourceCompatibility = 8
@@ -584,15 +576,27 @@ index 936da47050ee603a8f659893881d78978163e2e8..6c544fd32053b3e4beded879bbc9d7b0
                  if(result.length() + line.length() + 1 < maxLength){
                      result += line + "\n"
                  }
-@@ -304,19 +135,7 @@ project(":core"){
+@@ -304,7 +135,8 @@ project(":core"){
          }
      }
  
+-    task depsJar(type: Jar, dependsOn: [classes, ":server:dist"]){
++    tasks.register('depsJar', Jar){
++        dependsOn[classes, ":server:dist"]
+         archiveClassifier = 'deps'
+         from files(sourceSets.main.output.classesDirs)
+         from{ configurations.runtimeClasspath.collect{ it.isDirectory() ? it : zipTree(it) } }
+@@ -325,19 +157,13 @@ project(":core"){
+         duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+     }
+ 
 -    task sourcesJar(type: Jar, dependsOn: classes){
--        archiveClassifier = 'sources'
--        from sourceSets.main.allSource
--    }
--
++    tasks.register('sourcesJar', Jar){
++        dependsOn classes
+         archiveClassifier = 'sources'
+         from sourceSets.main.allSource
+     }
+ 
 -    task assetsJar(type: Jar, dependsOn: ":tools:pack"){
 -        archiveClassifier = 'assets'
 -        from files("assets"){
@@ -605,7 +609,7 @@ index 936da47050ee603a8f659893881d78978163e2e8..6c544fd32053b3e4beded879bbc9d7b0
          archiveClassifier = 'music'
          from files("assets"){
              include "music/*", "sounds/*"
-@@ -324,8 +143,6 @@ project(":core"){
+@@ -345,8 +171,6 @@ project(":core"){
      }
  
      dependencies{
@@ -614,7 +618,7 @@ index 936da47050ee603a8f659893881d78978163e2e8..6c544fd32053b3e4beded879bbc9d7b0
          api "at.yawk.lz4:lz4-java:1.10.2"
          api arcModule("arc-core")
          api arcModule("extensions:flabel")
-@@ -334,34 +151,30 @@ project(":core"){
+@@ -355,34 +179,30 @@ project(":core"){
          api arcModule("extensions:fx")
          api arcModule("extensions:arcnet")
          api "com.github.Anuken:rhino:$rhinoVersion"
@@ -665,8 +669,8 @@ index 936da47050ee603a8f659893881d78978163e2e8..6c544fd32053b3e4beded879bbc9d7b0
      }
  
      gradle.taskGraph.whenReady{
-@@ -398,12 +211,6 @@ project(":tests"){
-         testRuntimeOnly "org.junit.jupiter:junit-jupiter-engine:5.7.1"
+@@ -420,12 +240,6 @@ project(":tests"){
+         testRuntimeOnly "org.junit.platform:junit-platform-launcher"
      }
  
 -    tasks.withType(JavaCompile){
@@ -678,7 +682,7 @@ index 936da47050ee603a8f659893881d78978163e2e8..6c544fd32053b3e4beded879bbc9d7b0
      test{
          //fork every test so mods don't interact with each other
          forkEvery = 1
-@@ -427,7 +234,6 @@ project(":tools"){
+@@ -450,7 +264,6 @@ project(":tools"){
          implementation arcModule("backends:backend-headless")
  
          implementation("com.google.guava:guava:33.3.1-jre")
@@ -686,7 +690,7 @@ index 936da47050ee603a8f659893881d78978163e2e8..6c544fd32053b3e4beded879bbc9d7b0
      }
  }
  
-@@ -450,43 +256,16 @@ configure([":core", ":server"].collect{project(it)}){
+@@ -473,42 +286,16 @@ configure([":core", ":server"].collect{project(it)}){
          publications{
              maven(MavenPublication){
                  from components.java
@@ -694,11 +698,11 @@ index 936da47050ee603a8f659893881d78978163e2e8..6c544fd32053b3e4beded879bbc9d7b0
 -                //if(project.name == "core"){
 -                //    artifact(tasks.named("assetsJar"))
 -                //}
--            }
--        }
--    }
--}
--
+             }
+         }
+     }
+ }
+ 
 -task deployAll{
 -    task cleanDeployOutput{
 -        doFirst{
@@ -707,21 +711,20 @@ index 936da47050ee603a8f659893881d78978163e2e8..6c544fd32053b3e4beded879bbc9d7b0
 -
 -            delete{
 -                delete "deploy/"
-             }
-         }
-     }
+-            }
+-        }
+-    }
 -
 -    dependsOn cleanDeployOutput
 -    dependsOn "desktop:packrLinux64"
 -    dependsOn "desktop:packrWindows64"
--    dependsOn "desktop:packrWindows32"
 -    dependsOn "desktop:packrMacOS"
 -    if(versionModifier != "steam"){
 -        dependsOn "server:deploy"
 -        dependsOn "android:deploy"
 -    }
- }
- 
+-}
+-
 -task resolveDependencies{
 +tasks.register('resolveDependencies'){
      doLast{
@@ -816,17 +819,16 @@ index 0000000000000000000000000000000000000000..712c4750377c079ec77bfea24bd889db
 +}
 \ No newline at end of file
 diff --git a/desktop/build.gradle b/desktop/build.gradle
-index d30d59c78a6f6d8f4f5b02e1c84538646acf2c80..bbab133446e5eaed169ff0ad31ddf7b83aec7a1f 100644
+index 0898451c271ed8f75c849d1dc68259c5329dbf35..bbab133446e5eaed169ff0ad31ddf7b83aec7a1f 100644
 --- a/desktop/build.gradle
 +++ b/desktop/build.gradle
-@@ -3,15 +3,10 @@ sourceSets.main.java.srcDirs = ["src/"]
+@@ -3,14 +3,10 @@ sourceSets.main.java.srcDirs = ["src/"]
  project.ext.mainClassName = "mindustry.desktop.DesktopLauncher"
  project.ext.assetsDir = new File("../core/assets")
  
--def enableTemplates = true
 -def JDK_DIR = "$System.env.JDK_DIR"
 -def ICON_DIR = new File("$rootDir/core/assets/icons/icon.icns")
--def platforms = ["Linux64", "Windows64", "Windows32", "MacOS"]
+-def platforms = ["Linux64", "Windows64", "MacOS"]
 -
  tasks.register('run', JavaExec){
 -    dependsOn classes
@@ -837,7 +839,7 @@ index d30d59c78a6f6d8f4f5b02e1c84538646acf2c80..bbab133446e5eaed169ff0ad31ddf7b8
      standardInput = System.in
      workingDir = project.assetsDir
      ignoreExitValue = true
-@@ -46,7 +41,7 @@ tasks.register('dist', Jar){
+@@ -45,7 +41,7 @@ tasks.register('dist', Jar){
      from files(sourceSets.main.output.classesDirs)
      from files(sourceSets.main.output.resourcesDir)
      from{ configurations.runtimeClasspath.collect{ it.isDirectory() ? it : zipTree(it) } }
@@ -846,7 +848,7 @@ index d30d59c78a6f6d8f4f5b02e1c84538646acf2c80..bbab133446e5eaed169ff0ad31ddf7b8
      exclude("config/**")
      exclude("**hs_err**.log")
      duplicatesStrategy = DuplicatesStrategy.EXCLUDE
-@@ -64,165 +59,4 @@ tasks.register('dist', Jar){
+@@ -63,151 +59,4 @@ tasks.register('dist', Jar){
          attributes 'Enable-Native-Access': 'ALL-UNNAMED'
          attributes 'Multi-Release': 'true'
      }
@@ -898,80 +900,66 @@ index d30d59c78a6f6d8f4f5b02e1c84538646acf2c80..bbab133446e5eaed169ff0ad31ddf7b8
 -                delete "build/packr/output/"
 -            }
 -
--            //the Windows32 version uses an old java-8 based template, because packr and jpackage don't support win32
--            if(enableTemplates && (platform == "Windows32")){
--                copy{
--                    into "build/packr/output"
--                    from "${JDK_DIR}/templates/${platform.toString().toLowerCase()}"
--                }
+-            def jarPath = JDK_DIR + "packr.jar"
+-            def args = new String[]{"java", "-jar", jarPath}
 -
--                copy{
--                    into "build/packr/output/jre"
--                    rename("${appName}.jar", "desktop.jar")
--                    from "build/libs/${appName}.jar"
--                }
--            }else{
--                def jarPath = JDK_DIR + "packr.jar"
--                def args = new String[]{"java", "-jar", jarPath}
--
--                args += new String[]{
--                        "--platform", platform == "MacOS" ? "Mac" : platform.toString(),
--                        "--jdk", JDK_DIR + "jre-${platform.toString().toLowerCase()}",
--                        "--executable", appName,
--                        "--classpath", "$rootDir/desktop/build/packr/desktop.jar".toString(),
--                        "--mainclass", project.ext.mainClassName,
--                        "--verbose",
--                        "--bundle", getPackage() + ".mac",
--                        "--icon", ICON_DIR,
--                        "--output", "$rootDir/desktop/build/packr/output".toString(),
--                        "--removelibs", "$rootDir/desktop/build/packr/desktop.jar".toString()
--                }
--
--                args += "--vmargs"
--
--                if(platform == "MacOS"){
--                    args += "XstartOnFirstThread"
--                }
--
--                args += "Dhttps.protocols=TLSv1.2,TLSv1.1,TLSv1"
--                args += "XX:+ShowCodeDetailsInExceptionMessages"
--                args += "XX:+UseCompactObjectHeaders"
--                args += "enable-native-access=ALL-UNNAMED"
--
--                exec{
--                    commandLine args.toList()
--                    standardOutput = System.out
--                }
--
--                def outputJsonFile = platform != "MacOS" ? file("build/packr/output/Mindustry.json") : file("build/packr/output/${appName}.app/Contents/Resources/Mindustry.json")
--
--                if(platform != "MacOS"){
--                    copy{
--                        into "build/packr/output/jre/"
--                        from "build/packr/output/desktop.jar"
--                    }
--
--                    delete{
--                        delete "build/packr/output/desktop.jar"
--                    }
--
--                    outputJsonFile.text = outputJsonFile.text.replace("desktop.jar", "jre/desktop.jar")
--                }else{
--                    copy{
--                        into "build/packr/output/${appName}.app/Contents/"
--                        from "build/packr/output/Contents/"
--                    }
--
--                    delete{
--                        delete "build/packr/output/Contents/"
--                    }
--                }
--
--                //packr is broken and won't let me add one hyphen, so I have to do that myself later
--                outputJsonFile.text = outputJsonFile.text.replace("-enable-native-access=ALL-UNNAMED", "--enable-native-access=ALL-UNNAMED")
+-            args += new String[]{
+-                "--platform", platform == "MacOS" ? "Mac" : platform.toString(),
+-                "--jdk", JDK_DIR + "jre-${platform.toString().toLowerCase()}",
+-                "--executable", appName,
+-                "--classpath", "$rootDir/desktop/build/packr/desktop.jar".toString(),
+-                "--mainclass", project.ext.mainClassName,
+-                "--verbose",
+-                "--bundle", getPackage() + ".mac",
+-                "--icon", ICON_DIR,
+-                "--output", "$rootDir/desktop/build/packr/output".toString(),
+-                "--removelibs", "$rootDir/desktop/build/packr/desktop.jar".toString()
 -            }
 -
--            if((platform == "Windows64" || platform == "Windows32")){
+-            args += "--vmargs"
+-
+-            if(platform == "MacOS"){
+-                args += "XstartOnFirstThread"
+-            }
+-
+-            args += "Dhttps.protocols=TLSv1.2,TLSv1.1,TLSv1"
+-            args += "XX:+ShowCodeDetailsInExceptionMessages"
+-            args += "XX:+UseCompactObjectHeaders"
+-            args += "enable-native-access=ALL-UNNAMED"
+-
+-            project.services.get(ExecOperations).exec{
+-                commandLine args.toList()
+-                standardOutput = System.out
+-            }
+-
+-            def outputJsonFile = platform != "MacOS" ? file("build/packr/output/Mindustry.json") : file("build/packr/output/${appName}.app/Contents/Resources/Mindustry.json")
+-
+-            if(platform != "MacOS"){
+-                copy{
+-                    into "build/packr/output/jre/"
+-                    from "build/packr/output/desktop.jar"
+-                }
+-
+-                delete{
+-                    delete "build/packr/output/desktop.jar"
+-                }
+-
+-                outputJsonFile.text = outputJsonFile.text.replace("desktop.jar", "jre/desktop.jar")
+-            }else{
+-                copy{
+-                    into "build/packr/output/${appName}.app/Contents/"
+-                    from "build/packr/output/Contents/"
+-                }
+-
+-                delete{
+-                    delete "build/packr/output/Contents/"
+-                }
+-            }
+-
+-            //packr is broken and won't let me add one hyphen, so I have to do that myself later
+-            outputJsonFile.text = outputJsonFile.text.replace("-enable-native-access=ALL-UNNAMED", "--enable-native-access=ALL-UNNAMED")
+-
+-            if((platform == "Windows64")){
 -                copy{
 -                    from "build/packr/output/jre/bin/msvcr100.dll"
 -                    into "build/packr/output/"
@@ -983,8 +971,8 @@ index d30d59c78a6f6d8f4f5b02e1c84538646acf2c80..bbab133446e5eaed169ff0ad31ddf7b8
 -                copy{
 -                    def lib = platform == "MacOS" || platform == "Linux64" ? "lib" : ""
 -                    from zipTree(platform == "MacOS" ? "build/packr/output/${appName}.app/Contents/Resources/desktop.jar" : "build/packr/output/jre/desktop.jar").matching{
--                        include "${lib}steamworks4j${platform == "Windows64" ? '64.dll' : platform == "Windows32" ? '.dll' : platform == "Linux64" ? '.so' : '.dylib'}"
--                        include "${lib}steam_api${platform == "Windows64" ? '64.dll' : platform == "Windows32" ? '.dll' : platform == "Linux64" ? '.so' : '.dylib'}"
+-                        include "${lib}steamworks4j${platform == "Windows64" ? '64.dll' : platform == "Linux64" ? '.so' : '.dylib'}"
+-                        include "${lib}steam_api${platform == "Windows64" ? '64.dll' : platform == "Linux64" ? '.so' : '.dylib'}"
 -                    }
 -                    into platform != "MacOS" ? "build/packr/output/" : "build/packr/output/${appName}.app/Contents/Resources"
 -                }
@@ -1015,18 +1003,18 @@ index d30d59c78a6f6d8f4f5b02e1c84538646acf2c80..bbab133446e5eaed169ff0ad31ddf7b8
 +}
 \ No newline at end of file
 diff --git a/gradle.properties b/gradle.properties
-index 52acca77cac68c113b4f7002d22d16062fe1d0c7..7fecd47800825099dae1d2e7e535799e91a2df8a 100644
+index 194695a5df7bdf6cc686cef13b7bcae72bd61666..b0d3848bc1dedb03583b6aa89bebf0e99e7a1d67 100644
 --- a/gradle.properties
 +++ b/gradle.properties
 @@ -26,4 +26,7 @@ org.gradle.caching=true
  org.gradle.internal.http.socketTimeout=100000
  org.gradle.internal.http.connectionTimeout=100000
  android.enableR8.fullMode=false
--archash=a3c7d2cbf3
-+#archash=a3c7d2cbf3
+-archash=f9072fcc02
++#archash=f9072fcc02
 +
 +#MDTX: Use "v{upstreamBuild}" by default
-+upstreamBuild=155.4
++upstreamBuild=156
 diff --git a/gradlew b/gradlew
 index 4f906e0c811fc9e230eb44819f509cd0627f2600..f3b75f3b0d4faeb4b1c8a02b5c47007e6efb7dcd 100755
 --- a/gradlew
@@ -1466,10 +1454,10 @@ index 107acd32c4e687021ef32db511e8a206129b88ec..9d21a21834d5195c278ba17baec3115b
  :mainEnd
  if "%OS%"=="Windows_NT" endlocal
 diff --git a/ios/build.gradle b/ios/build.gradle
-index f61a602c9bd42f6b57450507349fcf3f155426de..34ace3c8c477d9558c14af8e787d1dfeb50177bf 100644
+index 088c7a70142fb58b08f69cbe209cafb0a703a27c..8ea58df04b0a8d9cfefb25e7b2420e224b2f2efd 100644
 --- a/ios/build.gradle
 +++ b/ios/build.gradle
-@@ -76,7 +76,7 @@ tasks.register('deploy'){
+@@ -75,7 +75,7 @@ tasks.register('deploy'){
  }
  
  //must pack before deployment, as iOS never has the latest sprites.
@@ -1479,7 +1467,7 @@ index f61a602c9bd42f6b57450507349fcf3f155426de..34ace3c8c477d9558c14af8e787d1dfe
  launchIPhoneSimulator.dependsOn build
  launchIPadSimulator.dependsOn build
 diff --git a/server/build.gradle b/server/build.gradle
-index 24252a0271c0ca9d54d51ab52853eb3b8a89dfa4..7c1293746b6329d9904f237b94b1466869f9c47c 100644
+index 536d691cfebd757eae099358f5728e5d11402d02..7c1293746b6329d9904f237b94b1466869f9c47c 100644
 --- a/server/build.gradle
 +++ b/server/build.gradle
 @@ -3,10 +3,6 @@ sourceSets.main.java.srcDirs = ["src/"]
@@ -1493,7 +1481,7 @@ index 24252a0271c0ca9d54d51ab52853eb3b8a89dfa4..7c1293746b6329d9904f237b94b14668
  tasks.register('run', JavaExec){
      dependsOn classes
      mainClass = project.mainClassName
-@@ -33,11 +29,12 @@ tasks.register('debug', JavaExec){
+@@ -33,12 +29,12 @@ tasks.register('debug', JavaExec){
  }
  
  tasks.register('dist', Jar){
@@ -1503,11 +1491,12 @@ index 24252a0271c0ca9d54d51ab52853eb3b8a89dfa4..7c1293746b6329d9904f237b94b14668
      from files(sourceSets.main.output.resourcesDir)
      from{ configurations.runtimeClasspath.collect{ it.isDirectory() ? it : zipTree(it) } }
 -    from files(project.assetsDir)
+-    exclude("bloomshaders/**")
 +    from files(tasks.getByPath(":core:allAssets"))
      exclude("sprites/**")
      exclude("music/**")
      exclude("sounds/**")
-@@ -58,40 +55,3 @@ tasks.register('dist', Jar){
+@@ -59,40 +55,3 @@ tasks.register('dist', Jar){
          attributes 'Main-Class': project.mainClassName
      }
  }
@@ -1549,7 +1538,7 @@ index 24252a0271c0ca9d54d51ab52853eb3b8a89dfa4..7c1293746b6329d9904f237b94b14668
 -
 -dist.dependsOn classes
 diff --git a/settings.gradle b/settings.gradle
-index d16da6d9d3e87d5dea9007176bd49cdfc499bb52..3df920741511290f54bcd11e95c87ba0b063af71 100644
+index 027d2a3269848fb10791815e5d0fdbcd640518dd..e688b9a8ea87e6ac6e6899c0a2807fba38ff18be 100644
 --- a/settings.gradle
 +++ b/settings.gradle
 @@ -1,8 +1,17 @@
@@ -1572,7 +1561,7 @@ index d16da6d9d3e87d5dea9007176bd49cdfc499bb52..3df920741511290f54bcd11e95c87ba0
  def hasSdk = System.getenv("ANDROID_HOME") != null
  
 diff --git a/tools/build.gradle b/tools/build.gradle
-index 28b3842033774d6c528eaef5d1c9ccc3eed96dc2..e76f2594a54db837b0b4bb3c48bec944497bc374 100644
+index c2b15be33876949dca7fbf96f63bc4e469c97342..e76f2594a54db837b0b4bb3c48bec944497bc374 100644
 --- a/tools/build.gradle
 +++ b/tools/build.gradle
 @@ -1,3 +1,13 @@
@@ -1616,29 +1605,12 @@ index 28b3842033774d6c528eaef5d1c9ccc3eed96dc2..e76f2594a54db837b0b4bb3c48bec944
              sum.mul(fm, fm, fm, fm)
              out.setRaw(x, y, sum.rgba8888())
              sum.set(0)
-@@ -102,7 +112,7 @@ static void antialias(File file){
-     new Fi(file).writePng(out)
- }
- 
--task antialiasImages(){
-+tasks.register('antialiasImages'){
-     doLast{
-         for(def img : project.getProperty("images").split(",")){
-             println(project.getProperty("startdir") + "/" + img)
-@@ -111,7 +121,7 @@ task antialiasImages(){
+@@ -120,8 +130,13 @@ tasks.register('tileImages'){
      }
  }
  
--task tileImages(){
-+tasks.register('tileImages'){
-     doLast{
-         for(def img : project.getProperty("images").split(",")){
-             println(project.getProperty("startdir") + "/" + img)
-@@ -120,7 +130,13 @@ task tileImages(){
-     }
- }
- 
--task pack(dependsOn: [classes, configurations.runtimeClasspath]){
+-tasks.register('pack'){
+-    dependsOn = [classes, configurations.runtimeClasspath]
 +tasks.register('doPack'){
 +    outputs.cacheIf{ true }
 +    dependsOn(classes)
@@ -1649,12 +1621,14 @@ index 28b3842033774d6c528eaef5d1c9ccc3eed96dc2..e76f2594a54db837b0b4bb3c48bec944
  
      doLast{
          //cleanup old sprites
-@@ -137,19 +153,18 @@ task pack(dependsOn: [classes, configurations.runtimeClasspath]){
+@@ -137,21 +152,19 @@ tasks.register('pack'){
+ 
          //run generation task; generate all needed sprites
          file(genFolder).mkdirs()
-         javaexec{
--            main = "mindustry.tools.ImagePacker"
-+            mainClass = "mindustry.tools.ImagePacker"
+-
+-        project.services.get(ExecOperations).javaexec{
++        javaexec{
+             mainClass = "mindustry.tools.ImagePacker"
              classpath = sourceSets.main.runtimeClasspath
              workingDir = genFolder
 +            standardOutput = System.out
@@ -1673,7 +1647,7 @@ index 28b3842033774d6c528eaef5d1c9ccc3eed96dc2..e76f2594a54db837b0b4bb3c48bec944
  
          if(enableAA){
              ExecutorService executor = Executors.newFixedThreadPool(OS.cores)
-@@ -172,23 +187,27 @@ task pack(dependsOn: [classes, configurations.runtimeClasspath]){
+@@ -174,21 +187,24 @@ tasks.register('pack'){
          println("\n\nPacking normal 4096 sprites...\n\n")
  
          //pack normal sprites
@@ -1705,76 +1679,8 @@ index 28b3842033774d6c528eaef5d1c9ccc3eed96dc2..e76f2594a54db837b0b4bb3c48bec944
 +    from(files(doPack))
 +}
  
--task genSprites(dependsOn: classes, type: JavaExec){
-+tasks.register('genSprites', JavaExec){
-+    dependsOn classes
-     finalizedBy 'antialiasGen'
- 
-     mainClass = "mindustry.tools.ImagePacker"
-@@ -197,7 +216,8 @@ task genSprites(dependsOn: classes, type: JavaExec){
-     workingDir = genFolder
- }
- 
--task fontgen(dependsOn: classes, type: JavaExec){
-+tasks.register('fontgen', JavaExec){
-+    dependsOn classes
-     /* icon font pipeline:
-      1. take set of pre-defined icons and SVGs
-      2. use Fontello API to get a font with these
-@@ -232,30 +252,32 @@ task fontgen(dependsOn: classes, type: JavaExec){
-         //TODO this is broken
- 
-         Log.info(OS.exec("fontforge", "-script",
--            Fi.get("core/assets-raw/fontgen/merge.pe").absolutePath(),
--            Fi.get("core/assets/fonts/font.woff").absolutePath(),
--            Fi.get("core/assets-raw/fontgen/out/font.woff").absolutePath())
-+                Fi.get("core/assets-raw/fontgen/merge.pe").absolutePath(),
-+                Fi.get("core/assets/fonts/font.woff").absolutePath(),
-+                Fi.get("core/assets-raw/fontgen/out/font.woff").absolutePath())
-         )
- 
-         Log.info("Done.")
-     }
- }
- 
--task icongen(dependsOn: classes, type: JavaExec){
-+tasks.register('icongen', JavaExec){
-+    dependsOn classes
-     mainClass = "mindustry.tools.IconConverter"
-     classpath = sourceSets.main.runtimeClasspath
-     standardInput = System.in
-     workingDir = "../core/assets-raw"
- }
- 
--task updateScripts(dependsOn: classes, type: JavaExec){
-+tasks.register('updateScripts', JavaExec){
-+    dependsOn classes
-     mainClass = "mindustry.tools.ScriptMainGenerator"
-     classpath = sourceSets.main.runtimeClasspath
-     standardInput = System.in
-     workingDir = "../"
- }
- 
--task updateBundles{
-+tasks.register('updateBundles'){
-     doLast{
-         def uniEscape = { String string ->
-             StringBuilder outBuffer = new StringBuilder()
-@@ -263,12 +285,12 @@ task updateBundles{
-             for(int i = 0; i < len; i++){
-                 char ch = string.charAt(i)
-                 if((ch > 61) && (ch < 127)){
--                    outBuffer.append(ch == (char)'\\' ? "\\\\" : ch)
-+                    outBuffer.append(ch == (char) '\\' ? "\\\\" : ch)
-                     continue
-                 }
- 
-                 if(ch >= 0xE000 && ch <= 0xF8FF){
--                    String hex = Integer.toHexString((int)ch)
-+                    String hex = Integer.toHexString((int) ch)
-                     outBuffer.append("\\u")
-                     for(int j = 0; j < 4 - hex.length(); j++){
-                         outBuffer.append('0')
+ tasks.register('genSprites', JavaExec){
+     dependsOn classes
 diff --git a/tools/src/mindustry/tools/Generators.java b/tools/src/mindustry/tools/Generators.java
 index fbd79b58a3f6f63bc3d42b5e6a07b80fdfff1df7..a137994e81e658d9795ddcbcee52aacb10d7aabc 100644
 --- a/tools/src/mindustry/tools/Generators.java

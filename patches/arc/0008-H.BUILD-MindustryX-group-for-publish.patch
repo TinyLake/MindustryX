@@ -8,10 +8,10 @@ Subject: [PATCH] H.BUILD: MindustryX group for publish
  1 file changed, 1 insertion(+), 1 deletion(-)
 
 diff --git a/build.gradle b/build.gradle
-index a489753797c24ac3931390bb4e557729a3b3d800..51337f900d45103652c4e738b018fe2959444e59 100644
+index 53231121a875f66183ace624dad7755537fb3b58..6783677bf18485a69fdc34b1360fc3bd8cee18b6 100644
 --- a/build.gradle
 +++ b/build.gradle
-@@ -59,7 +59,7 @@ libraries.lwjgl = [
+@@ -63,7 +63,7 @@ libraries.lwjgl = [
  
  allprojects{
      apply plugin: 'maven-publish'

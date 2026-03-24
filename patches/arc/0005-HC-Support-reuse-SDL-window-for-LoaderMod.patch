@@ -36,10 +36,10 @@ index f356fe21605f785cc84845c75a2c26568a9b5782..8248211d452110c3e158fe6cd3b1f995
  
          //show native IME candidate UI
 diff --git a/backends/backend-sdl3/src/arc/backend/sdl/SdlApplication.java b/backends/backend-sdl3/src/arc/backend/sdl/SdlApplication.java
-index 35526aab2ddf686dd47e34410e85af140bd4e343..abbc29a7863e64cf511a21375bb123583a4fc8fd 100644
+index baf2846b62416453a9c6eb1887e978d69611c91b..0bb0708e68df329f39ca3fa3818db78f0d0bdd24 100644
 --- a/backends/backend-sdl3/src/arc/backend/sdl/SdlApplication.java
 +++ b/backends/backend-sdl3/src/arc/backend/sdl/SdlApplication.java
-@@ -124,6 +124,20 @@ public class SdlApplication implements Application{
+@@ -125,6 +125,20 @@ public class SdlApplication implements Application{
  
          if(OS.isMac) restartMac();
  

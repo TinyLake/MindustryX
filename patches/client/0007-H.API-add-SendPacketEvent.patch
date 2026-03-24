@@ -9,7 +9,7 @@ Subject: [PATCH] H.API: add SendPacketEvent
  2 files changed, 8 insertions(+), 1 deletion(-)
 
 diff --git a/core/src/mindustry/net/ArcNetProvider.java b/core/src/mindustry/net/ArcNetProvider.java
-index 4051453c38e79d1f6c8c02900ac9823aaf1993b9..f2bf3bba1bf733159746729bc1aa7499d205affd 100644
+index 3110558167196826a67f5c93f571837cc3f940d4..77f3131a45f634b8f243a41ae3354a4a669a42c4 100644
 --- a/core/src/mindustry/net/ArcNetProvider.java
 +++ b/core/src/mindustry/net/ArcNetProvider.java
 @@ -16,6 +16,7 @@ import mindustry.game.EventType.*;
@@ -20,7 +20,7 @@ index 4051453c38e79d1f6c8c02900ac9823aaf1993b9..f2bf3bba1bf733159746729bc1aa7499
  import net.jpountz.lz4.*;
  
  import java.io.*;
-@@ -344,6 +345,7 @@ public class ArcNetProvider implements NetProvider{
+@@ -354,6 +355,7 @@ public class ArcNetProvider implements NetProvider{
  
          @Override
          public void sendStream(Streamable stream){
@@ -28,7 +28,7 @@ index 4051453c38e79d1f6c8c02900ac9823aaf1993b9..f2bf3bba1bf733159746729bc1aa7499
              connection.addListener(new InputStreamSender(stream.stream, 1024){
                  int id;
  
-@@ -369,6 +371,7 @@ public class ArcNetProvider implements NetProvider{
+@@ -379,6 +381,7 @@ public class ArcNetProvider implements NetProvider{
  
          @Override
          public void send(Object object, boolean reliable){
@@ -37,7 +37,7 @@ index 4051453c38e79d1f6c8c02900ac9823aaf1993b9..f2bf3bba1bf733159746729bc1aa7499
                  if(connection.isConnected()){
                      if(reliable){
 diff --git a/core/src/mindustry/net/Net.java b/core/src/mindustry/net/Net.java
-index b53601bc1d79052b569a721a7ee2207d0ee2420a..5cfafc4fba4b6a056f77256a674812b53498139f 100644
+index 2c8a5eba80a105865cf302e9ce0bf2460f7b7616..7685d7649bdea045e46fa6f4eb9ae93481bae567 100644
 --- a/core/src/mindustry/net/Net.java
 +++ b/core/src/mindustry/net/Net.java
 @@ -10,6 +10,7 @@ import mindustry.game.EventType.*;

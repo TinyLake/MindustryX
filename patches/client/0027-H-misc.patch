@@ -62,10 +62,10 @@ index ec993d3e6f8026dcc58cdc6cc943d8c792494bf5..f4ed14ca5a2b5f3a8b2d01e0c7bbc383
          }
  
 diff --git a/core/src/mindustry/Vars.java b/core/src/mindustry/Vars.java
-index 9813c47bd6316ac26023ad444c17f64c273e6afa..fba02d5892846f2a48b45384d0c0bb463e5e1d0f 100644
+index 462af52bc1286ff5684525d4a850fb4c77341b06..af29896b221ebc2a617a0a14ca2fdf054693a477 100644
 --- a/core/src/mindustry/Vars.java
 +++ b/core/src/mindustry/Vars.java
-@@ -289,7 +289,8 @@ public class Vars implements Loadable{
+@@ -294,7 +294,8 @@ public class Vars implements Loadable{
      public static NetServer netServer;
      public static NetClient netClient;
  
@@ -75,7 +75,7 @@ index 9813c47bd6316ac26023ad444c17f64c273e6afa..fba02d5892846f2a48b45384d0c0bb46
  
      @Override
      public void loadAsync(){
-@@ -421,6 +422,11 @@ public class Vars implements Loadable{
+@@ -427,6 +428,11 @@ public class Vars implements Loadable{
                  if(!headless && (ui == null || ui.consolefrag == null)){
                      logBuffer.add(result);
                  }else if(!headless){
@@ -101,7 +101,7 @@ index 11278ddac6ce2b35234acb31b43ea7e8c999592d..ed6785c5853a9a8096b2f48792c05b98
      private Seq<Team> activeTeams = new Seq<>(Team.class);
      /** Maps teams to a map of flagged tiles by flag. */
 diff --git a/core/src/mindustry/content/Blocks.java b/core/src/mindustry/content/Blocks.java
-index 55e608fcdff4c6fa6cc1fd7dd26ca65780ec2308..10d6b4165acb0efc88355b04839221ed4705316a 100644
+index 4019daad98e98aa86e28c5fe6926aa9a7edeeac8..f82f268fb3b2ec9dfd6fc4bec347590f802511ae 100644
 --- a/core/src/mindustry/content/Blocks.java
 +++ b/core/src/mindustry/content/Blocks.java
 @@ -2124,6 +2124,7 @@ public class Blocks{
@@ -133,10 +133,10 @@ index 6792c68861eb9ddf52428b2afc80510987509210..ef315970349db1c463ba117dfe3b0b15
  
          dynamic = new StatusEffect("dynamic"){{
 diff --git a/core/src/mindustry/core/Control.java b/core/src/mindustry/core/Control.java
-index 9d742cb882c473e191549fe1d9c1364ebce32c80..0e65f6091b906412ce8e52b54d10891182798738 100644
+index 314c40fa0343dc3baf16368db597a22c7be0125a..19a93769d3ab2a0ca9d9c4b7159bdeb18d2941ac 100644
 --- a/core/src/mindustry/core/Control.java
 +++ b/core/src/mindustry/core/Control.java
-@@ -622,7 +622,8 @@ public class Control implements ApplicationListener, Loadable{
+@@ -636,7 +636,8 @@ public class Control implements ApplicationListener, Loadable{
                  BaseDialog dialog = new BaseDialog("@confirm");
                  dialog.setFillParent(true);
  
@@ -147,10 +147,10 @@ index 9d742cb882c473e191549fe1d9c1364ebce32c80..0e65f6091b906412ce8e52b54d108911
                      Core.settings.put("uiscale", 100);
                      Core.settings.put("uiscalechanged", false);
 diff --git a/core/src/mindustry/core/NetClient.java b/core/src/mindustry/core/NetClient.java
-index 30c37c2c8f912865d800690664290cbdb314cfd6..556714c2f55370d662722d1e4d0c4f8d57dcdce8 100644
+index c7c877530b3e908a1df7bf59c1867f3928d62a18..c0016cedfe941e232fd19476ac3268898eb9a981 100644
 --- a/core/src/mindustry/core/NetClient.java
 +++ b/core/src/mindustry/core/NetClient.java
-@@ -73,6 +73,10 @@ public class NetClient implements ApplicationListener{
+@@ -77,6 +77,10 @@ public class NetClient implements ApplicationListener{
      public NetClient(){
  
          net.handleClient(Connect.class, packet -> {
@@ -162,7 +162,7 @@ index 30c37c2c8f912865d800690664290cbdb314cfd6..556714c2f55370d662722d1e4d0c4f8d
  
              player.admin = false;
 diff --git a/core/src/mindustry/core/Renderer.java b/core/src/mindustry/core/Renderer.java
-index b988dfe212a187b492194d010641611e6465e5b0..099efb2bcdd709d3a328471a0a434165c665446c 100644
+index 1dd3e1a1edfc7f7f1a8d2c0c52284f997fa56061..c33d35766827d76e53b1b69749a39666739d9cdd 100644
 --- a/core/src/mindustry/core/Renderer.java
 +++ b/core/src/mindustry/core/Renderer.java
 @@ -160,7 +160,7 @@ public class Renderer implements ApplicationListener{
@@ -175,10 +175,10 @@ index b988dfe212a187b492194d010641611e6465e5b0..099efb2bcdd709d3a328471a0a434165
          if(Mathf.equal(camerascale, dest, 0.001f)) camerascale = dest;
          unitLaserOpacity = settings.getInt("unitlaseropacity") / 100f;
 diff --git a/core/src/mindustry/core/UI.java b/core/src/mindustry/core/UI.java
-index daaa194524f5d1afad10f2c3b0731e8ae68da124..a62f8737b3037c8c25c34a84e22369cb0e434473 100644
+index 7342a8376c3ec0b4bce6d572a4ee3b69a3275e84..8b7eaeee1787eb01b632d230916f8af8b1e9bf69 100644
 --- a/core/src/mindustry/core/UI.java
 +++ b/core/src/mindustry/core/UI.java
-@@ -607,7 +607,7 @@ public class UI implements ApplicationListener, Loadable{
+@@ -649,7 +649,7 @@ public class UI implements ApplicationListener, Loadable{
                  t.remove();
              }
          });
@@ -187,7 +187,7 @@ index daaa194524f5d1afad10f2c3b0731e8ae68da124..a62f8737b3037c8c25c34a84e22369cb
          t.pack();
          t.act(0.1f);
          Core.scene.add(t);
-@@ -746,23 +746,7 @@ public class UI implements ApplicationListener, Loadable{
+@@ -788,23 +788,7 @@ public class UI implements ApplicationListener, Loadable{
      }
  
      public static String formatAmount(long number){
@@ -213,10 +213,10 @@ index daaa194524f5d1afad10f2c3b0731e8ae68da124..a62f8737b3037c8c25c34a84e22369cb
  
      public static int roundAmount(int number){
 diff --git a/core/src/mindustry/game/Schematics.java b/core/src/mindustry/game/Schematics.java
-index 15159d0b47c42aa5c1374d5cbf6ed0845fb9af82..437a625f4d3c1e8d8a252b6481b403a3e01b4551 100644
+index fb299ba4d207bab565c0602183326678f15c685f..407917ae59b27341f558646b6847bb702c741952 100644
 --- a/core/src/mindustry/game/Schematics.java
 +++ b/core/src/mindustry/game/Schematics.java
-@@ -99,7 +99,9 @@ public class Schematics implements Loadable{
+@@ -100,7 +100,9 @@ public class Schematics implements Loadable{
          all.sort();
  
          if(shadowBuffer == null && !headless){
@@ -227,7 +227,7 @@ index 15159d0b47c42aa5c1374d5cbf6ed0845fb9af82..437a625f4d3c1e8d8a252b6481b403a3
          }
      }
  
-@@ -550,7 +552,7 @@ public class Schematics implements Loadable{
+@@ -553,7 +555,7 @@ public class Schematics implements Loadable{
          try(DataInputStream stream = new DataInputStream(new InflaterInputStream(input))){
              short width = stream.readShort(), height = stream.readShort();
  
@@ -236,7 +236,7 @@ index 15159d0b47c42aa5c1374d5cbf6ed0845fb9af82..437a625f4d3c1e8d8a252b6481b403a3
  
              StringMap map = new StringMap();
              int tags = stream.readUnsignedByte();
-@@ -591,7 +593,7 @@ public class Schematics implements Loadable{
+@@ -594,7 +596,7 @@ public class Schematics implements Loadable{
  
              int total = stream.readInt();
  
@@ -246,7 +246,7 @@ index 15159d0b47c42aa5c1374d5cbf6ed0845fb9af82..437a625f4d3c1e8d8a252b6481b403a3
              Reads read = new Reads(stream);
  
 diff --git a/core/src/mindustry/graphics/MinimapRenderer.java b/core/src/mindustry/graphics/MinimapRenderer.java
-index 80892c624209e6f7e788c5c96b80f1f83a10d809..9101c36aaa4919cd52e1cd3bfb1bfab281076f3d 100644
+index e8026b216039407f6e234a3595ca6e8b00bbf58a..ce0d3f95b54097c55a660d746c607c1ae73393cc 100644
 --- a/core/src/mindustry/graphics/MinimapRenderer.java
 +++ b/core/src/mindustry/graphics/MinimapRenderer.java
 @@ -102,7 +102,8 @@ public class MinimapRenderer{
@@ -259,7 +259,7 @@ index 80892c624209e6f7e788c5c96b80f1f83a10d809..9101c36aaa4919cd52e1cd3bfb1bfab2
      }
  
      public float getZoom(){
-@@ -296,7 +297,8 @@ public class MinimapRenderer{
+@@ -321,7 +322,8 @@ public class MinimapRenderer{
      public @Nullable TextureRegion getRegion(){
          if(texture == null) return null;
  
@@ -270,7 +270,7 @@ index 80892c624209e6f7e788c5c96b80f1f83a10d809..9101c36aaa4919cd52e1cd3bfb1bfab2
          float dy = (Core.camera.position.y / tilesize);
          dx = Mathf.clamp(dx, sz, world.width() - sz);
 diff --git a/core/src/mindustry/input/DesktopInput.java b/core/src/mindustry/input/DesktopInput.java
-index 1b398a99d5c870f091da5cbe6f0a7dd44803301d..f7ac4952272dbf657cbf2b4bc74a320ebd967dc9 100644
+index 4f4b1db1c130f265107bf6bcd6ba5ac4bab7d44b..d5fff9b738ee04fc91af82a8c8722f6eacc1ad73 100644
 --- a/core/src/mindustry/input/DesktopInput.java
 +++ b/core/src/mindustry/input/DesktopInput.java
 @@ -409,6 +409,9 @@ public class DesktopInput extends InputHandler{
@@ -284,7 +284,7 @@ index 1b398a99d5c870f091da5cbe6f0a7dd44803301d..f7ac4952272dbf657cbf2b4bc74a320e
                  }
              }
 diff --git a/core/src/mindustry/ui/dialogs/JoinDialog.java b/core/src/mindustry/ui/dialogs/JoinDialog.java
-index 0c38dd9ab2a7b08cfcc8c0b1849778b90563e47f..4bc5fa841571cfe3e7948f7a74a9f08c4d2a6cb9 100644
+index 0978a38705e1767c5eea5d93dbc01c65509abbe1..3c53dc4a75e570a7f3937cd0ca44ca2f3cffde4c 100644
 --- a/core/src/mindustry/ui/dialogs/JoinDialog.java
 +++ b/core/src/mindustry/ui/dialogs/JoinDialog.java
 @@ -61,11 +61,9 @@ public class JoinDialog extends BaseDialog{
@@ -362,10 +362,10 @@ index d14fd47e8d0afa17a76b9112eb89cca4badeb2b8..d3dd7592465f420eb7c225b7dc7218ea
  
      void rebind(KeyBind bind, KeyCode newKey){
 diff --git a/core/src/mindustry/ui/dialogs/PausedDialog.java b/core/src/mindustry/ui/dialogs/PausedDialog.java
-index 8c8b7c49668a1adb90aa0d018c18f66ed6deeb6e..3e0cca2191e2fd062b96af031a6b2af5ba80e224 100644
+index 34bda027dca3220eddbe18f9ae9eabde37676653..206fbb42165a6bcdc3db4e12d5fc8469987aa245 100644
 --- a/core/src/mindustry/ui/dialogs/PausedDialog.java
 +++ b/core/src/mindustry/ui/dialogs/PausedDialog.java
-@@ -163,7 +163,8 @@ public class PausedDialog extends BaseDialog{
+@@ -173,7 +173,8 @@ public class PausedDialog extends BaseDialog{
          boolean wasClient = net.client();
          if(net.client()) netClient.disconnectQuietly();
  
@@ -376,10 +376,10 @@ index 8c8b7c49668a1adb90aa0d018c18f66ed6deeb6e..3e0cca2191e2fd062b96af031a6b2af5
              return;
          }else if(checkPlaytest()){
 diff --git a/core/src/mindustry/ui/dialogs/SettingsMenuDialog.java b/core/src/mindustry/ui/dialogs/SettingsMenuDialog.java
-index 7949471868168ce97170f6550ce2949c7590506b..6e0bd9f94bd41137ddc69bae8beb7727d12ac6c0 100644
+index 9b870091604950258a249fc1bcc1039065b4174c..a739399151758484415525262893e254ed80614e 100644
 --- a/core/src/mindustry/ui/dialogs/SettingsMenuDialog.java
 +++ b/core/src/mindustry/ui/dialogs/SettingsMenuDialog.java
-@@ -408,14 +408,14 @@ public class SettingsMenuDialog extends BaseDialog{
+@@ -421,14 +421,14 @@ public class SettingsMenuDialog extends BaseDialog{
          graphics.sliderPref("unitlaseropacity", 100, 0, 100, 5, s -> s + "%");
          graphics.sliderPref("bridgeopacity", 100, 0, 100, 5, s -> s + "%");
  
@@ -397,7 +397,7 @@ index 7949471868168ce97170f6550ce2949c7590506b..6e0bd9f94bd41137ddc69bae8beb7727
                  Core.settings.put("minzoomingamemultiplier", (float)s / 100.0f);
              }
 diff --git a/core/src/mindustry/ui/fragments/ChatFragment.java b/core/src/mindustry/ui/fragments/ChatFragment.java
-index add50b5864c311b66d4278e684a4e0260170139f..6202aadb499174630a04c0210e7390a0af4f6a42 100644
+index b807e2195df1162a09d74fde962f195bf57bc92c..cb241dd067e90851ca290d1035600eb557a52303 100644
 --- a/core/src/mindustry/ui/fragments/ChatFragment.java
 +++ b/core/src/mindustry/ui/fragments/ChatFragment.java
 @@ -5,6 +5,7 @@ import arc.Input.*;
@@ -417,7 +417,7 @@ index add50b5864c311b66d4278e684a4e0260170139f..6202aadb499174630a04c0210e7390a0
      private Font font;
      private GlyphLayout layout = new GlyphLayout();
      private float offsetx = Scl.scl(4), offsety = Scl.scl(4), fontoffsetx = Scl.scl(2), chatspace = Scl.scl(50);
-@@ -74,6 +75,8 @@ public class ChatFragment extends Table{
+@@ -76,6 +77,8 @@ public class ChatFragment extends Table{
                      historyPos--;
                      updateChat();
                  }
@@ -426,7 +426,7 @@ index add50b5864c311b66d4278e684a4e0260170139f..6202aadb499174630a04c0210e7390a0
                  if(input.keyTap(Binding.chatMode)){
                      nextMode();
                  }
-@@ -292,7 +295,7 @@ public class ChatFragment extends Table{
+@@ -318,7 +321,7 @@ public class ChatFragment extends Table{
          if(scrollPos > 0) scrollPos++;
      }
  
@@ -500,7 +500,7 @@ index 45b50a6504a69ebe787a79397df39ee3846701ae..6ee115c126247878ee09047641967596
  
          @Override
 diff --git a/core/src/mindustry/world/blocks/units/Reconstructor.java b/core/src/mindustry/world/blocks/units/Reconstructor.java
-index ef917ff030d1ca22e952530ca0df86133fcc48f5..db59ca748daedb56acc5f0968ec8f7bf9f1f6c32 100644
+index 59617ef6b7424d4ba87d79ed4d27baec424781bb..0252c2bdae34789d01836fd67477219f074ccdf2 100644
 --- a/core/src/mindustry/world/blocks/units/Reconstructor.java
 +++ b/core/src/mindustry/world/blocks/units/Reconstructor.java
 @@ -178,7 +178,7 @@ public class Reconstructor extends UnitBlock{

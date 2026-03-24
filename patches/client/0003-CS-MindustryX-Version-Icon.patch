@@ -57,7 +57,7 @@ index d42ffe6d4a318ce558f1010eae46140f88ed5c99..bf44ead5c58abfb79c500e6daae30c3e
 +    <string name="app_name">MindustryX</string>
  </resources>
 diff --git a/build.gradle b/build.gradle
-index a340b6d96ad764e992412eb90aea5f83223fabe0..9c6d7e53095d2e9c7f3397e8e339b53f7df9036c 100644
+index a5b4e36f46c80aeca5dd73c881a73d4c58120c94..25d99e8372350fc4baf70ff64f358ab730f9f5ad 100644
 --- a/build.gradle
 +++ b/build.gradle
 @@ -7,7 +7,11 @@ buildscript{
@@ -96,10 +96,10 @@ index 441b4366206a21f8a5eedc433dd55b00de6a15d8..bc63d9ae23cffccb96877410c70b646f
      }
      processResources.configure {
 diff --git a/core/src/mindustry/Vars.java b/core/src/mindustry/Vars.java
-index e75d82bf838a27c256bfce94f74e56e924dd47e4..84cf00172e8b630eddd7c268668400abe44cf286 100644
+index bae56deeb25445b764596cbeaafc3bc38c7fc119..d7d3796b701b58afa2d243112c6151bcc96e9351 100644
 --- a/core/src/mindustry/Vars.java
 +++ b/core/src/mindustry/Vars.java
-@@ -89,7 +89,7 @@ public class Vars implements Loadable{
+@@ -90,7 +90,7 @@ public class Vars implements Loadable{
      /** URLs to the JSON files containing the list of mods.  */
      public static final String[] modJsonURLs = {"https://raw.githubusercontent.com/Anuken/MindustryMods/master/mods.json", "https://cdn.jsdelivr.net/gh/anuken/mindustrymods/mods.json"};
      /** URL of the github issue report template.*/
@@ -109,10 +109,10 @@ index e75d82bf838a27c256bfce94f74e56e924dd47e4..84cf00172e8b630eddd7c268668400ab
      public static final Seq<ServerGroup> defaultServers = Seq.with();
      /** cached server list - only used if defaultServers have not been fetched*/
 diff --git a/core/src/mindustry/core/NetClient.java b/core/src/mindustry/core/NetClient.java
-index e38694fe5abb9098c43e274d12a08a97a38622c6..cd9ef5356459f40cd17d1519802c040669f56d9a 100644
+index d3325ffd642c1ea595bf5613f387415c699bd4d0..4c14732485f08d0fdebd9c945c0cbb87863f4fdf 100644
 --- a/core/src/mindustry/core/NetClient.java
 +++ b/core/src/mindustry/core/NetClient.java
-@@ -27,6 +27,7 @@ import mindustry.net.*;
+@@ -28,6 +28,7 @@ import mindustry.net.*;
  import mindustry.net.Packets.*;
  import mindustry.world.*;
  import mindustry.world.modules.*;
@@ -120,7 +120,7 @@ index e38694fe5abb9098c43e274d12a08a97a38622c6..cd9ef5356459f40cd17d1519802c0406
  
  import java.io.*;
  import java.util.*;
-@@ -145,6 +146,7 @@ public class NetClient implements ApplicationListener{
+@@ -149,6 +150,7 @@ public class NetClient implements ApplicationListener{
              Log.info("Received world data: @ bytes.", data.stream.available());
              NetworkIO.loadWorld(new InflaterInputStream(data.stream));
  
@@ -163,7 +163,7 @@ index 5b13558d13d816c420d34b32b161030955d1ae64..251f7c454d9823234b492d8878cb07c7
          buffer.put((byte)state.rules.mode().ordinal());
          buffer.putInt(netServer.admins.getPlayerLimit());
 diff --git a/desktop/src/mindustry/desktop/DesktopLauncher.java b/desktop/src/mindustry/desktop/DesktopLauncher.java
-index 49b4012ea1470afd399076a780718a8ad32463d2..e9bd8dece555391346b6ed8838c96e7ff3c971a3 100644
+index 9982b9be911bddb845f551e0c47095e320912c6b..788965957c7b9089dd9cfa563b20d55e0179a20a 100644
 --- a/desktop/src/mindustry/desktop/DesktopLauncher.java
 +++ b/desktop/src/mindustry/desktop/DesktopLauncher.java
 @@ -108,7 +108,7 @@ public class DesktopLauncher extends ClientLauncher{

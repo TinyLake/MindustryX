@@ -67,10 +67,10 @@ index b7415388c7427601ff9ec6c5bf85f5ae9cffa2ea..df7a39ed93ec5049d2ce6c932cea4a1c
  
      /** @return the last registered content with the specified name. Note that the content loader makes no attempt to resolve name conflicts. This method can be unreliable. */
 diff --git a/core/src/mindustry/core/NetClient.java b/core/src/mindustry/core/NetClient.java
-index 556714c2f55370d662722d1e4d0c4f8d57dcdce8..52088c330e65c9fa30d0bab87f9e020fb022f4b2 100644
+index c0016cedfe941e232fd19476ac3268898eb9a981..ea2dfce9c75d30008928909878d31dfa6f9bd78a 100644
 --- a/core/src/mindustry/core/NetClient.java
 +++ b/core/src/mindustry/core/NetClient.java
-@@ -523,6 +523,8 @@ public class NetClient implements ApplicationListener{
+@@ -527,6 +527,8 @@ public class NetClient implements ApplicationListener{
  
      @Remote(variants = Variant.both, priority = PacketPriority.low, unreliable = true)
      public static void blockSnapshot(short amount, byte[] data){
@@ -80,10 +80,10 @@ index 556714c2f55370d662722d1e4d0c4f8d57dcdce8..52088c330e65c9fa30d0bab87f9e020f
              netClient.byteStream.setBytes(data);
              DataInputStream input = netClient.dataStream;
 diff --git a/core/src/mindustry/io/TypeIO.java b/core/src/mindustry/io/TypeIO.java
-index 930b7462db02bd201fae6e694b9cc258b24be16b..c663a0fcc8d8372f4844cec65e8759fb871845d2 100644
+index 9882b8b4a5915265867a29c3a521c89b9cb6624e..897db2ddc5dcf63bdebfa833291994fa5d2ef477 100644
 --- a/core/src/mindustry/io/TypeIO.java
 +++ b/core/src/mindustry/io/TypeIO.java
-@@ -26,6 +26,7 @@ import mindustry.type.*;
+@@ -27,6 +27,7 @@ import mindustry.type.*;
  import mindustry.world.*;
  import mindustry.world.blocks.*;
  import mindustry.world.blocks.payloads.*;
@@ -91,7 +91,7 @@ index 930b7462db02bd201fae6e694b9cc258b24be16b..c663a0fcc8d8372f4844cec65e8759fb
  
  import java.io.*;
  import java.nio.*;
-@@ -55,7 +56,10 @@ public class TypeIO{
+@@ -57,7 +58,10 @@ public class TypeIO{
          }else if(object instanceof Content map){
              write.b((byte)5);
              write.b((byte)map.getContentType().ordinal());
@@ -101,9 +101,9 @@ index 930b7462db02bd201fae6e694b9cc258b24be16b..c663a0fcc8d8372f4844cec65e8759fb
 +            else
 +                write.s(map.id);
          }else if(object instanceof IntSeq arr){
+             if(arr.size > maxArraySize) throw new ArcRuntimeException("Array size too large: " + arr.size);
              write.b((byte)6);
-             write.s((short)arr.size);
-@@ -392,7 +396,15 @@ public class TypeIO{
+@@ -446,7 +450,15 @@ public class TypeIO{
      }
  
      public static void writeBlock(Writes write, Block block){
@@ -120,7 +120,7 @@ index 930b7462db02bd201fae6e694b9cc258b24be16b..c663a0fcc8d8372f4844cec65e8759fb
      }
  
      public static Block readBlock(Reads read){
-@@ -455,7 +467,7 @@ public class TypeIO{
+@@ -510,7 +522,7 @@ public class TypeIO{
          write.b(plan.breaking ? (byte)1 : 0);
          write.i(Point2.pack(plan.x, plan.y));
          if(!plan.breaking){
@@ -130,7 +130,7 @@ index 930b7462db02bd201fae6e694b9cc258b24be16b..c663a0fcc8d8372f4844cec65e8759fb
              boolean writePlan = !headless || !net.server();
              write.b(writePlan ? 1 : 0); //always has config
 diff --git a/core/src/mindustry/net/Net.java b/core/src/mindustry/net/Net.java
-index 332f2e11d8575e0b70f3589e685c4beb5c7a9049..cb76e9e2a90af2d54aa5668def238828a236c876 100644
+index 10bb4d0f92f653b53b6e4273a799b85ca566fa16..3f71d8b38f54b1fdbcc718f4dcf0af04644d692f 100644
 --- a/core/src/mindustry/net/Net.java
 +++ b/core/src/mindustry/net/Net.java
 @@ -1,6 +1,7 @@
@@ -207,10 +207,10 @@ index 332f2e11d8575e0b70f3589e685c4beb5c7a9049..cb76e9e2a90af2d54aa5668def238828
          if(active && !server){
              Log.info("Disconnecting.");
          }
-@@ -268,7 +286,13 @@ public class Net{
-      * Call to handle a packet being received for the client.
-      */
-     public void handleClientReceived(Packet object){
+@@ -272,7 +290,13 @@ public class Net{
+             return;
+         }
+ 
 -        object.handled();
 +        try{
 +            object.handled();
@@ -308,7 +308,7 @@ index 1b445b3ff268b1d626cf9ba84797560c04e9bb0a..8f91b6abf01af158cb8b2c81d10b55b3
              TypeIO.writeString(buffer, locale);
              TypeIO.writeString(buffer, usid);
 diff --git a/core/src/mindustry/ui/dialogs/JoinDialog.java b/core/src/mindustry/ui/dialogs/JoinDialog.java
-index 497406bf761dfa63cdbbe554289c00f4bff7df5b..1ce5f93c14fb17e4cbc176d1406188251af1d70a 100644
+index fef21d30db9c61fd17c6fe0390de27b273f9c159..67f3aeadd2975040c975859a394bb4df9c164801 100644
 --- a/core/src/mindustry/ui/dialogs/JoinDialog.java
 +++ b/core/src/mindustry/ui/dialogs/JoinDialog.java
 @@ -642,7 +642,7 @@ public class JoinDialog extends BaseDialog{

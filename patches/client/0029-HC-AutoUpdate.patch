@@ -4,18 +4,18 @@ Date: Tue, 26 Mar 2024 22:36:18 +0800
 Subject: [PATCH] HC: AutoUpdate
 
 ---
- core/src/mindustry/net/BeControl.java         | 10 +---------
+ core/src/mindustry/net/BeControl.java         |  8 --------
  .../mindustry/ui/fragments/MenuFragment.java  | 19 ++++---------------
- 2 files changed, 5 insertions(+), 24 deletions(-)
+ 2 files changed, 4 insertions(+), 23 deletions(-)
 
 diff --git a/core/src/mindustry/net/BeControl.java b/core/src/mindustry/net/BeControl.java
-index 2b96a3f231a78f6edb51d9459a1cbbcdeaa6d68e..7172b63844e32b48537d1b53a4da7db633bb4998 100644
+index 7892431374c93cec239a12651197d5a2eddd804c..a8088433306043d2ca7d172040115046c89a1109 100644
 --- a/core/src/mindustry/net/BeControl.java
 +++ b/core/src/mindustry/net/BeControl.java
-@@ -35,19 +35,11 @@ public class BeControl{
+@@ -39,14 +39,6 @@ public class BeControl{
      }
  
-     public BeControl(){
+     public void init(){
 -        if(active()){
 -            Timer.schedule(() -> {
 -                if((Vars.clientLoaded || headless) && checkUpdates && !mobile){
@@ -27,12 +27,6 @@ index 2b96a3f231a78f6edb51d9459a1cbbcdeaa6d68e..7172b63844e32b48537d1b53a4da7db6
          if(OS.hasProp("becopy")){
              try{
                  Fi dest = Fi.get(OS.prop("becopy"));
-                 Fi self = Fi.get(BeControl.class.getProtectionDomain().getCodeSource().getLocation().toURI().getPath());
--                
-+
-                 for(Fi file : self.parent().findAll(f -> !f.equals(self))) file.delete();
- 
-                 self.copyTo(dest);
 diff --git a/core/src/mindustry/ui/fragments/MenuFragment.java b/core/src/mindustry/ui/fragments/MenuFragment.java
 index 6918efaf97843415b3002beabcc1a4a9e0ea8a02..90c843267ba9c3c59413a658c9777198296514f5 100644
 --- a/core/src/mindustry/ui/fragments/MenuFragment.java

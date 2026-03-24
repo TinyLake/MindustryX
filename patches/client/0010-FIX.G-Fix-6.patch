@@ -8,11 +8,11 @@ Subject: [PATCH] FIX.G: Fix #6
  1 file changed, 4 insertions(+), 1 deletion(-)
 
 diff --git a/core/src/mindustry/world/blocks/payloads/PayloadConveyor.java b/core/src/mindustry/world/blocks/payloads/PayloadConveyor.java
-index 494be2ecc1956f53a4da9c60bdf0cf3b47809c65..421959f53846de5e543ea66ae02fbf73e4f2969a 100644
+index c9a0caa87f0a9133fdfef472b892a7e4a02fcb26..38ed3abe223830607d92e192e2c8232c3bb71ec1 100644
 --- a/core/src/mindustry/world/blocks/payloads/PayloadConveyor.java
 +++ b/core/src/mindustry/world/blocks/payloads/PayloadConveyor.java
-@@ -158,7 +158,10 @@ public class PayloadConveyor extends Block{
-                 if(valid && stepAccepted != curStep && item != null){
+@@ -162,7 +162,10 @@ public class PayloadConveyor extends Block{
+                     checkBlocked();
                      if(next != null){
                          //trigger update forward
 -                        next.updateTile();

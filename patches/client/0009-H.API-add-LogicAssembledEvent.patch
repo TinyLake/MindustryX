@@ -10,7 +10,7 @@ Subject: [PATCH] H.API: add LogicAssembledEvent
  3 files changed, 18 insertions(+), 1 deletion(-)
 
 diff --git a/core/src/mindustry/logic/LParser.java b/core/src/mindustry/logic/LParser.java
-index 25b7bc9ea1fe595583ae65abc1dec2c48a545661..32769d6ee3e25f884f53ce1d67a22dc51533f77c 100644
+index cc2fb1c104948db769dc8eefe5b880fd5d780c5d..6c3d620f0a4ea3c1ea23369b96ba48cb22e78808 100644
 --- a/core/src/mindustry/logic/LParser.java
 +++ b/core/src/mindustry/logic/LParser.java
 @@ -5,6 +5,8 @@ import arc.util.*;
@@ -22,7 +22,7 @@ index 25b7bc9ea1fe595583ae65abc1dec2c48a545661..32769d6ee3e25f884f53ce1d67a22dc5
  public class LParser{
      private static final String[] tokens = new String[16];
      private static final int maxJumps = 500;
-@@ -161,7 +163,7 @@ public class LParser{
+@@ -166,7 +168,7 @@ public class LParser{
                          }
                      }else{
                          //unparseable statement
@@ -61,7 +61,7 @@ index 355d311a1c7140e19125ce43dc377b79ddbc3276..4f172c5f66736634dac190b115827695
          @Override
          public void build(Table table){
 diff --git a/core/src/mindustry/world/blocks/logic/LogicBlock.java b/core/src/mindustry/world/blocks/logic/LogicBlock.java
-index 43595b23cc73d417a9cdff052c2f890c999ab2bb..5084bbc41f2630d7d19e948a519e3ed682de7e6a 100644
+index fe75cd902f06bb5776696c7e7e0fe46c25002eb1..d7f5d601ed0138a349bda45b02623ccfbfb23914 100644
 --- a/core/src/mindustry/world/blocks/logic/LogicBlock.java
 +++ b/core/src/mindustry/world/blocks/logic/LogicBlock.java
 @@ -1,5 +1,6 @@
@@ -71,7 +71,7 @@ index 43595b23cc73d417a9cdff052c2f890c999ab2bb..5084bbc41f2630d7d19e948a519e3ed6
  import arc.Graphics.*;
  import arc.Graphics.Cursor.*;
  import arc.func.*;
-@@ -25,6 +26,7 @@ import mindustry.world.*;
+@@ -26,6 +27,7 @@ import mindustry.world.*;
  import mindustry.world.blocks.ConstructBlock.*;
  import mindustry.world.meta.*;
  import mindustryX.*;
@@ -79,7 +79,7 @@ index 43595b23cc73d417a9cdff052c2f890c999ab2bb..5084bbc41f2630d7d19e948a519e3ed6
  
  import java.io.*;
  import java.util.zip.*;
-@@ -400,6 +402,8 @@ public class LogicBlock extends Block{
+@@ -403,6 +405,8 @@ public class LogicBlock extends Block{
                      asm.putConst("@thisx", World.conv(x));
                      asm.putConst("@thisy", World.conv(y));
  

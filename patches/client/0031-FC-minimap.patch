@@ -17,19 +17,19 @@ Content-Transfer-Encoding: 8bit
  3 files changed, 30 insertions(+), 10 deletions(-)
 
 diff --git a/core/src/mindustry/graphics/MinimapRenderer.java b/core/src/mindustry/graphics/MinimapRenderer.java
-index 9101c36aaa4919cd52e1cd3bfb1bfab281076f3d..fcadc779cd425dc93d4b979612e935d983ad8ca4 100644
+index ce0d3f95b54097c55a660d746c607c1ae73393cc..76351c5f2f30bdf59bd9f72d9269f8e799ca1e92 100644
 --- a/core/src/mindustry/graphics/MinimapRenderer.java
 +++ b/core/src/mindustry/graphics/MinimapRenderer.java
 @@ -166,7 +166,7 @@ public class MinimapRenderer{
              Draw.reset();
          }
  
--        if(fullView && net.active()){
-+        if(net.active()){
+-        if(fullView){
++        {
              for(Player player : Groups.player){
-                 if(!player.dead()){
+                 if(!player.dead() && net.active()){
                      drawLabel(player.x, player.y, player.name, player.color, scaleFactor);
-@@ -213,10 +213,10 @@ public class MinimapRenderer{
+@@ -238,10 +238,10 @@ public class MinimapRenderer{
          }
  
          //TODO might be useful in the standard minimap too
@@ -118,18 +118,18 @@ index e807ad3b752c42d84f958437bbdafead698859c0..54540e1084a1bdca8494b924b47b181f
                  tapSquareSize = Scl.scl(11f);
              }
 diff --git a/core/src/mindustry/ui/fragments/MinimapFragment.java b/core/src/mindustry/ui/fragments/MinimapFragment.java
-index d595b9beaeb1073646f721c0385352bcd634e601..d82ea0ea4633d3987090871a8fe018cf773b4099 100644
+index f7f70bd833cdd8a2efc53d48b9a37449f1003e14..fde886888acee15713570dac23468827c029927b 100644
 --- a/core/src/mindustry/ui/fragments/MinimapFragment.java
 +++ b/core/src/mindustry/ui/fragments/MinimapFragment.java
-@@ -13,6 +13,7 @@ import arc.util.*;
+@@ -16,6 +16,7 @@ import mindustry.core.*;
  import mindustry.gen.*;
  import mindustry.input.*;
  import mindustry.ui.*;
 +import mindustryX.features.*;
  
+ import static arc.Core.*;
  import static mindustry.Vars.*;
- 
-@@ -82,7 +83,7 @@ public class MinimapFragment{
+@@ -86,7 +87,7 @@ public class MinimapFragment{
  
              @Override
              public void pan(InputEvent event, float x, float y, float deltaX, float deltaY){
@@ -138,7 +138,7 @@ index d595b9beaeb1073646f721c0385352bcd634e601..d82ea0ea4633d3987090871a8fe018cf
                      panx += deltaX / zoom;
                      pany += deltaY / zoom;
                  }else{
-@@ -93,7 +94,7 @@ public class MinimapFragment{
+@@ -97,7 +98,7 @@ public class MinimapFragment{
              @Override
              public void touchDown(InputEvent event, float x, float y, int pointer, KeyCode button){
                  super.touchDown(event, x, y, pointer, button);

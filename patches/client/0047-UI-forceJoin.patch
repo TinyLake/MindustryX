@@ -44,7 +44,7 @@ index e766e594341959adfdaf7efef819806a7227f5c2..1b445b3ff268b1d626cf9ba84797560c
              TypeIO.writeString(buffer, name);
              TypeIO.writeString(buffer, locale);
 diff --git a/core/src/mindustry/ui/dialogs/JoinDialog.java b/core/src/mindustry/ui/dialogs/JoinDialog.java
-index 4bc5fa841571cfe3e7948f7a74a9f08c4d2a6cb9..497406bf761dfa63cdbbe554289c00f4bff7df5b 100644
+index 3c53dc4a75e570a7f3937cd0ca44ca2f3cffde4c..fef21d30db9c61fd17c6fe0390de27b273f9c159 100644
 --- a/core/src/mindustry/ui/dialogs/JoinDialog.java
 +++ b/core/src/mindustry/ui/dialogs/JoinDialog.java
 @@ -636,9 +636,22 @@ public class JoinDialog extends BaseDialog{

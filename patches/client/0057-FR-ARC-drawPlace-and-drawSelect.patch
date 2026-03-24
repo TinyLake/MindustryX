@@ -177,7 +177,7 @@ index 31b67b7837d1c1b6c4c3ec00982478b5e4709bae..76f9b2cedb83d84b444a0860b8821826
          indexer.eachBlock(player.team(), x * tilesize + offset, y * tilesize + offset, range, other -> other.block.canOverdrive, other -> Drawf.selected(other, Tmp.c1.set(baseColor).a(Mathf.absin(4f, 1f))));
      }
 diff --git a/core/src/mindustry/world/blocks/defense/turrets/Turret.java b/core/src/mindustry/world/blocks/defense/turrets/Turret.java
-index d601a340712560783657c1569dafe71128312b1b..b3332e3426ebe606692e85385f1a4458d8480755 100644
+index e66e9e789d97484c26cc1c74626ebe7af56b5492..d4192ede8131cdd267539b98434dcaceb8671ddd 100644
 --- a/core/src/mindustry/world/blocks/defense/turrets/Turret.java
 +++ b/core/src/mindustry/world/blocks/defense/turrets/Turret.java
 @@ -30,6 +30,7 @@ import mindustry.world.*;
@@ -202,7 +202,7 @@ index d601a340712560783657c1569dafe71128312b1b..b3332e3426ebe606692e85385f1a4458
      }
  
      public static abstract class AmmoEntry{
-@@ -472,6 +480,17 @@ public class Turret extends ReloadTurret{
+@@ -470,6 +478,17 @@ public class Turret extends ReloadTurret{
              if(drawMinRange){
                  Drawf.dashCircle(x, y, minRange(), team.color);
              }
@@ -221,7 +221,7 @@ index d601a340712560783657c1569dafe71128312b1b..b3332e3426ebe606692e85385f1a4458
  
          @Override
 diff --git a/core/src/mindustry/world/blocks/production/BeamDrill.java b/core/src/mindustry/world/blocks/production/BeamDrill.java
-index 2fdaf89d8bfafa089c5a6de09115ec81f0d35d06..2c2882cf82b66d37706fb5283b7b1b83effacf94 100644
+index dfae8f9afef7275ea9a8bfb79a2c7f3e79a6a4bb..1a3ffd805df5f6ff534f4024d98343c326df7448 100644
 --- a/core/src/mindustry/world/blocks/production/BeamDrill.java
 +++ b/core/src/mindustry/world/blocks/production/BeamDrill.java
 @@ -182,14 +182,10 @@ public class BeamDrill extends Block{
@@ -244,7 +244,7 @@ index 2fdaf89d8bfafa089c5a6de09115ec81f0d35d06..2c2882cf82b66d37706fb5283b7b1b83
              drawPlaceText(Core.bundle.get("bar.drilltierreq"), x, y, false);
          }
 diff --git a/core/src/mindustry/world/blocks/production/Drill.java b/core/src/mindustry/world/blocks/production/Drill.java
-index d2ff9c0ad19f3fc20f5e2b36d6bd4b77e60b4b95..e646c5476e1cc608dfd94017167371215b2492e2 100644
+index cb4d636607c5c3542517af46cb95e69ee3f5a49b..5ca594887b2b1677fc0fc33ceff1272eea0689b3 100644
 --- a/core/src/mindustry/world/blocks/production/Drill.java
 +++ b/core/src/mindustry/world/blocks/production/Drill.java
 @@ -147,12 +147,13 @@ public class Drill extends Block{

@@ -8,10 +8,10 @@ Subject: [PATCH] OC: optimize fonts update (picked from foo)
  1 file changed, 8 insertions(+), 6 deletions(-)
 
 diff --git a/extensions/freetype/src/arc/freetype/FreeTypeFontGenerator.java b/extensions/freetype/src/arc/freetype/FreeTypeFontGenerator.java
-index 992c82a8efbf0c1daf6e2bcf2d78b2b689b3b0a4..e23bc52fea6561d5a33b919940d89d222961831a 100755
+index cfbb13d6ecf5bc65c1dc3e0aef0a691dfac01de8..aba76957ce202ab055304ea05d2deff4e63f8d5e 100755
 --- a/extensions/freetype/src/arc/freetype/FreeTypeFontGenerator.java
 +++ b/extensions/freetype/src/arc/freetype/FreeTypeFontGenerator.java
-@@ -723,16 +723,18 @@ public class FreeTypeFontGenerator implements Disposable{
+@@ -764,16 +764,18 @@ public class FreeTypeFontGenerator implements Disposable{
              return glyph;
          }
  

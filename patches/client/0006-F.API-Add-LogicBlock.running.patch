@@ -8,10 +8,10 @@ Subject: [PATCH] F.API: Add `LogicBlock.running`
  1 file changed, 5 insertions(+)
 
 diff --git a/core/src/mindustry/world/blocks/logic/LogicBlock.java b/core/src/mindustry/world/blocks/logic/LogicBlock.java
-index 0f6e7133502e452ff8afe4abd51e63d6e3ea8337..43595b23cc73d417a9cdff052c2f890c999ab2bb 100644
+index 0f879b7a0335d0fc09a47a3a4eb1bb75e40bcf89..fe75cd902f06bb5776696c7e7e0fe46c25002eb1 100644
 --- a/core/src/mindustry/world/blocks/logic/LogicBlock.java
 +++ b/core/src/mindustry/world/blocks/logic/LogicBlock.java
-@@ -24,6 +24,7 @@ import mindustry.ui.*;
+@@ -25,6 +25,7 @@ import mindustry.ui.*;
  import mindustry.world.*;
  import mindustry.world.blocks.ConstructBlock.*;
  import mindustry.world.meta.*;
@@ -19,7 +19,7 @@ index 0f6e7133502e452ff8afe4abd51e63d6e3ea8337..43595b23cc73d417a9cdff052c2f890c
  
  import java.io.*;
  import java.util.zip.*;
-@@ -31,6 +32,8 @@ import java.util.zip.*;
+@@ -32,6 +33,8 @@ import java.util.zip.*;
  import static mindustry.Vars.*;
  
  public class LogicBlock extends Block{
@@ -28,7 +28,7 @@ index 0f6e7133502e452ff8afe4abd51e63d6e3ea8337..43595b23cc73d417a9cdff052c2f890c
      private static final int maxByteLen = 1024 * 100;
      private static final int maxLinks = 6000;
      public static final int maxNameLength = 32;
-@@ -525,6 +528,7 @@ public class LogicBlock extends Block{
+@@ -528,6 +531,7 @@ public class LogicBlock extends Block{
              if(enabled && executor.initialized()){
                  if(accumulator > maxInstructionScale * ipt) accumulator = maxInstructionScale * ipt;
  
@@ -36,7 +36,7 @@ index 0f6e7133502e452ff8afe4abd51e63d6e3ea8337..43595b23cc73d417a9cdff052c2f890c
                  while(accumulator >= 1f){
                      executor.runOnce();
                      if(executor.yield){
-@@ -533,6 +537,7 @@ public class LogicBlock extends Block{
+@@ -536,6 +540,7 @@ public class LogicBlock extends Block{
                      }
                      accumulator --;
                  }

@@ -43,12 +43,12 @@ index af09f046e1845755f883781ebc6e60e5681edf2a..b957924ea9411c3ec09eb8a24599ad92
          add(netServer = new NetServer());
          add(netClient = new NetClient());
 diff --git a/core/src/mindustry/core/UI.java b/core/src/mindustry/core/UI.java
-index a62f8737b3037c8c25c34a84e22369cb0e434473..9a3763d18ea8fe6ad194887daac47c42984d4589 100644
+index 8b7eaeee1787eb01b632d230916f8af8b1e9bf69..9734aa8dd2e68b064166ab3a4807a8cc6d3250db 100644
 --- a/core/src/mindustry/core/UI.java
 +++ b/core/src/mindustry/core/UI.java
-@@ -85,10 +85,6 @@ public class UI implements ApplicationListener, Loadable{
- 
-     private @Nullable Element lastAnnouncement;
+@@ -91,10 +91,6 @@ public class UI implements ApplicationListener, Loadable{
+     /** Maps labels to ids so that they can be removed or updated by id. */
+     private final IntMap<Table> labels = new IntMap<>();
  
 -    public UI(){
 -        Fonts.loadFonts();
@@ -58,10 +58,10 @@ index a62f8737b3037c8c25c34a84e22369cb0e434473..9a3763d18ea8fe6ad194887daac47c42
          Colors.put("accent", Pal.accent);
          Colors.put("unlaunched", Color.valueOf("8982ed"));
 diff --git a/core/src/mindustry/ui/Fonts.java b/core/src/mindustry/ui/Fonts.java
-index 4e99cc38c12733cb61025db84d29fd0563428ba1..1de3876c6adec0c03a3f477e242aaeac0550b138 100644
+index d71e88ff86dd6b586cea431f7c0abb4984a383dc..f0d7aab18f3d197ed6864eb1ef6a0f5210fc7148 100644
 --- a/core/src/mindustry/ui/Fonts.java
 +++ b/core/src/mindustry/ui/Fonts.java
-@@ -61,11 +61,25 @@ public class Fonts{
+@@ -62,11 +62,25 @@ public class Fonts{
      }
  
      public static void loadFonts(){
@@ -87,7 +87,7 @@ index 4e99cc38c12733cb61025db84d29fd0563428ba1..1de3876c6adec0c03a3f477e242aaeac
          Core.assets.load("monospace", Font.class, new FreeTypeFontLoaderParameter("fonts/monospace.woff", new FreeTypeFontParameter(){{
              size = 16;
              incremental = true;
-@@ -94,6 +108,8 @@ public class Fonts{
+@@ -96,6 +110,8 @@ public class Fonts{
              //ASCII only
              characters = "\0ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz1234567890\"!`?'.,;:()[]{}<>|/@\\^$€-%+=#_&~*";
          }})).loaded = f -> Fonts.logic = f;
@@ -95,8 +95,8 @@ index 4e99cc38c12733cb61025db84d29fd0563428ba1..1de3876c6adec0c03a3f477e242aaeac
 +        Core.assets.loadRun("mergeUI", PixmapPacker.class, () -> {}, () -> Fonts.mergeFontAtlas(Core.atlas));
      }
  
-     public static @Nullable String unicodeToName(int unicode){
-@@ -240,20 +256,6 @@ public class Fonts{
+     public static void loadExtraFonts(){
+@@ -262,20 +278,6 @@ public class Fonts{
              }
          });
  

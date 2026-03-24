@@ -18,10 +18,10 @@ way-zer <himc.wicp@gmail.com> on 2024/4/22 at 20:15
  3 files changed, 5 insertions(+), 1 deletion(-)
 
 diff --git a/core/src/mindustry/core/NetClient.java b/core/src/mindustry/core/NetClient.java
-index f1923596677f5027bc4a3179da92082bbd71cf15..30c37c2c8f912865d800690664290cbdb314cfd6 100644
+index ad8cb42c3af354a45ebd210533ee6b532aba143e..c7c877530b3e908a1df7bf59c1867f3928d62a18 100644
 --- a/core/src/mindustry/core/NetClient.java
 +++ b/core/src/mindustry/core/NetClient.java
-@@ -28,6 +28,7 @@ import mindustry.net.Packets.*;
+@@ -29,6 +29,7 @@ import mindustry.net.Packets.*;
  import mindustry.world.*;
  import mindustry.world.modules.*;
  import mindustryX.*;
@@ -29,7 +29,7 @@ index f1923596677f5027bc4a3179da92082bbd71cf15..30c37c2c8f912865d800690664290cbd
  
  import java.io.*;
  import java.util.*;
-@@ -115,6 +116,7 @@ public class NetClient implements ApplicationListener{
+@@ -119,6 +120,7 @@ public class NetClient implements ApplicationListener{
                  return;
              }
  
@@ -38,10 +38,10 @@ index f1923596677f5027bc4a3179da92082bbd71cf15..30c37c2c8f912865d800690664290cbd
          });
  
 diff --git a/core/src/mindustry/io/TypeIO.java b/core/src/mindustry/io/TypeIO.java
-index f174d06288d5adcffa6f8f60cbefe18d8fd40fe1..930b7462db02bd201fae6e694b9cc258b24be16b 100644
+index e04f97ccd666c90fd03b17f5b268a21443886626..9882b8b4a5915265867a29c3a521c89b9cb6624e 100644
 --- a/core/src/mindustry/io/TypeIO.java
 +++ b/core/src/mindustry/io/TypeIO.java
-@@ -318,7 +318,7 @@ public class TypeIO{
+@@ -372,7 +372,7 @@ public class TypeIO{
              netClient.addRemovedEntity(entity.id());
          }
  
@@ -51,7 +51,7 @@ index f174d06288d5adcffa6f8f60cbefe18d8fd40fe1..930b7462db02bd201fae6e694b9cc258
  
      public static void writeUnit(Writes write, Unit unit){
 diff --git a/core/src/mindustry/net/Net.java b/core/src/mindustry/net/Net.java
-index 5cfafc4fba4b6a056f77256a674812b53498139f..81b815965da3409ebee50b5aab5eaf59a7dadbfd 100644
+index 7685d7649bdea045e46fa6f4eb9ae93481bae567..576adaa4ccd830c6139ba2ba0396bbd75bcb5520 100644
 --- a/core/src/mindustry/net/Net.java
 +++ b/core/src/mindustry/net/Net.java
 @@ -11,6 +11,7 @@ import mindustry.gen.*;
@@ -62,7 +62,7 @@ index 5cfafc4fba4b6a056f77256a674812b53498139f..81b815965da3409ebee50b5aab5eaf59
  import net.jpountz.lz4.*;
  
  import java.io.*;
-@@ -294,6 +295,7 @@ public class Net{
+@@ -298,6 +299,7 @@ public class Net{
              int p = object.getPriority();
  
              if(clientLoaded || p == Packet.priorityHigh){

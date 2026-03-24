@@ -10,7 +10,7 @@ Subject: [PATCH] FR(RenderExt) deadOverlay
  3 files changed, 13 insertions(+), 10 deletions(-)
 
 diff --git a/core/src/mindustry/graphics/OverlayRenderer.java b/core/src/mindustry/graphics/OverlayRenderer.java
-index 78533c7fe78ce26a184f6251a5d0ae5de6298d5d..f1c07752bbe7d710bd11b255a95dade86c4ebeb4 100644
+index d2b4207635925f6d7e622b4dc9cb7e1453fb6f95..d2460d964e24fa9e1e6fa6b74e672f1cec11c8f9 100644
 --- a/core/src/mindustry/graphics/OverlayRenderer.java
 +++ b/core/src/mindustry/graphics/OverlayRenderer.java
 @@ -75,7 +75,7 @@ public class OverlayRenderer{
@@ -20,9 +20,9 @@ index 78533c7fe78ce26a184f6251a5d0ae5de6298d5d..f1c07752bbe7d710bd11b255a95dade8
 -        if(player.dead()) return;
 +        if(player.dead() && !RenderExt.deadOverlay.get()) return;
  
-         if(player.isBuilder()){
-             player.unit().drawBuildPlans();
-@@ -152,10 +152,10 @@ public class OverlayRenderer{
+         if(renderer.showOtherBuildPlans){
+             input.drawOtherBuildPlans();
+@@ -156,10 +156,10 @@ public class OverlayRenderer{
              tile.drawConfigure();
          }
  
@@ -36,10 +36,10 @@ index 78533c7fe78ce26a184f6251a5d0ae5de6298d5d..f1c07752bbe7d710bd11b255a95dade8
          buildFade = Mathf.lerpDelta(buildFade, input.isPlacing() || input.isUsingSchematic() ? 1f : 0f, 0.06f);
  
 diff --git a/core/src/mindustry/input/DesktopInput.java b/core/src/mindustry/input/DesktopInput.java
-index c50c591559a1ba5fba57c484d14a86d2d5cd86db..1b398a99d5c870f091da5cbe6f0a7dd44803301d 100644
+index 108e30dbbc0b5746ba91409e34c682e2df2ac438..4f4b1db1c130f265107bf6bcd6ba5ac4bab7d44b 100644
 --- a/core/src/mindustry/input/DesktopInput.java
 +++ b/core/src/mindustry/input/DesktopInput.java
-@@ -483,6 +483,7 @@ public class DesktopInput extends InputHandler{
+@@ -491,6 +491,7 @@ public class DesktopInput extends InputHandler{
              cursorType = SystemCursor.arrow;
              if(!locked){
                  pollInputNoPlayer();
@@ -47,7 +47,7 @@ index c50c591559a1ba5fba57c484d14a86d2d5cd86db..1b398a99d5c870f091da5cbe6f0a7dd4
              }
          }else{
              pollInputPlayer();
-@@ -567,7 +568,7 @@ public class DesktopInput extends InputHandler{
+@@ -575,7 +576,7 @@ public class DesktopInput extends InputHandler{
          int rawCursorX = World.toTile(Core.input.mouseWorld().x), rawCursorY = World.toTile(Core.input.mouseWorld().y);
  
          //automatically pause building if the current build queue is empty
@@ -56,7 +56,7 @@ index c50c591559a1ba5fba57c484d14a86d2d5cd86db..1b398a99d5c870f091da5cbe6f0a7dd4
              isBuilding = false;
              buildWasAutoPaused = true;
          }
-@@ -584,7 +585,7 @@ public class DesktopInput extends InputHandler{
+@@ -592,7 +593,7 @@ public class DesktopInput extends InputHandler{
              schematicY += shiftY;
          }
  
@@ -65,7 +65,7 @@ index c50c591559a1ba5fba57c484d14a86d2d5cd86db..1b398a99d5c870f091da5cbe6f0a7dd4
              player.unit().mineTile = null;
          }
  
-@@ -658,7 +659,7 @@ public class DesktopInput extends InputHandler{
+@@ -666,7 +667,7 @@ public class DesktopInput extends InputHandler{
              lastLineY = cursorY;
          }
  
@@ -74,7 +74,7 @@ index c50c591559a1ba5fba57c484d14a86d2d5cd86db..1b398a99d5c870f091da5cbe6f0a7dd4
              BuildPlan plan = getPlan(cursorX, cursorY);
  
              if(plan != null && !movedPlan){
-@@ -678,7 +679,7 @@ public class DesktopInput extends InputHandler{
+@@ -686,7 +687,7 @@ public class DesktopInput extends InputHandler{
              if(Core.input.keyDown(Binding.breakBlock)){
                  mode = none;
              }else if(!selectPlans.isEmpty()){
@@ -83,7 +83,7 @@ index c50c591559a1ba5fba57c484d14a86d2d5cd86db..1b398a99d5c870f091da5cbe6f0a7dd4
                  movedPlan = true;
              }else if(isPlacing()){
                  selectX = cursorX;
-@@ -700,7 +701,7 @@ public class DesktopInput extends InputHandler{
+@@ -708,7 +709,7 @@ public class DesktopInput extends InputHandler{
                  commandRectY = input.mouseWorldY();
              }else if(!checkConfigTap() && selected != null && !tryRepairDerelict(selected)){
                  //only begin shooting if there's no cursor event
@@ -92,7 +92,7 @@ index c50c591559a1ba5fba57c484d14a86d2d5cd86db..1b398a99d5c870f091da5cbe6f0a7dd4
                      && !(tryStopMine(selected) || (!settings.getBool("doubletapmine") || selected == prevSelected && Time.timeSinceMillis(selectMillis) < 500) && tryBeginMine(selected)) && !Core.scene.hasKeyboard()){
                      player.shooting = shouldShoot;
                  }
-@@ -725,7 +726,7 @@ public class DesktopInput extends InputHandler{
+@@ -733,7 +734,7 @@ public class DesktopInput extends InputHandler{
              schemY = rawCursorY;
          }
  
@@ -101,7 +101,7 @@ index c50c591559a1ba5fba57c484d14a86d2d5cd86db..1b398a99d5c870f091da5cbe6f0a7dd4
              var plan = getPlan(cursorX, cursorY);
              if(plan != null && plan.breaking){
                  player.unit().plans().remove(plan);
-@@ -749,7 +750,7 @@ public class DesktopInput extends InputHandler{
+@@ -757,7 +758,7 @@ public class DesktopInput extends InputHandler{
              schemY = -1;
          }
  
@@ -111,10 +111,10 @@ index c50c591559a1ba5fba57c484d14a86d2d5cd86db..1b398a99d5c870f091da5cbe6f0a7dd4
              if(mode == placing && block != null){ //touch up while placing, place everything in selection
                  if(input.keyDown(Binding.boost)){
 diff --git a/core/src/mindustry/input/InputHandler.java b/core/src/mindustry/input/InputHandler.java
-index 93f18140b4d49661e469b115c7c0751520ce035e..150a05c7e6f300d4347d61e729bdc93e3cbff349 100644
+index 16689a8735dae5f7a92503826eead04d27e47ed3..ff4db753c7412c302cd4742de0218c5181ab140c 100644
 --- a/core/src/mindustry/input/InputHandler.java
 +++ b/core/src/mindustry/input/InputHandler.java
-@@ -2128,6 +2128,7 @@ public abstract class InputHandler implements InputProcessor, GestureListener{
+@@ -2272,6 +2272,7 @@ public abstract class InputHandler implements InputProcessor, GestureListener{
      }
  
      public boolean canShoot(){
@@ -122,7 +122,7 @@ index 93f18140b4d49661e469b115c7c0751520ce035e..150a05c7e6f300d4347d61e729bdc93e
          return block == null && !onConfigurable() && !isDroppingItem() && !player.unit().activelyBuilding() &&
          !(player.unit() instanceof Mechc && player.unit().isFlying()) && !player.unit().mining() && !commandMode;
      }
-@@ -2177,6 +2178,7 @@ public abstract class InputHandler implements InputProcessor, GestureListener{
+@@ -2321,6 +2322,7 @@ public abstract class InputHandler implements InputProcessor, GestureListener{
      }
  
      public void rebuildArea(int x1, int y1, int x2, int y2){

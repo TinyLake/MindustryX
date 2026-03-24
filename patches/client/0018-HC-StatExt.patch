@@ -95,7 +95,7 @@ index c66cff2cbbb05e9783c613cd03e9fcaacb961705..7bdee181be7752ae7509782bf1623bed
          if(damage < 0) stats.add(Stat.healing, -damage * 60f, StatUnit.perSecond);
  
 diff --git a/core/src/mindustry/type/UnitType.java b/core/src/mindustry/type/UnitType.java
-index e47316c1a1b7495f3e8b4672f89f89ba0bc8c82b..ede5dc36c5e133c3f1033c00f678d64c9f8a4cc3 100644
+index c5dcf4d7a8cc541f1e660bf4a9de7cc766edf08e..1f91114f0f326727f604f214fb225abb2f4d3151 100644
 --- a/core/src/mindustry/type/UnitType.java
 +++ b/core/src/mindustry/type/UnitType.java
 @@ -37,6 +37,7 @@ import mindustry.world.blocks.payloads.*;
@@ -106,7 +106,7 @@ index e47316c1a1b7495f3e8b4672f89f89ba0bc8c82b..ede5dc36c5e133c3f1033c00f678d64c
  
  import static arc.graphics.g2d.Draw.*;
  import static mindustry.Vars.*;
-@@ -785,6 +786,7 @@ public class UnitType extends UnlockableContent implements Senseable{
+@@ -796,6 +797,7 @@ public class UnitType extends UnlockableContent implements Senseable{
          stats.add(Stat.health, health);
          stats.add(Stat.armor, armor);
          stats.add(Stat.speed, speed * 60f / tilesize, StatUnit.tilesSecond);
@@ -114,7 +114,7 @@ index e47316c1a1b7495f3e8b4672f89f89ba0bc8c82b..ede5dc36c5e133c3f1033c00f678d64c
          stats.add(Stat.size, StatValues.squared(hitSize / tilesize, StatUnit.blocks));
          stats.add(Stat.itemCapacity, itemCapacity);
          stats.add(Stat.range, Strings.autoFixed(maxRange / tilesize, 1), StatUnit.blocks);
-@@ -802,11 +804,16 @@ public class UnitType extends UnlockableContent implements Senseable{
+@@ -813,11 +815,16 @@ public class UnitType extends UnlockableContent implements Senseable{
  
          stats.add(Stat.targetsAir, targetAir);
          stats.add(Stat.targetsGround, targetGround);
@@ -132,7 +132,7 @@ index e47316c1a1b7495f3e8b4672f89f89ba0bc8c82b..ede5dc36c5e133c3f1033c00f678d64c
          stats.add(Stat.flying, flying);
  
          if(!flying){
-@@ -815,10 +822,14 @@ public class UnitType extends UnlockableContent implements Senseable{
+@@ -826,10 +833,14 @@ public class UnitType extends UnlockableContent implements Senseable{
                  stats.add(Stat.boostingSpeed, boostMultiplier * speed * 60f / tilesize, StatUnit.tilesSecond);
              }
          }
@@ -148,7 +148,7 @@ index e47316c1a1b7495f3e8b4672f89f89ba0bc8c82b..ede5dc36c5e133c3f1033c00f678d64c
                  b.itemDrop != null &&
                  (b instanceof Floor f && (((f.wallOre && mineWalls) || (!f.wallOre && mineFloor))) ||
                  (!(b instanceof Floor) && mineWalls)) &&
-@@ -841,6 +852,10 @@ public class UnitType extends UnlockableContent implements Senseable{
+@@ -852,6 +863,10 @@ public class UnitType extends UnlockableContent implements Senseable{
              stats.add(Stat.weapons, StatValues.weapons(this, weapons));
          }
  
@@ -159,7 +159,7 @@ index e47316c1a1b7495f3e8b4672f89f89ba0bc8c82b..ede5dc36c5e133c3f1033c00f678d64c
          if(immunities.size > 0){
              stats.add(Stat.immunities, StatValues.statusEffects(immunities.toSeq().sort()));
          }
-@@ -915,6 +930,8 @@ public class UnitType extends UnlockableContent implements Senseable{
+@@ -926,6 +941,8 @@ public class UnitType extends UnlockableContent implements Senseable{
  
          allowLegStep = example instanceof Legsc || example instanceof Crawlc;
  
@@ -192,10 +192,10 @@ index eedcaa20c7b63b6c41d647cead5febc8b8c2dacb..c527a7c4e0164fcbb22240880692f58b
              t.row();
              t.add("[lightgray]" + Stat.inaccuracy.localized() + ": [white]" + (int)inaccuracy + " " + StatUnit.degrees.localized());
 diff --git a/core/src/mindustry/world/Block.java b/core/src/mindustry/world/Block.java
-index b7739913f15fcebaaf32ec0a7698ab062c05cbbf..2011f1c6f47fbadf5170049a0e410b54509c4e7f 100644
+index 603a6b017368c5cb703d7e1b92a056b579396a12..1568bfaa385b761facf3c52c7d84504a2ed207d0 100644
 --- a/core/src/mindustry/world/Block.java
 +++ b/core/src/mindustry/world/Block.java
-@@ -33,6 +33,7 @@ import mindustry.world.blocks.environment.*;
+@@ -34,6 +34,7 @@ import mindustry.world.blocks.environment.*;
  import mindustry.world.blocks.power.*;
  import mindustry.world.consumers.*;
  import mindustry.world.meta.*;
@@ -203,7 +203,7 @@ index b7739913f15fcebaaf32ec0a7698ab062c05cbbf..2011f1c6f47fbadf5170049a0e410b54
  
  import java.lang.reflect.*;
  import java.util.*;
-@@ -622,7 +623,7 @@ public class Block extends UnlockableContent implements Senseable{
+@@ -628,7 +629,7 @@ public class Block extends UnlockableContent implements Senseable{
              }
          }
  
@@ -212,7 +212,7 @@ index b7739913f15fcebaaf32ec0a7698ab062c05cbbf..2011f1c6f47fbadf5170049a0e410b54
              stats.add(Stat.buildTime, buildTime / 60, StatUnit.seconds);
              stats.add(Stat.buildCost, StatValues.items(false, requirements));
          }
-@@ -634,6 +635,7 @@ public class Block extends UnlockableContent implements Senseable{
+@@ -640,6 +641,7 @@ public class Block extends UnlockableContent implements Senseable{
          for(var c : consumers){
              c.display(stats);
          }
@@ -429,7 +429,7 @@ index c2d52fcefd930ea36511420960086e0057647157..e77e03387f9e623aed7214ef34f02eee
                  if(++i % 4 == 0) c.row();
              }
 diff --git a/core/src/mindustry/world/meta/Stat.java b/core/src/mindustry/world/meta/Stat.java
-index c2f207259a32d563b4ed6b8ec284d67a34dfd1a2..890317c55e56551e6685e8d29d13235b13f2fad7 100644
+index 63a41ce7684cc506dc019a88066092c21802b7d7..727c1f00dcd5a427eb1de5936b063bbc7f1fb12d 100644
 --- a/core/src/mindustry/world/meta/Stat.java
 +++ b/core/src/mindustry/world/meta/Stat.java
 @@ -25,18 +25,19 @@ public class Stat implements Comparable<Stat>{
@@ -489,7 +489,7 @@ index 416df5a20af4767cdfdc2646bce19468ad11cd28..239311eea91980f2c3e0facd6613b237
      public final String name;
      public final int id;
 diff --git a/core/src/mindustry/world/meta/StatValues.java b/core/src/mindustry/world/meta/StatValues.java
-index 58134e5c84363b261f6270c44802fbf471128261..72207f49403881823181169657a797fe879678cc 100644
+index ed4923b10a5ef2b55632d9c1a16e7156b901d7dc..b5d0554771df365dbdd96e8bb488a5b88a562b99 100644
 --- a/core/src/mindustry/world/meta/StatValues.java
 +++ b/core/src/mindustry/world/meta/StatValues.java
 @@ -27,6 +27,8 @@ import mindustry.ui.*;

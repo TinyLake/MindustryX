@@ -10,7 +10,7 @@ Subject: [PATCH] HR: RenderExt
  3 files changed, 9 insertions(+), 2 deletions(-)
 
 diff --git a/core/src/mindustry/core/Renderer.java b/core/src/mindustry/core/Renderer.java
-index 4bbb531666aad6202c6a97660d65c2996900fb48..b8f9741948892d72519fbb8939f55391aa7e5419 100644
+index 701d6ca758f9895b097de5a374b2fa115a779fec..d00829becd3e287433ebf641ea85a38d3c925362 100644
 --- a/core/src/mindustry/core/Renderer.java
 +++ b/core/src/mindustry/core/Renderer.java
 @@ -20,6 +20,7 @@ import mindustry.graphics.g3d.*;
@@ -21,7 +21,7 @@ index 4bbb531666aad6202c6a97660d65c2996900fb48..b8f9741948892d72519fbb8939f55391
  
  import static arc.Core.*;
  import static mindustry.Vars.*;
-@@ -413,7 +414,7 @@ public class Renderer implements ApplicationListener{
+@@ -415,7 +416,7 @@ public class Renderer implements ApplicationListener{
          Events.fire(Trigger.drawOver);
          blocks.drawBlocks();
  
@@ -31,7 +31,7 @@ index 4bbb531666aad6202c6a97660d65c2996900fb48..b8f9741948892d72519fbb8939f55391
          if(drawDebugHitboxes){
              DebugCollisionRenderer.draw();
 diff --git a/core/src/mindustry/graphics/BlockRenderer.java b/core/src/mindustry/graphics/BlockRenderer.java
-index d39cfd9797a5eff99cbca49847776f1eda96108a..e8aa2b654249f2f0d0c78c8400afa62c83a9109d 100644
+index cce0e782176aecc3836e61e035035d22fb5bc379..40637b1e4efcd8359869f2c15bb86c638303bca1 100644
 --- a/core/src/mindustry/graphics/BlockRenderer.java
 +++ b/core/src/mindustry/graphics/BlockRenderer.java
 @@ -19,6 +19,7 @@ import mindustry.world.*;
@@ -52,10 +52,10 @@ index d39cfd9797a5eff99cbca49847776f1eda96108a..e8aa2b654249f2f0d0c78c8400afa62c
                  Draw.z(Layer.block);
  
 diff --git a/core/src/mindustry/input/InputHandler.java b/core/src/mindustry/input/InputHandler.java
-index 68bb108c22a0a4eae1369c7bf2ec37d1ad646e75..7d127c1a88a3256b90855b764209e09b4acf7286 100644
+index 4c93e68b23d05c6fefeb30889979ac798aacf4a4..4f987448bd2ee2fadef0f92a480b95d25ecd9ff2 100644
 --- a/core/src/mindustry/input/InputHandler.java
 +++ b/core/src/mindustry/input/InputHandler.java
-@@ -342,6 +342,11 @@ public abstract class InputHandler implements InputProcessor, GestureListener{
+@@ -357,6 +357,11 @@ public abstract class InputHandler implements InputProcessor, GestureListener{
                          ai.group = null;
                      }
  

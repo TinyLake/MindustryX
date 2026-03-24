@@ -23,10 +23,10 @@ index c1cfe2406f5c5c6bad747ce866a5f178f02a90b3..ec993d3e6f8026dcc58cdc6cc943d8c7
          assets.load(schematics);
  
 diff --git a/core/src/mindustry/Vars.java b/core/src/mindustry/Vars.java
-index 84cf00172e8b630eddd7c268668400abe44cf286..9813c47bd6316ac26023ad444c17f64c273e6afa 100644
+index d7d3796b701b58afa2d243112c6151bcc96e9351..462af52bc1286ff5684525d4a850fb4c77341b06 100644
 --- a/core/src/mindustry/Vars.java
 +++ b/core/src/mindustry/Vars.java
-@@ -298,6 +298,7 @@ public class Vars implements Loadable{
+@@ -303,6 +303,7 @@ public class Vars implements Loadable{
      }
  
      public static void init(){
@@ -35,10 +35,10 @@ index 84cf00172e8b630eddd7c268668400abe44cf286..9813c47bd6316ac26023ad444c17f64c
  
          if(loadLocales){
 diff --git a/core/src/mindustry/core/NetClient.java b/core/src/mindustry/core/NetClient.java
-index cd9ef5356459f40cd17d1519802c040669f56d9a..f1923596677f5027bc4a3179da92082bbd71cf15 100644
+index 4c14732485f08d0fdebd9c945c0cbb87863f4fdf..ad8cb42c3af354a45ebd210533ee6b532aba143e 100644
 --- a/core/src/mindustry/core/NetClient.java
 +++ b/core/src/mindustry/core/NetClient.java
-@@ -232,6 +232,8 @@ public class NetClient implements ApplicationListener{
+@@ -236,6 +236,8 @@ public class NetClient implements ApplicationListener{
  
      @Remote(targets = Loc.server, variants = Variant.both)
      public static void sendMessage(String message, @Nullable String unformatted, @Nullable Player playersender){
@@ -47,7 +47,7 @@ index cd9ef5356459f40cd17d1519802c040669f56d9a..f1923596677f5027bc4a3179da92082b
          if(Vars.ui != null){
              Vars.ui.chatfrag.addMessage(message);
              Sounds.uiChat.play();
-@@ -249,6 +251,8 @@ public class NetClient implements ApplicationListener{
+@@ -253,6 +255,8 @@ public class NetClient implements ApplicationListener{
      //equivalent to above method but there's no sender and no console log
      @Remote(called = Loc.server, targets = Loc.server)
      public static void sendMessage(String message){
