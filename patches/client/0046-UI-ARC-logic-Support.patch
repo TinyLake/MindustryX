@@ -38,7 +38,7 @@ MinRi2 <2275045670@qq.com> on 2025/5/3
  6 files changed, 149 insertions(+), 17 deletions(-)
 
 diff --git a/core/src/mindustry/logic/LCanvas.java b/core/src/mindustry/logic/LCanvas.java
-index 74fb32ff56eec0fcf565cb7cf7aedf1335c978cc..39f29b027fe979cea410e52b2b8cd695d1c60211 100644
+index b4ad9b3237f35d6783bc85daa8a86b820bc20ecd..599f907dc69bac24e7e5de16f5e6b18891c0261b 100644
 --- a/core/src/mindustry/logic/LCanvas.java
 +++ b/core/src/mindustry/logic/LCanvas.java
 @@ -18,6 +18,9 @@ import mindustry.gen.*;
@@ -62,7 +62,7 @@ index 74fb32ff56eec0fcf565cb7cf7aedf1335c978cc..39f29b027fe979cea410e52b2b8cd695
      public static void tooltip(Cell<?> cell, String key){
 @@ -444,11 +447,13 @@ public class LCanvas extends Table{
                  t.button(Icon.copy, Styles.logici, () -> {
-                 }).size(24f).padRight(6).get().tapped(this::copy);
+                 }).size(24f).padRight(6).disabled(i -> canvas.statements.getChildren().size >= LExecutor.maxInstructions).get().tapped(this::copy);
  
 +                t.button(st instanceof PrintStatement ? Icon.fileText : Icon.pencil, Styles.logici, this::toggleComment).size(24f).padRight(6);
 +

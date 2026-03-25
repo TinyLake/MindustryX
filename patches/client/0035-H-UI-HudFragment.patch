@@ -14,7 +14,7 @@ AuxiliaryTools, NewCoreItemsDisplay(新制核心资源显示), WaveInfoDisplay(�
  1 file changed, 24 insertions(+), 11 deletions(-)
 
 diff --git a/core/src/mindustry/ui/fragments/HudFragment.java b/core/src/mindustry/ui/fragments/HudFragment.java
-index c0d2babffdde6a24babc2eec69c9be3b3de3ee11..2a6d91fdb77e41feb90d6d233a6b5ad5cad8de77 100644
+index a0a6f1480180589dc353afa99f719680e929b6fd..5379b012c86fc185122fc58940e9642c9c8ab13b 100644
 --- a/core/src/mindustry/ui/fragments/HudFragment.java
 +++ b/core/src/mindustry/ui/fragments/HudFragment.java
 @@ -337,16 +337,21 @@ public class HudFragment{
@@ -47,7 +47,7 @@ index c0d2babffdde6a24babc2eec69c9be3b3de3ee11..2a6d91fdb77e41feb90d6d233a6b5ad5
              t.top().right();
          });
  
-@@ -545,12 +550,19 @@ public class HudFragment{
+@@ -546,12 +551,19 @@ public class HudFragment{
                  IntFormat mem = new IntFormat("memory");
                  IntFormat memnative = new IntFormat("memory2");
  
@@ -67,7 +67,7 @@ index c0d2babffdde6a24babc2eec69c9be3b3de3ee11..2a6d91fdb77e41feb90d6d233a6b5ad5
                  if(android){
                      info.label(() -> memnative.get((int)(Core.app.getJavaHeap() / 1024 / 1024), (int)(Core.app.getNativeHeap() / 1024 / 1024))).left().style(Styles.outlineLabel).name("memory2");
                  }else{
-@@ -560,8 +572,8 @@ public class HudFragment{
+@@ -561,8 +573,8 @@ public class HudFragment{
  
                  info.label(() -> ping.get(netClient.getPing())).visible(net::client).left().style(Styles.outlineLabel).name("ping").row();
                  info.label(() -> tps.get(state.serverTps == -1 ? 60 : state.serverTps)).visible(net::client).left().style(Styles.outlineLabel).name("tps").row();
@@ -78,7 +78,7 @@ index c0d2babffdde6a24babc2eec69c9be3b3de3ee11..2a6d91fdb77e41feb90d6d233a6b5ad5
          });
  
          //core info
-@@ -580,7 +592,8 @@ public class HudFragment{
+@@ -581,7 +593,8 @@ public class HudFragment{
  
              t.table(c -> {
                  //core items

@@ -295,10 +295,10 @@ index 251f7c454d9823234b492d8878cb07c7e37f0136..082a174b79d1bc90c414dcb88b4dc41b
          }
      }
 diff --git a/core/src/mindustry/net/Packets.java b/core/src/mindustry/net/Packets.java
-index 1b445b3ff268b1d626cf9ba84797560c04e9bb0a..8f91b6abf01af158cb8b2c81d10b55b3887b006d 100644
+index 835faba4ef5ca398c4986bba927bcd0bc91bbcf6..122c854ceb29ef6e9dee2f1abbe664d228a96feb 100644
 --- a/core/src/mindustry/net/Packets.java
 +++ b/core/src/mindustry/net/Packets.java
-@@ -124,7 +124,7 @@ public class Packets{
+@@ -134,7 +134,7 @@ public class Packets{
          @Override
          public void write(Writes buffer){
              buffer.i(clientVersion != 0 ? clientVersion : Version.build);

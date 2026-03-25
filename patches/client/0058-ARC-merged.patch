@@ -563,7 +563,7 @@ index d5fff9b738ee04fc91af82a8c8722f6eacc1ad73..8af9a9faa4d4e5d1246af2f8747cca43
              unit.lookAt(unit.prefRotation());
          }
 diff --git a/core/src/mindustry/input/InputHandler.java b/core/src/mindustry/input/InputHandler.java
-index ff4db753c7412c302cd4742de0218c5181ab140c..a21bbfb6d2c4944e6fe7bb99fd25b08a03ec32ee 100644
+index 321ccaa5020207d89eb784b5dc6e8ad341172ea8..8f582a1d4fb4f7caab678413a9c4e5c239260547 100644
 --- a/core/src/mindustry/input/InputHandler.java
 +++ b/core/src/mindustry/input/InputHandler.java
 @@ -39,8 +39,10 @@ import mindustry.world.*;
@@ -663,7 +663,7 @@ index ff4db753c7412c302cd4742de0218c5181ab140c..a21bbfb6d2c4944e6fe7bb99fd25b08a
          });
      }
  
-@@ -1793,6 +1828,9 @@ public abstract class InputHandler implements InputProcessor, GestureListener{
+@@ -1796,6 +1831,9 @@ public abstract class InputHandler implements InputProcessor, GestureListener{
              font.setUseIntegerPositions(ints);
              Draw.z(z);
          }
@@ -673,7 +673,7 @@ index ff4db753c7412c302cd4742de0218c5181ab140c..a21bbfb6d2c4944e6fe7bb99fd25b08a
      }
  
      protected void flushSelectPlans(Seq<BuildPlan> plans){
-@@ -2172,7 +2210,7 @@ public abstract class InputHandler implements InputProcessor, GestureListener{
+@@ -2175,7 +2213,7 @@ public abstract class InputHandler implements InputProcessor, GestureListener{
  
      public @Nullable Building selectedControlBuild(){
          Building build = world.buildWorld(Core.input.mouseWorld().x, Core.input.mouseWorld().y);
@@ -682,7 +682,7 @@ index ff4db753c7412c302cd4742de0218c5181ab140c..a21bbfb6d2c4944e6fe7bb99fd25b08a
              return build;
          }
          return null;
-@@ -2273,6 +2311,9 @@ public abstract class InputHandler implements InputProcessor, GestureListener{
+@@ -2276,6 +2314,9 @@ public abstract class InputHandler implements InputProcessor, GestureListener{
  
      public boolean canShoot(){
          if(player.dead()) return false;
@@ -1835,7 +1835,7 @@ index 3542163354070ac67c49b82dff6c72b374d4ca7d..6d2b1fbf2840eee89ab7bfcb37990e83
          //special case for 'clear' command
          if(message.equals("clear")){
 diff --git a/core/src/mindustry/ui/fragments/HudFragment.java b/core/src/mindustry/ui/fragments/HudFragment.java
-index 2a6d91fdb77e41feb90d6d233a6b5ad5cad8de77..431db8151d57fcca9df82318991533aa3199efcf 100644
+index 5379b012c86fc185122fc58940e9642c9c8ab13b..f56bc5a71ea1a0321265effe1ade558160a82b0a 100644
 --- a/core/src/mindustry/ui/fragments/HudFragment.java
 +++ b/core/src/mindustry/ui/fragments/HudFragment.java
 @@ -30,10 +30,12 @@ import mindustry.net.Packets.*;
@@ -1851,7 +1851,7 @@ index 2a6d91fdb77e41feb90d6d233a6b5ad5cad8de77..431db8151d57fcca9df82318991533aa
  
  import static mindustry.Vars.*;
  import static mindustry.gen.Tex.*;
-@@ -477,6 +479,10 @@ public class HudFragment{
+@@ -478,6 +480,10 @@ public class HudFragment{
              wavesMain.top().left().name = "waves";
  
              wavesMain.table(s -> {
@@ -1862,7 +1862,7 @@ index 2a6d91fdb77e41feb90d6d233a6b5ad5cad8de77..431db8151d57fcca9df82318991533aa
                  //wave info button with text
                  s.add(makeStatusTable()).grow().name("status");
  
-@@ -517,7 +523,7 @@ public class HudFragment{
+@@ -518,7 +524,7 @@ public class HudFragment{
                          button.getStyle().imageUpColor = team.color;
                          button.update(() -> button.setChecked(player.team() == team));
                      }
@@ -1871,7 +1871,7 @@ index 2a6d91fdb77e41feb90d6d233a6b5ad5cad8de77..431db8151d57fcca9df82318991533aa
                      teams.button(Icon.downOpen, Styles.emptyi, () -> Core.settings.put("editor-blocks-shown", !Core.settings.getBool("editor-blocks-shown")))
                      .size(45f).update(m -> m.getStyle().imageUp = (Core.settings.getBool("editor-blocks-shown") ? Icon.upOpen : Icon.downOpen));
                  }).top().left().row();
-@@ -1140,6 +1146,164 @@ public class HudFragment{
+@@ -1141,6 +1147,164 @@ public class HudFragment{
          return table;
      }
  
@@ -2036,7 +2036,7 @@ index 2a6d91fdb77e41feb90d6d233a6b5ad5cad8de77..431db8151d57fcca9df82318991533aa
      private void addInfoTable(Table table){
          table.name = "infotable";
          table.left();
-@@ -1189,7 +1353,7 @@ public class HudFragment{
+@@ -1190,7 +1354,7 @@ public class HudFragment{
      }
  
      private boolean canSkipWave(){

@@ -21,9 +21,9 @@ way-zer <himc.wicp@gmail.com> on 2024/6/9
  ios/build.gradle                              |   2 +-
  server/build.gradle                           |  45 +--
  settings.gradle                               |  11 +-
- tools/build.gradle                            |  56 ++--
+ tools/build.gradle                            |  63 ++--
  tools/src/mindustry/tools/Generators.java     |   2 +-
- 17 files changed, 428 insertions(+), 689 deletions(-)
+ 17 files changed, 434 insertions(+), 690 deletions(-)
  create mode 100644 annotations/src/main/java/com/github/bsideup/jabel/Desugar.java
  create mode 100644 annotations/src/main/resources/META-INF/services/javax.annotation.processing.Processor
  delete mode 100644 core/build.gradle
@@ -290,7 +290,7 @@ index 0000000000000000000000000000000000000000..181b87c1d5f3755f16a01c0528d0a89f
 +mindustry.annotations.misc.LogicStatementProcessor
 +mindustry.annotations.remote.RemoteProcess
 diff --git a/build.gradle b/build.gradle
-index 4899a68958320ec45ed0aa7dc558e58506066255..2aaf63d116f52b7be089ecf4535acec06a6f8a1c 100644
+index ae6b6f7c7ad52ed06e81978923d88ea9e0809fae..5b3ed67fdc80a301be344e2e469b1a2879406bf6 100644
 --- a/build.gradle
 +++ b/build.gradle
 @@ -1,29 +1,15 @@
@@ -1003,18 +1003,18 @@ index 0898451c271ed8f75c849d1dc68259c5329dbf35..bbab133446e5eaed169ff0ad31ddf7b8
 +}
 \ No newline at end of file
 diff --git a/gradle.properties b/gradle.properties
-index 194695a5df7bdf6cc686cef13b7bcae72bd61666..b0d3848bc1dedb03583b6aa89bebf0e99e7a1d67 100644
+index 91b687df3681931b1746398fcef89ea8531c4cfe..813679ef83498b8b070f3c652ccb15a37362effe 100644
 --- a/gradle.properties
 +++ b/gradle.properties
 @@ -26,4 +26,7 @@ org.gradle.caching=true
  org.gradle.internal.http.socketTimeout=100000
  org.gradle.internal.http.connectionTimeout=100000
  android.enableR8.fullMode=false
--archash=f9072fcc02
-+#archash=f9072fcc02
+-archash=5765d021b6
++#archash=5765d021b6
 +
 +#MDTX: Use "v{upstreamBuild}" by default
-+upstreamBuild=156
++upstreamBuild=156.1
 diff --git a/gradlew b/gradlew
 index 4f906e0c811fc9e230eb44819f509cd0627f2600..f3b75f3b0d4faeb4b1c8a02b5c47007e6efb7dcd 100755
 --- a/gradlew
@@ -1561,7 +1561,7 @@ index 027d2a3269848fb10791815e5d0fdbcd640518dd..e688b9a8ea87e6ac6e6899c0a2807fba
  def hasSdk = System.getenv("ANDROID_HOME") != null
  
 diff --git a/tools/build.gradle b/tools/build.gradle
-index c2b15be33876949dca7fbf96f63bc4e469c97342..e76f2594a54db837b0b4bb3c48bec944497bc374 100644
+index c2b15be33876949dca7fbf96f63bc4e469c97342..f40ab4cbe8c8d7dd63d34d11948eb8cd69648ff9 100644
 --- a/tools/build.gradle
 +++ b/tools/build.gradle
 @@ -1,3 +1,13 @@
@@ -1605,12 +1605,17 @@ index c2b15be33876949dca7fbf96f63bc4e469c97342..e76f2594a54db837b0b4bb3c48bec944
              sum.mul(fm, fm, fm, fm)
              out.setRaw(x, y, sum.rgba8888())
              sum.set(0)
-@@ -120,8 +130,13 @@ tasks.register('tileImages'){
+@@ -120,9 +130,19 @@ tasks.register('tileImages'){
      }
  }
  
 -tasks.register('pack'){
 -    dependsOn = [classes, configurations.runtimeClasspath]
+-
++interface InjectedExecOps {
++    @Inject
++    ExecOperations getExecOps()
++}
 +tasks.register('doPack'){
 +    outputs.cacheIf{ true }
 +    dependsOn(classes)
@@ -1618,16 +1623,18 @@ index c2b15be33876949dca7fbf96f63bc4e469c97342..e76f2594a54db837b0b4bb3c48bec944
 +    inputs.property("enableAA", enableAA)
 +    inputs.property("gameVersion", project.property("upstreamBuild"))
 +    outputs.dir("../core/assets-raw/packed")
- 
++
++    def injected = project.objects.newInstance(InjectedExecOps)
      doLast{
          //cleanup old sprites
-@@ -137,21 +152,19 @@ tasks.register('pack'){
+         delete{
+@@ -137,21 +157,19 @@ tasks.register('pack'){
  
          //run generation task; generate all needed sprites
          file(genFolder).mkdirs()
 -
 -        project.services.get(ExecOperations).javaexec{
-+        javaexec{
++        injected.execOps.javaexec{
              mainClass = "mindustry.tools.ImagePacker"
              classpath = sourceSets.main.runtimeClasspath
              workingDir = genFolder
@@ -1647,7 +1654,7 @@ index c2b15be33876949dca7fbf96f63bc4e469c97342..e76f2594a54db837b0b4bb3c48bec944
  
          if(enableAA){
              ExecutorService executor = Executors.newFixedThreadPool(OS.cores)
-@@ -174,21 +187,24 @@ tasks.register('pack'){
+@@ -174,21 +192,24 @@ tasks.register('pack'){
          println("\n\nPacking normal 4096 sprites...\n\n")
  
          //pack normal sprites

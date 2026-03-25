@@ -14,7 +14,7 @@ Content-Transfer-Encoding: 8bit
  2 files changed, 19 insertions(+), 3 deletions(-)
 
 diff --git a/core/src/mindustry/net/Packets.java b/core/src/mindustry/net/Packets.java
-index e766e594341959adfdaf7efef819806a7227f5c2..1b445b3ff268b1d626cf9ba84797560c04e9bb0a 100644
+index af4bc95b121ecfe6570dd7393fab09c485eef0ea..835faba4ef5ca398c4986bba927bcd0bc91bbcf6 100644
 --- a/core/src/mindustry/net/Packets.java
 +++ b/core/src/mindustry/net/Packets.java
 @@ -6,6 +6,7 @@ import arc.util.io.*;
@@ -25,7 +25,7 @@ index e766e594341959adfdaf7efef819806a7227f5c2..1b445b3ff268b1d626cf9ba84797560c
  
  import java.util.zip.*;
  
-@@ -111,6 +112,8 @@ public class Packets{
+@@ -121,6 +122,8 @@ public class Packets{
      }
  
      public static class ConnectPacket extends Packet{
@@ -34,7 +34,7 @@ index e766e594341959adfdaf7efef819806a7227f5c2..1b445b3ff268b1d626cf9ba84797560c
          public int version;
          public String versionType;
          public Seq<String> mods;
-@@ -120,7 +123,7 @@ public class Packets{
+@@ -130,7 +133,7 @@ public class Packets{
  
          @Override
          public void write(Writes buffer){

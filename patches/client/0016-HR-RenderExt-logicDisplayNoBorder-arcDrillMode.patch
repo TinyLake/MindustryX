@@ -46,7 +46,7 @@ index 2f4c404f1348ccae82a6d0f86ae96eb0ee147172..0b573076a400645ba85168028ac18ee7
                  }
              });
 diff --git a/core/src/mindustry/world/blocks/production/Drill.java b/core/src/mindustry/world/blocks/production/Drill.java
-index 0e16e3c639d6f25cbcf7834d1bd81c5d58f44e47..cb4d636607c5c3542517af46cb95e69ee3f5a49b 100644
+index cc123b120a6e8f92719bded067915749afbf19d5..55c523bc651db449f51b1864aff33103d9ee0d73 100644
 --- a/core/src/mindustry/world/blocks/production/Drill.java
 +++ b/core/src/mindustry/world/blocks/production/Drill.java
 @@ -21,6 +21,7 @@ import mindustry.world.*;

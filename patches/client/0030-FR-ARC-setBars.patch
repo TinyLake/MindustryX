@@ -50,7 +50,7 @@ index 36c61c5c641f197f6f13fcab6e5cc0da3e7181a4..b2c0fe2c649602c9d46fff7d3fdd8ac0
      }
  }
 diff --git a/core/src/mindustry/world/Block.java b/core/src/mindustry/world/Block.java
-index 1568bfaa385b761facf3c52c7d84504a2ed207d0..76ec0ea9878f23c97a5eb77fd0c4357e65d6780f 100644
+index 029494b36f4f83929f7ac19f30e95d55ec9007a0..7f3c00a861f2a6636dd25fa0ac79c9c1f8b1882f 100644
 --- a/core/src/mindustry/world/Block.java
 +++ b/core/src/mindustry/world/Block.java
 @@ -35,6 +35,7 @@ import mindustry.world.blocks.power.*;

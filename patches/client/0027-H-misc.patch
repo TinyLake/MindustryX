@@ -88,7 +88,7 @@ index 462af52bc1286ff5684525d4a850fb4c77341b06..af29896b221ebc2a617a0a14ca2fdf05
                          for(String code : ColorCodes.values){
                              result = result.replace(code, "");
 diff --git a/core/src/mindustry/ai/BlockIndexer.java b/core/src/mindustry/ai/BlockIndexer.java
-index 11278ddac6ce2b35234acb31b43ea7e8c999592d..ed6785c5853a9a8096b2f48792c05b98292947cd 100644
+index f5ff55e1e65d49c94130310c534e7d4f843ecb5b..627ce6898df4dc9781a8a0ebf5921c9a4e0cb4f2 100644
 --- a/core/src/mindustry/ai/BlockIndexer.java
 +++ b/core/src/mindustry/ai/BlockIndexer.java
 @@ -38,7 +38,7 @@ public class BlockIndexer{
@@ -213,10 +213,10 @@ index 7342a8376c3ec0b4bce6d572a4ee3b69a3275e84..8b7eaeee1787eb01b632d230916f8af8
  
      public static int roundAmount(int number){
 diff --git a/core/src/mindustry/game/Schematics.java b/core/src/mindustry/game/Schematics.java
-index fb299ba4d207bab565c0602183326678f15c685f..407917ae59b27341f558646b6847bb702c741952 100644
+index f7e2193588713d08a30c4b9122dbe2469f4a520e..d76c6296427dbc5d8754801e8cecba81fc12569f 100644
 --- a/core/src/mindustry/game/Schematics.java
 +++ b/core/src/mindustry/game/Schematics.java
-@@ -100,7 +100,9 @@ public class Schematics implements Loadable{
+@@ -101,7 +101,9 @@ public class Schematics implements Loadable{
          all.sort();
  
          if(shadowBuffer == null && !headless){
@@ -227,21 +227,21 @@ index fb299ba4d207bab565c0602183326678f15c685f..407917ae59b27341f558646b6847bb70
          }
      }
  
-@@ -553,7 +555,7 @@ public class Schematics implements Loadable{
+@@ -554,7 +556,7 @@ public class Schematics implements Loadable{
          try(DataInputStream stream = new DataInputStream(new InflaterInputStream(input))){
              short width = stream.readShort(), height = stream.readShort();
  
--            if(width > 128 || height > 128) throw new IOException("Invalid schematic: Too large (max possible size is 128x128)");
-+            if(width > 1024 || height > 1024) throw new IOException("Invalid schematic: Too large (max possible size is 128x128)");
+-            if(limitSchematicSize && (width > 128 || height > 128)) throw new IOException("Invalid schematic: Too large (max possible size is 128x128)");
++            if(limitSchematicSize && (width > 1024 || height > 1024)) throw new IOException("Invalid schematic: Too large (max possible size is 128x128)");
  
              StringMap map = new StringMap();
              int tags = stream.readUnsignedByte();
-@@ -594,7 +596,7 @@ public class Schematics implements Loadable{
+@@ -595,7 +597,7 @@ public class Schematics implements Loadable{
  
              int total = stream.readInt();
  
--            if(total > 128 * 128) throw new IOException("Invalid schematic: Too many blocks.");
-+            if(maxSchematicSize != Integer.MAX_VALUE && total > Math.max(maxSchematicSize * maxSchematicSize, 128 * 128)) throw new IOException("Invalid schematic: Too many blocks.");
+-            if(limitSchematicSize && total > 128 * 128) throw new IOException("Invalid schematic: Too many blocks.");
++            if(maxSchematicSize != Integer.MAX_VALUE && limitSchematicSize && total > Math.max(maxSchematicSize * maxSchematicSize, 128 * 128)) throw new IOException("Invalid schematic: Too many blocks.");
  
              Reads read = new Reads(stream);
  

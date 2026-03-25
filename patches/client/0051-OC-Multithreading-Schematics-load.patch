@@ -9,7 +9,7 @@ Inspired by FOO client.
  1 file changed, 19 insertions(+), 6 deletions(-)
 
 diff --git a/core/src/mindustry/game/Schematics.java b/core/src/mindustry/game/Schematics.java
-index 788de49f5c509e194b49ff03959a7e3ad7c97729..9a0a18ae2299f3b1d87be8c3c8458df5f45725fd 100644
+index 8c8fc5c220ec9ad241991a2da4b5995fee5393bc..d2e5f48f1be09dc625303ffb8bb4c16cf18eeba2 100644
 --- a/core/src/mindustry/game/Schematics.java
 +++ b/core/src/mindustry/game/Schematics.java
 @@ -39,6 +39,7 @@ import mindustry.world.meta.*;
@@ -20,7 +20,7 @@ index 788de49f5c509e194b49ff03959a7e3ad7c97729..9a0a18ae2299f3b1d87be8c3c8458df5
  import java.util.zip.*;
  
  import static mindustry.Vars.*;
-@@ -82,22 +83,36 @@ public class Schematics implements Loadable{
+@@ -83,22 +84,36 @@ public class Schematics implements Loadable{
  
          loadLoadouts();
  
@@ -61,7 +61,7 @@ index 788de49f5c509e194b49ff03959a7e3ad7c97729..9a0a18ae2299f3b1d87be8c3c8458df5
          all.sort();
  
          if(shadowBuffer == null && !headless){
-@@ -142,8 +157,6 @@ public class Schematics implements Loadable{
+@@ -143,8 +158,6 @@ public class Schematics implements Loadable{
  
          try{
              Schematic s = read(file);

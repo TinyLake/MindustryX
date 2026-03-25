@@ -12,10 +12,10 @@ Content-Transfer-Encoding: 8bit
  1 file changed, 13 insertions(+)
 
 diff --git a/core/src/mindustry/input/InputHandler.java b/core/src/mindustry/input/InputHandler.java
-index a21bbfb6d2c4944e6fe7bb99fd25b08a03ec32ee..d37829822511f4a5cb50b8b87251df29f1180420 100644
+index 8f582a1d4fb4f7caab678413a9c4e5c239260547..5f4ba5b5c7c464d1146c9dd3a812280f694fa587 100644
 --- a/core/src/mindustry/input/InputHandler.java
 +++ b/core/src/mindustry/input/InputHandler.java
-@@ -1982,6 +1982,18 @@ public abstract class InputHandler implements InputProcessor, GestureListener{
+@@ -1985,6 +1985,18 @@ public abstract class InputHandler implements InputProcessor, GestureListener{
  
      protected void updateLine(int x1, int y1, int x2, int y2){
          linePlans.clear();
@@ -34,7 +34,7 @@ index a21bbfb6d2c4944e6fe7bb99fd25b08a03ec32ee..d37829822511f4a5cb50b8b87251df29
          iterateLine(x1, y1, x2, y2, l -> {
              rotation = l.rotation;
              var plan = new BuildPlan(l.x, l.y, l.rotation, block, block.nextConfig());
-@@ -1999,6 +2011,7 @@ public abstract class InputHandler implements InputProcessor, GestureListener{
+@@ -2002,6 +2014,7 @@ public abstract class InputHandler implements InputProcessor, GestureListener{
  
              block.handlePlacementLine(linePlans);
          }

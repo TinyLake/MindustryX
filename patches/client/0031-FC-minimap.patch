@@ -118,7 +118,7 @@ index e807ad3b752c42d84f958437bbdafead698859c0..54540e1084a1bdca8494b924b47b181f
                  tapSquareSize = Scl.scl(11f);
              }
 diff --git a/core/src/mindustry/ui/fragments/MinimapFragment.java b/core/src/mindustry/ui/fragments/MinimapFragment.java
-index f7f70bd833cdd8a2efc53d48b9a37449f1003e14..fde886888acee15713570dac23468827c029927b 100644
+index 6756e878d1426f53f0475ac44d34c20a0b2c2ec6..bc6353cea77f98e01bf6de9072ed6eb8f1984bf9 100644
 --- a/core/src/mindustry/ui/fragments/MinimapFragment.java
 +++ b/core/src/mindustry/ui/fragments/MinimapFragment.java
 @@ -16,6 +16,7 @@ import mindustry.core.*;

@@ -89,7 +89,7 @@ index ea8ef0cdb8a30b54bb304543ea92dc99da44acb6..100337b3b1e99a85788803e4396ddd57
              array.items[index].update();
          }
 diff --git a/core/src/mindustry/ui/fragments/HudFragment.java b/core/src/mindustry/ui/fragments/HudFragment.java
-index 761c8d81aeb36582bf29604960a53be755296b6c..c0d2babffdde6a24babc2eec69c9be3b3de3ee11 100644
+index 5e026f5f443d1a7f5f67aa53e3379e5291e8eab7..a0a6f1480180589dc353afa99f719680e929b6fd 100644
 --- a/core/src/mindustry/ui/fragments/HudFragment.java
 +++ b/core/src/mindustry/ui/fragments/HudFragment.java
 @@ -32,6 +32,8 @@ import mindustry.ui.*;
@@ -101,7 +101,7 @@ index 761c8d81aeb36582bf29604960a53be755296b6c..c0d2babffdde6a24babc2eec69c9be3b
  
  import static mindustry.Vars.*;
  import static mindustry.gen.Tex.*;
-@@ -545,6 +547,9 @@ public class HudFragment{
+@@ -546,6 +548,9 @@ public class HudFragment{
  
                  info.label(() -> fps.get(Core.graphics.getFramesPerSecond())).left().style(Styles.outlineLabel).name("fps");
                  info.row();

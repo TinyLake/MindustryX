@@ -11,10 +11,10 @@ Subject: [PATCH] FS: Add icons.properties,bundles,block_colors.png to server
  3 files changed, 14 insertions(+), 15 deletions(-)
 
 diff --git a/core/src/mindustry/net/Administration.java b/core/src/mindustry/net/Administration.java
-index e8337ade8cb0ca91c6e9b50da8608194b9f8be63..7edd8e378c5f6b0b183c65032b40aa7347ef7d4f 100644
+index 47ff3fe168b98f0678f07cea04c270ae244fa8f9..1e70e6d272157d432a14687a9b77b11331045125 100644
 --- a/core/src/mindustry/net/Administration.java
 +++ b/core/src/mindustry/net/Administration.java
-@@ -512,6 +512,7 @@ public class Administration{
+@@ -513,6 +513,7 @@ public class Administration{
          serverName = new Config("name", "The server name as displayed on clients.", "Server", "servername"),
          desc = new Config("desc", "The server description, displayed under the name. Max 100 characters.", "off"),
          port = new Config("port", "The port to host on.", Vars.port),

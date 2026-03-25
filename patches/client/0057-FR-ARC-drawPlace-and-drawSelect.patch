@@ -244,7 +244,7 @@ index dfae8f9afef7275ea9a8bfb79a2c7f3e79a6a4bb..1a3ffd805df5f6ff534f4024d98343c3
              drawPlaceText(Core.bundle.get("bar.drilltierreq"), x, y, false);
          }
 diff --git a/core/src/mindustry/world/blocks/production/Drill.java b/core/src/mindustry/world/blocks/production/Drill.java
-index cb4d636607c5c3542517af46cb95e69ee3f5a49b..5ca594887b2b1677fc0fc33ceff1272eea0689b3 100644
+index 55c523bc651db449f51b1864aff33103d9ee0d73..6c9533ad625544becf6c31c24b81fb4b9125423c 100644
 --- a/core/src/mindustry/world/blocks/production/Drill.java
 +++ b/core/src/mindustry/world/blocks/production/Drill.java
 @@ -147,12 +147,13 @@ public class Drill extends Block{
