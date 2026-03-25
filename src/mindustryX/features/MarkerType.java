@@ -30,7 +30,6 @@ import static mindustry.Vars.*;
 import static mindustryX.features.UIExt.i;
 
 public class MarkerType{
-    private static final Pattern posPattern = Pattern.compile("(?<type><[A-Za-z]+>)?\\((?<x>\\d+),(?<y>\\d+)\\)");
     /** 冷却时间 */
     public static final float heatTime = 60f;
     /** 滞留时间 */
@@ -218,7 +217,9 @@ public class MarkerType{
             return;
         }
         last = at(pos);
-        ShareFeature.send(Iconc.map, Strings.format("[#@]<@>[]@", color, name, FormatDefault.formatTile(pos)));
+        String msg = Strings.format("[#@]<@>[]@", color, name, FormatDefault.formatTile(pos));
+        ShareFeature.send(Iconc.map, msg);
+        Call.pingLocation(player, pos.x, pos.y, msg);
     }
 
     public static void newMarkFromChat(String text, Vec2 pos){
