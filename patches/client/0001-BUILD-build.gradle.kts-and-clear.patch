@@ -290,7 +290,7 @@ index 0000000000000000000000000000000000000000..181b87c1d5f3755f16a01c0528d0a89f
 +mindustry.annotations.misc.LogicStatementProcessor
 +mindustry.annotations.remote.RemoteProcess
 diff --git a/build.gradle b/build.gradle
-index 4899a68958320ec45ed0aa7dc558e58506066255..d1c9edec56bee76a62dff09e0c136dadc8963451 100644
+index 4899a68958320ec45ed0aa7dc558e58506066255..2aaf63d116f52b7be089ecf4535acec06a6f8a1c 100644
 --- a/build.gradle
 +++ b/build.gradle
 @@ -1,29 +1,15 @@
@@ -582,7 +582,7 @@ index 4899a68958320ec45ed0aa7dc558e58506066255..d1c9edec56bee76a62dff09e0c136dad
  
 -    task depsJar(type: Jar, dependsOn: [classes, ":server:dist"]){
 +    tasks.register('depsJar', Jar){
-+        dependsOn[classes, ":server:dist"]
++        dependsOn classes, ":server:dist"
          archiveClassifier = 'deps'
          from files(sourceSets.main.output.classesDirs)
          from{ configurations.runtimeClasspath.collect{ it.isDirectory() ? it : zipTree(it) } }

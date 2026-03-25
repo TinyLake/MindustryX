@@ -10,7 +10,7 @@ Subject: [PATCH] FC: support modifier combinations in keybinds
  3 files changed, 77 insertions(+), 9 deletions(-)
 
 diff --git a/arc-core/src/arc/Input.java b/arc-core/src/arc/Input.java
-index 2ecc5c547cac9927f196d598d50669647d4b113b..be53f73875953db87a4a5221bbed9529fdea406b 100644
+index 2ecc5c547cac9927f196d598d50669647d4b113b..ec9108d5df71963ee24b90a88ad5ef25894fb541 100644
 --- a/arc-core/src/arc/Input.java
 +++ b/arc-core/src/arc/Input.java
 @@ -32,6 +32,17 @@ public abstract class Input{
@@ -55,7 +55,7 @@ index 2ecc5c547cac9927f196d598d50669647d4b113b..be53f73875953db87a4a5221bbed9529
      public float axis(KeyBind key){
          Axis axis = key.value;
          if(axis.key != null){
-+            if(matchModifiers(key.value.modifiers)) return 0f;
++            if(!matchModifiers(key.value.modifiers)) return 0f;
              return keyboard.getAxis(axis.key);
          }else{
              return keyboard.isPressed(axis.min) && keyboard.isPressed(axis.max) ? 0 :
@@ -63,7 +63,7 @@ index 2ecc5c547cac9927f196d598d50669647d4b113b..be53f73875953db87a4a5221bbed9529
      public float axisTap(KeyBind key){
          Axis axis = key.value;
          if(axis.key != null){
-+            if(modifiers() != key.value.modifiers) return 0f;
++            if(!matchModifiers(key.value.modifiers)) return 0f;
              return keyboard.getAxis(axis.key);
          }else{
              return keyboard.isTapped(axis.min) ? -1 : keyboard.isTapped(axis.max) ? 1 : 0;

@@ -9,7 +9,7 @@ Subject: [PATCH] FC: support modifier combinations in keybinds
  2 files changed, 45 insertions(+), 18 deletions(-)
 
 diff --git a/core/src/mindustry/input/DesktopInput.java b/core/src/mindustry/input/DesktopInput.java
-index 2f59d642b8203237b7cdc876e6c8fd3abf6386e0..78b16f02d3e0435f0712cd46ff84e787c209feeb 100644
+index 2f59d642b8203237b7cdc876e6c8fd3abf6386e0..31c1c2413f845e9f0a9ac6b2feaade56c323f4ed 100644
 --- a/core/src/mindustry/input/DesktopInput.java
 +++ b/core/src/mindustry/input/DesktopInput.java
 @@ -28,6 +28,7 @@ import static arc.Core.*;
@@ -46,8 +46,8 @@ index 2f59d642b8203237b7cdc876e6c8fd3abf6386e0..78b16f02d3e0435f0712cd46ff84e787
                  b.label(() -> Core.bundle.format("schematic.flip",
 -                    Binding.schematicFlipX.value.key.toString(),
 -                    Binding.schematicFlipY.value.key.toString())).style(Styles.outlineLabel).visible(() -> Core.settings.getBool("hints"));
-+                    Binding.schematicFlipX.value.toString(),
-+                    Binding.schematicFlipY.value.toString())).style(Styles.outlineLabel).visible(() -> Core.settings.getBool("hints"));
++                keyName(Binding.schematicFlipX.value),
++                keyName(Binding.schematicFlipY.value))).style(Styles.outlineLabel).visible(() -> Core.settings.getBool("hints"));
                  b.row();
                  b.table(a -> {
                      a.button("@schematic.add", Icon.save, this::showSchematicSave).colspan(2).size(250f, 50f).disabled(f -> lastSchematic == null || lastSchematic.file != null);
@@ -65,7 +65,7 @@ index 2f59d642b8203237b7cdc876e6c8fd3abf6386e0..78b16f02d3e0435f0712cd46ff84e787
          }
  
 -        if(button == Binding.commandQueue.value.key){
-+        if(button == Binding.commandQueue.value.key && input.modifiers() == Binding.commandQueue.value.modifiers){
++        if(button == Binding.commandQueue.value.key && input.matchModifiers(Binding.commandQueue.value.modifiers)){
              commandTap(x, y, true);
          }
  
