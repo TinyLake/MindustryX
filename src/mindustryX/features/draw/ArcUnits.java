@@ -6,7 +6,6 @@ import arc.graphics.g2d.*;
 import arc.math.*;
 import arc.util.*;
 import mindustry.ai.types.*;
-import mindustry.entities.units.*;
 import mindustry.game.*;
 import mindustry.gen.*;
 import mindustry.graphics.*;
@@ -18,8 +17,7 @@ import static mindustry.Vars.*;
 
 //move from mindustry.arcModule.draw.ARCUnits
 public class ArcUnits{
-    private static final int maxBuildPlans = 100;
-    private static boolean alwaysShowUnitRTSAi, unitHealthBar, unitLogicMoveLine, unitLogicTimerBars, unitBuildPlan;
+    private static boolean alwaysShowUnitRTSAi, unitHealthBar, unitLogicMoveLine, unitLogicTimerBars;
     private static float unitWeaponRange, unitWeaponRangeAlpha;
     public static boolean selectedUnitsFlyer, selectedUnitsLand;
 
@@ -34,7 +32,6 @@ public class ArcUnits{
             unitHealthBar = Core.settings.getBool("unitHealthBar");
             unitLogicMoveLine = Core.settings.getBool("unitLogicMoveLine");
             unitLogicTimerBars = Core.settings.getBool("unitLogicTimerBars");
-            unitBuildPlan = Core.settings.getBool("unitbuildplan");
 
             unitWeaponRange = Core.settings.getInt("unitWeaponRange") * tilesize;
             unitWeaponRangeAlpha = Core.settings.getInt("unitWeaponRangeAlpha") / 100f;
@@ -64,7 +61,6 @@ public class ArcUnits{
                 if(unitLogicMoveLine) drawLogicMove(unit, ai);
                 if(unitLogicTimerBars) drawLogicTimer(unit, ai);
             }
-            if(unitBuildPlan) drawBuildPlan(unit);
         }
     }
 
@@ -230,47 +226,6 @@ public class ArcUnits{
         Lines.stroke(2f);
         Lines.line(unit.x - (unit.hitSize() / 2f), unit.y - (unit.hitSize() / 2f), unit.x - (unit.hitSize() / 2f), unit.y + unit.hitSize() * (ai.controlTimer / LogicAI.logicControlTimeout - 0.5f));
         Draw.reset();
-    }
-
-    private static void drawBuildPlan(Unit unit){
-        if(unit.plans().isEmpty()) return;
-        if(unit != player.unit()){
-            int counter = maxBuildPlans;
-            for(BuildPlan b : unit.plans()){
-                unit.drawPlan(b, 0.5f);
-                counter--;
-                if(counter < 0) break;
-            }
-        }
-        //外部描黑
-        Draw.color(Pal.gray);
-        Lines.stroke(2f);
-        drawBuildPlan0(unit);
-
-        //内部圆圈和线
-        Draw.color(unit.team.color);
-        Lines.stroke(0.75f);
-        drawBuildPlan0(unit);
-
-        Draw.color();
-        Lines.stroke(1f);
-    }
-
-    private static void drawBuildPlan0(Unit unit){
-        int counter = maxBuildPlans;
-        float x = unit.x, y = unit.y, s = unit.hitSize / 2f;
-        for(BuildPlan b : unit.plans()){
-            if(b.block == null) return;
-            Tmp.v2.trns(Angles.angle(x, y, b.drawx(), b.drawy()), s);
-            Tmp.v3.trns(Angles.angle(x, y, b.drawx(), b.drawy()), b.block.size * 2f);
-            Lines.circle(b.drawx(), b.drawy(), b.block.size * 2f);
-            Lines.line(x + Tmp.v2.x, y + Tmp.v2.y, b.drawx() - Tmp.v3.x, b.drawy() - Tmp.v3.y);
-            x = b.drawx();
-            y = b.drawy();
-            s = b.block.size * 2f;
-            counter--;
-            if(counter < 0) break;
-        }
     }
 
     private static void drawBuildRange(Unit unit){

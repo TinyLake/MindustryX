@@ -125,7 +125,6 @@ public class ArcOld{
             c.checkPref("unitLogicMoveLine", false);
             c.checkPref("unitLogicTimerBars", false);
             c.checkPref("arcBuildInfo", false);
-            c.checkPref("unitbuildplan", false);
             c.checkPref("alwaysShowUnitRTSAi", false);
             c.sliderPref("rtsWoundUnit", 0, 0, 100, 2, s -> s + "%");
 
