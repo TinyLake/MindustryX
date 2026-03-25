@@ -33,7 +33,7 @@ fun exportBlockData() {
         }
 
         allBlock.sortedBy { it.second.name }
-            .forEach { (key, block) -> writeBlock(block, key) }
+            .forEach { [key, block] -> writeBlock(block, key) }
     }
     BaseDialog("Export Block Data").apply {
         cont.add("Date Lines: ${data.lines().size}").row()

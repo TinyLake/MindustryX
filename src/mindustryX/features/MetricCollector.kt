@@ -150,8 +150,7 @@ object MetricCollector {
 
     fun onLaunch() {
         if (!enable.value) return
-        val last = lastTime.get() ?: 0L
-        if (Time.timeSinceMillis(last) < 24 * 60 * 60 * 1000) {
+        if (Time.timeSinceMillis(lastTime.get()) < 24 * 60 * 60 * 1000) {
             Log.infoTag("MetricCollector", "Skip posting metrics.")
             return
         }

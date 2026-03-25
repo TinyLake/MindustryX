@@ -281,7 +281,7 @@ object OverlayUI {
                     data.value.constraintX?.let { applyConstraint(it) }
                     data.value.constraintY?.let { applyConstraint(it) }
                 } else {
-                    val (constraintX, constraintY) = findBestConstraints()
+                    val [constraintX, constraintY] = findBestConstraints()
                     constraintX?.let {
                         applyConstraint(it)
                         constraintDrawTask.add(it)
@@ -298,7 +298,7 @@ object OverlayUI {
             if (state == State.EndDrag) {
                 state = State.Stable
                 val center = Vec2(getX(Align.center), getY(Align.center))
-                val (constraintX, constraintY) = adsorption.findBestConstraints()
+                val [constraintX, constraintY] = adsorption.findBestConstraints()
                 data.set(data.value.copy(center = center, constraintX = constraintX, constraintY = constraintY))
             }
 
