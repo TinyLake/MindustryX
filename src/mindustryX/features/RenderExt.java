@@ -55,7 +55,6 @@ public class RenderExt{
     public static Color playerEffectColor = Color.clear;
 
     public static final SettingsV2.CheckPref noBulletShow = new CheckPref("entityRender.noBulletShow");
-    public static final SettingsV2.CheckPref unitHitbox = new CheckPref("entityRender.unitHitbox");
     public static final SettingsV2.CheckPref payloadPreview = new CheckPref("entityRender.payloadPreview");
 
     public static final SettingsV2.CheckPref unitHide = new CheckPref("entityRender.unitHide", new MemoryStore<>(false));
@@ -81,8 +80,7 @@ public class RenderExt{
     static{
         if(headless) throw new RuntimeException("RenderExt should not access in Headless");
         noBulletShow.addFallback("bulletShow", (Boolean it) -> !it);
-        unitHitbox.addFallbackName("unithitbox");
-        unitHitbox.addFallbackName("payloadpreview");
+        payloadPreview.addFallbackName("payloadpreview");
 
         unitHideExcludePlayers.addFallbackName("unitHideExcludePlayers");
         unitHideMinHealth.addFallbackName("unitDrawMinHealth");
@@ -182,7 +180,6 @@ public class RenderExt{
         t.draw();
         if(t instanceof Unit u){
             ArcUnits.draw(u);
-            if(unitHitbox.get()) drawHitBox(u);
         }
     }
 
@@ -312,12 +309,6 @@ public class RenderExt{
         Lines.line(x1, y, Mathf.lerp(x1, x2, Mathf.clamp(ratio, 0f, 1f)), y);
 
         Draw.reset();
-    }
-
-    private static void drawHitBox(Unit unit){
-        Draw.color(unit.team.color, 0.5f);
-        Lines.circle(unit.x, unit.y, unit.hitSize / 2f);
-        Draw.color();
     }
 
     static ObjectMap<String, HashSet<Unit>> removePool = new ObjectMap<>();

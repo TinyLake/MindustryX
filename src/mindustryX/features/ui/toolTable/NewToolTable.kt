@@ -54,7 +54,6 @@ object NewToolTable : Table() {
         toggle(i("效"), i("特效显示"), { Vars.renderer.enableEffects }) { Settings.toggle("effects") }
         toggle(i("墙"), i("墙体阴影显示"), { Vars.enableDarkness }) { Vars.enableDarkness = !Vars.enableDarkness }
         toggle("${Iconc.map}", i("小地图显示"), { Core.settings.getBool("minimap") }) { Settings.toggle("minimap") }
-        toggle(i("箱"), i("碰撞箱显示"), { RenderExt.unitHitbox.value }) { RenderExt.unitHitbox.toggle() }
 
         button("${Iconc.blockRadar}", i("雷达开关")) { ArcRadar.mobileRadar = !ArcRadar.mobileRadar }.get().also {
             SettingsV2.bindQuickSettings(it, ArcRadar.settings)
