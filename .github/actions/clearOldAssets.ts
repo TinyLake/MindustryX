@@ -14,6 +14,39 @@ if (!TOKEN || !REPOSITORY) {
 const octokit = getOctokit(TOKEN) as import("@octokit/plugin-rest-endpoint-methods/dist-types/types").Api;
 const [owner, repo] = REPOSITORY.split("/");
 
+async function clearOrphanPrereleaseTags(releaseTagSet: Set<string>) {
+    // 清理历史残留 tag：匹配 prerelease-* 但不存在于 releases 中
+    const {data: refs} = await octokit.rest.git.listMatchingRefs({
+        owner,
+        repo,
+        ref: "tags/prerelease-"
+    });
+
+    const orphanTags = refs
+        .map(ref => ref.ref.replace("refs/tags/", ""))
+        .filter(tag => !releaseTagSet.has(tag));
+
+    if (orphanTags.length === 0) {
+        console.log("No orphan prerelease tags found.");
+        return;
+    }
+
+    console.log("Removing orphan tags:", orphanTags);
+    for (const tag of orphanTags) {
+        if (DRY_RUN) continue;
+        try {
+            await octokit.rest.git.deleteRef({
+                owner,
+                repo,
+                ref: `tags/${tag}`
+            });
+            console.log(`Successfully deleted orphan tag ${tag}`);
+        } catch (e: any) {
+            console.error(`Failed to delete orphan tag ${tag}: ${e.message}`);
+        }
+    }
+}
+
 /**
  * 核心逻辑：清理 Pre-releases
  * 条件：是 Pre-release 且不包含当前正在构建的版本，只保留最新的 3 个
@@ -35,42 +68,58 @@ async function clearOldPreReleases(keep: number = 3) {
         // 按创建时间倒序排序
         .sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime());
 
+    // 所有在 release 中存在的 prerelease tag，用于后续识别“残留 tag”
+    const releaseTagSet = new Set(
+        releases
+            .filter(r => r.prerelease && r.tag_name.startsWith("prerelease-"))
+            .map(r => r.tag_name)
+    );
+    if (SELF_BUILD) {
+        releaseTagSet.add(SELF_BUILD);
+    }
+
     console.log(`Found ${preReleases.length} pre-releases.`, preReleases.map(it => it.tag_name))
 
+
     const toRemove = preReleases.slice(keep);
-    if(toRemove.length === 0) {
+    if (toRemove.length === 0) {
         console.log("No clean up needed.");
-        return;
+    }else {
+        console.log("Removing:", toRemove.map(r => r.tag_name));
     }
-    console.log("Removing:", toRemove.map(r => r.tag_name));
+
+    async function deleteReleases() {
+        // 3. 执行删除 (同时会删除关联的 Tag)
+        for (const rel of toRemove) {
+            try {
+                // 删除 Release
+                await octokit.rest.repos.deleteRelease({
+                    owner,
+                    repo,
+                    release_id: rel.id
+                });
+
+                // 删除 Git Tag (由于 API 限制，需手动删除 ref)
+                await octokit.rest.git.deleteRef({
+                    owner,
+                    repo,
+                    ref: `tags/${rel.tag_name}`
+                });
+
+                console.log(`Successfully deleted ${rel.tag_name}`);
+            } catch (e: any) {
+                console.error(`Failed to delete ${rel.tag_name}: ${e.message}`);
+            }
+        }
+    }
 
     if (DRY_RUN) {
         console.log("Dry run mode - no deletions will be made.");
-        return;
     }
 
-    // 3. 执行删除 (同时会删除关联的 Tag)
-    for (const rel of toRemove) {
-        try {
-            // 删除 Release
-            await octokit.rest.repos.deleteRelease({
-                owner,
-                repo,
-                release_id: rel.id
-            });
-
-            // 删除 Git Tag (由于 API 限制，需手动删除 ref)
-            await octokit.rest.git.deleteRef({
-                owner,
-                repo,
-                ref: `tags/${rel.tag_name}`
-            });
-
-            console.log(`Successfully deleted ${rel.tag_name}`);
-        } catch (e: any) {
-            console.error(`Failed to delete ${rel.tag_name}: ${e.message}`);
-        }
-    }
+    console.log("Checking orphan prerelease tags...");
+    await clearOrphanPrereleaseTags(releaseTagSet);
+    await deleteReleases()
 }
 
 await clearOldPreReleases();
