@@ -12,6 +12,7 @@ import kotlin.collections.*;
 import mindustry.*;
 import mindustry.core.*;
 import mindustry.entities.*;
+import mindustry.entities.units.*;
 import mindustry.game.EventType.*;
 import mindustry.gen.*;
 import mindustry.graphics.*;
@@ -33,6 +34,7 @@ import static mindustry.Vars.*;
 //moved from mindustry.arcModule.ui.RCoreItemsDisplay
 public class NewCoreItemsDisplay extends Table{
     public static final float COLUMN_WIDTH = 96f;
+    private static final ObjectSet<BuildPlan> allPlans = new ObjectSet<>();
 
     private Table itemsTable, unitsTable, plansTable, powerTable;
 
@@ -243,7 +245,15 @@ public class NewCoreItemsDisplay extends Table{
         planItems.clear();
         planCounter.clear();
 
-        control.input.allPlans().each(plan -> {
+        allPlans.addAll(control.input.linePlans);
+        allPlans.addAll(control.input.selectPlans);
+        if(player.isBuilder()){
+            for(BuildPlan plan : player.unit().plans){
+                allPlans.add(plan);
+            }
+        }
+
+        for(BuildPlan plan : allPlans){
             Block block = plan.block;
 
             if(block == null || block instanceof CoreBlock) return;
@@ -259,7 +269,7 @@ public class NewCoreItemsDisplay extends Table{
                 : state.rules.buildCostMultiplier * stack.amount * (1 - plan.progress));
                 planItems.add(stack.item, planAmount);
             }
-        });
+        }
 
         plansTable.clearChildren();
         if(planCounter.isEmpty()) return;
