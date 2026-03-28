@@ -36,7 +36,7 @@ object SettingsV2 {
         val value: T get() = get()
         fun get(): T
         fun set(value: T)
-        fun reset()
+        fun reset() = set(default)
         fun changed(key: Any): Boolean
         fun changed(): Boolean = changed(Unit)
     }
@@ -101,13 +101,11 @@ object SettingsV2 {
         override fun set(value: T) {
             if (core.get() == value) return
             core.set(value)
-            Core.settings.put(key, value)
-        }
-
-        override fun reset() {
-            if (core.get() == default) return
-            set(default)
-            Core.settings.remove(key)
+            if (value == null) {
+                Core.settings.remove(key)
+            } else {
+                Core.settings.put(key, value)
+            }
         }
 
         override fun changed(key: Any): Boolean = core.changed(key)
