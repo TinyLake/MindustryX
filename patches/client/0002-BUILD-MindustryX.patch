@@ -12,10 +12,10 @@ patchArc改写成transform
 way-zer <himc.wicp@gmail.com> on 2024/4/27 at 18:57
 ---
  build.gradle          | 6 ------
- core/build.gradle.kts | 2 ++
+ core/build.gradle.kts | 4 ++++
  gradle.properties     | 2 +-
  settings.gradle       | 2 ++
- 4 files changed, 5 insertions(+), 7 deletions(-)
+ 4 files changed, 7 insertions(+), 7 deletions(-)
 
 diff --git a/build.gradle b/build.gradle
 index 5b3ed67fdc80a301be344e2e469b1a2879406bf6..225fe1b5c45b87a14dd7a60d2e21d9be15306179 100644
@@ -35,10 +35,15 @@ index 5b3ed67fdc80a301be344e2e469b1a2879406bf6..225fe1b5c45b87a14dd7a60d2e21d9be
      jar{
          exclude("mindustry/entities/comp/**")
 diff --git a/core/build.gradle.kts b/core/build.gradle.kts
-index 712c4750377c079ec77bfea24bd889db58090b98..8a897258a0275646069ec52a7797183f96859c97 100644
+index 712c4750377c079ec77bfea24bd889db58090b98..a6553f80c4ea38c3ba734d5718519d56ab00da4e 100644
 --- a/core/build.gradle.kts
 +++ b/core/build.gradle.kts
-@@ -5,6 +5,7 @@ import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
+@@ -1,10 +1,12 @@
+ import org.gradle.jvm.tasks.Jar
+ import org.jetbrains.kotlin.gradle.dsl.JvmTarget
++import org.jetbrains.kotlin.gradle.dsl.KotlinVersion
+ import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
+ 
  plugins {
      java
      kotlin("jvm")
@@ -46,9 +51,11 @@ index 712c4750377c079ec77bfea24bd889db58090b98..8a897258a0275646069ec52a7797183f
  }
  sourceSets.main {
      java.setSrcDirs(listOf("src/", "../../src/", layout.buildDirectory.dir("/generated/sources/annotationProcessor/java/main")))
-@@ -15,6 +16,7 @@ tasks {
+@@ -14,7 +16,9 @@ sourceSets.main {
+ tasks {
      withType<KotlinCompile>().configureEach {
          compilerOptions {
++            apiVersion.set(KotlinVersion.KOTLIN_2_1)
              jvmTarget.set(JvmTarget.JVM_1_8)
 +            freeCompilerArgs.add("-Xname-based-destructuring=complete")
          }

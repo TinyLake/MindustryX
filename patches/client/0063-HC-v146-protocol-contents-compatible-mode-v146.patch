@@ -20,10 +20,10 @@ Content-Transfer-Encoding: 8bit
  8 files changed, 91 insertions(+), 17 deletions(-)
 
 diff --git a/core/build.gradle.kts b/core/build.gradle.kts
-index b47335e1817e34ff06ff12a06a8c0d9aeb882665..1121aa3dfb4b4f46c0641a24ea4760d655ef564a 100644
+index cb310b5cc243b840e61a6a8284c6b05ff59076ca..b290226c7046b465f244ddc07d8b0a349e42b238 100644
 --- a/core/build.gradle.kts
 +++ b/core/build.gradle.kts
-@@ -6,6 +6,7 @@ plugins {
+@@ -7,6 +7,7 @@ plugins {
      java
      kotlin("jvm")
      id("mindustryX.buildExt")
