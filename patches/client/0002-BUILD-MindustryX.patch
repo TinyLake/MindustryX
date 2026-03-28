@@ -14,8 +14,9 @@ way-zer <himc.wicp@gmail.com> on 2024/4/27 at 18:57
  build.gradle          | 6 ------
  core/build.gradle.kts | 4 ++++
  gradle.properties     | 2 +-
+ server/build.gradle   | 2 ++
  settings.gradle       | 2 ++
- 4 files changed, 7 insertions(+), 7 deletions(-)
+ 5 files changed, 9 insertions(+), 7 deletions(-)
 
 diff --git a/build.gradle b/build.gradle
 index 5b3ed67fdc80a301be344e2e469b1a2879406bf6..225fe1b5c45b87a14dd7a60d2e21d9be15306179 100644
@@ -35,7 +36,7 @@ index 5b3ed67fdc80a301be344e2e469b1a2879406bf6..225fe1b5c45b87a14dd7a60d2e21d9be
      jar{
          exclude("mindustry/entities/comp/**")
 diff --git a/core/build.gradle.kts b/core/build.gradle.kts
-index 712c4750377c079ec77bfea24bd889db58090b98..a6553f80c4ea38c3ba734d5718519d56ab00da4e 100644
+index 712c4750377c079ec77bfea24bd889db58090b98..e1904111c3ca730e830b5c1bac3c1d5cacc6b3d1 100644
 --- a/core/build.gradle.kts
 +++ b/core/build.gradle.kts
 @@ -1,10 +1,12 @@
@@ -55,7 +56,7 @@ index 712c4750377c079ec77bfea24bd889db58090b98..a6553f80c4ea38c3ba734d5718519d56
  tasks {
      withType<KotlinCompile>().configureEach {
          compilerOptions {
-+            apiVersion.set(KotlinVersion.KOTLIN_2_1)
++            languageVersion.set(KotlinVersion.KOTLIN_2_1)
              jvmTarget.set(JvmTarget.JVM_1_8)
 +            freeCompilerArgs.add("-Xname-based-destructuring=complete")
          }
@@ -74,6 +75,19 @@ index 813679ef83498b8b070f3c652ccb15a37362effe..272aa14ca1688d6e9f97c43ac6086ca8
  #needed for android compilation
  android.useAndroidX=true
  org.gradle.caching=true
+diff --git a/server/build.gradle b/server/build.gradle
+index 7c1293746b6329d9904f237b94b1466869f9c47c..6085c24c1882c38982af03174166fa7c5fcc668e 100644
+--- a/server/build.gradle
++++ b/server/build.gradle
+@@ -49,6 +49,8 @@ tasks.register('dist', Jar){
+     exclude("icons/icon_64.png")
+     exclude("**hs_err**.log")
+ 
++    exclude("META-INF/kotlin*.kotlin_module")
++
+     duplicatesStrategy = 'exclude'
+ 
+     manifest{
 diff --git a/settings.gradle b/settings.gradle
 index e688b9a8ea87e6ac6e6899c0a2807fba38ff18be..1c8ab04d2d3469220b45117ec2684979a317a92f 100644
 --- a/settings.gradle

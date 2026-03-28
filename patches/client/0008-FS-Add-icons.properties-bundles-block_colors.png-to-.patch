@@ -23,7 +23,7 @@ index 47ff3fe168b98f0678f07cea04c270ae244fa8f9..1e70e6d272157d432a14687a9b77b113
          showConnectMessages = new Config("showConnectMessages", "Whether to display connect/disconnect messages.", true),
          enableVotekick = new Config("enableVotekick", "Whether votekick is enabled.", true),
 diff --git a/server/build.gradle b/server/build.gradle
-index 7c1293746b6329d9904f237b94b1466869f9c47c..768f7a6b7b17feb8bd853dfcffb97674ac450429 100644
+index 6085c24c1882c38982af03174166fa7c5fcc668e..06aee37661f7f8ed0c04ff0fc16d79909bdd8bf3 100644
 --- a/server/build.gradle
 +++ b/server/build.gradle
 @@ -34,20 +34,18 @@ tasks.register('dist', Jar){
@@ -57,7 +57,7 @@ index 7c1293746b6329d9904f237b94b1466869f9c47c..768f7a6b7b17feb8bd853dfcffb97674
 +        include "*.*"
 +    }
  
-     duplicatesStrategy = 'exclude'
+     exclude("META-INF/kotlin*.kotlin_module")
  
 diff --git a/server/src/mindustry/server/ServerLauncher.java b/server/src/mindustry/server/ServerLauncher.java
 index 0f23c39ad937d6ead6e3657eb57a0c725ec84b56..c4a926ed2a8f6dacfc8f8787f75130247ef507dc 100644

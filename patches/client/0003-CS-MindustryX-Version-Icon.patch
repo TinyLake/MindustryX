@@ -83,7 +83,7 @@ index 225fe1b5c45b87a14dd7a60d2e21d9be15306179..3eb7add7ad8bd93ab7cb03715b5ae530
      ext{
          versionNumber = '8'
 diff --git a/core/build.gradle.kts b/core/build.gradle.kts
-index a6553f80c4ea38c3ba734d5718519d56ab00da4e..cb310b5cc243b840e61a6a8284c6b05ff59076ca 100644
+index e1904111c3ca730e830b5c1bac3c1d5cacc6b3d1..e89b8f7fe020fc5d5f1fa444da3867624a13965c 100644
 --- a/core/build.gradle.kts
 +++ b/core/build.gradle.kts
 @@ -51,7 +51,7 @@ tasks {
