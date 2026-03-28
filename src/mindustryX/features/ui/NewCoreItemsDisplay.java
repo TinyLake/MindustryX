@@ -270,6 +270,7 @@ public class NewCoreItemsDisplay extends Table{
                 planItems.add(stack.item, planAmount);
             }
         }
+        allPlans.clear();
 
         plansTable.clearChildren();
         if(planCounter.isEmpty()) return;
