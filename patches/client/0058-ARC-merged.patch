@@ -563,7 +563,7 @@ index d5fff9b738ee04fc91af82a8c8722f6eacc1ad73..8af9a9faa4d4e5d1246af2f8747cca43
              unit.lookAt(unit.prefRotation());
          }
 diff --git a/core/src/mindustry/input/InputHandler.java b/core/src/mindustry/input/InputHandler.java
-index 321ccaa5020207d89eb784b5dc6e8ad341172ea8..8f582a1d4fb4f7caab678413a9c4e5c239260547 100644
+index 253993603b8a66e81c8e34aac87a9141815c34e9..d7496513099cb404721176b3df060f68bedfb2ab 100644
 --- a/core/src/mindustry/input/InputHandler.java
 +++ b/core/src/mindustry/input/InputHandler.java
 @@ -39,8 +39,10 @@ import mindustry.world.*;
@@ -603,7 +603,7 @@ index 321ccaa5020207d89eb784b5dc6e8ad341172ea8..8f582a1d4fb4f7caab678413a9c4e5c2
              spectating = null;
          }
  
-@@ -1173,6 +1176,8 @@ public abstract class InputHandler implements InputProcessor, GestureListener{
+@@ -1176,6 +1179,8 @@ public abstract class InputHandler implements InputProcessor, GestureListener{
                      attack = selectedEnemyUnit(target.x, target.y);
                  }
  
@@ -612,7 +612,7 @@ index 321ccaa5020207d89eb784b5dc6e8ad341172ea8..8f582a1d4fb4f7caab678413a9c4e5c2
                  int[] ids = new int[selectedUnits.size];
                  for(int i = 0; i < ids.length; i++){
                      ids[i] = selectedUnits.get(i).id;
-@@ -1560,6 +1565,11 @@ public abstract class InputHandler implements InputProcessor, GestureListener{
+@@ -1563,6 +1568,11 @@ public abstract class InputHandler implements InputProcessor, GestureListener{
          });
      }
  
@@ -624,7 +624,7 @@ index 321ccaa5020207d89eb784b5dc6e8ad341172ea8..8f582a1d4fb4f7caab678413a9c4e5c2
      public void rotatePlans(Seq<BuildPlan> plans, int direction){
          int ox = schemOriginX(), oy = schemOriginY();
  
-@@ -1595,6 +1605,20 @@ public abstract class InputHandler implements InputProcessor, GestureListener{
+@@ -1598,6 +1608,20 @@ public abstract class InputHandler implements InputProcessor, GestureListener{
              plan.x = World.toTile(wx - plan.block.offset) + ox;
              plan.y = World.toTile(wy - plan.block.offset) + oy;
              plan.rotation = plan.block.planRotation(Mathf.mod(plan.rotation + direction, 4));
@@ -645,7 +645,7 @@ index 321ccaa5020207d89eb784b5dc6e8ad341172ea8..8f582a1d4fb4f7caab678413a9c4e5c2
          });
      }
  
-@@ -1624,6 +1648,17 @@ public abstract class InputHandler implements InputProcessor, GestureListener{
+@@ -1627,6 +1651,17 @@ public abstract class InputHandler implements InputProcessor, GestureListener{
  
              //flip rotation
              plan.block.flipRotation(plan, x);
@@ -663,7 +663,7 @@ index 321ccaa5020207d89eb784b5dc6e8ad341172ea8..8f582a1d4fb4f7caab678413a9c4e5c2
          });
      }
  
-@@ -1796,6 +1831,9 @@ public abstract class InputHandler implements InputProcessor, GestureListener{
+@@ -1799,6 +1834,9 @@ public abstract class InputHandler implements InputProcessor, GestureListener{
              font.setUseIntegerPositions(ints);
              Draw.z(z);
          }
@@ -673,7 +673,7 @@ index 321ccaa5020207d89eb784b5dc6e8ad341172ea8..8f582a1d4fb4f7caab678413a9c4e5c2
      }
  
      protected void flushSelectPlans(Seq<BuildPlan> plans){
-@@ -2175,7 +2213,7 @@ public abstract class InputHandler implements InputProcessor, GestureListener{
+@@ -2178,7 +2216,7 @@ public abstract class InputHandler implements InputProcessor, GestureListener{
  
      public @Nullable Building selectedControlBuild(){
          Building build = world.buildWorld(Core.input.mouseWorld().x, Core.input.mouseWorld().y);
@@ -682,7 +682,7 @@ index 321ccaa5020207d89eb784b5dc6e8ad341172ea8..8f582a1d4fb4f7caab678413a9c4e5c2
              return build;
          }
          return null;
-@@ -2276,6 +2314,9 @@ public abstract class InputHandler implements InputProcessor, GestureListener{
+@@ -2279,6 +2317,9 @@ public abstract class InputHandler implements InputProcessor, GestureListener{
  
      public boolean canShoot(){
          if(player.dead()) return false;
@@ -1835,7 +1835,7 @@ index 3542163354070ac67c49b82dff6c72b374d4ca7d..6d2b1fbf2840eee89ab7bfcb37990e83
          //special case for 'clear' command
          if(message.equals("clear")){
 diff --git a/core/src/mindustry/ui/fragments/HudFragment.java b/core/src/mindustry/ui/fragments/HudFragment.java
-index 5379b012c86fc185122fc58940e9642c9c8ab13b..f56bc5a71ea1a0321265effe1ade558160a82b0a 100644
+index 34a9d830b30f4544ac438dfd6ac790f8c79b2e01..b98445b7923002ef0f4fe9edd4304fad986df4d0 100644
 --- a/core/src/mindustry/ui/fragments/HudFragment.java
 +++ b/core/src/mindustry/ui/fragments/HudFragment.java
 @@ -30,10 +30,12 @@ import mindustry.net.Packets.*;

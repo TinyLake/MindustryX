@@ -111,10 +111,10 @@ index 108e30dbbc0b5746ba91409e34c682e2df2ac438..4f4b1db1c130f265107bf6bcd6ba5ac4
              if(mode == placing && block != null){ //touch up while placing, place everything in selection
                  if(input.keyDown(Binding.boost)){
 diff --git a/core/src/mindustry/input/InputHandler.java b/core/src/mindustry/input/InputHandler.java
-index 1a6c1d084618ffa8ca09cea144962299e4e516fa..321ccaa5020207d89eb784b5dc6e8ad341172ea8 100644
+index ecd132e30787cb1168ee4fd188f867735ed799ff..253993603b8a66e81c8e34aac87a9141815c34e9 100644
 --- a/core/src/mindustry/input/InputHandler.java
 +++ b/core/src/mindustry/input/InputHandler.java
-@@ -2275,6 +2275,7 @@ public abstract class InputHandler implements InputProcessor, GestureListener{
+@@ -2278,6 +2278,7 @@ public abstract class InputHandler implements InputProcessor, GestureListener{
      }
  
      public boolean canShoot(){
@@ -122,7 +122,7 @@ index 1a6c1d084618ffa8ca09cea144962299e4e516fa..321ccaa5020207d89eb784b5dc6e8ad3
          return block == null && !onConfigurable() && !isDroppingItem() && !player.unit().activelyBuilding() &&
          !(player.unit() instanceof Mechc && player.unit().isFlying()) && !player.unit().mining() && !commandMode;
      }
-@@ -2324,6 +2325,7 @@ public abstract class InputHandler implements InputProcessor, GestureListener{
+@@ -2327,6 +2328,7 @@ public abstract class InputHandler implements InputProcessor, GestureListener{
      }
  
      public void rebuildArea(int x1, int y1, int x2, int y2){

@@ -89,7 +89,7 @@ index ea8ef0cdb8a30b54bb304543ea92dc99da44acb6..100337b3b1e99a85788803e4396ddd57
              array.items[index].update();
          }
 diff --git a/core/src/mindustry/ui/fragments/HudFragment.java b/core/src/mindustry/ui/fragments/HudFragment.java
-index 5e026f5f443d1a7f5f67aa53e3379e5291e8eab7..a0a6f1480180589dc353afa99f719680e929b6fd 100644
+index 92963f62a30788a71f625c71e1867602cd07419d..badaa190bad6a1bfa57a5ec9089f63e150797d2a 100644
 --- a/core/src/mindustry/ui/fragments/HudFragment.java
 +++ b/core/src/mindustry/ui/fragments/HudFragment.java
 @@ -32,6 +32,8 @@ import mindustry.ui.*;

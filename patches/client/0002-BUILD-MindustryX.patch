@@ -63,7 +63,7 @@ index 712c4750377c079ec77bfea24bd889db58090b98..e1904111c3ca730e830b5c1bac3c1d5c
      }
  
 diff --git a/gradle.properties b/gradle.properties
-index 813679ef83498b8b070f3c652ccb15a37362effe..272aa14ca1688d6e9f97c43ac6086ca8cdcc5a97 100644
+index a01749009d82d2cb1a20b31e77fc3868b56b163d..06785489b65d6c05d62e8d1a5fb56dc981bc05f7 100644
 --- a/gradle.properties
 +++ b/gradle.properties
 @@ -18,7 +18,7 @@ kapt.use.worker.api=true

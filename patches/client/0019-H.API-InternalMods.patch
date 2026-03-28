@@ -8,10 +8,10 @@ Subject: [PATCH] H.API: InternalMods
  1 file changed, 5 insertions(+), 1 deletion(-)
 
 diff --git a/core/src/mindustry/mod/Mods.java b/core/src/mindustry/mod/Mods.java
-index 6b004e89a8d7af1c5b1154ff2b71b8c2f9f04bfd..7d41cacb7e843bb281244c634cc10e46ae9df5dd 100644
+index c6acfdab65e03460ce7868178d963bcc0c15fc6f..5f0182b0acd6031ea3dc6199afb6b6ea3c6321ec 100644
 --- a/core/src/mindustry/mod/Mods.java
 +++ b/core/src/mindustry/mod/Mods.java
-@@ -155,6 +155,10 @@ public class Mods implements Loadable{
+@@ -156,6 +156,10 @@ public class Mods implements Loadable{
          eachEnabled(mod -> {
              Seq<Fi> sprites = mod.root.child("sprites").findAll(f -> f.extension().equals("png"));
              Seq<Fi> overrides = mod.root.child("sprites-override").findAll(f -> f.extension().equals("png"));
@@ -22,7 +22,7 @@ index 6b004e89a8d7af1c5b1154ff2b71b8c2f9f04bfd..7d41cacb7e843bb281244c634cc10e46
  
              if(sprites.isEmpty() && overrides.isEmpty()) return;
  
-@@ -492,7 +496,7 @@ public class Mods implements Loadable{
+@@ -493,7 +497,7 @@ public class Mods implements Loadable{
      /** Loads all mods from the folder, but does not call any methods on them.*/
      public void load(){
          var candidates = new Seq<Fi>();

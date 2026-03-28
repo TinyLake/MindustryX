@@ -130,7 +130,7 @@ index 9882b8b4a5915265867a29c3a521c89b9cb6624e..897db2ddc5dcf63bdebfa833291994fa
              boolean writePlan = !headless || !net.server();
              write.b(writePlan ? 1 : 0); //always has config
 diff --git a/core/src/mindustry/net/Net.java b/core/src/mindustry/net/Net.java
-index 10bb4d0f92f653b53b6e4273a799b85ca566fa16..3f71d8b38f54b1fdbcc718f4dcf0af04644d692f 100644
+index 8b47a6e1d3b6b1d09419f8d3c24e627c9adc92a0..dae957720b9c9f7ded053f3884a8ff13261fa8f4 100644
 --- a/core/src/mindustry/net/Net.java
 +++ b/core/src/mindustry/net/Net.java
 @@ -1,6 +1,7 @@
@@ -160,7 +160,7 @@ index 10bb4d0f92f653b53b6e4273a799b85ca566fa16..3f71d8b38f54b1fdbcc718f4dcf0af04
  import static mindustry.Vars.*;
  
  @SuppressWarnings("unchecked")
-@@ -50,6 +51,14 @@ public class Net{
+@@ -51,6 +52,14 @@ public class Net{
          Call.registerPackets();
      }
  
@@ -175,7 +175,7 @@ index 10bb4d0f92f653b53b6e4273a799b85ca566fa16..3f71d8b38f54b1fdbcc718f4dcf0af04
      /** Registers a new packet type for serialization. */
      public static <T extends Packet> void registerPacket(Prov<T> cons){
          packetProvs.add(cons);
-@@ -59,13 +68,21 @@ public class Net{
+@@ -60,13 +69,21 @@ public class Net{
      }
  
      public static byte getPacketId(Packet packet){
@@ -199,7 +199,7 @@ index 10bb4d0f92f653b53b6e4273a799b85ca566fa16..3f71d8b38f54b1fdbcc718f4dcf0af04
      }
  
      public Net(NetProvider provider){
-@@ -199,6 +216,7 @@ public class Net{
+@@ -206,6 +223,7 @@ public class Net{
      }
  
      public void disconnect(){
@@ -207,7 +207,7 @@ index 10bb4d0f92f653b53b6e4273a799b85ca566fa16..3f71d8b38f54b1fdbcc718f4dcf0af04
          if(active && !server){
              Log.info("Disconnecting.");
          }
-@@ -272,7 +290,13 @@ public class Net{
+@@ -279,7 +297,13 @@ public class Net{
              return;
          }
  

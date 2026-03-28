@@ -8,10 +8,10 @@ Subject: [PATCH] H: replace pingHost with PingService
  1 file changed, 1 insertion(+), 4 deletions(-)
 
 diff --git a/core/src/mindustry/net/Net.java b/core/src/mindustry/net/Net.java
-index 9997b888279bab419294620036e59fb9b526d2c1..10bb4d0f92f653b53b6e4273a799b85ca566fa16 100644
+index 59845388448e8ffa33cb55065f2398161fa11190..8b47a6e1d3b6b1d09419f8d3c24e627c9adc92a0 100644
 --- a/core/src/mindustry/net/Net.java
 +++ b/core/src/mindustry/net/Net.java
-@@ -37,9 +37,6 @@ public class Net{
+@@ -38,9 +38,6 @@ public class Net{
      private final ObjectMap<Class<?>, Cons> clientListeners = new ObjectMap<>();
      private final ObjectMap<Class<?>, Cons2<NetConnection, Object>> serverListeners = new ObjectMap<>();
      private final IntMap<StreamBuilder> streams = new IntMap<>();
@@ -21,7 +21,7 @@ index 9997b888279bab419294620036e59fb9b526d2c1..10bb4d0f92f653b53b6e4273a799b85c
  
      private final NetProvider provider;
  
-@@ -359,7 +356,7 @@ public class Net{
+@@ -366,7 +363,7 @@ public class Net{
       * If the port is the default mindustry port, SRV records are checked too.
       */
      public void pingHost(String address, int port, Cons<Host> valid, Cons<Exception> failed){

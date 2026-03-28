@@ -52,7 +52,7 @@ index cce0e782176aecc3836e61e035035d22fb5bc379..40637b1e4efcd8359869f2c15bb86c63
                  Draw.z(Layer.block);
  
 diff --git a/core/src/mindustry/input/InputHandler.java b/core/src/mindustry/input/InputHandler.java
-index 4cc09ca60f2196b48582d2a0de1682da1fa5630b..767a63703af262caee9f9eabcc91cf5e7818f752 100644
+index 1e77e334a742fe6935816311a38f10d1aef934fb..78dcc334c5a6ee933838105432e9f91ca9ddaa0f 100644
 --- a/core/src/mindustry/input/InputHandler.java
 +++ b/core/src/mindustry/input/InputHandler.java
 @@ -357,6 +357,11 @@ public abstract class InputHandler implements InputProcessor, GestureListener{
