@@ -1,3 +1,29 @@
+--- ./mindustry/gen/Call.java
++++ ./mindustry/gen/Call.java
+@@ -30,6 +30,7 @@ import mindustry.type.UnitType;
+ import mindustry.type.Weather;
+ import mindustry.world.Block;
+ import mindustry.world.Tile;
++import mindustryX.features.*;
+ 
+ public class Call {
+   public static void adminRequest(Player other, Packets.AdminAction action, Object params) {
+@@ -328,6 +329,7 @@ public class Call {
+   }
+ 
+   public static void clientPlanSnapshot(int groupId, TypeIO.ClientBuildPlans plans) {
++    if(LogicExt.mockProtocol<156)return;
+     if(mindustry.Vars.net.client()) {
+       ClientPlanSnapshotCallPacket packet = new ClientPlanSnapshotCallPacket();
+       packet.groupId = groupId;
+@@ -1240,6 +1242,7 @@ public class Call {
+   }
+ 
+   public static void pingLocation(Player player, float x, float y, String text) {
++    if(LogicExt.mockProtocol<156)return;
+     if(mindustry.Vars.net.server() || !mindustry.Vars.net.active()) {
+       mindustry.input.InputHandler.pingLocation(player, x, y, text);
+     }
 --- ./mindustry/gen/ClientSnapshotCallPacket.java
 +++ ./mindustry/gen/ClientSnapshotCallPacket.java
 @@ -9,6 +9,7 @@ import mindustry.net.NetConnection;
@@ -23,7 +49,7 @@
      WRITE.f(viewY);
 --- ./mindustry/gen/Player.java
 +++ ./mindustry/gen/Player.java
-@@ -926,15 +926,17 @@ public class Player implements Drawc, Entityc, IndexableEntity__all, IndexableEn
+@@ -1155,15 +1155,17 @@ public class Player implements Drawc, Entityc, IndexableEntity__all, IndexableEn
        read.f();
      }
      this.name = mindustry.io.TypeIO.readString(read);

@@ -10,14 +10,14 @@ Content-Transfer-Encoding: 8bit
 
 ---
  core/build.gradle.kts                         |  1 +
- core/src/mindustry/core/ContentLoader.java    | 17 ++++++++++
- core/src/mindustry/core/NetClient.java        |  2 ++
- core/src/mindustry/io/TypeIO.java             | 18 ++++++++--
- core/src/mindustry/net/Net.java               | 34 ++++++++++++++++---
- core/src/mindustry/net/NetworkIO.java         | 32 +++++++++++++----
+ core/src/mindustry/core/ContentLoader.java    | 17 +++++++++
+ core/src/mindustry/core/NetClient.java        |  2 +
+ core/src/mindustry/io/TypeIO.java             | 18 +++++++--
+ core/src/mindustry/net/Net.java               | 38 ++++++++++++++++---
+ core/src/mindustry/net/NetworkIO.java         | 32 ++++++++++++----
  core/src/mindustry/net/Packets.java           |  2 +-
  core/src/mindustry/ui/dialogs/JoinDialog.java |  2 +-
- 8 files changed, 91 insertions(+), 17 deletions(-)
+ 8 files changed, 95 insertions(+), 17 deletions(-)
 
 diff --git a/core/build.gradle.kts b/core/build.gradle.kts
 index e89b8f7fe020fc5d5f1fa444da3867624a13965c..f562cd09c7b4aacdff1b6cf7fa7462c4501edbdb 100644
@@ -130,7 +130,7 @@ index 9882b8b4a5915265867a29c3a521c89b9cb6624e..897db2ddc5dcf63bdebfa833291994fa
              boolean writePlan = !headless || !net.server();
              write.b(writePlan ? 1 : 0); //always has config
 diff --git a/core/src/mindustry/net/Net.java b/core/src/mindustry/net/Net.java
-index e35f4e39b7a4c7e02f1e3e578b4159854c3c09a1..a8a273f836bb57687a1f8886ce0cf1f6ebf57984 100644
+index e35f4e39b7a4c7e02f1e3e578b4159854c3c09a1..42b8b8617b92c7fe8381c9c746729eb4028cb2d1 100644
 --- a/core/src/mindustry/net/Net.java
 +++ b/core/src/mindustry/net/Net.java
 @@ -1,6 +1,7 @@
@@ -160,12 +160,13 @@ index e35f4e39b7a4c7e02f1e3e578b4159854c3c09a1..a8a273f836bb57687a1f8886ce0cf1f6
  import static mindustry.Vars.*;
  
  @SuppressWarnings("unchecked")
-@@ -53,6 +54,14 @@ public class Net{
+@@ -53,6 +54,15 @@ public class Net{
          Call.registerPackets();
      }
  
 +    private static final ProtocolMap v146ProtocolMap = new ProtocolMap("v146");
 +    private static final ProtocolMap v153ProtocolMap = new ProtocolMap("v153");
++    private static final ProtocolMap v155ProtocolMap = new ProtocolMap("v155");
 +
 +    @MindustryXApi
 +    public static Seq<Class<? extends Packet>> allPacketClasses(){
@@ -175,13 +176,14 @@ index e35f4e39b7a4c7e02f1e3e578b4159854c3c09a1..a8a273f836bb57687a1f8886ce0cf1f6
      /** Registers a new packet type for serialization. */
      public static <T extends Packet> void registerPacket(Prov<T> cons){
          packetProvs.add(cons);
-@@ -62,13 +71,21 @@ public class Net{
+@@ -62,13 +72,24 @@ public class Net{
      }
  
      public static byte getPacketId(Packet packet){
 -        int id = packetToId.get(packet.getClass(), -1);
 +        int id = LogicExt.v146Mode ? v146ProtocolMap.getId(packet) :
 +        LogicExt.mockProtocol <= 153 ? v153ProtocolMap.getId(packet) :
++        LogicExt.mockProtocol <= 155 ? v155ProtocolMap.getId(packet) :
 +        packetToId.get(packet.getClass(), -1);
          if(id == -1) throw new ArcRuntimeException("Unknown packet type: " + packet.getClass());
          return (byte)id;
@@ -194,12 +196,14 @@ index e35f4e39b7a4c7e02f1e3e578b4159854c3c09a1..a8a273f836bb57687a1f8886ce0cf1f6
 +            id2 = v146ProtocolMap.mapId(id2);
 +        }else if(LogicExt.mockProtocol <= 153){
 +            id2 = v153ProtocolMap.mapId(id2);
++        }else if(LogicExt.mockProtocol <= 155){
++            id2 = v155ProtocolMap.mapId(id2);
 +        }
 +        return ((Prov<T>)packetProvs.get(id2)).get();
      }
  
      public Net(NetProvider provider){
-@@ -208,6 +225,7 @@ public class Net{
+@@ -208,6 +229,7 @@ public class Net{
      }
  
      public void disconnect(){
@@ -207,7 +211,7 @@ index e35f4e39b7a4c7e02f1e3e578b4159854c3c09a1..a8a273f836bb57687a1f8886ce0cf1f6
          if(active && !server){
              Log.info("Disconnecting.");
          }
-@@ -281,7 +299,13 @@ public class Net{
+@@ -281,7 +303,13 @@ public class Net{
              return;
          }
  
