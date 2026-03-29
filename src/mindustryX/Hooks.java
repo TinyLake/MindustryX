@@ -8,6 +8,7 @@ import mindustry.game.EventType.*;
 import mindustry.gen.*;
 import mindustry.mod.*;
 import mindustryX.features.*;
+import mindustryX.features.ui.*;
 
 import java.net.*;
 import java.util.*;
@@ -87,6 +88,13 @@ public class Hooks implements ApplicationListener{
                 builder.append(" ").append(message);
                 message = builder.toString();
             }
+        }
+        return message;
+    }
+
+    public static @Nullable String onHandleInfoPopup(@Nullable String message, float duration, int align, int top, int left, int bottom, int right){
+        if(Vars.ui != null && BroadOverlay.tryHandleInfoPopup(message, duration, align, top, left, bottom, right)){
+            return null;
         }
         return message;
     }

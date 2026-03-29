@@ -22,6 +22,7 @@ object UIExtKt {
     fun init() {
         LogicSupport.init()
         OverlayUI.init()
+        BroadOverlay.init()
 
         val inGameOnly = Prov { Vars.state.isGame }
         OverlayUI.registerWindow("debug", DebugUtil.metricTable())
