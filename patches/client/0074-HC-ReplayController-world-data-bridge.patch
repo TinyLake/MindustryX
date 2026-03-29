@@ -1,0 +1,264 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Codex <codex@example.com>
+Date: Sun, 15 Mar 2026 12:27:58 +0800
+Subject: [PATCH] HC: ReplayController world data bridge
+
+---
+ core/src/mindustry/core/NetClient.java     |  16 +++-
+ core/src/mindustry/core/NetServer.java     |   7 +-
+ core/src/mindustry/net/ArcNetProvider.java |   3 +
+ core/src/mindustry/net/Net.java            | 105 +++++++++++++++++++--
+ 4 files changed, 121 insertions(+), 10 deletions(-)
+
+diff --git a/core/src/mindustry/core/NetClient.java b/core/src/mindustry/core/NetClient.java
+index 52088c330e65c9fa30d0bab87f9e020fb022f4b2..739c9babdafd0218bc3d62f18130a781f1e20189 100644
+--- a/core/src/mindustry/core/NetClient.java
++++ b/core/src/mindustry/core/NetClient.java
+@@ -149,8 +148,19 @@ public class NetClient implements ApplicationListener{
+         });
+ 
+         net.handleClient(WorldStream.class, data -> {
+-            Log.info("Received world data: @ bytes.", data.stream.available());
+-            NetworkIO.loadWorld(new InflaterInputStream(data.stream));
++            byte[] bytes;
++            try{
++                ByteArrayOutputStream stream = new ByteArrayOutputStream(Math.max(data.stream.available(), 32));
++                byte[] buffer = new byte[4096];
++                for(int read; (read = data.stream.read(buffer)) != -1; ){
++                    stream.write(buffer, 0, read);
++                }
++                bytes = stream.toByteArray();
++            }catch(IOException e){
++                throw new RuntimeException("Failed to read world data stream.", e);
++            }
++            Log.info("Received world data: @ bytes.", bytes.length);
++            Net.notifyReplayClientWorldData(bytes);
++            NetworkIO.loadWorld(new InflaterInputStream(new ByteArrayInputStream(bytes)));
+ 
+             Time.run(60f, () -> Call.serverPacketReliable("MDTX", VarsX.version));
+             finishConnecting();
+@@ -423,6 +433,7 @@ public class NetClient implements ApplicationListener{
+         netClient.removed.clear();
+         logic.reset();
+         netClient.connecting = true;
++        Net.notifyReplayClientWorldDataBegin();
+ 
+         net.setClientLoaded(false);
+ 
+diff --git a/core/src/mindustry/core/NetServer.java b/core/src/mindustry/core/NetServer.java
+index 5640d67af6a90f2d4f60f3163164440c20efa271..1ff6734083cd2ff4685512bb101ec38b718a4cdb 100644
+--- a/core/src/mindustry/core/NetServer.java
++++ b/core/src/mindustry/core/NetServer.java
+@@ -507,8 +507,10 @@ public class NetServer implements ApplicationListener{
+         ByteArrayOutputStream stream = new ByteArrayOutputStream();
+         DeflaterOutputStream def = new FastDeflaterOutputStream(stream);
+         NetworkIO.writeWorld(player, def);
++        byte[] worldData = stream.toByteArray();
++        Net.notifyReplayServerWorldData(player.con, worldData);
+         WorldStream data = new WorldStream();
+-        data.stream = new ByteArrayInputStream(stream.toByteArray());
++        data.stream = new ByteArrayInputStream(worldData);
+         player.con.sendStream(data);
+ 
+         debug("Packed @ bytes of world data to @ (@ / @)", stream.size(), player.name, player.con.address, player.uuid());
+@@ -535,6 +537,9 @@ public class NetServer implements ApplicationListener{
+     }
+ 
+     public static void onDisconnect(Player player, String reason){
++        if(player.con != null){
++            Net.notifyReplayServerDisconnect(player.con);
++        }
+         //singleplayer multiplayer weirdness
+         if(player.con == null){
+             player.remove();
+diff --git a/core/src/mindustry/net/ArcNetProvider.java b/core/src/mindustry/net/ArcNetProvider.java
+index f2bf3bba1bf733159746729bc1aa7499d205affd..61def2d060c475fc248ac295c01b450307554e5e 100644
+--- a/core/src/mindustry/net/ArcNetProvider.java
++++ b/core/src/mindustry/net/ArcNetProvider.java
+@@ -379,6 +379,9 @@ public class ArcNetProvider implements NetProvider{
+                     }else{
+                         connection.sendUDP(object);
+                     }
++                    if(object instanceof Packet packet){
++                        Net.notifyReplayServerPacket((NetConnection)this, packet);
++                    }
+                 }
+             }catch(Exception e){
+                 Log.err(e);
+diff --git a/core/src/mindustry/net/Net.java b/core/src/mindustry/net/Net.java
+index cb76e9e2a90af2d54aa5668def238828a236c876..df5e7707a10e3ad84a4d9092c000b9c977c7b825 100644
+--- a/core/src/mindustry/net/Net.java
++++ b/core/src/mindustry/net/Net.java
+@@ -17,6 +17,7 @@ import mindustryX.features.*;
+ import net.jpountz.lz4.*;
+ 
+ import java.io.*;
++import java.lang.reflect.*;
+ import java.nio.*;
+ import java.nio.channels.*;
+ 
+@@ -28,6 +29,7 @@ public class Net{
+     private static Seq<Prov<? extends Packet>> packetProvs = new Seq<>();
+     private static Seq<Class<? extends Packet>> packetClasses = new Seq<>();
+     private static ObjectIntMap<Class<?>> packetToId = new ObjectIntMap<>();
++    private static final ThreadLocal<Packet> replayServerDispatchPacket = new ThreadLocal<>();
+ 
+     private boolean server;
+     private boolean active;
+@@ -41,6 +43,45 @@ public class Net{
+ 
+     private final NetProvider provider;
+ 
++    private static final class ReplayBridge{
++        private static boolean resolved;
++        private static boolean available;
++        private static Method prepareClientRecording;
++        private static Method onClientWorldDataBegin;
++        private static Method onClientWorldData;
++        private static Method onClientPacket;
++        private static Method onServerWorldData;
++        private static Method onServerPacket;
++        private static Method onServerDisconnect;
++
++        private static void resolve(){
++            if(resolved) return;
++            resolved = true;
++            try{
++                Class<?> type = Class.forName("mindustryX.features.ReplayController");
++                prepareClientRecording = type.getMethod("prepareClientRecording", String.class);
++                onClientWorldDataBegin = type.getMethod("onClientWorldDataBegin");
++                onClientWorldData = type.getMethod("onClientWorldData", byte[].class);
++                onClientPacket = type.getMethod("onClientPacket", Packet.class);
++                onServerWorldData = type.getMethod("onServerWorldData", NetConnection.class, byte[].class);
++                onServerPacket = type.getMethod("onServerPacket", NetConnection.class, Packet.class);
++                onServerDisconnect = type.getMethod("onServerDisconnect", NetConnection.class);
++                available = true;
++            }catch(Throwable ignored){
++                available = false;
++            }
++        }
++
++        private static void invoke(@Nullable Method method, Object... args){
++            resolve();
++            if(!available || method == null) return;
++            try{
++                method.invoke(null, args);
++            }catch(Throwable ignored){
++            }
++        }
++    }
++
+     static{
+         registerPacket(StreamBegin::new);
+         registerPacket(StreamChunk::new);
+@@ -175,6 +216,7 @@ public class Net{
+         try{
+             if(!active){
+                 Events.fire(new ClientServerConnectEvent(ip, port));
++                ReplayBridge.invoke(ReplayBridge.prepareClientRecording, ip + ":" + port);
+                 provider.connectClient(ip, port, success);
+                 active = true;
+                 server = false;
+@@ -244,9 +286,24 @@ public class Net{
+     public void send(Object object, boolean reliable){
+         if(SendPacketEvent.emit(null, null, object)) return;
+         if(server){
+-            for(NetConnection con : provider.getConnections()){
+-                if(!con.hasBegunConnecting) continue;
+-                con.send(object, reliable);
++            Packet packet = object instanceof Packet p ? p : null;
++            Packet previousReplayServerDispatchPacket = null;
++            if(packet != null){
++                previousReplayServerDispatchPacket = replayServerDispatchPacket.get();
++                replayServerDispatchPacket.set(packet);
++            }
++            try{
++                boolean recorded = false;
++                for(NetConnection con : provider.getConnections()){
++                    if(!con.hasBegunConnecting) continue;
++                    if(packet != null && !recorded){
++                        ReplayBridge.invoke(ReplayBridge.onServerPacket, null, packet);
++                        recorded = true;
++                    }
++                    con.send(object, reliable);
++                }
++            }finally{
++                if(packet != null){
++                    if(previousReplayServerDispatchPacket == null){
++                        replayServerDispatchPacket.remove();
++                    }else{
++                        replayServerDispatchPacket.set(previousReplayServerDispatchPacket);
++                    }
++                }
+             }
+         }else{
+             reliable |= LogicExt.reliableSync.get();
+@@ -257,9 +314,22 @@ public class Net{
+     /** Send an object to everyone EXCEPT a certain client. Server-side only.*/
+     public void sendExcept(NetConnection except, Object object, boolean reliable){
+         if(SendPacketEvent.emit(null, except, object)) return;
+-        for(NetConnection con : getConnections()){
+-            if(con != except && con.hasBegunConnecting){
+-                con.send(object, reliable);
++        Packet packet = object instanceof Packet p ? p : null;
++        Packet previousReplayServerDispatchPacket = null;
++        if(packet != null){
++            previousReplayServerDispatchPacket = replayServerDispatchPacket.get();
++            replayServerDispatchPacket.set(packet);
++        }
++        try{
++            for(NetConnection con : getConnections()){
++                if(con != except && con.hasBegunConnecting){
++                    if(packet != null){
++                        ReplayBridge.invoke(ReplayBridge.onServerPacket, con, packet);
++                    }
++                    con.send(object, reliable);
++                }
++            }
++        }finally{
++            if(packet != null){
++                if(previousReplayServerDispatchPacket == null){
++                    replayServerDispatchPacket.remove();
++                }else{
++                    replayServerDispatchPacket.set(previousReplayServerDispatchPacket);
++                }
+             }
+         }
+     }
+@@ -317,7 +387,7 @@ public class Net{
+             int p = object.getPriority();
+ 
+             if(clientLoaded || p == Packet.priorityHigh){
+-                ReplayController.onClientPacket(object);
++                ReplayBridge.invoke(ReplayBridge.onClientPacket, object);
+                 if(clientListeners.get(object.getClass()) != null){
+                     clientListeners.get(object.getClass()).get(object);
+                 }else{
+@@ -403,6 +473,27 @@ public class Net{
+         active = false;
+     }
+ 
++    public static void notifyReplayClientWorldDataBegin(){
++        ReplayBridge.invoke(ReplayBridge.onClientWorldDataBegin);
++    }
++
++    public static void notifyReplayClientWorldData(byte[] worldData){
++        ReplayBridge.invoke(ReplayBridge.onClientWorldData, worldData);
++    }
++
++    public static void notifyReplayServerWorldData(NetConnection connection, byte[] worldData){
++        ReplayBridge.invoke(ReplayBridge.onServerWorldData, connection, worldData);
++    }
++
++    public static void notifyReplayServerPacket(NetConnection connection, Packet packet){
++        if(packet == null || replayServerDispatchPacket.get() == packet) return;
++        ReplayBridge.invoke(ReplayBridge.onServerPacket, connection, packet);
++    }
++
++    public static void notifyReplayServerDisconnect(NetConnection connection){
++        ReplayBridge.invoke(ReplayBridge.onServerDisconnect, connection);
++    }
++
+     /** Networking implementation. */
+     public interface NetProvider{
+         /** Connect to a server. */

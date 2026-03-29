@@ -109,6 +109,8 @@ interface UiTextBundle {
     fun playerName(value: String): String = "玩家名:$value"
     fun packetCount(value: Int): String = "数据包总数：$value"
     fun playbackLength(value: String): String = "回放长度:$value"
+    fun replayRewindToCheckpoint(): String = "回退到上一个检查点"
+    fun replayNoCheckpoint(): String = "还没有可回退的检查点"
     fun sizeWithDimensions(width: String, height: String): String = "大小：$width\uE815$height"
     fun tiles(value: Number): String = "${value}格"
     fun tilesOrOff(value: Int): String = if (value > 0) "${value}格" else "关闭"
