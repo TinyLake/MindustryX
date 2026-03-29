@@ -48,7 +48,7 @@ object NewToolTable : Table() {
         }
         toggle(i("扫"), i("扫描模式"), { RenderExt.transportScan.value }) { RenderExt.transportScan.toggle() }
 
-        toggle(i("块"), i("建筑显示"), { RenderExt.blockRenderLevel > 0 }) { RenderExt.blockRenderLevel0.cycle() }
+        toggle(i("块"), i("建筑层级"), { RenderExt.shouldDrawBuildingLayer() }) { RenderExt.cycleBuildingVisibility() }
         toggle(i("兵"), i("兵种显示"), { !RenderExt.unitHide.value }) { RenderExt.unitHide.toggle() }
         toggle(i("弹"), i("子弹显示"), { !RenderExt.noBulletShow.value }) { RenderExt.noBulletShow.toggle() }
         toggle(i("效"), i("特效显示"), { Vars.renderer.enableEffects }) { Settings.toggle("effects") }

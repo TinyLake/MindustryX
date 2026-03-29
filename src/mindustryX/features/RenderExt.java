@@ -183,8 +183,47 @@ public class RenderExt{
         }
     }
 
+    public static boolean shouldDrawFloorLayer(){
+        return LogicExt.isFloorLayerEnabled();
+    }
+
+    public static boolean shouldDrawOreLayer(){
+        return LogicExt.isOreLayerEnabled();
+    }
+
+    public static boolean shouldDrawBuildingLayer(){
+        return LogicExt.isBlockLayerEnabled() && blockRenderLevel > 0;
+    }
+
+    public static boolean shouldDrawBuildingBase(){
+        return LogicExt.isBlockLayerEnabled() && blockRenderLevel > 1;
+    }
+
+    public static boolean shouldDraw(LogicExt.BlockLayer layer){
+        return switch(layer){
+            case FLOOR -> shouldDrawFloorLayer();
+            case ORE -> shouldDrawOreLayer();
+            case BLOCK -> shouldDrawBuildingLayer();
+        };
+    }
+
+    public static boolean shouldDraw(Block block){
+        return block != null && !block.isAir() && shouldDraw(LogicExt.classifyBlockLayer(block));
+    }
+
+    public static void cycleBuildingVisibility(){
+        if(!LogicExt.blockLayerEnabled0.get()){
+            LogicExt.blockLayerEnabled0.set(true);
+            if(blockRenderLevel0.get() <= 0){
+                blockRenderLevel0.set(1);
+            }
+            return;
+        }
+        blockRenderLevel0.cycle();
+    }
+
     public static void onBlockDraw(Tile tile, Block block, @Nullable Building build){
-        if(blockRenderLevel < 2) return;
+        if(!shouldDrawBuildingBase()) return;
         block.drawBase(tile);
         if(displayAllMessage && build instanceof MessageBuild){
             Draw.z(Layer.overlayUI - 0.1f);
