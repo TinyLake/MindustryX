@@ -12,10 +12,11 @@ way-zer <himc.wicp@gmail.com> on 2024/4/22 at 18:10
 实现功能按钮
 way-zer <himc.wicp@gmail.com> on 2024/4/22 at 20:15
 ---
- core/src/mindustry/core/NetClient.java | 2 ++
- core/src/mindustry/io/TypeIO.java      | 2 +-
- core/src/mindustry/net/Net.java        | 2 ++
- 3 files changed, 5 insertions(+), 1 deletion(-)
+ core/src/mindustry/core/NetClient.java     | 2 ++
+ core/src/mindustry/io/TypeIO.java          | 2 +-
+ core/src/mindustry/net/ArcNetProvider.java | 2 +-
+ core/src/mindustry/net/Net.java            | 6 +++++-
+ 4 files changed, 9 insertions(+), 3 deletions(-)
 
 diff --git a/core/src/mindustry/core/NetClient.java b/core/src/mindustry/core/NetClient.java
 index ad8cb42c3af354a45ebd210533ee6b532aba143e..c7c877530b3e908a1df7bf59c1867f3928d62a18 100644
@@ -50,8 +51,21 @@ index e04f97ccd666c90fd03b17f5b268a21443886626..9882b8b4a5915265867a29c3a521c89b
      }
  
      public static void writeUnit(Writes write, Unit unit){
+diff --git a/core/src/mindustry/net/ArcNetProvider.java b/core/src/mindustry/net/ArcNetProvider.java
+index 2efa8a01aedcfc506c8784ace465a835c0d634f5..0db8f792161317bad27f457575112051befe7bef 100644
+--- a/core/src/mindustry/net/ArcNetProvider.java
++++ b/core/src/mindustry/net/ArcNetProvider.java
+@@ -438,7 +438,7 @@ public class ArcNetProvider implements NetProvider{
+             }else{
+                 //read length int, followed by compressed lz4 data
+                 Packet packet = Net.newPacket(id);
+-                if(!packet.allow(net.server())) throw new RuntimeException("Invalid packet type for endpoint: " + packet.getClass());
++                if(!packet.allow(net.server() && !Net.fakeServer)) throw new RuntimeException("Invalid packet type for endpoint: " + packet.getClass());
+                 var buffer = decompressBuffer.get();
+                 int length = byteBuffer.getShort() & 0xffff;
+                 byte compression = byteBuffer.get();
 diff --git a/core/src/mindustry/net/Net.java b/core/src/mindustry/net/Net.java
-index 97591d04f64e11f5c52041de84c6f180ad112596..9fab7466cea15ec7d8dbe9c27fcc9850f7d8e591 100644
+index 97591d04f64e11f5c52041de84c6f180ad112596..2c297279bf049fe625f8b1d39d7181a6c2d54d74 100644
 --- a/core/src/mindustry/net/Net.java
 +++ b/core/src/mindustry/net/Net.java
 @@ -11,6 +11,7 @@ import mindustry.gen.*;
@@ -62,7 +76,16 @@ index 97591d04f64e11f5c52041de84c6f180ad112596..9fab7466cea15ec7d8dbe9c27fcc9850
  import net.jpountz.lz4.*;
  
  import java.io.*;
-@@ -305,6 +306,7 @@ public class Net{
+@@ -26,6 +27,8 @@ public class Net{
+     private static Seq<Prov<? extends Packet>> packetProvs = new Seq<>();
+     private static Seq<Class<? extends Packet>> packetClasses = new Seq<>();
+     private static ObjectIntMap<Class<?>> packetToId = new ObjectIntMap<>();
++    @MindustryXApi
++    public static boolean fakeServer = false;
+ 
+     private boolean server;
+     private boolean active;
+@@ -305,6 +308,7 @@ public class Net{
              int p = object.getPriority();
  
              if(clientLoaded || p == Packet.priorityHigh){
@@ -70,3 +93,12 @@ index 97591d04f64e11f5c52041de84c6f180ad112596..9fab7466cea15ec7d8dbe9c27fcc9850
                  if(clientListeners.get(object.getClass()) != null){
                      clientListeners.get(object.getClass()).get(object);
                  }else{
+@@ -377,7 +381,7 @@ public class Net{
+      * Whether this is a server or not.
+      */
+     public boolean server(){
+-        return server && active;
++        return fakeServer || (server && active);
+     }
+ 
+     /**

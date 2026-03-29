@@ -5,7 +5,6 @@ import arc.util.Time
 import arc.util.io.ByteBufferOutput
 import arc.util.io.Reads
 import arc.util.io.Writes
-import mindustry.Vars
 import mindustry.net.Net
 import mindustry.net.Packet
 import mindustry.net.Streamable
@@ -21,10 +20,6 @@ data class ReplayData(
     val serverIp: String,
     val recordPlayer: String,
 ) {
-    private object FakeServer : Net(null) {
-        override fun server(): Boolean = true
-    }
-
     class Writer(outputStream: OutputStream) : Closeable {
         val writes = DataOutputStream(DeflaterOutputStream(outputStream))
         private val startTime = Time.time
@@ -50,12 +45,12 @@ data class ReplayData(
                 reset()
             } else {
                 tmpBuf.position(0)
-                val oldNet = Vars.net
                 try {
-                    Vars.net = FakeServer
+                    // 一些IO函数会判断是否是server，所以需要临时设置。
+                    Net.fakeServer = true
                     packet.write(tmpWr)
                 } finally {
-                    Vars.net = oldNet
+                    Net.fakeServer = false
                 }
                 writes.writeVarShort(tmpBuf.position())
                 writes.write(tmpBuf.array(), 0, tmpBuf.position())
