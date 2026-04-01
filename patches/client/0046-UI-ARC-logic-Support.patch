@@ -88,7 +88,7 @@ index b4ad9b3237f35d6783bc85daa8a86b820bc20ecd..599f907dc69bac24e7e5de16f5e6b188
 +                Seq<LStatement> lsStatement = LAssembler.read(code, privileged);
 +                LStatement stNew = lsStatement.first();
 +                if(stNew instanceof InvalidStatement){
-+                    UIExt.announce(mindustryX.features.UIExt.i("[orange]警告：转换失败，请输入正确格式"));
++                    UIExt.announce(UIExt.i("[orange]警告：转换失败，请输入正确格式"));
 +                    return;
 +                }
 +                newElem = new StatementElem(stNew);
@@ -194,7 +194,7 @@ index 4f172c5f66736634dac190b115827695ab7993f7..ecbe2ed06b45257a1deb16ce7dbab495
 +                    var scroll = (ScrollPane)canvas.parent;
 +                    scroll.setScrollY(scroll.getMaxY() - dest.y + scroll.getHeight() * 0.5f);
 +                    saveUI();
-+                    UIExt.announce(Strings.format(mindustryX.features.UIExt.i("[gold]跳转行号:[] @"), destIndex));
++                    UIExt.announce(Strings.format(UIExt.i("[gold]跳转行号:[] @"), destIndex));
 +
 +                    Element header = dest.getChildren().first();
 +                    dest.clearActions();
@@ -254,7 +254,7 @@ index 51c8576d8b41d43e25eb86400d169b9a108e6642..de370177beb5fec5b3b00abbb3dd8e2c
                      }).marginLeft(12f);
 -
 +                    t.row();
-+                    t.button(mindustryX.features.UIExt.i("[orange]丢弃更改"), Icon.cancel,style, () -> ui.showConfirm(mindustryX.features.UIExt.i("确认丢弃?"), () -> {
++                    t.button(UIExt.i("[orange]丢弃更改"), Icon.cancel,style, () -> ui.showConfirm(UIExt.i("确认丢弃?"), () -> {
 +                        noSave = true;
 +                        dialog.hide();
 +                        hide();
