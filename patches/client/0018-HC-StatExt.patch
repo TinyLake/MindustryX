@@ -141,7 +141,7 @@ index c5dcf4d7a8cc541f1e660bf4a9de7cc766edf08e..1f91114f0f326727f604f214fb225abb
 +        }
  
          if(mineTier >= 1){
-+            stats.add(StatExt.mineLevel, UIExt.i("@级"), mineTier);
++            stats.add(StatExt.mineLevel, Core.bundle.get("stat.mine-level-value"), mineTier);
              stats.addPercent(Stat.mineSpeed, mineSpeed);
 -            stats.add(Stat.mineTier, StatValues.drillables(mineSpeed, 1f, 1, null, b ->
 +            stats.add(Stat.mineTier, StatValues.drillables(mineHardnessScaling ? 50 : 65, mineHardnessScaling ? 1 : 0, mineSpeed, null, b ->
@@ -177,14 +177,14 @@ index eedcaa20c7b63b6c41d647cead5febc8b8c2dacb..c527a7c4e0164fcbb22240880692f58b
  
      public void addStats(UnitType u, Table t){
 +        t.row();
-+        t.add(Strings.format(UIExt.i("[lightgray]武器范围: [stat]@[]格"), String.format("%.1f", bullet.range/8f)));
++        t.add(Core.bundle.format("stat.weapon-range", String.format("%.1f", bullet.range / 8f)));
 +
 +        if (rotate) {
 +            t.row();
-+            t.add(Strings.format(UIExt.i("[lightgray]旋转速度: [stat]@[]°/s"), String.format("%.0f", rotateSpeed * 60f)));
++            t.add(Core.bundle.format("stat.rotate-speed", String.format("%.0f", rotateSpeed * 60f)));
 +            if (rotationLimit < 361f) {
 +                t.row();
-+                t.add(Strings.format(UIExt.i("[lightgray]旋转范围: [stat]@[]@"), String.format("%.0f", rotationLimit), StatUnit.degrees.localized()));
++                t.add(Core.bundle.format("stat.rotate-range", String.format("%.0f", rotationLimit), StatUnit.degrees.localized()));
 +            }
 +        }
 +
@@ -597,12 +597,12 @@ index ed4923b10a5ef2b55632d9c1a16e7156b901d7dc..b5d0554771df365dbdd96e8bb488a5b8
  
                      if(type.buildingDamageMultiplier != 1){
 -                        sep(bt, Core.bundle.format("bullet.buildingdamage", ammoStat((int)(type.buildingDamageMultiplier * 100 - 100))));
-+                        sep(bt, multStat(type.buildingDamageMultiplier) + UIExt.i("[lightgray]x建筑伤害"));
++                        sep(bt, Core.bundle.format("bullet.buildingdamage.multiplier", multStat(type.buildingDamageMultiplier)));
                      }
  
                      if(type.rangeChange != 0 && !compact){
 -                        sep(bt, Core.bundle.format("bullet.range", ammoStat(type.rangeChange / tilesize)));
-+                        sep(bt, Strings.format(UIExt.i("[lightgray]射程 @[lightgray]格"), ammoStat(type.rangeChange / tilesize)));
++                        sep(bt, Core.bundle.format("bullet.range.detail", ammoStat(type.rangeChange / tilesize)));
                      }
  
                      if(type.shieldDamageMultiplier != 1){
@@ -612,7 +612,7 @@ index ed4923b10a5ef2b55632d9c1a16e7156b901d7dc..b5d0554771df365dbdd96e8bb488a5b8
                      if(!compact && !Mathf.equal(type.reloadMultiplier, 1f)){
 -                        int val = (int)(type.reloadMultiplier * 100 - 100);
 -                        sep(bt, Core.bundle.format("bullet.reload", ammoStat(val)));
-+                        sep(bt, multStat(type.reloadMultiplier) + UIExt.i("[lightgray]x射速"));
++                        sep(bt, Core.bundle.format("bullet.reload.multiplier", multStat(type.reloadMultiplier)));
                      }
  
                      if(type.knockback > 0){
@@ -626,20 +626,19 @@ index ed4923b10a5ef2b55632d9c1a16e7156b901d7dc..b5d0554771df365dbdd96e8bb488a5b8
 +                        boolean laserPierce = type instanceof LaserBulletType || type instanceof ContinuousLaserBulletType || type instanceof ShrapnelBulletType;
 +                        boolean pierceBuilding = laserPierce || type instanceof ContinuousFlameBulletType || type instanceof RailBulletType || type.pierceBuilding;
 +                        boolean pierceUnit = type.pierce;
-+                        StringBuilder str = new StringBuilder("[stat]");
++                        String pierceAmount;
 +                        if(type instanceof RailBulletType rail){
-+                            str.append(Strings.format(UIExt.i("@%衰减"), Strings.autoFixed(rail.pierceDamageFactor * 100f, 1)));
++                            pierceAmount = Core.bundle.format("bullet.pierce-falloff", Strings.autoFixed(rail.pierceDamageFactor * 100f, 1));
++                        }else if(type.pierceCap == -1){
++                            pierceAmount = Core.bundle.get("bullet.infinitepierce");
 +                        }else{
-+                            str.append(type.pierceCap == -1 ? UIExt.i("无限") : type.pierceCap + "x");
++                            pierceAmount = Core.bundle.format("bullet.pierce-count-multiplier", type.pierceCap);
 +                        }
-+                        str.append(UIExt.i("穿透[lightgray]"));
-+                        if(pierceBuilding && pierceUnit){
-+                            str.append(UIExt.i("建筑与单位"));
-+                        }else{
-+                            str.append(pierceBuilding ? UIExt.i("建筑") : UIExt.i("单位"));
-+                        }
-+                        if(laserPierce) str.append(UIExt.i("[stat](电性)"));
-+                        sep(bt, str.toString());
++                        String pierceTargets = Core.bundle.get(
++                            pierceBuilding && pierceUnit ? "bullet.pierce-target.buildings-units" :
++                            pierceBuilding ? "bullet.pierce-target.buildings" : "bullet.pierce-target.units"
++                        );
++                        sep(bt, Core.bundle.format("bullet.pierce-detail", pierceAmount, pierceTargets, laserPierce ? Core.bundle.get("bullet.pierce-type-electric") : ""));
                      }
  
                      if(type.incendAmount > 0){
@@ -648,7 +647,7 @@ index ed4923b10a5ef2b55632d9c1a16e7156b901d7dc..b5d0554771df365dbdd96e8bb488a5b8
  
                      if(type.homingPower > 0.01f){
 -                        sep(bt, "@bullet.homing");
-+                        sep(bt, Strings.format(UIExt.i("[stat]追踪[lightgray]~[]@°/s[lightgray]~[]@[lightgray]格"), Strings.autoFixed(type.homingPower * 50 * Time.toSeconds, 1), Strings.fixed(type.homingRange / tilesize, 1)));
++                        sep(bt, Core.bundle.format("bullet.homing.detail", Strings.autoFixed(type.homingPower * 50 * Time.toSeconds, 1), Strings.fixed(type.homingRange / tilesize, 1)));
                      }
  
 -                    if(type.lightning > 0){
@@ -672,7 +671,7 @@ index ed4923b10a5ef2b55632d9c1a16e7156b901d7dc..b5d0554771df365dbdd96e8bb488a5b8
                      }
  
 +                    if(type instanceof EmpBulletType eb){
-+                        collapse(bt, Strings.format(UIExt.i("[stat]EMP~@[lightgray]格[]~[white]\uE810[]@%/[white]\uE86D[]@%~[white]\uF899[][green]@%[]/[negstat]@%[]"),
++                        collapse(bt, Core.bundle.format("bullet.emp.summary",
 +                        Strings.autoFixed(eb.radius / tilesize, 0),
 +                        Strings.autoFixed(eb.powerDamageScl * 100, 0),
 +                        Strings.autoFixed(eb.unitDamageScl * 100, 0),
@@ -680,10 +679,10 @@ index ed4923b10a5ef2b55632d9c1a16e7156b901d7dc..b5d0554771df365dbdd96e8bb488a5b8
 +                        Strings.autoFixed(eb.powerSclDecrease * 100, 0)
 +                        ), ec -> {
 +                            ec.defaults().padLeft(5f);
-+                            sep(ec, Strings.format(UIExt.i("[stat]对敌方电网建筑造成@%子弹伤害"), Strings.autoFixed(eb.powerDamageScl * 100, 0)));
-+                            sep(ec, Strings.format(UIExt.i("[stat]对敌方单位造成@%子弹伤害"), Strings.autoFixed(eb.unitDamageScl * 100, 0)));
-+                            sep(ec, Strings.format(UIExt.i("[stat]对我方耗电建筑超速至@%"), Strings.autoFixed(eb.timeIncrease * 100, 0)));
-+                            sep(ec, Strings.format(UIExt.i("[stat]对敌方电网建筑减速至@%"), Strings.autoFixed(eb.powerSclDecrease * 100, 0)));
++                            sep(ec, Core.bundle.format("bullet.emp.power-damage", Strings.autoFixed(eb.powerDamageScl * 100, 0)));
++                            sep(ec, Core.bundle.format("bullet.emp.unit-damage", Strings.autoFixed(eb.unitDamageScl * 100, 0)));
++                            sep(ec, Core.bundle.format("bullet.emp.time-increase", Strings.autoFixed(eb.timeIncrease * 100, 0)));
++                            sep(ec, Core.bundle.format("bullet.emp.power-slow", Strings.autoFixed(eb.powerSclDecrease * 100, 0)));
 +                        });
 +                    }
 +
@@ -696,17 +695,9 @@ index ed4923b10a5ef2b55632d9c1a16e7156b901d7dc..b5d0554771df365dbdd96e8bb488a5b8
  
 +    public static StatValue lightning(int shots, float damage, int length, int lengthRand){
 +        return table -> {
-+            String str = "[lightgray]";
-+            if(shots > 0){
-+                str += String.format("[stat]%d[]x", shots);
-+            }
-+            str += Strings.format(UIExt.i("闪电~[stat]@[]伤害~"), Strings.autoFixed(damage, 1));
-+            if(lengthRand > 0){
-+                str += Strings.format(UIExt.i("[stat]@~@[]长度"), length, length + lengthRand);
-+            }else{
-+                str += Strings.format(UIExt.i("[stat]@[]长度"), length);
-+            }
-+            sep(table, str);
++            String shotsText = shots > 0 ? Core.bundle.format("bullet.lightning.count", shots) : "";
++            String lengthText = lengthRand > 0 ? Core.bundle.format("bullet.lightning.length-range", length, length + lengthRand) : Core.bundle.format("bullet.lightning.length", length);
++            sep(table, Core.bundle.format("bullet.lightning.summary", shotsText, Strings.autoFixed(damage, 1), lengthText));
 +        };
 +    }
 +

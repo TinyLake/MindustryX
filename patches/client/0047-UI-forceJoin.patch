@@ -59,9 +59,9 @@ index 3c53dc4a75e570a7f3937cd0ca44ca2f3cffde4c..fef21d30db9c61fd17c6fe0390de27b2
 +                title.setAlignment(Align.center);
 +                cont.add(Core.bundle.format("server.versions", Version.build, version)).row();
 +                cont.row();
-+                cont.add(mindustryX.features.UIExt.i("[gold]MDTX[]: 目标版本可能兼容，你可以选择伪装版本强制加入。\n如果出现[red]网络错误[]或其他问题，表示无法兼容。")).row();
++                cont.add(Core.bundle.get("forceJoin.tips")).row();
 +                cont.pack();
-+                buttons.button(mindustryX.features.UIExt.i("强制加入"), () -> {
++                buttons.button(Core.bundle.get("forceJoin.button"), () -> {
 +                    hide();
 +                    ConnectPacket.clientVersion = version;
 +                    connect(ip, port);

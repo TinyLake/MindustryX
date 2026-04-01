@@ -812,7 +812,7 @@ index 1f91114f0f326727f604f214fb225abb2f4d3151..8793c8fbf8eab887cabffadf9a6c07ca
  
              if(payloadCapacity > 0 && unit instanceof Payloadc payload){
 -                bars.add(new Bar("stat.payloadcapacity", Pal.items, () -> payload.payloadUsed() / payloadCapacity));
-+                bars.add(new Bar(() -> Strings.format(UIExt.i("装载：@/@ @"),
++                bars.add(new Bar(() -> Core.bundle.format("bar.payload-detail",
 +                Strings.autoFixed(payload.payloadUsed() / tilesize / tilesize, 4),
 +                Strings.autoFixed(payloadCapacity / tilesize / tilesize, 4),
 +                StatUnit.blocksSquared.localized()), () -> Pal.items, () -> payload.payloadUsed() / payloadCapacity));
@@ -841,10 +841,10 @@ index 1f91114f0f326727f604f214fb225abb2f4d3151..8793c8fbf8eab887cabffadf9a6c07ca
 +            });
 +            table.row().table(tt -> {
 +                tt.defaults().pad(0, 8, 0, 8);
-+                tt.add(UIExt.i("血量"));
-+                tt.add(UIExt.i("伤害"));
-+                tt.add(UIExt.i("攻速"));
-+                tt.add(UIExt.i("移速"));
++                tt.add(Core.bundle.get("unit.status-summary.health"));
++                tt.add(Core.bundle.get("unit.status-summary.damage"));
++                tt.add(Core.bundle.get("unit.status-summary.reload"));
++                tt.add(Core.bundle.get("unit.status-summary.speed"));
 +                tt.row();
 +                tt.add(FormatDefault.format(unit.healthMultiplier));
 +                tt.add(FormatDefault.format(unit.damageMultiplier));
@@ -853,9 +853,9 @@ index 1f91114f0f326727f604f214fb225abb2f4d3151..8793c8fbf8eab887cabffadf9a6c07ca
 +            }).growX().row();
 +            table.row().table(tt -> {
 +                tt.defaults().pad(0, 8, 0, 8);
-+                tt.add(UIExt.i("建速"));
-+                tt.add(UIExt.i("阻力"));
-+                tt.add(UIExt.i("装甲"));
++                tt.add(Core.bundle.get("unit.status-summary.build-speed"));
++                tt.add(Core.bundle.get("unit.status-summary.drag"));
++                tt.add(Core.bundle.get("unit.status-summary.armor"));
 +                tt.row();
 +                tt.add(FormatDefault.format(unit.buildSpeedMultiplier));
 +                tt.add(FormatDefault.format(unit.dragMultiplier));
@@ -1010,8 +1010,8 @@ index bc658d7e18538b735377222d56d3c02870dfd850..7da505e26c90014896f4edac0d4fe6d2
 +                t.button(Icon.book, Styles.clearNonei, () -> Core.app.setClipboardText(content.description)).tooltip(content.description);
 +
 +            if(net.active()){
-+                t.button(UIExt.i("♐简"), Styles.cleart, () -> ShareFeature.shareContent(content, false)).width(60f);
-+                t.button(UIExt.i("♐详"), Styles.cleart, () -> ShareFeature.shareContent(content, true)).width(60f);
++                t.button(Core.bundle.get("content.share-brief"), Styles.cleart, () -> ShareFeature.shareContent(content, false)).width(60f);
++                t.button(Core.bundle.get("content.share-full"), Styles.cleart, () -> ShareFeature.shareContent(content, true)).width(60f);
 +            }
 +        }).fillX().padLeft(10);
 +
@@ -1148,8 +1148,8 @@ index 52e5181fa87c472b7da701bb8f34dfb4a05ba306..14123327a7e65f9a7050630cd584fd27
 +        check("@rules.coreDestroyClear", b -> rules.coreDestroyClear = b, () -> rules.coreDestroyClear);
 +        check("@rules.unitPayloadUpdate", b -> rules.unitPayloadUpdate = b, () -> rules.unitPayloadUpdate);
 +        check("@rules.showSpawns", b -> rules.showSpawns = b, () -> rules.showSpawns);
-+        check(UIExt.i("允许控制单位"), b -> rules.possessionAllowed = b, () -> rules.possessionAllowed);
-+        check(UIExt.i("禁用重建"), b -> rules.ghostBlocks = !b, () -> !rules.ghostBlocks);
++        check(Core.bundle.get("rules.possession-allowed"), b -> rules.possessionAllowed = b, () -> rules.possessionAllowed);
++        check(Core.bundle.get("rules.disable-rebuild"), b -> rules.ghostBlocks = !b, () -> !rules.ghostBlocks);
 +
 +        check("@rules.limitarea", b -> rules.limitMapArea = b, () -> rules.limitMapArea);
 +        numberi("x", x -> state.rules.limitX = x, () -> state.rules.limitX, () -> state.rules.limitMapArea, 0, 10000);
@@ -1179,13 +1179,13 @@ index 52e5181fa87c472b7da701bb8f34dfb4a05ba306..14123327a7e65f9a7050630cd584fd27
          if(showRuleEditRule){
              check("@rules.allowedit", b -> rules.allowEditRules = b, () -> rules.allowEditRules);
          }
-+        current.button(UIExt.i("所有队伍开启无限火力"), () -> {
++        current.button(Core.bundle.get("rules.cheat-all-on"), () -> {
 +            for(Team team : Team.all){
 +                team.rules().cheat = true;
 +            }
 +            setup();
 +        }).width(256f).height(32f).row();
-+        current.button(UIExt.i("所有队伍关闭无限火力"), () -> {
++        current.button(Core.bundle.get("rules.cheat-all-off"), () -> {
 +            for(Team team : Team.all){
 +                team.rules().cheat = false;
 +            }
@@ -1196,7 +1196,7 @@ index 52e5181fa87c472b7da701bb8f34dfb4a05ba306..14123327a7e65f9a7050630cd584fd27
          team("@rules.enemyteam", t -> rules.waveTeam = t, () -> rules.waveTeam);
  
 -        for(Team team : Team.baseTeams){
-+        current.button(UIExt.i("更多队伍设置"), Styles.flatBordert, () -> UIExt.teamSelect.select(team -> teams.contains(team), team -> {
++        current.button(Core.bundle.get("rules.more-team-settings"), Styles.flatBordert, () -> UIExt.teamSelect.select(team -> teams.contains(team), team -> {
 +            if(teams.contains(team)) teams.remove(team);
 +            else teams.add(team);
 +            setup();
@@ -1223,7 +1223,7 @@ index 52e5181fa87c472b7da701bb8f34dfb4a05ba306..14123327a7e65f9a7050630cd584fd27
              }, () -> shown[0]).left().growX().row();
          }
  
-+        check(UIExt.i("自定义背景[lightgray](需要设置空地板)"), t -> {
++        check(Core.bundle.get("rules.custom-background"), t -> {
 +            rules.planetBackground = t ? new PlanetParams(){{planet = Planets.sun;zoom=1f;camPos = new Vec3(1.2388899f, 1.6047299f, 2.4758825f);}} : null;
 +            setup();
 +        }, () -> rules.planetBackground != null);
@@ -1242,10 +1242,10 @@ index 52e5181fa87c472b7da701bb8f34dfb4a05ba306..14123327a7e65f9a7050630cd584fd27
 +                    }
 +                }
 +            }).left().fill(false).expand(false, false).row();
-+            number(UIExt.i("放缩"), f -> rules.planetBackground.zoom = f, () -> rules.planetBackground.zoom, 0.0001f, 999);
-+            number(UIExt.i("位置x"), f -> rules.planetBackground.camPos.x = f, () -> rules.planetBackground.camPos.x);
-+            number(UIExt.i("位置y"), f -> rules.planetBackground.camPos.y = f, () -> rules.planetBackground.camPos.y);
-+            number(UIExt.i("位置z"), f -> rules.planetBackground.camPos.z = f, () -> rules.planetBackground.camPos.z);
++            number(Core.bundle.get("rules.background-zoom"), f -> rules.planetBackground.zoom = f, () -> rules.planetBackground.zoom, 0.0001f, 999);
++            number(Core.bundle.get("rules.background-pos-x"), f -> rules.planetBackground.camPos.x = f, () -> rules.planetBackground.camPos.x);
++            number(Core.bundle.get("rules.background-pos-y"), f -> rules.planetBackground.camPos.y = f, () -> rules.planetBackground.camPos.y);
++            number(Core.bundle.get("rules.background-pos-z"), f -> rules.planetBackground.camPos.z = f, () -> rules.planetBackground.camPos.z);
 +        }
 +
 +
@@ -1256,7 +1256,7 @@ index 52e5181fa87c472b7da701bb8f34dfb4a05ba306..14123327a7e65f9a7050630cd584fd27
                      cons.get(team);
                  }).pad(1f).checked(b -> prov.get() == team).size(60f).tooltip(team.coloredName()).with(i -> i.getStyle().imageUpColor = team.color);
              }
-+            t.button(Icon.add, Styles.squareTogglei, 38f, () -> UIExt.teamSelect.pickOne(cons, prov.get())).pad(1f).checked(b -> !Seq.with(Team.baseTeams).contains(prov.get())).size(60f).tooltip(UIExt.i("更多队伍选择"));
++            t.button(Icon.add, Styles.squareTogglei, 38f, () -> UIExt.teamSelect.pickOne(cons, prov.get())).pad(1f).checked(b -> !Seq.with(Team.baseTeams).contains(prov.get())).size(60f).tooltip(Core.bundle.get("team.select.more"));
          }).padTop(0).row();
      }
  
@@ -1354,14 +1354,14 @@ index 9726f281e9cd34eff6053dbea7c48129d7226e42..8b3529a0b2f1874a0a7f96cf0606f23a
          if(Core.graphics.isPortrait()){
              buttons.add(sectorTop).colspan(2).fillX().row();
              addBack();
-+            buttons.button(UIExt.i("区块名称"), Icon.bookOpen, () -> alwaysShowName = !alwaysShowName).size(100f, 54f).pad(2).bottom();
++            buttons.button(Core.bundle.get("sector.show-name"), Icon.bookOpen, () -> alwaysShowName = !alwaysShowName).size(100f, 54f).pad(2).bottom();
              addTech();
          }else{
              addBack();
              buttons.add().growX();
              buttons.add(sectorTop).minWidth(230f);
              buttons.add().growX();
-+            buttons.button(UIExt.i("区块名称"), Icon.bookOpen, () -> alwaysShowName = !alwaysShowName).size(100f, 54f).pad(2).bottom();
++            buttons.button(Core.bundle.get("sector.show-name"), Icon.bookOpen, () -> alwaysShowName = !alwaysShowName).size(100f, 54f).pad(2).bottom();
              addTech();
          }
      }
@@ -1454,8 +1454,8 @@ index fef8e21d771ccfd81cbc65a0bc62642ebf721952..f855efcd27a47e8ac5a0ac3dffc8a3c8
          addCloseButton();
          buttons.button("@schematic.import", Icon.download, this::showImport);
 +        if (mobile) buttons.row();
-+        buttons.button(UIExt.i("蓝图档案馆"), Icon.link, () -> UIExt.openURI("https://docs.qq.com/sheet/DVHNoS3lIcm1NbFFS"));
-+        buttons.button(UIExt.i("图片转换器") + Blocks.canvas.emoji() + Blocks.logicDisplay.emoji() + Blocks.sorter.emoji(), Icon.image, PicToMindustry::show);
++        buttons.button(Core.bundle.get("schematics.archive"), Icon.link, () -> UIExt.openURI("https://docs.qq.com/sheet/DVHNoS3lIcm1NbFFS"));
++        buttons.button(Core.bundle.format("schematics.image-converter-button", Blocks.canvas.emoji(), Blocks.logicDisplay.emoji(), Blocks.sorter.emoji()), Icon.image, PicToMindustry::show);
          makeButtonOverlay();
          shown(this::setup);
          onResize(this::setup);
@@ -1465,7 +1465,7 @@ index fef8e21d771ccfd81cbc65a0bc62642ebf721952..f855efcd27a47e8ac5a0ac3dffc8a3c8
  
 +        cont.row().table(in -> {
 +            in.left();
-+            in.add(UIExt.i("科技树：")).padRight(4);
++            in.add(Core.bundle.get("schematics.tech-tree")).padRight(4);
 +            for(var tag : content.planets().select(it -> it.alwaysUnlocked)){
 +                in.button(tag.localizedName, Styles.togglet, () -> {
 +                    if(selectedPlanet == tag) selectedPlanet = null;
@@ -1474,17 +1474,17 @@ index fef8e21d771ccfd81cbc65a0bc62642ebf721952..f855efcd27a47e8ac5a0ac3dffc8a3c8
 +                }).checked((t) -> selectedPlanet == tag).get().getLabel().setWrap(false);
 +            }
 +
-+            in.add(UIExt.i("辅助筛选：")).padLeft(20f).padRight(4);
++            in.add(Core.bundle.get("schematics.extra-filter")).padLeft(20f).padRight(4);
 +            in.button(Items.copper.emoji(), Styles.togglet, () -> {
 +                Core.settings.put("arcSchematicCanBuild", !Core.settings.getBool("arcSchematicCanBuild"));
 +                rebuildPane.run();
-+            }).size(tagh).pad(2).tooltip(UIExt.i("可建造(核心有此类资源+地图未禁用)")).checked(t -> Core.settings.getBool("arcSchematicCanBuild"));
-+            in.add(UIExt.i("蓝图包含：")).padLeft(20f).padRight(4);
++            }).size(tagh).pad(2).tooltip(Core.bundle.get("schematics.buildable")).checked(t -> Core.settings.getBool("arcSchematicCanBuild"));
++            in.add(Core.bundle.get("schematics.contains")).padLeft(20f).padRight(4);
 +            in.button(control.input.block == null ? "[red]\uE815" : control.input.block.emoji(), Styles.togglet, () -> {
 +                if(control.input.block == null) return;
 +                mindustryX.VarsX.autoSelectSchematic.toggle();
 +                rebuildPane.run();
-+            }).size(tagh).pad(2).tooltip(UIExt.i("蓝图需包含此建筑")).checked(t -> control.input.block != null && mindustryX.VarsX.autoSelectSchematic.get());
++            }).size(tagh).pad(2).tooltip(Core.bundle.get("schematics.must-contain-block")).checked(t -> control.input.block != null && mindustryX.VarsX.autoSelectSchematic.get());
 +        }).height(tagh).fillX();
 +
          cont.row();
@@ -1507,7 +1507,7 @@ index fef8e21d771ccfd81cbc65a0bc62642ebf721952..f855efcd27a47e8ac5a0ac3dffc8a3c8
          }).grow().scrollX(false);
 +
 +        if(mindustryX.VarsX.autoSelectSchematic.get() && control.input.block!=null){
-+            String text = Strings.format(UIExt.i("[orange]蓝图筛选模式[white]:蓝图必须包含 @"), control.input.block.emoji());
++            String text = Core.bundle.format("schematics.filter-mode", control.input.block.emoji());
 +            UIExt.announce(text, 5f);
 +        }
      }
@@ -1518,11 +1518,11 @@ index fef8e21d771ccfd81cbc65a0bc62642ebf721952..f855efcd27a47e8ac5a0ac3dffc8a3c8
                      dialog.hide();
                      platform.export(s.name(), schematicExtension, file -> Schematics.write(s, file));
 +                }).marginLeft(12f).row();
-+                t.button(UIExt.i("聊天分享蓝图"), Icon.chat, style, () -> {
++                t.button(Core.bundle.get("schematics.share-chat"), Icon.chat, style, () -> {
 +                    dialog.hide();
 +                    ShareFeature.shareSchematic(s);
 +                }).marginLeft(12f).row();
-+                t.button(UIExt.i("复制到剪切板(高级版，含介绍)"), Icon.star, style, () -> {
++                t.button(Core.bundle.get("schematics.copy-clipboard-advanced"), Icon.star, style, () -> {
 +                    dialog.hide();
 +                    ShareFeature.shareSchematicClipboard(s);
                  }).marginLeft(12f);
@@ -1536,7 +1536,7 @@ index fef8e21d771ccfd81cbc65a0bc62642ebf721952..f855efcd27a47e8ac5a0ac3dffc8a3c8
 +        try{
 +            Schematic s = Schematics.readBase64(base64);
 +            s.removeSteamID();
-+            s.tags.put("name", sender == null ? UIExt.i("来自服务器的蓝图") : Strings.format(UIExt.i("来自@的蓝图"), sender.plainName()));
++            s.tags.put("name", sender == null ? Core.bundle.get("schematics.from-server") : Core.bundle.format("schematics.from-player", sender.plainName()));
 +            fromShare = true;
 +            SchematicsDialog.this.showInfo(s);
 +        }catch(Throwable e){
@@ -1562,7 +1562,7 @@ index fef8e21d771ccfd81cbc65a0bc62642ebf721952..f855efcd27a47e8ac5a0ac3dffc8a3c8
 +                p.row();
 +                p.table(t -> {
 +                    t.left().defaults().fillX().height(tagh).pad(2);
-+                    t.button(UIExt.i("自动标签"), Icon.add, () -> arcAutoTags(rebuild[0])).wrapLabel(false).get().getLabelCell().padLeft(5);
++                    t.button(Core.bundle.get("schematics.auto-tags"), Icon.add, () -> arcAutoTags(rebuild[0])).wrapLabel(false).get().getLabelCell().padLeft(5);
 +                });
  
              };
@@ -1867,7 +1867,7 @@ index 34a9d830b30f4544ac438dfd6ac790f8c79b2e01..b98445b7923002ef0f4fe9edd4304fad
                          button.update(() -> button.setChecked(player.team() == team));
                      }
 -
-+                    teams.button(UIExt.i("更多"), () -> UIExt.teamSelect.pickOne(team -> Call.setPlayerTeamEditor(player, team), player.team())).center().row();
++                    teams.button(Core.bundle.get("teams.more"), () -> UIExt.teamSelect.pickOne(team -> Call.setPlayerTeamEditor(player, team), player.team())).center().row();
                      teams.button(Icon.downOpen, Styles.emptyi, () -> Core.settings.put("editor-blocks-shown", !Core.settings.getBool("editor-blocks-shown")))
                      .size(45f).update(m -> m.getStyle().imageUp = (Core.settings.getBool("editor-blocks-shown") ? Icon.upOpen : Icon.downOpen));
                  }).top().left().row();
@@ -1953,7 +1953,7 @@ index 34a9d830b30f4544ac438dfd6ac790f8c79b2e01..b98445b7923002ef0f4fe9edd4304fad
 +                    if(!state.rules.waves){
 +                        if(state.rules.attackMode){
 +                            int sum = Math.max(state.teams.present.sum(t -> t.team != player.team() ? t.cores.size : 0), 1);
-+                            return UIExt.i("敌人核心：[orange]") + sum;
++                            return Core.bundle.format("hud.enemy-cores", sum);
 +                        }
 +
 +                        if(state.isCampaign()){
@@ -1965,7 +1965,7 @@ index 34a9d830b30f4544ac438dfd6ac790f8c79b2e01..b98445b7923002ef0f4fe9edd4304fad
 +                    if(state.wave <= state.rules.winWave){
 +                        return "[orange]" + state.wave + "[white]/[yellow]" + state.rules.winWave;
 +                    }else{
-+                        return UIExt.i("波次：[orange]") + state.wave;
++                        return Core.bundle.format("hud.wave-current", state.wave);
 +                    }
 +                },
 +                () -> Color.valueOf("ccffcc"),
@@ -2269,16 +2269,16 @@ index 0e70bc703f77e282296a226b39ed73236fd5d694..9ad989b1f5ad672a411122bceeb54b9e
 +                                        float wound = (float) Core.settings.getInt("rtsWoundUnit") / 100f;
 +                                        if (units.contains(unit -> unit.health >= unit.maxHealth * wound) && units.contains(unit -> unit.health < unit.maxHealth * wound)){
 +                                            sp.table(spp->{
-+                                                arcSelectUnits(spp,"[green]\uE813", UIExt.i("高血量单位"), unit -> unit.health >= unit.maxHealth * wound);
-+                                                arcSelectUnits(spp,"[red]\uE80F", UIExt.i("低血量单位"), unit -> unit.health < unit.maxHealth * wound);
++                                                arcSelectUnits(spp,"[green]\uE813", Core.bundle.get("rts.units.high-health"), unit -> unit.health >= unit.maxHealth * wound);
++                                                arcSelectUnits(spp,"[red]\uE80F", Core.bundle.get("rts.units.low-health"), unit -> unit.health < unit.maxHealth * wound);
 +                                            });
 +                                        }
 +
 +                                        int assistCount = units.count(unit -> unit.type.commands.contains(UnitCommand.assistCommand));
 +                                        if(assistCount > 0 && assistCount != units.size){
 +                                            sp.table(spp -> {
-+                                                arcSelectUnits(spp, "\uE86E", UIExt.i("进攻性单位"), unit -> !unit.type.commands.contains(UnitCommand.assistCommand));
-+                                                arcSelectUnits(spp, "\uE86B", UIExt.i("辅助性单位"), unit -> unit.type.commands.contains(UnitCommand.assistCommand));
++                                                arcSelectUnits(spp, "\uE86E", Core.bundle.get("rts.units.offensive"), unit -> !unit.type.commands.contains(UnitCommand.assistCommand));
++                                                arcSelectUnits(spp, "\uE86B", Core.bundle.get("rts.units.support"), unit -> unit.type.commands.contains(UnitCommand.assistCommand));
 +                                            });
 +                                        }
 +
@@ -2287,9 +2287,9 @@ index 0e70bc703f77e282296a226b39ed73236fd5d694..9ad989b1f5ad672a411122bceeb54b9e
 +                                        hasNaval = units.contains(unit -> unit.type.naval);
 +                                        if((hasFlyer ? 1 : 0) + (hasLand ? 1 : 0) + (hasNaval ? 1 : 0) >= 2){
 +                                            sp.table(spp -> {
-+                                                if(hasFlyer) arcSelectUnits(spp, UnitTypes.flare.emoji(), UIExt.i("飞行单位"), Unitc::isFlying);
-+                                                if(hasLand) arcSelectUnits(spp, UnitTypes.crawler.emoji(), UIExt.i("陆军单位"), unit -> !unit.isFlying() && !unit.type.naval);
-+                                                if(hasNaval) arcSelectUnits(spp, UnitTypes.retusa.emoji(), UIExt.i("海军单位"), unit -> unit.type.naval);
++                                                if(hasFlyer) arcSelectUnits(spp, UnitTypes.flare.emoji(), Core.bundle.get("rts.units.flying"), Unitc::isFlying);
++                                                if(hasLand) arcSelectUnits(spp, UnitTypes.crawler.emoji(), Core.bundle.get("rts.units.ground"), unit -> !unit.isFlying() && !unit.type.naval);
++                                                if(hasNaval) arcSelectUnits(spp, UnitTypes.retusa.emoji(), Core.bundle.get("rts.units.naval"), unit -> unit.type.naval);
 +                                            });
                                          }
                                      }).fillX().padTop(4f).left();
@@ -2402,13 +2402,13 @@ index 0e70bc703f77e282296a226b39ed73236fd5d694..9ad989b1f5ad672a411122bceeb54b9e
 +            b.clicked(KeyCode.mouseLeft, () -> {
 +                control.input.selectedUnits = control.input.selectedUnits.select(cons);
 +                Events.fire(Trigger.unitCommandChange);
-+                UIExt.announce(Strings.format(UIExt.i("RTS控制器：选择@！"), info));
++                UIExt.announce(Core.bundle.format("rts.select", info));
 +            });
 +            //right click -> remove
 +            b.clicked(KeyCode.mouseRight, () -> {
 +                control.input.selectedUnits.removeAll(cons);
 +                Events.fire(Trigger.unitCommandChange);
-+                UIExt.announce(Strings.format(UIExt.i("RTS控制器：移除@！"), info));
++                UIExt.announce(Core.bundle.format("rts.remove", info));
 +            });
 +
 +            b.addListener(listener);
@@ -2495,7 +2495,7 @@ index 58d82ae32d4a37b4e2bea1559c854b775048350f..b0e3d09b0a8bea3bd0b32e958a05c5bc
  
 +            button.button(Icon.copySmall, ustyle, () -> {
 +                Core.app.setClipboardText(user.name);
-+                UIExt.announce(UIExt.i("已复制昵称：") + user.name);
++                UIExt.announce(Core.bundle.format("player.copied-nickname", user.name));
 +            }).size(iconMed);
 +            button.button(Icon.linkSmall, ustyle, () -> ShareFeature.at(user.name)).size(iconMed);
 +

@@ -39,10 +39,10 @@ index badaa190bad6a1bfa57a5ec9089f63e150797d2a..34a9d830b30f4544ac438dfd6ac790f8
 +                .visible(() -> Core.settings.getBool("position") || Core.settings.getBool("mouseposition"))
 +                .touchable(Touchable.disabled).style(Styles.outlineLabel).minWidth(120f);
 +
-+                tt.button("♐", Styles.cleart, MarkerType::toggleMarkHitterUI).size(iconMed).tooltip(mindustryX.features.UIExt.i("进入标记模式"));
++                tt.button("♐", Styles.cleart, MarkerType::toggleMarkHitterUI).size(iconMed).tooltip(Core.bundle.get("hud.mark-mode"));
 +                tt.button("T", Styles.cleart, () -> ui.chatfrag.nextMode())
-+                .checked(b -> ui.chatfrag.mode == ChatFragment.ChatMode.team).size(iconMed).tooltip(mindustryX.features.UIExt.i("前缀添加/t"));
-+                tt.button("" + Iconc.zoom, Styles.cleart, MarkerType::lockOnLastMark).size(iconMed).tooltip(mindustryX.features.UIExt.i("锁定上个标记点"));
++                .checked(b -> ui.chatfrag.mode == ChatFragment.ChatMode.team).size(iconMed).tooltip(Core.bundle.get("hud.chat-prefix-team"));
++                tt.button("" + Iconc.zoom, Styles.cleart, MarkerType::lockOnLastMark).size(iconMed).tooltip(Core.bundle.get("hud.lock-last-mark"));
 +            }).name("position");
              t.top().right();
          });
@@ -60,7 +60,7 @@ index badaa190bad6a1bfa57a5ec9089f63e150797d2a..34a9d830b30f4544ac438dfd6ac790f8
                  info.row();
  
 +                if (!android){
-+                    info.label(() -> mindustryX.features.UIExt.i("缩放: ") + String.format("%.2f", renderer.getScale())).left().style(Styles.outlineLabel);
++                    info.label(() -> Core.bundle.format("hud.zoom-detail", String.format("%.2f", renderer.getScale()))).left().style(Styles.outlineLabel);
 +                    info.row();
 +                }
 +
