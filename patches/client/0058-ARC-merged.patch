@@ -746,7 +746,7 @@ index 02dd8a144ae519cf76d5dbddab390cb7444eac9d..b83dfd99b52b876a31090fb2971181fc
                  //TODO desync?
                  case mission -> state.rules.mission = text;
 diff --git a/core/src/mindustry/type/UnitType.java b/core/src/mindustry/type/UnitType.java
-index 1f91114f0f326727f604f214fb225abb2f4d3151..8793c8fbf8eab887cabffadf9a6c07ca1ac9162a 100644
+index 765a302e3633c93a16a4a2a2f4fb9a0f6165d961..58e65be66388a93e4e40907b784b4f2c653db8c6 100644
 --- a/core/src/mindustry/type/UnitType.java
 +++ b/core/src/mindustry/type/UnitType.java
 @@ -38,6 +38,7 @@ import mindustry.world.blocks.units.*;
@@ -911,7 +911,7 @@ index 1f91114f0f326727f604f214fb225abb2f4d3151..8793c8fbf8eab887cabffadf9a6c07ca
  
              Draw.reset();
 diff --git a/core/src/mindustry/type/Weapon.java b/core/src/mindustry/type/Weapon.java
-index b5dea6beedbbaa476491ccac484a1233193b3efc..8fcde8c4b7b20822269628c3c56d03de71a71960 100644
+index 3219e2b2d774d2e3dc500a0f205ee091dd446ddf..a2a265d3c79c790ee46c16f5076c240ff838f456 100644
 --- a/core/src/mindustry/type/Weapon.java
 +++ b/core/src/mindustry/type/Weapon.java
 @@ -23,6 +23,8 @@ import mindustry.entities.units.*;
@@ -961,7 +961,7 @@ index f0d7aab18f3d197ed6864eb1ef6a0f5210fc7148..39616ef05ca1e660ca5f62860cbe4d58
  
      public static Font def, outline, icon, iconLarge, tech, logic, monospace;
 diff --git a/core/src/mindustry/ui/dialogs/ContentInfoDialog.java b/core/src/mindustry/ui/dialogs/ContentInfoDialog.java
-index bc658d7e18538b735377222d56d3c02870dfd850..7da505e26c90014896f4edac0d4fe6d2d5a87939 100644
+index bc658d7e18538b735377222d56d3c02870dfd850..0c047a1602cc8ece6c617d3cad7d9701ef239302 100644
 --- a/core/src/mindustry/ui/dialogs/ContentInfoDialog.java
 +++ b/core/src/mindustry/ui/dialogs/ContentInfoDialog.java
 @@ -10,9 +10,12 @@ import arc.util.*;
@@ -1019,7 +1019,7 @@ index bc658d7e18538b735377222d56d3c02870dfd850..7da505e26c90014896f4edac0d4fe6d2
          table.marginRight(30f);
          //TODO: some things (e.g. reconstructor requirements) are too long and screw up the layout
 diff --git a/core/src/mindustry/ui/dialogs/CustomRulesDialog.java b/core/src/mindustry/ui/dialogs/CustomRulesDialog.java
-index 52e5181fa87c472b7da701bb8f34dfb4a05ba306..14123327a7e65f9a7050630cd584fd27a8fa39f1 100644
+index 52e5181fa87c472b7da701bb8f34dfb4a05ba306..d5aaf556527c00482cdd1c193b7160e86afaded9 100644
 --- a/core/src/mindustry/ui/dialogs/CustomRulesDialog.java
 +++ b/core/src/mindustry/ui/dialogs/CustomRulesDialog.java
 @@ -3,6 +3,7 @@ package mindustry.ui.dialogs;
@@ -1280,7 +1280,7 @@ index 52e5181fa87c472b7da701bb8f34dfb4a05ba306..14123327a7e65f9a7050630cd584fd27
          ruleInfo(cell, text);
          current.row();
 diff --git a/core/src/mindustry/ui/dialogs/DatabaseDialog.java b/core/src/mindustry/ui/dialogs/DatabaseDialog.java
-index dfc6b9f31bdb9d1f890acc21f4ecca33e09c22fd..ba19ab884b440747864f6ccd84164e9b48490445 100644
+index feda24ed6809e91903766c152c922ab8902bb9b6..57c6ba14f3711614a0ea0211a9eec29a06ef6a31 100644
 --- a/core/src/mindustry/ui/dialogs/DatabaseDialog.java
 +++ b/core/src/mindustry/ui/dialogs/DatabaseDialog.java
 @@ -215,7 +215,7 @@ public class DatabaseDialog extends BaseDialog{
@@ -1330,7 +1330,7 @@ index 206fbb42165a6bcdc3db4e12d5fc8469987aa245..29ec028133e0925ca066f6f38a274653
      }
  
 diff --git a/core/src/mindustry/ui/dialogs/PlanetDialog.java b/core/src/mindustry/ui/dialogs/PlanetDialog.java
-index 9726f281e9cd34eff6053dbea7c48129d7226e42..8b3529a0b2f1874a0a7f96cf0606f23a317c96b5 100644
+index 9726f281e9cd34eff6053dbea7c48129d7226e42..633fe88c1a3a3e76b603a85e133358237146c0f2 100644
 --- a/core/src/mindustry/ui/dialogs/PlanetDialog.java
 +++ b/core/src/mindustry/ui/dialogs/PlanetDialog.java
 @@ -38,6 +38,7 @@ import mindustry.type.Planet.*;
@@ -1416,7 +1416,7 @@ index 9726f281e9cd34eff6053dbea7c48129d7226e42..8b3529a0b2f1874a0a7f96cf0606f23a
  
                              if(sec.isAttacked()){
 diff --git a/core/src/mindustry/ui/dialogs/SchematicsDialog.java b/core/src/mindustry/ui/dialogs/SchematicsDialog.java
-index fef8e21d771ccfd81cbc65a0bc62642ebf721952..f855efcd27a47e8ac5a0ac3dffc8a3c8a8413619 100644
+index fef8e21d771ccfd81cbc65a0bc62642ebf721952..a0b5e07ecdfd324dd7c14756138a2bf0d77bb663 100644
 --- a/core/src/mindustry/ui/dialogs/SchematicsDialog.java
 +++ b/core/src/mindustry/ui/dialogs/SchematicsDialog.java
 @@ -15,6 +15,7 @@ import arc.scene.ui.layout.*;
@@ -1835,7 +1835,7 @@ index 3542163354070ac67c49b82dff6c72b374d4ca7d..6d2b1fbf2840eee89ab7bfcb37990e83
          //special case for 'clear' command
          if(message.equals("clear")){
 diff --git a/core/src/mindustry/ui/fragments/HudFragment.java b/core/src/mindustry/ui/fragments/HudFragment.java
-index 34a9d830b30f4544ac438dfd6ac790f8c79b2e01..b98445b7923002ef0f4fe9edd4304fad986df4d0 100644
+index 795c496bdcd59b2b79c517de2242d34ff6bfd759..d6c1cdeab6c6ba89e38c04397a5f09114bb04427 100644
 --- a/core/src/mindustry/ui/fragments/HudFragment.java
 +++ b/core/src/mindustry/ui/fragments/HudFragment.java
 @@ -30,10 +30,12 @@ import mindustry.net.Packets.*;
@@ -2118,7 +2118,7 @@ index 90c843267ba9c3c59413a658c9777198296514f5..ef94d7797a159263ea5da2f2d1e445a8
      }
  
 diff --git a/core/src/mindustry/ui/fragments/PlacementFragment.java b/core/src/mindustry/ui/fragments/PlacementFragment.java
-index 0e70bc703f77e282296a226b39ed73236fd5d694..9ad989b1f5ad672a411122bceeb54b9eee27a759 100644
+index 0e70bc703f77e282296a226b39ed73236fd5d694..86f4b198acd6771a1a687e1a102850a77e96cb8e 100644
 --- a/core/src/mindustry/ui/fragments/PlacementFragment.java
 +++ b/core/src/mindustry/ui/fragments/PlacementFragment.java
 @@ -1,6 +1,7 @@
@@ -2417,7 +2417,7 @@ index 0e70bc703f77e282296a226b39ed73236fd5d694..9ad989b1f5ad672a411122bceeb54b9e
      }
  }
 diff --git a/core/src/mindustry/ui/fragments/PlayerListFragment.java b/core/src/mindustry/ui/fragments/PlayerListFragment.java
-index 58d82ae32d4a37b4e2bea1559c854b775048350f..b0e3d09b0a8bea3bd0b32e958a05c5bc2b24ab32 100644
+index 58d82ae32d4a37b4e2bea1559c854b775048350f..766aacd1e530d16f39dc59726b97f180325326ca 100644
 --- a/core/src/mindustry/ui/fragments/PlayerListFragment.java
 +++ b/core/src/mindustry/ui/fragments/PlayerListFragment.java
 @@ -10,13 +10,14 @@ import arc.scene.ui.ImageButton.*;

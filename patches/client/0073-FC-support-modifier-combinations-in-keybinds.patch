@@ -70,7 +70,7 @@ index 2f59d642b8203237b7cdc876e6c8fd3abf6386e0..31c1c2413f845e9f0a9ac6b2feaade56
          }
  
 diff --git a/core/src/mindustry/ui/dialogs/KeybindDialog.java b/core/src/mindustry/ui/dialogs/KeybindDialog.java
-index d3dd7592465f420eb7c225b7dc7218eada30abf8..d27da9d35bf2dca03a792125749bb0f9ae1e085e 100644
+index 4460a94a88e28d8854af74bbee8aa5481906264d..750a0fd2262ac5e1648db8d447910f4c72627c39 100644
 --- a/core/src/mindustry/ui/dialogs/KeybindDialog.java
 +++ b/core/src/mindustry/ui/dialogs/KeybindDialog.java
 @@ -95,10 +95,8 @@ public class KeybindDialog extends Dialog{

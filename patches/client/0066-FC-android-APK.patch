@@ -11,8 +11,8 @@ Content-Transfer-Encoding: 8bit
  android/AndroidManifest.xml                   | 11 +++
  android/res/xml/file_paths.xml                |  4 ++
  .../mindustry/android/AndroidLauncher.java    | 12 ++++
- .../mindustryX/features/ApkInstallHelper.java | 70 +++++++++++++++++++
- 4 files changed, 97 insertions(+)
+ .../mindustryX/features/ApkInstallHelper.java | 71 +++++++++++++++++++
+ 4 files changed, 98 insertions(+)
  create mode 100644 android/res/xml/file_paths.xml
  create mode 100644 android/src/mindustryX/features/ApkInstallHelper.java
 
@@ -109,7 +109,7 @@ index 3d40d5136f44bf3a7518c833b5d5f2964cee6a39..91a30636e9c60bd2dbfb2a4ec05a1c7a
          if(requestCode == PERMISSION_REQUEST_CODE){
 diff --git a/android/src/mindustryX/features/ApkInstallHelper.java b/android/src/mindustryX/features/ApkInstallHelper.java
 new file mode 100644
-index 0000000000000000000000000000000000000000..44ae3d51de403bd575d069024c76c3b76e319fd1
+index 0000000000000000000000000000000000000000..59addcd43b8553de46462a6b06aa33d426eb72bf
 --- /dev/null
 +++ b/android/src/mindustryX/features/ApkInstallHelper.java
 @@ -0,0 +1,71 @@

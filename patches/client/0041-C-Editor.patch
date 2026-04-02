@@ -10,11 +10,11 @@ Content-Transfer-Encoding: 8bit
 ---
  core/src/mindustry/editor/EditorTool.java     |  5 ++-
  core/src/mindustry/editor/MapEditor.java      |  9 ++++--
- .../src/mindustry/editor/MapEditorDialog.java | 28 +++++++++++-----
+ .../src/mindustry/editor/MapEditorDialog.java | 31 +++++++++++++-----
  .../src/mindustry/editor/MapResizeDialog.java |  4 +--
  core/src/mindustry/editor/MapView.java        | 32 +++++++++++++++----
  core/src/mindustry/ui/GridImage.java          |  5 +--
- 6 files changed, 60 insertions(+), 23 deletions(-)
+ 6 files changed, 63 insertions(+), 23 deletions(-)
 
 diff --git a/core/src/mindustry/editor/EditorTool.java b/core/src/mindustry/editor/EditorTool.java
 index eac257b3c5238a61b13afce11f26bdc3eb603d79..dde3985967815a41c6240c83d57755aafed2ca04 100644
@@ -68,15 +68,14 @@ index c2529b8c38ac57244517823aa73843cedec75602..b768477389731aefad275b3c6aa1760e
  
                  if(wx < 0 || wy < 0 || wx >= width() || wy >= height()){
 diff --git a/core/src/mindustry/editor/MapEditorDialog.java b/core/src/mindustry/editor/MapEditorDialog.java
-index 1dfc7ad0d4e827d02c6b8c35a9845fed8d614147..fc67c076a90670337e7c010f825ef573a8a61cde 100644
+index 1dfc7ad0d4e827d02c6b8c35a9845fed8d614147..1b01c0f05d9deb0d270dd67195c4f1778af235d3 100644
 --- a/core/src/mindustry/editor/MapEditorDialog.java
 +++ b/core/src/mindustry/editor/MapEditorDialog.java
-@@ -32,6 +32,8 @@ import mindustry.world.blocks.environment.*;
+@@ -32,6 +32,7 @@ import mindustry.world.blocks.environment.*;
  import mindustry.world.blocks.storage.*;
  import mindustry.world.blocks.storage.CoreBlock.*;
  import mindustry.world.meta.*;
-+import arc.Core;
- import mindustryX.features.*;
++import mindustryX.features.*;
  
  import static mindustry.Vars.*;
  
@@ -91,7 +90,7 @@ index 1dfc7ad0d4e827d02c6b8c35a9845fed8d614147..fc67c076a90670337e7c010f825ef573
                  for(Team team : Team.baseTeams){
                      ImageButton button = new ImageButton(Tex.whiteui, Styles.clearNoneTogglei);
                      button.margin(4f);
-@@ -680,19 +678,34 @@ public class MapEditorDialog extends Dialog implements Disposable{
+@@ -680,19 +678,37 @@ public class MapEditorDialog extends Dialog implements Disposable{
                      button.getStyle().imageUpColor = team.color;
                      button.clicked(() -> editor.drawTeam = team);
                      button.update(() -> button.setChecked(editor.drawTeam == team));
@@ -101,7 +100,7 @@ index 1dfc7ad0d4e827d02c6b8c35a9845fed8d614147..fc67c076a90670337e7c010f825ef573
                      if(i++ % 3 == 2) tools.row();
                  }
 +                tools.button(Core.bundle.get("editor.other-teams"), Styles.flatToggleMenut, () -> UIExt.teamSelect.pickOne(team -> editor.drawTeam = team))
-+                .update(b->{
++                .update(b -> {
 +                    boolean checked = !Seq.with(Team.baseTeams).contains(editor.drawTeam);
 +                    b.setColor(checked ? editor.drawTeam.color : Color.violet);
 +                    b.setChecked(checked);
@@ -124,11 +123,14 @@ index 1dfc7ad0d4e827d02c6b8c35a9845fed8d614147..fc67c076a90670337e7c010f825ef573
                  mid.table(Tex.underline, t -> {
                      Slider slider = new Slider(0, MapEditor.brushSizes.length - 1, 1, false);
 -                    slider.moved(f -> editor.brushSize = MapEditor.brushSizes[(int)f]);
-+                    slider.moved(f -> {editor.brushSize = MapEditor.brushSizes[(int)f];brushField.setText(Float.toString(editor.brushSize));});
++                    slider.moved(f -> {
++                        editor.brushSize = MapEditor.brushSizes[(int)f];
++                        brushField.setText(Float.toString(editor.brushSize));
++                    });
                      for(int j = 0; j < MapEditor.brushSizes.length; j++){
                          if(MapEditor.brushSizes[j] == editor.brushSize){
                              slider.setValue(j);
-@@ -847,6 +860,7 @@ public class MapEditorDialog extends Dialog implements Disposable{
+@@ -847,6 +863,7 @@ public class MapEditorDialog extends Dialog implements Disposable{
          });
  
          int i = 0;
@@ -136,7 +138,7 @@ index 1dfc7ad0d4e827d02c6b8c35a9845fed8d614147..fc67c076a90670337e7c010f825ef573
  
          for(Block block : blocksOut){
              TextureRegion region = block.uiIcon;
-@@ -865,9 +879,7 @@ public class MapEditorDialog extends Dialog implements Disposable{
+@@ -865,9 +882,7 @@ public class MapEditorDialog extends Dialog implements Disposable{
  
              if(i == 0) editor.drawBlock = block;
  
@@ -170,7 +172,7 @@ index 7a5c15ce71ac487492b0685e7cc99d061bae5b76..531e545323ec177de4a0ae29a2986dfa
                  table.row();
              }
 diff --git a/core/src/mindustry/editor/MapView.java b/core/src/mindustry/editor/MapView.java
-index e03035023877c8c13f92e7cf2c630c43014f3212..ad9234fb96c25c222811da3050e332f5e1854b74 100644
+index e03035023877c8c13f92e7cf2c630c43014f3212..312c2018b75166824b55d8341e09d1c834d4fd6e 100644
 --- a/core/src/mindustry/editor/MapView.java
 +++ b/core/src/mindustry/editor/MapView.java
 @@ -255,6 +255,11 @@ public class MapView extends Element implements GestureListener{
@@ -206,7 +208,7 @@ index e03035023877c8c13f92e7cf2c630c43014f3212..ad9234fb96c25c222811da3050e332f5
                  break;
              }
          }
-+        //MDTX: 学术端的任意大小笔刷功能
++        // MDTX: allow arbitrary brush sizes in editor preview.
 +        if(brush == null){
 +            float bSize = editor.brushSize;
 +            float mod = bSize % 1f;
@@ -234,7 +236,7 @@ index e03035023877c8c13f92e7cf2c630c43014f3212..ad9234fb96c25c222811da3050e332f5
 -                    Lines.square(v.x + scaling/2f, v.y + scaling/2f, scaling * ((editor.brushSize == 1.5f ? 1f : editor.brushSize) + 0.5f));
 +                if(tool == EditorTool.pencil && (tool.mode == 1 || tool.mode == 4)){
 +                    int brushSize = (int)(editor.brushSize * (tool.mode == 1 ? 2 : 1));
-+                    float corr = ((brushSize % 2) == 0) ? 0f : scaling / 2f;//whether in the center of tile
++                    float corr = ((brushSize % 2) == 0) ? 0f : scaling / 2f;
 +                    Lines.square(v.x + corr, v.y + corr, scaling * brushSize / 2);
                  }else{
 -                    Lines.poly(brushPolygons[index], v.x, v.y, scaling);

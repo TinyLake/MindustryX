@@ -38,7 +38,7 @@ MinRi2 <2275045670@qq.com> on 2025/5/3
  6 files changed, 149 insertions(+), 17 deletions(-)
 
 diff --git a/core/src/mindustry/logic/LCanvas.java b/core/src/mindustry/logic/LCanvas.java
-index b4ad9b3237f35d6783bc85daa8a86b820bc20ecd..599f907dc69bac24e7e5de16f5e6b18891c0261b 100644
+index b4ad9b3237f35d6783bc85daa8a86b820bc20ecd..2de413a459da6bd938eee16efbdab43a8fa36292 100644
 --- a/core/src/mindustry/logic/LCanvas.java
 +++ b/core/src/mindustry/logic/LCanvas.java
 @@ -18,6 +18,9 @@ import mindustry.gen.*;
@@ -161,7 +161,7 @@ index 254ec97e33d3933f51fc4d49105b70395a057865..02dd8a144ae519cf76d5dbddab390cb7
                  case pan -> {
                      control.input.logicCutscene = true;
 diff --git a/core/src/mindustry/logic/LStatements.java b/core/src/mindustry/logic/LStatements.java
-index 4f172c5f66736634dac190b115827695ab7993f7..ecbe2ed06b45257a1deb16ce7dbab49508cb0987 100644
+index 4f172c5f66736634dac190b115827695ab7993f7..11edf5da0ff26dfc190786f3219e3276a0706d07 100644
 --- a/core/src/mindustry/logic/LStatements.java
 +++ b/core/src/mindustry/logic/LStatements.java
 @@ -3,6 +3,9 @@ package mindustry.logic;
@@ -213,7 +213,7 @@ index 4f172c5f66736634dac190b115827695ab7993f7..ecbe2ed06b45257a1deb16ce7dbab495
  
              String name = name();
 diff --git a/core/src/mindustry/logic/LogicDialog.java b/core/src/mindustry/logic/LogicDialog.java
-index 51c8576d8b41d43e25eb86400d169b9a108e6642..de370177beb5fec5b3b00abbb3dd8e2c608610de 100644
+index 51c8576d8b41d43e25eb86400d169b9a108e6642..b6424e7ee89c3d2d2741c7e9a81f44e998ff4a5f 100644
 --- a/core/src/mindustry/logic/LogicDialog.java
 +++ b/core/src/mindustry/logic/LogicDialog.java
 @@ -19,6 +19,8 @@ import mindustry.logic.LStatements.*;

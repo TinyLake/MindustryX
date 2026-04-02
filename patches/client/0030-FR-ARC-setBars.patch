@@ -134,7 +134,7 @@ index cd0314aed5f922962bc8596badab02d6c548ce33..33cfc82bdb20cb6d433118f015b11b79
  
      @Override
 diff --git a/core/src/mindustry/world/blocks/defense/MendProjector.java b/core/src/mindustry/world/blocks/defense/MendProjector.java
-index 3c7b9653a58a5d4e92f9ba050de2f44757d91be2..dc337d182b0679e533c2389640b8edc70bb27a05 100644
+index 3c7b9653a58a5d4e92f9ba050de2f44757d91be2..f4ce6aac7a8dd577a6c1c1f1a569285a63cd69b5 100644
 --- a/core/src/mindustry/world/blocks/defense/MendProjector.java
 +++ b/core/src/mindustry/world/blocks/defense/MendProjector.java
 @@ -12,6 +12,7 @@ import mindustry.content.*;
@@ -159,7 +159,7 @@ index 3c7b9653a58a5d4e92f9ba050de2f44757d91be2..dc337d182b0679e533c2389640b8edc7
      public void drawPlace(int x, int y, int rotation, boolean valid){
          super.drawPlace(x, y, rotation, valid);
 diff --git a/core/src/mindustry/world/blocks/defense/OverdriveProjector.java b/core/src/mindustry/world/blocks/defense/OverdriveProjector.java
-index c2a1f10f2fe32c093cb0142a7f1d93dabadb4e2f..31b67b7837d1c1b6c4c3ec00982478b5e4709bae 100644
+index c2a1f10f2fe32c093cb0142a7f1d93dabadb4e2f..e7b34ddd44e8939997a600633ce3eae9ac04e402 100644
 --- a/core/src/mindustry/world/blocks/defense/OverdriveProjector.java
 +++ b/core/src/mindustry/world/blocks/defense/OverdriveProjector.java
 @@ -84,7 +84,9 @@ public class OverdriveProjector extends Block{
@@ -413,7 +413,7 @@ index 9b0ef63732d2cd574bf37f9f0a5fd0f3af378fd9..4c1065a12000cc5f9f4bb5a9fedda458
              () -> entity.productionEfficiency));
          }
 diff --git a/core/src/mindustry/world/blocks/production/BeamDrill.java b/core/src/mindustry/world/blocks/production/BeamDrill.java
-index c3e51ec146fda9cd4f91a2edf5324edef7293d18..dfae8f9afef7275ea9a8bfb79a2c7f3e79a6a4bb 100644
+index c3e51ec146fda9cd4f91a2edf5324edef7293d18..f03f984a16cb0c88c53fd78c5cc10acc7cdff678 100644
 --- a/core/src/mindustry/world/blocks/production/BeamDrill.java
 +++ b/core/src/mindustry/world/blocks/production/BeamDrill.java
 @@ -91,7 +91,7 @@ public class BeamDrill extends Block{
@@ -490,7 +490,7 @@ index 7cc1ee3d5ca050b9867653a4c890af8ddd59caf9..f6633e8fecc928e665b0d58b48f1886e
              () -> entity.heat / heatRequirement));
      }
 diff --git a/core/src/mindustry/world/blocks/production/WallCrafter.java b/core/src/mindustry/world/blocks/production/WallCrafter.java
-index 9ae3c98364c860ed47d03592f9d660d1af1b753c..e13f83f830269f8485351d2a52c2edffd1651905 100644
+index 9ae3c98364c860ed47d03592f9d660d1af1b753c..75dd3cdcb119d4ff03e99caf7102cf4001c2a7de 100644
 --- a/core/src/mindustry/world/blocks/production/WallCrafter.java
 +++ b/core/src/mindustry/world/blocks/production/WallCrafter.java
 @@ -69,7 +69,7 @@ public class WallCrafter extends Block{

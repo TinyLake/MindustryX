@@ -20,7 +20,7 @@ way-zer <himc.wicp@gmail.com> on 2024/5/4 at 22:17
  .../world/blocks/defense/RegenProjector.java  |   3 +-
  .../world/blocks/defense/ShieldWall.java      |   4 +
  .../distribution/BufferedItemBridge.java      |   1 +
- .../world/blocks/power/ImpactReactor.java     |  24 ++-
+ .../world/blocks/power/ImpactReactor.java     |  24 +++-
  .../world/blocks/sandbox/PowerSource.java     |   6 +
  .../world/blocks/sandbox/PowerVoid.java       |   1 -
  .../world/consumers/ConsumeItemDynamic.java   |   2 +-
@@ -28,8 +28,8 @@ way-zer <himc.wicp@gmail.com> on 2024/5/4 at 22:17
  .../consumers/ConsumePayloadDynamic.java      |   2 +-
  core/src/mindustry/world/meta/Stat.java       |  23 +--
  core/src/mindustry/world/meta/StatCat.java    |   5 +-
- core/src/mindustry/world/meta/StatValues.java | 142 +++++++++++++++---
- 20 files changed, 215 insertions(+), 52 deletions(-)
+ core/src/mindustry/world/meta/StatValues.java | 133 ++++++++++++++----
+ 20 files changed, 206 insertions(+), 52 deletions(-)
 
 diff --git a/core/src/mindustry/type/Item.java b/core/src/mindustry/type/Item.java
 index 3ba4dc9de5a10c39e4e0257e854dabd7434e7b6d..ffac65db1338a457df5189565f554d80cc076500 100644
@@ -95,7 +95,7 @@ index c66cff2cbbb05e9783c613cd03e9fcaacb961705..7bdee181be7752ae7509782bf1623bed
          if(damage < 0) stats.add(Stat.healing, -damage * 60f, StatUnit.perSecond);
  
 diff --git a/core/src/mindustry/type/UnitType.java b/core/src/mindustry/type/UnitType.java
-index c5dcf4d7a8cc541f1e660bf4a9de7cc766edf08e..1f91114f0f326727f604f214fb225abb2f4d3151 100644
+index c5dcf4d7a8cc541f1e660bf4a9de7cc766edf08e..765a302e3633c93a16a4a2a2f4fb9a0f6165d961 100644
 --- a/core/src/mindustry/type/UnitType.java
 +++ b/core/src/mindustry/type/UnitType.java
 @@ -37,6 +37,7 @@ import mindustry.world.blocks.payloads.*;
@@ -169,7 +169,7 @@ index c5dcf4d7a8cc541f1e660bf4a9de7cc766edf08e..1f91114f0f326727f604f214fb225abb
          if(example instanceof WaterMovec || example instanceof WaterCrawlc){
              naval = true;
 diff --git a/core/src/mindustry/type/Weapon.java b/core/src/mindustry/type/Weapon.java
-index eedcaa20c7b63b6c41d647cead5febc8b8c2dacb..c527a7c4e0164fcbb22240880692f58bbce6b2b6 100644
+index eedcaa20c7b63b6c41d647cead5febc8b8c2dacb..fea937e0d8a72c6170aef120e16dcd07f43dc756 100644
 --- a/core/src/mindustry/type/Weapon.java
 +++ b/core/src/mindustry/type/Weapon.java
 @@ -175,6 +175,18 @@ public class Weapon implements Cloneable{
@@ -489,7 +489,7 @@ index 416df5a20af4767cdfdc2646bce19468ad11cd28..239311eea91980f2c3e0facd6613b237
      public final String name;
      public final int id;
 diff --git a/core/src/mindustry/world/meta/StatValues.java b/core/src/mindustry/world/meta/StatValues.java
-index ed4923b10a5ef2b55632d9c1a16e7156b901d7dc..b5d0554771df365dbdd96e8bb488a5b88a562b99 100644
+index ed4923b10a5ef2b55632d9c1a16e7156b901d7dc..ac035bae1673251f18d695075f3ffb5e748beb2d 100644
 --- a/core/src/mindustry/world/meta/StatValues.java
 +++ b/core/src/mindustry/world/meta/StatValues.java
 @@ -27,6 +27,8 @@ import mindustry.ui.*;
@@ -616,7 +616,7 @@ index ed4923b10a5ef2b55632d9c1a16e7156b901d7dc..b5d0554771df365dbdd96e8bb488a5b8
                      }
  
                      if(type.knockback > 0){
-@@ -686,8 +712,24 @@ public class StatValues{
+@@ -686,8 +712,23 @@ public class StatValues{
                          sep(bt, Core.bundle.format("bullet.healamount", Strings.autoFixed(type.healAmount, 2)));
                      }
  
@@ -642,7 +642,7 @@ index ed4923b10a5ef2b55632d9c1a16e7156b901d7dc..b5d0554771df365dbdd96e8bb488a5b8
                      }
  
                      if(type.incendAmount > 0){
-@@ -695,11 +737,11 @@ public class StatValues{
+@@ -695,11 +736,11 @@ public class StatValues{
                      }
  
                      if(type.homingPower > 0.01f){
@@ -657,7 +657,7 @@ index ed4923b10a5ef2b55632d9c1a16e7156b901d7dc..b5d0554771df365dbdd96e8bb488a5b8
                      }
  
                      if(type instanceof LaserBulletType b && b.lightningSpacing > 0){
-@@ -716,7 +758,7 @@ public class StatValues{
+@@ -716,7 +757,7 @@ public class StatValues{
                              Strings.autoFixed(b.timeDuration / 60f, 1)) + " " + StatUnit.seconds.localized());
                          }
                          if(b.timeDuration > 0f && b.powerSclDecrease < 1f){
@@ -666,7 +666,7 @@ index ed4923b10a5ef2b55632d9c1a16e7156b901d7dc..b5d0554771df365dbdd96e8bb488a5b8
                              (b.powerSclDecrease < 1f ? "[negstat]" : "") + Strings.autoFixed((b.powerSclDecrease - 1f) * 100f, 2),
                              Strings.autoFixed(b.timeDuration / 60f, 1)) + " " + StatUnit.seconds.localized());
                          }
-@@ -782,6 +824,22 @@ public class StatValues{
+@@ -782,6 +823,22 @@ public class StatValues{
                          bt.add(coll);
                      }
  
@@ -689,7 +689,7 @@ index ed4923b10a5ef2b55632d9c1a16e7156b901d7dc..b5d0554771df365dbdd96e8bb488a5b8
                      if(type.fragBullet != null){
                          bt.row();
  
-@@ -826,6 +884,22 @@ public class StatValues{
+@@ -826,6 +883,14 @@ public class StatValues{
          };
      }
  
@@ -704,7 +704,7 @@ index ed4923b10a5ef2b55632d9c1a16e7156b901d7dc..b5d0554771df365dbdd96e8bb488a5b8
      //for AmmoListValue
      private static Cell<?> sep(Table table, String text){
          table.row();
-@@ -845,6 +919,26 @@ public class StatValues{
+@@ -845,6 +910,26 @@ public class StatValues{
          });
      }
  
