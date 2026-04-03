@@ -79,7 +79,7 @@ index c0016cedfe941e232fd19476ac3268898eb9a981..1148b5d7d321d2efee3eaf508dd52a41
  
      @Remote(variants = Variant.both, priority = PacketPriority.low, unreliable = true)
      public static void blockSnapshot(short amount, byte[] data){
-+        // MDTX: contents-compatible mode cannot trust block snapshot IDs.
++        //MDTX: As `Block.id` and `Building.version()` is different, snapshot can't read correctly
 +        if(LogicExt.contentsCompatibleMode) return;
          try{
              netClient.byteStream.setBytes(data);
@@ -217,7 +217,7 @@ index e35f4e39b7a4c7e02f1e3e578b4159854c3c09a1..c360df75ed4008a3f301d51f89cf8f1e
          if(active && !server){
              Log.info("Disconnecting.");
          }
-@@ -281,7 +303,15 @@ public class Net{
+@@ -281,7 +303,13 @@ public class Net{
              return;
          }
  
@@ -226,16 +226,14 @@ index e35f4e39b7a4c7e02f1e3e578b4159854c3c09a1..c360df75ed4008a3f301d51f89cf8f1e
 +            object.handled();
 +        }catch(RuntimeException e){
 +            if(LogicExt.contentsCompatibleMode && e.getCause() instanceof EOFException){
-+                // Ignore packet shape mismatches while cross-version compatibility is active.
-+            }else{
-+                throw e;
-+            }
++                //ignore
++            }else throw e;
 +        }
  
          if(object instanceof StreamBegin b){
              streams.put(b.id, currentStream = new StreamBuilder(b));
 diff --git a/core/src/mindustry/net/NetworkIO.java b/core/src/mindustry/net/NetworkIO.java
-index 251f7c454d9823234b492d8878cb07c7e37f0136..05781fd83eb79c7c13542653b63863ef558b2410 100644
+index 251f7c454d9823234b492d8878cb07c7e37f0136..082a174b79d1bc90c414dcb88b4dc41beba8c46c 100644
 --- a/core/src/mindustry/net/NetworkIO.java
 +++ b/core/src/mindustry/net/NetworkIO.java
 @@ -4,6 +4,7 @@ import arc.*;
@@ -254,7 +252,7 @@ index 251f7c454d9823234b492d8878cb07c7e37f0136..05781fd83eb79c7c13542653b63863ef
  
  import java.io.*;
  import java.nio.*;
-@@ -61,12 +63,18 @@ public class NetworkIO{
+@@ -61,12 +63,19 @@ public class NetworkIO{
          }
      }
  
@@ -266,6 +264,7 @@ index 251f7c454d9823234b492d8878cb07c7e37f0136..05781fd83eb79c7c13542653b63863ef
              state.rules = JsonIO.read(Rules.class, stream.readUTF());
 -            state.mapLocales = JsonIO.read(MapLocales.class, stream.readUTF());
 +            if(LogicExt.v146Mode){
++                //noinspection deprecation
 +                if(!state.rules.hiddenBuildItems.contains(Items.beryllium) && !state.rules.hiddenBuildItems.contains(Items.copper)){
 +                    state.rules.planet = Planets.sun;
 +                }
@@ -274,7 +273,7 @@ index 251f7c454d9823234b492d8878cb07c7e37f0136..05781fd83eb79c7c13542653b63863ef
              state.map = new Map(SaveIO.getSaveWriter().readStringMap(stream));
  
              state.wave = stream.readInt();
-@@ -84,16 +92,26 @@ public class NetworkIO{
+@@ -84,15 +93,24 @@ public class NetworkIO{
              player.id = id;
              player.add();
  
@@ -285,29 +284,27 @@ index 251f7c454d9823234b492d8878cb07c7e37f0136..05781fd83eb79c7c13542653b63863ef
 -            SaveIO.getSaveWriter().readMarkers(stream);
 -            SaveIO.getSaveWriter().readCustomChunks(stream);
 +            var saveWriter = SaveIO.getSaveWriter();
++            //MDTX: Use ShortChunkSave version
 +            if(LogicExt.mockProtocol < 152){
 +                saveWriter = SaveIO.getSaveWriter(9);
 +            }
 +            saveWriter.readContentHeader(stream);
-+            if(LogicExt.mockProtocol >= 153){
++            //MDTX: Use ShortChunkSave version
++            if(LogicExt.mockProtocol >= 153)
 +                saveWriter.readContentPatches(stream);
-+            }
 +            saveWriter.readMap(stream, world.context);
 +            saveWriter.readTeamBlocks(stream);
-+            if(!LogicExt.v146Mode){
++            if(!LogicExt.v146Mode)
 +                saveWriter.readMarkers(stream);
-+            }
 +            saveWriter.readCustomChunks(stream);
          }catch(IOException e){
              throw new RuntimeException(e);
          }finally{
--            content.setTemporaryMapper(null);
-+            if(!LogicExt.contentsCompatibleMode){
-+                content.setTemporaryMapper(null);
-+            }
++            if(!LogicExt.contentsCompatibleMode)
+             content.setTemporaryMapper(null);
          }
      }
- 
+
 diff --git a/core/src/mindustry/net/Packets.java b/core/src/mindustry/net/Packets.java
 index 835faba4ef5ca398c4986bba927bcd0bc91bbcf6..122c854ceb29ef6e9dee2f1abbe664d228a96feb 100644
 --- a/core/src/mindustry/net/Packets.java
