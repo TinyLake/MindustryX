@@ -205,7 +205,7 @@ index e03035023877c8c13f92e7cf2c630c43014f3212..ad9234fb96c25c222811da3050e332f5
                  break;
              }
          }
-+        //MDTX: 学术端的任意大小笔刷功能
++        // MDTX: allow arbitrary brush sizes in editor preview.
 +        if(brush == null){
 +            float bSize = editor.brushSize;
 +            float mod = bSize % 1f;
@@ -233,7 +233,7 @@ index e03035023877c8c13f92e7cf2c630c43014f3212..ad9234fb96c25c222811da3050e332f5
 -                    Lines.square(v.x + scaling/2f, v.y + scaling/2f, scaling * ((editor.brushSize == 1.5f ? 1f : editor.brushSize) + 0.5f));
 +                if(tool == EditorTool.pencil && (tool.mode == 1 || tool.mode == 4)){
 +                    int brushSize = (int)(editor.brushSize * (tool.mode == 1 ? 2 : 1));
-+                    float corr = ((brushSize % 2) == 0) ? 0f : scaling / 2f;//whether in the center of tile
++                    float corr = ((brushSize % 2) == 0) ? 0f : scaling / 2f;
 +                    Lines.square(v.x + corr, v.y + corr, scaling * brushSize / 2);
                  }else{
 -                    Lines.poly(brushPolygons[index], v.x, v.y, scaling);
