@@ -10,6 +10,10 @@ BLUE='\033[0;34m'
 NC='\033[0m' # No Color
 
 export GIT_COMMITTER_DATE='2024-01-01 00:00:00 +0000' # fix git am date
+export GIT_AUTHOR_NAME='System'
+export GIT_AUTHOR_EMAIL='system@example.com'
+export GIT_COMMITTER_NAME='System'
+export GIT_COMMITTER_EMAIL='system@example.com'
 
 # --- Helper Functions ---
 
