@@ -256,7 +256,7 @@ public class NewCoreItemsDisplay extends Table{
         for(BuildPlan plan : allPlans){
             Block block = plan.block;
 
-            if(block == null || block instanceof CoreBlock) return;
+            if(block == null || block instanceof CoreBlock) continue;
 
             if(plan.build() instanceof ConstructBuild build){
                 block = build.current;
