@@ -4,13 +4,13 @@ Date: Sun, 14 Dec 2025 23:19:27 +0800
 Subject: [PATCH] HC: Support reuse SDL-window for LoaderMod
 
 ---
- .../src/arc/backend/sdl/SdlApplication.java   | 25 +++++++++++++++++++
- .../src/arc/backend/sdl/SdlApplication.java   | 14 +++++++++++
- .../src/arc/backend/sdl/SdlGraphics.java      |  3 ++-
- 3 files changed, 41 insertions(+), 1 deletion(-)
+ .../src/arc/backend/sdl/SdlApplication.java      | 16 ++++++++++++++++
+ .../src/arc/backend/sdl/SdlApplication.java      | 14 ++++++++++++++
+ .../src/arc/backend/sdl/SdlGraphics.java         |  3 ++-
+ 3 files changed, 32 insertions(+), 1 deletion(-)
 
 diff --git a/backends/backend-sdl/src/arc/backend/sdl/SdlApplication.java b/backends/backend-sdl/src/arc/backend/sdl/SdlApplication.java
-index 6f6e52f668028b338ac7b50b12b22b0aacb0bbdb..81859b7be355451eb6ca6030a79125c6af05139f 100644
+index 6f6e52f668028b338ac7b50b12b22b0aacb0bbdb..d69db2b95e3da2a9a49921226128c5b51f5642d5 100644
 --- a/backends/backend-sdl/src/arc/backend/sdl/SdlApplication.java
 +++ b/backends/backend-sdl/src/arc/backend/sdl/SdlApplication.java
 @@ -6,6 +6,7 @@ import arc.backend.sdl.jni.*;
@@ -21,7 +21,7 @@ index 6f6e52f668028b338ac7b50b12b22b0aacb0bbdb..81859b7be355451eb6ca6030a79125c6
  import arc.math.geom.*;
  import arc.scene.ui.*;
  import arc.struct.*;
-@@ -112,6 +113,30 @@ public class SdlApplication implements Application{
+@@ -112,6 +113,21 @@ public class SdlApplication implements Application{
  
          if(OS.isMac) restartMac();
  
@@ -38,15 +38,6 @@ index 6f6e52f668028b338ac7b50b12b22b0aacb0bbdb..81859b7be355451eb6ca6030a79125c6
 +            SDL_GetVersion(ver);
 +            Log.info("[Core] Initialized SDL v@.@.@", ver[0], ver[1], ver[2]);
 +            return;
-+        }
-+
-+        //show native IME candidate UI
-+        SDL_SetHint("SDL_IME_SHOW_UI","1");
-+        if(OS.isWindows){
-+            // SDL only applies Windows DPI awareness hints before the video subsystem starts.
-+            SDL_SetHint("SDL_WINDOWS_DPI_SCALING", "0");
-+            SDL_SetHint("SDL_WINDOWS_DPI_AWARENESS", "permonitorv2");
-+            config.hdpiMode = HdpiMode.pixels;
 +        }
 +
          check(SDL_Init(SDL_INIT_VIDEO | SDL_INIT_EVENTS));

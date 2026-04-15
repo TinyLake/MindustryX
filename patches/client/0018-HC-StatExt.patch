@@ -15,7 +15,7 @@ way-zer <himc.wicp@gmail.com> on 2024/5/4 at 22:17
  core/src/mindustry/type/UnitType.java         |  21 ++-
  core/src/mindustry/type/Weapon.java           |  12 ++
  core/src/mindustry/world/Block.java           |   4 +-
- .../world/blocks/defense/ForceProjector.java  |   2 +
+ .../world/blocks/defense/ForceProjector.java  |   1 +
  .../world/blocks/defense/MendProjector.java   |   4 +-
  .../world/blocks/defense/RegenProjector.java  |   3 +-
  .../world/blocks/defense/ShieldWall.java      |   4 +
@@ -29,7 +29,7 @@ way-zer <himc.wicp@gmail.com> on 2024/5/4 at 22:17
  core/src/mindustry/world/meta/Stat.java       |  23 +--
  core/src/mindustry/world/meta/StatCat.java    |   5 +-
  core/src/mindustry/world/meta/StatValues.java | 142 +++++++++++++++---
- 20 files changed, 215 insertions(+), 53 deletions(-)
+ 20 files changed, 214 insertions(+), 53 deletions(-)
 
 diff --git a/core/src/mindustry/type/Item.java b/core/src/mindustry/type/Item.java
 index 3ba4dc9de5a10c39e4e0257e854dabd7434e7b6d..ffac65db1338a457df5189565f554d80cc076500 100644
@@ -221,7 +221,7 @@ index edf4da72786c47a19c9fb64162ef3aff0ea1d7d6..c79e6ffce4c68637e140ff3e785b061c
          //Note: Power stats are added by the consumers.
          if(hasLiquids) stats.add(Stat.liquidCapacity, liquidCapacity, StatUnit.liquidUnits);
 diff --git a/core/src/mindustry/world/blocks/defense/ForceProjector.java b/core/src/mindustry/world/blocks/defense/ForceProjector.java
-index c1e57abed105da8197b0a543d38657318bc8fb2e..7b95c19f9c6017cc82d037bcc4221c2d9144c763 100644
+index c1e57abed105da8197b0a543d38657318bc8fb2e..a19a4f3b1730c3fda1dd7a06d3ec3b7a0241ebc7 100644
 --- a/core/src/mindustry/world/blocks/defense/ForceProjector.java
 +++ b/core/src/mindustry/world/blocks/defense/ForceProjector.java
 @@ -24,6 +24,7 @@ import mindustry.world.*;
@@ -232,14 +232,6 @@ index c1e57abed105da8197b0a543d38657318bc8fb2e..7b95c19f9c6017cc82d037bcc4221c2d
  
  import static mindustry.Vars.*;
  
-@@ -109,6 +110,7 @@ public class ForceProjector extends Block{
- 
-         if(consItems) stats.timePeriod = phaseUseTime;
-         super.setStats();
-+        stats.add(Stat.range, radius / tilesize, StatUnit.blocks);
-         stats.add(Stat.shieldHealth, shieldHealth, StatUnit.none);
-         stats.add(Stat.range, radius / tilesize, StatUnit.blocks);
-         stats.add(Stat.regenerationRate, cooldownNormal * 60f, StatUnit.perSecond);
 diff --git a/core/src/mindustry/world/blocks/defense/MendProjector.java b/core/src/mindustry/world/blocks/defense/MendProjector.java
 index fe3b942681f449db3a17a6603182162e9b522b24..3c7b9653a58a5d4e92f9ba050de2f44757d91be2 100644
 --- a/core/src/mindustry/world/blocks/defense/MendProjector.java
