@@ -4,24 +4,16 @@ Date: Sun, 14 Dec 2025 23:19:27 +0800
 Subject: [PATCH] HC: Support reuse SDL-window for LoaderMod
 
 ---
- .../src/arc/backend/sdl/SdlApplication.java      | 16 ++++++++++++++++
- .../src/arc/backend/sdl/SdlApplication.java      | 14 ++++++++++++++
- .../src/arc/backend/sdl/SdlGraphics.java         |  3 ++-
- 3 files changed, 32 insertions(+), 1 deletion(-)
+ .../src/arc/backend/sdl/SdlApplication.java       | 15 +++++++++++++++
+ .../src/arc/backend/sdl/SdlApplication.java       | 14 ++++++++++++++
+ .../src/arc/backend/sdl/SdlGraphics.java          |  3 ++-
+ 3 files changed, 31 insertions(+), 1 deletion(-)
 
 diff --git a/backends/backend-sdl/src/arc/backend/sdl/SdlApplication.java b/backends/backend-sdl/src/arc/backend/sdl/SdlApplication.java
-index 6f6e52f668028b338ac7b50b12b22b0aacb0bbdb..d69db2b95e3da2a9a49921226128c5b51f5642d5 100644
+index 6f6e52f668028b338ac7b50b12b22b0aacb0bbdb..5e136d551d1c039dafc2af698673baeabae05e42 100644
 --- a/backends/backend-sdl/src/arc/backend/sdl/SdlApplication.java
 +++ b/backends/backend-sdl/src/arc/backend/sdl/SdlApplication.java
-@@ -6,6 +6,7 @@ import arc.backend.sdl.jni.*;
- import arc.files.*;
- import arc.func.*;
- import arc.graphics.*;
-+import arc.graphics.gl.*;
- import arc.math.geom.*;
- import arc.scene.ui.*;
- import arc.struct.*;
-@@ -112,6 +113,21 @@ public class SdlApplication implements Application{
+@@ -112,6 +112,21 @@ public class SdlApplication implements Application{
  
          if(OS.isMac) restartMac();
  
