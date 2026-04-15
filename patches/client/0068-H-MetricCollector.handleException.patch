@@ -9,7 +9,7 @@ Subject: [PATCH] H MetricCollector.handleException
  2 files changed, 26 insertions(+), 4 deletions(-)
 
 diff --git a/core/src/mindustry/mod/Mods.java b/core/src/mindustry/mod/Mods.java
-index a9c5f27f09e06f8c160561365dfd9d2ceb3d3c6a..ebf6b5cb066a7d45c5f4caba97892944401cf6a2 100644
+index 7ee6f63dca69dc3c21f6083c7e09d68952c1f011..a8a85c08db5f55950339a78c1bc8d770b8ec23c6 100644
 --- a/core/src/mindustry/mod/Mods.java
 +++ b/core/src/mindustry/mod/Mods.java
 @@ -23,6 +23,7 @@ import mindustry.graphics.MultiPacker.*;
@@ -20,7 +20,7 @@ index a9c5f27f09e06f8c160561365dfd9d2ceb3d3c6a..ebf6b5cb066a7d45c5f4caba97892944
  
  import java.io.*;
  import java.util.*;
-@@ -307,10 +308,15 @@ public class Mods implements Loadable{
+@@ -309,10 +310,15 @@ public class Mods implements Loadable{
          for(Seq<Content> arr : content.getContentMap()){
              arr.each(c -> {
                  if(c instanceof UnlockableContent u && c.minfo.mod != null){

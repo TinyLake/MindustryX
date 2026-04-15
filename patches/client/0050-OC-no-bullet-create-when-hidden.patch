@@ -9,7 +9,7 @@ Subject: [PATCH] OC: no bullet create when hidden
  2 files changed, 3 insertions(+), 1 deletion(-)
 
 diff --git a/core/src/mindustry/entities/bullet/BulletType.java b/core/src/mindustry/entities/bullet/BulletType.java
-index 06d74ddac6c4101853fd0dfaedcf1d18e2b6de9f..a812d38d7f3145213778bd6eaab61194824eb58b 100644
+index b0879d8490eba1c0d335260777445582081cf5f3..ce382d07641b5921ee3f89d308a93fe0b6be8537 100644
 --- a/core/src/mindustry/entities/bullet/BulletType.java
 +++ b/core/src/mindustry/entities/bullet/BulletType.java
 @@ -23,6 +23,7 @@ import mindustry.graphics.*;
@@ -20,7 +20,7 @@ index 06d74ddac6c4101853fd0dfaedcf1d18e2b6de9f..a812d38d7f3145213778bd6eaab61194
  
  import static mindustry.Vars.*;
  
-@@ -911,6 +912,7 @@ public class BulletType extends Content implements Cloneable{
+@@ -914,6 +915,7 @@ public class BulletType extends Content implements Cloneable{
          @Nullable Entityc owner, @Nullable Entityc shooter, Team team, float x, float y, float angle, float damage, float velocityScl,
          float lifetimeScl, Object data, @Nullable Mover mover, float aimX, float aimY, @Nullable Teamc target
      ){

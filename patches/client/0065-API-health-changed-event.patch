@@ -55,7 +55,7 @@ index 48e42b4e5fcdb86d678ceb75355c72415634f36b..b115b9617204ed997e8337248f9562b4
              lines.add(new Vec2(x + Mathf.range(3f), y + Mathf.range(3f)));
  
 diff --git a/core/src/mindustry/entities/bullet/BulletType.java b/core/src/mindustry/entities/bullet/BulletType.java
-index a812d38d7f3145213778bd6eaab61194824eb58b..4c868d381c92a0b998f0c2b456ae293ab27a1859 100644
+index ce382d07641b5921ee3f89d308a93fe0b6be8537..47c0b6d60dfcc09b8d8ec8cf38784f6aa51172a0 100644
 --- a/core/src/mindustry/entities/bullet/BulletType.java
 +++ b/core/src/mindustry/entities/bullet/BulletType.java
 @@ -23,6 +23,7 @@ import mindustry.graphics.*;
@@ -66,7 +66,7 @@ index a812d38d7f3145213778bd6eaab61194824eb58b..4c868d381c92a0b998f0c2b456ae293a
  import mindustryX.features.*;
  
  import static mindustry.Vars.*;
-@@ -457,6 +458,7 @@ public class BulletType extends Content implements Cloneable{
+@@ -459,6 +460,7 @@ public class BulletType extends Content implements Cloneable{
          }
  
          if(heals() && build.team == b.team && !(build.block instanceof ConstructBlock)){
@@ -74,7 +74,7 @@ index a812d38d7f3145213778bd6eaab61194824eb58b..4c868d381c92a0b998f0c2b456ae293a
              healEffect.at(build.x, build.y, 0f, healColor, build.block);
              build.heal(healPercent / 100f * build.maxHealth + healAmount);
              healSound.at(build, 1f + Mathf.range(0.1f), healSoundVolume);
-@@ -478,6 +480,8 @@ public class BulletType extends Content implements Cloneable{
+@@ -480,6 +482,8 @@ public class BulletType extends Content implements Cloneable{
          boolean wasDead = entity instanceof Unit u && u.dead;
  
          if(entity instanceof Healthc h){
@@ -83,7 +83,7 @@ index a812d38d7f3145213778bd6eaab61194824eb58b..4c868d381c92a0b998f0c2b456ae293a
              float damage = b.damage;
              float shield = entity instanceof Shieldc s ? Math.max(s.shield(), 0f) : 0f;
              if(maxDamageFraction > 0){
-@@ -589,7 +593,9 @@ public class BulletType extends Content implements Cloneable{
+@@ -591,7 +595,9 @@ public class BulletType extends Content implements Cloneable{
  
      public void createSplashDamage(Bullet b, float x, float y){
          if(splashDamageRadius > 0 && !b.absorbed){
@@ -93,7 +93,7 @@ index a812d38d7f3145213778bd6eaab61194824eb58b..4c868d381c92a0b998f0c2b456ae293a
  
              if(status != StatusEffects.none){
                  Damage.status(b.team, x, y, splashDamageRadius, status, statusDuration, collidesAir, collidesGround);
-@@ -597,6 +603,7 @@ public class BulletType extends Content implements Cloneable{
+@@ -599,6 +605,7 @@ public class BulletType extends Content implements Cloneable{
  
              if(heals()){
                  indexer.eachBlock(b.team, x, y, splashDamageRadius, Building::damaged, other -> {

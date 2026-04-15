@@ -50,7 +50,7 @@ index 36c61c5c641f197f6f13fcab6e5cc0da3e7181a4..b2c0fe2c649602c9d46fff7d3fdd8ac0
      }
  }
 diff --git a/core/src/mindustry/world/Block.java b/core/src/mindustry/world/Block.java
-index 029494b36f4f83929f7ac19f30e95d55ec9007a0..7f3c00a861f2a6636dd25fa0ac79c9c1f8b1882f 100644
+index c79e6ffce4c68637e140ff3e785b061cb930e713..0bedbb38372ca190e9a25ca2fff3d884979db1fc 100644
 --- a/core/src/mindustry/world/Block.java
 +++ b/core/src/mindustry/world/Block.java
 @@ -35,6 +35,7 @@ import mindustry.world.blocks.power.*;
@@ -109,7 +109,7 @@ index 029494b36f4f83929f7ac19f30e95d55ec9007a0..7f3c00a861f2a6636dd25fa0ac79c9c1
                  () -> Mathf.zero(consPower.requestedPower(entity)) && entity.power.graph.getPowerProduced() + entity.power.graph.getBatteryStored() > 0f ? 1f : entity.power.status)
              );
 diff --git a/core/src/mindustry/world/blocks/defense/ForceProjector.java b/core/src/mindustry/world/blocks/defense/ForceProjector.java
-index cd0314aed5f922962bc8596badab02d6c548ce33..33cfc82bdb20cb6d433118f015b11b7983e9ac1d 100644
+index 7b95c19f9c6017cc82d037bcc4221c2d9144c763..9f0d64009efb2383d182b4ac369b6be620a2e9a7 100644
 --- a/core/src/mindustry/world/blocks/defense/ForceProjector.java
 +++ b/core/src/mindustry/world/blocks/defense/ForceProjector.java
 @@ -25,6 +25,7 @@ import mindustry.world.blocks.*;
@@ -369,7 +369,7 @@ index 8b151af5dcdcab792b903a02b2012e7191209140..fe80ce93eb9291cdcb7ca2d43f34ed19
  
      public class PayloadDeconstructorBuild extends PayloadBlockBuild<Payload>{
 diff --git a/core/src/mindustry/world/blocks/power/ImpactReactor.java b/core/src/mindustry/world/blocks/power/ImpactReactor.java
-index 2869759bab9ca11481538a58f9bdcd9cb5037abc..f93c058daadb8dae8217a9e321508adb49114349 100644
+index 0e438489051997426fb151f74ef5ae562ab4d3c4..d4c21e6ab8cea1783d92454497a0742c5a20e05d 100644
 --- a/core/src/mindustry/world/blocks/power/ImpactReactor.java
 +++ b/core/src/mindustry/world/blocks/power/ImpactReactor.java
 @@ -54,11 +54,20 @@ public class ImpactReactor extends PowerGenerator{
@@ -378,17 +378,17 @@ index 2869759bab9ca11481538a58f9bdcd9cb5037abc..f93c058daadb8dae8217a9e321508adb
  
 -        addBar("power", (GeneratorBuild entity) -> new Bar(() ->
 -        Core.bundle.format("bar.poweroutput",
--        Strings.fixed(Math.max(entity.getPowerProduction() - consPower.usage, 0) * 60 * entity.timeScale(), 1)),
+-        Strings.fixed(Math.max(entity.getPowerProduction() - (consPower == null ? 0f : consPower.usage), 0) * 60 * entity.timeScale(), 1)),
 -        () -> Pal.powerBar,
 -        () -> entity.productionEfficiency));
 +        addBar("power", (GeneratorBuild entity) -> new Bar(
 +                () -> entity.warmup() > 0.999f
 +                        ? Strings.format(Iconc.power+"@[lightgray](@%)[]",
-+                                Strings.autoFixed((entity.getPowerProduction() - consPower.usage) * 60 * entity.timeScale(), 1),
++                                Strings.autoFixed((entity.getPowerProduction() - (consPower == null ? 0f : consPower.usage)) * 60 * entity.timeScale(), 1),
 +                                Strings.autoFixed(entity.productionEfficiency * 100, 1)
 +                        )
 +                        : Strings.format(Iconc.power+"@[lightgray](@%)[]|@s",
-+                                Strings.autoFixed((entity.getPowerProduction() - consPower.usage) * 60 * entity.timeScale(), 1),
++                                Strings.autoFixed((entity.getPowerProduction() - (consPower == null ? 0f : consPower.usage)) * 60 * entity.timeScale(), 1),
 +                                Strings.autoFixed(entity.productionEfficiency * 100, 1),
 +                                Strings.autoFixed((warmupToTime(0.999f, entity.timeScale()) - warmupToTime(entity.warmup(), entity.timeScale())) / 60f, 1)
 +                        ),

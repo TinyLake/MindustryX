@@ -10,7 +10,7 @@ Subject: [PATCH] HC: additionInventoryColumns
  3 files changed, 7 insertions(+), 4 deletions(-)
 
 diff --git a/core/src/mindustry/ui/dialogs/PlanetDialog.java b/core/src/mindustry/ui/dialogs/PlanetDialog.java
-index a8d281b886f5638c0856dcef68726fa3a2e12cf7..52b4cc43f6ddc449615129aa0816582a07dae61e 100644
+index dcb24ef2073a9a325a3c74873d2f76f44bf9f89f..d72cbae9f527e2187a524c4f9476e7cf0fc8de97 100644
 --- a/core/src/mindustry/ui/dialogs/PlanetDialog.java
 +++ b/core/src/mindustry/ui/dialogs/PlanetDialog.java
 @@ -1030,6 +1030,7 @@ public class PlanetDialog extends BaseDialog implements PlanetInterfaceRenderer{

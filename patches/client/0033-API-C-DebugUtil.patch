@@ -29,7 +29,7 @@ index f4ed14ca5a2b5f3a8b2d01e0c7bbc383be740962..c3d0524f8e9760d1a59610f3ab505eaa
          assets.setLoader(Texture.class, "." + mapExtension, new MapPreviewLoader());
  
 diff --git a/core/src/mindustry/core/Logic.java b/core/src/mindustry/core/Logic.java
-index 3ecb56215333d2b051d618c7119c6de35790d556..ad1f132d7e88abe60b6f60f5262df1125315c781 100644
+index 66fd4ef90d3544b6a39f962829b235e16a9cab2f..24717d27d919dadb7975dd45a1b27864815ff96d 100644
 --- a/core/src/mindustry/core/Logic.java
 +++ b/core/src/mindustry/core/Logic.java
 @@ -21,6 +21,7 @@ import mindustry.world.*;
@@ -40,7 +40,7 @@ index 3ecb56215333d2b051d618c7119c6de35790d556..ad1f132d7e88abe60b6f60f5262df112
  
  import java.util.*;
  
-@@ -466,6 +467,7 @@ public class Logic implements ApplicationListener{
+@@ -467,6 +468,7 @@ public class Logic implements ApplicationListener{
          PerfCounter.frame.end();
          PerfCounter.frame.begin();
  
@@ -48,7 +48,7 @@ index 3ecb56215333d2b051d618c7119c6de35790d556..ad1f132d7e88abe60b6f60f5262df112
          Events.fire(Trigger.update);
          universe.updateGlobal();
  
-@@ -578,6 +580,7 @@ public class Logic implements ApplicationListener{
+@@ -579,6 +581,7 @@ public class Logic implements ApplicationListener{
          }else if(netServer.isWaitingForPlayers() && runStateCheck){
              checkGameState();
          }

@@ -961,7 +961,7 @@ index f0d7aab18f3d197ed6864eb1ef6a0f5210fc7148..39616ef05ca1e660ca5f62860cbe4d58
  
      public static Font def, outline, icon, iconLarge, tech, logic, monospace;
 diff --git a/core/src/mindustry/ui/dialogs/ContentInfoDialog.java b/core/src/mindustry/ui/dialogs/ContentInfoDialog.java
-index bc658d7e18538b735377222d56d3c02870dfd850..7da505e26c90014896f4edac0d4fe6d2d5a87939 100644
+index 377d7e225c07464a110e760bcf1e5022f0fb88f7..495b30f1e87b58ee349b366d9ea5af026e9504e9 100644
 --- a/core/src/mindustry/ui/dialogs/ContentInfoDialog.java
 +++ b/core/src/mindustry/ui/dialogs/ContentInfoDialog.java
 @@ -10,9 +10,12 @@ import arc.util.*;
@@ -1330,7 +1330,7 @@ index 206fbb42165a6bcdc3db4e12d5fc8469987aa245..29ec028133e0925ca066f6f38a274653
      }
  
 diff --git a/core/src/mindustry/ui/dialogs/PlanetDialog.java b/core/src/mindustry/ui/dialogs/PlanetDialog.java
-index 52b4cc43f6ddc449615129aa0816582a07dae61e..80209603dfc1859be202f5b7aa3632f7a9200cc4 100644
+index d72cbae9f527e2187a524c4f9476e7cf0fc8de97..292a95b998595f5603f5f9c060b9da7a1947739c 100644
 --- a/core/src/mindustry/ui/dialogs/PlanetDialog.java
 +++ b/core/src/mindustry/ui/dialogs/PlanetDialog.java
 @@ -38,6 +38,7 @@ import mindustry.type.Planet.*;

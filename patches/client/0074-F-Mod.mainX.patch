@@ -8,7 +8,7 @@ Subject: [PATCH] F: Mod.mainX
  1 file changed, 9 insertions(+)
 
 diff --git a/core/src/mindustry/mod/Mods.java b/core/src/mindustry/mod/Mods.java
-index ebf6b5cb066a7d45c5f4caba97892944401cf6a2..77e2a17db2fe233c7253f25df5c2523bad37c8e6 100644
+index a8a85c08db5f55950339a78c1bc8d770b8ec23c6..28fd25ed6ec59499e1840243b6344cf2c8fc1fa1 100644
 --- a/core/src/mindustry/mod/Mods.java
 +++ b/core/src/mindustry/mod/Mods.java
 @@ -23,6 +23,7 @@ import mindustry.graphics.MultiPacker.*;
@@ -19,7 +19,7 @@ index ebf6b5cb066a7d45c5f4caba97892944401cf6a2..77e2a17db2fe233c7253f25df5c2523b
  import mindustryX.features.MetricCollector.*;
  
  import java.io.*;
-@@ -1137,6 +1138,11 @@ public class Mods implements Loadable{
+@@ -1141,6 +1142,11 @@ public class Mods implements Loadable{
  
              String camelized = meta.name.replace(" ", "");
              String mainClass = meta.main == null ? camelized.toLowerCase(Locale.ROOT) + "." + camelized + "Mod" : meta.main;
@@ -31,7 +31,7 @@ index ebf6b5cb066a7d45c5f4caba97892944401cf6a2..77e2a17db2fe233c7253f25df5c2523b
              String baseName = meta.name.toLowerCase(Locale.ROOT).replace(" ", "-");
  
              var other = mods.find(m -> m.name.equals(baseName));
-@@ -1427,6 +1433,9 @@ public class Mods implements Loadable{
+@@ -1431,6 +1437,9 @@ public class Mods implements Loadable{
          /** Minimum game version that this mod requires, e.g. "140.1" */
          public String minGameVersion = "0";
          public @Nullable String displayName, author, description, subtitle, version, main, repo;

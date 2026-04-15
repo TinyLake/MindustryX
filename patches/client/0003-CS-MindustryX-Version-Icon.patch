@@ -57,7 +57,7 @@ index d42ffe6d4a318ce558f1010eae46140f88ed5c99..bf44ead5c58abfb79c500e6daae30c3e
 +    <string name="app_name">MindustryX</string>
  </resources>
 diff --git a/build.gradle b/build.gradle
-index 225fe1b5c45b87a14dd7a60d2e21d9be15306179..3eb7add7ad8bd93ab7cb03715b5ae530a11022e9 100644
+index 71619509254c843cdf8a0fe8d2c0d2271a2125af..5f69c3a1b4f77494c3c4045664214ec6fe73fbe4 100644
 --- a/build.gradle
 +++ b/build.gradle
 @@ -7,7 +7,11 @@ buildscript{
@@ -96,7 +96,7 @@ index e1904111c3ca730e830b5c1bac3c1d5cacc6b3d1..e89b8f7fe020fc5d5f1fa444da386762
      }
      processResources.configure {
 diff --git a/core/src/mindustry/Vars.java b/core/src/mindustry/Vars.java
-index 84064f7739ae6d3049e4f2313a2829a1810e53d2..911e256b3bc8fde56a12da9eaf9493002b239a8c 100644
+index 00b1059e804094475999ee819cb661e5b9bfab67..b8a8b31d12c0c05993f282ee1f6b1aba3cf16608 100644
 --- a/core/src/mindustry/Vars.java
 +++ b/core/src/mindustry/Vars.java
 @@ -90,7 +90,7 @@ public class Vars implements Loadable{

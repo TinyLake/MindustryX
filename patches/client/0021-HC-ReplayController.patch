@@ -52,10 +52,10 @@ index 730e0d7c960a454161b0d8d6766ed017007e44b7..8d654913ad9f55ae4f10de8a8eff1df0
  
      public static void writeUnit(Writes write, Unit unit){
 diff --git a/core/src/mindustry/net/ArcNetProvider.java b/core/src/mindustry/net/ArcNetProvider.java
-index a759e4c791ca7c2b9e9892277738cabdc904e94e..a09af782ccc6f5de444ec3db82e934029d105b58 100644
+index d82ea3569ab07387265ee4baaa7ee25b7575f1a0..b78a14c7b7f0c68bcb5a9b97d67c01d33631491d 100644
 --- a/core/src/mindustry/net/ArcNetProvider.java
 +++ b/core/src/mindustry/net/ArcNetProvider.java
-@@ -452,7 +452,7 @@ public class ArcNetProvider implements NetProvider{
+@@ -455,7 +455,7 @@ public class ArcNetProvider implements NetProvider{
              }else{
                  //read length int, followed by compressed lz4 data
                  Packet packet = Net.newPacket(id);

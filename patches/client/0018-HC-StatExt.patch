@@ -20,7 +20,7 @@ way-zer <himc.wicp@gmail.com> on 2024/5/4 at 22:17
  .../world/blocks/defense/RegenProjector.java  |   3 +-
  .../world/blocks/defense/ShieldWall.java      |   4 +
  .../distribution/BufferedItemBridge.java      |   1 +
- .../world/blocks/power/ImpactReactor.java     |  24 ++-
+ .../world/blocks/power/ImpactReactor.java     |  25 ++-
  .../world/blocks/sandbox/PowerSource.java     |   6 +
  .../world/blocks/sandbox/PowerVoid.java       |   1 -
  .../world/consumers/ConsumeItemDynamic.java   |   2 +-
@@ -29,7 +29,7 @@ way-zer <himc.wicp@gmail.com> on 2024/5/4 at 22:17
  core/src/mindustry/world/meta/Stat.java       |  23 +--
  core/src/mindustry/world/meta/StatCat.java    |   5 +-
  core/src/mindustry/world/meta/StatValues.java | 142 +++++++++++++++---
- 20 files changed, 215 insertions(+), 52 deletions(-)
+ 20 files changed, 215 insertions(+), 53 deletions(-)
 
 diff --git a/core/src/mindustry/type/Item.java b/core/src/mindustry/type/Item.java
 index 3ba4dc9de5a10c39e4e0257e854dabd7434e7b6d..ffac65db1338a457df5189565f554d80cc076500 100644
@@ -192,7 +192,7 @@ index eedcaa20c7b63b6c41d647cead5febc8b8c2dacb..c527a7c4e0164fcbb22240880692f58b
              t.row();
              t.add("[lightgray]" + Stat.inaccuracy.localized() + ": [white]" + (int)inaccuracy + " " + StatUnit.degrees.localized());
 diff --git a/core/src/mindustry/world/Block.java b/core/src/mindustry/world/Block.java
-index 6d44f33d32025f59d78470e7a740f770a00f2b21..029494b36f4f83929f7ac19f30e95d55ec9007a0 100644
+index edf4da72786c47a19c9fb64162ef3aff0ea1d7d6..c79e6ffce4c68637e140ff3e785b061cb930e713 100644
 --- a/core/src/mindustry/world/Block.java
 +++ b/core/src/mindustry/world/Block.java
 @@ -34,6 +34,7 @@ import mindustry.world.blocks.environment.*;
@@ -221,7 +221,7 @@ index 6d44f33d32025f59d78470e7a740f770a00f2b21..029494b36f4f83929f7ac19f30e95d55
          //Note: Power stats are added by the consumers.
          if(hasLiquids) stats.add(Stat.liquidCapacity, liquidCapacity, StatUnit.liquidUnits);
 diff --git a/core/src/mindustry/world/blocks/defense/ForceProjector.java b/core/src/mindustry/world/blocks/defense/ForceProjector.java
-index cfafdca58465e803cb415a2ced3547da4ae754c0..cd0314aed5f922962bc8596badab02d6c548ce33 100644
+index c1e57abed105da8197b0a543d38657318bc8fb2e..7b95c19f9c6017cc82d037bcc4221c2d9144c763 100644
 --- a/core/src/mindustry/world/blocks/defense/ForceProjector.java
 +++ b/core/src/mindustry/world/blocks/defense/ForceProjector.java
 @@ -24,6 +24,7 @@ import mindustry.world.*;
@@ -238,8 +238,8 @@ index cfafdca58465e803cb415a2ced3547da4ae754c0..cd0314aed5f922962bc8596badab02d6
          super.setStats();
 +        stats.add(Stat.range, radius / tilesize, StatUnit.blocks);
          stats.add(Stat.shieldHealth, shieldHealth, StatUnit.none);
+         stats.add(Stat.range, radius / tilesize, StatUnit.blocks);
          stats.add(Stat.regenerationRate, cooldownNormal * 60f, StatUnit.perSecond);
-         stats.add(Stat.cooldownTime, (int) (shieldHealth / cooldownBrokenBase / 60f), StatUnit.seconds);
 diff --git a/core/src/mindustry/world/blocks/defense/MendProjector.java b/core/src/mindustry/world/blocks/defense/MendProjector.java
 index fe3b942681f449db3a17a6603182162e9b522b24..3c7b9653a58a5d4e92f9ba050de2f44757d91be2 100644
 --- a/core/src/mindustry/world/blocks/defense/MendProjector.java
@@ -313,7 +313,7 @@ index c79a5c21485da2f6c8a9daad1ba7877819f43775..c60fffbbdcb8db5cfb9fceb7f275d55e
          stats.add(Stat.itemsMoved, displayedSpeed, StatUnit.itemsSecond);
      }
 diff --git a/core/src/mindustry/world/blocks/power/ImpactReactor.java b/core/src/mindustry/world/blocks/power/ImpactReactor.java
-index 74a2e374f196fb414a01d8d51150c44cf40d87a8..2869759bab9ca11481538a58f9bdcd9cb5037abc 100644
+index e67147fcd1302e25926ea99175965d29526d183f..0e438489051997426fb151f74ef5ae562ab4d3c4 100644
 --- a/core/src/mindustry/world/blocks/power/ImpactReactor.java
 +++ b/core/src/mindustry/world/blocks/power/ImpactReactor.java
 @@ -13,6 +13,7 @@ import mindustry.logic.*;
@@ -339,28 +339,30 @@ index 74a2e374f196fb414a01d8d51150c44cf40d87a8..2869759bab9ca11481538a58f9bdcd9c
      @Override
      public void setBars(){
          super.setBars();
-@@ -59,13 +68,14 @@ public class ImpactReactor extends PowerGenerator{
+@@ -59,15 +68,15 @@ public class ImpactReactor extends PowerGenerator{
          if(hasItems){
              stats.add(Stat.productionTime, itemDuration / 60f, StatUnit.seconds);
          }
--        //exponential decay formula
--        float max = -(float)Math.log(0.001f) / warmupSpeed / 60f;
--        float equal = -(float)Math.log(1f - Mathf.pow(consPower.usage / powerProduction, 1f / 5f)) / warmupSpeed / 60f;
--        stats.add(Stat.warmupTime, t -> {
--            t.add(Strings.autoFixed(max, 2) + " " + StatUnit.seconds.localized() + (consPower != null ? 
+-
+         if(consPower != null){
+-            //exponential decay formula
+-            float max = -(float)Math.log(0.001f) / warmupSpeed / 60f;
+-            float equal = -(float)Math.log(1f - Mathf.pow(consPower.usage / powerProduction, 1f / 5f)) / warmupSpeed / 60f;
+-            stats.add(Stat.warmupTime, t -> {
+-                t.add(Strings.autoFixed(max, 2) + " " + StatUnit.seconds.localized() + (consPower != null ?
 -                " ~ " + Strings.autoFixed(equal, 2) + " " + StatUnit.seconds.localized() + " " + StatUnit.powerEquilibrium.localized() : ""));
--        });
-+        float startTime = warmupToTime(Mathf.pow(consPower.usage / powerProduction, 1f / 5f), 1f);
-+        stats.add(StatExt.warmupPartial, startTime / 60f, StatUnit.seconds);
-+        stats.add(StatExt.warmupTime, warmupToTime(0.999f, 1f) / 60f, StatUnit.seconds);
-+        float startConsPower = 0;
-+        for (int tick = 1;tick < startTime;tick++) {
-+            startConsPower += consPower.usage - Mathf.pow(timeToWarmup(tick, 1f), 5f) * powerProduction;
-+        }
-+        stats.add(StatExt.warmupPower, Mathf.ceil(startConsPower / 50f) * 50f, StatUnit.none);
+-            });
++            float startTime = warmupToTime(Mathf.pow(consPower.usage / powerProduction, 1f / 5f), 1f);
++            stats.add(StatExt.warmupPartial, startTime / 60f, StatUnit.seconds);
++            stats.add(StatExt.warmupTime, warmupToTime(0.999f, 1f) / 60f, StatUnit.seconds);
++            float startConsPower = 0;
++            for(int tick = 1; tick < startTime; tick++){
++                startConsPower += consPower.usage - Mathf.pow(timeToWarmup(tick, 1f), 5f) * powerProduction;
++            }
++            stats.add(StatExt.warmupPower, Mathf.ceil(startConsPower / 50f) * 50f, StatUnit.none);
+         }
      }
  
-     public class ImpactReactorBuild extends GeneratorBuild{
 diff --git a/core/src/mindustry/world/blocks/sandbox/PowerSource.java b/core/src/mindustry/world/blocks/sandbox/PowerSource.java
 index 0e011c9bac5573a8124e5e603f0054319eaff0ba..fa8abf6f6424f11e2155a1258157416f1e54423a 100644
 --- a/core/src/mindustry/world/blocks/sandbox/PowerSource.java

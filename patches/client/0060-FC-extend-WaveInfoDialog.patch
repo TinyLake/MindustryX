@@ -11,11 +11,11 @@ Content-Transfer-Encoding: 8bit
 * 列表状波次浏览
 * 其他细节优化
 ---
- core/src/mindustry/editor/WaveInfoDialog.java | 229 +++++++++++++-----
- 1 file changed, 163 insertions(+), 66 deletions(-)
+ core/src/mindustry/editor/WaveInfoDialog.java | 231 +++++++++++++-----
+ 1 file changed, 164 insertions(+), 67 deletions(-)
 
 diff --git a/core/src/mindustry/editor/WaveInfoDialog.java b/core/src/mindustry/editor/WaveInfoDialog.java
-index 55e675caa05e8b7fb43b92bc2460e19daae7840e..f4467612284dc20feb6447a4953dff25274a7fa7 100644
+index 21ca2cdd139416d3ff92f1d3fa4f4873ed09f93d..96a9a6698986dcb8080c4c64c6921c8cdd0ef2bb 100644
 --- a/core/src/mindustry/editor/WaveInfoDialog.java
 +++ b/core/src/mindustry/editor/WaveInfoDialog.java
 @@ -6,6 +6,7 @@ import arc.graphics.*;
@@ -325,5 +325,6 @@ index 55e675caa05e8b7fb43b92bc2460e19daae7840e..f4467612284dc20feb6447a4953dff25
 +        ArcWaveSpawner.reload(groups);
 +        buildWavesList();
      }
- }
+-}
++}
 \ No newline at end of file

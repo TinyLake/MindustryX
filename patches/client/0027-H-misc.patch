@@ -62,7 +62,7 @@ index ec993d3e6f8026dcc58cdc6cc943d8c792494bf5..f4ed14ca5a2b5f3a8b2d01e0c7bbc383
          }
  
 diff --git a/core/src/mindustry/Vars.java b/core/src/mindustry/Vars.java
-index 5effe0780e4345b5b82e62b141b830a7e6109352..b70591215da5e5a2641e4da857a524a8c588eff9 100644
+index 8fc72cb83f64d2aa5ba2aa273de83cefd4019803..ce932b34e96285803a1d4e05b79188a0a9de71b3 100644
 --- a/core/src/mindustry/Vars.java
 +++ b/core/src/mindustry/Vars.java
 @@ -296,7 +296,8 @@ public class Vars implements Loadable{
@@ -101,7 +101,7 @@ index f5ff55e1e65d49c94130310c534e7d4f843ecb5b..627ce6898df4dc9781a8a0ebf5921c9a
      private Seq<Team> activeTeams = new Seq<>(Team.class);
      /** Maps teams to a map of flagged tiles by flag. */
 diff --git a/core/src/mindustry/content/Blocks.java b/core/src/mindustry/content/Blocks.java
-index 4019daad98e98aa86e28c5fe6926aa9a7edeeac8..f82f268fb3b2ec9dfd6fc4bec347590f802511ae 100644
+index c5f5ad9f3b0e4ba76c22708bb066b5b9f303f5a2..ebf20b5aa81a171bfe206273ddc3c9e8ef10332e 100644
 --- a/core/src/mindustry/content/Blocks.java
 +++ b/core/src/mindustry/content/Blocks.java
 @@ -2124,6 +2124,7 @@ public class Blocks{

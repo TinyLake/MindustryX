@@ -123,10 +123,10 @@ index 2564649423f3306dfaaf539dd1021527e65a5a8e..0ba08a4cd621a0081db6487527a98cba
      }
  
 diff --git a/core/src/mindustry/world/Block.java b/core/src/mindustry/world/Block.java
-index 7f3c00a861f2a6636dd25fa0ac79c9c1f8b1882f..f8281144fcc921f3ae9ff7dbbc1f25e6c106e5b8 100644
+index 0bedbb38372ca190e9a25ca2fff3d884979db1fc..ecd38c53c1e395caffa3cc62e7ba105dc5bc457e 100644
 --- a/core/src/mindustry/world/Block.java
 +++ b/core/src/mindustry/world/Block.java
-@@ -1006,11 +1006,11 @@ public class Block extends UnlockableContent implements Senseable{
+@@ -1009,11 +1009,11 @@ public class Block extends UnlockableContent implements Senseable{
      }
  
      public boolean isVisible(){

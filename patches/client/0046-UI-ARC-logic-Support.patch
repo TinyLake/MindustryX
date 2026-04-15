@@ -161,7 +161,7 @@ index 2c964326f9e19636fb0307e018834f405882984a..ee9d6239303186bb603429f2603f11b2
                  case pan -> {
                      control.input.logicCutscene = true;
 diff --git a/core/src/mindustry/logic/LStatements.java b/core/src/mindustry/logic/LStatements.java
-index 4f172c5f66736634dac190b115827695ab7993f7..ecbe2ed06b45257a1deb16ce7dbab49508cb0987 100644
+index 8a58192fac2f26bacf3fee44fd1c90ef4777934c..1a8a402b4bdbe5f6c8021602a6ba40d0e81dc1d9 100644
 --- a/core/src/mindustry/logic/LStatements.java
 +++ b/core/src/mindustry/logic/LStatements.java
 @@ -3,6 +3,9 @@ package mindustry.logic;
