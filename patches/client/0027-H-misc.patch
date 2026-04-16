@@ -121,13 +121,13 @@ index c5f5ad9f3b0e4ba76c22708bb066b5b9f303f5a2..ebf20b5aa81a171bfe206273ddc3c9e8
  
          sorter = new Sorter("sorter"){{
 diff --git a/core/src/mindustry/content/StatusEffects.java b/core/src/mindustry/content/StatusEffects.java
-index 6792c68861eb9ddf52428b2afc80510987509210..ef315970349db1c463ba117dfe3b0b15e218a72e 100644
+index 5e34e429ff04a9228b67c314c25128e277dcd6b8..33f6f8bca7473ace9951ca2a7247da673514b196 100644
 --- a/core/src/mindustry/content/StatusEffects.java
 +++ b/core/src/mindustry/content/StatusEffects.java
-@@ -206,6 +206,7 @@ public class StatusEffects{
- 
+@@ -210,6 +210,7 @@ public class StatusEffects{
          invincible = new StatusEffect("invincible"){{
              healthMultiplier = Float.POSITIVE_INFINITY;
+             show = false;
 +            color = Color.red;
          }};
  
