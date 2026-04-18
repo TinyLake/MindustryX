@@ -11,7 +11,7 @@ Subject: [PATCH] FS: Add icons.properties,bundles,block_colors.png to server
  3 files changed, 14 insertions(+), 15 deletions(-)
 
 diff --git a/core/src/mindustry/net/Administration.java b/core/src/mindustry/net/Administration.java
-index 47ff3fe168b98f0678f07cea04c270ae244fa8f9..1e70e6d272157d432a14687a9b77b11331045125 100644
+index de4407c2d864f756542166e2794eaa14a8419a55..d08bd95b57fb4c88075205c30f924f117fb8c32d 100644
 --- a/core/src/mindustry/net/Administration.java
 +++ b/core/src/mindustry/net/Administration.java
 @@ -513,6 +513,7 @@ public class Administration{

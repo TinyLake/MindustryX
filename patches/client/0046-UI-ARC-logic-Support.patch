@@ -38,7 +38,7 @@ MinRi2 <2275045670@qq.com> on 2025/5/3
  6 files changed, 149 insertions(+), 17 deletions(-)
 
 diff --git a/core/src/mindustry/logic/LCanvas.java b/core/src/mindustry/logic/LCanvas.java
-index b4ad9b3237f35d6783bc85daa8a86b820bc20ecd..599f907dc69bac24e7e5de16f5e6b18891c0261b 100644
+index 56f52b1bb9aecab2ecbedf672bc8431dc3a9de41..14b5488c33562503bc981c903a6da70d70a78ba0 100644
 --- a/core/src/mindustry/logic/LCanvas.java
 +++ b/core/src/mindustry/logic/LCanvas.java
 @@ -18,6 +18,9 @@ import mindustry.gen.*;
@@ -60,7 +60,7 @@ index b4ad9b3237f35d6783bc85daa8a86b820bc20ecd..599f907dc69bac24e7e5de16f5e6b188
      }
  
      public static void tooltip(Cell<?> cell, String key){
-@@ -444,11 +447,13 @@ public class LCanvas extends Table{
+@@ -443,11 +446,13 @@ public class LCanvas extends Table{
                  t.button(Icon.copy, Styles.logici, () -> {
                  }).size(24f).padRight(6).disabled(i -> canvas.statements.getChildren().size >= LExecutor.maxInstructions).get().tapped(this::copy);
  
@@ -75,7 +75,7 @@ index b4ad9b3237f35d6783bc85daa8a86b820bc20ecd..599f907dc69bac24e7e5de16f5e6b188
  
                  t.addListener(new InputListener(){
                      float lastx, lasty;
-@@ -529,6 +534,45 @@ public class LCanvas extends Table{
+@@ -528,6 +533,45 @@ public class LCanvas extends Table{
              }
          }
  
@@ -122,10 +122,10 @@ index b4ad9b3237f35d6783bc85daa8a86b820bc20ecd..599f907dc69bac24e7e5de16f5e6b188
          public void draw(){
              float pad = 5f;
 diff --git a/core/src/mindustry/logic/LExecutor.java b/core/src/mindustry/logic/LExecutor.java
-index 2c964326f9e19636fb0307e018834f405882984a..ee9d6239303186bb603429f2603f11b273d7dc08 100644
+index 5347939e724b212a1b0568b163cdc0a6afcc9443..fc52fc4e23a7c0cb733f07e90c8ac485181fcbde 100644
 --- a/core/src/mindustry/logic/LExecutor.java
 +++ b/core/src/mindustry/logic/LExecutor.java
-@@ -44,6 +44,9 @@ public class LExecutor{
+@@ -46,6 +46,9 @@ public class LExecutor{
      public LInstruction[] instructions = {};
      /** Non-constant variables used for network sync */
      public LVar[] vars = {};
@@ -135,7 +135,7 @@ index 2c964326f9e19636fb0307e018834f405882984a..ee9d6239303186bb603429f2603f11b2
  
      public LVar counter, unit, thisv, ipt;
  
-@@ -120,6 +123,7 @@ public class LExecutor{
+@@ -122,6 +125,7 @@ public class LExecutor{
      public void load(LAssembler builder){
          nameMap = null;
          vars = builder.vars.values().toSeq().retainAll(var -> !var.constant).toArray(LVar.class);
@@ -143,7 +143,7 @@ index 2c964326f9e19636fb0307e018834f405882984a..ee9d6239303186bb603429f2603f11b2
          for(int i = 0; i < vars.length; i++){
              vars[i].id = i;
          }
-@@ -566,6 +570,7 @@ public class LExecutor{
+@@ -568,6 +572,7 @@ public class LExecutor{
          public void run(LExecutor exec){
              Object obj = target.obj();
              if(obj instanceof Building b && (exec.privileged || (exec.build != null && exec.build.validLink(b)))){
@@ -151,7 +151,7 @@ index 2c964326f9e19636fb0307e018834f405882984a..ee9d6239303186bb603429f2603f11b2
  
                  if(type == LAccess.enabled){
                      if(p1.bool()){
-@@ -1307,7 +1312,7 @@ public class LExecutor{
+@@ -1309,7 +1314,7 @@ public class LExecutor{
          @Override
          public void run(LExecutor exec){
              if(headless) return;
@@ -161,7 +161,7 @@ index 2c964326f9e19636fb0307e018834f405882984a..ee9d6239303186bb603429f2603f11b2
                  case pan -> {
                      control.input.logicCutscene = true;
 diff --git a/core/src/mindustry/logic/LStatements.java b/core/src/mindustry/logic/LStatements.java
-index 8a58192fac2f26bacf3fee44fd1c90ef4777934c..1a8a402b4bdbe5f6c8021602a6ba40d0e81dc1d9 100644
+index f1a569fdb867823221a5fe8fafeca3dc37d86241..501f75a215f97be925045d11d8b243021d228c0a 100644
 --- a/core/src/mindustry/logic/LStatements.java
 +++ b/core/src/mindustry/logic/LStatements.java
 @@ -3,6 +3,9 @@ package mindustry.logic;

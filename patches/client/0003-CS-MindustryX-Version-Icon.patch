@@ -96,12 +96,12 @@ index e1904111c3ca730e830b5c1bac3c1d5cacc6b3d1..e89b8f7fe020fc5d5f1fa444da386762
      }
      processResources.configure {
 diff --git a/core/src/mindustry/Vars.java b/core/src/mindustry/Vars.java
-index 00b1059e804094475999ee819cb661e5b9bfab67..b8a8b31d12c0c05993f282ee1f6b1aba3cf16608 100644
+index 8e5660992b6eb418c08ec624f84d0f076a142c62..83cf4ac7fdb1274cccd0a28af17a70e685ae5686 100644
 --- a/core/src/mindustry/Vars.java
 +++ b/core/src/mindustry/Vars.java
-@@ -90,7 +90,7 @@ public class Vars implements Loadable{
-     /** URLs to the JSON files containing the list of mods.  */
-     public static final String[] modJsonURLs = {"https://raw.githubusercontent.com/Anuken/MindustryMods/master/mods.json", "https://cdn.jsdelivr.net/gh/anuken/mindustrymods/mods.json"};
+@@ -92,7 +92,7 @@ public class Vars implements Loadable{
+     /** URLs to the JSON file containing players banned from Steam.  */
+     public static final String[] steamBansURLs = {"https://raw.githubusercontent.com/Anuken/MindustrySteamBans/master/data.json", "https://cdn.jsdelivr.net/gh/anuken/mindustrysteambans/data.json"};
      /** URL of the github issue report template.*/
 -    public static final String reportIssueURL = "https://github.com/Anuken/Mindustry/issues/new?labels=bug&template=bug_report.md";
 +    public static final String reportIssueURL = "https://github.com/TinyLake/MindustryX/issues/new?labels=bug&template=bug_report.md";

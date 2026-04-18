@@ -55,7 +55,7 @@ index 48e42b4e5fcdb86d678ceb75355c72415634f36b..b115b9617204ed997e8337248f9562b4
              lines.add(new Vec2(x + Mathf.range(3f), y + Mathf.range(3f)));
  
 diff --git a/core/src/mindustry/entities/bullet/BulletType.java b/core/src/mindustry/entities/bullet/BulletType.java
-index ce382d07641b5921ee3f89d308a93fe0b6be8537..47c0b6d60dfcc09b8d8ec8cf38784f6aa51172a0 100644
+index 1b59b06fec022dea50d56f72de0775f362fe5490..ba9ab63b3f050f51dd783e582fe32c4a363904bf 100644
 --- a/core/src/mindustry/entities/bullet/BulletType.java
 +++ b/core/src/mindustry/entities/bullet/BulletType.java
 @@ -23,6 +23,7 @@ import mindustry.graphics.*;

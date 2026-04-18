@@ -717,10 +717,10 @@ index ae17589b7a6f849aeda3673665263a8073cd5d78..f34727c38d8d158f787e604299920383
          rect.grow(4f);
  
 diff --git a/core/src/mindustry/logic/LExecutor.java b/core/src/mindustry/logic/LExecutor.java
-index ee9d6239303186bb603429f2603f11b273d7dc08..3bc05771b5ea18105cd0e2018a1da4a7013951a7 100644
+index fc52fc4e23a7c0cb733f07e90c8ac485181fcbde..242fcf475b71fe899d36e761a9d824edd61b55db 100644
 --- a/core/src/mindustry/logic/LExecutor.java
 +++ b/core/src/mindustry/logic/LExecutor.java
-@@ -30,6 +30,7 @@ import mindustry.world.blocks.logic.LogicDisplay.*;
+@@ -32,6 +32,7 @@ import mindustry.world.blocks.logic.LogicDisplay.*;
  import mindustry.world.blocks.logic.MessageBlock.*;
  import mindustry.world.blocks.payloads.*;
  import mindustry.world.meta.*;
@@ -728,7 +728,7 @@ index ee9d6239303186bb603429f2603f11b273d7dc08..3bc05771b5ea18105cd0e2018a1da4a7
  
  import static mindustry.Vars.*;
  
-@@ -1762,8 +1763,14 @@ public class LExecutor{
+@@ -1822,8 +1823,14 @@ public class LExecutor{
              }
  
              switch(type){
@@ -1719,7 +1719,7 @@ index fef8e21d771ccfd81cbc65a0bc62642ebf721952..f855efcd27a47e8ac5a0ac3dffc8a3c8
          }
      }
 diff --git a/core/src/mindustry/ui/dialogs/SettingsMenuDialog.java b/core/src/mindustry/ui/dialogs/SettingsMenuDialog.java
-index 93e63f1e509537e54f6d5921110bfbae9e8a0f81..a2cc26038ec99cf54e4d385a5030bb4a8ba929c3 100644
+index 72870e184271a2913d2260d307d6837fe3450544..d1a3201f6e63e10630ec1b8ee5054c6f893d302a 100644
 --- a/core/src/mindustry/ui/dialogs/SettingsMenuDialog.java
 +++ b/core/src/mindustry/ui/dialogs/SettingsMenuDialog.java
 @@ -309,8 +309,8 @@ public class SettingsMenuDialog extends BaseDialog{
@@ -1732,9 +1732,9 @@ index 93e63f1e509537e54f6d5921110bfbae9e8a0f81..a2cc26038ec99cf54e4d385a5030bb4a
              game.checkPref("keyboard", false, val -> {
                  control.setInput(val ? new DesktopInput() : new MobileInput());
                  input.setUseKeyboard(val);
-@@ -344,11 +344,9 @@ public class SettingsMenuDialog extends BaseDialog{
+@@ -343,11 +343,9 @@ public class SettingsMenuDialog extends BaseDialog{
+         game.checkPref("conveyorpathfinding", true);
          game.checkPref("hints", true);
-         game.checkPref("logichints", true);
  
 -        if(!mobile){
 -            game.checkPref("backgroundpause", true);
@@ -1747,7 +1747,7 @@ index 93e63f1e509537e54f6d5921110bfbae9e8a0f81..a2cc26038ec99cf54e4d385a5030bb4a
  
          game.checkPref("doubletapmine", false);
          game.checkPref("commandmodehold", true);
-@@ -372,6 +370,8 @@ public class SettingsMenuDialog extends BaseDialog{
+@@ -371,6 +369,8 @@ public class SettingsMenuDialog extends BaseDialog{
  
          game.checkPref("console", false);
  
@@ -1756,7 +1756,7 @@ index 93e63f1e509537e54f6d5921110bfbae9e8a0f81..a2cc26038ec99cf54e4d385a5030bb4a
          graphics.sliderPref("uiEdgePadding", 0, 0, 100, s -> s + "px", s -> {
              if(ui != null){
                  ui.updateMargins();
-@@ -458,6 +458,8 @@ public class SettingsMenuDialog extends BaseDialog{
+@@ -457,6 +457,8 @@ public class SettingsMenuDialog extends BaseDialog{
          graphics.checkPref("destroyedblocks", true);
          graphics.checkPref("blockstatus", false);
          graphics.checkPref("playerchat", true);
@@ -1765,7 +1765,7 @@ index 93e63f1e509537e54f6d5921110bfbae9e8a0f81..a2cc26038ec99cf54e4d385a5030bb4a
          if(!mobile){
              graphics.checkPref("coreitems", true);
          }
-@@ -467,14 +469,14 @@ public class SettingsMenuDialog extends BaseDialog{
+@@ -466,14 +468,14 @@ public class SettingsMenuDialog extends BaseDialog{
              graphics.checkPref("detach-camera", false);
          }
          graphics.checkPref("position", false);

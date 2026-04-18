@@ -62,10 +62,10 @@ index ec993d3e6f8026dcc58cdc6cc943d8c792494bf5..f4ed14ca5a2b5f3a8b2d01e0c7bbc383
          }
  
 diff --git a/core/src/mindustry/Vars.java b/core/src/mindustry/Vars.java
-index 8fc72cb83f64d2aa5ba2aa273de83cefd4019803..ce932b34e96285803a1d4e05b79188a0a9de71b3 100644
+index 163e05c298205cf76d0c20390f90d043c75aaf8c..30deda304aa7b4c990537accd18c06f7c464448d 100644
 --- a/core/src/mindustry/Vars.java
 +++ b/core/src/mindustry/Vars.java
-@@ -296,7 +296,8 @@ public class Vars implements Loadable{
+@@ -298,7 +298,8 @@ public class Vars implements Loadable{
      public static NetServer netServer;
      public static NetClient netClient;
  
@@ -75,7 +75,7 @@ index 8fc72cb83f64d2aa5ba2aa273de83cefd4019803..ce932b34e96285803a1d4e05b79188a0
  
      @Override
      public void loadAsync(){
-@@ -429,6 +430,11 @@ public class Vars implements Loadable{
+@@ -431,6 +432,11 @@ public class Vars implements Loadable{
                  if(!headless && (ui == null || ui.consolefrag == null)){
                      logBuffer.add(result);
                  }else if(!headless){
@@ -376,10 +376,10 @@ index 34bda027dca3220eddbe18f9ae9eabde37676653..206fbb42165a6bcdc3db4e12d5fc8469
              return;
          }else if(checkPlaytest()){
 diff --git a/core/src/mindustry/ui/dialogs/SettingsMenuDialog.java b/core/src/mindustry/ui/dialogs/SettingsMenuDialog.java
-index f60fc0e7469a14d7e2ab76b5e1337d230621f6b0..93e63f1e509537e54f6d5921110bfbae9e8a0f81 100644
+index 8737697a44759a5f4697739347b5a7e477204c9d..72870e184271a2913d2260d307d6837fe3450544 100644
 --- a/core/src/mindustry/ui/dialogs/SettingsMenuDialog.java
 +++ b/core/src/mindustry/ui/dialogs/SettingsMenuDialog.java
-@@ -415,14 +415,14 @@ public class SettingsMenuDialog extends BaseDialog{
+@@ -414,14 +414,14 @@ public class SettingsMenuDialog extends BaseDialog{
          graphics.sliderPref("unitlaseropacity", 100, 0, 100, 5, s -> s + "%");
          graphics.sliderPref("bridgeopacity", 100, 0, 100, 5, s -> s + "%");
  

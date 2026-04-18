@@ -994,18 +994,18 @@ index 0898451c271ed8f75c849d1dc68259c5329dbf35..bbab133446e5eaed169ff0ad31ddf7b8
 +}
 \ No newline at end of file
 diff --git a/gradle.properties b/gradle.properties
-index c801972f4eba34b989a0ce88431394cbc66c84cd..f8b3ecb599832cc79c00824d49d9728790eaecaa 100644
+index b053430be84d0e3e9d145a17ea4c86c60ab2a077..0de68b0cfbc7daa8a36bf2d5fe6a63f028b7ab6c 100644
 --- a/gradle.properties
 +++ b/gradle.properties
 @@ -26,4 +26,7 @@ org.gradle.caching=true
  org.gradle.internal.http.socketTimeout=100000
  org.gradle.internal.http.connectionTimeout=100000
  android.enableR8.fullMode=false
--archash=177dbd2492
-+#archash=177dbd2492
+-archash=4d9760e264
++#archash=4d9760e264
 +
 +#MDTX: Use "v{upstreamBuild}" by default
-+upstreamBuild=157.2
++upstreamBuild=157.3
 \ No newline at end of file
 diff --git a/gradlew b/gradlew
 index 4f906e0c811fc9e230eb44819f509cd0627f2600..f3b75f3b0d4faeb4b1c8a02b5c47007e6efb7dcd 100755

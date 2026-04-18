@@ -68,7 +68,7 @@ index 1b0543282063c741277298d46f3789d910a1a289..cdd50ebb9189c7e087a4b85714eecb76
                  result = e;
                  cdist = cost;
 diff --git a/core/src/mindustry/entities/bullet/BulletType.java b/core/src/mindustry/entities/bullet/BulletType.java
-index 30e9d0aeff5f80339c9ece0794bb04e87a9f4806..b0879d8490eba1c0d335260777445582081cf5f3 100644
+index b58f83c18d9f7cb8b17c3d383d90c162116fd5db..f984e496448b0e9e8e1909c602d4b55c1fd4fa97 100644
 --- a/core/src/mindustry/entities/bullet/BulletType.java
 +++ b/core/src/mindustry/entities/bullet/BulletType.java
 @@ -729,6 +729,7 @@ public class BulletType extends Content implements Cloneable{
