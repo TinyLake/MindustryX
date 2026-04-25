@@ -101,7 +101,7 @@ index f5ff55e1e65d49c94130310c534e7d4f843ecb5b..627ce6898df4dc9781a8a0ebf5921c9a
      private Seq<Team> activeTeams = new Seq<>(Team.class);
      /** Maps teams to a map of flagged tiles by flag. */
 diff --git a/core/src/mindustry/content/Blocks.java b/core/src/mindustry/content/Blocks.java
-index c5f5ad9f3b0e4ba76c22708bb066b5b9f303f5a2..ebf20b5aa81a171bfe206273ddc3c9e8ef10332e 100644
+index d2509b1ecb3651bb79c0d9e7ab4da1ea73f80665..653a6852864530f24b9c592e774e88a11873eb79 100644
 --- a/core/src/mindustry/content/Blocks.java
 +++ b/core/src/mindustry/content/Blocks.java
 @@ -2124,6 +2124,7 @@ public class Blocks{
@@ -133,10 +133,10 @@ index 5e34e429ff04a9228b67c314c25128e277dcd6b8..33f6f8bca7473ace9951ca2a7247da67
  
          dynamic = new StatusEffect("dynamic"){{
 diff --git a/core/src/mindustry/core/Control.java b/core/src/mindustry/core/Control.java
-index 3dc06989ed3dcffe8c76fd630cfa1fd2d5c40df6..1426b17a2b8a13bb642611b3d6f364244e8da52d 100644
+index d751d7f177fe5ef6e4334c8bcc412e0a65894a88..9a6c297685923b4cca631c0be8a580590591c97e 100644
 --- a/core/src/mindustry/core/Control.java
 +++ b/core/src/mindustry/core/Control.java
-@@ -636,7 +636,8 @@ public class Control implements ApplicationListener, Loadable{
+@@ -637,7 +637,8 @@ public class Control implements ApplicationListener, Loadable{
                  BaseDialog dialog = new BaseDialog("@confirm");
                  dialog.setFillParent(true);
  
@@ -376,10 +376,10 @@ index 34bda027dca3220eddbe18f9ae9eabde37676653..206fbb42165a6bcdc3db4e12d5fc8469
              return;
          }else if(checkPlaytest()){
 diff --git a/core/src/mindustry/ui/dialogs/SettingsMenuDialog.java b/core/src/mindustry/ui/dialogs/SettingsMenuDialog.java
-index 8737697a44759a5f4697739347b5a7e477204c9d..72870e184271a2913d2260d307d6837fe3450544 100644
+index fb10278972bea8fec62743f60c601c81f0ed9bf6..5b5a51d2fc9f79a14a1819d84ccb5a5a0d1ea9b5 100644
 --- a/core/src/mindustry/ui/dialogs/SettingsMenuDialog.java
 +++ b/core/src/mindustry/ui/dialogs/SettingsMenuDialog.java
-@@ -414,14 +414,14 @@ public class SettingsMenuDialog extends BaseDialog{
+@@ -419,14 +419,14 @@ public class SettingsMenuDialog extends BaseDialog{
          graphics.sliderPref("unitlaseropacity", 100, 0, 100, 5, s -> s + "%");
          graphics.sliderPref("bridgeopacity", 100, 0, 100, 5, s -> s + "%");
  

@@ -122,10 +122,10 @@ index 56f52b1bb9aecab2ecbedf672bc8431dc3a9de41..14b5488c33562503bc981c903a6da70d
          public void draw(){
              float pad = 5f;
 diff --git a/core/src/mindustry/logic/LExecutor.java b/core/src/mindustry/logic/LExecutor.java
-index 5347939e724b212a1b0568b163cdc0a6afcc9443..fc52fc4e23a7c0cb733f07e90c8ac485181fcbde 100644
+index 794c0ca3675b23b1e00c06671aeabbfc61cce2f2..54e4222daffa082fc39b23cf726c7b8912034ef0 100644
 --- a/core/src/mindustry/logic/LExecutor.java
 +++ b/core/src/mindustry/logic/LExecutor.java
-@@ -46,6 +46,9 @@ public class LExecutor{
+@@ -47,6 +47,9 @@ public class LExecutor{
      public LInstruction[] instructions = {};
      /** Non-constant variables used for network sync */
      public LVar[] vars = {};
@@ -133,9 +133,9 @@ index 5347939e724b212a1b0568b163cdc0a6afcc9443..fc52fc4e23a7c0cb733f07e90c8ac485
 +    @mindustryX.MindustryXApi
 +    public LVar[] allVars = {};
  
-     public LVar counter, unit, thisv, ipt;
+     public LVar counter, unit, thisv, ipt, queryResult;
  
-@@ -122,6 +125,7 @@ public class LExecutor{
+@@ -123,6 +126,7 @@ public class LExecutor{
      public void load(LAssembler builder){
          nameMap = null;
          vars = builder.vars.values().toSeq().retainAll(var -> !var.constant).toArray(LVar.class);
@@ -143,7 +143,7 @@ index 5347939e724b212a1b0568b163cdc0a6afcc9443..fc52fc4e23a7c0cb733f07e90c8ac485
          for(int i = 0; i < vars.length; i++){
              vars[i].id = i;
          }
-@@ -568,6 +572,7 @@ public class LExecutor{
+@@ -570,6 +574,7 @@ public class LExecutor{
          public void run(LExecutor exec){
              Object obj = target.obj();
              if(obj instanceof Building b && (exec.privileged || (exec.build != null && exec.build.validLink(b)))){
@@ -151,7 +151,7 @@ index 5347939e724b212a1b0568b163cdc0a6afcc9443..fc52fc4e23a7c0cb733f07e90c8ac485
  
                  if(type == LAccess.enabled){
                      if(p1.bool()){
-@@ -1309,7 +1314,7 @@ public class LExecutor{
+@@ -1319,7 +1324,7 @@ public class LExecutor{
          @Override
          public void run(LExecutor exec){
              if(headless) return;
@@ -161,7 +161,7 @@ index 5347939e724b212a1b0568b163cdc0a6afcc9443..fc52fc4e23a7c0cb733f07e90c8ac485
                  case pan -> {
                      control.input.logicCutscene = true;
 diff --git a/core/src/mindustry/logic/LStatements.java b/core/src/mindustry/logic/LStatements.java
-index f1a569fdb867823221a5fe8fafeca3dc37d86241..501f75a215f97be925045d11d8b243021d228c0a 100644
+index 230e99ae5c1acc2896da7ed2cd72cc2e0d4dfb09..46df9ca61ff9d505df5dbc614043275ebd47e7c7 100644
 --- a/core/src/mindustry/logic/LStatements.java
 +++ b/core/src/mindustry/logic/LStatements.java
 @@ -3,6 +3,9 @@ package mindustry.logic;

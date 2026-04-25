@@ -292,7 +292,7 @@ index 55c523bc651db449f51b1864aff33103d9ee0d73..6c9533ad625544becf6c31c24b81fb4b
          returnItem = null;
          returnCount = 0;
 diff --git a/core/src/mindustry/world/blocks/storage/CoreBlock.java b/core/src/mindustry/world/blocks/storage/CoreBlock.java
-index 95e5b698dc2a4eefede24f83241d4d9ab023bf50..c547e1f803c704eeb98bf094ea5c938a7f132aed 100644
+index 5adb03cb6fbcaad2a85e6a6f6b37d44640175cdc..b61d90b72b593e19b28ac610d8c33ad6efe0f803 100644
 --- a/core/src/mindustry/world/blocks/storage/CoreBlock.java
 +++ b/core/src/mindustry/world/blocks/storage/CoreBlock.java
 @@ -100,6 +100,7 @@ public class CoreBlock extends StorageBlock{

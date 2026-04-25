@@ -429,7 +429,7 @@ index 314d6991673fe30a591754937426b14db7a3f4a9..6c5da648d33377d9e9c35914b79420d2
                  }
                  Draw.reset();
 diff --git a/core/src/mindustry/graphics/OverlayRenderer.java b/core/src/mindustry/graphics/OverlayRenderer.java
-index d2460d964e24fa9e1e6fa6b74e672f1cec11c8f9..2882c93b0afd83a31609660c0ebc45a4a9acf0b4 100644
+index 2033e20b8e66a248530f64be11995341e917687e..6bdcddbaa6065546a019f95dff96f1f8fa23e4cc 100644
 --- a/core/src/mindustry/graphics/OverlayRenderer.java
 +++ b/core/src/mindustry/graphics/OverlayRenderer.java
 @@ -17,6 +17,7 @@ import mindustry.gen.*;
@@ -717,10 +717,10 @@ index ae17589b7a6f849aeda3673665263a8073cd5d78..f34727c38d8d158f787e604299920383
          rect.grow(4f);
  
 diff --git a/core/src/mindustry/logic/LExecutor.java b/core/src/mindustry/logic/LExecutor.java
-index fc52fc4e23a7c0cb733f07e90c8ac485181fcbde..242fcf475b71fe899d36e761a9d824edd61b55db 100644
+index 54e4222daffa082fc39b23cf726c7b8912034ef0..d657933524de8e0beb361b4ccaa0e962c286ba45 100644
 --- a/core/src/mindustry/logic/LExecutor.java
 +++ b/core/src/mindustry/logic/LExecutor.java
-@@ -32,6 +32,7 @@ import mindustry.world.blocks.logic.LogicDisplay.*;
+@@ -33,6 +33,7 @@ import mindustry.world.blocks.logic.LogicDisplay.*;
  import mindustry.world.blocks.logic.MessageBlock.*;
  import mindustry.world.blocks.payloads.*;
  import mindustry.world.meta.*;
@@ -728,7 +728,7 @@ index fc52fc4e23a7c0cb733f07e90c8ac485181fcbde..242fcf475b71fe899d36e761a9d824ed
  
  import static mindustry.Vars.*;
  
-@@ -1822,8 +1823,14 @@ public class LExecutor{
+@@ -1926,8 +1927,14 @@ public class LExecutor{
              }
  
              switch(type){
@@ -1719,10 +1719,10 @@ index fef8e21d771ccfd81cbc65a0bc62642ebf721952..f855efcd27a47e8ac5a0ac3dffc8a3c8
          }
      }
 diff --git a/core/src/mindustry/ui/dialogs/SettingsMenuDialog.java b/core/src/mindustry/ui/dialogs/SettingsMenuDialog.java
-index 72870e184271a2913d2260d307d6837fe3450544..d1a3201f6e63e10630ec1b8ee5054c6f893d302a 100644
+index 5b5a51d2fc9f79a14a1819d84ccb5a5a0d1ea9b5..d54c5480d0476a2a2b61f3a1521a0c5af8b9460e 100644
 --- a/core/src/mindustry/ui/dialogs/SettingsMenuDialog.java
 +++ b/core/src/mindustry/ui/dialogs/SettingsMenuDialog.java
-@@ -309,8 +309,8 @@ public class SettingsMenuDialog extends BaseDialog{
+@@ -314,8 +314,8 @@ public class SettingsMenuDialog extends BaseDialog{
  
          game.sliderPref("saveinterval", 60, 10, 5 * 120, 10, i -> Core.bundle.format("setting.seconds", i));
  
@@ -1732,7 +1732,7 @@ index 72870e184271a2913d2260d307d6837fe3450544..d1a3201f6e63e10630ec1b8ee5054c6f
              game.checkPref("keyboard", false, val -> {
                  control.setInput(val ? new DesktopInput() : new MobileInput());
                  input.setUseKeyboard(val);
-@@ -343,11 +343,9 @@ public class SettingsMenuDialog extends BaseDialog{
+@@ -348,11 +348,9 @@ public class SettingsMenuDialog extends BaseDialog{
          game.checkPref("conveyorpathfinding", true);
          game.checkPref("hints", true);
  
@@ -1747,7 +1747,7 @@ index 72870e184271a2913d2260d307d6837fe3450544..d1a3201f6e63e10630ec1b8ee5054c6f
  
          game.checkPref("doubletapmine", false);
          game.checkPref("commandmodehold", true);
-@@ -371,6 +369,8 @@ public class SettingsMenuDialog extends BaseDialog{
+@@ -376,6 +374,8 @@ public class SettingsMenuDialog extends BaseDialog{
  
          game.checkPref("console", false);
  
@@ -1756,7 +1756,7 @@ index 72870e184271a2913d2260d307d6837fe3450544..d1a3201f6e63e10630ec1b8ee5054c6f
          graphics.sliderPref("uiEdgePadding", 0, 0, 100, s -> s + "px", s -> {
              if(ui != null){
                  ui.updateMargins();
-@@ -457,6 +457,8 @@ public class SettingsMenuDialog extends BaseDialog{
+@@ -462,6 +462,8 @@ public class SettingsMenuDialog extends BaseDialog{
          graphics.checkPref("destroyedblocks", true);
          graphics.checkPref("blockstatus", false);
          graphics.checkPref("playerchat", true);
@@ -1765,7 +1765,7 @@ index 72870e184271a2913d2260d307d6837fe3450544..d1a3201f6e63e10630ec1b8ee5054c6f
          if(!mobile){
              graphics.checkPref("coreitems", true);
          }
-@@ -466,14 +468,14 @@ public class SettingsMenuDialog extends BaseDialog{
+@@ -471,14 +473,14 @@ public class SettingsMenuDialog extends BaseDialog{
              graphics.checkPref("detach-camera", false);
          }
          graphics.checkPref("position", false);
@@ -1831,7 +1831,7 @@ index 07e24fe2b60d559ea88bbe7360ce61bf36f56537..c52f8a953d4f492c0de38ea6f2a2fc9c
          //special case for 'clear' command
          if(message.equals("clear")){
 diff --git a/core/src/mindustry/ui/fragments/HudFragment.java b/core/src/mindustry/ui/fragments/HudFragment.java
-index 80f70ba1397860e4e700b99c30d165942afa1abc..938f73c55bc90638b7e4c86269a07b7f6347fe6a 100644
+index e070b6fc415f37791c4167ee2b0626d60a21c45e..b0ceb630095e87b9bf2bb428e745f4f9ac0f9976 100644
 --- a/core/src/mindustry/ui/fragments/HudFragment.java
 +++ b/core/src/mindustry/ui/fragments/HudFragment.java
 @@ -30,10 +30,12 @@ import mindustry.net.Packets.*;
@@ -1867,7 +1867,7 @@ index 80f70ba1397860e4e700b99c30d165942afa1abc..938f73c55bc90638b7e4c86269a07b7f
                      teams.button(Icon.downOpen, Styles.emptyi, () -> Core.settings.put("editor-blocks-shown", !Core.settings.getBool("editor-blocks-shown")))
                      .size(45f).update(m -> m.getStyle().imageUp = (Core.settings.getBool("editor-blocks-shown") ? Icon.upOpen : Icon.downOpen));
                  }).top().left().row();
-@@ -1149,6 +1155,164 @@ public class HudFragment{
+@@ -1157,6 +1163,164 @@ public class HudFragment{
          return table;
      }
  
@@ -2032,7 +2032,7 @@ index 80f70ba1397860e4e700b99c30d165942afa1abc..938f73c55bc90638b7e4c86269a07b7f
      private void addInfoTable(Table table){
          table.name = "infotable";
          table.left();
-@@ -1198,7 +1362,7 @@ public class HudFragment{
+@@ -1206,7 +1370,7 @@ public class HudFragment{
      }
  
      private boolean canSkipWave(){

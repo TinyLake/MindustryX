@@ -80,7 +80,7 @@ index c0016cedfe941e232fd19476ac3268898eb9a981..ea2dfce9c75d30008928909878d31dfa
              netClient.byteStream.setBytes(data);
              DataInputStream input = netClient.dataStream;
 diff --git a/core/src/mindustry/io/TypeIO.java b/core/src/mindustry/io/TypeIO.java
-index 8d654913ad9f55ae4f10de8a8eff1df03642f7f2..56597768108b4085a125f242feb295b65dcc6ce6 100644
+index e448887255b334511f5a4bfb0f00a652b8833a33..3a2ee6401106ce5aa9b49af61e0191f533fcffed 100644
 --- a/core/src/mindustry/io/TypeIO.java
 +++ b/core/src/mindustry/io/TypeIO.java
 @@ -27,6 +27,7 @@ import mindustry.type.*;
@@ -103,7 +103,7 @@ index 8d654913ad9f55ae4f10de8a8eff1df03642f7f2..56597768108b4085a125f242feb295b6
          }else if(object instanceof IntSeq arr){
              if(arr.size > maxArraySize) throw new ArcRuntimeException("Array size too large: " + arr.size);
              write.b((byte)6);
-@@ -454,7 +458,15 @@ public class TypeIO{
+@@ -456,7 +460,15 @@ public class TypeIO{
      }
  
      public static void writeBlock(Writes write, Block block){
@@ -120,7 +120,7 @@ index 8d654913ad9f55ae4f10de8a8eff1df03642f7f2..56597768108b4085a125f242feb295b6
      }
  
      public static Block readBlock(Reads read){
-@@ -518,7 +530,7 @@ public class TypeIO{
+@@ -520,7 +532,7 @@ public class TypeIO{
          write.b(plan.breaking ? (byte)1 : 0);
          write.i(Point2.pack(plan.x, plan.y));
          if(!plan.breaking){

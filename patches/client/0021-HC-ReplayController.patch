@@ -39,10 +39,10 @@ index ad8cb42c3af354a45ebd210533ee6b532aba143e..c7c877530b3e908a1df7bf59c1867f39
          });
  
 diff --git a/core/src/mindustry/io/TypeIO.java b/core/src/mindustry/io/TypeIO.java
-index 730e0d7c960a454161b0d8d6766ed017007e44b7..8d654913ad9f55ae4f10de8a8eff1df03642f7f2 100644
+index aaafb6b2ba4a639887879759ec772ac6cae067e1..e448887255b334511f5a4bfb0f00a652b8833a33 100644
 --- a/core/src/mindustry/io/TypeIO.java
 +++ b/core/src/mindustry/io/TypeIO.java
-@@ -372,7 +372,7 @@ public class TypeIO{
+@@ -374,7 +374,7 @@ public class TypeIO{
              netClient.addRemovedEntity(entity.id());
          }
  
