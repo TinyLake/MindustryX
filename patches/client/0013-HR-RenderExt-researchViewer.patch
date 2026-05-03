@@ -92,7 +92,7 @@ index d3ffe9546d0ea23db6592598ec48b1a64fee1aac..9fe8a455c814171c898fe270af5bfd1a
                  b.table(desc -> {
                      desc.left().defaults().left();
 -                    desc.add(selectable ? node.content.localizedName : "[accent]???");
-+                    desc.add(selectable ? node.content.localizedName : RenderExt.researchViewer ? node.content.localizedName + "\n[red]未满足前置科技" : "[accent]???");
++                    desc.add(selectable ? node.content.localizedName : RenderExt.researchViewer ? Core.bundle.format("researchviewer.prerequisite-missing", node.content.localizedName) : "[accent]???");
                      desc.row();
                      if(locked(node) || (debugShowRequirements && !net.client())){
  
