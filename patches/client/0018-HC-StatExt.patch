@@ -140,7 +140,7 @@ index c5dcf4d7a8cc541f1e660bf4a9de7cc766edf08e..1f91114f0f326727f604f214fb225abb
 +        }
  
          if(mineTier >= 1){
-+            stats.add(StatExt.mineLevel, "@�?, mineTier);
++            stats.add(StatExt.mineLevel, Core.bundle.get("stat.mine-level-value"), mineTier);
              stats.addPercent(Stat.mineSpeed, mineSpeed);
 -            stats.add(Stat.mineTier, StatValues.drillables(mineSpeed, 1f, 1, null, b ->
 +            stats.add(Stat.mineTier, StatValues.drillables(mineHardnessScaling ? 50 : 65, mineHardnessScaling ? 1 : 0, mineSpeed, null, b ->
