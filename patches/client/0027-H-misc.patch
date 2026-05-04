@@ -31,7 +31,6 @@ Content-Transfer-Encoding: 8bit
  20 files changed, 82 insertions(+), 55 deletions(-)
 
 diff --git a/core/src/mindustry/ClientLauncher.java b/core/src/mindustry/ClientLauncher.java
-index ec993d3e6f8026dcc58cdc6cc943d8c792494bf5..f4ed14ca5a2b5f3a8b2d01e0c7bbc383be740962 100644
 --- a/core/src/mindustry/ClientLauncher.java
 +++ b/core/src/mindustry/ClientLauncher.java
 @@ -43,6 +43,10 @@ public abstract class ClientLauncher extends ApplicationCore implements Platform
@@ -61,7 +60,6 @@ index ec993d3e6f8026dcc58cdc6cc943d8c792494bf5..f4ed14ca5a2b5f3a8b2d01e0c7bbc383
          }
  
 diff --git a/core/src/mindustry/Vars.java b/core/src/mindustry/Vars.java
-index 163e05c298205cf76d0c20390f90d043c75aaf8c..30deda304aa7b4c990537accd18c06f7c464448d 100644
 --- a/core/src/mindustry/Vars.java
 +++ b/core/src/mindustry/Vars.java
 @@ -298,7 +298,8 @@ public class Vars implements Loadable{
@@ -87,7 +85,6 @@ index 163e05c298205cf76d0c20390f90d043c75aaf8c..30deda304aa7b4c990537accd18c06f7
                          for(String code : ColorCodes.values){
                              result = result.replace(code, "");
 diff --git a/core/src/mindustry/ai/BlockIndexer.java b/core/src/mindustry/ai/BlockIndexer.java
-index f5ff55e1e65d49c94130310c534e7d4f843ecb5b..627ce6898df4dc9781a8a0ebf5921c9a4e0cb4f2 100644
 --- a/core/src/mindustry/ai/BlockIndexer.java
 +++ b/core/src/mindustry/ai/BlockIndexer.java
 @@ -38,7 +38,7 @@ public class BlockIndexer{
@@ -100,7 +97,6 @@ index f5ff55e1e65d49c94130310c534e7d4f843ecb5b..627ce6898df4dc9781a8a0ebf5921c9a
      private Seq<Team> activeTeams = new Seq<>(Team.class);
      /** Maps teams to a map of flagged tiles by flag. */
 diff --git a/core/src/mindustry/content/Blocks.java b/core/src/mindustry/content/Blocks.java
-index d2509b1ecb3651bb79c0d9e7ab4da1ea73f80665..653a6852864530f24b9c592e774e88a11873eb79 100644
 --- a/core/src/mindustry/content/Blocks.java
 +++ b/core/src/mindustry/content/Blocks.java
 @@ -2124,6 +2124,7 @@ public class Blocks{
@@ -120,7 +116,6 @@ index d2509b1ecb3651bb79c0d9e7ab4da1ea73f80665..653a6852864530f24b9c592e774e88a1
  
          sorter = new Sorter("sorter"){{
 diff --git a/core/src/mindustry/core/Control.java b/core/src/mindustry/core/Control.java
-index d751d7f177fe5ef6e4334c8bcc412e0a65894a88..9a6c297685923b4cca631c0be8a580590591c97e 100644
 --- a/core/src/mindustry/core/Control.java
 +++ b/core/src/mindustry/core/Control.java
 @@ -637,7 +637,8 @@ public class Control implements ApplicationListener, Loadable{
@@ -134,7 +129,6 @@ index d751d7f177fe5ef6e4334c8bcc412e0a65894a88..9a6c297685923b4cca631c0be8a58059
                      Core.settings.put("uiscale", 100);
                      Core.settings.put("uiscalechanged", false);
 diff --git a/core/src/mindustry/core/NetClient.java b/core/src/mindustry/core/NetClient.java
-index c7c877530b3e908a1df7bf59c1867f3928d62a18..c0016cedfe941e232fd19476ac3268898eb9a981 100644
 --- a/core/src/mindustry/core/NetClient.java
 +++ b/core/src/mindustry/core/NetClient.java
 @@ -77,6 +77,10 @@ public class NetClient implements ApplicationListener{
@@ -149,7 +143,6 @@ index c7c877530b3e908a1df7bf59c1867f3928d62a18..c0016cedfe941e232fd19476ac326889
  
              player.admin = false;
 diff --git a/core/src/mindustry/core/Renderer.java b/core/src/mindustry/core/Renderer.java
-index ffe9448b2c1bb72bcfd08d12aeace63de3c41a3a..872e2479cdbb6560780a62a375817621d7519bb7 100644
 --- a/core/src/mindustry/core/Renderer.java
 +++ b/core/src/mindustry/core/Renderer.java
 @@ -160,7 +160,7 @@ public class Renderer implements ApplicationListener{
@@ -162,7 +155,6 @@ index ffe9448b2c1bb72bcfd08d12aeace63de3c41a3a..872e2479cdbb6560780a62a375817621
          if(Mathf.equal(camerascale, dest, 0.001f)) camerascale = dest;
          unitLaserOpacity = settings.getInt("unitlaseropacity") / 100f;
 diff --git a/core/src/mindustry/core/UI.java b/core/src/mindustry/core/UI.java
-index 7342a8376c3ec0b4bce6d572a4ee3b69a3275e84..8b7eaeee1787eb01b632d230916f8af8b1e9bf69 100644
 --- a/core/src/mindustry/core/UI.java
 +++ b/core/src/mindustry/core/UI.java
 @@ -649,7 +649,7 @@ public class UI implements ApplicationListener, Loadable{
@@ -200,7 +192,6 @@ index 7342a8376c3ec0b4bce6d572a4ee3b69a3275e84..8b7eaeee1787eb01b632d230916f8af8
  
      public static int roundAmount(int number){
 diff --git a/core/src/mindustry/game/Schematics.java b/core/src/mindustry/game/Schematics.java
-index f7e2193588713d08a30c4b9122dbe2469f4a520e..20bc208d12a87810501f4738742aeb7ea0531c25 100644
 --- a/core/src/mindustry/game/Schematics.java
 +++ b/core/src/mindustry/game/Schematics.java
 @@ -101,7 +101,9 @@ public class Schematics implements Loadable{
@@ -215,7 +206,6 @@ index f7e2193588713d08a30c4b9122dbe2469f4a520e..20bc208d12a87810501f4738742aeb7e
      }
  
 diff --git a/core/src/mindustry/graphics/MinimapRenderer.java b/core/src/mindustry/graphics/MinimapRenderer.java
-index e8026b216039407f6e234a3595ca6e8b00bbf58a..ce0d3f95b54097c55a660d746c607c1ae73393cc 100644
 --- a/core/src/mindustry/graphics/MinimapRenderer.java
 +++ b/core/src/mindustry/graphics/MinimapRenderer.java
 @@ -102,7 +102,8 @@ public class MinimapRenderer{
@@ -239,7 +229,6 @@ index e8026b216039407f6e234a3595ca6e8b00bbf58a..ce0d3f95b54097c55a660d746c607c1a
          float dy = (Core.camera.position.y / tilesize);
          dx = Mathf.clamp(dx, sz, world.width() - sz);
 diff --git a/core/src/mindustry/input/DesktopInput.java b/core/src/mindustry/input/DesktopInput.java
-index 4f4b1db1c130f265107bf6bcd6ba5ac4bab7d44b..d5fff9b738ee04fc91af82a8c8722f6eacc1ad73 100644
 --- a/core/src/mindustry/input/DesktopInput.java
 +++ b/core/src/mindustry/input/DesktopInput.java
 @@ -409,6 +409,9 @@ public class DesktopInput extends InputHandler{
@@ -253,7 +242,6 @@ index 4f4b1db1c130f265107bf6bcd6ba5ac4bab7d44b..d5fff9b738ee04fc91af82a8c8722f6e
                  }
              }
 diff --git a/core/src/mindustry/ui/dialogs/JoinDialog.java b/core/src/mindustry/ui/dialogs/JoinDialog.java
-index a6c4cee76dc917d3be46c4714f3beb3189c84ef4..9b8101507d4a361cd5598c8f14383bb7b5c3c0d4 100644
 --- a/core/src/mindustry/ui/dialogs/JoinDialog.java
 +++ b/core/src/mindustry/ui/dialogs/JoinDialog.java
 @@ -61,11 +61,9 @@ public class JoinDialog extends BaseDialog{
@@ -290,7 +278,6 @@ index a6c4cee76dc917d3be46c4714f3beb3189c84ef4..9b8101507d4a361cd5598c8f14383bb7
          add = new BaseDialog("@joingame.title");
          add.cont.add("@joingame.ip").padRight(5f).left();
 diff --git a/core/src/mindustry/ui/dialogs/KeybindDialog.java b/core/src/mindustry/ui/dialogs/KeybindDialog.java
-index d14fd47e8d0afa17a76b9112eb89cca4badeb2b8..d3dd7592465f420eb7c225b7dc7218eada30abf8 100644
 --- a/core/src/mindustry/ui/dialogs/KeybindDialog.java
 +++ b/core/src/mindustry/ui/dialogs/KeybindDialog.java
 @@ -79,7 +79,7 @@ public class KeybindDialog extends Dialog{
@@ -331,7 +318,6 @@ index d14fd47e8d0afa17a76b9112eb89cca4badeb2b8..d3dd7592465f420eb7c225b7dc7218ea
  
      void rebind(KeyBind bind, KeyCode newKey){
 diff --git a/core/src/mindustry/ui/dialogs/PausedDialog.java b/core/src/mindustry/ui/dialogs/PausedDialog.java
-index 34bda027dca3220eddbe18f9ae9eabde37676653..206fbb42165a6bcdc3db4e12d5fc8469987aa245 100644
 --- a/core/src/mindustry/ui/dialogs/PausedDialog.java
 +++ b/core/src/mindustry/ui/dialogs/PausedDialog.java
 @@ -173,7 +173,8 @@ public class PausedDialog extends BaseDialog{
@@ -345,7 +331,6 @@ index 34bda027dca3220eddbe18f9ae9eabde37676653..206fbb42165a6bcdc3db4e12d5fc8469
              return;
          }else if(checkPlaytest()){
 diff --git a/core/src/mindustry/ui/dialogs/SettingsMenuDialog.java b/core/src/mindustry/ui/dialogs/SettingsMenuDialog.java
-index fb10278972bea8fec62743f60c601c81f0ed9bf6..5b5a51d2fc9f79a14a1819d84ccb5a5a0d1ea9b5 100644
 --- a/core/src/mindustry/ui/dialogs/SettingsMenuDialog.java
 +++ b/core/src/mindustry/ui/dialogs/SettingsMenuDialog.java
 @@ -419,14 +419,14 @@ public class SettingsMenuDialog extends BaseDialog{
@@ -366,7 +351,6 @@ index fb10278972bea8fec62743f60c601c81f0ed9bf6..5b5a51d2fc9f79a14a1819d84ccb5a5a
                  Core.settings.put("minzoomingamemultiplier", (float)s / 100.0f);
              }
 diff --git a/core/src/mindustry/ui/fragments/ChatFragment.java b/core/src/mindustry/ui/fragments/ChatFragment.java
-index b807e2195df1162a09d74fde962f195bf57bc92c..cb241dd067e90851ca290d1035600eb557a52303 100644
 --- a/core/src/mindustry/ui/fragments/ChatFragment.java
 +++ b/core/src/mindustry/ui/fragments/ChatFragment.java
 @@ -5,6 +5,7 @@ import arc.Input.*;
@@ -405,7 +389,6 @@ index b807e2195df1162a09d74fde962f195bf57bc92c..cb241dd067e90851ca290d1035600eb5
          team("/t"),
          admin("/a", player::admin)
 diff --git a/core/src/mindustry/ui/fragments/PlacementFragment.java b/core/src/mindustry/ui/fragments/PlacementFragment.java
-index d379e40472df7e283cb098691c9ec447f946d832..2564649423f3306dfaaf539dd1021527e65a5a8e 100644
 --- a/core/src/mindustry/ui/fragments/PlacementFragment.java
 +++ b/core/src/mindustry/ui/fragments/PlacementFragment.java
 @@ -771,10 +771,8 @@ public class PlacementFragment{
@@ -422,7 +405,6 @@ index d379e40472df7e283cb098691c9ec447f946d832..2564649423f3306dfaaf539dd1021527
          //check for a unit
          Unit unit = Units.closestOverlap(player.team(), Core.input.mouseWorldX(), Core.input.mouseWorldY(), 5f, u -> !u.isLocal() && u.displayable());
 diff --git a/core/src/mindustry/world/blocks/defense/Radar.java b/core/src/mindustry/world/blocks/defense/Radar.java
-index e24a3368d190f64fdaf002130a76f4799834c9a5..0811c4520865cff648084cbc743a141367a103c5 100644
 --- a/core/src/mindustry/world/blocks/defense/Radar.java
 +++ b/core/src/mindustry/world/blocks/defense/Radar.java
 @@ -3,12 +3,14 @@ package mindustry.world.blocks.defense;
@@ -455,7 +437,6 @@ index e24a3368d190f64fdaf002130a76f4799834c9a5..0811c4520865cff648084cbc743a1413
          public float progress;
          public float lastRadius = 0f;
 diff --git a/core/src/mindustry/world/blocks/distribution/Router.java b/core/src/mindustry/world/blocks/distribution/Router.java
-index 45b50a6504a69ebe787a79397df39ee3846701ae..6ee115c126247878ee0904764196759615134ffb 100644
 --- a/core/src/mindustry/world/blocks/distribution/Router.java
 +++ b/core/src/mindustry/world/blocks/distribution/Router.java
 @@ -47,7 +47,8 @@ public class Router extends Block{
@@ -469,7 +450,6 @@ index 45b50a6504a69ebe787a79397df39ee3846701ae..6ee115c126247878ee09047641967596
  
          @Override
 diff --git a/core/src/mindustry/world/blocks/units/Reconstructor.java b/core/src/mindustry/world/blocks/units/Reconstructor.java
-index 59617ef6b7424d4ba87d79ed4d27baec424781bb..0252c2bdae34789d01836fd67477219f074ccdf2 100644
 --- a/core/src/mindustry/world/blocks/units/Reconstructor.java
 +++ b/core/src/mindustry/world/blocks/units/Reconstructor.java
 @@ -178,7 +178,7 @@ public class Reconstructor extends UnitBlock{
