@@ -1,9 +1,97 @@
 From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
-From: DeterMination-Wind
- <228482103+DeterMination-Wind@users.noreply.github.com>
-Date: Mon, 4 May 2026 14:32:32 +0800
+From: way-zer <himc.wicp@gmail.com>
+Date: Wed, 24 Jan 2024 15:39:50 +0800
 Subject: [PATCH] ARC merged
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 
+Way-Zer:
+removed: LabelController,ARCChat,QuickCameraTable,changelogreaded, UpdateDialog, 主页标语(联网), 学术日报, 热更新(无效), 检查更新, arcPlayerEffect(VIP), District(区域规划器)
+remove WindowManager.java
+还原maxSchematicSize设置，优化ARCUnits
+remove NumberFormat(已替代)
+PICK 9eaa74b9 优化单位绘图执行逻辑，减少性能开销。同时不开启显示其他队伍状态时不绘制任何单位信息（除了碰撞箱）
+  Lucky Clover <jmj18795967847@gmail.com> on 2024/2/29 at 10:09
+
+MinRi2: improve drawText;PausedDialog重排
+
+Cong0707: remove AboutCN_ARC
+
+单位能力显示 优化
+way-zer <himc.wicp@gmail.com> on 2024/4/18 at 23:22
+
+remove getThemeColor()
+way-zer <himc.wicp@gmail.com> on 2024/4/20 at 22:06
+
+波次信息面板自动失焦;面板挤长ui
+7c336939 MinRi2 <2275045670@qq.com> on 2024/4/20 at 22:25
+
+* remove "selectTeam"(功能与工具箱重复)
+* 移动QuickTool
+* 清理ARCUI
+way-zer <himc.wicp@gmail.com> on 2024/4/29
+
+* remove "fontSize"
+* remove "USIDDialog"(usid管理器)
+* remove "AchievementsDialog"(学术成就)
+* clean JoinDialog
+* clean Block.drawPurePlaceText and Block.drawText
+* 整理ARCBuilds ARCUnits 外部调用
+way-zer <himc.wicp@gmail.com> on 2024/5/4
+
+* fix "alwaysShowUnitRTSAi"
+* KeyCode.unknown -> unset
+* "@sectors.production" bug
+* revert MenuFragment "discord and mobile info" button.
+* fix about "unitTrans"
+* 重制编辑器功能，修复错误的辅助线实现
+way-zer <himc.wicp@gmail.com> on 2024/5/11
+
+* clean "arcdrillmode"
+* 还原unitHide实现;修复"showMineBeam"实现
+* 从ARC同步MusicDialog(API更新)
+* 重制炮台子弹范围显示
+* arcSetCamera -> control.input.panCamera
+way-zer <himc.wicp@gmail.com> on 2024/5/19
+
+remove blockDrop and minimapTools(小地图工具)
+way-zer <himc.wicp@gmail.com> on 2024/6/10 at 14:27
+
+* remove arcChatPicture(图片分享) and MusicDialog(松鼠音乐)
+* clean about `Format.duration` and `MessageDialog.share`
+* clean about `ARCUI.arcInfo`
+* split MessageDialog and clean ARCUI
+* clean ARCVars
+way-zer <himc.wicp@gmail.com> on 2024/6/14
+
+* move package
+* clean DrawUtilities
+way-zer <himc.wicp@gmail.com> on 2024/6/15
+
+clean PowerInfo, ArcMessageDialog, BlockSelectDialog, ItemImage
+way-zer <himc.wicp@gmail.com> on 2024/6/30
+
+remove minimap.forceShowPlayer, minimap.unitDetailsIcon, 左键切换视角(原版已实现右键切视角)
+way-zer <himc.wicp@gmail.com> on 2024/7/2
+
+* 修复BE版指挥菜单错乱
+* 移除多余小地图按钮
+way-zer <himc.wicp@gmail.com> on 2024/7/13
+
+* fix no uiIcon
+* remove menuFlyers
+way-zer <himc.wicp@gmail.com> on 2024/7/13
+
+* 整理PlayerListFragment
+* fix #CN-ARC/Mindustry-CN-ARC:85
+way-zer <himc.wicp@gmail.com> on 2024/7/28
+
+* 清理Input相关，移除autoAim(无意义)
+* 分离创世神和解禁相关
+* 整理美化 PlacementFragment
+* 更改开雾功能实现
+way-zer <himc.wicp@gmail.com> on 2024/9/8
 ---
  core/src/mindustry/editor/MapInfoDialog.java  |   7 +-
  .../mindustry/entities/comp/BuildingComp.java |  18 +-

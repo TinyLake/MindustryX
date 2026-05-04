@@ -1,13 +1,33 @@
 From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
-From: DeterMination-Wind
- <228482103+DeterMination-Wind@users.noreply.github.com>
-Date: Mon, 4 May 2026 14:30:19 +0800
+From: way-zer <himc.wicp@gmail.com>
+Date: Sat, 13 Jul 2024 00:12:04 +0800
 Subject: [PATCH] =?UTF-8?q?UI&ARC:=20logic=20Support=20=E5=A4=84=E7=90=86?=
  =?UTF-8?q?=E5=99=A8=E7=BC=96=E8=BE=91=E5=A2=9E=E5=BC=BA?=
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 
+* 从Merged分离
+* 修复注释切换功能；整理代码
+* 实现JUMP跳转按钮
+way-zer <himc.wicp@gmail.com> on 2024/7/13
+
+重制内存元显示 和 处理器快捷显示
+way-zer <himc.wicp@gmail.com> on 2024/7/14
+
+防止多人模式下编辑世处，并给出提示
+way-zer <himc.wicp@gmail.com> on 2024/9/8
+
+clean
+
+调整Jump样式，添加跳转强调
+
+按钮调整
+MinRi2 <2275045670@qq.com>
+
+* 添加失效链接显示
+* 清除链接建筑时更新逻辑代码
+MinRi2 <2275045670@qq.com> on 2025/5/3
 ---
  core/src/mindustry/logic/LCanvas.java         | 48 ++++++++++++++++++-
  core/src/mindustry/logic/LExecutor.java       |  7 ++-

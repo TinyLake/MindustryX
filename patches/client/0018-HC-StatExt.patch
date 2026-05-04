@@ -6,7 +6,8 @@ MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 
-修复一些显示错�?way-zer <himc.wicp@gmail.com> on 2024/5/4 at 22:17
+修复一些显示错误
+way-zer <himc.wicp@gmail.com> on 2024/5/4 at 22:17
 ---
  core/src/mindustry/type/Item.java             |   5 +
  core/src/mindustry/type/Liquid.java           |   2 +
