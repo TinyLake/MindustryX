@@ -1,97 +1,9 @@
 From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
-From: way-zer <himc.wicp@gmail.com>
-Date: Wed, 24 Jan 2024 15:39:50 +0800
+From: DeterMination-Wind
+ <228482103+DeterMination-Wind@users.noreply.github.com>
+Date: Mon, 4 May 2026 14:32:32 +0800
 Subject: [PATCH] ARC merged
-MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
 
-Way-Zer:
-removed: LabelController,ARCChat,QuickCameraTable,changelogreaded, UpdateDialog, 主页标语(联网), 学术日报, 热更新(无效), 检查更新, arcPlayerEffect(VIP), District(区域规划器)
-remove WindowManager.java
-还原maxSchematicSize设置，优化ARCUnits
-remove NumberFormat(已替代)
-PICK 9eaa74b9 优化单位绘图执行逻辑，减少性能开销。同时不开启显示其他队伍状态时不绘制任何单位信息（除了碰撞箱）
-  Lucky Clover <jmj18795967847@gmail.com> on 2024/2/29 at 10:09
-
-MinRi2: improve drawText;PausedDialog重排
-
-Cong0707: remove AboutCN_ARC
-
-单位能力显示 优化
-way-zer <himc.wicp@gmail.com> on 2024/4/18 at 23:22
-
-remove getThemeColor()
-way-zer <himc.wicp@gmail.com> on 2024/4/20 at 22:06
-
-波次信息面板自动失焦;面板挤长ui
-7c336939 MinRi2 <2275045670@qq.com> on 2024/4/20 at 22:25
-
-* remove "selectTeam"(功能与工具箱重复)
-* 移动QuickTool
-* 清理ARCUI
-way-zer <himc.wicp@gmail.com> on 2024/4/29
-
-* remove "fontSize"
-* remove "USIDDialog"(usid管理器)
-* remove "AchievementsDialog"(学术成就)
-* clean JoinDialog
-* clean Block.drawPurePlaceText and Block.drawText
-* 整理ARCBuilds ARCUnits 外部调用
-way-zer <himc.wicp@gmail.com> on 2024/5/4
-
-* fix "alwaysShowUnitRTSAi"
-* KeyCode.unknown -> unset
-* "@sectors.production" bug
-* revert MenuFragment "discord and mobile info" button.
-* fix about "unitTrans"
-* 重制编辑器功能，修复错误的辅助线实现
-way-zer <himc.wicp@gmail.com> on 2024/5/11
-
-* clean "arcdrillmode"
-* 还原unitHide实现;修复"showMineBeam"实现
-* 从ARC同步MusicDialog(API更新)
-* 重制炮台子弹范围显示
-* arcSetCamera -> control.input.panCamera
-way-zer <himc.wicp@gmail.com> on 2024/5/19
-
-remove blockDrop and minimapTools(小地图工具)
-way-zer <himc.wicp@gmail.com> on 2024/6/10 at 14:27
-
-* remove arcChatPicture(图片分享) and MusicDialog(松鼠音乐)
-* clean about `Format.duration` and `MessageDialog.share`
-* clean about `ARCUI.arcInfo`
-* split MessageDialog and clean ARCUI
-* clean ARCVars
-way-zer <himc.wicp@gmail.com> on 2024/6/14
-
-* move package
-* clean DrawUtilities
-way-zer <himc.wicp@gmail.com> on 2024/6/15
-
-clean PowerInfo, ArcMessageDialog, BlockSelectDialog, ItemImage
-way-zer <himc.wicp@gmail.com> on 2024/6/30
-
-remove minimap.forceShowPlayer, minimap.unitDetailsIcon, 左键切换视角(原版已实现右键切视角)
-way-zer <himc.wicp@gmail.com> on 2024/7/2
-
-* 修复BE版指挥菜单错乱
-* 移除多余小地图按钮
-way-zer <himc.wicp@gmail.com> on 2024/7/13
-
-* fix no uiIcon
-* remove menuFlyers
-way-zer <himc.wicp@gmail.com> on 2024/7/13
-
-* 整理PlayerListFragment
-* fix #CN-ARC/Mindustry-CN-ARC:85
-way-zer <himc.wicp@gmail.com> on 2024/7/28
-
-* 清理Input相关，移除autoAim(无意义)
-* 分离创世神和解禁相关
-* 整理美化 PlacementFragment
-* 更改开雾功能实现
-way-zer <himc.wicp@gmail.com> on 2024/9/8
 ---
  core/src/mindustry/editor/MapInfoDialog.java  |   7 +-
  .../mindustry/entities/comp/BuildingComp.java |  18 +-
@@ -113,14 +25,14 @@ way-zer <himc.wicp@gmail.com> on 2024/9/8
  .../mindustry/ui/dialogs/PausedDialog.java    |  12 +-
  .../mindustry/ui/dialogs/PlanetDialog.java    |  27 ++-
  .../ui/dialogs/SchematicsDialog.java          | 202 +++++++++++++++++-
- .../ui/dialogs/SettingsMenuDialog.java        |  24 +--
+ .../ui/dialogs/SettingsMenuDialog.java        |  11 +-
  .../mindustry/ui/fragments/ChatFragment.java  |   9 +-
  .../ui/fragments/ConsoleFragment.java         |   2 +
  .../mindustry/ui/fragments/HudFragment.java   | 168 ++++++++++++++-
  .../mindustry/ui/fragments/MenuFragment.java  |  24 ++-
  .../ui/fragments/PlacementFragment.java       | 164 +++++++++++---
  .../ui/fragments/PlayerListFragment.java      |  70 +++---
- 27 files changed, 1094 insertions(+), 144 deletions(-)
+ 27 files changed, 1089 insertions(+), 136 deletions(-)
 
 diff --git a/core/src/mindustry/editor/MapInfoDialog.java b/core/src/mindustry/editor/MapInfoDialog.java
 index b4f56d136b632aae1841fcfb6f745018d40b9199..6e38c85a35901a80d632191502f10063066e8e2e 100644
@@ -429,7 +341,7 @@ index 314d6991673fe30a591754937426b14db7a3f4a9..6c5da648d33377d9e9c35914b79420d2
                  }
                  Draw.reset();
 diff --git a/core/src/mindustry/graphics/OverlayRenderer.java b/core/src/mindustry/graphics/OverlayRenderer.java
-index d2460d964e24fa9e1e6fa6b74e672f1cec11c8f9..2882c93b0afd83a31609660c0ebc45a4a9acf0b4 100644
+index 2033e20b8e66a248530f64be11995341e917687e..6bdcddbaa6065546a019f95dff96f1f8fa23e4cc 100644
 --- a/core/src/mindustry/graphics/OverlayRenderer.java
 +++ b/core/src/mindustry/graphics/OverlayRenderer.java
 @@ -17,6 +17,7 @@ import mindustry.gen.*;
@@ -563,7 +475,7 @@ index d5fff9b738ee04fc91af82a8c8722f6eacc1ad73..8af9a9faa4d4e5d1246af2f8747cca43
              unit.lookAt(unit.prefRotation());
          }
 diff --git a/core/src/mindustry/input/InputHandler.java b/core/src/mindustry/input/InputHandler.java
-index 253993603b8a66e81c8e34aac87a9141815c34e9..d7496513099cb404721176b3df060f68bedfb2ab 100644
+index db0bae58bd5f65ad7eef9f7432091cc892677588..4bb4d756a863507cfaee26d88eabf47b686548c5 100644
 --- a/core/src/mindustry/input/InputHandler.java
 +++ b/core/src/mindustry/input/InputHandler.java
 @@ -39,8 +39,10 @@ import mindustry.world.*;
@@ -585,7 +497,7 @@ index 253993603b8a66e81c8e34aac87a9141815c34e9..d7496513099cb404721176b3df060f68
      private Seq<BuildPlan> plansOut = new Seq<>(BuildPlan.class);
      private QuadTree<BuildPlan> playerPlanTree = new QuadTree<>(new Rect());
      private QuadTree<BuildPlan> selectPlanTree = new QuadTree<>(new Rect());
-@@ -748,7 +751,7 @@ public abstract class InputHandler implements InputProcessor, GestureListener{
+@@ -746,7 +749,7 @@ public abstract class InputHandler implements InputProcessor, GestureListener{
              throw new ValidateException(player, "Player cannot control a building.");
          }
  
@@ -594,7 +506,7 @@ index 253993603b8a66e81c8e34aac87a9141815c34e9..d7496513099cb404721176b3df060f68
              var before = player.unit();
  
              build.onControlSelect(player.unit());
-@@ -938,7 +941,7 @@ public abstract class InputHandler implements InputProcessor, GestureListener{
+@@ -936,7 +939,7 @@ public abstract class InputHandler implements InputProcessor, GestureListener{
      }
  
      public void update(){
@@ -603,7 +515,7 @@ index 253993603b8a66e81c8e34aac87a9141815c34e9..d7496513099cb404721176b3df060f68
              spectating = null;
          }
  
-@@ -1176,6 +1179,8 @@ public abstract class InputHandler implements InputProcessor, GestureListener{
+@@ -1174,6 +1177,8 @@ public abstract class InputHandler implements InputProcessor, GestureListener{
                      attack = selectedEnemyUnit(target.x, target.y);
                  }
  
@@ -612,7 +524,7 @@ index 253993603b8a66e81c8e34aac87a9141815c34e9..d7496513099cb404721176b3df060f68
                  int[] ids = new int[selectedUnits.size];
                  for(int i = 0; i < ids.length; i++){
                      ids[i] = selectedUnits.get(i).id;
-@@ -1563,6 +1568,11 @@ public abstract class InputHandler implements InputProcessor, GestureListener{
+@@ -1561,6 +1566,11 @@ public abstract class InputHandler implements InputProcessor, GestureListener{
          });
      }
  
@@ -624,7 +536,7 @@ index 253993603b8a66e81c8e34aac87a9141815c34e9..d7496513099cb404721176b3df060f68
      public void rotatePlans(Seq<BuildPlan> plans, int direction){
          int ox = schemOriginX(), oy = schemOriginY();
  
-@@ -1598,6 +1608,20 @@ public abstract class InputHandler implements InputProcessor, GestureListener{
+@@ -1596,6 +1606,20 @@ public abstract class InputHandler implements InputProcessor, GestureListener{
              plan.x = World.toTile(wx - plan.block.offset) + ox;
              plan.y = World.toTile(wy - plan.block.offset) + oy;
              plan.rotation = plan.block.planRotation(Mathf.mod(plan.rotation + direction, 4));
@@ -645,7 +557,7 @@ index 253993603b8a66e81c8e34aac87a9141815c34e9..d7496513099cb404721176b3df060f68
          });
      }
  
-@@ -1627,6 +1651,17 @@ public abstract class InputHandler implements InputProcessor, GestureListener{
+@@ -1625,6 +1649,17 @@ public abstract class InputHandler implements InputProcessor, GestureListener{
  
              //flip rotation
              plan.block.flipRotation(plan, x);
@@ -663,7 +575,7 @@ index 253993603b8a66e81c8e34aac87a9141815c34e9..d7496513099cb404721176b3df060f68
          });
      }
  
-@@ -1799,6 +1834,9 @@ public abstract class InputHandler implements InputProcessor, GestureListener{
+@@ -1797,6 +1832,9 @@ public abstract class InputHandler implements InputProcessor, GestureListener{
              font.setUseIntegerPositions(ints);
              Draw.z(z);
          }
@@ -673,7 +585,7 @@ index 253993603b8a66e81c8e34aac87a9141815c34e9..d7496513099cb404721176b3df060f68
      }
  
      protected void flushSelectPlans(Seq<BuildPlan> plans){
-@@ -2178,7 +2216,7 @@ public abstract class InputHandler implements InputProcessor, GestureListener{
+@@ -2174,7 +2212,7 @@ public abstract class InputHandler implements InputProcessor, GestureListener{
  
      public @Nullable Building selectedControlBuild(){
          Building build = world.buildWorld(Core.input.mouseWorld().x, Core.input.mouseWorld().y);
@@ -682,7 +594,7 @@ index 253993603b8a66e81c8e34aac87a9141815c34e9..d7496513099cb404721176b3df060f68
              return build;
          }
          return null;
-@@ -2279,6 +2317,9 @@ public abstract class InputHandler implements InputProcessor, GestureListener{
+@@ -2275,6 +2313,9 @@ public abstract class InputHandler implements InputProcessor, GestureListener{
  
      public boolean canShoot(){
          if(player.dead()) return false;
@@ -693,7 +605,7 @@ index 253993603b8a66e81c8e34aac87a9141815c34e9..d7496513099cb404721176b3df060f68
          !(player.unit() instanceof Mechc && player.unit().isFlying()) && !player.unit().mining() && !commandMode;
      }
 diff --git a/core/src/mindustry/input/MobileInput.java b/core/src/mindustry/input/MobileInput.java
-index fefd6b196f32fbef7918898ede1863732bdf05c6..72d4edb70babfe1fd574a935f2cb5fb4f0538016 100644
+index ae17589b7a6f849aeda3673665263a8073cd5d78..f34727c38d8d158f787e604299920383eab395c9 100644
 --- a/core/src/mindustry/input/MobileInput.java
 +++ b/core/src/mindustry/input/MobileInput.java
 @@ -343,7 +343,7 @@ public class MobileInput extends InputHandler implements GestureListener{
@@ -717,10 +629,10 @@ index fefd6b196f32fbef7918898ede1863732bdf05c6..72d4edb70babfe1fd574a935f2cb5fb4
          rect.grow(4f);
  
 diff --git a/core/src/mindustry/logic/LExecutor.java b/core/src/mindustry/logic/LExecutor.java
-index 02dd8a144ae519cf76d5dbddab390cb7444eac9d..b83dfd99b52b876a31090fb2971181fc9d2961bd 100644
+index 54e4222daffa082fc39b23cf726c7b8912034ef0..d657933524de8e0beb361b4ccaa0e962c286ba45 100644
 --- a/core/src/mindustry/logic/LExecutor.java
 +++ b/core/src/mindustry/logic/LExecutor.java
-@@ -30,6 +30,7 @@ import mindustry.world.blocks.logic.LogicDisplay.*;
+@@ -33,6 +33,7 @@ import mindustry.world.blocks.logic.LogicDisplay.*;
  import mindustry.world.blocks.logic.MessageBlock.*;
  import mindustry.world.blocks.payloads.*;
  import mindustry.world.meta.*;
@@ -728,7 +640,7 @@ index 02dd8a144ae519cf76d5dbddab390cb7444eac9d..b83dfd99b52b876a31090fb2971181fc
  
  import static mindustry.Vars.*;
  
-@@ -1757,8 +1758,14 @@ public class LExecutor{
+@@ -1926,8 +1927,14 @@ public class LExecutor{
              }
  
              switch(type){
@@ -746,7 +658,7 @@ index 02dd8a144ae519cf76d5dbddab390cb7444eac9d..b83dfd99b52b876a31090fb2971181fc
                  //TODO desync?
                  case mission -> state.rules.mission = text;
 diff --git a/core/src/mindustry/type/UnitType.java b/core/src/mindustry/type/UnitType.java
-index 1f91114f0f326727f604f214fb225abb2f4d3151..8793c8fbf8eab887cabffadf9a6c07ca1ac9162a 100644
+index 765a302e3633c93a16a4a2a2f4fb9a0f6165d961..58e65be66388a93e4e40907b784b4f2c653db8c6 100644
 --- a/core/src/mindustry/type/UnitType.java
 +++ b/core/src/mindustry/type/UnitType.java
 @@ -38,6 +38,7 @@ import mindustry.world.blocks.units.*;
@@ -911,7 +823,7 @@ index 1f91114f0f326727f604f214fb225abb2f4d3151..8793c8fbf8eab887cabffadf9a6c07ca
  
              Draw.reset();
 diff --git a/core/src/mindustry/type/Weapon.java b/core/src/mindustry/type/Weapon.java
-index b5dea6beedbbaa476491ccac484a1233193b3efc..8fcde8c4b7b20822269628c3c56d03de71a71960 100644
+index 3219e2b2d774d2e3dc500a0f205ee091dd446ddf..a2a265d3c79c790ee46c16f5076c240ff838f456 100644
 --- a/core/src/mindustry/type/Weapon.java
 +++ b/core/src/mindustry/type/Weapon.java
 @@ -23,6 +23,8 @@ import mindustry.entities.units.*;
@@ -961,7 +873,7 @@ index f0d7aab18f3d197ed6864eb1ef6a0f5210fc7148..39616ef05ca1e660ca5f62860cbe4d58
  
      public static Font def, outline, icon, iconLarge, tech, logic, monospace;
 diff --git a/core/src/mindustry/ui/dialogs/ContentInfoDialog.java b/core/src/mindustry/ui/dialogs/ContentInfoDialog.java
-index bc658d7e18538b735377222d56d3c02870dfd850..7da505e26c90014896f4edac0d4fe6d2d5a87939 100644
+index 377d7e225c07464a110e760bcf1e5022f0fb88f7..c3b62c70d4b91341d715c1ccb835e06d7ca468d6 100644
 --- a/core/src/mindustry/ui/dialogs/ContentInfoDialog.java
 +++ b/core/src/mindustry/ui/dialogs/ContentInfoDialog.java
 @@ -10,9 +10,12 @@ import arc.util.*;
@@ -1019,7 +931,7 @@ index bc658d7e18538b735377222d56d3c02870dfd850..7da505e26c90014896f4edac0d4fe6d2
          table.marginRight(30f);
          //TODO: some things (e.g. reconstructor requirements) are too long and screw up the layout
 diff --git a/core/src/mindustry/ui/dialogs/CustomRulesDialog.java b/core/src/mindustry/ui/dialogs/CustomRulesDialog.java
-index 52e5181fa87c472b7da701bb8f34dfb4a05ba306..14123327a7e65f9a7050630cd584fd27a8fa39f1 100644
+index 52e5181fa87c472b7da701bb8f34dfb4a05ba306..d5aaf556527c00482cdd1c193b7160e86afaded9 100644
 --- a/core/src/mindustry/ui/dialogs/CustomRulesDialog.java
 +++ b/core/src/mindustry/ui/dialogs/CustomRulesDialog.java
 @@ -3,6 +3,7 @@ package mindustry.ui.dialogs;
@@ -1280,7 +1192,7 @@ index 52e5181fa87c472b7da701bb8f34dfb4a05ba306..14123327a7e65f9a7050630cd584fd27
          ruleInfo(cell, text);
          current.row();
 diff --git a/core/src/mindustry/ui/dialogs/DatabaseDialog.java b/core/src/mindustry/ui/dialogs/DatabaseDialog.java
-index dfc6b9f31bdb9d1f890acc21f4ecca33e09c22fd..ba19ab884b440747864f6ccd84164e9b48490445 100644
+index feda24ed6809e91903766c152c922ab8902bb9b6..57c6ba14f3711614a0ea0211a9eec29a06ef6a31 100644
 --- a/core/src/mindustry/ui/dialogs/DatabaseDialog.java
 +++ b/core/src/mindustry/ui/dialogs/DatabaseDialog.java
 @@ -215,7 +215,7 @@ public class DatabaseDialog extends BaseDialog{
@@ -1330,7 +1242,7 @@ index 206fbb42165a6bcdc3db4e12d5fc8469987aa245..29ec028133e0925ca066f6f38a274653
      }
  
 diff --git a/core/src/mindustry/ui/dialogs/PlanetDialog.java b/core/src/mindustry/ui/dialogs/PlanetDialog.java
-index 9726f281e9cd34eff6053dbea7c48129d7226e42..8b3529a0b2f1874a0a7f96cf0606f23a317c96b5 100644
+index d72cbae9f527e2187a524c4f9476e7cf0fc8de97..e029fa5abbd5c366dcfae9b8847059a8af0c941d 100644
 --- a/core/src/mindustry/ui/dialogs/PlanetDialog.java
 +++ b/core/src/mindustry/ui/dialogs/PlanetDialog.java
 @@ -38,6 +38,7 @@ import mindustry.type.Planet.*;
@@ -1350,7 +1262,7 @@ index 9726f281e9cd34eff6053dbea7c48129d7226e42..8b3529a0b2f1874a0a7f96cf0606f23a
      public PlanetDialog(){
          super("", Styles.fullDialog);
  
-@@ -297,12 +300,14 @@ public class PlanetDialog extends BaseDialog implements PlanetInterfaceRenderer{
+@@ -298,12 +301,14 @@ public class PlanetDialog extends BaseDialog implements PlanetInterfaceRenderer{
          if(Core.graphics.isPortrait()){
              buttons.add(sectorTop).colspan(2).fillX().row();
              addBack();
@@ -1365,7 +1277,7 @@ index 9726f281e9cd34eff6053dbea7c48129d7226e42..8b3529a0b2f1874a0a7f96cf0606f23a
              addTech();
          }
      }
-@@ -566,6 +571,11 @@ public class PlanetDialog extends BaseDialog implements PlanetInterfaceRenderer{
+@@ -567,6 +572,11 @@ public class PlanetDialog extends BaseDialog implements PlanetInterfaceRenderer{
                          Draw.rect(icon, 0, 0, iw, iw * icon.height / icon.width);
                      });
                  }
@@ -1377,7 +1289,7 @@ index 9726f281e9cd34eff6053dbea7c48129d7226e42..8b3529a0b2f1874a0a7f96cf0606f23a
              }
  
              if(debugShowNumbers && (sec.hasEnemyBase() || sec.preset != null)){
-@@ -775,7 +785,7 @@ public class PlanetDialog extends BaseDialog implements PlanetInterfaceRenderer{
+@@ -776,7 +786,7 @@ public class PlanetDialog extends BaseDialog implements PlanetInterfaceRenderer{
  
              //sector notifications & search
              c.top().right();
@@ -1386,7 +1298,7 @@ index 9726f281e9cd34eff6053dbea7c48129d7226e42..8b3529a0b2f1874a0a7f96cf0606f23a
  
              c.button(bundle.get("sectorlist") +
              (attacked == 0 ? "" : "\n[red]⚠[lightgray] " + bundle.format("sectorlist.attacked", "[red]" + attacked + "[]")),
-@@ -819,7 +829,7 @@ public class PlanetDialog extends BaseDialog implements PlanetInterfaceRenderer{
+@@ -820,7 +830,7 @@ public class PlanetDialog extends BaseDialog implements PlanetInterfaceRenderer{
  
              readd[0] = () -> {
                  con.clearChildren();
@@ -1395,7 +1307,7 @@ index 9726f281e9cd34eff6053dbea7c48129d7226e42..8b3529a0b2f1874a0a7f96cf0606f23a
                      if(sec.hasBase() && (searchText.isEmpty() || sec.name().toLowerCase().contains(searchText.toLowerCase()))){
                          con.button(t -> {
                              t.marginRight(10f);
-@@ -840,6 +850,19 @@ public class PlanetDialog extends BaseDialog implements PlanetInterfaceRenderer{
+@@ -841,6 +851,19 @@ public class PlanetDialog extends BaseDialog implements PlanetInterfaceRenderer{
                                  String ic = sec.iconChar() == null ? "" : sec.iconChar() + " ";
  
                                  head.add(ic + sec.name()).growX().wrap();
@@ -1416,7 +1328,7 @@ index 9726f281e9cd34eff6053dbea7c48129d7226e42..8b3529a0b2f1874a0a7f96cf0606f23a
  
                              if(sec.isAttacked()){
 diff --git a/core/src/mindustry/ui/dialogs/SchematicsDialog.java b/core/src/mindustry/ui/dialogs/SchematicsDialog.java
-index fef8e21d771ccfd81cbc65a0bc62642ebf721952..f855efcd27a47e8ac5a0ac3dffc8a3c8a8413619 100644
+index fef8e21d771ccfd81cbc65a0bc62642ebf721952..a0b5e07ecdfd324dd7c14756138a2bf0d77bb663 100644
 --- a/core/src/mindustry/ui/dialogs/SchematicsDialog.java
 +++ b/core/src/mindustry/ui/dialogs/SchematicsDialog.java
 @@ -15,6 +15,7 @@ import arc.scene.ui.layout.*;
@@ -1719,10 +1631,10 @@ index fef8e21d771ccfd81cbc65a0bc62642ebf721952..f855efcd27a47e8ac5a0ac3dffc8a3c8
          }
      }
 diff --git a/core/src/mindustry/ui/dialogs/SettingsMenuDialog.java b/core/src/mindustry/ui/dialogs/SettingsMenuDialog.java
-index a739399151758484415525262893e254ed80614e..3532cd00aadc248b6d018a5623db48dd671c39f7 100644
+index 5b5a51d2fc9f79a14a1819d84ccb5a5a0d1ea9b5..8c9b8c9042b949f4ff225d2b6e58eaf1444a56fc 100644
 --- a/core/src/mindustry/ui/dialogs/SettingsMenuDialog.java
 +++ b/core/src/mindustry/ui/dialogs/SettingsMenuDialog.java
-@@ -309,8 +309,8 @@ public class SettingsMenuDialog extends BaseDialog{
+@@ -314,8 +314,8 @@ public class SettingsMenuDialog extends BaseDialog{
  
          game.sliderPref("saveinterval", 60, 10, 5 * 120, 10, i -> Core.bundle.format("setting.seconds", i));
  
@@ -1732,35 +1644,15 @@ index a739399151758484415525262893e254ed80614e..3532cd00aadc248b6d018a5623db48dd
              game.checkPref("keyboard", false, val -> {
                  control.setInput(val ? new DesktopInput() : new MobileInput());
                  input.setUseKeyboard(val);
-@@ -348,11 +348,9 @@ public class SettingsMenuDialog extends BaseDialog{
-         game.checkPref("hints", true);
-         game.checkPref("logichints", true);
- 
--        if(!mobile){
--            game.checkPref("backgroundpause", true);
--            game.checkPref("buildautopause", false);
--            game.checkPref("distinctcontrolgroups", true);
--        }
-+        game.checkPref("backgroundpause", true);
-+        game.checkPref("buildautopause", false);
-+        game.checkPref("distinctcontrolgroups", true);
- 
-         game.checkPref("doubletapmine", false);
-         game.checkPref("commandmodehold", true);
-@@ -374,9 +372,9 @@ public class SettingsMenuDialog extends BaseDialog{
-             }
+@@ -375,6 +375,7 @@ public class SettingsMenuDialog extends BaseDialog{
          }
  
--        if(!mobile){
--            game.checkPref("console", false);
--        }
-+        game.checkPref("console", false);
-+
+         game.checkPref("console", false);
 +        graphics.addCategory("arcCOverview");
  
          graphics.sliderPref("uiEdgePadding", 0, 0, 100, s -> s + "px", s -> {
              if(ui != null){
-@@ -489,6 +487,8 @@ public class SettingsMenuDialog extends BaseDialog{
+@@ -462,6 +463,8 @@ public class SettingsMenuDialog extends BaseDialog{
          graphics.checkPref("destroyedblocks", true);
          graphics.checkPref("blockstatus", false);
          graphics.checkPref("playerchat", true);
@@ -1769,7 +1661,7 @@ index a739399151758484415525262893e254ed80614e..3532cd00aadc248b6d018a5623db48dd
          if(!mobile){
              graphics.checkPref("coreitems", true);
          }
-@@ -498,14 +498,14 @@ public class SettingsMenuDialog extends BaseDialog{
+@@ -471,14 +474,14 @@ public class SettingsMenuDialog extends BaseDialog{
              graphics.checkPref("detach-camera", false);
          }
          graphics.checkPref("position", false);
@@ -1815,18 +1707,18 @@ index cb241dd067e90851ca290d1035600eb557a52303..a81b52f191507b7cfac50864ad097b42
      }
  
 diff --git a/core/src/mindustry/ui/fragments/ConsoleFragment.java b/core/src/mindustry/ui/fragments/ConsoleFragment.java
-index 3542163354070ac67c49b82dff6c72b374d4ca7d..6d2b1fbf2840eee89ab7bfcb37990e83073bf083 100644
+index 07e24fe2b60d559ea88bbe7360ce61bf36f56537..c52f8a953d4f492c0de38ea6f2a2fc9cf8d84774 100644
 --- a/core/src/mindustry/ui/fragments/ConsoleFragment.java
 +++ b/core/src/mindustry/ui/fragments/ConsoleFragment.java
-@@ -15,6 +15,7 @@ import arc.util.*;
- import mindustry.game.EventType.*;
+@@ -16,6 +16,7 @@ import mindustry.game.EventType.*;
+ import mindustry.gen.*;
  import mindustry.input.*;
  import mindustry.ui.*;
 +import mindustryX.features.ui.*;
  
  import static arc.Core.*;
  import static mindustry.Vars.*;
-@@ -163,6 +164,7 @@ public class ConsoleFragment extends Table{
+@@ -195,6 +196,7 @@ public class ConsoleFragment extends Table{
          clearChatInput();
  
          if(message.replace(" ", "").isEmpty()) return;
@@ -1835,7 +1727,7 @@ index 3542163354070ac67c49b82dff6c72b374d4ca7d..6d2b1fbf2840eee89ab7bfcb37990e83
          //special case for 'clear' command
          if(message.equals("clear")){
 diff --git a/core/src/mindustry/ui/fragments/HudFragment.java b/core/src/mindustry/ui/fragments/HudFragment.java
-index 34a9d830b30f4544ac438dfd6ac790f8c79b2e01..b98445b7923002ef0f4fe9edd4304fad986df4d0 100644
+index d95273d8c9f75da99565a85a5422917dab88d688..c121c725a0c3ce485a0ac687834bbcfdfc29d23b 100644
 --- a/core/src/mindustry/ui/fragments/HudFragment.java
 +++ b/core/src/mindustry/ui/fragments/HudFragment.java
 @@ -30,10 +30,12 @@ import mindustry.net.Packets.*;
@@ -1851,7 +1743,7 @@ index 34a9d830b30f4544ac438dfd6ac790f8c79b2e01..b98445b7923002ef0f4fe9edd4304fad
  
  import static mindustry.Vars.*;
  import static mindustry.gen.Tex.*;
-@@ -478,6 +480,10 @@ public class HudFragment{
+@@ -491,6 +493,10 @@ public class HudFragment{
              wavesMain.top().left().name = "waves";
  
              wavesMain.table(s -> {
@@ -1862,7 +1754,7 @@ index 34a9d830b30f4544ac438dfd6ac790f8c79b2e01..b98445b7923002ef0f4fe9edd4304fad
                  //wave info button with text
                  s.add(makeStatusTable()).grow().name("status");
  
-@@ -518,7 +524,7 @@ public class HudFragment{
+@@ -530,7 +536,7 @@ public class HudFragment{
                          button.getStyle().imageUpColor = team.color;
                          button.update(() -> button.setChecked(player.team() == team));
                      }
@@ -1871,7 +1763,7 @@ index 34a9d830b30f4544ac438dfd6ac790f8c79b2e01..b98445b7923002ef0f4fe9edd4304fad
                      teams.button(Icon.downOpen, Styles.emptyi, () -> Core.settings.put("editor-blocks-shown", !Core.settings.getBool("editor-blocks-shown")))
                      .size(45f).update(m -> m.getStyle().imageUp = (Core.settings.getBool("editor-blocks-shown") ? Icon.upOpen : Icon.downOpen));
                  }).top().left().row();
-@@ -1141,6 +1147,164 @@ public class HudFragment{
+@@ -1157,6 +1163,164 @@ public class HudFragment{
          return table;
      }
  
@@ -2036,7 +1928,7 @@ index 34a9d830b30f4544ac438dfd6ac790f8c79b2e01..b98445b7923002ef0f4fe9edd4304fad
      private void addInfoTable(Table table){
          table.name = "infotable";
          table.left();
-@@ -1190,7 +1354,7 @@ public class HudFragment{
+@@ -1206,7 +1370,7 @@ public class HudFragment{
      }
  
      private boolean canSkipWave(){
@@ -2046,7 +1938,7 @@ index 34a9d830b30f4544ac438dfd6ac790f8c79b2e01..b98445b7923002ef0f4fe9edd4304fad
  
  }
 diff --git a/core/src/mindustry/ui/fragments/MenuFragment.java b/core/src/mindustry/ui/fragments/MenuFragment.java
-index 90c843267ba9c3c59413a658c9777198296514f5..ef94d7797a159263ea5da2f2d1e445a8287cb959 100644
+index 5509cfb471cd5297a5e5d213b894ab9f85db40c1..34cba06da98dd664a70a71b545f8994509ccfd70 100644
 --- a/core/src/mindustry/ui/fragments/MenuFragment.java
 +++ b/core/src/mindustry/ui/fragments/MenuFragment.java
 @@ -45,7 +45,15 @@ public class MenuFragment{
@@ -2066,19 +1958,19 @@ index 90c843267ba9c3c59413a658c9777198296514f5..ef94d7797a159263ea5da2f2d1e445a8
  
          parent.fill(c -> {
              c.pane(Styles.noBarPane, cont -> {
-@@ -97,6 +105,11 @@ public class MenuFragment{
-             }}, ui.about::show).size(84, 45).name("info"));
+@@ -102,6 +110,11 @@ public class MenuFragment{
+             });
          }
  
 +        parent.fill(c -> c.bottom().left().table(t -> {
 +            t.background(Tex.buttonEdge3);
-+            t.button("\uE83D", Styles.cleart, ()->ArcOld.nextBackground(img)).width(50f);
++            t.button("\uE83D", Styles.cleart, () -> ArcOld.nextBackground(img)).width(50f);
 +        }).visible(() -> !ArcOld.backgroundPath.get().isEmpty()).left().width(100));
 +
          String versionText = ((Version.build == -1) ? "[#fc8140aa]" : "[#ffffffba]") + Version.combined();
          parent.fill((x, y, w, h) -> {
              TextureRegion logo = Core.atlas.find("logo");
-@@ -139,7 +152,7 @@ public class MenuFragment{
+@@ -144,7 +157,7 @@ public class MenuFragment{
              tools = new MobileButton(Icon.settings, "@settings", ui.settings::show),
              mods = new MobileButton(Icon.book, "@mods", ui.mods::show),
              exit = new MobileButton(Icon.exit, "@quit", () -> Core.app.exit()),
@@ -2087,7 +1979,7 @@ index 90c843267ba9c3c59413a658c9777198296514f5..ef94d7797a159263ea5da2f2d1e445a8
  
          Seq<MobileButton> customs = customButtons.map(b -> new MobileButton(b.icon, b.text, b.runnable == null ? () -> {} : b.runnable));
  
-@@ -158,11 +171,12 @@ public class MenuFragment{
+@@ -163,11 +176,12 @@ public class MenuFragment{
              container.add(editor);
              container.add(tools);
              container.add(mods);
@@ -2101,7 +1993,7 @@ index 90c843267ba9c3c59413a658c9777198296514f5..ef94d7797a159263ea5da2f2d1e445a8
          }else{
              container.marginTop(0f);
              container.add(play);
-@@ -175,12 +189,14 @@ public class MenuFragment{
+@@ -180,12 +194,14 @@ public class MenuFragment{
              container.add(tools);
              container.row();
              container.add(mods);
@@ -2118,7 +2010,7 @@ index 90c843267ba9c3c59413a658c9777198296514f5..ef94d7797a159263ea5da2f2d1e445a8
      }
  
 diff --git a/core/src/mindustry/ui/fragments/PlacementFragment.java b/core/src/mindustry/ui/fragments/PlacementFragment.java
-index 0e70bc703f77e282296a226b39ed73236fd5d694..9ad989b1f5ad672a411122bceeb54b9eee27a759 100644
+index 0ba08a4cd621a0081db6487527a98cbab785de4d..cf6c878603a473a11355672d78c6af6332781e11 100644
 --- a/core/src/mindustry/ui/fragments/PlacementFragment.java
 +++ b/core/src/mindustry/ui/fragments/PlacementFragment.java
 @@ -1,6 +1,7 @@
@@ -2172,7 +2064,7 @@ index 0e70bc703f77e282296a226b39ed73236fd5d694..9ad989b1f5ad672a411122bceeb54b9e
                  rebuild();
              }
          });
-@@ -280,6 +282,8 @@ public class PlacementFragment{
+@@ -281,6 +283,8 @@ public class PlacementFragment{
      }
  
      public void build(Group parent){
@@ -2181,7 +2073,7 @@ index 0e70bc703f77e282296a226b39ed73236fd5d694..9ad989b1f5ad672a411122bceeb54b9e
          parent.fill(full -> {
              toggler = full;
              full.bottom().right().visible(() -> ui.hudfrag.shown);
-@@ -356,19 +360,22 @@ public class PlacementFragment{
+@@ -357,19 +361,22 @@ public class PlacementFragment{
  
                          //find current hovered thing
                          Displayable hovered = hover;
@@ -2205,7 +2097,7 @@ index 0e70bc703f77e282296a226b39ed73236fd5d694..9ad989b1f5ad672a411122bceeb54b9e
                          lastTeam = player.team();
  
                          //show details of selected block, with costs
-@@ -437,6 +444,30 @@ public class PlacementFragment{
+@@ -438,6 +445,30 @@ public class PlacementFragment{
                          }else if(hovered != null){
                              //show hovered item, whatever that may be
                              hovered.display(topTable);
@@ -2236,7 +2128,7 @@ index 0e70bc703f77e282296a226b39ed73236fd5d694..9ad989b1f5ad672a411122bceeb54b9e
                          }
                      });
                  }).colspan(3).fillX().visible(this::hasInfoBox).touchable(Touchable.enabled).row();
-@@ -498,6 +529,8 @@ public class PlacementFragment{
+@@ -499,6 +530,8 @@ public class PlacementFragment{
  
                          rebuildCommand = () -> {
                              u.clearChildren();
@@ -2245,7 +2137,7 @@ index 0e70bc703f77e282296a226b39ed73236fd5d694..9ad989b1f5ad672a411122bceeb54b9e
                              var units = control.input.selectedUnits;
                              if(units.size > 0){
                                  usedCommands.clear();
-@@ -581,7 +614,7 @@ public class PlacementFragment{
+@@ -582,7 +615,7 @@ public class PlacementFragment{
                                                  Call.setUnitCommand(player, units.mapInt(un -> un.id, un -> un.type.allowCommand(un, command)).toArray(), command);
                                              }).checked(i -> activeCommands.get(command.id)).size(50f).tooltip(command.localized(), true);
  
@@ -2254,7 +2146,7 @@ index 0e70bc703f77e282296a226b39ed73236fd5d694..9ad989b1f5ad672a411122bceeb54b9e
                                          }
  
                                      }).fillX().padTop(4f).left();
-@@ -604,13 +637,67 @@ public class PlacementFragment{
+@@ -605,13 +638,67 @@ public class PlacementFragment{
                                                  Call.setUnitStance(player, units.mapInt(un -> un.id, un -> un.type.allowStance(un, stance)).toArray(), stance, !activeStances.get(stance.id));
                                              }).checked(i -> activeStances.get(stance.id)).size(50f).tooltip(stance.localized(), true);
  
@@ -2323,7 +2215,7 @@ index 0e70bc703f77e282296a226b39ed73236fd5d694..9ad989b1f5ad672a411122bceeb54b9e
                          };
  
                          u.update(() -> {
-@@ -675,7 +762,7 @@ public class PlacementFragment{
+@@ -676,7 +763,7 @@ public class PlacementFragment{
                  {
                      blockCatTable.table(Tex.pane2, blocksSelect -> {
                          blocksSelect.margin(4).marginTop(0);
@@ -2332,7 +2224,7 @@ index 0e70bc703f77e282296a226b39ed73236fd5d694..9ad989b1f5ad672a411122bceeb54b9e
                              if(pane.hasScroll()){
                                  Element result = Core.scene.getHoverElement();
                                  if(result == null || !result.isDescendantOf(pane)){
-@@ -713,6 +800,17 @@ public class PlacementFragment{
+@@ -714,6 +801,17 @@ public class PlacementFragment{
                          boolean needsAssign = categoryEmpty[currentCategory.ordinal()];
  
                          int f = 0;
@@ -2350,7 +2242,7 @@ index 0e70bc703f77e282296a226b39ed73236fd5d694..9ad989b1f5ad672a411122bceeb54b9e
                          for(Category cat : getCategories()){
                              if(f++ % 2 == 0) categories.row();
  
-@@ -771,8 +869,9 @@ public class PlacementFragment{
+@@ -772,8 +870,9 @@ public class PlacementFragment{
      }
  
      boolean hasInfoBox(){
@@ -2361,7 +2253,7 @@ index 0e70bc703f77e282296a226b39ed73236fd5d694..9ad989b1f5ad672a411122bceeb54b9e
      }
  
      /** @return the thing being hovered over. */
-@@ -780,25 +879,40 @@ public class PlacementFragment{
+@@ -781,25 +880,40 @@ public class PlacementFragment{
          //MDTX: fix flashing. Don't clear hover if the mouse just on topTable.
          if(Core.scene.hasMouse(Core.input.mouseX(), Core.input.mouseY()) && !topTable.hasMouse()) return null;
  
@@ -2417,7 +2309,7 @@ index 0e70bc703f77e282296a226b39ed73236fd5d694..9ad989b1f5ad672a411122bceeb54b9e
      }
  }
 diff --git a/core/src/mindustry/ui/fragments/PlayerListFragment.java b/core/src/mindustry/ui/fragments/PlayerListFragment.java
-index 58d82ae32d4a37b4e2bea1559c854b775048350f..b0e3d09b0a8bea3bd0b32e958a05c5bc2b24ab32 100644
+index 58d82ae32d4a37b4e2bea1559c854b775048350f..766aacd1e530d16f39dc59726b97f180325326ca 100644
 --- a/core/src/mindustry/ui/fragments/PlayerListFragment.java
 +++ b/core/src/mindustry/ui/fragments/PlayerListFragment.java
 @@ -10,13 +10,14 @@ import arc.scene.ui.ImageButton.*;

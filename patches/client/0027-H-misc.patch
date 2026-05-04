@@ -1,12 +1,9 @@
 From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
-From: way-zer <himc.wicp@gmail.com>
-Date: Sun, 18 Feb 2024 15:58:00 +0800
+From: DeterMination-Wind
+ <228482103+DeterMination-Wind@users.noreply.github.com>
+Date: Mon, 4 May 2026 14:27:13 +0800
 Subject: [PATCH] H: misc
-MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
 
-每个改动仅限连续的一段，且前有注释说明改动内容
 ---
  core/src/mindustry/ClientLauncher.java        |  8 ++++++++
  core/src/mindustry/Vars.java                  |  8 +++++++-
@@ -62,10 +59,10 @@ index ec993d3e6f8026dcc58cdc6cc943d8c792494bf5..f4ed14ca5a2b5f3a8b2d01e0c7bbc383
          }
  
 diff --git a/core/src/mindustry/Vars.java b/core/src/mindustry/Vars.java
-index 462af52bc1286ff5684525d4a850fb4c77341b06..af29896b221ebc2a617a0a14ca2fdf054693a477 100644
+index 163e05c298205cf76d0c20390f90d043c75aaf8c..30deda304aa7b4c990537accd18c06f7c464448d 100644
 --- a/core/src/mindustry/Vars.java
 +++ b/core/src/mindustry/Vars.java
-@@ -294,7 +294,8 @@ public class Vars implements Loadable{
+@@ -298,7 +298,8 @@ public class Vars implements Loadable{
      public static NetServer netServer;
      public static NetClient netClient;
  
@@ -75,7 +72,7 @@ index 462af52bc1286ff5684525d4a850fb4c77341b06..af29896b221ebc2a617a0a14ca2fdf05
  
      @Override
      public void loadAsync(){
-@@ -427,6 +428,11 @@ public class Vars implements Loadable{
+@@ -431,6 +432,11 @@ public class Vars implements Loadable{
                  if(!headless && (ui == null || ui.consolefrag == null)){
                      logBuffer.add(result);
                  }else if(!headless){
@@ -101,7 +98,7 @@ index f5ff55e1e65d49c94130310c534e7d4f843ecb5b..627ce6898df4dc9781a8a0ebf5921c9a
      private Seq<Team> activeTeams = new Seq<>(Team.class);
      /** Maps teams to a map of flagged tiles by flag. */
 diff --git a/core/src/mindustry/content/Blocks.java b/core/src/mindustry/content/Blocks.java
-index 4019daad98e98aa86e28c5fe6926aa9a7edeeac8..f82f268fb3b2ec9dfd6fc4bec347590f802511ae 100644
+index d2509b1ecb3651bb79c0d9e7ab4da1ea73f80665..653a6852864530f24b9c592e774e88a11873eb79 100644
 --- a/core/src/mindustry/content/Blocks.java
 +++ b/core/src/mindustry/content/Blocks.java
 @@ -2124,6 +2124,7 @@ public class Blocks{
@@ -121,22 +118,22 @@ index 4019daad98e98aa86e28c5fe6926aa9a7edeeac8..f82f268fb3b2ec9dfd6fc4bec347590f
  
          sorter = new Sorter("sorter"){{
 diff --git a/core/src/mindustry/content/StatusEffects.java b/core/src/mindustry/content/StatusEffects.java
-index 6792c68861eb9ddf52428b2afc80510987509210..ef315970349db1c463ba117dfe3b0b15e218a72e 100644
+index 5e34e429ff04a9228b67c314c25128e277dcd6b8..c2bd01b56f0505c28f172e77bd5531902537f2fa 100644
 --- a/core/src/mindustry/content/StatusEffects.java
 +++ b/core/src/mindustry/content/StatusEffects.java
-@@ -206,6 +206,7 @@ public class StatusEffects{
+@@ -209,6 +209,7 @@ public class StatusEffects{
  
          invincible = new StatusEffect("invincible"){{
              healthMultiplier = Float.POSITIVE_INFINITY;
 +            color = Color.red;
+             show = false;
          }};
  
-         dynamic = new StatusEffect("dynamic"){{
 diff --git a/core/src/mindustry/core/Control.java b/core/src/mindustry/core/Control.java
-index 314c40fa0343dc3baf16368db597a22c7be0125a..19a93769d3ab2a0ca9d9c4b7159bdeb18d2941ac 100644
+index d751d7f177fe5ef6e4334c8bcc412e0a65894a88..9a6c297685923b4cca631c0be8a580590591c97e 100644
 --- a/core/src/mindustry/core/Control.java
 +++ b/core/src/mindustry/core/Control.java
-@@ -636,7 +636,8 @@ public class Control implements ApplicationListener, Loadable{
+@@ -637,7 +637,8 @@ public class Control implements ApplicationListener, Loadable{
                  BaseDialog dialog = new BaseDialog("@confirm");
                  dialog.setFillParent(true);
  
@@ -162,7 +159,7 @@ index c7c877530b3e908a1df7bf59c1867f3928d62a18..c0016cedfe941e232fd19476ac326889
  
              player.admin = false;
 diff --git a/core/src/mindustry/core/Renderer.java b/core/src/mindustry/core/Renderer.java
-index 1dd3e1a1edfc7f7f1a8d2c0c52284f997fa56061..c33d35766827d76e53b1b69749a39666739d9cdd 100644
+index ffe9448b2c1bb72bcfd08d12aeace63de3c41a3a..872e2479cdbb6560780a62a375817621d7519bb7 100644
 --- a/core/src/mindustry/core/Renderer.java
 +++ b/core/src/mindustry/core/Renderer.java
 @@ -160,7 +160,7 @@ public class Renderer implements ApplicationListener{
@@ -284,7 +281,7 @@ index 4f4b1db1c130f265107bf6bcd6ba5ac4bab7d44b..d5fff9b738ee04fc91af82a8c8722f6e
                  }
              }
 diff --git a/core/src/mindustry/ui/dialogs/JoinDialog.java b/core/src/mindustry/ui/dialogs/JoinDialog.java
-index 0978a38705e1767c5eea5d93dbc01c65509abbe1..3c53dc4a75e570a7f3937cd0ca44ca2f3cffde4c 100644
+index a6c4cee76dc917d3be46c4714f3beb3189c84ef4..9b8101507d4a361cd5598c8f14383bb7b5c3c0d4 100644
 --- a/core/src/mindustry/ui/dialogs/JoinDialog.java
 +++ b/core/src/mindustry/ui/dialogs/JoinDialog.java
 @@ -61,11 +61,9 @@ public class JoinDialog extends BaseDialog{
@@ -321,7 +318,7 @@ index 0978a38705e1767c5eea5d93dbc01c65509abbe1..3c53dc4a75e570a7f3937cd0ca44ca2f
          add = new BaseDialog("@joingame.title");
          add.cont.add("@joingame.ip").padRight(5f).left();
 diff --git a/core/src/mindustry/ui/dialogs/KeybindDialog.java b/core/src/mindustry/ui/dialogs/KeybindDialog.java
-index d14fd47e8d0afa17a76b9112eb89cca4badeb2b8..d3dd7592465f420eb7c225b7dc7218eada30abf8 100644
+index d14fd47e8d0afa17a76b9112eb89cca4badeb2b8..4460a94a88e28d8854af74bbee8aa5481906264d 100644
 --- a/core/src/mindustry/ui/dialogs/KeybindDialog.java
 +++ b/core/src/mindustry/ui/dialogs/KeybindDialog.java
 @@ -79,7 +79,7 @@ public class KeybindDialog extends Dialog{
@@ -376,10 +373,10 @@ index 34bda027dca3220eddbe18f9ae9eabde37676653..206fbb42165a6bcdc3db4e12d5fc8469
              return;
          }else if(checkPlaytest()){
 diff --git a/core/src/mindustry/ui/dialogs/SettingsMenuDialog.java b/core/src/mindustry/ui/dialogs/SettingsMenuDialog.java
-index 9b870091604950258a249fc1bcc1039065b4174c..a739399151758484415525262893e254ed80614e 100644
+index fb10278972bea8fec62743f60c601c81f0ed9bf6..5b5a51d2fc9f79a14a1819d84ccb5a5a0d1ea9b5 100644
 --- a/core/src/mindustry/ui/dialogs/SettingsMenuDialog.java
 +++ b/core/src/mindustry/ui/dialogs/SettingsMenuDialog.java
-@@ -421,14 +421,14 @@ public class SettingsMenuDialog extends BaseDialog{
+@@ -419,14 +419,14 @@ public class SettingsMenuDialog extends BaseDialog{
          graphics.sliderPref("unitlaseropacity", 100, 0, 100, 5, s -> s + "%");
          graphics.sliderPref("bridgeopacity", 100, 0, 100, 5, s -> s + "%");
  
@@ -436,10 +433,10 @@ index b807e2195df1162a09d74fde962f195bf57bc92c..cb241dd067e90851ca290d1035600eb5
          team("/t"),
          admin("/a", player::admin)
 diff --git a/core/src/mindustry/ui/fragments/PlacementFragment.java b/core/src/mindustry/ui/fragments/PlacementFragment.java
-index 2050811b53179fe9d4e805f2f2f8b23e64d2aa15..722f0a96ded8714d89b128bba97e7fa9aa4975dc 100644
+index d379e40472df7e283cb098691c9ec447f946d832..2564649423f3306dfaaf539dd1021527e65a5a8e 100644
 --- a/core/src/mindustry/ui/fragments/PlacementFragment.java
 +++ b/core/src/mindustry/ui/fragments/PlacementFragment.java
-@@ -770,10 +770,8 @@ public class PlacementFragment{
+@@ -771,10 +771,8 @@ public class PlacementFragment{
  
      /** @return the thing being hovered over. */
      public @Nullable Displayable hovered(){

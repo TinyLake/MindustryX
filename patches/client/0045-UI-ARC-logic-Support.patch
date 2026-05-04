@@ -1,33 +1,13 @@
 From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
-From: way-zer <himc.wicp@gmail.com>
-Date: Sat, 13 Jul 2024 00:12:04 +0800
+From: DeterMination-Wind
+ <228482103+DeterMination-Wind@users.noreply.github.com>
+Date: Mon, 4 May 2026 14:30:19 +0800
 Subject: [PATCH] =?UTF-8?q?UI&ARC:=20logic=20Support=20=E5=A4=84=E7=90=86?=
  =?UTF-8?q?=E5=99=A8=E7=BC=96=E8=BE=91=E5=A2=9E=E5=BC=BA?=
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 
-* 从Merged分离
-* 修复注释切换功能；整理代码
-* 实现JUMP跳转按钮
-way-zer <himc.wicp@gmail.com> on 2024/7/13
-
-重制内存元显示 和 处理器快捷显示
-way-zer <himc.wicp@gmail.com> on 2024/7/14
-
-防止多人模式下编辑世处，并给出提示
-way-zer <himc.wicp@gmail.com> on 2024/9/8
-
-clean
-
-调整Jump样式，添加跳转强调
-
-按钮调整
-MinRi2 <2275045670@qq.com>
-
-* 添加失效链接显示
-* 清除链接建筑时更新逻辑代码
-MinRi2 <2275045670@qq.com> on 2025/5/3
 ---
  core/src/mindustry/logic/LCanvas.java         | 48 ++++++++++++++++++-
  core/src/mindustry/logic/LExecutor.java       |  7 ++-
@@ -38,7 +18,7 @@ MinRi2 <2275045670@qq.com> on 2025/5/3
  6 files changed, 149 insertions(+), 17 deletions(-)
 
 diff --git a/core/src/mindustry/logic/LCanvas.java b/core/src/mindustry/logic/LCanvas.java
-index b4ad9b3237f35d6783bc85daa8a86b820bc20ecd..599f907dc69bac24e7e5de16f5e6b18891c0261b 100644
+index 56f52b1bb9aecab2ecbedf672bc8431dc3a9de41..5eeb66f5291a0adcadae218e359917600106ea6e 100644
 --- a/core/src/mindustry/logic/LCanvas.java
 +++ b/core/src/mindustry/logic/LCanvas.java
 @@ -18,6 +18,9 @@ import mindustry.gen.*;
@@ -60,7 +40,7 @@ index b4ad9b3237f35d6783bc85daa8a86b820bc20ecd..599f907dc69bac24e7e5de16f5e6b188
      }
  
      public static void tooltip(Cell<?> cell, String key){
-@@ -444,11 +447,13 @@ public class LCanvas extends Table{
+@@ -443,11 +446,13 @@ public class LCanvas extends Table{
                  t.button(Icon.copy, Styles.logici, () -> {
                  }).size(24f).padRight(6).disabled(i -> canvas.statements.getChildren().size >= LExecutor.maxInstructions).get().tapped(this::copy);
  
@@ -75,7 +55,7 @@ index b4ad9b3237f35d6783bc85daa8a86b820bc20ecd..599f907dc69bac24e7e5de16f5e6b188
  
                  t.addListener(new InputListener(){
                      float lastx, lasty;
-@@ -529,6 +534,45 @@ public class LCanvas extends Table{
+@@ -528,6 +533,45 @@ public class LCanvas extends Table{
              }
          }
  
@@ -122,10 +102,10 @@ index b4ad9b3237f35d6783bc85daa8a86b820bc20ecd..599f907dc69bac24e7e5de16f5e6b188
          public void draw(){
              float pad = 5f;
 diff --git a/core/src/mindustry/logic/LExecutor.java b/core/src/mindustry/logic/LExecutor.java
-index 254ec97e33d3933f51fc4d49105b70395a057865..02dd8a144ae519cf76d5dbddab390cb7444eac9d 100644
+index 794c0ca3675b23b1e00c06671aeabbfc61cce2f2..54e4222daffa082fc39b23cf726c7b8912034ef0 100644
 --- a/core/src/mindustry/logic/LExecutor.java
 +++ b/core/src/mindustry/logic/LExecutor.java
-@@ -44,6 +44,9 @@ public class LExecutor{
+@@ -47,6 +47,9 @@ public class LExecutor{
      public LInstruction[] instructions = {};
      /** Non-constant variables used for network sync */
      public LVar[] vars = {};
@@ -133,9 +113,9 @@ index 254ec97e33d3933f51fc4d49105b70395a057865..02dd8a144ae519cf76d5dbddab390cb7
 +    @mindustryX.MindustryXApi
 +    public LVar[] allVars = {};
  
-     public LVar counter, unit, thisv, ipt;
+     public LVar counter, unit, thisv, ipt, queryResult;
  
-@@ -120,6 +123,7 @@ public class LExecutor{
+@@ -123,6 +126,7 @@ public class LExecutor{
      public void load(LAssembler builder){
          nameMap = null;
          vars = builder.vars.values().toSeq().retainAll(var -> !var.constant).toArray(LVar.class);
@@ -143,7 +123,7 @@ index 254ec97e33d3933f51fc4d49105b70395a057865..02dd8a144ae519cf76d5dbddab390cb7
          for(int i = 0; i < vars.length; i++){
              vars[i].id = i;
          }
-@@ -566,6 +570,7 @@ public class LExecutor{
+@@ -570,6 +574,7 @@ public class LExecutor{
          public void run(LExecutor exec){
              Object obj = target.obj();
              if(obj instanceof Building b && (exec.privileged || (exec.build != null && exec.build.validLink(b)))){
@@ -151,7 +131,7 @@ index 254ec97e33d3933f51fc4d49105b70395a057865..02dd8a144ae519cf76d5dbddab390cb7
  
                  if(type == LAccess.enabled){
                      if(p1.bool()){
-@@ -1302,7 +1307,7 @@ public class LExecutor{
+@@ -1319,7 +1324,7 @@ public class LExecutor{
          @Override
          public void run(LExecutor exec){
              if(headless) return;
@@ -161,7 +141,7 @@ index 254ec97e33d3933f51fc4d49105b70395a057865..02dd8a144ae519cf76d5dbddab390cb7
                  case pan -> {
                      control.input.logicCutscene = true;
 diff --git a/core/src/mindustry/logic/LStatements.java b/core/src/mindustry/logic/LStatements.java
-index 4f172c5f66736634dac190b115827695ab7993f7..ecbe2ed06b45257a1deb16ce7dbab49508cb0987 100644
+index 230e99ae5c1acc2896da7ed2cd72cc2e0d4dfb09..fa144253fadf8921cc20369610c8530d060a00e8 100644
 --- a/core/src/mindustry/logic/LStatements.java
 +++ b/core/src/mindustry/logic/LStatements.java
 @@ -3,6 +3,9 @@ package mindustry.logic;
@@ -213,7 +193,7 @@ index 4f172c5f66736634dac190b115827695ab7993f7..ecbe2ed06b45257a1deb16ce7dbab495
  
              String name = name();
 diff --git a/core/src/mindustry/logic/LogicDialog.java b/core/src/mindustry/logic/LogicDialog.java
-index 51c8576d8b41d43e25eb86400d169b9a108e6642..de370177beb5fec5b3b00abbb3dd8e2c608610de 100644
+index 51c8576d8b41d43e25eb86400d169b9a108e6642..b6424e7ee89c3d2d2741c7e9a81f44e998ff4a5f 100644
 --- a/core/src/mindustry/logic/LogicDialog.java
 +++ b/core/src/mindustry/logic/LogicDialog.java
 @@ -19,6 +19,8 @@ import mindustry.logic.LStatements.*;
@@ -271,7 +251,7 @@ index 51c8576d8b41d43e25eb86400d169b9a108e6642..de370177beb5fec5b3b00abbb3dd8e2c
      }
  }
 diff --git a/core/src/mindustry/world/blocks/logic/LogicBlock.java b/core/src/mindustry/world/blocks/logic/LogicBlock.java
-index d7f5d601ed0138a349bda45b02623ccfbfb23914..32955a9faa2a6f759b48b1fbc11e0d9d1b142238 100644
+index d8a0f2c4f204c8a31e8981fc546f4627dfb12f7c..604eac9e6c6224db88cc2ba3157083e0e7aac089 100644
 --- a/core/src/mindustry/world/blocks/logic/LogicBlock.java
 +++ b/core/src/mindustry/world/blocks/logic/LogicBlock.java
 @@ -16,6 +16,7 @@ import arc.util.io.*;
@@ -297,7 +277,7 @@ index d7f5d601ed0138a349bda45b02623ccfbfb23914..32955a9faa2a6f759b48b1fbc11e0d9d
  
  import java.io.*;
  import java.util.zip.*;
-@@ -110,11 +114,15 @@ public class LogicBlock extends Block{
+@@ -109,11 +113,15 @@ public class LogicBlock extends Block{
  
      @Override
      public boolean checkForceDark(Tile tile){
@@ -315,7 +295,7 @@ index d7f5d601ed0138a349bda45b02623ccfbfb23914..32955a9faa2a6f759b48b1fbc11e0d9d
      }
  
      @Override
-@@ -425,7 +433,7 @@ public class LogicBlock extends Block{
+@@ -424,7 +432,7 @@ public class LogicBlock extends Block{
  
          @Override
          public boolean displayable(){
@@ -324,7 +304,7 @@ index d7f5d601ed0138a349bda45b02623ccfbfb23914..32955a9faa2a6f759b48b1fbc11e0d9d
          }
  
          @Override
-@@ -448,7 +456,12 @@ public class LogicBlock extends Block{
+@@ -447,7 +455,12 @@ public class LogicBlock extends Block{
  
          @Override
          public Cursor getCursor(){
@@ -338,7 +318,7 @@ index d7f5d601ed0138a349bda45b02623ccfbfb23914..32955a9faa2a6f759b48b1fbc11e0d9d
          }
  
          //logic blocks cause write problems when picked up
-@@ -609,24 +622,30 @@ public class LogicBlock extends Block{
+@@ -608,24 +621,30 @@ public class LogicBlock extends Block{
              }
  
              for(LogicLink l : links){
@@ -373,7 +353,7 @@ index d7f5d601ed0138a349bda45b02623ccfbfb23914..32955a9faa2a6f759b48b1fbc11e0d9d
  
              Groups.unit.each(u -> u.controller() instanceof LogicAI ai && ai.controller == this, unit -> {
                  Drawf.square(unit.x, unit.y, unit.hitSize, unit.rotation + 45);
-@@ -673,12 +692,12 @@ public class LogicBlock extends Block{
+@@ -672,12 +691,12 @@ public class LogicBlock extends Block{
  
          @Override
          public boolean shouldShowConfigure(Player player){

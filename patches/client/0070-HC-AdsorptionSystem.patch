@@ -8,7 +8,7 @@ Subject: [PATCH] HC: AdsorptionSystem
  1 file changed, 1 insertion(+)
 
 diff --git a/core/src/mindustry/ui/fragments/PlacementFragment.java b/core/src/mindustry/ui/fragments/PlacementFragment.java
-index 2ab03f018baacd73e4ef3011e7353547e33b9e4a..a3d534250c9f9698a6ee3bbb393048c97bdce07b 100644
+index cf6c878603a473a11355672d78c6af6332781e11..46db4203aa463d09cefe992eeeb92d9a40ed7269 100644
 --- a/core/src/mindustry/ui/fragments/PlacementFragment.java
 +++ b/core/src/mindustry/ui/fragments/PlacementFragment.java
 @@ -843,6 +843,7 @@ public class PlacementFragment{

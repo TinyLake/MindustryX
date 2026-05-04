@@ -1,6 +1,7 @@
 From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
-From: way-zer <himc.wicp@gmail.com>
-Date: Sun, 24 Mar 2024 00:02:12 +0800
+From: DeterMination-Wind
+ <228482103+DeterMination-Wind@users.noreply.github.com>
+Date: Mon, 4 May 2026 14:27:44 +0800
 Subject: [PATCH] FR: ARC setBars
 
 ---
@@ -50,7 +51,7 @@ index 36c61c5c641f197f6f13fcab6e5cc0da3e7181a4..b2c0fe2c649602c9d46fff7d3fdd8ac0
      }
  }
 diff --git a/core/src/mindustry/world/Block.java b/core/src/mindustry/world/Block.java
-index 029494b36f4f83929f7ac19f30e95d55ec9007a0..7f3c00a861f2a6636dd25fa0ac79c9c1f8b1882f 100644
+index c79e6ffce4c68637e140ff3e785b061cb930e713..0bedbb38372ca190e9a25ca2fff3d884979db1fc 100644
 --- a/core/src/mindustry/world/Block.java
 +++ b/core/src/mindustry/world/Block.java
 @@ -35,6 +35,7 @@ import mindustry.world.blocks.power.*;
@@ -109,7 +110,7 @@ index 029494b36f4f83929f7ac19f30e95d55ec9007a0..7f3c00a861f2a6636dd25fa0ac79c9c1
                  () -> Mathf.zero(consPower.requestedPower(entity)) && entity.power.graph.getPowerProduced() + entity.power.graph.getBatteryStored() > 0f ? 1f : entity.power.status)
              );
 diff --git a/core/src/mindustry/world/blocks/defense/ForceProjector.java b/core/src/mindustry/world/blocks/defense/ForceProjector.java
-index cd0314aed5f922962bc8596badab02d6c548ce33..33cfc82bdb20cb6d433118f015b11b7983e9ac1d 100644
+index a19a4f3b1730c3fda1dd7a06d3ec3b7a0241ebc7..6156ad9b240199dc05361ab73027b7f07010003e 100644
 --- a/core/src/mindustry/world/blocks/defense/ForceProjector.java
 +++ b/core/src/mindustry/world/blocks/defense/ForceProjector.java
 @@ -25,6 +25,7 @@ import mindustry.world.blocks.*;
@@ -134,7 +135,7 @@ index cd0314aed5f922962bc8596badab02d6c548ce33..33cfc82bdb20cb6d433118f015b11b79
  
      @Override
 diff --git a/core/src/mindustry/world/blocks/defense/MendProjector.java b/core/src/mindustry/world/blocks/defense/MendProjector.java
-index 3c7b9653a58a5d4e92f9ba050de2f44757d91be2..dc337d182b0679e533c2389640b8edc70bb27a05 100644
+index 3c7b9653a58a5d4e92f9ba050de2f44757d91be2..f4ce6aac7a8dd577a6c1c1f1a569285a63cd69b5 100644
 --- a/core/src/mindustry/world/blocks/defense/MendProjector.java
 +++ b/core/src/mindustry/world/blocks/defense/MendProjector.java
 @@ -12,6 +12,7 @@ import mindustry.content.*;
@@ -159,7 +160,7 @@ index 3c7b9653a58a5d4e92f9ba050de2f44757d91be2..dc337d182b0679e533c2389640b8edc7
      public void drawPlace(int x, int y, int rotation, boolean valid){
          super.drawPlace(x, y, rotation, valid);
 diff --git a/core/src/mindustry/world/blocks/defense/OverdriveProjector.java b/core/src/mindustry/world/blocks/defense/OverdriveProjector.java
-index c2a1f10f2fe32c093cb0142a7f1d93dabadb4e2f..31b67b7837d1c1b6c4c3ec00982478b5e4709bae 100644
+index c2a1f10f2fe32c093cb0142a7f1d93dabadb4e2f..e7b34ddd44e8939997a600633ce3eae9ac04e402 100644
 --- a/core/src/mindustry/world/blocks/defense/OverdriveProjector.java
 +++ b/core/src/mindustry/world/blocks/defense/OverdriveProjector.java
 @@ -84,7 +84,9 @@ public class OverdriveProjector extends Block{
@@ -369,7 +370,7 @@ index 8b151af5dcdcab792b903a02b2012e7191209140..fe80ce93eb9291cdcb7ca2d43f34ed19
  
      public class PayloadDeconstructorBuild extends PayloadBlockBuild<Payload>{
 diff --git a/core/src/mindustry/world/blocks/power/ImpactReactor.java b/core/src/mindustry/world/blocks/power/ImpactReactor.java
-index 2869759bab9ca11481538a58f9bdcd9cb5037abc..f93c058daadb8dae8217a9e321508adb49114349 100644
+index 0e438489051997426fb151f74ef5ae562ab4d3c4..d4c21e6ab8cea1783d92454497a0742c5a20e05d 100644
 --- a/core/src/mindustry/world/blocks/power/ImpactReactor.java
 +++ b/core/src/mindustry/world/blocks/power/ImpactReactor.java
 @@ -54,11 +54,20 @@ public class ImpactReactor extends PowerGenerator{
@@ -378,17 +379,17 @@ index 2869759bab9ca11481538a58f9bdcd9cb5037abc..f93c058daadb8dae8217a9e321508adb
  
 -        addBar("power", (GeneratorBuild entity) -> new Bar(() ->
 -        Core.bundle.format("bar.poweroutput",
--        Strings.fixed(Math.max(entity.getPowerProduction() - consPower.usage, 0) * 60 * entity.timeScale(), 1)),
+-        Strings.fixed(Math.max(entity.getPowerProduction() - (consPower == null ? 0f : consPower.usage), 0) * 60 * entity.timeScale(), 1)),
 -        () -> Pal.powerBar,
 -        () -> entity.productionEfficiency));
 +        addBar("power", (GeneratorBuild entity) -> new Bar(
 +                () -> entity.warmup() > 0.999f
 +                        ? Strings.format(Iconc.power+"@[lightgray](@%)[]",
-+                                Strings.autoFixed((entity.getPowerProduction() - consPower.usage) * 60 * entity.timeScale(), 1),
++                                Strings.autoFixed((entity.getPowerProduction() - (consPower == null ? 0f : consPower.usage)) * 60 * entity.timeScale(), 1),
 +                                Strings.autoFixed(entity.productionEfficiency * 100, 1)
 +                        )
 +                        : Strings.format(Iconc.power+"@[lightgray](@%)[]|@s",
-+                                Strings.autoFixed((entity.getPowerProduction() - consPower.usage) * 60 * entity.timeScale(), 1),
++                                Strings.autoFixed((entity.getPowerProduction() - (consPower == null ? 0f : consPower.usage)) * 60 * entity.timeScale(), 1),
 +                                Strings.autoFixed(entity.productionEfficiency * 100, 1),
 +                                Strings.autoFixed((warmupToTime(0.999f, entity.timeScale()) - warmupToTime(entity.warmup(), entity.timeScale())) / 60f, 1)
 +                        ),
@@ -413,7 +414,7 @@ index 9b0ef63732d2cd574bf37f9f0a5fd0f3af378fd9..4c1065a12000cc5f9f4bb5a9fedda458
              () -> entity.productionEfficiency));
          }
 diff --git a/core/src/mindustry/world/blocks/production/BeamDrill.java b/core/src/mindustry/world/blocks/production/BeamDrill.java
-index c3e51ec146fda9cd4f91a2edf5324edef7293d18..dfae8f9afef7275ea9a8bfb79a2c7f3e79a6a4bb 100644
+index c3e51ec146fda9cd4f91a2edf5324edef7293d18..f03f984a16cb0c88c53fd78c5cc10acc7cdff678 100644
 --- a/core/src/mindustry/world/blocks/production/BeamDrill.java
 +++ b/core/src/mindustry/world/blocks/production/BeamDrill.java
 @@ -91,7 +91,7 @@ public class BeamDrill extends Block{
@@ -490,7 +491,7 @@ index 7cc1ee3d5ca050b9867653a4c890af8ddd59caf9..f6633e8fecc928e665b0d58b48f1886e
              () -> entity.heat / heatRequirement));
      }
 diff --git a/core/src/mindustry/world/blocks/production/WallCrafter.java b/core/src/mindustry/world/blocks/production/WallCrafter.java
-index 9ae3c98364c860ed47d03592f9d660d1af1b753c..e13f83f830269f8485351d2a52c2edffd1651905 100644
+index 9ae3c98364c860ed47d03592f9d660d1af1b753c..75dd3cdcb119d4ff03e99caf7102cf4001c2a7de 100644
 --- a/core/src/mindustry/world/blocks/production/WallCrafter.java
 +++ b/core/src/mindustry/world/blocks/production/WallCrafter.java
 @@ -69,7 +69,7 @@ public class WallCrafter extends Block{
