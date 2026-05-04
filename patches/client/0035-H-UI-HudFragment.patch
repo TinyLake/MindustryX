@@ -14,7 +14,7 @@ AuxiliaryTools, NewCoreItemsDisplay(新制核心资源显示), WaveInfoDisplay(�
  1 file changed, 24 insertions(+), 11 deletions(-)
 
 diff --git a/core/src/mindustry/ui/fragments/HudFragment.java b/core/src/mindustry/ui/fragments/HudFragment.java
-index b98090865d487e1887e613cae52d050e60052dfb..e070b6fc415f37791c4167ee2b0626d60a21c45e 100644
+index badaa190bad6a1bfa57a5ec9089f63e150797d2a..34a9d830b30f4544ac438dfd6ac790f8c79b2e01 100644
 --- a/core/src/mindustry/ui/fragments/HudFragment.java
 +++ b/core/src/mindustry/ui/fragments/HudFragment.java
 @@ -337,16 +337,21 @@ public class HudFragment{
@@ -39,15 +39,15 @@ index b98090865d487e1887e613cae52d050e60052dfb..e070b6fc415f37791c4167ee2b0626d6
 +                .visible(() -> Core.settings.getBool("position") || Core.settings.getBool("mouseposition"))
 +                .touchable(Touchable.disabled).style(Styles.outlineLabel).minWidth(120f);
 +
-+                tt.button("♐", Styles.cleart, MarkerType::toggleMarkHitterUI).size(iconMed).tooltip("进入标记模式");
++                tt.button("♐", Styles.cleart, MarkerType::toggleMarkHitterUI).size(iconMed).tooltip(Core.bundle.get("hud.mark-mode"));
 +                tt.button("T", Styles.cleart, () -> ui.chatfrag.nextMode())
-+                .checked(b -> ui.chatfrag.mode == ChatFragment.ChatMode.team).size(iconMed).tooltip("前缀添加/t");
-+                tt.button("" + Iconc.zoom, Styles.cleart, MarkerType::lockOnLastMark).size(iconMed).tooltip("锁定上个标记点");
++                .checked(b -> ui.chatfrag.mode == ChatFragment.ChatMode.team).size(iconMed).tooltip(Core.bundle.get("hud.chat-prefix-team"));
++                tt.button("" + Iconc.zoom, Styles.cleart, MarkerType::lockOnLastMark).size(iconMed).tooltip(Core.bundle.get("hud.lock-last-mark"));
 +            }).name("position");
              t.top().right();
          });
  
-@@ -558,12 +563,19 @@ public class HudFragment{
+@@ -546,12 +551,19 @@ public class HudFragment{
                  IntFormat mem = new IntFormat("memory");
                  IntFormat memnative = new IntFormat("memory2");
  
@@ -60,14 +60,14 @@ index b98090865d487e1887e613cae52d050e60052dfb..e070b6fc415f37791c4167ee2b0626d6
                  info.row();
  
 +                if (!android){
-+                    info.label(() -> "缩放: " + String.format("%.2f", renderer.getScale())).left().style(Styles.outlineLabel);
++                    info.label(() -> Core.bundle.format("hud.zoom-detail", String.format("%.2f", renderer.getScale()))).left().style(Styles.outlineLabel);
 +                    info.row();
 +                }
 +
                  if(android){
                      info.label(() -> memnative.get((int)(Core.app.getJavaHeap() / 1024 / 1024), (int)(Core.app.getNativeHeap() / 1024 / 1024))).left().style(Styles.outlineLabel).name("memory2");
                  }else{
-@@ -573,8 +585,8 @@ public class HudFragment{
+@@ -561,8 +573,8 @@ public class HudFragment{
  
                  info.label(() -> ping.get(netClient.getPing())).visible(net::client).left().style(Styles.outlineLabel).name("ping").row();
                  info.label(() -> tps.get(state.serverTps == -1 ? 60 : state.serverTps)).visible(net::client).left().style(Styles.outlineLabel).name("tps").row();
@@ -78,7 +78,7 @@ index b98090865d487e1887e613cae52d050e60052dfb..e070b6fc415f37791c4167ee2b0626d6
          });
  
          //core info
-@@ -593,7 +605,8 @@ public class HudFragment{
+@@ -581,7 +593,8 @@ public class HudFragment{
  
              t.table(c -> {
                  //core items

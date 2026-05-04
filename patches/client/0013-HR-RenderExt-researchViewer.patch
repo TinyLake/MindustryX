@@ -42,7 +42,7 @@ index 3328eee453c1b9e5f56bc864a35bb6eaa1c7646c..7da49f8b4df23fd1016e4188c9e4b20c
  
          @Override
 diff --git a/core/src/mindustry/ui/dialogs/ResearchDialog.java b/core/src/mindustry/ui/dialogs/ResearchDialog.java
-index d3ffe9546d0ea23db6592598ec48b1a64fee1aac..9fe8a455c814171c898fe270af5bfd1a8ed73c22 100644
+index 244c04afc7f4d892b1dca301a1ab50344568682a..fbf8dde06bdf66cb336cee8eb3bbe246e43210a5 100644
 --- a/core/src/mindustry/ui/dialogs/ResearchDialog.java
 +++ b/core/src/mindustry/ui/dialogs/ResearchDialog.java
 @@ -27,6 +27,7 @@ import mindustry.type.*;
@@ -67,7 +67,7 @@ index d3ffe9546d0ea23db6592598ec48b1a64fee1aac..9fe8a455c814171c898fe270af5bfd1a
  
      boolean selectable(TechNode node){
 +        if(node.content.unlockedHost()) return true;
-+        if(RenderExt.researchViewer && node.parent != null && locked(node.parent)) return false;
++        if(RenderExt.researchViewer && locked(node.parent)) return false;
          //there's a desync here as far as sectors go, since the client doesn't know about that, but I'm not too concerned
          return node.content.unlockedHost() || !node.objectives.contains(i -> !i.complete());
      }
@@ -80,8 +80,8 @@ index d3ffe9546d0ea23db6592598ec48b1a64fee1aac..9fe8a455c814171c898fe270af5bfd1a
                      button.getImage().setColor(!locked(node.node) ? Color.white : node.selectable ? Color.gray : Pal.gray);
                      button.getImage().layout();
                  });
-@@ -646,13 +649,13 @@ public class ResearchDialog extends BaseDialog{
-                 b.left();
+@@ -645,13 +648,13 @@ public class ResearchDialog extends BaseDialog{
+             infoTable.table(b -> {
                  b.margin(0).left().defaults().left();
  
 -                if(selectable){

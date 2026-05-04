@@ -40,7 +40,7 @@ index f855efcd27a47e8ac5a0ac3dffc8a3c8a8413619..aecd5fa9c1d0d9f564421c2acd57c0ed
 +                            if(codeString.isEmpty()) return;
 +                            t.button(logicBlock.emoji(), Styles.cleart, () -> {
 +                                Core.app.setClipboardText(codeString);
-+                                UIExt.announce("已复制逻辑代码");
++                                UIExt.announce(Core.bundle.get("logic.copied-code"));
 +                            }).tooltip(Strings.truncate(codeString, 500, "\n...")).size(40f);
 +                            if(t.getChildren().size % 15 == 0) t.row();
 +                        }

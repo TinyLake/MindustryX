@@ -50,7 +50,7 @@ index 36c61c5c641f197f6f13fcab6e5cc0da3e7181a4..b2c0fe2c649602c9d46fff7d3fdd8ac0
      }
  }
 diff --git a/core/src/mindustry/world/Block.java b/core/src/mindustry/world/Block.java
-index c79e6ffce4c68637e140ff3e785b061cb930e713..0bedbb38372ca190e9a25ca2fff3d884979db1fc 100644
+index 029494b36f4f83929f7ac19f30e95d55ec9007a0..7f3c00a861f2a6636dd25fa0ac79c9c1f8b1882f 100644
 --- a/core/src/mindustry/world/Block.java
 +++ b/core/src/mindustry/world/Block.java
 @@ -35,6 +35,7 @@ import mindustry.world.blocks.power.*;
@@ -109,7 +109,7 @@ index c79e6ffce4c68637e140ff3e785b061cb930e713..0bedbb38372ca190e9a25ca2fff3d884
                  () -> Mathf.zero(consPower.requestedPower(entity)) && entity.power.graph.getPowerProduced() + entity.power.graph.getBatteryStored() > 0f ? 1f : entity.power.status)
              );
 diff --git a/core/src/mindustry/world/blocks/defense/ForceProjector.java b/core/src/mindustry/world/blocks/defense/ForceProjector.java
-index a19a4f3b1730c3fda1dd7a06d3ec3b7a0241ebc7..6156ad9b240199dc05361ab73027b7f07010003e 100644
+index cd0314aed5f922962bc8596badab02d6c548ce33..33cfc82bdb20cb6d433118f015b11b7983e9ac1d 100644
 --- a/core/src/mindustry/world/blocks/defense/ForceProjector.java
 +++ b/core/src/mindustry/world/blocks/defense/ForceProjector.java
 @@ -25,6 +25,7 @@ import mindustry.world.blocks.*;
@@ -152,7 +152,7 @@ index 3c7b9653a58a5d4e92f9ba050de2f44757d91be2..dc337d182b0679e533c2389640b8edc7
 +    @Override
 +    public void setBars(){
 +        super.setBars();
-+        addBar("charge", (MendBuild entity) -> new Bar(() -> ("充能: " + (int)entity.charge + " / " + reload), () -> Pal.items, () -> (entity.charge / reload)));
++        addBar("charge", (MendBuild entity) -> new Bar(() -> Core.bundle.format("bar.mend-charge", (int)entity.charge, reload), () -> Pal.items, () -> (entity.charge / reload)));
 +    }
 +
      @Override
@@ -168,7 +168,7 @@ index c2a1f10f2fe32c093cb0142a7f1d93dabadb4e2f..31b67b7837d1c1b6c4c3ec00982478b5
          super.setBars();
 -        addBar("boost", (OverdriveBuild entity) -> new Bar(() -> Core.bundle.format("bar.boost", Mathf.round(Math.max((entity.realBoost() * 100 - 100), 0))), () -> Pal.accent, () -> entity.realBoost() / (hasBoost ? speedBoost + speedBoostPhase : speedBoost)));
 +        addBar("boost", (OverdriveBuild entity) -> new Bar(() ->
-+                "超速：" + (entity.realBoost() <= 1 ? "[red]\uE815": "+" + (int)((entity.realBoost() - 1) * 100) + "%"),
++                Core.bundle.format("bar.boost-detail", entity.realBoost() <= 1 ? "[red]\uE815" : "+" + (int)((entity.realBoost() - 1) * 100) + "%"),
 +                () -> Pal.accent, () -> entity.realBoost() / (hasBoost ? speedBoost + speedBoostPhase : speedBoost)));
      }
  
@@ -369,7 +369,7 @@ index 8b151af5dcdcab792b903a02b2012e7191209140..fe80ce93eb9291cdcb7ca2d43f34ed19
  
      public class PayloadDeconstructorBuild extends PayloadBlockBuild<Payload>{
 diff --git a/core/src/mindustry/world/blocks/power/ImpactReactor.java b/core/src/mindustry/world/blocks/power/ImpactReactor.java
-index 0e438489051997426fb151f74ef5ae562ab4d3c4..d4c21e6ab8cea1783d92454497a0742c5a20e05d 100644
+index 2869759bab9ca11481538a58f9bdcd9cb5037abc..f93c058daadb8dae8217a9e321508adb49114349 100644
 --- a/core/src/mindustry/world/blocks/power/ImpactReactor.java
 +++ b/core/src/mindustry/world/blocks/power/ImpactReactor.java
 @@ -54,11 +54,20 @@ public class ImpactReactor extends PowerGenerator{
@@ -378,17 +378,17 @@ index 0e438489051997426fb151f74ef5ae562ab4d3c4..d4c21e6ab8cea1783d92454497a0742c
  
 -        addBar("power", (GeneratorBuild entity) -> new Bar(() ->
 -        Core.bundle.format("bar.poweroutput",
--        Strings.fixed(Math.max(entity.getPowerProduction() - (consPower == null ? 0f : consPower.usage), 0) * 60 * entity.timeScale(), 1)),
+-        Strings.fixed(Math.max(entity.getPowerProduction() - consPower.usage, 0) * 60 * entity.timeScale(), 1)),
 -        () -> Pal.powerBar,
 -        () -> entity.productionEfficiency));
 +        addBar("power", (GeneratorBuild entity) -> new Bar(
 +                () -> entity.warmup() > 0.999f
 +                        ? Strings.format(Iconc.power+"@[lightgray](@%)[]",
-+                                Strings.autoFixed((entity.getPowerProduction() - (consPower == null ? 0f : consPower.usage)) * 60 * entity.timeScale(), 1),
++                                Strings.autoFixed((entity.getPowerProduction() - consPower.usage) * 60 * entity.timeScale(), 1),
 +                                Strings.autoFixed(entity.productionEfficiency * 100, 1)
 +                        )
 +                        : Strings.format(Iconc.power+"@[lightgray](@%)[]|@s",
-+                                Strings.autoFixed((entity.getPowerProduction() - (consPower == null ? 0f : consPower.usage)) * 60 * entity.timeScale(), 1),
++                                Strings.autoFixed((entity.getPowerProduction() - consPower.usage) * 60 * entity.timeScale(), 1),
 +                                Strings.autoFixed(entity.productionEfficiency * 100, 1),
 +                                Strings.autoFixed((warmupToTime(0.999f, entity.timeScale()) - warmupToTime(entity.warmup(), entity.timeScale())) / 60f, 1)
 +                        ),
@@ -421,7 +421,7 @@ index c3e51ec146fda9cd4f91a2edf5324edef7293d18..dfae8f9afef7275ea9a8bfb79a2c7f3e
  
          addBar("drillspeed", (BeamDrillBuild e) ->
 -            new Bar(() -> Core.bundle.format("bar.drillspeed", Strings.fixed(e.lastDrillSpeed * 60, 2)), () -> Pal.ammo, () -> e.warmup));
-+            new Bar(() -> (e.lastItem == null ? "挖掘速度：0.00/s" : e.lastItem.emoji() +" "+ Strings.fixed(e.lastDrillSpeed * 60 , 2) + "/s"), () -> Pal.ammo, () -> e.warmup));
++            new Bar(() -> e.lastItem == null ? Core.bundle.get("bar.drillspeed.empty") : Core.bundle.format("bar.drillspeed.item", e.lastItem.emoji(), Strings.fixed(e.lastDrillSpeed * 60, 2)), () -> Pal.ammo, () -> e.warmup));
      }
  
      @Override
@@ -498,7 +498,7 @@ index 9ae3c98364c860ed47d03592f9d660d1af1b753c..e13f83f830269f8485351d2a52c2edff
  
          addBar("drillspeed", (WallCrafterBuild e) ->
 -            new Bar(() -> Core.bundle.format("bar.drillspeed", Strings.fixed(e.lastEfficiency * 60 / drillTime, 2)), () -> Pal.ammo, () -> e.warmup));
-+            new Bar(() -> (output == null ? "挖掘速度：" : output.emoji()) +" "+ Strings.fixed(e.lastEfficiency * 60 / drillTime, 2) + "/s", () -> Pal.ammo, () -> e.warmup));
++            new Bar(() -> output == null ? Core.bundle.format("bar.drillspeed.output", Strings.fixed(e.lastEfficiency * 60 / drillTime, 2)) : Core.bundle.format("bar.drillspeed.item", output.emoji(), Strings.fixed(e.lastEfficiency * 60 / drillTime, 2)), () -> Pal.ammo, () -> e.warmup));
      }
  
      @Override

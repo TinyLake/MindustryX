@@ -71,11 +71,12 @@ diff --git a/core/src/mindustry/editor/MapEditorDialog.java b/core/src/mindustry
 index 1dfc7ad0d4e827d02c6b8c35a9845fed8d614147..fc67c076a90670337e7c010f825ef573a8a61cde 100644
 --- a/core/src/mindustry/editor/MapEditorDialog.java
 +++ b/core/src/mindustry/editor/MapEditorDialog.java
-@@ -32,6 +32,7 @@ import mindustry.world.blocks.environment.*;
+@@ -32,6 +32,8 @@ import mindustry.world.blocks.environment.*;
  import mindustry.world.blocks.storage.*;
  import mindustry.world.blocks.storage.CoreBlock.*;
  import mindustry.world.meta.*;
-+import mindustryX.features.*;
++import arc.Core;
+ import mindustryX.features.*;
  
  import static mindustry.Vars.*;
  
@@ -99,7 +100,7 @@ index 1dfc7ad0d4e827d02c6b8c35a9845fed8d614147..fc67c076a90670337e7c010f825ef573
  
                      if(i++ % 3 == 2) tools.row();
                  }
-+                tools.button("[violet]其他队伍", Styles.flatToggleMenut, () -> UIExt.teamSelect.pickOne(team -> editor.drawTeam = team))
++                tools.button(Core.bundle.get("editor.other-teams"), Styles.flatToggleMenut, () -> UIExt.teamSelect.pickOne(team -> editor.drawTeam = team))
 +                .update(b->{
 +                    boolean checked = !Seq.with(Team.baseTeams).contains(editor.drawTeam);
 +                    b.setColor(checked ? editor.drawTeam.color : Color.violet);
@@ -111,13 +112,13 @@ index 1dfc7ad0d4e827d02c6b8c35a9845fed8d614147..fc67c076a90670337e7c010f825ef573
                  mid.row();
  
 +                mid.table(t -> {
-+                    t.add("辅助线：");
++                    t.add(Core.bundle.get("editor.guide-lines"));
 +                    t.field(Integer.toString(editor.interval), TextField.TextFieldFilter.digitsOnly, value -> editor.interval = Integer.parseInt(value))
 +                    .valid(Strings::canParsePositiveInt).maxTextLength(4).width(100f);
 +                }).row();
 +
 +                var brushField = mid.table().get()
-+                .add("笔刷：").getTable()
++                .add(Core.bundle.get("editor.brush")).getTable()
 +                .field(Float.toString(editor.brushSize), value -> editor.brushSize = Float.parseFloat(value)).valid(Strings::canParsePositiveFloat).maxTextLength(4).width(100f).get();
 +                mid.row();
                  mid.table(Tex.underline, t -> {

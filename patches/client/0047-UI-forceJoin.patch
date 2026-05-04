@@ -44,7 +44,7 @@ index af4bc95b121ecfe6570dd7393fab09c485eef0ea..835faba4ef5ca398c4986bba927bcd0b
              TypeIO.writeString(buffer, name);
              TypeIO.writeString(buffer, locale);
 diff --git a/core/src/mindustry/ui/dialogs/JoinDialog.java b/core/src/mindustry/ui/dialogs/JoinDialog.java
-index 9b8101507d4a361cd5598c8f14383bb7b5c3c0d4..105c34e52221930f2767999c1bf38dfd04f27cd5 100644
+index 3c53dc4a75e570a7f3937cd0ca44ca2f3cffde4c..fef21d30db9c61fd17c6fe0390de27b273f9c159 100644
 --- a/core/src/mindustry/ui/dialogs/JoinDialog.java
 +++ b/core/src/mindustry/ui/dialogs/JoinDialog.java
 @@ -636,9 +636,22 @@ public class JoinDialog extends BaseDialog{
@@ -59,9 +59,9 @@ index 9b8101507d4a361cd5598c8f14383bb7b5c3c0d4..105c34e52221930f2767999c1bf38dfd
 +                title.setAlignment(Align.center);
 +                cont.add(Core.bundle.format("server.versions", Version.build, version)).row();
 +                cont.row();
-+                cont.add("[gold]MDTX[]: 目标版本可能兼容，你可以选择伪装版本强制加入。\n如果出现[red]网络错误[]或其他问题，表示无法兼容。").row();
++                cont.add(Core.bundle.get("forceJoin.tips")).row();
 +                cont.pack();
-+                buttons.button("强制加入", () -> {
++                buttons.button(Core.bundle.get("forceJoin.button"), () -> {
 +                    hide();
 +                    ConnectPacket.clientVersion = version;
 +                    connect(ip, port);

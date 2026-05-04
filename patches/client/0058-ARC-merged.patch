@@ -113,14 +113,14 @@ way-zer <himc.wicp@gmail.com> on 2024/9/8
  .../mindustry/ui/dialogs/PausedDialog.java    |  12 +-
  .../mindustry/ui/dialogs/PlanetDialog.java    |  27 ++-
  .../ui/dialogs/SchematicsDialog.java          | 202 +++++++++++++++++-
- .../ui/dialogs/SettingsMenuDialog.java        |  20 +-
+ .../ui/dialogs/SettingsMenuDialog.java        |  24 +--
  .../mindustry/ui/fragments/ChatFragment.java  |   9 +-
  .../ui/fragments/ConsoleFragment.java         |   2 +
  .../mindustry/ui/fragments/HudFragment.java   | 168 ++++++++++++++-
  .../mindustry/ui/fragments/MenuFragment.java  |  24 ++-
  .../ui/fragments/PlacementFragment.java       | 164 +++++++++++---
  .../ui/fragments/PlayerListFragment.java      |  70 +++---
- 27 files changed, 1093 insertions(+), 141 deletions(-)
+ 27 files changed, 1094 insertions(+), 144 deletions(-)
 
 diff --git a/core/src/mindustry/editor/MapInfoDialog.java b/core/src/mindustry/editor/MapInfoDialog.java
 index b4f56d136b632aae1841fcfb6f745018d40b9199..6e38c85a35901a80d632191502f10063066e8e2e 100644
@@ -429,7 +429,7 @@ index 314d6991673fe30a591754937426b14db7a3f4a9..6c5da648d33377d9e9c35914b79420d2
                  }
                  Draw.reset();
 diff --git a/core/src/mindustry/graphics/OverlayRenderer.java b/core/src/mindustry/graphics/OverlayRenderer.java
-index 2033e20b8e66a248530f64be11995341e917687e..6bdcddbaa6065546a019f95dff96f1f8fa23e4cc 100644
+index d2460d964e24fa9e1e6fa6b74e672f1cec11c8f9..2882c93b0afd83a31609660c0ebc45a4a9acf0b4 100644
 --- a/core/src/mindustry/graphics/OverlayRenderer.java
 +++ b/core/src/mindustry/graphics/OverlayRenderer.java
 @@ -17,6 +17,7 @@ import mindustry.gen.*;
@@ -563,7 +563,7 @@ index d5fff9b738ee04fc91af82a8c8722f6eacc1ad73..8af9a9faa4d4e5d1246af2f8747cca43
              unit.lookAt(unit.prefRotation());
          }
 diff --git a/core/src/mindustry/input/InputHandler.java b/core/src/mindustry/input/InputHandler.java
-index db0bae58bd5f65ad7eef9f7432091cc892677588..4bb4d756a863507cfaee26d88eabf47b686548c5 100644
+index 253993603b8a66e81c8e34aac87a9141815c34e9..d7496513099cb404721176b3df060f68bedfb2ab 100644
 --- a/core/src/mindustry/input/InputHandler.java
 +++ b/core/src/mindustry/input/InputHandler.java
 @@ -39,8 +39,10 @@ import mindustry.world.*;
@@ -585,7 +585,7 @@ index db0bae58bd5f65ad7eef9f7432091cc892677588..4bb4d756a863507cfaee26d88eabf47b
      private Seq<BuildPlan> plansOut = new Seq<>(BuildPlan.class);
      private QuadTree<BuildPlan> playerPlanTree = new QuadTree<>(new Rect());
      private QuadTree<BuildPlan> selectPlanTree = new QuadTree<>(new Rect());
-@@ -746,7 +749,7 @@ public abstract class InputHandler implements InputProcessor, GestureListener{
+@@ -748,7 +751,7 @@ public abstract class InputHandler implements InputProcessor, GestureListener{
              throw new ValidateException(player, "Player cannot control a building.");
          }
  
@@ -594,7 +594,7 @@ index db0bae58bd5f65ad7eef9f7432091cc892677588..4bb4d756a863507cfaee26d88eabf47b
              var before = player.unit();
  
              build.onControlSelect(player.unit());
-@@ -936,7 +939,7 @@ public abstract class InputHandler implements InputProcessor, GestureListener{
+@@ -938,7 +941,7 @@ public abstract class InputHandler implements InputProcessor, GestureListener{
      }
  
      public void update(){
@@ -603,7 +603,7 @@ index db0bae58bd5f65ad7eef9f7432091cc892677588..4bb4d756a863507cfaee26d88eabf47b
              spectating = null;
          }
  
-@@ -1174,6 +1177,8 @@ public abstract class InputHandler implements InputProcessor, GestureListener{
+@@ -1176,6 +1179,8 @@ public abstract class InputHandler implements InputProcessor, GestureListener{
                      attack = selectedEnemyUnit(target.x, target.y);
                  }
  
@@ -612,7 +612,7 @@ index db0bae58bd5f65ad7eef9f7432091cc892677588..4bb4d756a863507cfaee26d88eabf47b
                  int[] ids = new int[selectedUnits.size];
                  for(int i = 0; i < ids.length; i++){
                      ids[i] = selectedUnits.get(i).id;
-@@ -1561,6 +1566,11 @@ public abstract class InputHandler implements InputProcessor, GestureListener{
+@@ -1563,6 +1568,11 @@ public abstract class InputHandler implements InputProcessor, GestureListener{
          });
      }
  
@@ -624,7 +624,7 @@ index db0bae58bd5f65ad7eef9f7432091cc892677588..4bb4d756a863507cfaee26d88eabf47b
      public void rotatePlans(Seq<BuildPlan> plans, int direction){
          int ox = schemOriginX(), oy = schemOriginY();
  
-@@ -1596,6 +1606,20 @@ public abstract class InputHandler implements InputProcessor, GestureListener{
+@@ -1598,6 +1608,20 @@ public abstract class InputHandler implements InputProcessor, GestureListener{
              plan.x = World.toTile(wx - plan.block.offset) + ox;
              plan.y = World.toTile(wy - plan.block.offset) + oy;
              plan.rotation = plan.block.planRotation(Mathf.mod(plan.rotation + direction, 4));
@@ -645,7 +645,7 @@ index db0bae58bd5f65ad7eef9f7432091cc892677588..4bb4d756a863507cfaee26d88eabf47b
          });
      }
  
-@@ -1625,6 +1649,17 @@ public abstract class InputHandler implements InputProcessor, GestureListener{
+@@ -1627,6 +1651,17 @@ public abstract class InputHandler implements InputProcessor, GestureListener{
  
              //flip rotation
              plan.block.flipRotation(plan, x);
@@ -663,7 +663,7 @@ index db0bae58bd5f65ad7eef9f7432091cc892677588..4bb4d756a863507cfaee26d88eabf47b
          });
      }
  
-@@ -1797,6 +1832,9 @@ public abstract class InputHandler implements InputProcessor, GestureListener{
+@@ -1799,6 +1834,9 @@ public abstract class InputHandler implements InputProcessor, GestureListener{
              font.setUseIntegerPositions(ints);
              Draw.z(z);
          }
@@ -673,7 +673,7 @@ index db0bae58bd5f65ad7eef9f7432091cc892677588..4bb4d756a863507cfaee26d88eabf47b
      }
  
      protected void flushSelectPlans(Seq<BuildPlan> plans){
-@@ -2174,7 +2212,7 @@ public abstract class InputHandler implements InputProcessor, GestureListener{
+@@ -2178,7 +2216,7 @@ public abstract class InputHandler implements InputProcessor, GestureListener{
  
      public @Nullable Building selectedControlBuild(){
          Building build = world.buildWorld(Core.input.mouseWorld().x, Core.input.mouseWorld().y);
@@ -682,7 +682,7 @@ index db0bae58bd5f65ad7eef9f7432091cc892677588..4bb4d756a863507cfaee26d88eabf47b
              return build;
          }
          return null;
-@@ -2275,6 +2313,9 @@ public abstract class InputHandler implements InputProcessor, GestureListener{
+@@ -2279,6 +2317,9 @@ public abstract class InputHandler implements InputProcessor, GestureListener{
  
      public boolean canShoot(){
          if(player.dead()) return false;
@@ -693,7 +693,7 @@ index db0bae58bd5f65ad7eef9f7432091cc892677588..4bb4d756a863507cfaee26d88eabf47b
          !(player.unit() instanceof Mechc && player.unit().isFlying()) && !player.unit().mining() && !commandMode;
      }
 diff --git a/core/src/mindustry/input/MobileInput.java b/core/src/mindustry/input/MobileInput.java
-index ae17589b7a6f849aeda3673665263a8073cd5d78..f34727c38d8d158f787e604299920383eab395c9 100644
+index fefd6b196f32fbef7918898ede1863732bdf05c6..72d4edb70babfe1fd574a935f2cb5fb4f0538016 100644
 --- a/core/src/mindustry/input/MobileInput.java
 +++ b/core/src/mindustry/input/MobileInput.java
 @@ -343,7 +343,7 @@ public class MobileInput extends InputHandler implements GestureListener{
@@ -717,10 +717,10 @@ index ae17589b7a6f849aeda3673665263a8073cd5d78..f34727c38d8d158f787e604299920383
          rect.grow(4f);
  
 diff --git a/core/src/mindustry/logic/LExecutor.java b/core/src/mindustry/logic/LExecutor.java
-index 54e4222daffa082fc39b23cf726c7b8912034ef0..d657933524de8e0beb361b4ccaa0e962c286ba45 100644
+index 02dd8a144ae519cf76d5dbddab390cb7444eac9d..b83dfd99b52b876a31090fb2971181fc9d2961bd 100644
 --- a/core/src/mindustry/logic/LExecutor.java
 +++ b/core/src/mindustry/logic/LExecutor.java
-@@ -33,6 +33,7 @@ import mindustry.world.blocks.logic.LogicDisplay.*;
+@@ -30,6 +30,7 @@ import mindustry.world.blocks.logic.LogicDisplay.*;
  import mindustry.world.blocks.logic.MessageBlock.*;
  import mindustry.world.blocks.payloads.*;
  import mindustry.world.meta.*;
@@ -728,7 +728,7 @@ index 54e4222daffa082fc39b23cf726c7b8912034ef0..d657933524de8e0beb361b4ccaa0e962
  
  import static mindustry.Vars.*;
  
-@@ -1926,8 +1927,14 @@ public class LExecutor{
+@@ -1757,8 +1758,14 @@ public class LExecutor{
              }
  
              switch(type){
@@ -812,7 +812,7 @@ index 1f91114f0f326727f604f214fb225abb2f4d3151..8793c8fbf8eab887cabffadf9a6c07ca
  
              if(payloadCapacity > 0 && unit instanceof Payloadc payload){
 -                bars.add(new Bar("stat.payloadcapacity", Pal.items, () -> payload.payloadUsed() / payloadCapacity));
-+                bars.add(new Bar(() -> Strings.format("装载：@/@ @",
++                bars.add(new Bar(() -> Core.bundle.format("bar.payload-detail",
 +                Strings.autoFixed(payload.payloadUsed() / tilesize / tilesize, 4),
 +                Strings.autoFixed(payloadCapacity / tilesize / tilesize, 4),
 +                StatUnit.blocksSquared.localized()), () -> Pal.items, () -> payload.payloadUsed() / payloadCapacity));
@@ -841,10 +841,10 @@ index 1f91114f0f326727f604f214fb225abb2f4d3151..8793c8fbf8eab887cabffadf9a6c07ca
 +            });
 +            table.row().table(tt -> {
 +                tt.defaults().pad(0, 8, 0, 8);
-+                tt.add("血量");
-+                tt.add("伤害");
-+                tt.add("攻速");
-+                tt.add("移速");
++                tt.add(Core.bundle.get("unit.status-summary.health"));
++                tt.add(Core.bundle.get("unit.status-summary.damage"));
++                tt.add(Core.bundle.get("unit.status-summary.reload"));
++                tt.add(Core.bundle.get("unit.status-summary.speed"));
 +                tt.row();
 +                tt.add(FormatDefault.format(unit.healthMultiplier));
 +                tt.add(FormatDefault.format(unit.damageMultiplier));
@@ -853,9 +853,9 @@ index 1f91114f0f326727f604f214fb225abb2f4d3151..8793c8fbf8eab887cabffadf9a6c07ca
 +            }).growX().row();
 +            table.row().table(tt -> {
 +                tt.defaults().pad(0, 8, 0, 8);
-+                tt.add("建速");
-+                tt.add("阻力");
-+                tt.add("装甲");
++                tt.add(Core.bundle.get("unit.status-summary.build-speed"));
++                tt.add(Core.bundle.get("unit.status-summary.drag"));
++                tt.add(Core.bundle.get("unit.status-summary.armor"));
 +                tt.row();
 +                tt.add(FormatDefault.format(unit.buildSpeedMultiplier));
 +                tt.add(FormatDefault.format(unit.dragMultiplier));
@@ -961,7 +961,7 @@ index f0d7aab18f3d197ed6864eb1ef6a0f5210fc7148..39616ef05ca1e660ca5f62860cbe4d58
  
      public static Font def, outline, icon, iconLarge, tech, logic, monospace;
 diff --git a/core/src/mindustry/ui/dialogs/ContentInfoDialog.java b/core/src/mindustry/ui/dialogs/ContentInfoDialog.java
-index 377d7e225c07464a110e760bcf1e5022f0fb88f7..495b30f1e87b58ee349b366d9ea5af026e9504e9 100644
+index bc658d7e18538b735377222d56d3c02870dfd850..7da505e26c90014896f4edac0d4fe6d2d5a87939 100644
 --- a/core/src/mindustry/ui/dialogs/ContentInfoDialog.java
 +++ b/core/src/mindustry/ui/dialogs/ContentInfoDialog.java
 @@ -10,9 +10,12 @@ import arc.util.*;
@@ -1010,8 +1010,8 @@ index 377d7e225c07464a110e760bcf1e5022f0fb88f7..495b30f1e87b58ee349b366d9ea5af02
 +                t.button(Icon.book, Styles.clearNonei, () -> Core.app.setClipboardText(content.description)).tooltip(content.description);
 +
 +            if(net.active()){
-+                t.button("♐简", Styles.cleart, () -> ShareFeature.shareContent(content, false)).width(60f);
-+                t.button("♐详", Styles.cleart, () -> ShareFeature.shareContent(content, true)).width(60f);
++                t.button(Core.bundle.get("content.share-brief"), Styles.cleart, () -> ShareFeature.shareContent(content, false)).width(60f);
++                t.button(Core.bundle.get("content.share-full"), Styles.cleart, () -> ShareFeature.shareContent(content, true)).width(60f);
 +            }
 +        }).fillX().padLeft(10);
 +
@@ -1148,8 +1148,8 @@ index 52e5181fa87c472b7da701bb8f34dfb4a05ba306..14123327a7e65f9a7050630cd584fd27
 +        check("@rules.coreDestroyClear", b -> rules.coreDestroyClear = b, () -> rules.coreDestroyClear);
 +        check("@rules.unitPayloadUpdate", b -> rules.unitPayloadUpdate = b, () -> rules.unitPayloadUpdate);
 +        check("@rules.showSpawns", b -> rules.showSpawns = b, () -> rules.showSpawns);
-+        check("允许控制单位", b -> rules.possessionAllowed = b, () -> rules.possessionAllowed);
-+        check("禁用重建", b -> rules.ghostBlocks = !b, () -> !rules.ghostBlocks);
++        check(Core.bundle.get("rules.possession-allowed"), b -> rules.possessionAllowed = b, () -> rules.possessionAllowed);
++        check(Core.bundle.get("rules.disable-rebuild"), b -> rules.ghostBlocks = !b, () -> !rules.ghostBlocks);
 +
 +        check("@rules.limitarea", b -> rules.limitMapArea = b, () -> rules.limitMapArea);
 +        numberi("x", x -> state.rules.limitX = x, () -> state.rules.limitX, () -> state.rules.limitMapArea, 0, 10000);
@@ -1179,13 +1179,13 @@ index 52e5181fa87c472b7da701bb8f34dfb4a05ba306..14123327a7e65f9a7050630cd584fd27
          if(showRuleEditRule){
              check("@rules.allowedit", b -> rules.allowEditRules = b, () -> rules.allowEditRules);
          }
-+        current.button("所有队伍开启无限火力", () -> {
++        current.button(Core.bundle.get("rules.cheat-all-on"), () -> {
 +            for(Team team : Team.all){
 +                team.rules().cheat = true;
 +            }
 +            setup();
 +        }).width(256f).height(32f).row();
-+        current.button("所有队伍关闭无限火力", () -> {
++        current.button(Core.bundle.get("rules.cheat-all-off"), () -> {
 +            for(Team team : Team.all){
 +                team.rules().cheat = false;
 +            }
@@ -1196,7 +1196,7 @@ index 52e5181fa87c472b7da701bb8f34dfb4a05ba306..14123327a7e65f9a7050630cd584fd27
          team("@rules.enemyteam", t -> rules.waveTeam = t, () -> rules.waveTeam);
  
 -        for(Team team : Team.baseTeams){
-+        current.button("更多队伍设置", Styles.flatBordert, () -> UIExt.teamSelect.select(team -> teams.contains(team), team -> {
++        current.button(Core.bundle.get("rules.more-team-settings"), Styles.flatBordert, () -> UIExt.teamSelect.select(team -> teams.contains(team), team -> {
 +            if(teams.contains(team)) teams.remove(team);
 +            else teams.add(team);
 +            setup();
@@ -1223,7 +1223,7 @@ index 52e5181fa87c472b7da701bb8f34dfb4a05ba306..14123327a7e65f9a7050630cd584fd27
              }, () -> shown[0]).left().growX().row();
          }
  
-+        check("自定义背景[lightgray](需要设置空地板)", t -> {
++        check(Core.bundle.get("rules.custom-background"), t -> {
 +            rules.planetBackground = t ? new PlanetParams(){{planet = Planets.sun;zoom=1f;camPos = new Vec3(1.2388899f, 1.6047299f, 2.4758825f);}} : null;
 +            setup();
 +        }, () -> rules.planetBackground != null);
@@ -1242,10 +1242,10 @@ index 52e5181fa87c472b7da701bb8f34dfb4a05ba306..14123327a7e65f9a7050630cd584fd27
 +                    }
 +                }
 +            }).left().fill(false).expand(false, false).row();
-+            number("放缩", f -> rules.planetBackground.zoom = f, () -> rules.planetBackground.zoom, 0.0001f, 999);
-+            number("位置x", f -> rules.planetBackground.camPos.x = f, () -> rules.planetBackground.camPos.x);
-+            number("位置y", f -> rules.planetBackground.camPos.y = f, () -> rules.planetBackground.camPos.y);
-+            number("位置z", f -> rules.planetBackground.camPos.z = f, () -> rules.planetBackground.camPos.z);
++            number(Core.bundle.get("rules.background-zoom"), f -> rules.planetBackground.zoom = f, () -> rules.planetBackground.zoom, 0.0001f, 999);
++            number(Core.bundle.get("rules.background-pos-x"), f -> rules.planetBackground.camPos.x = f, () -> rules.planetBackground.camPos.x);
++            number(Core.bundle.get("rules.background-pos-y"), f -> rules.planetBackground.camPos.y = f, () -> rules.planetBackground.camPos.y);
++            number(Core.bundle.get("rules.background-pos-z"), f -> rules.planetBackground.camPos.z = f, () -> rules.planetBackground.camPos.z);
 +        }
 +
 +
@@ -1256,7 +1256,7 @@ index 52e5181fa87c472b7da701bb8f34dfb4a05ba306..14123327a7e65f9a7050630cd584fd27
                      cons.get(team);
                  }).pad(1f).checked(b -> prov.get() == team).size(60f).tooltip(team.coloredName()).with(i -> i.getStyle().imageUpColor = team.color);
              }
-+            t.button(Icon.add, Styles.squareTogglei, 38f, () -> UIExt.teamSelect.pickOne(cons, prov.get())).pad(1f).checked(b -> !Seq.with(Team.baseTeams).contains(prov.get())).size(60f).tooltip("更多队伍选择");
++            t.button(Icon.add, Styles.squareTogglei, 38f, () -> UIExt.teamSelect.pickOne(cons, prov.get())).pad(1f).checked(b -> !Seq.with(Team.baseTeams).contains(prov.get())).size(60f).tooltip(Core.bundle.get("team.select.more"));
          }).padTop(0).row();
      }
  
@@ -1330,7 +1330,7 @@ index 206fbb42165a6bcdc3db4e12d5fc8469987aa245..29ec028133e0925ca066f6f38a274653
      }
  
 diff --git a/core/src/mindustry/ui/dialogs/PlanetDialog.java b/core/src/mindustry/ui/dialogs/PlanetDialog.java
-index d72cbae9f527e2187a524c4f9476e7cf0fc8de97..292a95b998595f5603f5f9c060b9da7a1947739c 100644
+index 9726f281e9cd34eff6053dbea7c48129d7226e42..8b3529a0b2f1874a0a7f96cf0606f23a317c96b5 100644
 --- a/core/src/mindustry/ui/dialogs/PlanetDialog.java
 +++ b/core/src/mindustry/ui/dialogs/PlanetDialog.java
 @@ -38,6 +38,7 @@ import mindustry.type.Planet.*;
@@ -1350,22 +1350,22 @@ index d72cbae9f527e2187a524c4f9476e7cf0fc8de97..292a95b998595f5603f5f9c060b9da7a
      public PlanetDialog(){
          super("", Styles.fullDialog);
  
-@@ -298,12 +301,14 @@ public class PlanetDialog extends BaseDialog implements PlanetInterfaceRenderer{
+@@ -297,12 +300,14 @@ public class PlanetDialog extends BaseDialog implements PlanetInterfaceRenderer{
          if(Core.graphics.isPortrait()){
              buttons.add(sectorTop).colspan(2).fillX().row();
              addBack();
-+            buttons.button("区块名称", Icon.bookOpen, () -> alwaysShowName = !alwaysShowName).size(100f, 54f).pad(2).bottom();
++            buttons.button(Core.bundle.get("sector.show-name"), Icon.bookOpen, () -> alwaysShowName = !alwaysShowName).size(100f, 54f).pad(2).bottom();
              addTech();
          }else{
              addBack();
              buttons.add().growX();
              buttons.add(sectorTop).minWidth(230f);
              buttons.add().growX();
-+            buttons.button("区块名称", Icon.bookOpen, () -> alwaysShowName = !alwaysShowName).size(100f, 54f).pad(2).bottom();
++            buttons.button(Core.bundle.get("sector.show-name"), Icon.bookOpen, () -> alwaysShowName = !alwaysShowName).size(100f, 54f).pad(2).bottom();
              addTech();
          }
      }
-@@ -567,6 +572,11 @@ public class PlanetDialog extends BaseDialog implements PlanetInterfaceRenderer{
+@@ -566,6 +571,11 @@ public class PlanetDialog extends BaseDialog implements PlanetInterfaceRenderer{
                          Draw.rect(icon, 0, 0, iw, iw * icon.height / icon.width);
                      });
                  }
@@ -1377,7 +1377,7 @@ index d72cbae9f527e2187a524c4f9476e7cf0fc8de97..292a95b998595f5603f5f9c060b9da7a
              }
  
              if(debugShowNumbers && (sec.hasEnemyBase() || sec.preset != null)){
-@@ -776,7 +786,7 @@ public class PlanetDialog extends BaseDialog implements PlanetInterfaceRenderer{
+@@ -775,7 +785,7 @@ public class PlanetDialog extends BaseDialog implements PlanetInterfaceRenderer{
  
              //sector notifications & search
              c.top().right();
@@ -1386,7 +1386,7 @@ index d72cbae9f527e2187a524c4f9476e7cf0fc8de97..292a95b998595f5603f5f9c060b9da7a
  
              c.button(bundle.get("sectorlist") +
              (attacked == 0 ? "" : "\n[red]⚠[lightgray] " + bundle.format("sectorlist.attacked", "[red]" + attacked + "[]")),
-@@ -820,7 +830,7 @@ public class PlanetDialog extends BaseDialog implements PlanetInterfaceRenderer{
+@@ -819,7 +829,7 @@ public class PlanetDialog extends BaseDialog implements PlanetInterfaceRenderer{
  
              readd[0] = () -> {
                  con.clearChildren();
@@ -1395,7 +1395,7 @@ index d72cbae9f527e2187a524c4f9476e7cf0fc8de97..292a95b998595f5603f5f9c060b9da7a
                      if(sec.hasBase() && (searchText.isEmpty() || sec.name().toLowerCase().contains(searchText.toLowerCase()))){
                          con.button(t -> {
                              t.marginRight(10f);
-@@ -841,6 +851,19 @@ public class PlanetDialog extends BaseDialog implements PlanetInterfaceRenderer{
+@@ -840,6 +850,19 @@ public class PlanetDialog extends BaseDialog implements PlanetInterfaceRenderer{
                                  String ic = sec.iconChar() == null ? "" : sec.iconChar() + " ";
  
                                  head.add(ic + sec.name()).growX().wrap();
@@ -1454,8 +1454,8 @@ index fef8e21d771ccfd81cbc65a0bc62642ebf721952..f855efcd27a47e8ac5a0ac3dffc8a3c8
          addCloseButton();
          buttons.button("@schematic.import", Icon.download, this::showImport);
 +        if (mobile) buttons.row();
-+        buttons.button("蓝图档案馆", Icon.link, () -> UIExt.openURI("https://docs.qq.com/sheet/DVHNoS3lIcm1NbFFS"));
-+        buttons.button("图片转换器" + Blocks.canvas.emoji() + Blocks.logicDisplay.emoji() + Blocks.sorter.emoji(), Icon.image, PicToMindustry::show);
++        buttons.button(Core.bundle.get("schematics.archive"), Icon.link, () -> UIExt.openURI("https://docs.qq.com/sheet/DVHNoS3lIcm1NbFFS"));
++        buttons.button(Core.bundle.format("schematics.image-converter-button", Blocks.canvas.emoji(), Blocks.logicDisplay.emoji(), Blocks.sorter.emoji()), Icon.image, PicToMindustry::show);
          makeButtonOverlay();
          shown(this::setup);
          onResize(this::setup);
@@ -1465,7 +1465,7 @@ index fef8e21d771ccfd81cbc65a0bc62642ebf721952..f855efcd27a47e8ac5a0ac3dffc8a3c8
  
 +        cont.row().table(in -> {
 +            in.left();
-+            in.add("科技树：").padRight(4);
++            in.add(Core.bundle.get("schematics.tech-tree")).padRight(4);
 +            for(var tag : content.planets().select(it -> it.alwaysUnlocked)){
 +                in.button(tag.localizedName, Styles.togglet, () -> {
 +                    if(selectedPlanet == tag) selectedPlanet = null;
@@ -1474,17 +1474,17 @@ index fef8e21d771ccfd81cbc65a0bc62642ebf721952..f855efcd27a47e8ac5a0ac3dffc8a3c8
 +                }).checked((t) -> selectedPlanet == tag).get().getLabel().setWrap(false);
 +            }
 +
-+            in.add("辅助筛选：").padLeft(20f).padRight(4);
++            in.add(Core.bundle.get("schematics.extra-filter")).padLeft(20f).padRight(4);
 +            in.button(Items.copper.emoji(), Styles.togglet, () -> {
 +                Core.settings.put("arcSchematicCanBuild", !Core.settings.getBool("arcSchematicCanBuild"));
 +                rebuildPane.run();
-+            }).size(tagh).pad(2).tooltip("可建造(核心有此类资源+地图未禁用)").checked(t -> Core.settings.getBool("arcSchematicCanBuild"));
-+            in.add("蓝图包含：").padLeft(20f).padRight(4);
++            }).size(tagh).pad(2).tooltip(Core.bundle.get("schematics.buildable")).checked(t -> Core.settings.getBool("arcSchematicCanBuild"));
++            in.add(Core.bundle.get("schematics.contains")).padLeft(20f).padRight(4);
 +            in.button(control.input.block == null ? "[red]\uE815" : control.input.block.emoji(), Styles.togglet, () -> {
 +                if(control.input.block == null) return;
 +                mindustryX.VarsX.autoSelectSchematic.toggle();
 +                rebuildPane.run();
-+            }).size(tagh).pad(2).tooltip("蓝图需包含此建筑").checked(t -> control.input.block != null && mindustryX.VarsX.autoSelectSchematic.get());
++            }).size(tagh).pad(2).tooltip(Core.bundle.get("schematics.must-contain-block")).checked(t -> control.input.block != null && mindustryX.VarsX.autoSelectSchematic.get());
 +        }).height(tagh).fillX();
 +
          cont.row();
@@ -1507,7 +1507,7 @@ index fef8e21d771ccfd81cbc65a0bc62642ebf721952..f855efcd27a47e8ac5a0ac3dffc8a3c8
          }).grow().scrollX(false);
 +
 +        if(mindustryX.VarsX.autoSelectSchematic.get() && control.input.block!=null){
-+            String text = "[orange]蓝图筛选模式[white]:蓝图必须包含 "+control.input.block.emoji();
++            String text = Core.bundle.format("schematics.filter-mode", control.input.block.emoji());
 +            UIExt.announce(text, 5f);
 +        }
      }
@@ -1518,11 +1518,11 @@ index fef8e21d771ccfd81cbc65a0bc62642ebf721952..f855efcd27a47e8ac5a0ac3dffc8a3c8
                      dialog.hide();
                      platform.export(s.name(), schematicExtension, file -> Schematics.write(s, file));
 +                }).marginLeft(12f).row();
-+                t.button("聊天分享蓝图", Icon.chat, style, () -> {
++                t.button(Core.bundle.get("schematics.share-chat"), Icon.chat, style, () -> {
 +                    dialog.hide();
 +                    ShareFeature.shareSchematic(s);
 +                }).marginLeft(12f).row();
-+                t.button("复制到剪切板(高级版，含介绍)", Icon.star, style, () -> {
++                t.button(Core.bundle.get("schematics.copy-clipboard-advanced"), Icon.star, style, () -> {
 +                    dialog.hide();
 +                    ShareFeature.shareSchematicClipboard(s);
                  }).marginLeft(12f);
@@ -1536,7 +1536,7 @@ index fef8e21d771ccfd81cbc65a0bc62642ebf721952..f855efcd27a47e8ac5a0ac3dffc8a3c8
 +        try{
 +            Schematic s = Schematics.readBase64(base64);
 +            s.removeSteamID();
-+            s.tags.put("name", sender == null ? "来自服务器的蓝图" : "来自" + sender.plainName() + "的蓝图");
++            s.tags.put("name", sender == null ? Core.bundle.get("schematics.from-server") : Core.bundle.format("schematics.from-player", sender.plainName()));
 +            fromShare = true;
 +            SchematicsDialog.this.showInfo(s);
 +        }catch(Throwable e){
@@ -1562,7 +1562,7 @@ index fef8e21d771ccfd81cbc65a0bc62642ebf721952..f855efcd27a47e8ac5a0ac3dffc8a3c8
 +                p.row();
 +                p.table(t -> {
 +                    t.left().defaults().fillX().height(tagh).pad(2);
-+                    t.button("自动标签", Icon.add, () -> arcAutoTags(rebuild[0])).wrapLabel(false).get().getLabelCell().padLeft(5);
++                    t.button(Core.bundle.get("schematics.auto-tags"), Icon.add, () -> arcAutoTags(rebuild[0])).wrapLabel(false).get().getLabelCell().padLeft(5);
 +                });
  
              };
@@ -1719,10 +1719,10 @@ index fef8e21d771ccfd81cbc65a0bc62642ebf721952..f855efcd27a47e8ac5a0ac3dffc8a3c8
          }
      }
 diff --git a/core/src/mindustry/ui/dialogs/SettingsMenuDialog.java b/core/src/mindustry/ui/dialogs/SettingsMenuDialog.java
-index 5b5a51d2fc9f79a14a1819d84ccb5a5a0d1ea9b5..d54c5480d0476a2a2b61f3a1521a0c5af8b9460e 100644
+index a739399151758484415525262893e254ed80614e..3532cd00aadc248b6d018a5623db48dd671c39f7 100644
 --- a/core/src/mindustry/ui/dialogs/SettingsMenuDialog.java
 +++ b/core/src/mindustry/ui/dialogs/SettingsMenuDialog.java
-@@ -314,8 +314,8 @@ public class SettingsMenuDialog extends BaseDialog{
+@@ -309,8 +309,8 @@ public class SettingsMenuDialog extends BaseDialog{
  
          game.sliderPref("saveinterval", 60, 10, 5 * 120, 10, i -> Core.bundle.format("setting.seconds", i));
  
@@ -1733,8 +1733,8 @@ index 5b5a51d2fc9f79a14a1819d84ccb5a5a0d1ea9b5..d54c5480d0476a2a2b61f3a1521a0c5a
                  control.setInput(val ? new DesktopInput() : new MobileInput());
                  input.setUseKeyboard(val);
 @@ -348,11 +348,9 @@ public class SettingsMenuDialog extends BaseDialog{
-         game.checkPref("conveyorpathfinding", true);
          game.checkPref("hints", true);
+         game.checkPref("logichints", true);
  
 -        if(!mobile){
 -            game.checkPref("backgroundpause", true);
@@ -1747,16 +1747,20 @@ index 5b5a51d2fc9f79a14a1819d84ccb5a5a0d1ea9b5..d54c5480d0476a2a2b61f3a1521a0c5a
  
          game.checkPref("doubletapmine", false);
          game.checkPref("commandmodehold", true);
-@@ -376,6 +374,8 @@ public class SettingsMenuDialog extends BaseDialog{
+@@ -374,9 +372,9 @@ public class SettingsMenuDialog extends BaseDialog{
+             }
+         }
  
-         game.checkPref("console", false);
- 
-+        graphics.addCategory("arcCOverview");
+-        if(!mobile){
+-            game.checkPref("console", false);
+-        }
++        game.checkPref("console", false);
 +
++        graphics.addCategory("arcCOverview");
+ 
          graphics.sliderPref("uiEdgePadding", 0, 0, 100, s -> s + "px", s -> {
              if(ui != null){
-                 ui.updateMargins();
-@@ -462,6 +462,8 @@ public class SettingsMenuDialog extends BaseDialog{
+@@ -489,6 +487,8 @@ public class SettingsMenuDialog extends BaseDialog{
          graphics.checkPref("destroyedblocks", true);
          graphics.checkPref("blockstatus", false);
          graphics.checkPref("playerchat", true);
@@ -1765,7 +1769,7 @@ index 5b5a51d2fc9f79a14a1819d84ccb5a5a0d1ea9b5..d54c5480d0476a2a2b61f3a1521a0c5a
          if(!mobile){
              graphics.checkPref("coreitems", true);
          }
-@@ -471,14 +473,14 @@ public class SettingsMenuDialog extends BaseDialog{
+@@ -498,14 +498,14 @@ public class SettingsMenuDialog extends BaseDialog{
              graphics.checkPref("detach-camera", false);
          }
          graphics.checkPref("position", false);
@@ -1811,18 +1815,18 @@ index cb241dd067e90851ca290d1035600eb557a52303..a81b52f191507b7cfac50864ad097b42
      }
  
 diff --git a/core/src/mindustry/ui/fragments/ConsoleFragment.java b/core/src/mindustry/ui/fragments/ConsoleFragment.java
-index 07e24fe2b60d559ea88bbe7360ce61bf36f56537..c52f8a953d4f492c0de38ea6f2a2fc9cf8d84774 100644
+index 3542163354070ac67c49b82dff6c72b374d4ca7d..6d2b1fbf2840eee89ab7bfcb37990e83073bf083 100644
 --- a/core/src/mindustry/ui/fragments/ConsoleFragment.java
 +++ b/core/src/mindustry/ui/fragments/ConsoleFragment.java
-@@ -16,6 +16,7 @@ import mindustry.game.EventType.*;
- import mindustry.gen.*;
+@@ -15,6 +15,7 @@ import arc.util.*;
+ import mindustry.game.EventType.*;
  import mindustry.input.*;
  import mindustry.ui.*;
 +import mindustryX.features.ui.*;
  
  import static arc.Core.*;
  import static mindustry.Vars.*;
-@@ -195,6 +196,7 @@ public class ConsoleFragment extends Table{
+@@ -163,6 +164,7 @@ public class ConsoleFragment extends Table{
          clearChatInput();
  
          if(message.replace(" ", "").isEmpty()) return;
@@ -1831,7 +1835,7 @@ index 07e24fe2b60d559ea88bbe7360ce61bf36f56537..c52f8a953d4f492c0de38ea6f2a2fc9c
          //special case for 'clear' command
          if(message.equals("clear")){
 diff --git a/core/src/mindustry/ui/fragments/HudFragment.java b/core/src/mindustry/ui/fragments/HudFragment.java
-index e070b6fc415f37791c4167ee2b0626d60a21c45e..b0ceb630095e87b9bf2bb428e745f4f9ac0f9976 100644
+index 34a9d830b30f4544ac438dfd6ac790f8c79b2e01..b98445b7923002ef0f4fe9edd4304fad986df4d0 100644
 --- a/core/src/mindustry/ui/fragments/HudFragment.java
 +++ b/core/src/mindustry/ui/fragments/HudFragment.java
 @@ -30,10 +30,12 @@ import mindustry.net.Packets.*;
@@ -1847,7 +1851,7 @@ index e070b6fc415f37791c4167ee2b0626d60a21c45e..b0ceb630095e87b9bf2bb428e745f4f9
  
  import static mindustry.Vars.*;
  import static mindustry.gen.Tex.*;
-@@ -491,6 +493,10 @@ public class HudFragment{
+@@ -478,6 +480,10 @@ public class HudFragment{
              wavesMain.top().left().name = "waves";
  
              wavesMain.table(s -> {
@@ -1858,16 +1862,16 @@ index e070b6fc415f37791c4167ee2b0626d60a21c45e..b0ceb630095e87b9bf2bb428e745f4f9
                  //wave info button with text
                  s.add(makeStatusTable()).grow().name("status");
  
-@@ -530,7 +536,7 @@ public class HudFragment{
+@@ -518,7 +524,7 @@ public class HudFragment{
                          button.getStyle().imageUpColor = team.color;
                          button.update(() -> button.setChecked(player.team() == team));
                      }
 -
-+                    teams.button("更多", () -> UIExt.teamSelect.pickOne(team -> Call.setPlayerTeamEditor(player, team), player.team())).center().row();
++                    teams.button(Core.bundle.get("teams.more"), () -> UIExt.teamSelect.pickOne(team -> Call.setPlayerTeamEditor(player, team), player.team())).center().row();
                      teams.button(Icon.downOpen, Styles.emptyi, () -> Core.settings.put("editor-blocks-shown", !Core.settings.getBool("editor-blocks-shown")))
                      .size(45f).update(m -> m.getStyle().imageUp = (Core.settings.getBool("editor-blocks-shown") ? Icon.upOpen : Icon.downOpen));
                  }).top().left().row();
-@@ -1157,6 +1163,164 @@ public class HudFragment{
+@@ -1141,6 +1147,164 @@ public class HudFragment{
          return table;
      }
  
@@ -1949,7 +1953,7 @@ index e070b6fc415f37791c4167ee2b0626d60a21c45e..b0ceb630095e87b9bf2bb428e745f4f9
 +                    if(!state.rules.waves){
 +                        if(state.rules.attackMode){
 +                            int sum = Math.max(state.teams.present.sum(t -> t.team != player.team() ? t.cores.size : 0), 1);
-+                            return "敌人核心：[orange]" + sum;
++                            return Core.bundle.format("hud.enemy-cores", sum);
 +                        }
 +
 +                        if(state.isCampaign()){
@@ -1961,7 +1965,7 @@ index e070b6fc415f37791c4167ee2b0626d60a21c45e..b0ceb630095e87b9bf2bb428e745f4f9
 +                    if(state.wave <= state.rules.winWave){
 +                        return "[orange]" + state.wave + "[white]/[yellow]" + state.rules.winWave;
 +                    }else{
-+                        return "波次：[orange]" + state.wave;
++                        return Core.bundle.format("hud.wave-current", state.wave);
 +                    }
 +                },
 +                () -> Color.valueOf("ccffcc"),
@@ -2032,7 +2036,7 @@ index e070b6fc415f37791c4167ee2b0626d60a21c45e..b0ceb630095e87b9bf2bb428e745f4f9
      private void addInfoTable(Table table){
          table.name = "infotable";
          table.left();
-@@ -1206,7 +1370,7 @@ public class HudFragment{
+@@ -1190,7 +1354,7 @@ public class HudFragment{
      }
  
      private boolean canSkipWave(){
@@ -2042,7 +2046,7 @@ index e070b6fc415f37791c4167ee2b0626d60a21c45e..b0ceb630095e87b9bf2bb428e745f4f9
  
  }
 diff --git a/core/src/mindustry/ui/fragments/MenuFragment.java b/core/src/mindustry/ui/fragments/MenuFragment.java
-index 5509cfb471cd5297a5e5d213b894ab9f85db40c1..8dabb1815bd43f1fa88444b6aa3acf9f31978b1a 100644
+index 90c843267ba9c3c59413a658c9777198296514f5..ef94d7797a159263ea5da2f2d1e445a8287cb959 100644
 --- a/core/src/mindustry/ui/fragments/MenuFragment.java
 +++ b/core/src/mindustry/ui/fragments/MenuFragment.java
 @@ -45,7 +45,15 @@ public class MenuFragment{
@@ -2062,8 +2066,8 @@ index 5509cfb471cd5297a5e5d213b894ab9f85db40c1..8dabb1815bd43f1fa88444b6aa3acf9f
  
          parent.fill(c -> {
              c.pane(Styles.noBarPane, cont -> {
-@@ -102,6 +110,11 @@ public class MenuFragment{
-             });
+@@ -97,6 +105,11 @@ public class MenuFragment{
+             }}, ui.about::show).size(84, 45).name("info"));
          }
  
 +        parent.fill(c -> c.bottom().left().table(t -> {
@@ -2074,7 +2078,7 @@ index 5509cfb471cd5297a5e5d213b894ab9f85db40c1..8dabb1815bd43f1fa88444b6aa3acf9f
          String versionText = ((Version.build == -1) ? "[#fc8140aa]" : "[#ffffffba]") + Version.combined();
          parent.fill((x, y, w, h) -> {
              TextureRegion logo = Core.atlas.find("logo");
-@@ -144,7 +157,7 @@ public class MenuFragment{
+@@ -139,7 +152,7 @@ public class MenuFragment{
              tools = new MobileButton(Icon.settings, "@settings", ui.settings::show),
              mods = new MobileButton(Icon.book, "@mods", ui.mods::show),
              exit = new MobileButton(Icon.exit, "@quit", () -> Core.app.exit()),
@@ -2083,7 +2087,7 @@ index 5509cfb471cd5297a5e5d213b894ab9f85db40c1..8dabb1815bd43f1fa88444b6aa3acf9f
  
          Seq<MobileButton> customs = customButtons.map(b -> new MobileButton(b.icon, b.text, b.runnable == null ? () -> {} : b.runnable));
  
-@@ -163,11 +176,12 @@ public class MenuFragment{
+@@ -158,11 +171,12 @@ public class MenuFragment{
              container.add(editor);
              container.add(tools);
              container.add(mods);
@@ -2097,7 +2101,7 @@ index 5509cfb471cd5297a5e5d213b894ab9f85db40c1..8dabb1815bd43f1fa88444b6aa3acf9f
          }else{
              container.marginTop(0f);
              container.add(play);
-@@ -180,12 +194,14 @@ public class MenuFragment{
+@@ -175,12 +189,14 @@ public class MenuFragment{
              container.add(tools);
              container.row();
              container.add(mods);
@@ -2114,7 +2118,7 @@ index 5509cfb471cd5297a5e5d213b894ab9f85db40c1..8dabb1815bd43f1fa88444b6aa3acf9f
      }
  
 diff --git a/core/src/mindustry/ui/fragments/PlacementFragment.java b/core/src/mindustry/ui/fragments/PlacementFragment.java
-index 0ba08a4cd621a0081db6487527a98cbab785de4d..2ab03f018baacd73e4ef3011e7353547e33b9e4a 100644
+index 0e70bc703f77e282296a226b39ed73236fd5d694..9ad989b1f5ad672a411122bceeb54b9eee27a759 100644
 --- a/core/src/mindustry/ui/fragments/PlacementFragment.java
 +++ b/core/src/mindustry/ui/fragments/PlacementFragment.java
 @@ -1,6 +1,7 @@
@@ -2168,7 +2172,7 @@ index 0ba08a4cd621a0081db6487527a98cbab785de4d..2ab03f018baacd73e4ef3011e7353547
                  rebuild();
              }
          });
-@@ -281,6 +283,8 @@ public class PlacementFragment{
+@@ -280,6 +282,8 @@ public class PlacementFragment{
      }
  
      public void build(Group parent){
@@ -2177,7 +2181,7 @@ index 0ba08a4cd621a0081db6487527a98cbab785de4d..2ab03f018baacd73e4ef3011e7353547
          parent.fill(full -> {
              toggler = full;
              full.bottom().right().visible(() -> ui.hudfrag.shown);
-@@ -357,19 +361,22 @@ public class PlacementFragment{
+@@ -356,19 +360,22 @@ public class PlacementFragment{
  
                          //find current hovered thing
                          Displayable hovered = hover;
@@ -2201,7 +2205,7 @@ index 0ba08a4cd621a0081db6487527a98cbab785de4d..2ab03f018baacd73e4ef3011e7353547
                          lastTeam = player.team();
  
                          //show details of selected block, with costs
-@@ -438,6 +445,30 @@ public class PlacementFragment{
+@@ -437,6 +444,30 @@ public class PlacementFragment{
                          }else if(hovered != null){
                              //show hovered item, whatever that may be
                              hovered.display(topTable);
@@ -2232,7 +2236,7 @@ index 0ba08a4cd621a0081db6487527a98cbab785de4d..2ab03f018baacd73e4ef3011e7353547
                          }
                      });
                  }).colspan(3).fillX().visible(this::hasInfoBox).touchable(Touchable.enabled).row();
-@@ -499,6 +530,8 @@ public class PlacementFragment{
+@@ -498,6 +529,8 @@ public class PlacementFragment{
  
                          rebuildCommand = () -> {
                              u.clearChildren();
@@ -2241,7 +2245,7 @@ index 0ba08a4cd621a0081db6487527a98cbab785de4d..2ab03f018baacd73e4ef3011e7353547
                              var units = control.input.selectedUnits;
                              if(units.size > 0){
                                  usedCommands.clear();
-@@ -582,7 +615,7 @@ public class PlacementFragment{
+@@ -581,7 +614,7 @@ public class PlacementFragment{
                                                  Call.setUnitCommand(player, units.mapInt(un -> un.id, un -> un.type.allowCommand(un, command)).toArray(), command);
                                              }).checked(i -> activeCommands.get(command.id)).size(50f).tooltip(command.localized(), true);
  
@@ -2250,7 +2254,7 @@ index 0ba08a4cd621a0081db6487527a98cbab785de4d..2ab03f018baacd73e4ef3011e7353547
                                          }
  
                                      }).fillX().padTop(4f).left();
-@@ -605,13 +638,67 @@ public class PlacementFragment{
+@@ -604,13 +637,67 @@ public class PlacementFragment{
                                                  Call.setUnitStance(player, units.mapInt(un -> un.id, un -> un.type.allowStance(un, stance)).toArray(), stance, !activeStances.get(stance.id));
                                              }).checked(i -> activeStances.get(stance.id)).size(50f).tooltip(stance.localized(), true);
  
@@ -2265,16 +2269,16 @@ index 0ba08a4cd621a0081db6487527a98cbab785de4d..2ab03f018baacd73e4ef3011e7353547
 +                                        float wound = (float) Core.settings.getInt("rtsWoundUnit") / 100f;
 +                                        if (units.contains(unit -> unit.health >= unit.maxHealth * wound) && units.contains(unit -> unit.health < unit.maxHealth * wound)){
 +                                            sp.table(spp->{
-+                                                arcSelectUnits(spp,"[green]\uE813","高血量单位", unit -> unit.health >= unit.maxHealth * wound);
-+                                                arcSelectUnits(spp,"[red]\uE80F","低血量单位", unit -> unit.health < unit.maxHealth * wound);
++                                                arcSelectUnits(spp,"[green]\uE813", Core.bundle.get("rts.units.high-health"), unit -> unit.health >= unit.maxHealth * wound);
++                                                arcSelectUnits(spp,"[red]\uE80F", Core.bundle.get("rts.units.low-health"), unit -> unit.health < unit.maxHealth * wound);
 +                                            });
 +                                        }
 +
 +                                        int assistCount = units.count(unit -> unit.type.commands.contains(UnitCommand.assistCommand));
 +                                        if(assistCount > 0 && assistCount != units.size){
 +                                            sp.table(spp -> {
-+                                                arcSelectUnits(spp, "\uE86E", "进攻性单位", unit -> !unit.type.commands.contains(UnitCommand.assistCommand));
-+                                                arcSelectUnits(spp, "\uE86B", "辅助性单位", unit -> unit.type.commands.contains(UnitCommand.assistCommand));
++                                                arcSelectUnits(spp, "\uE86E", Core.bundle.get("rts.units.offensive"), unit -> !unit.type.commands.contains(UnitCommand.assistCommand));
++                                                arcSelectUnits(spp, "\uE86B", Core.bundle.get("rts.units.support"), unit -> unit.type.commands.contains(UnitCommand.assistCommand));
 +                                            });
 +                                        }
 +
@@ -2283,9 +2287,9 @@ index 0ba08a4cd621a0081db6487527a98cbab785de4d..2ab03f018baacd73e4ef3011e7353547
 +                                        hasNaval = units.contains(unit -> unit.type.naval);
 +                                        if((hasFlyer ? 1 : 0) + (hasLand ? 1 : 0) + (hasNaval ? 1 : 0) >= 2){
 +                                            sp.table(spp -> {
-+                                                if(hasFlyer) arcSelectUnits(spp, UnitTypes.flare.emoji(), "飞行单位", Unitc::isFlying);
-+                                                if(hasLand) arcSelectUnits(spp, UnitTypes.crawler.emoji(), "陆军单位", unit -> !unit.isFlying() && !unit.type.naval);
-+                                                if(hasNaval) arcSelectUnits(spp, UnitTypes.retusa.emoji(), "海军单位", unit -> unit.type.naval);
++                                                if(hasFlyer) arcSelectUnits(spp, UnitTypes.flare.emoji(), Core.bundle.get("rts.units.flying"), Unitc::isFlying);
++                                                if(hasLand) arcSelectUnits(spp, UnitTypes.crawler.emoji(), Core.bundle.get("rts.units.ground"), unit -> !unit.isFlying() && !unit.type.naval);
++                                                if(hasNaval) arcSelectUnits(spp, UnitTypes.retusa.emoji(), Core.bundle.get("rts.units.naval"), unit -> unit.type.naval);
 +                                            });
                                          }
                                      }).fillX().padTop(4f).left();
@@ -2319,7 +2323,7 @@ index 0ba08a4cd621a0081db6487527a98cbab785de4d..2ab03f018baacd73e4ef3011e7353547
                          };
  
                          u.update(() -> {
-@@ -676,7 +763,7 @@ public class PlacementFragment{
+@@ -675,7 +762,7 @@ public class PlacementFragment{
                  {
                      blockCatTable.table(Tex.pane2, blocksSelect -> {
                          blocksSelect.margin(4).marginTop(0);
@@ -2328,7 +2332,7 @@ index 0ba08a4cd621a0081db6487527a98cbab785de4d..2ab03f018baacd73e4ef3011e7353547
                              if(pane.hasScroll()){
                                  Element result = Core.scene.getHoverElement();
                                  if(result == null || !result.isDescendantOf(pane)){
-@@ -714,6 +801,17 @@ public class PlacementFragment{
+@@ -713,6 +800,17 @@ public class PlacementFragment{
                          boolean needsAssign = categoryEmpty[currentCategory.ordinal()];
  
                          int f = 0;
@@ -2346,7 +2350,7 @@ index 0ba08a4cd621a0081db6487527a98cbab785de4d..2ab03f018baacd73e4ef3011e7353547
                          for(Category cat : getCategories()){
                              if(f++ % 2 == 0) categories.row();
  
-@@ -772,8 +870,9 @@ public class PlacementFragment{
+@@ -771,8 +869,9 @@ public class PlacementFragment{
      }
  
      boolean hasInfoBox(){
@@ -2357,7 +2361,7 @@ index 0ba08a4cd621a0081db6487527a98cbab785de4d..2ab03f018baacd73e4ef3011e7353547
      }
  
      /** @return the thing being hovered over. */
-@@ -781,25 +880,40 @@ public class PlacementFragment{
+@@ -780,25 +879,40 @@ public class PlacementFragment{
          //MDTX: fix flashing. Don't clear hover if the mouse just on topTable.
          if(Core.scene.hasMouse(Core.input.mouseX(), Core.input.mouseY()) && !topTable.hasMouse()) return null;
  
@@ -2398,13 +2402,13 @@ index 0ba08a4cd621a0081db6487527a98cbab785de4d..2ab03f018baacd73e4ef3011e7353547
 +            b.clicked(KeyCode.mouseLeft, () -> {
 +                control.input.selectedUnits = control.input.selectedUnits.select(cons);
 +                Events.fire(Trigger.unitCommandChange);
-+                UIExt.announce("RTS控制器：选择" + info + "！");
++                UIExt.announce(Core.bundle.format("rts.select", info));
 +            });
 +            //right click -> remove
 +            b.clicked(KeyCode.mouseRight, () -> {
 +                control.input.selectedUnits.removeAll(cons);
 +                Events.fire(Trigger.unitCommandChange);
-+                UIExt.announce("RTS控制器：移除" + info + "！");
++                UIExt.announce(Core.bundle.format("rts.remove", info));
 +            });
 +
 +            b.addListener(listener);
@@ -2491,7 +2495,7 @@ index 58d82ae32d4a37b4e2bea1559c854b775048350f..b0e3d09b0a8bea3bd0b32e958a05c5bc
  
 +            button.button(Icon.copySmall, ustyle, () -> {
 +                Core.app.setClipboardText(user.name);
-+                UIExt.announce("已复制昵称：" + user.name);
++                UIExt.announce(Core.bundle.format("player.copied-nickname", user.name));
 +            }).size(iconMed);
 +            button.button(Icon.linkSmall, ustyle, () -> ShareFeature.at(user.name)).size(iconMed);
 +

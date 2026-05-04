@@ -38,7 +38,7 @@ MinRi2 <2275045670@qq.com> on 2025/5/3
  6 files changed, 149 insertions(+), 17 deletions(-)
 
 diff --git a/core/src/mindustry/logic/LCanvas.java b/core/src/mindustry/logic/LCanvas.java
-index 56f52b1bb9aecab2ecbedf672bc8431dc3a9de41..14b5488c33562503bc981c903a6da70d70a78ba0 100644
+index b4ad9b3237f35d6783bc85daa8a86b820bc20ecd..599f907dc69bac24e7e5de16f5e6b18891c0261b 100644
 --- a/core/src/mindustry/logic/LCanvas.java
 +++ b/core/src/mindustry/logic/LCanvas.java
 @@ -18,6 +18,9 @@ import mindustry.gen.*;
@@ -60,7 +60,7 @@ index 56f52b1bb9aecab2ecbedf672bc8431dc3a9de41..14b5488c33562503bc981c903a6da70d
      }
  
      public static void tooltip(Cell<?> cell, String key){
-@@ -443,11 +446,13 @@ public class LCanvas extends Table{
+@@ -444,11 +447,13 @@ public class LCanvas extends Table{
                  t.button(Icon.copy, Styles.logici, () -> {
                  }).size(24f).padRight(6).disabled(i -> canvas.statements.getChildren().size >= LExecutor.maxInstructions).get().tapped(this::copy);
  
@@ -75,7 +75,7 @@ index 56f52b1bb9aecab2ecbedf672bc8431dc3a9de41..14b5488c33562503bc981c903a6da70d
  
                  t.addListener(new InputListener(){
                      float lastx, lasty;
-@@ -528,6 +533,45 @@ public class LCanvas extends Table{
+@@ -529,6 +534,45 @@ public class LCanvas extends Table{
              }
          }
  
@@ -88,7 +88,7 @@ index 56f52b1bb9aecab2ecbedf672bc8431dc3a9de41..14b5488c33562503bc981c903a6da70d
 +                Seq<LStatement> lsStatement = LAssembler.read(code, privileged);
 +                LStatement stNew = lsStatement.first();
 +                if(stNew instanceof InvalidStatement){
-+                    UIExt.announce("[orange]警告：转换失败，请输入正确格式");
++                    UIExt.announce(Core.bundle.get("logic.comment-convert-failed"));
 +                    return;
 +                }
 +                newElem = new StatementElem(stNew);
@@ -122,10 +122,10 @@ index 56f52b1bb9aecab2ecbedf672bc8431dc3a9de41..14b5488c33562503bc981c903a6da70d
          public void draw(){
              float pad = 5f;
 diff --git a/core/src/mindustry/logic/LExecutor.java b/core/src/mindustry/logic/LExecutor.java
-index 794c0ca3675b23b1e00c06671aeabbfc61cce2f2..54e4222daffa082fc39b23cf726c7b8912034ef0 100644
+index 254ec97e33d3933f51fc4d49105b70395a057865..02dd8a144ae519cf76d5dbddab390cb7444eac9d 100644
 --- a/core/src/mindustry/logic/LExecutor.java
 +++ b/core/src/mindustry/logic/LExecutor.java
-@@ -47,6 +47,9 @@ public class LExecutor{
+@@ -44,6 +44,9 @@ public class LExecutor{
      public LInstruction[] instructions = {};
      /** Non-constant variables used for network sync */
      public LVar[] vars = {};
@@ -133,9 +133,9 @@ index 794c0ca3675b23b1e00c06671aeabbfc61cce2f2..54e4222daffa082fc39b23cf726c7b89
 +    @mindustryX.MindustryXApi
 +    public LVar[] allVars = {};
  
-     public LVar counter, unit, thisv, ipt, queryResult;
+     public LVar counter, unit, thisv, ipt;
  
-@@ -123,6 +126,7 @@ public class LExecutor{
+@@ -120,6 +123,7 @@ public class LExecutor{
      public void load(LAssembler builder){
          nameMap = null;
          vars = builder.vars.values().toSeq().retainAll(var -> !var.constant).toArray(LVar.class);
@@ -143,7 +143,7 @@ index 794c0ca3675b23b1e00c06671aeabbfc61cce2f2..54e4222daffa082fc39b23cf726c7b89
          for(int i = 0; i < vars.length; i++){
              vars[i].id = i;
          }
-@@ -570,6 +574,7 @@ public class LExecutor{
+@@ -566,6 +570,7 @@ public class LExecutor{
          public void run(LExecutor exec){
              Object obj = target.obj();
              if(obj instanceof Building b && (exec.privileged || (exec.build != null && exec.build.validLink(b)))){
@@ -151,7 +151,7 @@ index 794c0ca3675b23b1e00c06671aeabbfc61cce2f2..54e4222daffa082fc39b23cf726c7b89
  
                  if(type == LAccess.enabled){
                      if(p1.bool()){
-@@ -1319,7 +1324,7 @@ public class LExecutor{
+@@ -1302,7 +1307,7 @@ public class LExecutor{
          @Override
          public void run(LExecutor exec){
              if(headless) return;
@@ -161,7 +161,7 @@ index 794c0ca3675b23b1e00c06671aeabbfc61cce2f2..54e4222daffa082fc39b23cf726c7b89
                  case pan -> {
                      control.input.logicCutscene = true;
 diff --git a/core/src/mindustry/logic/LStatements.java b/core/src/mindustry/logic/LStatements.java
-index 230e99ae5c1acc2896da7ed2cd72cc2e0d4dfb09..46df9ca61ff9d505df5dbc614043275ebd47e7c7 100644
+index 4f172c5f66736634dac190b115827695ab7993f7..ecbe2ed06b45257a1deb16ce7dbab49508cb0987 100644
 --- a/core/src/mindustry/logic/LStatements.java
 +++ b/core/src/mindustry/logic/LStatements.java
 @@ -3,6 +3,9 @@ package mindustry.logic;
@@ -194,7 +194,7 @@ index 230e99ae5c1acc2896da7ed2cd72cc2e0d4dfb09..46df9ca61ff9d505df5dbc614043275e
 +                    var scroll = (ScrollPane)canvas.parent;
 +                    scroll.setScrollY(scroll.getMaxY() - dest.y + scroll.getHeight() * 0.5f);
 +                    saveUI();
-+                    UIExt.announce("[gold]跳转行号:[] " + destIndex);
++                    UIExt.announce(Core.bundle.format("logic.jump-line", destIndex));
 +
 +                    Element header = dest.getChildren().first();
 +                    dest.clearActions();
@@ -254,7 +254,7 @@ index 51c8576d8b41d43e25eb86400d169b9a108e6642..de370177beb5fec5b3b00abbb3dd8e2c
                      }).marginLeft(12f);
 -
 +                    t.row();
-+                    t.button("[orange]丢弃更改", Icon.cancel,style, () -> ui.showConfirm("确认丢弃?", () -> {
++                    t.button(Core.bundle.get("logic.discard"), Icon.cancel,style, () -> ui.showConfirm(Core.bundle.get("logic.discard-confirm"), () -> {
 +                        noSave = true;
 +                        dialog.hide();
 +                        hide();
@@ -271,7 +271,7 @@ index 51c8576d8b41d43e25eb86400d169b9a108e6642..de370177beb5fec5b3b00abbb3dd8e2c
      }
  }
 diff --git a/core/src/mindustry/world/blocks/logic/LogicBlock.java b/core/src/mindustry/world/blocks/logic/LogicBlock.java
-index d8a0f2c4f204c8a31e8981fc546f4627dfb12f7c..604eac9e6c6224db88cc2ba3157083e0e7aac089 100644
+index d7f5d601ed0138a349bda45b02623ccfbfb23914..32955a9faa2a6f759b48b1fbc11e0d9d1b142238 100644
 --- a/core/src/mindustry/world/blocks/logic/LogicBlock.java
 +++ b/core/src/mindustry/world/blocks/logic/LogicBlock.java
 @@ -16,6 +16,7 @@ import arc.util.io.*;
@@ -297,7 +297,7 @@ index d8a0f2c4f204c8a31e8981fc546f4627dfb12f7c..604eac9e6c6224db88cc2ba3157083e0
  
  import java.io.*;
  import java.util.zip.*;
-@@ -109,11 +113,15 @@ public class LogicBlock extends Block{
+@@ -110,11 +114,15 @@ public class LogicBlock extends Block{
  
      @Override
      public boolean checkForceDark(Tile tile){
@@ -315,7 +315,7 @@ index d8a0f2c4f204c8a31e8981fc546f4627dfb12f7c..604eac9e6c6224db88cc2ba3157083e0
      }
  
      @Override
-@@ -424,7 +432,7 @@ public class LogicBlock extends Block{
+@@ -425,7 +433,7 @@ public class LogicBlock extends Block{
  
          @Override
          public boolean displayable(){
@@ -324,7 +324,7 @@ index d8a0f2c4f204c8a31e8981fc546f4627dfb12f7c..604eac9e6c6224db88cc2ba3157083e0
          }
  
          @Override
-@@ -447,7 +455,12 @@ public class LogicBlock extends Block{
+@@ -448,7 +456,12 @@ public class LogicBlock extends Block{
  
          @Override
          public Cursor getCursor(){
@@ -338,7 +338,7 @@ index d8a0f2c4f204c8a31e8981fc546f4627dfb12f7c..604eac9e6c6224db88cc2ba3157083e0
          }
  
          //logic blocks cause write problems when picked up
-@@ -608,24 +621,30 @@ public class LogicBlock extends Block{
+@@ -609,24 +622,30 @@ public class LogicBlock extends Block{
              }
  
              for(LogicLink l : links){
@@ -373,7 +373,7 @@ index d8a0f2c4f204c8a31e8981fc546f4627dfb12f7c..604eac9e6c6224db88cc2ba3157083e0
  
              Groups.unit.each(u -> u.controller() instanceof LogicAI ai && ai.controller == this, unit -> {
                  Drawf.square(unit.x, unit.y, unit.hitSize, unit.rotation + 45);
-@@ -672,12 +691,12 @@ public class LogicBlock extends Block{
+@@ -673,12 +692,12 @@ public class LogicBlock extends Block{
  
          @Override
          public boolean shouldShowConfigure(Player player){

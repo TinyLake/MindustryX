@@ -112,9 +112,10 @@ new file mode 100644
 index 0000000000000000000000000000000000000000..44ae3d51de403bd575d069024c76c3b76e319fd1
 --- /dev/null
 +++ b/android/src/mindustryX/features/ApkInstallHelper.java
-@@ -0,0 +1,70 @@
+@@ -0,0 +1,71 @@
 +package mindustryX.features;
 +
++import arc.Core;
 +import android.app.*;
 +import android.content.*;
 +import android.net.*;
@@ -179,7 +180,7 @@ index 0000000000000000000000000000000000000000..44ae3d51de403bd575d069024c76c3b7
 +            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
 +            activity.startActivity(intent);
 +        }catch(Exception e){
-+            Vars.ui.showException("安装APK失败", e);
++            Vars.ui.showException(Core.bundle.get("android.apk-install-failed"), e);
 +        }
 +    }
 +}
