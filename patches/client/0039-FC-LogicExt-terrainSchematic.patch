@@ -36,7 +36,7 @@ index 21b5e739a4a68cdbfba44e1d2d4f7c39c3f84d61..51ba0cfa93279f8643c192ce774e502e
          }
          Tile tile = world.tile(place.x, place.y);
 diff --git a/core/src/mindustry/game/Schematics.java b/core/src/mindustry/game/Schematics.java
-index d76c6296427dbc5d8754801e8cecba81fc12569f..8c8fc5c220ec9ad241991a2da4b5995fee5393bc 100644
+index 20bc208d12a87810501f4738742aeb7ea0531c25..6970dc18edda89c92208181daf3ce9949c5cf5d1 100644
 --- a/core/src/mindustry/game/Schematics.java
 +++ b/core/src/mindustry/game/Schematics.java
 @@ -36,6 +36,7 @@ import mindustry.world.blocks.sandbox.*;

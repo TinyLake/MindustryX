@@ -14,7 +14,7 @@ Content-Transfer-Encoding: 8bit
  2 files changed, 22 insertions(+), 14 deletions(-)
 
 diff --git a/core/src/mindustry/input/DesktopInput.java b/core/src/mindustry/input/DesktopInput.java
-index 7277ea1b02972a73a3124ef1c885fee91d9b6793..696b3e626c7a2548e0716daf2a5707d0f6c0eecd 100644
+index 2f59d642b8203237b7cdc876e6c8fd3abf6386e0..bee5296ae9b10936a7d8970b08ebae1e81fa3b8d 100644
 --- a/core/src/mindustry/input/DesktopInput.java
 +++ b/core/src/mindustry/input/DesktopInput.java
 @@ -94,14 +94,14 @@ public class DesktopInput extends InputHandler{
@@ -57,7 +57,7 @@ index 7277ea1b02972a73a3124ef1c885fee91d9b6793..696b3e626c7a2548e0716daf2a5707d0
              if(settings.getBool("commandmodehold")){
                  commandMode = input.keyDown(Binding.commandMode);
              }else if(input.keyTap(Binding.commandMode)){
-@@ -916,7 +916,7 @@ public class DesktopInput extends InputHandler{
+@@ -924,7 +924,7 @@ public class DesktopInput extends InputHandler{
              commandTap(x, y);
          }
  
