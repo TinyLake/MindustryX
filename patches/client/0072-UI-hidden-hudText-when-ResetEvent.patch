@@ -8,10 +8,10 @@ Subject: [PATCH] UI: hidden hudText when ResetEvent
  1 file changed, 6 insertions(+)
 
 diff --git a/core/src/mindustry/ui/fragments/HudFragment.java b/core/src/mindustry/ui/fragments/HudFragment.java
-index 6831036bbf3d3931ae6d84d7c1e8dd077425300a..abde3cb26cc344a3fb9cd54151c0f8643ef780d8 100644
+index a5fbc9c984b8ae6bd6e615ab4d45189356372a2d..553606b21e95f34052b527f5e3035a28977a8317 100644
 --- a/core/src/mindustry/ui/fragments/HudFragment.java
 +++ b/core/src/mindustry/ui/fragments/HudFragment.java
-@@ -675,6 +675,12 @@ public class HudFragment{
+@@ -671,6 +671,12 @@ public class HudFragment{
                  .with(p -> p.visible(() -> (p.color.a = Mathf.lerpDelta(p.color.a, Mathf.num(showHudText), 0.2f)) >= 0.001f));
          });
  

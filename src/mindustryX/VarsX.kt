@@ -80,11 +80,6 @@ object VarsX {
     val githubMirror = CheckPref("githubMirror")
 
     @JvmField
-    val arcSpecificInfoTable = CheckPref("gameUI.arcSpecificTable").apply {
-        addFallbackName("arcSpecificTable")
-    }
-
-    @JvmField
     val itemSelectionHeight = SliderPref("gameUI.itemSelectionHeight", 4, 4, 12) { bundle.itemSelectionHeight(it) }.apply {
         addFallbackName("itemSelectionHeight")
     }
