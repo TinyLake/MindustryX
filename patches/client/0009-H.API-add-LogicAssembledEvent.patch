@@ -6,11 +6,11 @@ Subject: [PATCH] H.API: add LogicAssembledEvent
 ---
  core/src/mindustry/logic/LParser.java                 |  4 +++-
  core/src/mindustry/logic/LStatements.java             | 11 +++++++++++
- core/src/mindustry/world/blocks/logic/LogicBlock.java |  4 ++++
- 3 files changed, 18 insertions(+), 1 deletion(-)
+ core/src/mindustry/world/blocks/logic/LogicBlock.java |  3 +++
+ 3 files changed, 17 insertions(+), 1 deletion(-)
 
 diff --git a/core/src/mindustry/logic/LParser.java b/core/src/mindustry/logic/LParser.java
-index cc2fb1c104948db769dc8eefe5b880fd5d780c5d..6c3d620f0a4ea3c1ea23369b96ba48cb22e78808 100644
+index f77b8d15a54b3b79142d9815d131ac1906e6710e..8bbbc4ce1155b0b5b7d01776e6ab8c2c19237f66 100644
 --- a/core/src/mindustry/logic/LParser.java
 +++ b/core/src/mindustry/logic/LParser.java
 @@ -5,6 +5,8 @@ import arc.util.*;
@@ -22,7 +22,7 @@ index cc2fb1c104948db769dc8eefe5b880fd5d780c5d..6c3d620f0a4ea3c1ea23369b96ba48cb
  public class LParser{
      private static final String[] tokens = new String[16];
      private static final int maxJumps = 500;
-@@ -166,7 +168,7 @@ public class LParser{
+@@ -170,7 +172,7 @@ public class LParser{
                          }
                      }else{
                          //unparseable statement
@@ -61,17 +61,10 @@ index a99df8281fa90167fe9ec81fa0dfbe852d95c477..230e99ae5c1acc2896da7ed2cd72cc2e
          @Override
          public void build(Table table){
 diff --git a/core/src/mindustry/world/blocks/logic/LogicBlock.java b/core/src/mindustry/world/blocks/logic/LogicBlock.java
-index eab91580693a95b493b1ce102ed36dc5ad0f2855..d8a0f2c4f204c8a31e8981fc546f4627dfb12f7c 100644
+index 12921ce8e5b1f9ea6e04104e66a1b8a888e2dbb0..af2acd00025fac4821ad043003245033ddd534b9 100644
 --- a/core/src/mindustry/world/blocks/logic/LogicBlock.java
 +++ b/core/src/mindustry/world/blocks/logic/LogicBlock.java
-@@ -1,5 +1,6 @@
- package mindustry.world.blocks.logic;
- 
-+import arc.*;
- import arc.Graphics.*;
- import arc.Graphics.Cursor.*;
- import arc.func.*;
-@@ -26,6 +27,7 @@ import mindustry.world.*;
+@@ -27,6 +27,7 @@ import mindustry.world.*;
  import mindustry.world.blocks.ConstructBlock.*;
  import mindustry.world.meta.*;
  import mindustryX.*;
@@ -79,7 +72,7 @@ index eab91580693a95b493b1ce102ed36dc5ad0f2855..d8a0f2c4f204c8a31e8981fc546f4627
  
  import java.io.*;
  import java.util.zip.*;
-@@ -402,6 +404,8 @@ public class LogicBlock extends Block{
+@@ -423,6 +424,8 @@ public class LogicBlock extends Block{
                      asm.putConst("@thisx", World.conv(x));
                      asm.putConst("@thisy", World.conv(y));
  

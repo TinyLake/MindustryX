@@ -80,7 +80,7 @@ index c0016cedfe941e232fd19476ac3268898eb9a981..ea2dfce9c75d30008928909878d31dfa
              netClient.byteStream.setBytes(data);
              DataInputStream input = netClient.dataStream;
 diff --git a/core/src/mindustry/io/TypeIO.java b/core/src/mindustry/io/TypeIO.java
-index e448887255b334511f5a4bfb0f00a652b8833a33..3a2ee6401106ce5aa9b49af61e0191f533fcffed 100644
+index 7aafb5d251cdbef49ac519d092a417c754297bdc..7c415868ad8a5cebf60a8ce14c0ed73937b56515 100644
 --- a/core/src/mindustry/io/TypeIO.java
 +++ b/core/src/mindustry/io/TypeIO.java
 @@ -27,6 +27,7 @@ import mindustry.type.*;
@@ -120,7 +120,7 @@ index e448887255b334511f5a4bfb0f00a652b8833a33..3a2ee6401106ce5aa9b49af61e0191f5
      }
  
      public static Block readBlock(Reads read){
-@@ -520,7 +532,7 @@ public class TypeIO{
+@@ -531,7 +543,7 @@ public class TypeIO{
          write.b(plan.breaking ? (byte)1 : 0);
          write.i(Point2.pack(plan.x, plan.y));
          if(!plan.breaking){

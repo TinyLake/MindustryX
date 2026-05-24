@@ -17,7 +17,7 @@ Content-Transfer-Encoding: 8bit
  6 files changed, 60 insertions(+), 23 deletions(-)
 
 diff --git a/core/src/mindustry/editor/EditorTool.java b/core/src/mindustry/editor/EditorTool.java
-index eac257b3c5238a61b13afce11f26bdc3eb603d79..dde3985967815a41c6240c83d57755aafed2ca04 100644
+index 0d7de460ff6c67b760a28429027c8b8d19f5d55b..f19bb5a81421c9968f855097ece84ac5872a69c2 100644
 --- a/core/src/mindustry/editor/EditorTool.java
 +++ b/core/src/mindustry/editor/EditorTool.java
 @@ -49,7 +49,7 @@ public enum EditorTool{
@@ -147,14 +147,14 @@ index 1dfc7ad0d4e827d02c6b8c35a9845fed8d614147..fc67c076a90670337e7c010f825ef573
              }
          }
 diff --git a/core/src/mindustry/editor/MapResizeDialog.java b/core/src/mindustry/editor/MapResizeDialog.java
-index 7a5c15ce71ac487492b0685e7cc99d061bae5b76..531e545323ec177de4a0ae29a2986dfaeb898402 100644
+index 475cd5047abc4e0c74a02db3f34644ddcaa20634..531e545323ec177de4a0ae29a2986dfaeb898402 100644
 --- a/core/src/mindustry/editor/MapResizeDialog.java
 +++ b/core/src/mindustry/editor/MapResizeDialog.java
 @@ -9,7 +9,7 @@ import mindustry.ui.dialogs.*;
  import static mindustry.Vars.*;
  
  public class MapResizeDialog extends BaseDialog{
--    public static int minSize = 50, maxSize = 600, increment = 50;
+-    public static int minSize = 50, maxSize = 800, increment = 50;
 +    public static int minSize = 10, maxSize = 9999, increment = 50;
  
      int width, height, shiftX, shiftY;

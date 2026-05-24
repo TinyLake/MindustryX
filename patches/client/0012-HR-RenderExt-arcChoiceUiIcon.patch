@@ -38,7 +38,7 @@ index 76d6fb0ae48901fc5a3d0ea940e6d2df0b5f3dea..6b5f24ab2f1b53cab5143d030743c16e
                  Draw.rect(arrowRegion, x, y, rotdeg());
              }
 diff --git a/core/src/mindustry/world/blocks/distribution/DuctRouter.java b/core/src/mindustry/world/blocks/distribution/DuctRouter.java
-index 97bef1ebe97f67b37ddc9c1fc1a83c8b7d3373a8..9920882552d131a9c8d6e6bfeb603fe56527695e 100644
+index 69e71ac0395a2d3060efb404474f572e414aad22..f9de6a6f3e91d4deb87e808d3b52dac77fed70ca 100644
 --- a/core/src/mindustry/world/blocks/distribution/DuctRouter.java
 +++ b/core/src/mindustry/world/blocks/distribution/DuctRouter.java
 @@ -12,6 +12,7 @@ import mindustry.type.*;
@@ -98,7 +98,7 @@ index b505c5f883e4dc5453ef677005ec9955c5dc52d9..78438212a0ab63f2411928695846cc89
  
              super.draw();
 diff --git a/core/src/mindustry/world/blocks/storage/Unloader.java b/core/src/mindustry/world/blocks/storage/Unloader.java
-index 0801f042b2e67ec7a35007dea1130347ab07123f..5d5bd6ac70e451df5357eb1587bdb93c01447502 100644
+index 71bba8e4194330dba430121387e6f704369318ca..d9e88e79cd431539f760be4fb26d2c6755744a9b 100644
 --- a/core/src/mindustry/world/blocks/storage/Unloader.java
 +++ b/core/src/mindustry/world/blocks/storage/Unloader.java
 @@ -20,6 +20,8 @@ import mindustry.world.meta.*;

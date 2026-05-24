@@ -223,7 +223,7 @@ index 024695a06bdb82374e705ca24f5576ea50a33883..01fa8c384ac1f4005dc0b2a9c3f801f7
          public byte version(){
              return 1;
 diff --git a/core/src/mindustry/world/blocks/distribution/Router.java b/core/src/mindustry/world/blocks/distribution/Router.java
-index cbe6d64d52f66d38be69a897a9a1a2f5b928e631..45b50a6504a69ebe787a79397df39ee3846701ae 100644
+index f3c2e7f6def7c5e06bbaced7f7ff5b8eedf5cd51..992e3968725e3a2a743cb043dda96053aa1f2a2f 100644
 --- a/core/src/mindustry/world/blocks/distribution/Router.java
 +++ b/core/src/mindustry/world/blocks/distribution/Router.java
 @@ -1,13 +1,17 @@

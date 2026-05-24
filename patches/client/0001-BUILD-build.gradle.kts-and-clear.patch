@@ -994,18 +994,18 @@ index 0898451c271ed8f75c849d1dc68259c5329dbf35..bbab133446e5eaed169ff0ad31ddf7b8
 +}
 \ No newline at end of file
 diff --git a/gradle.properties b/gradle.properties
-index b053430be84d0e3e9d145a17ea4c86c60ab2a077..802ec2f75a14ab2d7a0e0cb6e1cdf06b305b6f01 100644
+index ab08e193eec55833d6f69ac4d599d5ebaa5a48f6..27759169678948da994a47bf5fc5f0da1f2efbaa 100644
 --- a/gradle.properties
 +++ b/gradle.properties
 @@ -26,4 +26,7 @@ org.gradle.caching=true
  org.gradle.internal.http.socketTimeout=100000
  org.gradle.internal.http.connectionTimeout=100000
  android.enableR8.fullMode=false
--archash=4d9760e264
-+#archash=4d9760e264
+-archash=0e5679dc9c
++#archash=0e5679dc9c
 +
 +#MDTX: Use "v{upstreamBuild}" by default
-+upstreamBuild=157.4
++upstreamBuild=158
 \ No newline at end of file
 diff --git a/gradlew b/gradlew
 index 4f906e0c811fc9e230eb44819f509cd0627f2600..f3b75f3b0d4faeb4b1c8a02b5c47007e6efb7dcd 100755
@@ -1681,7 +1681,7 @@ index c2b15be33876949dca7fbf96f63bc4e469c97342..f40ab4cbe8c8d7dd63d34d11948eb8cd
  tasks.register('genSprites', JavaExec){
      dependsOn classes
 diff --git a/tools/src/mindustry/tools/Generators.java b/tools/src/mindustry/tools/Generators.java
-index fbd79b58a3f6f63bc3d42b5e6a07b80fdfff1df7..a137994e81e658d9795ddcbcee52aacb10d7aabc 100644
+index f6e3a38a31aa1dc2579861d6e1bc37b4e3e3b1a9..9224433bc70a527ee5c0542024f51284d6ec8284 100644
 --- a/tools/src/mindustry/tools/Generators.java
 +++ b/tools/src/mindustry/tools/Generators.java
 @@ -448,7 +448,7 @@ public class Generators{

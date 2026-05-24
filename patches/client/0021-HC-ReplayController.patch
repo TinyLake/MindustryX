@@ -39,7 +39,7 @@ index ad8cb42c3af354a45ebd210533ee6b532aba143e..c7c877530b3e908a1df7bf59c1867f39
          });
  
 diff --git a/core/src/mindustry/io/TypeIO.java b/core/src/mindustry/io/TypeIO.java
-index aaafb6b2ba4a639887879759ec772ac6cae067e1..e448887255b334511f5a4bfb0f00a652b8833a33 100644
+index aaff16296ae851df66748b7261a73ceb7a1421a8..7aafb5d251cdbef49ac519d092a417c754297bdc 100644
 --- a/core/src/mindustry/io/TypeIO.java
 +++ b/core/src/mindustry/io/TypeIO.java
 @@ -374,7 +374,7 @@ public class TypeIO{
@@ -52,7 +52,7 @@ index aaafb6b2ba4a639887879759ec772ac6cae067e1..e448887255b334511f5a4bfb0f00a652
  
      public static void writeUnit(Writes write, Unit unit){
 diff --git a/core/src/mindustry/net/ArcNetProvider.java b/core/src/mindustry/net/ArcNetProvider.java
-index d82ea3569ab07387265ee4baaa7ee25b7575f1a0..b78a14c7b7f0c68bcb5a9b97d67c01d33631491d 100644
+index ce9ec5e0f2a9c83ed049d05e85de877316569377..9e319d197cc400dfbd07a36245e258e3af2d2225 100644
 --- a/core/src/mindustry/net/ArcNetProvider.java
 +++ b/core/src/mindustry/net/ArcNetProvider.java
 @@ -455,7 +455,7 @@ public class ArcNetProvider implements NetProvider{

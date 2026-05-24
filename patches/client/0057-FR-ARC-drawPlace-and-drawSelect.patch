@@ -15,7 +15,7 @@ Subject: [PATCH] FR: ARC drawPlace and drawSelect
  8 files changed, 91 insertions(+), 19 deletions(-)
 
 diff --git a/core/src/mindustry/world/blocks/ConstructBlock.java b/core/src/mindustry/world/blocks/ConstructBlock.java
-index f8bf94b418cab64321e89ad0b85c883c1335fa2c..8fc82b4776222f0223f8ba7ff7727107f69de910 100644
+index 711d6c971c9d4df19203d42449a95adf895c30bf..b93cf1e7b4309789953d91bb29e1f707d060a9d3 100644
 --- a/core/src/mindustry/world/blocks/ConstructBlock.java
 +++ b/core/src/mindustry/world/blocks/ConstructBlock.java
 @@ -3,14 +3,17 @@ package mindustry.world.blocks;
@@ -177,10 +177,10 @@ index 31b67b7837d1c1b6c4c3ec00982478b5e4709bae..76f9b2cedb83d84b444a0860b8821826
          indexer.eachBlock(player.team(), x * tilesize + offset, y * tilesize + offset, range, other -> other.block.canOverdrive, other -> Drawf.selected(other, Tmp.c1.set(baseColor).a(Mathf.absin(4f, 1f))));
      }
 diff --git a/core/src/mindustry/world/blocks/defense/turrets/Turret.java b/core/src/mindustry/world/blocks/defense/turrets/Turret.java
-index e66e9e789d97484c26cc1c74626ebe7af56b5492..d4192ede8131cdd267539b98434dcaceb8671ddd 100644
+index 23cd7de6da67c3066ed36e2ffb0166f60fab4609..de990558688c082316121f1215ff95919ecd4727 100644
 --- a/core/src/mindustry/world/blocks/defense/turrets/Turret.java
 +++ b/core/src/mindustry/world/blocks/defense/turrets/Turret.java
-@@ -30,6 +30,7 @@ import mindustry.world.*;
+@@ -31,6 +31,7 @@ import mindustry.world.*;
  import mindustry.world.blocks.*;
  import mindustry.world.draw.*;
  import mindustry.world.meta.*;
@@ -188,7 +188,7 @@ index e66e9e789d97484c26cc1c74626ebe7af56b5492..d4192ede8131cdd267539b98434dcace
  
  import static mindustry.Vars.*;
  
-@@ -252,6 +253,13 @@ public class Turret extends ReloadTurret{
+@@ -253,6 +254,13 @@ public class Turret extends ReloadTurret{
          if(drawMinRange){
              Drawf.dashCircle(x * tilesize + offset, y * tilesize + offset, minRange, Pal.placing);
          }
@@ -202,7 +202,7 @@ index e66e9e789d97484c26cc1c74626ebe7af56b5492..d4192ede8131cdd267539b98434dcace
      }
  
      public static abstract class AmmoEntry{
-@@ -470,6 +478,17 @@ public class Turret extends ReloadTurret{
+@@ -481,6 +489,17 @@ public class Turret extends ReloadTurret{
              if(drawMinRange){
                  Drawf.dashCircle(x, y, minRange(), team.color);
              }
@@ -221,10 +221,10 @@ index e66e9e789d97484c26cc1c74626ebe7af56b5492..d4192ede8131cdd267539b98434dcace
  
          @Override
 diff --git a/core/src/mindustry/world/blocks/production/BeamDrill.java b/core/src/mindustry/world/blocks/production/BeamDrill.java
-index dfae8f9afef7275ea9a8bfb79a2c7f3e79a6a4bb..1a3ffd805df5f6ff534f4024d98343c326df7448 100644
+index 3a2b552197a63e1368e434170d012133f970c4f3..4c228bb679a758283ac20f4a29646a5c94aeefae 100644
 --- a/core/src/mindustry/world/blocks/production/BeamDrill.java
 +++ b/core/src/mindustry/world/blocks/production/BeamDrill.java
-@@ -182,14 +182,10 @@ public class BeamDrill extends Block{
+@@ -180,14 +180,10 @@ public class BeamDrill extends Block{
          }
  
          if(item != null){
@@ -292,7 +292,7 @@ index 55c523bc651db449f51b1864aff33103d9ee0d73..6c9533ad625544becf6c31c24b81fb4b
          returnItem = null;
          returnCount = 0;
 diff --git a/core/src/mindustry/world/blocks/storage/CoreBlock.java b/core/src/mindustry/world/blocks/storage/CoreBlock.java
-index 5adb03cb6fbcaad2a85e6a6f6b37d44640175cdc..b61d90b72b593e19b28ac610d8c33ad6efe0f803 100644
+index c328a5ad4dd3ca4bdc81c382cc35bb2bfc57ff44..643b6f0f53185259b2c3c677303d647f35bf32d5 100644
 --- a/core/src/mindustry/world/blocks/storage/CoreBlock.java
 +++ b/core/src/mindustry/world/blocks/storage/CoreBlock.java
 @@ -100,6 +100,7 @@ public class CoreBlock extends StorageBlock{

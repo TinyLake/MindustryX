@@ -14,7 +14,7 @@ Content-Transfer-Encoding: 8bit
  1 file changed, 20 insertions(+)
 
 diff --git a/core/src/mindustry/ui/dialogs/SchematicsDialog.java b/core/src/mindustry/ui/dialogs/SchematicsDialog.java
-index f855efcd27a47e8ac5a0ac3dffc8a3c8a8413619..aecd5fa9c1d0d9f564421c2acd57c0ed21d6fded 100644
+index 7e3841d8f0d14a99337855dfa48405b3f9f24bdd..57a3bcf22d94592bb17ee54829e99842f86270a9 100644
 --- a/core/src/mindustry/ui/dialogs/SchematicsDialog.java
 +++ b/core/src/mindustry/ui/dialogs/SchematicsDialog.java
 @@ -24,6 +24,8 @@ import mindustry.input.*;
@@ -27,9 +27,9 @@ index f855efcd27a47e8ac5a0ac3dffc8a3c8a8413619..aecd5fa9c1d0d9f564421c2acd57c0ed
  import mindustry.world.meta.*;
  import mindustryX.features.*;
 @@ -950,6 +952,24 @@ public class SchematicsDialog extends BaseDialog{
+                     }
                  }
-             });
-             cont.row();
+             }).pad(6).row();
 +            if(schem.tiles.contains(stile -> stile.block instanceof LogicBlock)){
 +                LogicBuild tmpBuild = ((LogicBlock)Blocks.logicProcessor).new LogicBuild();
 +                cont.table(t -> {
@@ -50,4 +50,4 @@ index f855efcd27a47e8ac5a0ac3dffc8a3c8a8413619..aecd5fa9c1d0d9f564421c2acd57c0ed
 +            }
              float cons = schem.powerConsumption() * 60, prod = schem.powerProduction() * 60;
              if(!Mathf.zero(cons) || !Mathf.zero(prod)){
-                 cont.table(t -> {
+                 inner.table(t -> {

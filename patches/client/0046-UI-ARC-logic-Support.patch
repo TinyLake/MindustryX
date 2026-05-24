@@ -122,7 +122,7 @@ index 56f52b1bb9aecab2ecbedf672bc8431dc3a9de41..14b5488c33562503bc981c903a6da70d
          public void draw(){
              float pad = 5f;
 diff --git a/core/src/mindustry/logic/LExecutor.java b/core/src/mindustry/logic/LExecutor.java
-index 794c0ca3675b23b1e00c06671aeabbfc61cce2f2..54e4222daffa082fc39b23cf726c7b8912034ef0 100644
+index 07e167b5fd6566259d6f388b88ce92c496237235..92183af06346ea886944d765f8667822e353b1fd 100644
 --- a/core/src/mindustry/logic/LExecutor.java
 +++ b/core/src/mindustry/logic/LExecutor.java
 @@ -47,6 +47,9 @@ public class LExecutor{
@@ -151,7 +151,7 @@ index 794c0ca3675b23b1e00c06671aeabbfc61cce2f2..54e4222daffa082fc39b23cf726c7b89
  
                  if(type == LAccess.enabled){
                      if(p1.bool()){
-@@ -1319,7 +1324,7 @@ public class LExecutor{
+@@ -1321,7 +1326,7 @@ public class LExecutor{
          @Override
          public void run(LExecutor exec){
              if(headless) return;
@@ -271,7 +271,7 @@ index 51c8576d8b41d43e25eb86400d169b9a108e6642..de370177beb5fec5b3b00abbb3dd8e2c
      }
  }
 diff --git a/core/src/mindustry/world/blocks/logic/LogicBlock.java b/core/src/mindustry/world/blocks/logic/LogicBlock.java
-index d8a0f2c4f204c8a31e8981fc546f4627dfb12f7c..604eac9e6c6224db88cc2ba3157083e0e7aac089 100644
+index af2acd00025fac4821ad043003245033ddd534b9..1640465641ad8c94eb19c8b8583e46eb740de02f 100644
 --- a/core/src/mindustry/world/blocks/logic/LogicBlock.java
 +++ b/core/src/mindustry/world/blocks/logic/LogicBlock.java
 @@ -16,6 +16,7 @@ import arc.util.io.*;
@@ -297,7 +297,7 @@ index d8a0f2c4f204c8a31e8981fc546f4627dfb12f7c..604eac9e6c6224db88cc2ba3157083e0
  
  import java.io.*;
  import java.util.zip.*;
-@@ -109,11 +113,15 @@ public class LogicBlock extends Block{
+@@ -110,11 +114,15 @@ public class LogicBlock extends Block{
  
      @Override
      public boolean checkForceDark(Tile tile){
@@ -315,7 +315,7 @@ index d8a0f2c4f204c8a31e8981fc546f4627dfb12f7c..604eac9e6c6224db88cc2ba3157083e0
      }
  
      @Override
-@@ -424,7 +432,7 @@ public class LogicBlock extends Block{
+@@ -444,7 +452,7 @@ public class LogicBlock extends Block{
  
          @Override
          public boolean displayable(){
@@ -324,7 +324,7 @@ index d8a0f2c4f204c8a31e8981fc546f4627dfb12f7c..604eac9e6c6224db88cc2ba3157083e0
          }
  
          @Override
-@@ -447,7 +455,12 @@ public class LogicBlock extends Block{
+@@ -467,7 +475,12 @@ public class LogicBlock extends Block{
  
          @Override
          public Cursor getCursor(){
@@ -338,7 +338,7 @@ index d8a0f2c4f204c8a31e8981fc546f4627dfb12f7c..604eac9e6c6224db88cc2ba3157083e0
          }
  
          //logic blocks cause write problems when picked up
-@@ -608,24 +621,30 @@ public class LogicBlock extends Block{
+@@ -654,24 +667,30 @@ public class LogicBlock extends Block{
              }
  
              for(LogicLink l : links){
@@ -373,7 +373,7 @@ index d8a0f2c4f204c8a31e8981fc546f4627dfb12f7c..604eac9e6c6224db88cc2ba3157083e0
  
              Groups.unit.each(u -> u.controller() instanceof LogicAI ai && ai.controller == this, unit -> {
                  Drawf.square(unit.x, unit.y, unit.hitSize, unit.rotation + 45);
-@@ -672,12 +691,12 @@ public class LogicBlock extends Block{
+@@ -718,12 +737,12 @@ public class LogicBlock extends Block{
  
          @Override
          public boolean shouldShowConfigure(Player player){

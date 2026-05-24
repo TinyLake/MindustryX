@@ -8,12 +8,12 @@ Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 
 ---
- .../type/weapons/PointDefenseWeapon.java      | 25 +++++++++++++++++--
+ .../type/weapons/PointDefenseWeapon.java      | 24 ++++++++++++++++++-
  .../defense/turrets/PointDefenseTurret.java   |  3 ++-
- 2 files changed, 25 insertions(+), 3 deletions(-)
+ 2 files changed, 25 insertions(+), 2 deletions(-)
 
 diff --git a/core/src/mindustry/type/weapons/PointDefenseWeapon.java b/core/src/mindustry/type/weapons/PointDefenseWeapon.java
-index b90026826717730afef1761883561d1afdcd56f1..bb90db919e026096a9d2d0badf10490391f11abc 100644
+index 5e93d25abd27903e3bd8246b8e9498f268d3a94b..843f8dbe00d5be3f8ed8e9b6bb77592b3806b84a 100644
 --- a/core/src/mindustry/type/weapons/PointDefenseWeapon.java
 +++ b/core/src/mindustry/type/weapons/PointDefenseWeapon.java
 @@ -1,6 +1,7 @@
@@ -24,16 +24,15 @@ index b90026826717730afef1761883561d1afdcd56f1..bb90db919e026096a9d2d0badf104903
  import arc.graphics.*;
  import arc.math.*;
  import arc.math.geom.*;
-@@ -43,7 +44,7 @@ public class PointDefenseWeapon extends Weapon{
-         targetInterval = 10f;
-     }
+@@ -8,6 +9,7 @@ import arc.scene.ui.layout.*;
+ import mindustry.content.*;
+ import mindustry.entities.*;
+ import mindustry.entities.units.*;
++import mindustry.game.*;
+ import mindustry.gen.*;
+ import mindustry.type.*;
  
--    @Override 
-+    @Override
-     public void addStats(UnitType u, Table t){
-         t.add(Core.bundle.format("weapon.pointdefense"));
-         super.addStats(u, t);
-@@ -51,7 +52,27 @@ public class PointDefenseWeapon extends Weapon{
+@@ -47,7 +49,27 @@ public class PointDefenseWeapon extends Weapon{
  
      @Override
      protected Teamc findTarget(Unit unit, float x, float y, float range, boolean air, boolean ground){
