@@ -1817,7 +1817,7 @@ index 07e24fe2b60d559ea88bbe7360ce61bf36f56537..c52f8a953d4f492c0de38ea6f2a2fc9c
          //special case for 'clear' command
          if(message.equals("clear")){
 diff --git a/core/src/mindustry/ui/fragments/HudFragment.java b/core/src/mindustry/ui/fragments/HudFragment.java
-index 10b0af6e9e14685e21a42671f85cc98e16cd34c4..a5fbc9c984b8ae6bd6e615ab4d45189356372a2d 100644
+index a43abd1732ac8ff27387012282203433910e61f1..e31236f09f4a1a71be2386d09556d66b7b045070 100644
 --- a/core/src/mindustry/ui/fragments/HudFragment.java
 +++ b/core/src/mindustry/ui/fragments/HudFragment.java
 @@ -31,10 +31,12 @@ import mindustry.net.Packets.*;
@@ -1842,7 +1842,7 @@ index 10b0af6e9e14685e21a42671f85cc98e16cd34c4..a5fbc9c984b8ae6bd6e615ab4d451893
                      teams.button(Icon.downOpen, Styles.emptyi, () -> Core.settings.put("editor-blocks-shown", !Core.settings.getBool("editor-blocks-shown")))
                      .size(45f).update(m -> m.getStyle().imageUp = (Core.settings.getBool("editor-blocks-shown") ? Icon.upOpen : Icon.downOpen));
                  }).top().left().row();
-@@ -1223,7 +1225,7 @@ public class HudFragment{
+@@ -1241,7 +1243,7 @@ public class HudFragment{
      }
  
      private boolean canSkipWave(){

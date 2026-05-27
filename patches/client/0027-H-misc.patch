@@ -175,7 +175,7 @@ index ffe9448b2c1bb72bcfd08d12aeace63de3c41a3a..872e2479cdbb6560780a62a375817621
          if(Mathf.equal(camerascale, dest, 0.001f)) camerascale = dest;
          unitLaserOpacity = settings.getInt("unitlaseropacity") / 100f;
 diff --git a/core/src/mindustry/core/UI.java b/core/src/mindustry/core/UI.java
-index 7342a8376c3ec0b4bce6d572a4ee3b69a3275e84..8b7eaeee1787eb01b632d230916f8af8b1e9bf69 100644
+index c3c90b80cd579ec095f5919c86438043c33ac8f8..64c335618277ee1f161b50e52de045377076922e 100644
 --- a/core/src/mindustry/core/UI.java
 +++ b/core/src/mindustry/core/UI.java
 @@ -649,7 +649,7 @@ public class UI implements ApplicationListener, Loadable{
@@ -187,7 +187,7 @@ index 7342a8376c3ec0b4bce6d572a4ee3b69a3275e84..8b7eaeee1787eb01b632d230916f8af8
          t.pack();
          t.act(0.1f);
          Core.scene.add(t);
-@@ -788,23 +788,7 @@ public class UI implements ApplicationListener, Loadable{
+@@ -793,23 +793,7 @@ public class UI implements ApplicationListener, Loadable{
      }
  
      public static String formatAmount(long number){

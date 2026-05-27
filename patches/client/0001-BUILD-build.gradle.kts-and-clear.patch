@@ -994,7 +994,7 @@ index 0898451c271ed8f75c849d1dc68259c5329dbf35..bbab133446e5eaed169ff0ad31ddf7b8
 +}
 \ No newline at end of file
 diff --git a/gradle.properties b/gradle.properties
-index ab08e193eec55833d6f69ac4d599d5ebaa5a48f6..27759169678948da994a47bf5fc5f0da1f2efbaa 100644
+index ab08e193eec55833d6f69ac4d599d5ebaa5a48f6..2be2d152326a1923d5d3e439e39735fbe15ecce1 100644
 --- a/gradle.properties
 +++ b/gradle.properties
 @@ -26,4 +26,7 @@ org.gradle.caching=true
@@ -1005,7 +1005,7 @@ index ab08e193eec55833d6f69ac4d599d5ebaa5a48f6..27759169678948da994a47bf5fc5f0da
 +#archash=0e5679dc9c
 +
 +#MDTX: Use "v{upstreamBuild}" by default
-+upstreamBuild=158
++upstreamBuild=158.1
 \ No newline at end of file
 diff --git a/gradlew b/gradlew
 index 4f906e0c811fc9e230eb44819f509cd0627f2600..f3b75f3b0d4faeb4b1c8a02b5c47007e6efb7dcd 100755
