@@ -22,6 +22,7 @@ import mindustry.world.blocks.logic.MemoryBlock.*;
 import mindustryX.*;
 import mindustryX.features.SettingsV2.*;
 import mindustryX.features.*;
+import mindustryX.features.ui.comp.*;
 
 import static mindustry.Vars.*;
 import static mindustryX.features.UIExt.i;
@@ -283,26 +284,37 @@ public class LogicSupport{
             addCloseButton();
             closeOnBack();
             cont.add(i("TIP: 所有包含处理器的蓝图")).row();
-            cont.pane(tt -> {
-                for(var schem : all){
-                    tt.button(schem.name(), () -> {
-                        var blocks = schem.tiles.select(s -> s.block instanceof LogicBlock);
-                        cont.clear();
-                        LogicBuild tmp = block.new LogicBuild();
-                        for(var block : blocks){
-                            tmp.readCompressed((byte[])block.config, false);
-                            String code = tmp.code;
-                            cont.button(block.block.emoji(), () -> {
-                                build.configure(block.config);
-                                hide();
-                            }).tooltip(Strings.truncate(code, 300, "\n...")).size(iconMed);
-                        }
-                        if(blocks.size == 1){
-                            cont.getChildren().pop().change();
-                        }
-                    }).growX().row();
-                }
-            }).growX().maxWidth(600f);
+
+            String[] query = {""};
+
+            cont.table(t -> {
+                t.image(Icon.zoomSmall).size(iconSmall).padRight(4f);
+                t.field("", text -> query[0] = text).growX();
+            }).fillX().padBottom(8f).row();
+
+            GridTable list = new GridTable();
+            list.setWidth(600f);
+            list.defaults().growX().minWidth(180f).height(40f).pad(4f);
+            for(var schem : all){
+                list.button(schem.name(), () -> {
+                    var blocks = schem.tiles.select(s -> s.block instanceof LogicBlock);
+                    cont.clear();
+                    LogicBuild tmp = block.new LogicBuild();
+                    for(var block : blocks){
+                        tmp.readCompressed((byte[])block.config, false);
+                        String code = tmp.code;
+                        cont.button(block.block.emoji(), () -> {
+                            build.configure(block.config);
+                            hide();
+                        }).tooltip(Strings.truncate(code, 300, "\n...")).size(iconMed);
+                    }
+                    if(blocks.size == 1){
+                        cont.getChildren().pop().change();
+                    }
+                })
+                .visible(() -> query[0].isEmpty() || schem.name().toLowerCase().contains(query[0].toLowerCase()));
+            }
+            cont.pane(list).width(600f);
         }}.show();
     }
 
