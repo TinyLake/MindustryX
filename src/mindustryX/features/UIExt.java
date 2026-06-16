@@ -18,17 +18,17 @@ import mindustryX.features.ui.toolTable.*;
 import static mindustry.Vars.ui;
 
 public class UIExt{
-    public static TeamSelectDialog teamSelect;
-    public static ModsRecommendDialog modsRecommend = new ModsRecommendDialog();
-    public static ArcMessageDialog arcMessageDialog = new ArcMessageDialog();
-    public static AdvanceBuildTool advanceBuildTool = new AdvanceBuildTool();
-    public static NewCoreItemsDisplay coreItems = new NewCoreItemsDisplay();
-
     static{
         if(Core.app.isHeadless()){
             throw new RuntimeException("UIExt should not be initialized in headless mode.");
         }
     }
+
+    public static TeamSelectDialog teamSelect;
+    public static ModsRecommendDialog modsRecommend = new ModsRecommendDialog();
+    public static ArcMessageDialog arcMessageDialog = new ArcMessageDialog();
+    public static AdvanceBuildTool advanceBuildTool = new AdvanceBuildTool();
+    public static NewCoreItemsDisplay coreItems = new NewCoreItemsDisplay();
 
     public static void init(){
         teamSelect = new TeamSelectDialog();

@@ -271,7 +271,7 @@ index 51c8576d8b41d43e25eb86400d169b9a108e6642..de370177beb5fec5b3b00abbb3dd8e2c
      }
  }
 diff --git a/core/src/mindustry/world/blocks/logic/LogicBlock.java b/core/src/mindustry/world/blocks/logic/LogicBlock.java
-index af2acd00025fac4821ad043003245033ddd534b9..1640465641ad8c94eb19c8b8583e46eb740de02f 100644
+index af2acd00025fac4821ad043003245033ddd534b9..b5ed4a5ab2aa1bf5f060df301705a6baa1ab775b 100644
 --- a/core/src/mindustry/world/blocks/logic/LogicBlock.java
 +++ b/core/src/mindustry/world/blocks/logic/LogicBlock.java
 @@ -16,6 +16,7 @@ import arc.util.io.*;
@@ -334,7 +334,7 @@ index af2acd00025fac4821ad043003245033ddd534b9..1640465641ad8c94eb19c8b8583e46eb
 +
 +        @Override
 +        public boolean interactable(Team team){
-+            return super.interactable(team) || RenderExt.showOtherInfo;
++            return super.interactable(team) || (!Core.app.isHeadless() && RenderExt.showOtherInfo);
          }
  
          //logic blocks cause write problems when picked up
