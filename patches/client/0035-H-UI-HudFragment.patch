@@ -14,7 +14,7 @@ AuxiliaryTools, NewCoreItemsDisplay(新制核心资源显示), WaveInfoDisplay(�
  1 file changed, 24 insertions(+), 11 deletions(-)
 
 diff --git a/core/src/mindustry/ui/fragments/HudFragment.java b/core/src/mindustry/ui/fragments/HudFragment.java
-index 32fd7583843eb6d33731b94525db473faea4b097..a43abd1732ac8ff27387012282203433910e61f1 100644
+index 32fd7583843eb6d33731b94525db473faea4b097..4b8bf259629b8eea68c0dd05b93cd1ea46749286 100644
 --- a/core/src/mindustry/ui/fragments/HudFragment.java
 +++ b/core/src/mindustry/ui/fragments/HudFragment.java
 @@ -338,16 +338,21 @@ public class HudFragment{
@@ -39,10 +39,10 @@ index 32fd7583843eb6d33731b94525db473faea4b097..a43abd1732ac8ff27387012282203433
 +                .visible(() -> Core.settings.getBool("position") || Core.settings.getBool("mouseposition"))
 +                .touchable(Touchable.disabled).style(Styles.outlineLabel).minWidth(120f);
 +
-+                tt.button("♐", Styles.cleart, MarkerType::toggleMarkHitterUI).size(iconMed).tooltip("进入标记模式");
++                tt.button("♐", Styles.cleart, MarkerType::toggleMarkHitterUI).size(iconMed).tooltip(Core.bundle.get("mdtx.hud.markMode"));
 +                tt.button("T", Styles.cleart, () -> ui.chatfrag.nextMode())
-+                .checked(b -> ui.chatfrag.mode == ChatFragment.ChatMode.team).size(iconMed).tooltip("前缀添加/t");
-+                tt.button("" + Iconc.zoom, Styles.cleart, MarkerType::lockOnLastMark).size(iconMed).tooltip("锁定上个标记点");
++                .checked(b -> ui.chatfrag.mode == ChatFragment.ChatMode.team).size(iconMed).tooltip(Core.bundle.get("mdtx.hud.prefixTeam"));
++                tt.button("" + Iconc.zoom, Styles.cleart, MarkerType::lockOnLastMark).size(iconMed).tooltip(Core.bundle.get("mdtx.hud.lockLastMark"));
 +            }).name("position");
              t.top().right();
          });
@@ -60,7 +60,7 @@ index 32fd7583843eb6d33731b94525db473faea4b097..a43abd1732ac8ff27387012282203433
                  info.row();
  
 +                if (!android){
-+                    info.label(() -> "缩放: " + String.format("%.2f", renderer.getScale())).left().style(Styles.outlineLabel);
++                    info.label(() -> Core.bundle.format("mdtx.hud.zoom", String.format("%.2f", renderer.getScale()))).left().style(Styles.outlineLabel);
 +                    info.row();
 +                }
 +

@@ -38,7 +38,7 @@ MinRi2 <2275045670@qq.com> on 2025/5/3
  6 files changed, 149 insertions(+), 17 deletions(-)
 
 diff --git a/core/src/mindustry/logic/LCanvas.java b/core/src/mindustry/logic/LCanvas.java
-index 56f52b1bb9aecab2ecbedf672bc8431dc3a9de41..14b5488c33562503bc981c903a6da70d70a78ba0 100644
+index 56f52b1bb9aecab2ecbedf672bc8431dc3a9de41..b3cdfea775f6823ea4535ce05c4816d59d1a0cea 100644
 --- a/core/src/mindustry/logic/LCanvas.java
 +++ b/core/src/mindustry/logic/LCanvas.java
 @@ -18,6 +18,9 @@ import mindustry.gen.*;
@@ -88,7 +88,7 @@ index 56f52b1bb9aecab2ecbedf672bc8431dc3a9de41..14b5488c33562503bc981c903a6da70d
 +                Seq<LStatement> lsStatement = LAssembler.read(code, privileged);
 +                LStatement stNew = lsStatement.first();
 +                if(stNew instanceof InvalidStatement){
-+                    UIExt.announce("[orange]警告：转换失败，请输入正确格式");
++                    UIExt.announce(Core.bundle.get("mdtx.logic.convertError"));
 +                    return;
 +                }
 +                newElem = new StatementElem(stNew);
@@ -161,7 +161,7 @@ index 07e167b5fd6566259d6f388b88ce92c496237235..92183af06346ea886944d765f8667822
                  case pan -> {
                      control.input.logicCutscene = true;
 diff --git a/core/src/mindustry/logic/LStatements.java b/core/src/mindustry/logic/LStatements.java
-index 230e99ae5c1acc2896da7ed2cd72cc2e0d4dfb09..46df9ca61ff9d505df5dbc614043275ebd47e7c7 100644
+index 230e99ae5c1acc2896da7ed2cd72cc2e0d4dfb09..7bb5e21eff2eada20cee090a70cf7cb661b7306e 100644
 --- a/core/src/mindustry/logic/LStatements.java
 +++ b/core/src/mindustry/logic/LStatements.java
 @@ -3,6 +3,9 @@ package mindustry.logic;
@@ -194,7 +194,7 @@ index 230e99ae5c1acc2896da7ed2cd72cc2e0d4dfb09..46df9ca61ff9d505df5dbc614043275e
 +                    var scroll = (ScrollPane)canvas.parent;
 +                    scroll.setScrollY(scroll.getMaxY() - dest.y + scroll.getHeight() * 0.5f);
 +                    saveUI();
-+                    UIExt.announce("[gold]跳转行号:[] " + destIndex);
++                    UIExt.announce(Core.bundle.format("mdtx.logic.jumpLine", destIndex));
 +
 +                    Element header = dest.getChildren().first();
 +                    dest.clearActions();
@@ -213,7 +213,7 @@ index 230e99ae5c1acc2896da7ed2cd72cc2e0d4dfb09..46df9ca61ff9d505df5dbc614043275e
  
              String name = name();
 diff --git a/core/src/mindustry/logic/LogicDialog.java b/core/src/mindustry/logic/LogicDialog.java
-index 51c8576d8b41d43e25eb86400d169b9a108e6642..de370177beb5fec5b3b00abbb3dd8e2c608610de 100644
+index 51c8576d8b41d43e25eb86400d169b9a108e6642..46362d700178f7057917ef156c14711278541f2e 100644
 --- a/core/src/mindustry/logic/LogicDialog.java
 +++ b/core/src/mindustry/logic/LogicDialog.java
 @@ -19,6 +19,8 @@ import mindustry.logic.LStatements.*;
@@ -254,7 +254,7 @@ index 51c8576d8b41d43e25eb86400d169b9a108e6642..de370177beb5fec5b3b00abbb3dd8e2c
                      }).marginLeft(12f);
 -
 +                    t.row();
-+                    t.button("[orange]丢弃更改", Icon.cancel,style, () -> ui.showConfirm("确认丢弃?", () -> {
++                    t.button(Core.bundle.get("mdtx.logic.discardChanges"), Icon.cancel,style, () -> ui.showConfirm(Core.bundle.get("mdtx.logic.confirmDiscard"), () -> {
 +                        noSave = true;
 +                        dialog.hide();
 +                        hide();

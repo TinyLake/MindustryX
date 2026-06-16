@@ -14,7 +14,7 @@ Content-Transfer-Encoding: 8bit
  1 file changed, 20 insertions(+)
 
 diff --git a/core/src/mindustry/ui/dialogs/SchematicsDialog.java b/core/src/mindustry/ui/dialogs/SchematicsDialog.java
-index 7e3841d8f0d14a99337855dfa48405b3f9f24bdd..57a3bcf22d94592bb17ee54829e99842f86270a9 100644
+index 46bb189c37fadcefc2add429e80e885dd7901657..7461de72cceff9d4e97e59959157c8b2894fcd3f 100644
 --- a/core/src/mindustry/ui/dialogs/SchematicsDialog.java
 +++ b/core/src/mindustry/ui/dialogs/SchematicsDialog.java
 @@ -24,6 +24,8 @@ import mindustry.input.*;
@@ -40,7 +40,7 @@ index 7e3841d8f0d14a99337855dfa48405b3f9f24bdd..57a3bcf22d94592bb17ee54829e99842
 +                            if(codeString.isEmpty()) return;
 +                            t.button(logicBlock.emoji(), Styles.cleart, () -> {
 +                                Core.app.setClipboardText(codeString);
-+                                UIExt.announce("已复制逻辑代码");
++                                UIExt.announce(Core.bundle.get("mdtx.schematic.copiedLogicCode"));
 +                            }).tooltip(Strings.truncate(codeString, 500, "\n...")).size(40f);
 +                            if(t.getChildren().size % 15 == 0) t.row();
 +                        }

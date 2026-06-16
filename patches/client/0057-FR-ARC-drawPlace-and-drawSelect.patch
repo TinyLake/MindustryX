@@ -124,7 +124,7 @@ index 6156ad9b240199dc05361ab73027b7f07010003e..b9f9b4262151e7f3c89a5db139f056d8
      }
  
 diff --git a/core/src/mindustry/world/blocks/defense/MendProjector.java b/core/src/mindustry/world/blocks/defense/MendProjector.java
-index dc337d182b0679e533c2389640b8edc70bb27a05..1e832f9fbd028bc2e19f381fcdec7e51deb5317d 100644
+index 46e1b5355fbbbf41df537d63ab63f2c45128e7d6..e412d3addf2bd09a5137e3009e85d42d5a1e275b 100644
 --- a/core/src/mindustry/world/blocks/defense/MendProjector.java
 +++ b/core/src/mindustry/world/blocks/defense/MendProjector.java
 @@ -1,5 +1,6 @@
@@ -154,7 +154,7 @@ index dc337d182b0679e533c2389640b8edc70bb27a05..1e832f9fbd028bc2e19f381fcdec7e51
      }
  
 diff --git a/core/src/mindustry/world/blocks/defense/OverdriveProjector.java b/core/src/mindustry/world/blocks/defense/OverdriveProjector.java
-index 31b67b7837d1c1b6c4c3ec00982478b5e4709bae..76f9b2cedb83d84b444a0860b88218267e58aab8 100644
+index 5f4eb21f4ea982fd93f07b7664fa53ea07dbb3fc..8ca74509a5194b10ef96d897c25a643e23fb03d3 100644
 --- a/core/src/mindustry/world/blocks/defense/OverdriveProjector.java
 +++ b/core/src/mindustry/world/blocks/defense/OverdriveProjector.java
 @@ -1,6 +1,5 @@
@@ -221,7 +221,7 @@ index 23cd7de6da67c3066ed36e2ffb0166f60fab4609..de990558688c082316121f1215ff9591
  
          @Override
 diff --git a/core/src/mindustry/world/blocks/production/BeamDrill.java b/core/src/mindustry/world/blocks/production/BeamDrill.java
-index 3a2b552197a63e1368e434170d012133f970c4f3..4c228bb679a758283ac20f4a29646a5c94aeefae 100644
+index bb51ed0bf3c0a3e5bd06ad4e40662c509d7fad63..ed314b2555f966b1be7b6f7614e6eb630f90ca1f 100644
 --- a/core/src/mindustry/world/blocks/production/BeamDrill.java
 +++ b/core/src/mindustry/world/blocks/production/BeamDrill.java
 @@ -180,14 +180,10 @@ public class BeamDrill extends Block{

@@ -109,7 +109,7 @@ index 3d40d5136f44bf3a7518c833b5d5f2964cee6a39..91a30636e9c60bd2dbfb2a4ec05a1c7a
          if(requestCode == PERMISSION_REQUEST_CODE){
 diff --git a/android/src/mindustryX/features/ApkInstallHelper.java b/android/src/mindustryX/features/ApkInstallHelper.java
 new file mode 100644
-index 0000000000000000000000000000000000000000..44ae3d51de403bd575d069024c76c3b76e319fd1
+index 0000000000000000000000000000000000000000..15525ce1a6f3911210fc16466aa0546b809f7f4e
 --- /dev/null
 +++ b/android/src/mindustryX/features/ApkInstallHelper.java
 @@ -0,0 +1,70 @@
@@ -179,7 +179,7 @@ index 0000000000000000000000000000000000000000..44ae3d51de403bd575d069024c76c3b7
 +            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
 +            activity.startActivity(intent);
 +        }catch(Exception e){
-+            Vars.ui.showException("安装APK失败", e);
++            Vars.ui.showException(Core.bundle.get("mdtx.apk.installFailed"), e);
 +        }
 +    }
 +}

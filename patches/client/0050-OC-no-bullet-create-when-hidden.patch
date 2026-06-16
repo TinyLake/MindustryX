@@ -29,7 +29,7 @@ index 5619d65c62ce65488f3509a31e508a4088eb1ae7..f8436b1bc5cc22ecf2b731e2f43d1360
  
          if(!Mathf.chance(createChance)) return null;
 diff --git a/core/src/mindustry/type/Weapon.java b/core/src/mindustry/type/Weapon.java
-index 730beb13467614404eff0d64cf7f560147ac2a27..dcbdd5df54f2c75bc3662b4282b1def9ea7ef063 100644
+index 628a3026f563edaa238012b9100793c09d31a611..3d42a2bab2e9951cae5cb1a780b1a946ee29b5d0 100644
 --- a/core/src/mindustry/type/Weapon.java
 +++ b/core/src/mindustry/type/Weapon.java
 @@ -539,7 +539,7 @@ public class Weapon implements Cloneable{

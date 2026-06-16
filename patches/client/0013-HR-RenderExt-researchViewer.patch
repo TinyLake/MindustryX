@@ -42,7 +42,7 @@ index 3328eee453c1b9e5f56bc864a35bb6eaa1c7646c..7da49f8b4df23fd1016e4188c9e4b20c
  
          @Override
 diff --git a/core/src/mindustry/ui/dialogs/ResearchDialog.java b/core/src/mindustry/ui/dialogs/ResearchDialog.java
-index d3ffe9546d0ea23db6592598ec48b1a64fee1aac..9fe8a455c814171c898fe270af5bfd1a8ed73c22 100644
+index d3ffe9546d0ea23db6592598ec48b1a64fee1aac..549cc4c215b295aaa72e18bae7ebe334de6b3df7 100644
 --- a/core/src/mindustry/ui/dialogs/ResearchDialog.java
 +++ b/core/src/mindustry/ui/dialogs/ResearchDialog.java
 @@ -27,6 +27,7 @@ import mindustry.type.*;
@@ -92,7 +92,7 @@ index d3ffe9546d0ea23db6592598ec48b1a64fee1aac..9fe8a455c814171c898fe270af5bfd1a
                  b.table(desc -> {
                      desc.left().defaults().left();
 -                    desc.add(selectable ? node.content.localizedName : "[accent]???");
-+                    desc.add(selectable ? node.content.localizedName : RenderExt.researchViewer ? node.content.localizedName + "\n[red]未满足前置科技" : "[accent]???");
++                    desc.add(selectable ? node.content.localizedName : RenderExt.researchViewer ? node.content.localizedName + Core.bundle.get("mdtx.research.prerequisiteNotMet") : "[accent]???");
                      desc.row();
                      if(locked(node) || (debugShowRequirements && !net.client())){
  

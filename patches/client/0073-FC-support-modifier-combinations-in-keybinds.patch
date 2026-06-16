@@ -70,7 +70,7 @@ index 2f59d642b8203237b7cdc876e6c8fd3abf6386e0..31c1c2413f845e9f0a9ac6b2feaade56
          }
  
 diff --git a/core/src/mindustry/ui/dialogs/KeybindDialog.java b/core/src/mindustry/ui/dialogs/KeybindDialog.java
-index d3dd7592465f420eb7c225b7dc7218eada30abf8..6ae0ee7ed4c1364fc3a44105d0bc1c9d6ba89441 100644
+index 3e756e8d13f498a9eadaa355ce07b097254e3d70..7890dca51808de5d4c02e924a67af3f30a27ae3b 100644
 --- a/core/src/mindustry/ui/dialogs/KeybindDialog.java
 +++ b/core/src/mindustry/ui/dialogs/KeybindDialog.java
 @@ -95,10 +95,8 @@ public class KeybindDialog extends Dialog{
@@ -95,7 +95,7 @@ index d3dd7592465f420eb7c225b7dc7218eada30abf8..6ae0ee7ed4c1364fc3a44105d0bc1c9d
 +                table.button("=", Styles.logicTogglet, () -> {
 +                    keybind.value = new Axis(keybind.value.key, keybind.value.modifiers ^ KeyBind.modifierExact);
 +                    keybind.save();
-+                }).checked((_b) -> keybind.value.matchExact()).width(18f).padRight(8f).tooltip("精确匹配快捷键").disabled(b -> keybind.value.key == null);
++                }).checked((_b) -> keybind.value.matchExact()).width(18f).padRight(8f).tooltip(Core.bundle.get("mdtx.keybind.exactMatch")).disabled(b -> keybind.value.key == null);
 +                table.add(keyName(keybind.value)).update(l -> {
 +                    l.setText(keyName(keybind.value));
                      l.setColor(keybind.value.key == KeyCode.unset ? Color.darkGray : Pal.accent);

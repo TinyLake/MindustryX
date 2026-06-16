@@ -9,15 +9,14 @@ Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 
 ---
- core/build.gradle.kts                         |  1 +
- core/src/mindustry/core/ContentLoader.java    | 17 +++++++++
- core/src/mindustry/core/NetClient.java        |  2 +
- core/src/mindustry/io/TypeIO.java             | 18 +++++++--
- core/src/mindustry/net/Net.java               | 38 ++++++++++++++++---
- core/src/mindustry/net/NetworkIO.java         | 32 ++++++++++++----
- core/src/mindustry/net/Packets.java           |  2 +-
- core/src/mindustry/ui/dialogs/JoinDialog.java |  2 +-
- 8 files changed, 95 insertions(+), 17 deletions(-)
+ core/build.gradle.kts                      |  1 +
+ core/src/mindustry/core/ContentLoader.java | 17 ++++++++++
+ core/src/mindustry/core/NetClient.java     |  2 ++
+ core/src/mindustry/io/TypeIO.java          | 18 ++++++++--
+ core/src/mindustry/net/Net.java            | 38 +++++++++++++++++++---
+ core/src/mindustry/net/NetworkIO.java      | 32 ++++++++++++++----
+ core/src/mindustry/net/Packets.java        |  2 +-
+ 7 files changed, 94 insertions(+), 16 deletions(-)
 
 diff --git a/core/build.gradle.kts b/core/build.gradle.kts
 index e89b8f7fe020fc5d5f1fa444da3867624a13965c..f562cd09c7b4aacdff1b6cf7fa7462c4501edbdb 100644
@@ -311,16 +310,3 @@ index 835faba4ef5ca398c4986bba927bcd0bc91bbcf6..122c854ceb29ef6e9dee2f1abbe664d2
              TypeIO.writeString(buffer, name);
              TypeIO.writeString(buffer, locale);
              TypeIO.writeString(buffer, usid);
-diff --git a/core/src/mindustry/ui/dialogs/JoinDialog.java b/core/src/mindustry/ui/dialogs/JoinDialog.java
-index 105c34e52221930f2767999c1bf38dfd04f27cd5..a735dc4d29049ba9d2a213f6aa6dc416ca1fb78e 100644
---- a/core/src/mindustry/ui/dialogs/JoinDialog.java
-+++ b/core/src/mindustry/ui/dialogs/JoinDialog.java
-@@ -642,7 +642,7 @@ public class JoinDialog extends BaseDialog{
-                 title.setAlignment(Align.center);
-                 cont.add(Core.bundle.format("server.versions", Version.build, version)).row();
-                 cont.row();
--                cont.add("[gold]MDTX[]: 目标版本可能兼容，你可以选择伪装版本强制加入。\n如果出现[red]网络错误[]或其他问题，表示无法兼容。").row();
-+                cont.add("@forceJoin.tips").row();
-                 cont.pack();
-                 buttons.button("强制加入", () -> {
-                     hide();

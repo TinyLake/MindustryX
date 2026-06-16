@@ -321,7 +321,7 @@ index a6c4cee76dc917d3be46c4714f3beb3189c84ef4..9b8101507d4a361cd5598c8f14383bb7
          add = new BaseDialog("@joingame.title");
          add.cont.add("@joingame.ip").padRight(5f).left();
 diff --git a/core/src/mindustry/ui/dialogs/KeybindDialog.java b/core/src/mindustry/ui/dialogs/KeybindDialog.java
-index d14fd47e8d0afa17a76b9112eb89cca4badeb2b8..d3dd7592465f420eb7c225b7dc7218eada30abf8 100644
+index d14fd47e8d0afa17a76b9112eb89cca4badeb2b8..3e756e8d13f498a9eadaa355ce07b097254e3d70 100644
 --- a/core/src/mindustry/ui/dialogs/KeybindDialog.java
 +++ b/core/src/mindustry/ui/dialogs/KeybindDialog.java
 @@ -79,7 +79,7 @@ public class KeybindDialog extends Dialog{
@@ -348,7 +348,7 @@ index d14fd47e8d0afa17a76b9112eb89cca4badeb2b8..d3dd7592465f420eb7c225b7dc7218ea
                      openDialog(keybind);
                  }).size(bw, bh);
              }
-+            table.button("取消绑定", tstyle, () -> {
++            table.button(Core.bundle.get("mdtx.keybind.unbind"), tstyle, () -> {
 +                keybind.value = new Axis(KeyCode.unset);
 +                keybind.save();
 +            }).size(bw, bh).pad(2f).padLeft(4f);
