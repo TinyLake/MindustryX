@@ -47,14 +47,14 @@ index 380fd844426820615fd6d2f88899d2f5ec20ac2a..caf6a100865d862a4d75ccf55741f45b
  
      public boolean unlocked(){
 diff --git a/core/src/mindustry/ui/dialogs/DatabaseDialog.java b/core/src/mindustry/ui/dialogs/DatabaseDialog.java
-index 078026a393a19b36a66577a962f5984310375570..5e11f01de79027231a6d39cee708306895744647 100644
+index 078026a393a19b36a66577a962f5984310375570..f30455ff9b1d2095e9ccdfcc053ed45f9394f72f 100644
 --- a/core/src/mindustry/ui/dialogs/DatabaseDialog.java
 +++ b/core/src/mindustry/ui/dialogs/DatabaseDialog.java
 @@ -51,6 +51,11 @@ public class DatabaseDialog extends BaseDialog{
          });
          onResize(this::rebuild);
  
-+        buttons.button(Core.bundle.get("mdtx.database.unlock"), Styles.togglet, () -> {
++        buttons.button("@mdtx.database.unlock", Styles.togglet, () -> {
 +            mindustryX.VarsX.allUnlocked.toggle();
 +            rebuild();
 +        }).checked((b) -> mindustryX.VarsX.allUnlocked.get());

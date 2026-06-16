@@ -1267,7 +1267,7 @@ index 52e5181fa87c472b7da701bb8f34dfb4a05ba306..09412d05ee69ae0d547d688b212a941c
          ruleInfo(cell, text);
          current.row();
 diff --git a/core/src/mindustry/ui/dialogs/DatabaseDialog.java b/core/src/mindustry/ui/dialogs/DatabaseDialog.java
-index 5e11f01de79027231a6d39cee708306895744647..8ee5cce33c4f94d6da2b7d87edacdeadf3673be5 100644
+index f30455ff9b1d2095e9ccdfcc053ed45f9394f72f..1b2a6b136cff38fefcc8b2778117da28b5c426cf 100644
 --- a/core/src/mindustry/ui/dialogs/DatabaseDialog.java
 +++ b/core/src/mindustry/ui/dialogs/DatabaseDialog.java
 @@ -215,7 +215,7 @@ public class DatabaseDialog extends BaseDialog{
