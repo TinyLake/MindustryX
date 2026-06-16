@@ -7,12 +7,12 @@ Subject: [PATCH] FR: ARC drawPlace and drawSelect
  .../world/blocks/ConstructBlock.java          | 42 ++++++++++++++++++-
  .../world/blocks/defense/ForceProjector.java  |  2 +
  .../world/blocks/defense/MendProjector.java   |  5 ++-
- .../blocks/defense/OverdriveProjector.java    |  6 ++-
+ .../blocks/defense/OverdriveProjector.java    |  5 +++
  .../world/blocks/defense/turrets/Turret.java  | 19 +++++++++
  .../world/blocks/production/BeamDrill.java    | 12 ++----
  .../world/blocks/production/Drill.java        | 23 ++++++----
  .../world/blocks/storage/CoreBlock.java       |  1 +
- 8 files changed, 91 insertions(+), 19 deletions(-)
+ 8 files changed, 91 insertions(+), 18 deletions(-)
 
 diff --git a/core/src/mindustry/world/blocks/ConstructBlock.java b/core/src/mindustry/world/blocks/ConstructBlock.java
 index 711d6c971c9d4df19203d42449a95adf895c30bf..b93cf1e7b4309789953d91bb29e1f707d060a9d3 100644
@@ -154,17 +154,10 @@ index 46e1b5355fbbbf41df537d63ab63f2c45128e7d6..e412d3addf2bd09a5137e3009e85d42d
      }
  
 diff --git a/core/src/mindustry/world/blocks/defense/OverdriveProjector.java b/core/src/mindustry/world/blocks/defense/OverdriveProjector.java
-index 5f4eb21f4ea982fd93f07b7664fa53ea07dbb3fc..8ca74509a5194b10ef96d897c25a643e23fb03d3 100644
+index 5f4eb21f4ea982fd93f07b7664fa53ea07dbb3fc..e076156c361f30de83a1547f1a48b24510bdc65a 100644
 --- a/core/src/mindustry/world/blocks/defense/OverdriveProjector.java
 +++ b/core/src/mindustry/world/blocks/defense/OverdriveProjector.java
-@@ -1,6 +1,5 @@
- package mindustry.world.blocks.defense;
- 
--import arc.*;
- import arc.graphics.*;
- import arc.graphics.g2d.*;
- import arc.math.*;
-@@ -62,6 +61,11 @@ public class OverdriveProjector extends Block{
+@@ -62,6 +62,11 @@ public class OverdriveProjector extends Block{
          super.drawPlace(x, y, rotation, valid);
  
          Drawf.dashCircle(x * tilesize + offset, y * tilesize + offset, range, baseColor);
