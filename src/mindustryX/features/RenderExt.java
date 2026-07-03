@@ -82,6 +82,8 @@ public class RenderExt{
     public static final SettingsV2.CheckPref showOtherTeamState = new CheckPref("block.showOtherTeamState");
     public static final SettingsV2.CheckPref logicDisplayNoBorder0 = new CheckPref("block.logicDisplayNoBorder");
 
+    private static final Seq<Unit> tmpUnits = new Seq<>();
+
 
     static{
         if(headless) throw new RuntimeException("RenderExt should not access in Headless");
@@ -212,6 +214,21 @@ public class RenderExt{
         if(build instanceof BaseTurretBuild turretBuild){
             Draw.z(Layer.turret);
             ArcBuilds.turretDraw(turretBuild);
+        }
+    }
+
+    public static void onDrawSelect(Building build){
+        if(arcDrillMode && build instanceof DrillBuild) return;
+        build.drawSelect();
+
+        if(build instanceof TurretBuild turretBuild){
+            Draw.z(Layer.turret + 0.1f);
+            drawTurretSelect(turretBuild);
+        }
+        if(build instanceof ConstructBuild constructBuild){
+            // BlockUnit之上
+            Draw.z(Layer.flyingUnit + 0.1f);
+            drawConstructSelect(constructBuild);
         }
     }
 
@@ -354,25 +371,12 @@ public class RenderExt{
         });
     }
 
-    public static void onDrawSelect(Building build){
-        if(arcDrillMode && build instanceof DrillBuild) return;
-        build.drawSelect();
-
-        if(build instanceof TurretBuild turretBuild){
-            Draw.z(Layer.turret + 0.1f);
-            drawTurretSelect(turretBuild);
-        }
-        if(build instanceof ConstructBuild constructBuild){
-            Draw.z(Layer.flyingUnit + 0.1f);
-            drawConstructSelect(constructBuild);
-        }
-    }
-
     public static void drawTurretSelect(TurretBuild turretBuild){
         Vec2 targetPos = turretBuild.targetPos;
 
         Turret turret = (Turret)turretBuild.block;
 
+        //ARC: show shoot target line
         if(ArcBuilds.blockWeaponTargetLine && !targetPos.isZero() && turretBuild.dst(targetPos) < turret.range * 5){
             Lines.stroke(1f);
             Lines.dashLine(turretBuild.x, turretBuild.y, targetPos.x, targetPos.y, (int)(turretBuild.dst(targetPos) / 8));
@@ -395,9 +399,22 @@ public class RenderExt{
         Block current = constructBuild.current;
         float progress = constructBuild.progress;
 
-        var pos = Tmp.v1.set(constructBuild).add(0, buildHitSize / 2f);
-        FuncX.drawText(pos, Strings.fixed(progress * 100, 2) + "%", scl, Pal.accent, Align.bottom);
+        // 显示建造进度
+        var pos = Tmp.v1.set(constructBuild).add(0, buildHitSize / 2f);//顶部
 
+        constructBuild.team.data().unitTree.getObjects(tmpUnits);
+        float speed = tmpUnits.select(u -> u.isBuilding() && u.buildPlan().build() == constructBuild)
+        .sumf(u -> Mathf.sign(!u.buildPlan().breaking) * 1.0f / constructBuild.buildCost * u.type.buildSpeed * u.buildSpeedMultiplier * Vars.state.rules.buildSpeed(u.team));
+        tmpUnits.clear();
+
+        float timeTicks = (speed > 0 ? 1 - progress : progress) / Math.abs(speed);
+        String timeStr = Mathf.zero(speed) ? ""
+        : timeTicks < 600 ? "(" + Strings.autoFixed(timeTicks / 60, 1) + "s" + ")"
+        : "(" + UI.formatTime(timeTicks) + ")";
+
+        FuncX.drawText(pos, Strings.fixed(progress * 100, 2) + "%" + timeStr, scl, Pal.accent, Align.bottom);
+
+        // 显示物品需求
         StringBuilder requirements = new StringBuilder();
         for(int i = 0; i < current.requirements.length; i++){
             ItemStack stack = current.requirements[i];
@@ -411,7 +428,7 @@ public class RenderExt{
             if(i != 0) requirements.append('\n');
             requirements.append(stack.item.emoji()).append(hasItem ? "[#ffd37f]" : "[#e55454]").append(investItem).append("/").append(needItem).append("/").append(UI.formatAmount(coreAmount)).append("[]");
         }
-        pos.set(constructBuild).add(-buildHitSize / 2f, -buildHitSize / 2f);
+        pos.set(constructBuild).add(-buildHitSize / 2f, -buildHitSize / 2f);//左下角
         FuncX.drawText(pos, requirements.toString(), scl, Color.white, Align.topLeft);
     }
 }
