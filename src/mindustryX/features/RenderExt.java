@@ -12,6 +12,7 @@ import kotlin.collections.*;
 import mindustry.*;
 import mindustry.core.*;
 import mindustry.entities.*;
+import mindustry.entities.units.*;
 import mindustry.game.EventType.*;
 import mindustry.gen.*;
 import mindustry.graphics.*;
@@ -402,16 +403,23 @@ public class RenderExt{
         // 显示建造进度
         var pos = Tmp.v1.set(constructBuild).add(0, buildHitSize / 2f);//顶部
 
-        constructBuild.team.data().unitTree.getObjects(tmpUnits);
-        float speed = tmpUnits.select(u -> u.isBuilding() && u.buildPlan().build() == constructBuild)
-        .sumf(u -> Mathf.sign(!u.buildPlan().breaking) * 1.0f / constructBuild.buildCost * u.type.buildSpeed * u.buildSpeedMultiplier * Vars.state.rules.buildSpeed(u.team));
+        constructBuild.team.data().tree().getObjects(tmpUnits);
+        float speed = 0f;
+        for(Unit u : tmpUnits){
+            BuildPlan plan = u.buildPlan();
+            if(plan != null && plan.build() == constructBuild){
+                if(u.controller() == player && !control.input.isBuilding) continue;
+                speed += Mathf.sign(!plan.breaking) * 1.0f / constructBuild.buildCost * u.type.buildSpeed * u.buildSpeedMultiplier * Vars.state.rules.buildSpeed(u.team);
+            }
+        }
         tmpUnits.clear();
 
-        float timeTicks = (speed > 0 ? 1 - progress : progress) / Math.abs(speed);
-        String timeStr = Mathf.zero(speed) ? ""
-        : timeTicks < 600 ? "(" + Strings.autoFixed(timeTicks / 60, 1) + "s" + ")"
-        : "(" + UI.formatTime(timeTicks) + ")";
-
+        String timeStr = "";
+        if(!Mathf.zero(speed)){
+            float leftTicks = (speed > 0 ? 1 - progress : progress) / Math.abs(speed);
+            timeStr = leftTicks < 600 ? "(" + Strings.autoFixed(leftTicks / 60, 1) + "s" + ")"
+            : "(" + UI.formatTime(leftTicks) + ")";
+        }
         FuncX.drawText(pos, Strings.fixed(progress * 100, 2) + "%" + timeStr, scl, Pal.accent, Align.bottom);
 
         // 显示物品需求
