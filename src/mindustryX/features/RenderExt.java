@@ -34,6 +34,7 @@ import java.util.*;
 
 import static mindustry.Vars.*;
 import static mindustryX.features.UIExt.i;
+import static mindustryX.features.func.FuncX.drawText;
 
 public class RenderExt{
     public static boolean displayAllMessage;
@@ -63,6 +64,7 @@ public class RenderExt{
 
     public static final SettingsV2.CheckPref spawnerWaveDisplay = new CheckPref("gameUI.spawnerWaveDisplay", true);
     public static final SettingsV2.CheckPref transportScan = new CheckPref("gameUI.transportScan");
+    public static final SettingsV2.CheckPref mouseInfo = new CheckPref("gameUI.mouseInfo");
     public static final SettingsV2.CheckPref announceRtsTake = new CheckPref("gameUI.announceRtsTake", true);
     public static final SettingsV2.CheckPref deadOverlay = new CheckPref("gameUI.deadOverlay");
 
@@ -168,6 +170,7 @@ public class RenderExt{
         ArcRadar.draw();
         if(payloadPreview.get()) PayloadDropHint.draw(player);
         if(transportScan.get()) NewTransferScanMode.INSTANCE.draw();
+        if(mouseInfo.get()) drawMouseInfo();
     }
 
     public static void onGroupDraw(Drawc t){
@@ -309,6 +312,17 @@ public class RenderExt{
         Lines.line(x1, y, Mathf.lerp(x1, x2, Mathf.clamp(ratio, 0f, 1f)), y);
 
         Draw.reset();
+    }
+
+    private static void drawMouseInfo(){
+        Draw.z(Layer.overlayUI);
+        Vec2 pos = Core.input.mouseWorld();
+        String text = VarsX.bundle.coordinateDistance(
+        (int)(pos.x / tilesize),
+        (int)(pos.y / tilesize),
+        (int)(player.dst(pos) / tilesize)
+        );
+        drawText(pos, text);
     }
 
     static ObjectMap<String, HashSet<Unit>> removePool = new ObjectMap<>();

@@ -56,16 +56,6 @@ object NewTransferScanMode {
      * Main entry point - rendering function
      */
     fun draw() {
-        Draw.z(Layer.overlayUI + 0.01f)
-
-        val pos = Core.input.mouseWorld()
-        val text = VarsX.bundle.coordinateDistance(
-            (pos.x / tilesize).toInt(),
-            (pos.y / tilesize).toInt(),
-            (player.dst(pos) / tilesize).toInt()
-        )
-        drawText(pos, text)
-
         Draw.z(Layer.overlayUI)
         // 获取鼠标悬停的建筑
         val build = world.tileWorld(Core.input.mouseWorld().x, Core.input.mouseWorld().y)?.build ?: return
