@@ -13,6 +13,7 @@ import mindustry.*;
 import mindustry.core.*;
 import mindustry.entities.*;
 import mindustry.entities.units.*;
+import mindustry.game.*;
 import mindustry.game.EventType.*;
 import mindustry.gen.*;
 import mindustry.graphics.*;
@@ -264,6 +265,12 @@ public class NewCoreItemsDisplay extends Table{
             Block block = plan.block;
 
             if(block == null || block instanceof CoreBlock) continue;
+
+            // BuilderComp#updateBuildLogic
+            Tile tile = plan.tile();
+            if(tile.team() == Team.derelict && tile.block() == block && tile.build != null && tile.block().allowDerelictRepair && state.rules.derelictRepair){
+                continue;
+            }
 
             if(plan.build() instanceof ConstructBuild build){
                 block = build.current;
