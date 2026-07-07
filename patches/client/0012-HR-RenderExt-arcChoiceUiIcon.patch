@@ -18,7 +18,7 @@ Content-Transfer-Encoding: 8bit
  6 files changed, 16 insertions(+)
 
 diff --git a/core/src/mindustry/world/blocks/distribution/DirectionalUnloader.java b/core/src/mindustry/world/blocks/distribution/DirectionalUnloader.java
-index d32cfdd4c2ac030c344270e5cba23585ef23fedc..7e786c4ec6270095798fe252f1cc9a559f8e32d0 100644
+index 6f944e48554227533c9dd650e231b83e3d28d9cd..5e14488a6736bfe18c59b7ca6b652b3bac253ece 100644
 --- a/core/src/mindustry/world/blocks/distribution/DirectionalUnloader.java
 +++ b/core/src/mindustry/world/blocks/distribution/DirectionalUnloader.java
 @@ -14,6 +14,7 @@ import mindustry.world.blocks.*;
@@ -29,7 +29,7 @@ index d32cfdd4c2ac030c344270e5cba23585ef23fedc..7e786c4ec6270095798fe252f1cc9a55
  
  import static mindustry.Vars.*;
  
-@@ -123,6 +124,7 @@ public class DirectionalUnloader extends Block{
+@@ -129,6 +130,7 @@ public class DirectionalUnloader extends Block{
                  Draw.color(unloadItem.color);
                  Draw.rect(centerRegion, x, y);
                  Draw.color();

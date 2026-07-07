@@ -1392,7 +1392,7 @@ index 20e282fa1b46d18d0a230d0aa71b2554ddb82023..8343b8b2019fd2765d528d5a1afdd684
  
                              if(sec.isAttacked()){
 diff --git a/core/src/mindustry/ui/dialogs/SchematicsDialog.java b/core/src/mindustry/ui/dialogs/SchematicsDialog.java
-index f07e3c68cf278e7f66d31514162022df8b370bca..3676a7b8e86daac265280afc4b428e7f2f0edf68 100644
+index 7cf970930b303eb492404f400d61fe3626d09367..3f395066e52ef4ece740287afeb5b98c0ee3892b 100644
 --- a/core/src/mindustry/ui/dialogs/SchematicsDialog.java
 +++ b/core/src/mindustry/ui/dialogs/SchematicsDialog.java
 @@ -16,6 +16,7 @@ import arc.scene.ui.layout.*;

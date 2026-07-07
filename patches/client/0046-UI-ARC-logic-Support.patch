@@ -213,7 +213,7 @@ index 1f47387df3cf1e402ece1beebb56851256aaea43..12f2db1e818a72bada17ab4c3c21e1b0
  
              String name = name();
 diff --git a/core/src/mindustry/logic/LogicDialog.java b/core/src/mindustry/logic/LogicDialog.java
-index f88f166e4d05ea89777c5a06fdc5f2e7bafa1611..e0572acd979799eceb1eac64b31703a630d6c14f 100644
+index 80d8f7e86ea56efd190317b75aa1e6d2f5d7ad6d..d7e899df6ae55ae528fe4ef7dc917bd9d6ecedc7 100644
 --- a/core/src/mindustry/logic/LogicDialog.java
 +++ b/core/src/mindustry/logic/LogicDialog.java
 @@ -19,6 +19,8 @@ import mindustry.logic.LStatements.*;
@@ -271,7 +271,7 @@ index f88f166e4d05ea89777c5a06fdc5f2e7bafa1611..e0572acd979799eceb1eac64b31703a6
      }
  }
 diff --git a/core/src/mindustry/world/blocks/logic/LogicBlock.java b/core/src/mindustry/world/blocks/logic/LogicBlock.java
-index 321492b5d4d0cd9b521ee649e7d3f28440d9159f..1c2778f019e7197658cff7e4b910994eaf569bfe 100644
+index 8755d029fe8f3e158d9e97108f9cf36959edaee1..a0e31fe98b6146ce17bdb613e3d604938df4dd5d 100644
 --- a/core/src/mindustry/world/blocks/logic/LogicBlock.java
 +++ b/core/src/mindustry/world/blocks/logic/LogicBlock.java
 @@ -16,6 +16,7 @@ import arc.util.io.*;
@@ -338,7 +338,7 @@ index 321492b5d4d0cd9b521ee649e7d3f28440d9159f..1c2778f019e7197658cff7e4b910994e
          }
  
          //logic blocks cause write problems when picked up
-@@ -681,24 +694,30 @@ public class LogicBlock extends Block{
+@@ -682,24 +695,30 @@ public class LogicBlock extends Block{
              }
  
              for(LogicLink l : links){
@@ -373,7 +373,7 @@ index 321492b5d4d0cd9b521ee649e7d3f28440d9159f..1c2778f019e7197658cff7e4b910994e
  
              Groups.unit.each(u -> u.controller() instanceof LogicAI ai && ai.controller == this, unit -> {
                  Drawf.square(unit.x, unit.y, unit.hitSize, unit.rotation + 45);
-@@ -745,12 +764,12 @@ public class LogicBlock extends Block{
+@@ -746,12 +765,12 @@ public class LogicBlock extends Block{
  
          @Override
          public boolean shouldShowConfigure(Player player){

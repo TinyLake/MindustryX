@@ -9,9 +9,9 @@ Content-Transfer-Encoding: 8bit
 更好的字体包支持
 ---
  core/src/mindustry/ClientLauncher.java |  6 ++----
- core/src/mindustry/core/UI.java        |  4 ----
+ core/src/mindustry/core/UI.java        |  2 --
  core/src/mindustry/ui/Fonts.java       | 30 ++++++++++++++------------
- 3 files changed, 18 insertions(+), 22 deletions(-)
+ 3 files changed, 18 insertions(+), 20 deletions(-)
 
 diff --git a/core/src/mindustry/ClientLauncher.java b/core/src/mindustry/ClientLauncher.java
 index 186bdddacf16e9100eda18496ddd3eebd6935a7e..df3cd614172f416ea5ef1c96910facf61e8764bb 100644
@@ -43,20 +43,18 @@ index 186bdddacf16e9100eda18496ddd3eebd6935a7e..df3cd614172f416ea5ef1c96910facf6
          add(netServer = new NetServer());
          add(netClient = new NetClient());
 diff --git a/core/src/mindustry/core/UI.java b/core/src/mindustry/core/UI.java
-index a6ebab2571f6e54bf602eef54c2c77caea9d9adb..46132989e953ece3e6b4d0e68194507cb875be4e 100644
+index 490a9d7a0b7dbf531311bef15e977910f1de9ffd..1ebb72400447cc52bec262498f42a9be6a3891f2 100644
 --- a/core/src/mindustry/core/UI.java
 +++ b/core/src/mindustry/core/UI.java
-@@ -92,10 +92,6 @@ public class UI implements ApplicationListener, Loadable{
-     /** Maps labels to ids so that they can be removed or updated by id. */
-     private final IntMap<WorldLabel> labels = new IntMap<>();
- 
--    public UI(){
--        Fonts.loadFonts();
--    }
+@@ -97,8 +97,6 @@ public class UI implements ApplicationListener, Loadable{
+             labels.clear();
+             popups.clear();
+         });
 -
+-        Fonts.loadFonts();
+     }
+ 
      public static void loadColors(){
-         Colors.put("accent", Pal.accent);
-         Colors.put("unlaunched", Color.valueOf("8982ed"));
 diff --git a/core/src/mindustry/ui/Fonts.java b/core/src/mindustry/ui/Fonts.java
 index 397b42b472e9b8739dfc0e4d8948b6af481780b9..40c0e7858e69a0ce3fe5be7acd946a877c138822 100644
 --- a/core/src/mindustry/ui/Fonts.java

@@ -161,10 +161,10 @@ index 00ba1ca4db32ff2be45c18b6c65e4ab95fa95b0c..ed298514f6c3681d5de9c09c17c2ae10
  
              player.admin = false;
 diff --git a/core/src/mindustry/core/UI.java b/core/src/mindustry/core/UI.java
-index ef63fc0fb2d3ee46a2ee38654d6e769699c66118..a6ebab2571f6e54bf602eef54c2c77caea9d9adb 100644
+index f629548331217db2131cc231e850ad259d567565..490a9d7a0b7dbf531311bef15e977910f1de9ffd 100644
 --- a/core/src/mindustry/core/UI.java
 +++ b/core/src/mindustry/core/UI.java
-@@ -638,7 +638,7 @@ public class UI implements ApplicationListener, Loadable{
+@@ -645,7 +645,7 @@ public class UI implements ApplicationListener, Loadable{
                  t.remove();
              }
          });
@@ -173,7 +173,7 @@ index ef63fc0fb2d3ee46a2ee38654d6e769699c66118..a6ebab2571f6e54bf602eef54c2c77ca
          t.pack();
          t.act(0.1f);
          Core.scene.add(t);
-@@ -782,23 +782,7 @@ public class UI implements ApplicationListener, Loadable{
+@@ -789,23 +789,7 @@ public class UI implements ApplicationListener, Loadable{
      }
  
      public static String formatAmount(long number){

@@ -8,7 +8,7 @@ Subject: [PATCH] OC: speedup SchematicsDialog showing.
  1 file changed, 4 insertions(+), 1 deletion(-)
 
 diff --git a/core/src/mindustry/ui/dialogs/SchematicsDialog.java b/core/src/mindustry/ui/dialogs/SchematicsDialog.java
-index b6c7640bdde477dbbda67e37831b720ab948be50..f07e3c68cf278e7f66d31514162022df8b370bca 100644
+index 6e0fe6a1b98c0aec8f4e2e62a134fa9a7f21d5f7..7cf970930b303eb492404f400d61fe3626d09367 100644
 --- a/core/src/mindustry/ui/dialogs/SchematicsDialog.java
 +++ b/core/src/mindustry/ui/dialogs/SchematicsDialog.java
 @@ -697,6 +697,7 @@ public class SchematicsDialog extends BaseDialog{
