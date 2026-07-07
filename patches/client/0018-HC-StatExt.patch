@@ -232,7 +232,7 @@ index c1e57abed105da8197b0a543d38657318bc8fb2e..a19a4f3b1730c3fda1dd7a06d3ec3b7a
  import static mindustry.Vars.*;
  
 diff --git a/core/src/mindustry/world/blocks/defense/MendProjector.java b/core/src/mindustry/world/blocks/defense/MendProjector.java
-index 348ff6af1f018bcfc0e460e0abc993badaaa4b75..096071ee20bcc276105c05ab09c2e8236730f749 100644
+index e1978238268e8e09f3dd7a1a2c6668945649cc38..30629e1f178cc2629584aabf599abf5d45909b2a 100644
 --- a/core/src/mindustry/world/blocks/defense/MendProjector.java
 +++ b/core/src/mindustry/world/blocks/defense/MendProjector.java
 @@ -60,8 +60,10 @@ public class MendProjector extends Block{

@@ -124,7 +124,7 @@ index 6156ad9b240199dc05361ab73027b7f07010003e..b9f9b4262151e7f3c89a5db139f056d8
      }
  
 diff --git a/core/src/mindustry/world/blocks/defense/MendProjector.java b/core/src/mindustry/world/blocks/defense/MendProjector.java
-index da8d956f788128b4bdd2b1a5b96be4876fe40c48..be71f3dcafe420700613b00ed14d5f5be857d120 100644
+index ea33db2196fb3fd261bae1d5fe29768e78c29cb7..93cc61b4a1e2a4814d3197aaf4789712ec525ade 100644
 --- a/core/src/mindustry/world/blocks/defense/MendProjector.java
 +++ b/core/src/mindustry/world/blocks/defense/MendProjector.java
 @@ -1,5 +1,6 @@

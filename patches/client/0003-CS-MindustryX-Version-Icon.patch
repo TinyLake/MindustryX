@@ -12,14 +12,14 @@ way-zer <himc.wicp@gmail.com> on 2024/9/8
  .gitignore                                         | 1 +
  android/build.gradle                               | 2 +-
  android/res/values/strings.xml                     | 2 +-
- build.gradle                                       | 9 +++++++--
+ build.gradle                                       | 8 ++++++--
  core/build.gradle.kts                              | 2 +-
  core/src/mindustry/Vars.java                       | 4 ++--
  core/src/mindustry/core/NetClient.java             | 2 ++
  core/src/mindustry/core/Version.java               | 4 +++-
  core/src/mindustry/net/NetworkIO.java              | 2 +-
  desktop/src/mindustry/desktop/DesktopLauncher.java | 2 +-
- 10 files changed, 20 insertions(+), 10 deletions(-)
+ 10 files changed, 19 insertions(+), 10 deletions(-)
 
 diff --git a/.gitignore b/.gitignore
 index b5b2a237c2f5343aab2fb668337c2bc47a45c1b8..308ff12c92a06e11c18b33f540098a0f1347ab5e 100644
@@ -57,18 +57,15 @@ index d42ffe6d4a318ce558f1010eae46140f88ed5c99..bf44ead5c58abfb79c500e6daae30c3e
 +    <string name="app_name">MindustryX</string>
  </resources>
 diff --git a/build.gradle b/build.gradle
-index 0b65443711dee862c479de72223141d032a299dd..06411e403a352de11b395ad9e02c7564ad47be61 100644
+index b7b3afa858783147fd47d7fdf8a76886f5e90c67..9606b803f0aeed0659f1b6ce69c2ea6025e0b9db 100644
 --- a/build.gradle
 +++ b/build.gradle
-@@ -4,9 +4,14 @@ buildscript{
-         localArc = new File(rootDir.parent, 'Arc').exists() && !project.hasProperty("noLocalArc")
- 
+@@ -6,7 +6,11 @@ buildscript{
          arcModule = { String name ->
-+            def useLocalArc = localArc
              //skip to last submodule
              name = name.substring(name.lastIndexOf(':') + 1)
 -            return "com.github.Anuken${localArc ? "" : ".Arc"}:$name:$arcHash"
-+            if(useLocalArc){
++            if(localArc){
 +                return "com.github.TinyLake.MindustryX:$name:$arcHash"
 +            }else{
 +                return "com.github.Anuken.Arc:$name:$arcHash"
@@ -76,7 +73,7 @@ index 0b65443711dee862c479de72223141d032a299dd..06411e403a352de11b395ad9e02c7564
          }
      }
  }
-@@ -20,7 +25,7 @@ allprojects{
+@@ -20,7 +24,7 @@ allprojects{
      apply plugin: 'maven-publish'
  
      version = project.hasProperty("packageVersion") ? project.getProperty("packageVersion") : 'release'

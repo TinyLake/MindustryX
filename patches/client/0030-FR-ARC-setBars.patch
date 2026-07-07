@@ -134,7 +134,7 @@ index a19a4f3b1730c3fda1dd7a06d3ec3b7a0241ebc7..6156ad9b240199dc05361ab73027b7f0
  
      @Override
 diff --git a/core/src/mindustry/world/blocks/defense/MendProjector.java b/core/src/mindustry/world/blocks/defense/MendProjector.java
-index 096071ee20bcc276105c05ab09c2e8236730f749..da8d956f788128b4bdd2b1a5b96be4876fe40c48 100644
+index 30629e1f178cc2629584aabf599abf5d45909b2a..ea33db2196fb3fd261bae1d5fe29768e78c29cb7 100644
 --- a/core/src/mindustry/world/blocks/defense/MendProjector.java
 +++ b/core/src/mindustry/world/blocks/defense/MendProjector.java
 @@ -12,6 +12,7 @@ import mindustry.content.*;

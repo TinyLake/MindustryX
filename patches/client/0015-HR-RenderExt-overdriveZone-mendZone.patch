@@ -6,9 +6,9 @@ Subject: [PATCH] HR(RenderExt) overdriveZone mendZone
 ---
  core/src/mindustry/core/Renderer.java         |  5 ++++
  core/src/mindustry/graphics/Layer.java        |  3 +++
- .../world/blocks/defense/MendProjector.java   | 10 ++++++++
+ .../world/blocks/defense/MendProjector.java   |  8 +++++++
  .../blocks/defense/OverdriveProjector.java    | 24 +++++++++++++++++++
- 4 files changed, 42 insertions(+)
+ 4 files changed, 40 insertions(+)
 
 diff --git a/core/src/mindustry/core/Renderer.java b/core/src/mindustry/core/Renderer.java
 index f25585b53208318e2b09c227e94915bf291b941e..a74d7e7db9dc1d629fc76365c775ec0a6bbb6b08 100644
@@ -41,7 +41,7 @@ index 7d8d9f343acb410ba680aab1c1f6a2be9dbbf3a4..48e80224bdcbaea0476d4be204eef767
      weather = 130,
  
 diff --git a/core/src/mindustry/world/blocks/defense/MendProjector.java b/core/src/mindustry/world/blocks/defense/MendProjector.java
-index 91ee4035ba5afcd8614fab31869526311fca7b58..348ff6af1f018bcfc0e460e0abc993badaaa4b75 100644
+index 91ee4035ba5afcd8614fab31869526311fca7b58..e1978238268e8e09f3dd7a1a2c6668945649cc38 100644
 --- a/core/src/mindustry/world/blocks/defense/MendProjector.java
 +++ b/core/src/mindustry/world/blocks/defense/MendProjector.java
 @@ -15,6 +15,7 @@ import mindustry.logic.*;
@@ -52,12 +52,10 @@ index 91ee4035ba5afcd8614fab31869526311fca7b58..348ff6af1f018bcfc0e460e0abc993ba
  
  import static mindustry.Vars.*;
  
-@@ -144,6 +145,15 @@ public class MendProjector extends Block{
+@@ -144,6 +145,13 @@ public class MendProjector extends Block{
  
          @Override
          public void draw(){
-+            super.draw();
-+
 +            float realRange = range + phaseHeat * phaseRangeBoost;
 +            if(status() == BlockStatus.active && RenderExt.mendZoneTransparency > 0.02f){
 +                var c = Tmp.c1.set(baseColor);

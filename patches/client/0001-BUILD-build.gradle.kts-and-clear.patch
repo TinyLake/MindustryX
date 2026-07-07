@@ -7,23 +7,23 @@ clear and replce jabel(Support record)
 way-zer <himc.wicp@gmail.com> on 2024/6/9
 ---
  .gitignore                                    |   2 +-
- android/build.gradle                          | 119 ++----
+ android/build.gradle                          | 119 ++-----
  android/proguard-rules.pro                    |   4 +
  .../com/github/bsideup/jabel/Desugar.java     |  13 +
  .../javax.annotation.processing.Processor     |   6 +
- build.gradle                                  | 366 ++++--------------
+ build.gradle                                  | 337 ++++--------------
  core/build.gradle                             |   2 -
  core/build.gradle.kts                         |  73 ++++
- desktop/build.gradle                          | 159 +-------
+ desktop/build.gradle                          | 159 +--------
  gradle.properties                             |   5 +-
- gradlew                                       | 284 ++++++++------
+ gradlew                                       | 284 +++++++++------
  gradlew.bat                                   |  37 +-
  ios/build.gradle                              |   2 +-
  server/build.gradle                           |  45 +--
  settings.gradle                               |  11 +-
- tools/build.gradle                            |  63 ++-
+ tools/build.gradle                            |  63 ++--
  tools/src/mindustry/tools/Generators.java     |   2 +-
- 17 files changed, 474 insertions(+), 719 deletions(-)
+ 17 files changed, 458 insertions(+), 706 deletions(-)
  create mode 100644 annotations/src/main/java/com/github/bsideup/jabel/Desugar.java
  create mode 100644 annotations/src/main/resources/META-INF/services/javax.annotation.processing.Processor
  delete mode 100644 core/build.gradle
@@ -289,7 +289,7 @@ index 0000000000000000000000000000000000000000..181b87c1d5f3755f16a01c0528d0a89f
 +mindustry.annotations.misc.LogicStatementProcessor
 +mindustry.annotations.remote.RemoteProcess
 diff --git a/build.gradle b/build.gradle
-index b1718ba1495763ef2cc36cd18fe919a725c0f1dc..c76b413831c1b2ae174637a19b07e57e6c7d54d1 100644
+index b1718ba1495763ef2cc36cd18fe919a725c0f1dc..d0b7b8867edffc6baca2bb8295461f28b551384a 100644
 --- a/build.gradle
 +++ b/build.gradle
 @@ -1,9 +1,6 @@
@@ -560,48 +560,28 @@ index b1718ba1495763ef2cc36cd18fe919a725c0f1dc..c76b413831c1b2ae174637a19b07e57e
          options{
              addStringOption('Xdoclint:none', '-quiet')
              addStringOption('-release', '17')
-@@ -252,27 +102,24 @@ configure(subprojects - project(":annotations") - project(":tests")){
+@@ -252,11 +102,10 @@ configure(subprojects - project(":annotations") - project(":tests")){
      }
  }
  
--project(":desktop"){
--    apply plugin: "java"
--
--    compileJava.options.fork = true
 +if(findProject("desktop") != null)
-+    project(":desktop"){
-+        apply plugin: "java"
+ project(":desktop"){
+     apply plugin: "java"
  
--    dependencies{
--        implementation project(":core")
--        implementation arcModule("extensions:profiling")
--        implementation arcModule("extensions:discord")
--        implementation arcModule("natives:natives-filedialogs")
--        implementation arcModule("extensions:filedialogs")
--        implementation arcModule("natives:natives-desktop")
--        implementation arcModule("natives:natives-freetype-desktop")
-+        dependencies{
-+            implementation project(":core")
-+            implementation arcModule("extensions:profiling")
-+            implementation arcModule("extensions:discord")
-+            implementation arcModule("natives:natives-filedialogs")
-+            implementation arcModule("extensions:filedialogs")
-+            implementation arcModule("natives:natives-desktop")
-+            implementation arcModule("natives:natives-freetype-desktop")
+-    compileJava.options.fork = true
+-
+     dependencies{
+         implementation project(":core")
+         implementation arcModule("extensions:profiling")
+@@ -266,8 +115,6 @@ project(":desktop"){
+         implementation arcModule("natives:natives-desktop")
+         implementation arcModule("natives:natives-freetype-desktop")
  
 -        if(debugged()) implementation project(":debug")
-+            implementation "com.github.Anuken:steamworks4j:$steamworksVersion"
- 
--        implementation "com.github.Anuken:steamworks4j:$steamworksVersion"
 -
--        implementation arcModule("backends:backend-sdl")
-+            implementation arcModule("backends:backend-sdl")
-+        }
-     }
--}
+         implementation "com.github.Anuken:steamworks4j:$steamworksVersion"
  
- project(":core"){
-     apply plugin: "java-library"
+         implementation arcModule("backends:backend-sdl")
 @@ -286,17 +133,7 @@ project(":core"){
          }
      }
@@ -682,16 +662,13 @@ index b1718ba1495763ef2cc36cd18fe919a725c0f1dc..c76b413831c1b2ae174637a19b07e57e
          api "at.yawk.lz4:lz4-java:1.10.2"
          api arcModule("arc-core")
          api arcModule("extensions:flabel")
-@@ -380,33 +203,30 @@ project(":core"){
+@@ -380,33 +203,27 @@ project(":core"){
          api arcModule("extensions:fx")
          api arcModule("extensions:arcnet")
          api "com.github.Anuken:rhino:$rhinoVersion"
 -        if(localArc && debugged()) api arcModule("extensions:recorder")
 -        if(localArc) api arcModule(":extensions:packer")
  
-+//        compileOnly 'com.github.bsideup.jabel:jabel-javac-plugin:0.4.2'
-+        annotationProcessor 'com.github.bsideup.jabel:jabel-javac-plugin:0.4.2'
-+//        annotationProcessor 'com.github.Anuken:jabel:0.9.0'
          compileOnly project(":annotations")
          if(!project.hasProperty("noKapt")) kapt project(":annotations")
      }
@@ -732,7 +709,7 @@ index b1718ba1495763ef2cc36cd18fe919a725c0f1dc..c76b413831c1b2ae174637a19b07e57e
      }
  
      gradle.taskGraph.whenReady{
-@@ -444,12 +264,6 @@ project(":tests"){
+@@ -444,12 +261,6 @@ project(":tests"){
          testRuntimeOnly "org.junit.platform:junit-platform-launcher"
      }
  
@@ -745,7 +722,7 @@ index b1718ba1495763ef2cc36cd18fe919a725c0f1dc..c76b413831c1b2ae174637a19b07e57e
      test{
          //fork every test so mods don't interact with each other
          forkEvery = 1
-@@ -501,33 +315,11 @@ configure([":core", ":server"].collect{project(it)}){
+@@ -501,33 +312,11 @@ configure([":core", ":server"].collect{project(it)}){
      }
  }
  
