@@ -27,10 +27,10 @@ way-zer <himc.wicp@gmail.com> on 2024/8/4
  2 files changed, 5 insertions(+), 4 deletions(-)
 
 diff --git a/core/src/mindustry/graphics/MultiPacker.java b/core/src/mindustry/graphics/MultiPacker.java
-index f3ebb3b5b53e1c1c983083644dabb1bcf1f07c67..d92d1f7c97cbad689f2d6d5843d343802fa6a86b 100644
+index 0d40a489e3a8daac43acd023ecefd0a4b0013407..abb1d8bac3a95729f76b9a8a099affaa72df4127 100644
 --- a/core/src/mindustry/graphics/MultiPacker.java
 +++ b/core/src/mindustry/graphics/MultiPacker.java
-@@ -114,7 +114,7 @@ public class MultiPacker implements Disposable{
+@@ -126,7 +126,7 @@ public class MultiPacker implements Disposable{
      //editor page (sprites5.png) - all sprites needed for rendering in the editor, including block icons and a few minor sprites
      public enum PageType{
          //main page can be massive, but 8192 throws GL_OUT_OF_MEMORY on some GPUs and I can't deal with it yet.
@@ -40,10 +40,10 @@ index f3ebb3b5b53e1c1c983083644dabb1bcf1f07c67..d92d1f7c97cbad689f2d6d5843d34380
          environment(4096),
          ui(4096),
 diff --git a/core/src/mindustry/world/blocks/logic/LogicDisplay.java b/core/src/mindustry/world/blocks/logic/LogicDisplay.java
-index 0b573076a400645ba85168028ac18ee74b3b188c..c32fe2331d141d0bd22b10e1cb037649d1c90736 100644
+index d204f8e8374bc52250261f435db760d4fe30b61a..959dd0d9fad017b827d70dbe6743f1f7059c49b5 100644
 --- a/core/src/mindustry/world/blocks/logic/LogicDisplay.java
 +++ b/core/src/mindustry/world/blocks/logic/LogicDisplay.java
-@@ -100,11 +100,11 @@ public class LogicDisplay extends Block{
+@@ -101,11 +101,11 @@ public class LogicDisplay extends Block{
              //don't even bother processing anything when displays are off.
              if(!Vars.renderer.drawDisplays) return;
  
@@ -57,7 +57,7 @@ index 0b573076a400645ba85168028ac18ee74b3b188c..c32fe2331d141d0bd22b10e1cb037649
                  if(buffer != null){
                      if(RenderExt.logicDisplayNoBorder){
                          Draw.rect(Draw.wrap(buffer.getTexture()), x, y, (buffer.getWidth() + 16) * Draw.scl, -(buffer.getHeight() + 16) * Draw.scl);
-@@ -114,6 +114,7 @@ public class LogicDisplay extends Block{
+@@ -115,6 +115,7 @@ public class LogicDisplay extends Block{
                  }
              });
              Draw.blend();
@@ -65,7 +65,7 @@ index 0b573076a400645ba85168028ac18ee74b3b188c..c32fe2331d141d0bd22b10e1cb037649
          }
  
          @Override
-@@ -154,7 +155,7 @@ public class LogicDisplay extends Block{
+@@ -155,7 +156,7 @@ public class LogicDisplay extends Block{
          public void processCommands(){
              //don't bother processing commands if displays are off
              if(!commands.isEmpty() && buffer != null){

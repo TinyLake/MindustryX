@@ -10,6 +10,7 @@ import arc.util.*;
 import mindustry.gen.*;
 import mindustry.graphics.*;
 import mindustry.ui.*;
+import mindustry.ui.FileChooser.*;
 import mindustry.ui.dialogs.*;
 import mindustryX.*;
 import mindustryX.features.*;
@@ -42,8 +43,9 @@ public class ReplayManagerDialog extends BaseDialog{
 
         addCloseButton();
         buttons.button(i("加载外部回放"), Icon.upload, () -> {
-            FileChooser.setLastDirectory(saveDirectory);
-            platform.showFileChooser(true, i("打开回放文件"), ReplayController.extension, file -> Core.app.post(() -> {
+            FileChooserDialog.setLastDirectory(saveDirectory);
+            new FileChooserParams().open(true).title(i("打开回放文件"))
+            .extensions(ReplayController.extension).submit(file -> Core.app.post(() -> {
                 hide();
                 ReplayController.startPlay(file);
             }));

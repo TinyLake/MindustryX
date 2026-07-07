@@ -142,7 +142,7 @@ index 0ad4c733dba850d448cf7ba61cfae7adb558d4be..ae17589b7a6f849aeda3673665263a80
  
                              rotation = plan.rotation;
 diff --git a/core/src/mindustry/world/blocks/environment/Floor.java b/core/src/mindustry/world/blocks/environment/Floor.java
-index 12ba8c78d10c6eeb463deb327ccb90cb018bfb5d..87a6c7318ee93ad7ee4647e314a49e27f91dfd7c 100644
+index ab4b3366aeeef1040b1d55f7c95bc28ad2d5e652..ef6fdcddcc3b0bfcb9c765f2d0c7342a1d9eedb0 100644
 --- a/core/src/mindustry/world/blocks/environment/Floor.java
 +++ b/core/src/mindustry/world/blocks/environment/Floor.java
 @@ -114,6 +114,7 @@ public class Floor extends Block{

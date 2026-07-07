@@ -6,6 +6,7 @@ package mindustryX.features.func
 import arc.Core
 import mindustry.Vars
 import mindustry.io.SaveVersion
+import mindustry.ui.FileChooser
 import mindustry.ui.dialogs.BaseDialog
 import mindustry.world.Block
 import mindustryX.features.UIExt
@@ -44,8 +45,8 @@ fun exportBlockData() {
             UIExt.announce("Copied to Clipboard")
         }
         buttons.button("Save to File") {
-            Vars.platform.showFileChooser(false, "Export Block Data", "dat") { file ->
-                if (file == null) return@showFileChooser
+            FileChooser.export("Export Block Data", "dat"){ file ->
+                if (file == null) return@export
                 file.writeBytes(data.toByteArray())
             }
         }

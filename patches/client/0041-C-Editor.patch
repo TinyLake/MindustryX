@@ -40,7 +40,7 @@ index 0d7de460ff6c67b760a28429027c8b8d19f5d55b..f19bb5a81421c9968f855097ece84ac5
  
          }
 diff --git a/core/src/mindustry/editor/MapEditor.java b/core/src/mindustry/editor/MapEditor.java
-index c2529b8c38ac57244517823aa73843cedec75602..b768477389731aefad275b3c6aa1760e20a4cc35 100644
+index 2187b57045a1402424f4e4ca4e19040775b94803..f0afd6f8f766602bcef90863fb5946ecf8133ee7 100644
 --- a/core/src/mindustry/editor/MapEditor.java
 +++ b/core/src/mindustry/editor/MapEditor.java
 @@ -29,7 +29,9 @@ public class MapEditor{
@@ -68,7 +68,7 @@ index c2529b8c38ac57244517823aa73843cedec75602..b768477389731aefad275b3c6aa1760e
  
                  if(wx < 0 || wy < 0 || wx >= width() || wy >= height()){
 diff --git a/core/src/mindustry/editor/MapEditorDialog.java b/core/src/mindustry/editor/MapEditorDialog.java
-index 1dfc7ad0d4e827d02c6b8c35a9845fed8d614147..a5c9b3ff5cf0d1ab7a1115f6423aad298a87d251 100644
+index 5de06bed1b254d520c104f03cdf21bfab7e0af0a..e791a867451560b207ce2b8e7041a65289aa3f15 100644
 --- a/core/src/mindustry/editor/MapEditorDialog.java
 +++ b/core/src/mindustry/editor/MapEditorDialog.java
 @@ -32,6 +32,7 @@ import mindustry.world.blocks.environment.*;
@@ -79,7 +79,7 @@ index 1dfc7ad0d4e827d02c6b8c35a9845fed8d614147..a5c9b3ff5cf0d1ab7a1115f6423aad29
  
  import static mindustry.Vars.*;
  
-@@ -669,10 +670,7 @@ public class MapEditorDialog extends Dialog implements Disposable{
+@@ -668,10 +669,7 @@ public class MapEditorDialog extends Dialog implements Disposable{
  
                  tools.image(Tex.whiteui, Pal.gray).colspan(3).height(4f).width(size * 3f + 3f).row();
  
@@ -90,7 +90,7 @@ index 1dfc7ad0d4e827d02c6b8c35a9845fed8d614147..a5c9b3ff5cf0d1ab7a1115f6423aad29
                  for(Team team : Team.baseTeams){
                      ImageButton button = new ImageButton(Tex.whiteui, Styles.clearNoneTogglei);
                      button.margin(4f);
-@@ -680,19 +678,34 @@ public class MapEditorDialog extends Dialog implements Disposable{
+@@ -679,19 +677,34 @@ public class MapEditorDialog extends Dialog implements Disposable{
                      button.getStyle().imageUpColor = team.color;
                      button.clicked(() -> editor.drawTeam = team);
                      button.update(() -> button.setChecked(editor.drawTeam == team));
@@ -127,7 +127,7 @@ index 1dfc7ad0d4e827d02c6b8c35a9845fed8d614147..a5c9b3ff5cf0d1ab7a1115f6423aad29
                      for(int j = 0; j < MapEditor.brushSizes.length; j++){
                          if(MapEditor.brushSizes[j] == editor.brushSize){
                              slider.setValue(j);
-@@ -847,6 +860,7 @@ public class MapEditorDialog extends Dialog implements Disposable{
+@@ -854,6 +867,7 @@ public class MapEditorDialog extends Dialog implements Disposable{
          });
  
          int i = 0;
@@ -135,7 +135,7 @@ index 1dfc7ad0d4e827d02c6b8c35a9845fed8d614147..a5c9b3ff5cf0d1ab7a1115f6423aad29
  
          for(Block block : blocksOut){
              TextureRegion region = block.uiIcon;
-@@ -865,9 +879,7 @@ public class MapEditorDialog extends Dialog implements Disposable{
+@@ -872,9 +886,7 @@ public class MapEditorDialog extends Dialog implements Disposable{
  
              if(i == 0) editor.drawBlock = block;
  
@@ -169,10 +169,10 @@ index 475cd5047abc4e0c74a02db3f34644ddcaa20634..531e545323ec177de4a0ae29a2986dfa
                  table.row();
              }
 diff --git a/core/src/mindustry/editor/MapView.java b/core/src/mindustry/editor/MapView.java
-index e03035023877c8c13f92e7cf2c630c43014f3212..ad9234fb96c25c222811da3050e332f5e1854b74 100644
+index 0190b0081d933fe891aa96e922a658b84c06fc99..08cc0c9845a8df4866da6f0d6da7f22957f5d2ff 100644
 --- a/core/src/mindustry/editor/MapView.java
 +++ b/core/src/mindustry/editor/MapView.java
-@@ -255,6 +255,11 @@ public class MapView extends Element implements GestureListener{
+@@ -258,6 +258,11 @@ public class MapView extends Element implements GestureListener{
          if(grid){
              Draw.color(Color.gray);
              image.setBounds(centerx - sclwidth / 2, centery - sclheight / 2, sclwidth, sclheight);
@@ -184,7 +184,7 @@ index e03035023877c8c13f92e7cf2c630c43014f3212..ad9234fb96c25c222811da3050e332f5
              image.draw();
  
              Lines.stroke(2f);
-@@ -269,16 +274,27 @@ public class MapView extends Element implements GestureListener{
+@@ -272,16 +277,27 @@ public class MapView extends Element implements GestureListener{
              Lines.line(centerx - sclwidth/2f, centery, centerx + sclwidth/2f, centery);
              Lines.line(centerx, centery - sclheight/2f, centerx, centery + sclheight/2f);
  
@@ -214,7 +214,7 @@ index e03035023877c8c13f92e7cf2c630c43014f3212..ad9234fb96c25c222811da3050e332f5
  
          float scaling = zoom * Math.min(width, height) / editor.width();
  
-@@ -291,8 +307,8 @@ public class MapView extends Element implements GestureListener{
+@@ -294,8 +310,8 @@ public class MapView extends Element implements GestureListener{
                  float sx = v1.x, sy = v1.y;
                  Vec2 v2 = unproject(lastx, lasty).add(x, y);
  
@@ -225,7 +225,7 @@ index e03035023877c8c13f92e7cf2c630c43014f3212..ad9234fb96c25c222811da3050e332f5
              }
  
              if((tool.edit || (tool == EditorTool.line && !drawing)) && (!mobile || drawing)){
-@@ -300,10 +316,12 @@ public class MapView extends Element implements GestureListener{
+@@ -303,10 +319,12 @@ public class MapView extends Element implements GestureListener{
                  Vec2 v = unproject(p.x, p.y).add(x, y);
  
                  //pencil square outline

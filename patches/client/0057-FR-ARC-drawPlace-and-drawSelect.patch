@@ -124,7 +124,7 @@ index 6156ad9b240199dc05361ab73027b7f07010003e..b9f9b4262151e7f3c89a5db139f056d8
      }
  
 diff --git a/core/src/mindustry/world/blocks/defense/MendProjector.java b/core/src/mindustry/world/blocks/defense/MendProjector.java
-index 46e1b5355fbbbf41df537d63ab63f2c45128e7d6..e412d3addf2bd09a5137e3009e85d42d5a1e275b 100644
+index da8d956f788128b4bdd2b1a5b96be4876fe40c48..be71f3dcafe420700613b00ed14d5f5be857d120 100644
 --- a/core/src/mindustry/world/blocks/defense/MendProjector.java
 +++ b/core/src/mindustry/world/blocks/defense/MendProjector.java
 @@ -1,5 +1,6 @@
@@ -143,7 +143,7 @@ index 46e1b5355fbbbf41df537d63ab63f2c45128e7d6..e412d3addf2bd09a5137e3009e85d42d
      public @Load("@-top") TextureRegion topRegion;
      public float reload = 250f;
      public float range = 60f;
-@@ -86,7 +87,9 @@ public class MendProjector extends Block{
+@@ -87,7 +88,9 @@ public class MendProjector extends Block{
          super.drawPlace(x, y, rotation, valid);
  
          Drawf.dashCircle(x * tilesize + offset, y * tilesize + offset, range, baseColor);
@@ -154,7 +154,7 @@ index 46e1b5355fbbbf41df537d63ab63f2c45128e7d6..e412d3addf2bd09a5137e3009e85d42d
      }
  
 diff --git a/core/src/mindustry/world/blocks/defense/OverdriveProjector.java b/core/src/mindustry/world/blocks/defense/OverdriveProjector.java
-index 5f4eb21f4ea982fd93f07b7664fa53ea07dbb3fc..e076156c361f30de83a1547f1a48b24510bdc65a 100644
+index 57d8b4ac27635c65154d9c1863001f3df84109d3..890d9444e6c670207929cd63f1b624c3d3a060cf 100644
 --- a/core/src/mindustry/world/blocks/defense/OverdriveProjector.java
 +++ b/core/src/mindustry/world/blocks/defense/OverdriveProjector.java
 @@ -62,6 +62,11 @@ public class OverdriveProjector extends Block{
@@ -170,7 +170,7 @@ index 5f4eb21f4ea982fd93f07b7664fa53ea07dbb3fc..e076156c361f30de83a1547f1a48b245
          indexer.eachBlock(player.team(), x * tilesize + offset, y * tilesize + offset, range, other -> other.block.canOverdrive, other -> Drawf.selected(other, Tmp.c1.set(baseColor).a(Mathf.absin(4f, 1f))));
      }
 diff --git a/core/src/mindustry/world/blocks/defense/turrets/Turret.java b/core/src/mindustry/world/blocks/defense/turrets/Turret.java
-index 23cd7de6da67c3066ed36e2ffb0166f60fab4609..de990558688c082316121f1215ff95919ecd4727 100644
+index 6e8f77e8ecc420912d8e3af2e772c2179aaba6af..aa87a2fddacf68400510bfbb358dbcd098a60e51 100644
 --- a/core/src/mindustry/world/blocks/defense/turrets/Turret.java
 +++ b/core/src/mindustry/world/blocks/defense/turrets/Turret.java
 @@ -31,6 +31,7 @@ import mindustry.world.*;
@@ -195,7 +195,7 @@ index 23cd7de6da67c3066ed36e2ffb0166f60fab4609..de990558688c082316121f1215ff9591
      }
  
      public static abstract class AmmoEntry{
-@@ -481,6 +489,17 @@ public class Turret extends ReloadTurret{
+@@ -485,6 +493,17 @@ public class Turret extends ReloadTurret{
              if(drawMinRange){
                  Drawf.dashCircle(x, y, minRange(), team.color);
              }
@@ -214,7 +214,7 @@ index 23cd7de6da67c3066ed36e2ffb0166f60fab4609..de990558688c082316121f1215ff9591
  
          @Override
 diff --git a/core/src/mindustry/world/blocks/production/BeamDrill.java b/core/src/mindustry/world/blocks/production/BeamDrill.java
-index bb51ed0bf3c0a3e5bd06ad4e40662c509d7fad63..ed314b2555f966b1be7b6f7614e6eb630f90ca1f 100644
+index 839b23a763a157631db88137c2fc59e54e112abd..4e5018ffc79fbdf2f7d5b4e10acfae10e258ad2c 100644
 --- a/core/src/mindustry/world/blocks/production/BeamDrill.java
 +++ b/core/src/mindustry/world/blocks/production/BeamDrill.java
 @@ -180,14 +180,10 @@ public class BeamDrill extends Block{
@@ -285,10 +285,10 @@ index 55c523bc651db449f51b1864aff33103d9ee0d73..6c9533ad625544becf6c31c24b81fb4b
          returnItem = null;
          returnCount = 0;
 diff --git a/core/src/mindustry/world/blocks/storage/CoreBlock.java b/core/src/mindustry/world/blocks/storage/CoreBlock.java
-index 5adb03cb6fbcaad2a85e6a6f6b37d44640175cdc..b61d90b72b593e19b28ac610d8c33ad6efe0f803 100644
+index 19ff222da83fe3cbda7486186b32a0c167239320..ecb236f2f2986f6a6d8cf00aedbc7b5d43c55394 100644
 --- a/core/src/mindustry/world/blocks/storage/CoreBlock.java
 +++ b/core/src/mindustry/world/blocks/storage/CoreBlock.java
-@@ -100,6 +100,7 @@ public class CoreBlock extends StorageBlock{
+@@ -102,6 +102,7 @@ public class CoreBlock extends StorageBlock{
          player.set(core);
  
          if(!net.client()){

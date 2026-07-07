@@ -546,7 +546,7 @@ public class MySpriteBatchBase extends Batch{
             int unique = 0;
             final int end3 = end * 3;
             for(int i = 0; i < end3; i += 3){
-                int loc = counts.getOrPut(arr[i], unique);
+                int loc = counts.putMissing(arr[i], unique);
                 arr[i] = loc;
                 if(loc == unique){
                     if(unique >= locs.length){

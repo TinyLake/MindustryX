@@ -15,7 +15,7 @@ Content-Transfer-Encoding: 8bit
  1 file changed, 164 insertions(+), 67 deletions(-)
 
 diff --git a/core/src/mindustry/editor/WaveInfoDialog.java b/core/src/mindustry/editor/WaveInfoDialog.java
-index 21ca2cdd139416d3ff92f1d3fa4f4873ed09f93d..e0105c3dd837808354e78cde3542d87c38946d37 100644
+index 116f6a13c3c4aa0aa59c7ac22415b185b59f9bb7..7b796e97bb11bba3751eeeeb15dd56c718a8633a 100644
 --- a/core/src/mindustry/editor/WaveInfoDialog.java
 +++ b/core/src/mindustry/editor/WaveInfoDialog.java
 @@ -6,6 +6,7 @@ import arc.graphics.*;

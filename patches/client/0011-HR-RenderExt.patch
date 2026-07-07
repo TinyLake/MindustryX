@@ -10,7 +10,7 @@ Subject: [PATCH] HR: RenderExt
  3 files changed, 9 insertions(+), 2 deletions(-)
 
 diff --git a/core/src/mindustry/core/Renderer.java b/core/src/mindustry/core/Renderer.java
-index a96899173e75f51a23729c06e20839e7915f738c..e6e407293c928d3392bc8eb46ae7b7ef544dbab9 100644
+index 389684d7bb658688334d062df2cd3d9d7685ecf9..f25585b53208318e2b09c227e94915bf291b941e 100644
 --- a/core/src/mindustry/core/Renderer.java
 +++ b/core/src/mindustry/core/Renderer.java
 @@ -20,6 +20,7 @@ import mindustry.graphics.g3d.*;
@@ -21,41 +21,41 @@ index a96899173e75f51a23729c06e20839e7915f738c..e6e407293c928d3392bc8eb46ae7b7ef
  
  import static arc.Core.*;
  import static mindustry.Vars.*;
-@@ -414,7 +415,7 @@ public class Renderer implements ApplicationListener{
+@@ -416,7 +417,7 @@ public class Renderer implements ApplicationListener{
          Events.fire(Trigger.drawOver);
          blocks.drawBlocks();
  
 -        Groups.draw.draw(Drawc::draw);
 +        Groups.draw.draw(RenderExt::onGroupDraw);
  
-         if(drawDebugHitboxes){
+         if(settings.getBool("drawhitboxes")){
              DebugCollisionRenderer.draw();
 diff --git a/core/src/mindustry/graphics/BlockRenderer.java b/core/src/mindustry/graphics/BlockRenderer.java
-index cce0e782176aecc3836e61e035035d22fb5bc379..40637b1e4efcd8359869f2c15bb86c638303bca1 100644
+index 2f9daf5931c006e5696a0a46e2f537071d1c4a1b..1a60d811c0d59092217dabf4f8c55206f2340485 100644
 --- a/core/src/mindustry/graphics/BlockRenderer.java
 +++ b/core/src/mindustry/graphics/BlockRenderer.java
-@@ -19,6 +19,7 @@ import mindustry.world.*;
+@@ -20,6 +20,7 @@ import mindustry.world.*;
  import mindustry.world.blocks.environment.*;
  import mindustry.world.blocks.environment.Floor.*;
  import mindustry.world.blocks.power.*;
 +import mindustryX.features.*;
  
- import static arc.Core.*;
- import static mindustry.Vars.*;
-@@ -479,7 +480,7 @@ public class BlockRenderer{
+ import java.util.*;
  
-             //comment wasVisible part for hiding?
+@@ -724,7 +725,7 @@ public class BlockRenderer{
+ 
              if(block != Blocks.air && (visible || build.wasVisible)){
+                 SpriteBatch.totalDrawCalls = 0;
 -                block.drawBase(tile);
 +                RenderExt.onBlockDraw(tile, block, build);
                  Draw.reset();
                  Draw.z(Layer.block);
  
 diff --git a/core/src/mindustry/input/InputHandler.java b/core/src/mindustry/input/InputHandler.java
-index 226370ab0bbe2ea3260da8f401749af44e150e7c..63fade86d111e807e461885bb5325f6a30c25e70 100644
+index 5bc3c64a44247b45c77020bd8ba4a2bfddbc8ea8..b4b3ce4c5e021f9100bf59400fe9ea137b2b31c7 100644
 --- a/core/src/mindustry/input/InputHandler.java
 +++ b/core/src/mindustry/input/InputHandler.java
-@@ -355,6 +355,11 @@ public abstract class InputHandler implements InputProcessor, GestureListener{
+@@ -361,6 +361,11 @@ public abstract class InputHandler implements InputProcessor, GestureListener{
                          ai.group = null;
                      }
  

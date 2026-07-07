@@ -42,7 +42,7 @@ index 3328eee453c1b9e5f56bc864a35bb6eaa1c7646c..7da49f8b4df23fd1016e4188c9e4b20c
  
          @Override
 diff --git a/core/src/mindustry/ui/dialogs/ResearchDialog.java b/core/src/mindustry/ui/dialogs/ResearchDialog.java
-index d3ffe9546d0ea23db6592598ec48b1a64fee1aac..549cc4c215b295aaa72e18bae7ebe334de6b3df7 100644
+index 46bc62f21b6c98132b013d523294ab7e7012f7a4..f0ce808b69ffbd66368eb7d575a7d31238ae603f 100644
 --- a/core/src/mindustry/ui/dialogs/ResearchDialog.java
 +++ b/core/src/mindustry/ui/dialogs/ResearchDialog.java
 @@ -27,6 +27,7 @@ import mindustry.type.*;
@@ -53,7 +53,7 @@ index d3ffe9546d0ea23db6592598ec48b1a64fee1aac..549cc4c215b295aaa72e18bae7ebe334
  
  import java.util.*;
  
-@@ -371,7 +372,7 @@ public class ResearchDialog extends BaseDialog{
+@@ -389,7 +390,7 @@ public class ResearchDialog extends BaseDialog{
      }
  
      void checkNodes(TechTreeNode node){
@@ -62,7 +62,7 @@ index d3ffe9546d0ea23db6592598ec48b1a64fee1aac..549cc4c215b295aaa72e18bae7ebe334
          if(!locked && (node.parent == null || node.parent.visible)) node.visible = true;
          node.selectable = selectable(node.node);
          for(TechTreeNode l : node.children){
-@@ -383,6 +384,8 @@ public class ResearchDialog extends BaseDialog{
+@@ -401,6 +402,8 @@ public class ResearchDialog extends BaseDialog{
      }
  
      boolean selectable(TechNode node){
@@ -71,7 +71,7 @@ index d3ffe9546d0ea23db6592598ec48b1a64fee1aac..549cc4c215b295aaa72e18bae7ebe334
          //there's a desync here as far as sectors go, since the client doesn't know about that, but I'm not too concerned
          return node.content.unlockedHost() || !node.objectives.contains(i -> !i.complete());
      }
-@@ -490,7 +493,7 @@ public class ResearchDialog extends BaseDialog{
+@@ -508,7 +511,7 @@ public class ResearchDialog extends BaseDialog{
                      button.setPosition(node.x + panX + width / 2f, node.y + panY + height / 2f + offset, Align.center);
                      button.getStyle().up = !locked(node.node) ? Tex.buttonOver : !selectable(node.node) || (!canSpend(node.node) && !net.client()) ? Tex.buttonRed : Tex.button;
  
@@ -80,7 +80,7 @@ index d3ffe9546d0ea23db6592598ec48b1a64fee1aac..549cc4c215b295aaa72e18bae7ebe334
                      button.getImage().setColor(!locked(node.node) ? Color.white : node.selectable ? Color.gray : Pal.gray);
                      button.getImage().layout();
                  });
-@@ -646,13 +649,13 @@ public class ResearchDialog extends BaseDialog{
+@@ -664,13 +667,13 @@ public class ResearchDialog extends BaseDialog{
                  b.left();
                  b.margin(0).left().defaults().left();
  

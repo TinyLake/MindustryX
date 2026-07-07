@@ -19,10 +19,10 @@ way-zer <himc.wicp@gmail.com> on 2024/4/22 at 20:15
  4 files changed, 9 insertions(+), 3 deletions(-)
 
 diff --git a/core/src/mindustry/core/NetClient.java b/core/src/mindustry/core/NetClient.java
-index ad8cb42c3af354a45ebd210533ee6b532aba143e..c7c877530b3e908a1df7bf59c1867f3928d62a18 100644
+index 84be8046633d5679b833e5b133dbc61afca22a58..00ba1ca4db32ff2be45c18b6c65e4ab95fa95b0c 100644
 --- a/core/src/mindustry/core/NetClient.java
 +++ b/core/src/mindustry/core/NetClient.java
-@@ -29,6 +29,7 @@ import mindustry.net.Packets.*;
+@@ -30,6 +30,7 @@ import mindustry.net.Packets.*;
  import mindustry.world.*;
  import mindustry.world.modules.*;
  import mindustryX.*;
@@ -30,7 +30,7 @@ index ad8cb42c3af354a45ebd210533ee6b532aba143e..c7c877530b3e908a1df7bf59c1867f39
  
  import java.io.*;
  import java.util.*;
-@@ -119,6 +120,7 @@ public class NetClient implements ApplicationListener{
+@@ -120,6 +121,7 @@ public class NetClient implements ApplicationListener{
                  return;
              }
  
@@ -39,10 +39,10 @@ index ad8cb42c3af354a45ebd210533ee6b532aba143e..c7c877530b3e908a1df7bf59c1867f39
          });
  
 diff --git a/core/src/mindustry/io/TypeIO.java b/core/src/mindustry/io/TypeIO.java
-index aaff16296ae851df66748b7261a73ceb7a1421a8..7aafb5d251cdbef49ac519d092a417c754297bdc 100644
+index 669be278c60a16b8540d094afaccc083eaebda4a..a5191ad4a483b2fb361d2124bb87d9ded42f334e 100644
 --- a/core/src/mindustry/io/TypeIO.java
 +++ b/core/src/mindustry/io/TypeIO.java
-@@ -374,7 +374,7 @@ public class TypeIO{
+@@ -380,7 +380,7 @@ public class TypeIO{
              netClient.addRemovedEntity(entity.id());
          }
  
@@ -52,10 +52,10 @@ index aaff16296ae851df66748b7261a73ceb7a1421a8..7aafb5d251cdbef49ac519d092a417c7
  
      public static void writeUnit(Writes write, Unit unit){
 diff --git a/core/src/mindustry/net/ArcNetProvider.java b/core/src/mindustry/net/ArcNetProvider.java
-index ce9ec5e0f2a9c83ed049d05e85de877316569377..9e319d197cc400dfbd07a36245e258e3af2d2225 100644
+index 7f05b1c060a4a261366f10f5390d6323ad248c12..09fde441a8f5e3256a782330820289bbca3c251a 100644
 --- a/core/src/mindustry/net/ArcNetProvider.java
 +++ b/core/src/mindustry/net/ArcNetProvider.java
-@@ -455,7 +455,7 @@ public class ArcNetProvider implements NetProvider{
+@@ -509,7 +509,7 @@ public class ArcNetProvider implements NetProvider{
              }else{
                  //read length int, followed by compressed lz4 data
                  Packet packet = Net.newPacket(id);
@@ -65,7 +65,7 @@ index ce9ec5e0f2a9c83ed049d05e85de877316569377..9e319d197cc400dfbd07a36245e258e3
                  int length = byteBuffer.getShort() & 0xffff;
                  byte compression = byteBuffer.get();
 diff --git a/core/src/mindustry/net/Net.java b/core/src/mindustry/net/Net.java
-index 7685d7649bdea045e46fa6f4eb9ae93481bae567..7445dfcef7b60d92d310bc999f7f38bf843411e0 100644
+index f1778c69977d407103ee3f741d47f6a569b17d70..a4a580ba10bac5bdb7116df6cd451527ed19685b 100644
 --- a/core/src/mindustry/net/Net.java
 +++ b/core/src/mindustry/net/Net.java
 @@ -11,6 +11,7 @@ import mindustry.gen.*;
@@ -76,7 +76,7 @@ index 7685d7649bdea045e46fa6f4eb9ae93481bae567..7445dfcef7b60d92d310bc999f7f38bf
  import net.jpountz.lz4.*;
  
  import java.io.*;
-@@ -26,6 +27,8 @@ public class Net{
+@@ -28,6 +29,8 @@ public class Net{
      private static Seq<Prov<? extends Packet>> packetProvs = new Seq<>();
      private static Seq<Class<? extends Packet>> packetClasses = new Seq<>();
      private static ObjectIntMap<Class<?>> packetToId = new ObjectIntMap<>();
@@ -85,7 +85,7 @@ index 7685d7649bdea045e46fa6f4eb9ae93481bae567..7445dfcef7b60d92d310bc999f7f38bf
  
      private boolean server;
      private boolean active;
-@@ -298,6 +301,7 @@ public class Net{
+@@ -325,6 +328,7 @@ public class Net{
              int p = object.getPriority();
  
              if(clientLoaded || p == Packet.priorityHigh){
@@ -93,7 +93,7 @@ index 7685d7649bdea045e46fa6f4eb9ae93481bae567..7445dfcef7b60d92d310bc999f7f38bf
                  if(clientListeners.get(object.getClass()) != null){
                      clientListeners.get(object.getClass()).get(object);
                  }else{
-@@ -370,7 +374,7 @@ public class Net{
+@@ -397,7 +401,7 @@ public class Net{
       * Whether this is a server or not.
       */
      public boolean server(){

@@ -12,14 +12,14 @@ way-zer <himc.wicp@gmail.com> on 2024/9/8
  .gitignore                                         | 1 +
  android/build.gradle                               | 2 +-
  android/res/values/strings.xml                     | 2 +-
- build.gradle                                       | 8 ++++++--
+ build.gradle                                       | 9 +++++++--
  core/build.gradle.kts                              | 2 +-
- core/src/mindustry/Vars.java                       | 2 +-
+ core/src/mindustry/Vars.java                       | 4 ++--
  core/src/mindustry/core/NetClient.java             | 2 ++
  core/src/mindustry/core/Version.java               | 4 +++-
  core/src/mindustry/net/NetworkIO.java              | 2 +-
  desktop/src/mindustry/desktop/DesktopLauncher.java | 2 +-
- 10 files changed, 18 insertions(+), 9 deletions(-)
+ 10 files changed, 20 insertions(+), 10 deletions(-)
 
 diff --git a/.gitignore b/.gitignore
 index b5b2a237c2f5343aab2fb668337c2bc47a45c1b8..308ff12c92a06e11c18b33f540098a0f1347ab5e 100644
@@ -34,7 +34,7 @@ index b5b2a237c2f5343aab2fb668337c2bc47a45c1b8..308ff12c92a06e11c18b33f540098a0f
  /out/
  ios/libs/
 diff --git a/android/build.gradle b/android/build.gradle
-index 13e9a69de55f1ceb51409c317b9b1c5db56b86b3..2621a6c49e3a08296ce1263f165a63b23acf3533 100644
+index 6adefb586edf29be20ed8333d446ea638d22e6ed..e164ea38705d4119b096a06e34f050d40018f43b 100644
 --- a/android/build.gradle
 +++ b/android/build.gradle
 @@ -31,7 +31,7 @@ android{
@@ -57,14 +57,17 @@ index d42ffe6d4a318ce558f1010eae46140f88ed5c99..bf44ead5c58abfb79c500e6daae30c3e
 +    <string name="app_name">MindustryX</string>
  </resources>
 diff --git a/build.gradle b/build.gradle
-index 71619509254c843cdf8a0fe8d2c0d2271a2125af..5f69c3a1b4f77494c3c4045664214ec6fe73fbe4 100644
+index 0b65443711dee862c479de72223141d032a299dd..06411e403a352de11b395ad9e02c7564ad47be61 100644
 --- a/build.gradle
 +++ b/build.gradle
-@@ -7,7 +7,11 @@ buildscript{
-             def useLocalArc = localArc
+@@ -4,9 +4,14 @@ buildscript{
+         localArc = new File(rootDir.parent, 'Arc').exists() && !project.hasProperty("noLocalArc")
+ 
+         arcModule = { String name ->
++            def useLocalArc = localArc
              //skip to last submodule
              name = name.substring(name.lastIndexOf(':') + 1)
--            return "com.github.Anuken${useLocalArc ? "" : ".Arc"}:$name:$arcHash"
+-            return "com.github.Anuken${localArc ? "" : ".Arc"}:$name:$arcHash"
 +            if(useLocalArc){
 +                return "com.github.TinyLake.MindustryX:$name:$arcHash"
 +            }else{
@@ -73,7 +76,7 @@ index 71619509254c843cdf8a0fe8d2c0d2271a2125af..5f69c3a1b4f77494c3c4045664214ec6
          }
      }
  }
-@@ -21,7 +25,7 @@ allprojects{
+@@ -20,7 +25,7 @@ allprojects{
      apply plugin: 'maven-publish'
  
      version = project.hasProperty("packageVersion") ? project.getProperty("packageVersion") : 'release'
@@ -83,7 +86,7 @@ index 71619509254c843cdf8a0fe8d2c0d2271a2125af..5f69c3a1b4f77494c3c4045664214ec6
      ext{
          versionNumber = '8'
 diff --git a/core/build.gradle.kts b/core/build.gradle.kts
-index e1904111c3ca730e830b5c1bac3c1d5cacc6b3d1..e89b8f7fe020fc5d5f1fa444da3867624a13965c 100644
+index 0a9d7266e69870c0ffd77d1acc317788797c75df..8fe5de91eccf8cd7f4fcfbe69f4b652594b17684 100644
 --- a/core/build.gradle.kts
 +++ b/core/build.gradle.kts
 @@ -51,7 +51,7 @@ tasks {
@@ -96,23 +99,25 @@ index e1904111c3ca730e830b5c1bac3c1d5cacc6b3d1..e89b8f7fe020fc5d5f1fa444da386762
      }
      processResources.configure {
 diff --git a/core/src/mindustry/Vars.java b/core/src/mindustry/Vars.java
-index 8e5660992b6eb418c08ec624f84d0f076a142c62..83cf4ac7fdb1274cccd0a28af17a70e685ae5686 100644
+index dd0ea1d149227ccfa48e879f2523606bbaf639c7..e288d0f73b6ef429e6238d9ea29dbd8f94b7c70e 100644
 --- a/core/src/mindustry/Vars.java
 +++ b/core/src/mindustry/Vars.java
-@@ -92,7 +92,7 @@ public class Vars implements Loadable{
-     /** URLs to the JSON file containing players banned from Steam.  */
+@@ -91,8 +91,8 @@ public class Vars implements Loadable{
+     public static final String[] modJsonURLs = {"https://raw.githubusercontent.com/Anuken/MindustryMods/master/mods.json", "https://cdn.jsdelivr.net/gh/anuken/mindustrymods/mods.json"};
+     /** URLs to the JSON file containing players banned from Steam. */
      public static final String[] steamBansURLs = {"https://raw.githubusercontent.com/Anuken/MindustrySteamBans/master/data.json", "https://cdn.jsdelivr.net/gh/anuken/mindustrysteambans/data.json"};
-     /** URL of the github issue report template.*/
+-    /** URL of the github issue report template. */
 -    public static final String reportIssueURL = "https://github.com/Anuken/Mindustry/issues/new?labels=bug&template=bug_report.md";
++    /** URL of the github issue report template.*/
 +    public static final String reportIssueURL = "https://github.com/TinyLake/MindustryX/issues/new?labels=bug&template=bug_report.md";
      /** list of built-in servers.*/
      public static final Seq<ServerGroup> defaultServers = Seq.with();
-     /** cached server list - only used if defaultServers have not been fetched*/
+     /** cached server list - only used if defaultServers have not been fetched */
 diff --git a/core/src/mindustry/core/NetClient.java b/core/src/mindustry/core/NetClient.java
-index d3325ffd642c1ea595bf5613f387415c699bd4d0..4c14732485f08d0fdebd9c945c0cbb87863f4fdf 100644
+index dd4292c2ac8d14f1531ac310b31d54e12e3b17fe..e2b26d92a35e0cf936b7fdade158a93ebec5a951 100644
 --- a/core/src/mindustry/core/NetClient.java
 +++ b/core/src/mindustry/core/NetClient.java
-@@ -28,6 +28,7 @@ import mindustry.net.*;
+@@ -29,6 +29,7 @@ import mindustry.net.*;
  import mindustry.net.Packets.*;
  import mindustry.world.*;
  import mindustry.world.modules.*;
@@ -120,14 +125,14 @@ index d3325ffd642c1ea595bf5613f387415c699bd4d0..4c14732485f08d0fdebd9c945c0cbb87
  
  import java.io.*;
  import java.util.*;
-@@ -149,6 +150,7 @@ public class NetClient implements ApplicationListener{
-             Log.info("Received world data: @ bytes.", data.stream.available());
+@@ -150,6 +151,7 @@ public class NetClient implements ApplicationListener{
+             Log.info("Received world data: @", Strings.formatByteCount(data.stream.available()));
              NetworkIO.loadWorld(new InflaterInputStream(data.stream));
  
 +            Time.run(60f, () -> Call.serverPacketReliable("MDTX", VarsX.version));
              finishConnecting();
          });
-     }
+ 
 diff --git a/core/src/mindustry/core/Version.java b/core/src/mindustry/core/Version.java
 index b2b59ddafcb5f022a51588caefd0b30121fcf7ac..24de76a2633e1f28b8d693cb91de8e57187e55a4 100644
 --- a/core/src/mindustry/core/Version.java
@@ -150,10 +155,10 @@ index b2b59ddafcb5f022a51588caefd0b30121fcf7ac..24de76a2633e1f28b8d693cb91de8e57
      }
  }
 diff --git a/core/src/mindustry/net/NetworkIO.java b/core/src/mindustry/net/NetworkIO.java
-index 5b13558d13d816c420d34b32b161030955d1ae64..251f7c454d9823234b492d8878cb07c7e37f0136 100644
+index ac8eec820937b09c611e9274180707da82e2f291..75850e7de0b0d7775431ef1d038744d87e84ddf3 100644
 --- a/core/src/mindustry/net/NetworkIO.java
 +++ b/core/src/mindustry/net/NetworkIO.java
-@@ -110,7 +110,7 @@ public class NetworkIO{
+@@ -176,7 +176,7 @@ public class NetworkIO{
          buffer.putInt(Core.settings.getInt("totalPlayers", Groups.player.size()));
          buffer.putInt(state.wave);
          buffer.putInt(Version.build);
@@ -163,10 +168,10 @@ index 5b13558d13d816c420d34b32b161030955d1ae64..251f7c454d9823234b492d8878cb07c7
          buffer.put((byte)state.rules.mode().ordinal());
          buffer.putInt(netServer.admins.getPlayerLimit());
 diff --git a/desktop/src/mindustry/desktop/DesktopLauncher.java b/desktop/src/mindustry/desktop/DesktopLauncher.java
-index 9982b9be911bddb845f551e0c47095e320912c6b..788965957c7b9089dd9cfa563b20d55e0179a20a 100644
+index 5cda3d376063501d553cb8c9d20f646b9d01312b..0bfaee751842a088fe336b2627c9de12cfe65950 100644
 --- a/desktop/src/mindustry/desktop/DesktopLauncher.java
 +++ b/desktop/src/mindustry/desktop/DesktopLauncher.java
-@@ -108,7 +108,7 @@ public class DesktopLauncher extends ClientLauncher{
+@@ -109,7 +109,7 @@ public class DesktopLauncher extends ClientLauncher{
                          }
                      }
                  }

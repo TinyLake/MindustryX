@@ -10,10 +10,10 @@ Subject: [PATCH] API: more error log
  3 files changed, 5 insertions(+), 1 deletion(-)
 
 diff --git a/core/src/mindustry/core/Control.java b/core/src/mindustry/core/Control.java
-index 9a6c297685923b4cca631c0be8a580590591c97e..8b93499957c02c77182f82c12a43949edb6ba1d9 100644
+index 7e7445ecae21abd00683cab2efaff471ddafb6da..48ee2ce15b19600f492a3156e152909be3abc735 100644
 --- a/core/src/mindustry/core/Control.java
 +++ b/core/src/mindustry/core/Control.java
-@@ -677,6 +677,7 @@ public class Control implements ApplicationListener, Loadable{
+@@ -679,6 +679,7 @@ public class Control implements ApplicationListener, Loadable{
          try{
              assets.update();
          }catch(Exception ignored){
@@ -22,7 +22,7 @@ index 9a6c297685923b4cca631c0be8a580590591c97e..8b93499957c02c77182f82c12a43949e
  
          input.updateState();
 diff --git a/core/src/mindustry/core/World.java b/core/src/mindustry/core/World.java
-index 5eae5a4ea89c825a22f7d4b140a9e72cb5a2ab34..4b4578e09a2a3b17c07073032cf6423d348550fc 100644
+index 5b6b2e4f1861640f879010d43e2f6fae20db3f71..1be1aa92645e5c57a2d03fe274b50cbfd1cc38bb 100644
 --- a/core/src/mindustry/core/World.java
 +++ b/core/src/mindustry/core/World.java
 @@ -238,6 +238,7 @@ public class World{

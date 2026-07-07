@@ -8,10 +8,10 @@ Subject: [PATCH] OC: speedup SchematicsDialog showing.
  1 file changed, 4 insertions(+), 1 deletion(-)
 
 diff --git a/core/src/mindustry/ui/dialogs/SchematicsDialog.java b/core/src/mindustry/ui/dialogs/SchematicsDialog.java
-index 1f3ccd390ee2e7110964e230d9e0cb9dda1d83dd..950301be71963d7a453591f825840e689c4bd404 100644
+index b6c7640bdde477dbbda67e37831b720ab948be50..f07e3c68cf278e7f66d31514162022df8b370bca 100644
 --- a/core/src/mindustry/ui/dialogs/SchematicsDialog.java
 +++ b/core/src/mindustry/ui/dialogs/SchematicsDialog.java
-@@ -682,6 +682,7 @@ public class SchematicsDialog extends BaseDialog{
+@@ -697,6 +697,7 @@ public class SchematicsDialog extends BaseDialog{
      }
  
      public static class SchematicImage extends Image{
@@ -19,7 +19,7 @@ index 1f3ccd390ee2e7110964e230d9e0cb9dda1d83dd..950301be71963d7a453591f825840e68
          public float scaling = 16f;
          public float thickness = 4f;
          public Color borderColor = Pal.gray;
-@@ -707,7 +708,8 @@ public class SchematicsDialog extends BaseDialog{
+@@ -722,7 +723,8 @@ public class SchematicsDialog extends BaseDialog{
                  && ((Button)parent.parent).isOver();
  
              boolean wasSet = set;
@@ -29,7 +29,7 @@ index 1f3ccd390ee2e7110964e230d9e0cb9dda1d83dd..950301be71963d7a453591f825840e68
                  Core.app.post(this::setPreview);
                  set = true;
              }else if(lastTexture != null && lastTexture.isDisposed()){
-@@ -738,6 +740,7 @@ public class SchematicsDialog extends BaseDialog{
+@@ -753,6 +755,7 @@ public class SchematicsDialog extends BaseDialog{
          }
  
          private void setPreview(){

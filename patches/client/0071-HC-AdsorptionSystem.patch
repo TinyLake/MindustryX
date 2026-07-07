@@ -8,10 +8,10 @@ Subject: [PATCH] HC: AdsorptionSystem
  1 file changed, 1 insertion(+)
 
 diff --git a/core/src/mindustry/ui/fragments/PlacementFragment.java b/core/src/mindustry/ui/fragments/PlacementFragment.java
-index 5e78d6fa28e851e8a59fd4574890ad05e1423d5d..a1c564223cfef857d68f1a341db4c367fdf4465b 100644
+index 7baa73414f53d881270869fe160a9daf9abe4037..f91fdd89f1d05417774d7488038758e2b4110dc3 100644
 --- a/core/src/mindustry/ui/fragments/PlacementFragment.java
 +++ b/core/src/mindustry/ui/fragments/PlacementFragment.java
-@@ -843,6 +843,7 @@ public class PlacementFragment{
+@@ -848,6 +848,7 @@ public class PlacementFragment{
                      if(!control.input.commandMode && gridUpdate(control.input)){
                          rebuildCategory.run();
                      }

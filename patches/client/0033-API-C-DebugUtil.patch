@@ -16,7 +16,7 @@ way-zer <himc.wicp@gmail.com> on 2024/7/21
  4 files changed, 22 insertions(+), 1 deletion(-)
 
 diff --git a/core/src/mindustry/ClientLauncher.java b/core/src/mindustry/ClientLauncher.java
-index f4ed14ca5a2b5f3a8b2d01e0c7bbc383be740962..c3d0524f8e9760d1a59610f3ab505eaab6948b17 100644
+index 79f6b803c4d086feec057414eddd5f38923bdc06..b056be57deda57cb9a60107b40b7ff5b820343eb 100644
 --- a/core/src/mindustry/ClientLauncher.java
 +++ b/core/src/mindustry/ClientLauncher.java
 @@ -95,7 +95,7 @@ public abstract class ClientLauncher extends ApplicationCore implements Platform
@@ -29,7 +29,7 @@ index f4ed14ca5a2b5f3a8b2d01e0c7bbc383be740962..c3d0524f8e9760d1a59610f3ab505eaa
          assets.setLoader(Texture.class, "." + mapExtension, new MapPreviewLoader());
  
 diff --git a/core/src/mindustry/core/Logic.java b/core/src/mindustry/core/Logic.java
-index 956b53cbf3ea0bc3154af4dcb3d11a4ac71ddea4..9ca7b3f6880d8cec0833bb4a4b224c9daf15e9a9 100644
+index 45790073c8f64c5cfd7a20cf3554a533b52c8230..8c7040891e015e8bf7fffba726a8e515006c10c9 100644
 --- a/core/src/mindustry/core/Logic.java
 +++ b/core/src/mindustry/core/Logic.java
 @@ -21,6 +21,7 @@ import mindustry.world.*;
@@ -40,37 +40,37 @@ index 956b53cbf3ea0bc3154af4dcb3d11a4ac71ddea4..9ca7b3f6880d8cec0833bb4a4b224c9d
  
  import java.util.*;
  
-@@ -465,6 +466,7 @@ public class Logic implements ApplicationListener{
-         PerfCounter.frame.end();
-         PerfCounter.frame.begin();
+@@ -498,6 +499,7 @@ public class Logic implements ApplicationListener{
+ 
+         PerfCounter.stateUpdate.begin();
  
 +        var start = Time.nanos();
          Events.fire(Trigger.update);
          universe.updateGlobal();
  
-@@ -577,6 +579,7 @@ public class Logic implements ApplicationListener{
+@@ -608,6 +610,7 @@ public class Logic implements ApplicationListener{
          }else if(netServer.isWaitingForPlayers() && runStateCheck){
              checkGameState();
          }
 +        DebugUtil.logicTime = Time.timeSinceNanos(start);
-     }
  
-     /** @return whether the wave timer is paused due to enemies */
+         PerfCounter.stateUpdate.end(PerfCounter.entityUpdate.latestValueNs());
+     }
 diff --git a/core/src/mindustry/entities/EntityGroup.java b/core/src/mindustry/entities/EntityGroup.java
-index ea8ef0cdb8a30b54bb304543ea92dc99da44acb6..100337b3b1e99a85788803e4396ddd571cea0b33 100644
+index d0e4bc310870be35220edb525d731d03243a9083..f315ac8c950741e657c692d00442a022f9daf0fb 100644
 --- a/core/src/mindustry/entities/EntityGroup.java
 +++ b/core/src/mindustry/entities/EntityGroup.java
-@@ -5,7 +5,9 @@ import arc.func.*;
- import arc.math.geom.*;
- import arc.struct.*;
+@@ -7,7 +7,9 @@ import arc.struct.*;
  import arc.util.*;
+ import arc.util.Time.*;
+ import arc.util.pooling.*;
 +import mindustry.*;
  import mindustry.gen.*;
 +import mindustryX.features.*;
  
  import java.util.*;
  
-@@ -80,6 +82,17 @@ public class EntityGroup<T extends Entityc> implements Iterable<T>{
+@@ -86,6 +88,17 @@ public class EntityGroup<T extends Entityc> implements Iterable<T>{
      }
  
      public void update(){
@@ -89,7 +89,7 @@ index ea8ef0cdb8a30b54bb304543ea92dc99da44acb6..100337b3b1e99a85788803e4396ddd57
              array.items[index].update();
          }
 diff --git a/core/src/mindustry/ui/fragments/HudFragment.java b/core/src/mindustry/ui/fragments/HudFragment.java
-index 9976040ba4c7db4bb4b7721302761ace6d843b5d..32fd7583843eb6d33731b94525db473faea4b097 100644
+index de3757fb2ddf7df91f471ca96950901e20081215..481593622856540a02b70496ffa1c35db88ac201 100644
 --- a/core/src/mindustry/ui/fragments/HudFragment.java
 +++ b/core/src/mindustry/ui/fragments/HudFragment.java
 @@ -33,6 +33,8 @@ import mindustry.ui.*;
@@ -101,7 +101,7 @@ index 9976040ba4c7db4bb4b7721302761ace6d843b5d..32fd7583843eb6d33731b94525db473f
  
  import static mindustry.Vars.*;
  import static mindustry.gen.Tex.*;
-@@ -559,6 +561,9 @@ public class HudFragment{
+@@ -560,6 +562,9 @@ public class HudFragment{
  
                  info.label(() -> fps.get(Core.graphics.getFramesPerSecond())).left().style(Styles.outlineLabel).name("fps");
                  info.row();
