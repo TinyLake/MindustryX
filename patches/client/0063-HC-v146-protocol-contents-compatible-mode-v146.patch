@@ -10,13 +10,14 @@ Content-Transfer-Encoding: 8bit
 
 ---
  core/build.gradle.kts                      |  1 +
- core/src/mindustry/core/ContentLoader.java | 17 ++++++++++
+ core/src/mindustry/core/ContentLoader.java | 17 +++++++++
  core/src/mindustry/core/NetClient.java     |  2 ++
+ core/src/mindustry/io/SaveVersion.java     | 22 ++++++++++++
  core/src/mindustry/io/TypeIO.java          | 18 ++++++++--
- core/src/mindustry/net/Net.java            | 38 +++++++++++++++++++---
- core/src/mindustry/net/NetworkIO.java      | 31 ++++++++++++++----
+ core/src/mindustry/net/Net.java            | 42 +++++++++++++++++++---
+ core/src/mindustry/net/NetworkIO.java      | 35 ++++++++++++++----
  core/src/mindustry/net/Packets.java        |  2 +-
- 7 files changed, 94 insertions(+), 15 deletions(-)
+ 8 files changed, 123 insertions(+), 16 deletions(-)
 
 diff --git a/core/build.gradle.kts b/core/build.gradle.kts
 index 8fe5de91eccf8cd7f4fcfbe69f4b652594b17684..aa1073699b8a87c3b09e6a2779177cc7ffd46075 100644
@@ -78,6 +79,37 @@ index ed298514f6c3681d5de9c09c17c2ae104ead99b7..016d4c233d0890d974841fb8b5e5b4a0
          try{
              netClient.byteStream.setBytes(data);
              DataInputStream input = netClient.dataStream;
+diff --git a/core/src/mindustry/io/SaveVersion.java b/core/src/mindustry/io/SaveVersion.java
+index 86d6bb7185e7fb88a9b947f90fe61fc28a4fa9cd..4595a8dd1ac424db354c0513482c9dc20ef26fb5 100644
+--- a/core/src/mindustry/io/SaveVersion.java
++++ b/core/src/mindustry/io/SaveVersion.java
+@@ -660,4 +660,26 @@ public abstract class SaveVersion extends SaveFileReader{
+             }
+         }
+     }
++
++    @mindustryX.MindustryXApi
++    @Deprecated
++    public void readDataPatchesOld(DataInput stream) throws IOException{
++        Seq<String> patches = new Seq<>();
++
++        int amount = stream.readUnsignedByte();
++        if(amount > 0){
++            for(int i = 0; i < amount; i++){
++                int len = stream.readInt();
++                byte[] bytes = new byte[len];
++                stream.readFully(bytes);
++                patches.add(new String(bytes, Strings.utf8));
++            }
++        }
++
++        Seq<DataAsset> assets = patches.map(PatchAsset::new);
++
++        Events.fire(new DataPatchLoadEvent(assets));
++
++        state.data.load(assets);
++    }
+ }
 diff --git a/core/src/mindustry/io/TypeIO.java b/core/src/mindustry/io/TypeIO.java
 index a5191ad4a483b2fb361d2124bb87d9ded42f334e..ef10cd25d0b48e59e5071376adf21bdb10ceee25 100644
 --- a/core/src/mindustry/io/TypeIO.java
@@ -129,7 +161,7 @@ index a5191ad4a483b2fb361d2124bb87d9ded42f334e..ef10cd25d0b48e59e5071376adf21bdb
              boolean writePlan = !headless || !net.server();
              write.b(writePlan ? 1 : 0); //always has config
 diff --git a/core/src/mindustry/net/Net.java b/core/src/mindustry/net/Net.java
-index 444b3e3ca920c890bc5dbc4ecab6163378d48e9a..e4f86f9eacf1f6016ba01a24fe603f39adcaef74 100644
+index 444b3e3ca920c890bc5dbc4ecab6163378d48e9a..12b6d0a5e1d5daff0ca9db3c92ee8143064f2d61 100644
 --- a/core/src/mindustry/net/Net.java
 +++ b/core/src/mindustry/net/Net.java
 @@ -1,6 +1,7 @@
@@ -159,13 +191,14 @@ index 444b3e3ca920c890bc5dbc4ecab6163378d48e9a..e4f86f9eacf1f6016ba01a24fe603f39
  import static mindustry.Vars.*;
  
  @SuppressWarnings("unchecked")
-@@ -56,6 +57,15 @@ public class Net{
+@@ -56,6 +57,16 @@ public class Net{
          Call.registerPackets();
      }
  
 +    private static final ProtocolMap v146ProtocolMap = new ProtocolMap("v146");
 +    private static final ProtocolMap v153ProtocolMap = new ProtocolMap("v153");
 +    private static final ProtocolMap v155ProtocolMap = new ProtocolMap("v155");
++    private static final ProtocolMap v158ProtocolMap = new ProtocolMap("v158");
 +
 +    @MindustryXApi
 +    public static Seq<Class<? extends Packet>> allPacketClasses(){
@@ -175,7 +208,7 @@ index 444b3e3ca920c890bc5dbc4ecab6163378d48e9a..e4f86f9eacf1f6016ba01a24fe603f39
      /** Registers a new packet type for serialization. */
      public static <T extends Packet> int registerPacket(Prov<T> cons){
          int id = packetProvs.size;
-@@ -71,13 +81,24 @@ public class Net{
+@@ -71,13 +82,27 @@ public class Net{
      }
  
      public static byte getPacketId(Packet packet){
@@ -183,6 +216,7 @@ index 444b3e3ca920c890bc5dbc4ecab6163378d48e9a..e4f86f9eacf1f6016ba01a24fe603f39
 +        int id = LogicExt.v146Mode ? v146ProtocolMap.getId(packet) :
 +        LogicExt.mockProtocol <= 153 ? v153ProtocolMap.getId(packet) :
 +        LogicExt.mockProtocol <= 155 ? v155ProtocolMap.getId(packet) :
++        LogicExt.mockProtocol <= 158 ? v158ProtocolMap.getId(packet) :
 +        packetToId.get(packet.getClass(), -1);
          if(id == -1) throw new ArcRuntimeException("Unknown packet type: " + packet.getClass());
          return (byte)id;
@@ -197,12 +231,14 @@ index 444b3e3ca920c890bc5dbc4ecab6163378d48e9a..e4f86f9eacf1f6016ba01a24fe603f39
 +            id2 = v153ProtocolMap.mapId(id2);
 +        }else if(LogicExt.mockProtocol <= 155){
 +            id2 = v155ProtocolMap.mapId(id2);
++        }else if(LogicExt.mockProtocol <= 158){
++            id2 = v158ProtocolMap.mapId(id2);
 +        }
 +        return ((Prov<T>)packetProvs.get(id2)).get();
      }
  
      public Net(NetProvider provider){
-@@ -214,6 +235,7 @@ public class Net{
+@@ -214,6 +239,7 @@ public class Net{
      }
  
      public void disconnect(){
@@ -210,7 +246,7 @@ index 444b3e3ca920c890bc5dbc4ecab6163378d48e9a..e4f86f9eacf1f6016ba01a24fe603f39
          if(active && !server){
              Log.info("Disconnecting.");
          }
-@@ -289,7 +311,13 @@ public class Net{
+@@ -289,7 +315,13 @@ public class Net{
              return;
          }
  
@@ -226,7 +262,7 @@ index 444b3e3ca920c890bc5dbc4ecab6163378d48e9a..e4f86f9eacf1f6016ba01a24fe603f39
          if(object instanceof StreamBegin b){
              streams.put(b.id, currentStream = new StreamBuilder(b, ((Streamable)Net.newPacket(b.type)).incremental()));
 diff --git a/core/src/mindustry/net/NetworkIO.java b/core/src/mindustry/net/NetworkIO.java
-index 75850e7de0b0d7775431ef1d038744d87e84ddf3..6b1e928c53cc2d1342f56a10e144246e0b1edb18 100644
+index 75850e7de0b0d7775431ef1d038744d87e84ddf3..85d165792b0cef10b129a0e7c7373cafeb6b85b9 100644
 --- a/core/src/mindustry/net/NetworkIO.java
 +++ b/core/src/mindustry/net/NetworkIO.java
 @@ -6,6 +6,7 @@ import arc.struct.*;
@@ -245,7 +281,7 @@ index 75850e7de0b0d7775431ef1d038744d87e84ddf3..6b1e928c53cc2d1342f56a10e144246e
  
  import java.io.*;
  import java.nio.*;
-@@ -68,6 +70,7 @@ public class NetworkIO{
+@@ -68,14 +70,23 @@ public class NetworkIO{
          }
      }
  
@@ -253,8 +289,11 @@ index 75850e7de0b0d7775431ef1d038744d87e84ddf3..6b1e928c53cc2d1342f56a10e144246e
      public static void loadWorld(InputStream is){
  
          try(DataInputStream stream = new DataInputStream(is)){
-@@ -75,7 +78,13 @@ public class NetworkIO{
-             SaveIO.getSaveWriter().readDataPatches(stream, new SaveReadState(world.context));
+             Time.clear();
+-            SaveIO.getSaveWriter().readDataPatches(stream, new SaveReadState(world.context));
++            if(LogicExt.mockProtocol >= 159){
++                SaveIO.getSaveWriter().readDataPatches(stream, new SaveReadState(world.context));
++            }
  
              state.rules = JsonIO.read(Rules.class, stream.readUTF());
 -            state.mapLocales = JsonIO.read(MapLocales.class, stream.readUTF());
@@ -268,7 +307,7 @@ index 75850e7de0b0d7775431ef1d038744d87e84ddf3..6b1e928c53cc2d1342f56a10e144246e
              state.map = new Map(SaveIO.getSaveWriter().readStringMap(stream));
  
              state.wave = stream.readInt();
-@@ -93,14 +102,24 @@ public class NetworkIO{
+@@ -93,14 +104,24 @@ public class NetworkIO{
              player.id = id;
              player.add();
  
@@ -284,8 +323,8 @@ index 75850e7de0b0d7775431ef1d038744d87e84ddf3..6b1e928c53cc2d1342f56a10e144246e
 +            }
 +            saveWriter.readContentHeader(stream);
 +            //MDTX: Use ShortChunkSave version
-+//            if(LogicExt.mockProtocol >= 153)
-+//                saveWriter.readContentPatches(stream);
++            if(LogicExt.mockProtocol >= 153 && LogicExt.mockProtocol < 159)
++                saveWriter.readDataPatchesOld(stream);
 +            saveWriter.readMap(stream, world.context);
 +            saveWriter.readTeamBlocks(stream);
 +            if(!LogicExt.v146Mode)
