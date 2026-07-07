@@ -10,10 +10,10 @@ Subject: [PATCH] HC: additionInventoryColumns
  3 files changed, 7 insertions(+), 4 deletions(-)
 
 diff --git a/core/src/mindustry/ui/dialogs/PlanetDialog.java b/core/src/mindustry/ui/dialogs/PlanetDialog.java
-index dcb24ef2073a9a325a3c74873d2f76f44bf9f89f..d72cbae9f527e2187a524c4f9476e7cf0fc8de97 100644
+index fec80c8b4ef7ce8a1e63692d55dbea6b4bee5501..20e282fa1b46d18d0a230d0aa71b2554ddb82023 100644
 --- a/core/src/mindustry/ui/dialogs/PlanetDialog.java
 +++ b/core/src/mindustry/ui/dialogs/PlanetDialog.java
-@@ -1030,6 +1030,7 @@ public class PlanetDialog extends BaseDialog implements PlanetInterfaceRenderer{
+@@ -1031,6 +1031,7 @@ public class PlanetDialog extends BaseDialog implements PlanetInterfaceRenderer{
          Table t = new Table().left();
  
          int i = 0;
@@ -21,7 +21,7 @@ index dcb24ef2073a9a325a3c74873d2f76f44bf9f89f..d72cbae9f527e2187a524c4f9476e7cf
          for(var item : content.items()){
              var stat = stats.get(item);
              if(stat == null) continue;
-@@ -1037,7 +1038,7 @@ public class PlanetDialog extends BaseDialog implements PlanetInterfaceRenderer{
+@@ -1038,7 +1039,7 @@ public class PlanetDialog extends BaseDialog implements PlanetInterfaceRenderer{
              if(total > 1){
                  t.image(item.uiIcon).padRight(3);
                  t.add(UI.formatAmount(total) + " " + Core.bundle.get("unit.perminute")).color(Color.lightGray).padRight(3);
@@ -30,7 +30,7 @@ index dcb24ef2073a9a325a3c74873d2f76f44bf9f89f..d72cbae9f527e2187a524c4f9476e7cf
                      t.row();
                  }
              }
-@@ -1124,10 +1125,11 @@ public class PlanetDialog extends BaseDialog implements PlanetInterfaceRenderer{
+@@ -1125,10 +1126,11 @@ public class PlanetDialog extends BaseDialog implements PlanetInterfaceRenderer{
                      t.table(res -> {
  
                          int i = 0;

@@ -122,10 +122,10 @@ index 56f52b1bb9aecab2ecbedf672bc8431dc3a9de41..b3cdfea775f6823ea4535ce05c4816d5
          public void draw(){
              float pad = 5f;
 diff --git a/core/src/mindustry/logic/LExecutor.java b/core/src/mindustry/logic/LExecutor.java
-index 07e167b5fd6566259d6f388b88ce92c496237235..92183af06346ea886944d765f8667822e353b1fd 100644
+index dfc7243b2a0b19674b520d067922197a3c82026a..0e9503c13a45b59bc383802f6471a5d6ed851c51 100644
 --- a/core/src/mindustry/logic/LExecutor.java
 +++ b/core/src/mindustry/logic/LExecutor.java
-@@ -47,6 +47,9 @@ public class LExecutor{
+@@ -48,6 +48,9 @@ public class LExecutor{
      public LInstruction[] instructions = {};
      /** Non-constant variables used for network sync */
      public LVar[] vars = {};
@@ -135,15 +135,15 @@ index 07e167b5fd6566259d6f388b88ce92c496237235..92183af06346ea886944d765f8667822
  
      public LVar counter, unit, thisv, ipt, queryResult;
  
-@@ -123,6 +126,7 @@ public class LExecutor{
-     public void load(LAssembler builder){
+@@ -125,6 +128,7 @@ public class LExecutor{
+         stop = false;
          nameMap = null;
          vars = builder.vars.values().toSeq().retainAll(var -> !var.constant).toArray(LVar.class);
 +        allVars = builder.vars.values().toSeq().toArray(LVar.class);
          for(int i = 0; i < vars.length; i++){
              vars[i].id = i;
          }
-@@ -570,6 +574,7 @@ public class LExecutor{
+@@ -572,6 +576,7 @@ public class LExecutor{
          public void run(LExecutor exec){
              Object obj = target.obj();
              if(obj instanceof Building b && (exec.privileged || (exec.build != null && exec.build.validLink(b)))){
@@ -151,7 +151,7 @@ index 07e167b5fd6566259d6f388b88ce92c496237235..92183af06346ea886944d765f8667822
  
                  if(type == LAccess.enabled){
                      if(p1.bool()){
-@@ -1321,7 +1326,7 @@ public class LExecutor{
+@@ -1324,7 +1329,7 @@ public class LExecutor{
          @Override
          public void run(LExecutor exec){
              if(headless) return;
@@ -161,11 +161,11 @@ index 07e167b5fd6566259d6f388b88ce92c496237235..92183af06346ea886944d765f8667822
                  case pan -> {
                      control.input.logicCutscene = true;
 diff --git a/core/src/mindustry/logic/LStatements.java b/core/src/mindustry/logic/LStatements.java
-index 230e99ae5c1acc2896da7ed2cd72cc2e0d4dfb09..7bb5e21eff2eada20cee090a70cf7cb661b7306e 100644
+index 1f47387df3cf1e402ece1beebb56851256aaea43..12f2db1e818a72bada17ab4c3c21e1b01563cb06 100644
 --- a/core/src/mindustry/logic/LStatements.java
 +++ b/core/src/mindustry/logic/LStatements.java
-@@ -3,6 +3,9 @@ package mindustry.logic;
- import arc.*;
+@@ -4,6 +4,9 @@ import arc.*;
+ import arc.audio.*;
  import arc.func.*;
  import arc.graphics.*;
 +import arc.math.*;
@@ -174,7 +174,7 @@ index 230e99ae5c1acc2896da7ed2cd72cc2e0d4dfb09..7bb5e21eff2eada20cee090a70cf7cb6
  import arc.scene.style.*;
  import arc.scene.ui.*;
  import arc.scene.ui.layout.*;
-@@ -21,6 +24,7 @@ import mindustry.ui.*;
+@@ -23,6 +26,7 @@ import mindustry.ui.*;
  import mindustry.world.*;
  import mindustry.world.meta.*;
  import mindustryX.*;
@@ -182,7 +182,7 @@ index 230e99ae5c1acc2896da7ed2cd72cc2e0d4dfb09..7bb5e21eff2eada20cee090a70cf7cb6
  
  import static mindustry.Vars.*;
  import static mindustry.logic.LCanvas.*;
-@@ -1011,6 +1015,29 @@ public class LStatements{
+@@ -1013,6 +1017,29 @@ public class LStatements{
              table.table(this::rebuild);
  
              table.add().growX();
@@ -213,7 +213,7 @@ index 230e99ae5c1acc2896da7ed2cd72cc2e0d4dfb09..7bb5e21eff2eada20cee090a70cf7cb6
  
              String name = name();
 diff --git a/core/src/mindustry/logic/LogicDialog.java b/core/src/mindustry/logic/LogicDialog.java
-index 51c8576d8b41d43e25eb86400d169b9a108e6642..46362d700178f7057917ef156c14711278541f2e 100644
+index 80d8f7e86ea56efd190317b75aa1e6d2f5d7ad6d..d7e899df6ae55ae528fe4ef7dc917bd9d6ecedc7 100644
 --- a/core/src/mindustry/logic/LogicDialog.java
 +++ b/core/src/mindustry/logic/LogicDialog.java
 @@ -19,6 +19,8 @@ import mindustry.logic.LStatements.*;
@@ -271,7 +271,7 @@ index 51c8576d8b41d43e25eb86400d169b9a108e6642..46362d700178f7057917ef156c147112
      }
  }
 diff --git a/core/src/mindustry/world/blocks/logic/LogicBlock.java b/core/src/mindustry/world/blocks/logic/LogicBlock.java
-index af2acd00025fac4821ad043003245033ddd534b9..b5ed4a5ab2aa1bf5f060df301705a6baa1ab775b 100644
+index 8755d029fe8f3e158d9e97108f9cf36959edaee1..a0e31fe98b6146ce17bdb613e3d604938df4dd5d 100644
 --- a/core/src/mindustry/world/blocks/logic/LogicBlock.java
 +++ b/core/src/mindustry/world/blocks/logic/LogicBlock.java
 @@ -16,6 +16,7 @@ import arc.util.io.*;
@@ -297,7 +297,7 @@ index af2acd00025fac4821ad043003245033ddd534b9..b5ed4a5ab2aa1bf5f060df301705a6ba
  
  import java.io.*;
  import java.util.zip.*;
-@@ -110,11 +114,15 @@ public class LogicBlock extends Block{
+@@ -112,11 +116,15 @@ public class LogicBlock extends Block{
  
      @Override
      public boolean checkForceDark(Tile tile){
@@ -315,7 +315,7 @@ index af2acd00025fac4821ad043003245033ddd534b9..b5ed4a5ab2aa1bf5f060df301705a6ba
      }
  
      @Override
-@@ -444,7 +452,7 @@ public class LogicBlock extends Block{
+@@ -448,7 +456,7 @@ public class LogicBlock extends Block{
  
          @Override
          public boolean displayable(){
@@ -324,7 +324,7 @@ index af2acd00025fac4821ad043003245033ddd534b9..b5ed4a5ab2aa1bf5f060df301705a6ba
          }
  
          @Override
-@@ -467,7 +475,12 @@ public class LogicBlock extends Block{
+@@ -471,7 +479,12 @@ public class LogicBlock extends Block{
  
          @Override
          public Cursor getCursor(){
@@ -338,7 +338,7 @@ index af2acd00025fac4821ad043003245033ddd534b9..b5ed4a5ab2aa1bf5f060df301705a6ba
          }
  
          //logic blocks cause write problems when picked up
-@@ -654,24 +667,30 @@ public class LogicBlock extends Block{
+@@ -682,24 +695,30 @@ public class LogicBlock extends Block{
              }
  
              for(LogicLink l : links){
@@ -373,7 +373,7 @@ index af2acd00025fac4821ad043003245033ddd534b9..b5ed4a5ab2aa1bf5f060df301705a6ba
  
              Groups.unit.each(u -> u.controller() instanceof LogicAI ai && ai.controller == this, unit -> {
                  Drawf.square(unit.x, unit.y, unit.hitSize, unit.rotation + 45);
-@@ -718,12 +737,12 @@ public class LogicBlock extends Block{
+@@ -746,12 +765,12 @@ public class LogicBlock extends Block{
  
          @Override
          public boolean shouldShowConfigure(Player player){

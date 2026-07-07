@@ -9,10 +9,10 @@ Subject: [PATCH] HC: ARC arcScanMode
  2 files changed, 7 insertions(+), 1 deletion(-)
 
 diff --git a/core/src/mindustry/world/blocks/distribution/ItemBridge.java b/core/src/mindustry/world/blocks/distribution/ItemBridge.java
-index 8dc3a8f940806c189d56de44051a728c8c77b207..a28a23c7f3d92f8a842a33be0078f8103aab751e 100644
+index 3044a0b7a3cd1cd49f1d4f65c0c9426d96772872..8759ea8a204bf48b0c5e872662ef1b8e10f4d5cd 100644
 --- a/core/src/mindustry/world/blocks/distribution/ItemBridge.java
 +++ b/core/src/mindustry/world/blocks/distribution/ItemBridge.java
-@@ -499,7 +499,7 @@ public class ItemBridge extends Block{
+@@ -503,7 +503,7 @@ public class ItemBridge extends Block{
              int rel = relativeTo(other.x, other.y);
              int rel2 = relativeTo(to.tileX(), to.tileY());
  
@@ -21,7 +21,7 @@ index 8dc3a8f940806c189d56de44051a728c8c77b207..a28a23c7f3d92f8a842a33be0078f810
          }
  
          @Override
-@@ -545,5 +545,8 @@ public class ItemBridge extends Block{
+@@ -549,5 +549,8 @@ public class ItemBridge extends Block{
                  wasMoved = moved = read.bool();
              }
          }
@@ -32,7 +32,7 @@ index 8dc3a8f940806c189d56de44051a728c8c77b207..a28a23c7f3d92f8a842a33be0078f810
  }
 \ No newline at end of file
 diff --git a/core/src/mindustry/world/blocks/distribution/MassDriver.java b/core/src/mindustry/world/blocks/distribution/MassDriver.java
-index b3a1fc53f8d68954ca858b112e8a2afecba68053..4139b7c41484ce8c09aa4559ccf9599488906fca 100644
+index fee8d9eed427ce7cdd621b6128315dc774b15e09..67a23180524b99690039a306ff597d424ea261d7 100644
 --- a/core/src/mindustry/world/blocks/distribution/MassDriver.java
 +++ b/core/src/mindustry/world/blocks/distribution/MassDriver.java
 @@ -343,6 +343,9 @@ public class MassDriver extends Block{

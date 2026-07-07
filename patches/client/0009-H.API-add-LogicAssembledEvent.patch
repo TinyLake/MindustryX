@@ -32,10 +32,10 @@ index f77b8d15a54b3b79142d9815d131ac1906e6710e..8bbbc4ce1155b0b5b7d01776e6ab8c2c
                  }
                  line ++;
 diff --git a/core/src/mindustry/logic/LStatements.java b/core/src/mindustry/logic/LStatements.java
-index a99df8281fa90167fe9ec81fa0dfbe852d95c477..230e99ae5c1acc2896da7ed2cd72cc2e0d4dfb09 100644
+index ff887d3920f905a385c9a77cad3614d86d4f0dcd..1f47387df3cf1e402ece1beebb56851256aaea43 100644
 --- a/core/src/mindustry/logic/LStatements.java
 +++ b/core/src/mindustry/logic/LStatements.java
-@@ -20,6 +20,7 @@ import mindustry.type.*;
+@@ -22,6 +22,7 @@ import mindustry.type.*;
  import mindustry.ui.*;
  import mindustry.world.*;
  import mindustry.world.meta.*;
@@ -43,7 +43,7 @@ index a99df8281fa90167fe9ec81fa0dfbe852d95c477..230e99ae5c1acc2896da7ed2cd72cc2e
  
  import static mindustry.Vars.*;
  import static mindustry.logic.LCanvas.*;
-@@ -45,6 +46,16 @@ public class LStatements{
+@@ -47,6 +48,16 @@ public class LStatements{
  
      @RegisterStatement("noop")
      public static class InvalidStatement extends LStatement{
@@ -61,7 +61,7 @@ index a99df8281fa90167fe9ec81fa0dfbe852d95c477..230e99ae5c1acc2896da7ed2cd72cc2e
          @Override
          public void build(Table table){
 diff --git a/core/src/mindustry/world/blocks/logic/LogicBlock.java b/core/src/mindustry/world/blocks/logic/LogicBlock.java
-index 12921ce8e5b1f9ea6e04104e66a1b8a888e2dbb0..af2acd00025fac4821ad043003245033ddd534b9 100644
+index 61803ca968b12d0f5f32d9fe1973ab94803348d8..8755d029fe8f3e158d9e97108f9cf36959edaee1 100644
 --- a/core/src/mindustry/world/blocks/logic/LogicBlock.java
 +++ b/core/src/mindustry/world/blocks/logic/LogicBlock.java
 @@ -27,6 +27,7 @@ import mindustry.world.*;
@@ -72,7 +72,7 @@ index 12921ce8e5b1f9ea6e04104e66a1b8a888e2dbb0..af2acd00025fac4821ad043003245033
  
  import java.io.*;
  import java.util.zip.*;
-@@ -423,6 +424,8 @@ public class LogicBlock extends Block{
+@@ -427,6 +428,8 @@ public class LogicBlock extends Block{
                      asm.putConst("@thisx", World.conv(x));
                      asm.putConst("@thisy", World.conv(y));
  

@@ -9,7 +9,7 @@ Subject: [PATCH] OC: no bullet create when hidden
  2 files changed, 3 insertions(+), 1 deletion(-)
 
 diff --git a/core/src/mindustry/entities/bullet/BulletType.java b/core/src/mindustry/entities/bullet/BulletType.java
-index 5619d65c62ce65488f3509a31e508a4088eb1ae7..f8436b1bc5cc22ecf2b731e2f43d136087b9e09c 100644
+index d7febf0b02e6e431a5433a66bf4ca44e28c95f4a..c92fa88030973e62fca6b5c9dc0eac309ee8c403 100644
 --- a/core/src/mindustry/entities/bullet/BulletType.java
 +++ b/core/src/mindustry/entities/bullet/BulletType.java
 @@ -23,6 +23,7 @@ import mindustry.graphics.*;

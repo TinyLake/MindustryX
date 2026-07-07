@@ -12,17 +12,17 @@ patchArc改写成transform
 way-zer <himc.wicp@gmail.com> on 2024/4/27 at 18:57
 ---
  build.gradle          | 6 ------
- core/build.gradle.kts | 4 ++++
+ core/build.gradle.kts | 6 +++++-
  gradle.properties     | 2 +-
  server/build.gradle   | 2 ++
  settings.gradle       | 2 ++
- 5 files changed, 9 insertions(+), 7 deletions(-)
+ 5 files changed, 10 insertions(+), 8 deletions(-)
 
 diff --git a/build.gradle b/build.gradle
-index 73431d8e757ff19a19b37f8a8d8e4446e98f6e5d..71619509254c843cdf8a0fe8d2c0d2271a2125af 100644
+index d0b7b8867edffc6baca2bb8295461f28b551384a..b7b3afa858783147fd47d7fdf8a76886f5e90c67 100644
 --- a/build.gradle
 +++ b/build.gradle
-@@ -205,12 +205,6 @@ project(":core"){
+@@ -226,12 +226,6 @@ project(":core"){
          destinationDir = layout.buildDirectory.dir("javadoc").get().asFile
      }
  
@@ -36,7 +36,7 @@ index 73431d8e757ff19a19b37f8a8d8e4446e98f6e5d..71619509254c843cdf8a0fe8d2c0d227
      jar{
          exclude("mindustry/entities/comp/**")
 diff --git a/core/build.gradle.kts b/core/build.gradle.kts
-index 712c4750377c079ec77bfea24bd889db58090b98..e1904111c3ca730e830b5c1bac3c1d5cacc6b3d1 100644
+index 016d8707c2122f8d42ee3f696b358c7fb0bf35df..0a9d7266e69870c0ffd77d1acc317788797c75df 100644
 --- a/core/build.gradle.kts
 +++ b/core/build.gradle.kts
 @@ -1,10 +1,12 @@
@@ -56,14 +56,15 @@ index 712c4750377c079ec77bfea24bd889db58090b98..e1904111c3ca730e830b5c1bac3c1d5c
  tasks {
      withType<KotlinCompile>().configureEach {
          compilerOptions {
+-            jvmTarget.set(JvmTarget.JVM_1_8)
 +            languageVersion.set(KotlinVersion.KOTLIN_2_1)
-             jvmTarget.set(JvmTarget.JVM_1_8)
++            jvmTarget.set(JvmTarget.JVM_17)
 +            freeCompilerArgs.add("-Xname-based-destructuring=complete")
          }
      }
  
 diff --git a/gradle.properties b/gradle.properties
-index 2be2d152326a1923d5d3e439e39735fbe15ecce1..f57fa292f8bb188ca19c296b67c6d388b41c7994 100644
+index adc3b35e3dedd935b52be7814379ccf6e76fe02f..11198bbc1368df55b15cf5a060c53373080e8ece 100644
 --- a/gradle.properties
 +++ b/gradle.properties
 @@ -18,7 +18,7 @@ kapt.use.worker.api=true

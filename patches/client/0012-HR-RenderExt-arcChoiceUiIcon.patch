@@ -18,7 +18,7 @@ Content-Transfer-Encoding: 8bit
  6 files changed, 16 insertions(+)
 
 diff --git a/core/src/mindustry/world/blocks/distribution/DirectionalUnloader.java b/core/src/mindustry/world/blocks/distribution/DirectionalUnloader.java
-index 76d6fb0ae48901fc5a3d0ea940e6d2df0b5f3dea..6b5f24ab2f1b53cab5143d030743c16efc95b9c8 100644
+index 6f944e48554227533c9dd650e231b83e3d28d9cd..5e14488a6736bfe18c59b7ca6b652b3bac253ece 100644
 --- a/core/src/mindustry/world/blocks/distribution/DirectionalUnloader.java
 +++ b/core/src/mindustry/world/blocks/distribution/DirectionalUnloader.java
 @@ -14,6 +14,7 @@ import mindustry.world.blocks.*;
@@ -29,7 +29,7 @@ index 76d6fb0ae48901fc5a3d0ea940e6d2df0b5f3dea..6b5f24ab2f1b53cab5143d030743c16e
  
  import static mindustry.Vars.*;
  
-@@ -121,6 +122,7 @@ public class DirectionalUnloader extends Block{
+@@ -129,6 +130,7 @@ public class DirectionalUnloader extends Block{
                  Draw.color(unloadItem.color);
                  Draw.rect(centerRegion, x, y);
                  Draw.color();
@@ -38,7 +38,7 @@ index 76d6fb0ae48901fc5a3d0ea940e6d2df0b5f3dea..6b5f24ab2f1b53cab5143d030743c16e
                  Draw.rect(arrowRegion, x, y, rotdeg());
              }
 diff --git a/core/src/mindustry/world/blocks/distribution/DuctRouter.java b/core/src/mindustry/world/blocks/distribution/DuctRouter.java
-index 69e71ac0395a2d3060efb404474f572e414aad22..f9de6a6f3e91d4deb87e808d3b52dac77fed70ca 100644
+index bb4eaeeb149139854f08bf684212c1ca6a02d8d3..16fc618d7b139d7efd6ff6be4f89987ab245ed02 100644
 --- a/core/src/mindustry/world/blocks/distribution/DuctRouter.java
 +++ b/core/src/mindustry/world/blocks/distribution/DuctRouter.java
 @@ -12,6 +12,7 @@ import mindustry.type.*;
@@ -49,7 +49,7 @@ index 69e71ac0395a2d3060efb404474f572e414aad22..f9de6a6f3e91d4deb87e808d3b52dac7
  
  import static mindustry.Vars.*;
  
-@@ -84,6 +85,7 @@ public class DuctRouter extends Block{
+@@ -86,6 +87,7 @@ public class DuctRouter extends Block{
                  Draw.color(sortItem.color);
                  Draw.rect("center", x, y);
                  Draw.color();
@@ -58,7 +58,7 @@ index 69e71ac0395a2d3060efb404474f572e414aad22..f9de6a6f3e91d4deb87e808d3b52dac7
                  Draw.rect(topRegion, x, y, rotdeg());
              }
 diff --git a/core/src/mindustry/world/blocks/distribution/Sorter.java b/core/src/mindustry/world/blocks/distribution/Sorter.java
-index c5f8f522482a476d27ee18eb4acdc52d722eda46..716c6645e5cf90a6dd4d4ec65b48ed2ef41d7227 100644
+index 77fb1a9693f9a08fe714c98e7f8257c83695ac32..141dea69418a7d1ce0359c7a0591b8d5d104194e 100644
 --- a/core/src/mindustry/world/blocks/distribution/Sorter.java
 +++ b/core/src/mindustry/world/blocks/distribution/Sorter.java
 @@ -13,6 +13,7 @@ import mindustry.type.*;
@@ -69,7 +69,7 @@ index c5f8f522482a476d27ee18eb4acdc52d722eda46..716c6645e5cf90a6dd4d4ec65b48ed2e
  
  import static mindustry.Vars.*;
  
-@@ -78,6 +79,7 @@ public class Sorter extends Block{
+@@ -81,6 +82,7 @@ public class Sorter extends Block{
                  Draw.color(sortItem.color);
                  Fill.square(x, y, tilesize/2f - 0.00001f);
                  Draw.color();
@@ -78,7 +78,7 @@ index c5f8f522482a476d27ee18eb4acdc52d722eda46..716c6645e5cf90a6dd4d4ec65b48ed2e
  
              super.draw();
 diff --git a/core/src/mindustry/world/blocks/sandbox/ItemSource.java b/core/src/mindustry/world/blocks/sandbox/ItemSource.java
-index b505c5f883e4dc5453ef677005ec9955c5dc52d9..78438212a0ab63f2411928695846cc8915679cc8 100644
+index 9fd37b4d9fb98ff074066c90fc7f3173942c67ce..8ddf150cb8fe5baadf9c46bac9f9640070a46c30 100644
 --- a/core/src/mindustry/world/blocks/sandbox/ItemSource.java
 +++ b/core/src/mindustry/world/blocks/sandbox/ItemSource.java
 @@ -11,6 +11,7 @@ import mindustry.type.*;
@@ -89,7 +89,7 @@ index b505c5f883e4dc5453ef677005ec9955c5dc52d9..78438212a0ab63f2411928695846cc89
  
  import static mindustry.Vars.*;
  
-@@ -73,6 +74,7 @@ public class ItemSource extends Block{
+@@ -75,6 +76,7 @@ public class ItemSource extends Block{
                  Draw.color(outputItem.color);
                  Fill.square(x, y, tilesize/2f - 0.00001f);
                  Draw.color();
@@ -98,7 +98,7 @@ index b505c5f883e4dc5453ef677005ec9955c5dc52d9..78438212a0ab63f2411928695846cc89
  
              super.draw();
 diff --git a/core/src/mindustry/world/blocks/storage/Unloader.java b/core/src/mindustry/world/blocks/storage/Unloader.java
-index 71bba8e4194330dba430121387e6f704369318ca..d9e88e79cd431539f760be4fb26d2c6755744a9b 100644
+index 90b6af2c6e9e4616f112d97608386a5ff112cd90..9f73fbea69fac792208c035113c22ee9585630cd 100644
 --- a/core/src/mindustry/world/blocks/storage/Unloader.java
 +++ b/core/src/mindustry/world/blocks/storage/Unloader.java
 @@ -20,6 +20,8 @@ import mindustry.world.meta.*;
@@ -110,7 +110,7 @@ index 71bba8e4194330dba430121387e6f704369318ca..d9e88e79cd431539f760be4fb26d2c67
  import static mindustry.Vars.*;
  
  public class Unloader extends Block{
-@@ -233,6 +235,10 @@ public class Unloader extends Block{
+@@ -235,6 +237,10 @@ public class Unloader extends Block{
          public void draw(){
              super.draw();
  

@@ -11,10 +11,10 @@ Subject: [PATCH] HR(RenderExt) overdriveZone mendZone
  4 files changed, 40 insertions(+)
 
 diff --git a/core/src/mindustry/core/Renderer.java b/core/src/mindustry/core/Renderer.java
-index e6e407293c928d3392bc8eb46ae7b7ef544dbab9..add785b5be5ed00e5c89138ebfce57f7200b293c 100644
+index f25585b53208318e2b09c227e94915bf291b941e..a74d7e7db9dc1d629fc76365c775ec0a6bbb6b08 100644
 --- a/core/src/mindustry/core/Renderer.java
 +++ b/core/src/mindustry/core/Renderer.java
-@@ -375,6 +375,11 @@ public class Renderer implements ApplicationListener{
+@@ -377,6 +377,11 @@ public class Renderer implements ApplicationListener{
                  effectBuffer.blit(Shaders.shield);
              });
  
@@ -41,7 +41,7 @@ index 7d8d9f343acb410ba680aab1c1f6a2be9dbbf3a4..48e80224bdcbaea0476d4be204eef767
      weather = 130,
  
 diff --git a/core/src/mindustry/world/blocks/defense/MendProjector.java b/core/src/mindustry/world/blocks/defense/MendProjector.java
-index e56333732c3a467b2a230f0801496cf3f88e0ac4..fe3b942681f449db3a17a6603182162e9b522b24 100644
+index 91ee4035ba5afcd8614fab31869526311fca7b58..e1978238268e8e09f3dd7a1a2c6668945649cc38 100644
 --- a/core/src/mindustry/world/blocks/defense/MendProjector.java
 +++ b/core/src/mindustry/world/blocks/defense/MendProjector.java
 @@ -15,6 +15,7 @@ import mindustry.logic.*;
@@ -52,10 +52,10 @@ index e56333732c3a467b2a230f0801496cf3f88e0ac4..fe3b942681f449db3a17a6603182162e
  
  import static mindustry.Vars.*;
  
-@@ -140,6 +141,13 @@ public class MendProjector extends Block{
-         public void draw(){
-             super.draw();
+@@ -144,6 +145,13 @@ public class MendProjector extends Block{
  
+         @Override
+         public void draw(){
 +            float realRange = range + phaseHeat * phaseRangeBoost;
 +            if(status() == BlockStatus.active && RenderExt.mendZoneTransparency > 0.02f){
 +                var c = Tmp.c1.set(baseColor);
@@ -65,9 +65,9 @@ index e56333732c3a467b2a230f0801496cf3f88e0ac4..fe3b942681f449db3a17a6603182162e
 +            }
              float f = 1f - (Time.time / 100f) % 1f;
  
-             Draw.color(baseColor, phaseColor, phaseHeat);
+             if(!Lod.l2) return;
 diff --git a/core/src/mindustry/world/blocks/defense/OverdriveProjector.java b/core/src/mindustry/world/blocks/defense/OverdriveProjector.java
-index 17c606bd86ca5222691a366f0691a72faea4acf8..c2a1f10f2fe32c093cb0142a7f1d93dabadb4e2f 100644
+index 69712beaead065bffdccbf3c12c5c1b583c5355f..b669201323e86fee02e58197ed95ccfc8b18a3e1 100644
 --- a/core/src/mindustry/world/blocks/defense/OverdriveProjector.java
 +++ b/core/src/mindustry/world/blocks/defense/OverdriveProjector.java
 @@ -15,6 +15,7 @@ import mindustry.ui.*;
@@ -112,6 +112,6 @@ index 17c606bd86ca5222691a366f0691a72faea4acf8..c2a1f10f2fe32c093cb0142a7f1d93da
 +                }
 +            }
 +
-             float f = 1f - (Time.time / 100f) % 1f;
+             if(!Lod.l2) return;
  
-             Draw.color(baseColor, phaseColor, phaseHeat);
+             float f = 1f - (Time.time / 100f) % 1f;

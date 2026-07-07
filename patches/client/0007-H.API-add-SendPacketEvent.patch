@@ -9,7 +9,7 @@ Subject: [PATCH] H.API: add SendPacketEvent
  2 files changed, 8 insertions(+), 1 deletion(-)
 
 diff --git a/core/src/mindustry/net/ArcNetProvider.java b/core/src/mindustry/net/ArcNetProvider.java
-index 6a7814972876de1160327b2874deb521a8843629..ce9ec5e0f2a9c83ed049d05e85de877316569377 100644
+index b0b88d7d41e32ab381df5fa2d5bccd083449aeea..7f05b1c060a4a261366f10f5390d6323ad248c12 100644
 --- a/core/src/mindustry/net/ArcNetProvider.java
 +++ b/core/src/mindustry/net/ArcNetProvider.java
 @@ -16,6 +16,7 @@ import mindustry.game.EventType.*;
@@ -20,7 +20,7 @@ index 6a7814972876de1160327b2874deb521a8843629..ce9ec5e0f2a9c83ed049d05e85de8773
  import net.jpountz.lz4.*;
  
  import java.io.*;
-@@ -368,6 +369,7 @@ public class ArcNetProvider implements NetProvider{
+@@ -423,6 +424,7 @@ public class ArcNetProvider implements NetProvider{
  
          @Override
          public void sendStream(Streamable stream){
@@ -28,7 +28,7 @@ index 6a7814972876de1160327b2874deb521a8843629..ce9ec5e0f2a9c83ed049d05e85de8773
              connection.addListener(new InputStreamSender(stream.stream, 1024){
                  int id;
  
-@@ -393,6 +395,7 @@ public class ArcNetProvider implements NetProvider{
+@@ -448,6 +450,7 @@ public class ArcNetProvider implements NetProvider{
  
          @Override
          public void send(Object object, boolean reliable){
@@ -37,7 +37,7 @@ index 6a7814972876de1160327b2874deb521a8843629..ce9ec5e0f2a9c83ed049d05e85de8773
                  if(connection.isConnected()){
                      if(reliable){
 diff --git a/core/src/mindustry/net/Net.java b/core/src/mindustry/net/Net.java
-index 2c8a5eba80a105865cf302e9ce0bf2460f7b7616..7685d7649bdea045e46fa6f4eb9ae93481bae567 100644
+index 53aea8b5fd627dda0c592eede372091a13814eb1..f1778c69977d407103ee3f741d47f6a569b17d70 100644
 --- a/core/src/mindustry/net/Net.java
 +++ b/core/src/mindustry/net/Net.java
 @@ -10,6 +10,7 @@ import mindustry.game.EventType.*;
@@ -48,25 +48,36 @@ index 2c8a5eba80a105865cf302e9ce0bf2460f7b7616..7685d7649bdea045e46fa6f4eb9ae934
  import net.jpountz.lz4.*;
  
  import java.io.*;
-@@ -225,8 +226,10 @@ public class Net{
+@@ -242,6 +243,7 @@ public class Net{
  
      /** Send an object to all connected clients, or to the server if this is a client.*/
      public void send(Object object, boolean reliable){
 +        if(SendPacketEvent.emit(null, null, object)) return;
          if(server){
-             for(NetConnection con : provider.getConnections()){
-+                if(!con.hasBegunConnecting) continue;
-                 con.send(object, reliable);
-             }
+             provider.sendAllServer(object, reliable);
          }else{
-@@ -236,8 +239,9 @@ public class Net{
+@@ -256,6 +258,7 @@ public class Net{
  
      /** Send an object to everyone EXCEPT a certain client. Server-side only.*/
      public void sendExcept(NetConnection except, Object object, boolean reliable){
 +        if(SendPacketEvent.emit(null, except, object)) return;
-         for(NetConnection con : getConnections()){
--            if(con != except){
-+            if(con != except && con.hasBegunConnecting){
+         provider.sendExceptServer(except, object, reliable);
+     }
+ 
+@@ -416,6 +419,7 @@ public class Net{
+         /** Sends a packet to a specific list of clients. */
+         default void sendAllServer(Object object, Iterable<NetConnection> connections, boolean reliable){
+             for(NetConnection con : connections){
++                if(!con.hasBegunConnecting) continue;
                  con.send(object, reliable);
              }
          }
+@@ -430,7 +434,7 @@ public class Net{
+         /** Sends a packet to all connected clients, except the specified one. */
+         default void sendExceptServer(NetConnection except, Object object, boolean reliable){
+             for(NetConnection con : getConnections()){
+-                if(con != except){
++                if(con != except && con.hasBegunConnecting){
+                     con.send(object, reliable);
+                 }
+             }

@@ -17,7 +17,7 @@ Content-Transfer-Encoding: 8bit
  6 files changed, 30 insertions(+), 8 deletions(-)
 
 diff --git a/core/src/mindustry/ctype/UnlockableContent.java b/core/src/mindustry/ctype/UnlockableContent.java
-index 380fd844426820615fd6d2f88899d2f5ec20ac2a..caf6a100865d862a4d75ccf55741f45b6efe6935 100644
+index 006f322b2465a91f2ba8d24482fed819aec4e523..9ab00cd747d6b5f4eaece2440343b77600d3133d 100644
 --- a/core/src/mindustry/ctype/UnlockableContent.java
 +++ b/core/src/mindustry/ctype/UnlockableContent.java
 @@ -18,6 +18,7 @@ import mindustry.mod.*;
@@ -47,7 +47,7 @@ index 380fd844426820615fd6d2f88899d2f5ec20ac2a..caf6a100865d862a4d75ccf55741f45b
  
      public boolean unlocked(){
 diff --git a/core/src/mindustry/ui/dialogs/DatabaseDialog.java b/core/src/mindustry/ui/dialogs/DatabaseDialog.java
-index 078026a393a19b36a66577a962f5984310375570..f30455ff9b1d2095e9ccdfcc053ed45f9394f72f 100644
+index 23e4d12cebf578dac6aea18f0e8d4ea7bc6cc7d8..81a86b8676a990d130ba7d1a268e1bfc3faa324e 100644
 --- a/core/src/mindustry/ui/dialogs/DatabaseDialog.java
 +++ b/core/src/mindustry/ui/dialogs/DatabaseDialog.java
 @@ -51,6 +51,11 @@ public class DatabaseDialog extends BaseDialog{
@@ -80,7 +80,7 @@ index 078026a393a19b36a66577a962f5984310375570..f30455ff9b1d2095e9ccdfcc053ed45f
      }
  }
 diff --git a/core/src/mindustry/ui/fragments/PlacementFragment.java b/core/src/mindustry/ui/fragments/PlacementFragment.java
-index 2564649423f3306dfaaf539dd1021527e65a5a8e..0ba08a4cd621a0081db6487527a98cbab785de4d 100644
+index dfa92ea73d4d58d6d8346ce9e8686e06f6b5902a..df0464d16d57bed5ef1929b5829ff0564d704c42 100644
 --- a/core/src/mindustry/ui/fragments/PlacementFragment.java
 +++ b/core/src/mindustry/ui/fragments/PlacementFragment.java
 @@ -27,8 +27,10 @@ import mindustry.input.*;
@@ -113,7 +113,7 @@ index 2564649423f3306dfaaf539dd1021527e65a5a8e..0ba08a4cd621a0081db6487527a98cba
                          if(index++ % rowWidth == 0){
                              blockTable.row();
                          }
-@@ -760,7 +767,7 @@ public class PlacementFragment{
+@@ -765,7 +772,7 @@ public class PlacementFragment{
      }
  
      boolean unlocked(Block block){
@@ -123,10 +123,10 @@ index 2564649423f3306dfaaf539dd1021527e65a5a8e..0ba08a4cd621a0081db6487527a98cba
      }
  
 diff --git a/core/src/mindustry/world/Block.java b/core/src/mindustry/world/Block.java
-index 0bedbb38372ca190e9a25ca2fff3d884979db1fc..ecd38c53c1e395caffa3cc62e7ba105dc5bc457e 100644
+index a3507d85a6a1cda5abb412defa588a90d84c9d32..dacb1277325e68f9730e67c3e288706028e63586 100644
 --- a/core/src/mindustry/world/Block.java
 +++ b/core/src/mindustry/world/Block.java
-@@ -1009,11 +1009,11 @@ public class Block extends UnlockableContent implements Senseable{
+@@ -1027,11 +1027,11 @@ public class Block extends UnlockableContent implements Senseable{
      }
  
      public boolean isVisible(){

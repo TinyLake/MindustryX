@@ -17,7 +17,7 @@ Content-Transfer-Encoding: 8bit
  create mode 100644 android/src/mindustryX/features/ApkInstallHelper.java
 
 diff --git a/android/AndroidManifest.xml b/android/AndroidManifest.xml
-index 4593cbc68faa33726f4b23e5b65f9b56bf10cc7d..17a8cf6506223dc5264e2c5f97c4f5490778d5fe 100644
+index 588bd9f12dc2ada79adb79e5e1e4bee93fdc3737..707f7e31b8d5a523a78e92c944ed98a8f0bdba3d 100644
 --- a/android/AndroidManifest.xml
 +++ b/android/AndroidManifest.xml
 @@ -6,6 +6,7 @@
@@ -27,8 +27,8 @@ index 4593cbc68faa33726f4b23e5b65f9b56bf10cc7d..17a8cf6506223dc5264e2c5f97c4f549
 +    <uses-permission android:name="android.permission.REQUEST_INSTALL_PACKAGES" /> <!-- MDTX -->
  
      <application
-             android:resizeableActivity="true"
-@@ -32,6 +33,16 @@
+             android:enableOnBackInvokedCallback="false"
+@@ -40,6 +41,16 @@
  
          </activity>
  
@@ -57,26 +57,26 @@ index 0000000000000000000000000000000000000000..54e235c5590f4dd65fe4b989d67b82da
 +</paths>
 \ No newline at end of file
 diff --git a/android/src/mindustry/android/AndroidLauncher.java b/android/src/mindustry/android/AndroidLauncher.java
-index 3d40d5136f44bf3a7518c833b5d5f2964cee6a39..91a30636e9c60bd2dbfb2a4ec05a1c7a3d954bbe 100644
+index 652f4947961ca5d865253f05a52b9dafba48bd79..4a22c6cb62ae65afe6efed978a11507ba3f48b3c 100644
 --- a/android/src/mindustry/android/AndroidLauncher.java
 +++ b/android/src/mindustry/android/AndroidLauncher.java
-@@ -20,6 +20,7 @@ import mindustry.game.Saves.*;
- import mindustry.io.*;
- import mindustry.net.*;
+@@ -22,6 +22,7 @@ import mindustry.net.*;
+ import mindustry.ui.*;
+ import mindustry.ui.FileChooser.*;
  import mindustry.ui.dialogs.*;
 +import mindustryX.features.*;
  
  import java.io.*;
  import java.lang.Thread.*;
-@@ -32,6 +33,7 @@ public class AndroidLauncher extends AndroidApplication{
+@@ -34,6 +35,7 @@ public class AndroidLauncher extends AndroidApplication{
      boolean doubleScaleTablets = true;
-     FileChooser chooser;
+     FileChooserDialog chooser;
      Runnable permCallback;
 +    private ApkInstallHelper apkInstaller;
  
      @Override
      protected void onCreate(Bundle savedInstanceState){
-@@ -50,6 +52,7 @@ public class AndroidLauncher extends AndroidApplication{
+@@ -52,6 +54,7 @@ public class AndroidLauncher extends AndroidApplication{
          });
  
          super.onCreate(savedInstanceState);
@@ -84,7 +84,7 @@ index 3d40d5136f44bf3a7518c833b5d5f2964cee6a39..91a30636e9c60bd2dbfb2a4ec05a1c7a
          if(doubleScaleTablets && isTablet(this)){
              Scl.setAddition(0.5f);
          }
-@@ -68,6 +71,9 @@ public class AndroidLauncher extends AndroidApplication{
+@@ -70,6 +73,9 @@ public class AndroidLauncher extends AndroidApplication{
  
              @Override
              public void shareFile(Fi file){
@@ -94,7 +94,7 @@ index 3d40d5136f44bf3a7518c833b5d5f2964cee6a39..91a30636e9c60bd2dbfb2a4ec05a1c7a
              }
  
              @Override
-@@ -261,6 +267,12 @@ public class AndroidLauncher extends AndroidApplication{
+@@ -264,6 +270,12 @@ public class AndroidLauncher extends AndroidApplication{
          }
      }
  

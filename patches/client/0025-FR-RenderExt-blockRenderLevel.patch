@@ -11,10 +11,10 @@ Subject: [PATCH] FR(RenderExt) blockRenderLevel
  4 files changed, 12 insertions(+), 4 deletions(-)
 
 diff --git a/core/src/mindustry/core/Renderer.java b/core/src/mindustry/core/Renderer.java
-index add785b5be5ed00e5c89138ebfce57f7200b293c..ffe9448b2c1bb72bcfd08d12aeace63de3c41a3a 100644
+index a74d7e7db9dc1d629fc76365c775ec0a6bbb6b08..7174660ffad8e111b81807a646f75fde5bb3ee4d 100644
 --- a/core/src/mindustry/core/Renderer.java
 +++ b/core/src/mindustry/core/Renderer.java
-@@ -333,7 +333,8 @@ public class Renderer implements ApplicationListener{
+@@ -335,7 +335,8 @@ public class Renderer implements ApplicationListener{
  
          Draw.draw(Layer.background, this::drawBackground);
          Draw.draw(Layer.floor, blocks.floor::drawFloor);
@@ -24,7 +24,7 @@ index add785b5be5ed00e5c89138ebfce57f7200b293c..ffe9448b2c1bb72bcfd08d12aeace63d
          Draw.draw(Layer.block - 0.09f, () -> {
              blocks.floor.beginDraw();
              blocks.floor.drawLayer(CacheLayer.walls);
-@@ -418,7 +419,8 @@ public class Renderer implements ApplicationListener{
+@@ -420,7 +421,8 @@ public class Renderer implements ApplicationListener{
          }
  
          Events.fire(Trigger.drawOver);
@@ -58,10 +58,10 @@ index 3d948c538ea91437be30224408350cf6a29aedbd..341ca42edb3cdadba7cfe6fbb8a9b5e8
  
      public void create(float x, float y, float rotation, Color color, Object data){
 diff --git a/core/src/mindustry/entities/comp/BuildingComp.java b/core/src/mindustry/entities/comp/BuildingComp.java
-index eb79bc7fc27751053fdaf101cc9b4d91a4400433..4df1705e8e55e91d7c5b7431fb5cc12db77ae158 100644
+index 8240ca8b76692261900a257a40e55685e9fcf1f4..b440f9b451bf7724e5497134733365223950605d 100644
 --- a/core/src/mindustry/entities/comp/BuildingComp.java
 +++ b/core/src/mindustry/entities/comp/BuildingComp.java
-@@ -2242,7 +2242,10 @@ abstract class BuildingComp implements Posc, Teamc, Healthc, Buildingc, Timerc,
+@@ -2275,7 +2275,10 @@ abstract class BuildingComp implements Posc, Teamc, Healthc, Buildingc, Timerc,
          updateConsumption();
  
          if(enabled || !block.noUpdateDisabled){
@@ -73,15 +73,15 @@ index eb79bc7fc27751053fdaf101cc9b4d91a4400433..4df1705e8e55e91d7c5b7431fb5cc12d
      }
  
 diff --git a/core/src/mindustry/graphics/BlockRenderer.java b/core/src/mindustry/graphics/BlockRenderer.java
-index 40637b1e4efcd8359869f2c15bb86c638303bca1..314d6991673fe30a591754937426b14db7a3f4a9 100644
+index 1a60d811c0d59092217dabf4f8c55206f2340485..593dce64908fc8a76936eee460d626a67fe6e111 100644
 --- a/core/src/mindustry/graphics/BlockRenderer.java
 +++ b/core/src/mindustry/graphics/BlockRenderer.java
-@@ -401,7 +401,7 @@ public class BlockRenderer{
+@@ -538,7 +538,7 @@ public class BlockRenderer{
          }
  
  
--        if(avgx == lastCamX && avgy == lastCamY && lastRangeX == rangex && lastRangeY == rangey){
-+        if(RenderExt.blockRenderLevel <= 0 || avgx == lastCamX && avgy == lastCamY && lastRangeX == rangex && lastRangeY == rangey){
+-        if(avgx == lastCamX && avgy == lastCamY && lastRangeX == rangex && lastRangeY == rangey && lastTeam == player.team()){
++        if(RenderExt.blockRenderLevel <= 0 || avgx == lastCamX && avgy == lastCamY && lastRangeX == rangex && lastRangeY == rangey && lastTeam == player.team()){
              return;
          }
  

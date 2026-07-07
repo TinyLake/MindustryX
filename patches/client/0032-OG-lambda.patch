@@ -9,15 +9,15 @@ Content-Transfer-Encoding: 8bit
 
 ---
  core/src/mindustry/entities/Units.java        | 25 ++++-
- .../mindustry/entities/bullet/BulletType.java | 11 ++-
+ .../mindustry/entities/bullet/BulletType.java | 12 ++-
  .../src/mindustry/graphics/LightRenderer.java | 94 ++++++++++++++++---
- 3 files changed, 107 insertions(+), 23 deletions(-)
+ 3 files changed, 108 insertions(+), 23 deletions(-)
 
 diff --git a/core/src/mindustry/entities/Units.java b/core/src/mindustry/entities/Units.java
-index 1b0543282063c741277298d46f3789d910a1a289..cdd50ebb9189c7e087a4b85714eecb76c31e6137 100644
+index 2ccd5bf36b35365a1987b9eb726245ec3fd80ee5..b6efc744fe0dbc03d0c879a3d8a6b0defc83cc25 100644
 --- a/core/src/mindustry/entities/Units.java
 +++ b/core/src/mindustry/entities/Units.java
-@@ -287,6 +287,10 @@ public class Units{
+@@ -292,6 +292,10 @@ public class Units{
          }
      }
  
@@ -28,7 +28,7 @@ index 1b0543282063c741277298d46f3789d910a1a289..cdd50ebb9189c7e087a4b85714eecb76
      /** Returns the closest enemy of this team. Filter by predicate. */
      public static Unit closestEnemy(Team team, float x, float y, float range, Boolf<Unit> predicate){
          if(team == Team.derelict) return null;
-@@ -295,11 +299,16 @@ public class Units{
+@@ -300,11 +304,16 @@ public class Units{
          cdist = 0f;
          cpriority = -99999f;
  
@@ -48,7 +48,7 @@ index 1b0543282063c741277298d46f3789d910a1a289..cdd50ebb9189c7e087a4b85714eecb76
                  result = e;
                  cdist = dst2;
                  cpriority = e.type.targetPriority;
-@@ -317,10 +326,16 @@ public class Units{
+@@ -322,10 +331,16 @@ public class Units{
          cdist = 0f;
          cpriority = -99999f;
  
@@ -68,7 +68,7 @@ index 1b0543282063c741277298d46f3789d910a1a289..cdd50ebb9189c7e087a4b85714eecb76
                  result = e;
                  cdist = cost;
 diff --git a/core/src/mindustry/entities/bullet/BulletType.java b/core/src/mindustry/entities/bullet/BulletType.java
-index c58cc529828e1de0f926f8850f50b8c2cd0e012f..5619d65c62ce65488f3509a31e508a4088eb1ae7 100644
+index 03be495fdc580ed4c8538487b07b4f0dcdd491b1..d7febf0b02e6e431a5433a66bf4ca44e28c95f4a 100644
 --- a/core/src/mindustry/entities/bullet/BulletType.java
 +++ b/core/src/mindustry/entities/bullet/BulletType.java
 @@ -731,6 +731,7 @@ public class BulletType extends Content implements Cloneable{
@@ -79,18 +79,18 @@ index c58cc529828e1de0f926f8850f50b8c2cd0e012f..5619d65c62ce65488f3509a31e508a40
      public void updateHoming(Bullet b){
          if(homingPower > 0.0001f && b.time >= homingDelay){
              float realAimX = b.aimX < 0 ? b.x : b.aimX;
-@@ -738,20 +739,22 @@ public class BulletType extends Content implements Cloneable{
+@@ -738,19 +739,22 @@ public class BulletType extends Content implements Cloneable{
  
              Teamc target;
              //home in on allies if possible
 +            argBullet = b;
              if(heals()){
-                 target = Units.closestTarget(null, realAimX, realAimY, homingRange,
--                e -> e.checkTarget(collidesAir, collidesGround) && e.team != b.team && !b.hasCollided(e.id),
--                t -> collidesGround && (t.team != b.team || t.damaged()) && !b.hasCollided(t.id)
+                 target = Units.closestTarget(null, realAimX, realAimY, homingRange, b.team,
+-                    e -> e.checkTarget(collidesAir, collidesGround) && e.team != b.team && !b.hasCollided(e.id),
+-                    t -> collidesGround && (t.team != b.team || t.damaged()) && !b.hasCollided(t.id));
 +                e -> e.checkTarget(collidesAir, collidesGround) && e.team != argBullet.team && !argBullet.hasCollided(e.id),
 +                t -> collidesGround && (t.team != argBullet.team || t.damaged()) && !argBullet.hasCollided(t.id)
-                 );
++                );
              }else{
                  if(b.aimTile != null && b.aimTile.build != null && b.aimTile.build.team != b.team && collidesGround && !b.hasCollided(b.aimTile.build.id)){
                      target = b.aimTile.build;

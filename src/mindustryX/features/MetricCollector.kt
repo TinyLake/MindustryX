@@ -133,7 +133,7 @@ object MetricCollector {
                 put("state", Vars.state?.state?.toString())
                 put("currentMod", Vars.content?.transformName("")?.removeSuffix("-"))
                 put("mapName", Vars.state?.map?.name())
-                put("patches", Vars.state?.patcher?.patches?.size ?: 0)
+                put("patches", Vars.state?.data?.patches?.size ?: 0)
             })
             likelyCause?.let {
                 put("likelyCause", it)
