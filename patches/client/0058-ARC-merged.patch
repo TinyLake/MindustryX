@@ -1682,10 +1682,10 @@ index f07e3c68cf278e7f66d31514162022df8b370bca..3676a7b8e86daac265280afc4b428e7f
          }
      }
 diff --git a/core/src/mindustry/ui/dialogs/SettingsMenuDialog.java b/core/src/mindustry/ui/dialogs/SettingsMenuDialog.java
-index da358539bede7d98af88eec0467fbc06f839f6fc..debcddb916d4fcd37c30c90c19412e9144c0eec7 100644
+index cacb8422937db6f44230f5fce39b492164435a33..32ee27bb0a9f85e1438a3b6d3422030cd2bde980 100644
 --- a/core/src/mindustry/ui/dialogs/SettingsMenuDialog.java
 +++ b/core/src/mindustry/ui/dialogs/SettingsMenuDialog.java
-@@ -378,8 +378,8 @@ public class SettingsMenuDialog extends BaseDialog{
+@@ -371,8 +371,8 @@ public class SettingsMenuDialog extends BaseDialog{
  
          game.sliderPref("saveinterval", 60, 10, 5 * 120, 10, i -> Core.bundle.format("setting.seconds", i));
  
@@ -1695,7 +1695,7 @@ index da358539bede7d98af88eec0467fbc06f839f6fc..debcddb916d4fcd37c30c90c19412e91
              game.checkPref("keyboard", false, val -> {
                  control.setInput(val ? new DesktopInput() : new MobileInput());
                  input.setUseKeyboard(val);
-@@ -412,11 +412,9 @@ public class SettingsMenuDialog extends BaseDialog{
+@@ -405,11 +405,9 @@ public class SettingsMenuDialog extends BaseDialog{
          game.checkPref("conveyorpathfinding", true);
          game.checkPref("hints", true);
  
@@ -1710,7 +1710,7 @@ index da358539bede7d98af88eec0467fbc06f839f6fc..debcddb916d4fcd37c30c90c19412e91
  
          game.checkPref("doubletapmine", false);
          game.checkPref("commandmodehold", true);
-@@ -428,6 +426,8 @@ public class SettingsMenuDialog extends BaseDialog{
+@@ -421,6 +419,8 @@ public class SettingsMenuDialog extends BaseDialog{
              });
          }
  
@@ -1719,7 +1719,7 @@ index da358539bede7d98af88eec0467fbc06f839f6fc..debcddb916d4fcd37c30c90c19412e91
          graphics.sliderPref("uiEdgePadding", 0, 0, 100, s -> s + "px", s -> {
              if(ui != null){
                  ui.updateMargins();
-@@ -514,6 +514,8 @@ public class SettingsMenuDialog extends BaseDialog{
+@@ -507,6 +507,8 @@ public class SettingsMenuDialog extends BaseDialog{
          graphics.checkPref("destroyedblocks", true);
          graphics.checkPref("blockstatus", false);
          graphics.checkPref("playerchat", true);
@@ -1728,7 +1728,7 @@ index da358539bede7d98af88eec0467fbc06f839f6fc..debcddb916d4fcd37c30c90c19412e91
          if(!mobile){
              graphics.checkPref("coreitems", true);
          }
-@@ -523,14 +525,14 @@ public class SettingsMenuDialog extends BaseDialog{
+@@ -516,14 +518,14 @@ public class SettingsMenuDialog extends BaseDialog{
              graphics.checkPref("detach-camera", false);
          }
          graphics.checkPref("position", false);

@@ -362,10 +362,10 @@ index b555d0544e23cfe286f70634e13f079d3b1bb3cb..9345ed419479db6ad5780fcbaee969ca
              return;
          }else if(checkPlaytest()){
 diff --git a/core/src/mindustry/ui/dialogs/SettingsMenuDialog.java b/core/src/mindustry/ui/dialogs/SettingsMenuDialog.java
-index 72f2e48f3907cbe0ab0850a3042862a1102a4dc9..da358539bede7d98af88eec0467fbc06f839f6fc 100644
+index b57a175a652c0e6c6329b4b28650bba7e6e9170a..cacb8422937db6f44230f5fce39b492164435a33 100644
 --- a/core/src/mindustry/ui/dialogs/SettingsMenuDialog.java
 +++ b/core/src/mindustry/ui/dialogs/SettingsMenuDialog.java
-@@ -471,14 +471,14 @@ public class SettingsMenuDialog extends BaseDialog{
+@@ -464,14 +464,14 @@ public class SettingsMenuDialog extends BaseDialog{
          graphics.sliderPref("unitlaseropacity", 100, 0, 100, 5, s -> s + "%");
          graphics.sliderPref("bridgeopacity", 100, 0, 100, 5, s -> s + "%");
  
