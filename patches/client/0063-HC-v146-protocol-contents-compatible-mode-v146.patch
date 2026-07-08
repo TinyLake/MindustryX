@@ -80,10 +80,10 @@ index ed298514f6c3681d5de9c09c17c2ae104ead99b7..016d4c233d0890d974841fb8b5e5b4a0
              netClient.byteStream.setBytes(data);
              DataInputStream input = netClient.dataStream;
 diff --git a/core/src/mindustry/io/SaveVersion.java b/core/src/mindustry/io/SaveVersion.java
-index 86d6bb7185e7fb88a9b947f90fe61fc28a4fa9cd..4595a8dd1ac424db354c0513482c9dc20ef26fb5 100644
+index 0016997574b76a6e1fdafed82e7730ab3d0d9658..c2bd7f2a02626dbb8a4c4f5eebd9238847591e8e 100644
 --- a/core/src/mindustry/io/SaveVersion.java
 +++ b/core/src/mindustry/io/SaveVersion.java
-@@ -660,4 +660,26 @@ public abstract class SaveVersion extends SaveFileReader{
+@@ -661,4 +661,26 @@ public abstract class SaveVersion extends SaveFileReader{
              }
          }
      }

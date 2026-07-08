@@ -12,17 +12,17 @@ way-zer <himc.wicp@gmail.com> on 2024/6/9
 更好的Desktop适配
 way-zer <himc.wicp@gmail.com> on 2024/8/3
 ---
- .../src/mindustryX/loader/AndroidImpl.java    | 272 ++++++++++++++++++
+ .../src/mindustryX/loader/AndroidImpl.java    | 264 ++++++++++++++++++
  core/src/mindustry/mod/ModClassLoader.java    |   7 +
- 2 files changed, 279 insertions(+)
+ 2 files changed, 271 insertions(+)
  create mode 100644 android/src/mindustryX/loader/AndroidImpl.java
 
 diff --git a/android/src/mindustryX/loader/AndroidImpl.java b/android/src/mindustryX/loader/AndroidImpl.java
 new file mode 100644
-index 0000000000000000000000000000000000000000..3c52e6dad6fb333a0fb75cfa8b5399247a046cd5
+index 0000000000000000000000000000000000000000..83afa98efc910e4b549c8c55ab1449f1fea1dfcd
 --- /dev/null
 +++ b/android/src/mindustryX/loader/AndroidImpl.java
-@@ -0,0 +1,272 @@
+@@ -0,0 +1,264 @@
 +package mindustryX.loader;
 +
 +import android.app.*;
@@ -38,6 +38,7 @@ index 0000000000000000000000000000000000000000..3c52e6dad6fb333a0fb75cfa8b539924
 +import dalvik.system.*;
 +import mindustry.*;
 +import mindustry.android.*;
++import mindustry.ui.FileChooser.*;
 +
 +import java.io.*;
 +import java.lang.reflect.Proxy;
@@ -209,17 +210,9 @@ index 0000000000000000000000000000000000000000..3c52e6dad6fb333a0fb75cfa8b539924
 +            }
 +
 +            @Override
-+            public void showFileChooser(boolean open, String title, String extension, Cons<Fi> cons){
-+                showFileChooser(open, title, cons, extension);
-+            }
-+
-+            @Override
-+            public void showMultiFileChooser(Cons<Fi> cons, String... extensions){
-+                showFileChooser(true, "@open", cons, extensions);
-+            }
-+
-+            void showFileChooser(boolean open, String title, Cons<Fi> cons, String... extensions){
-+                Cons<Object> consProxy = (fi) -> {
++            public void showFileChooser(FileChooserParams params){
++                Cons<Fi> cons = params.handler;
++                params.handler = (fi) -> {
 +                    Class<?> cls = fi.getClass();
 +                    if(cls.isAnonymousClass()){
 +                        cons.get(new Fi((File)Reflect.get(fi, "file")){
@@ -240,9 +233,8 @@ index 0000000000000000000000000000000000000000..3c52e6dad6fb333a0fb75cfa8b539924
 +                    }
 +                };
 +                try{
-+                    Method m = platform.getClass().getDeclaredMethod("showFileChooser", boolean.class, String.class, Cons.class, String[].class);
-+                    m.setAccessible(true);
-+                    m.invoke(platform, open, title, consProxy, extensions);
++                    Reflect.invoke(params, "checkParams");
++                    Reflect.invoke(platform, "showFileChooser", new Object[]{params}, FileChooserParams.class);
 +                }catch(Exception e){
 +                    Log.err(e);
 +                }
