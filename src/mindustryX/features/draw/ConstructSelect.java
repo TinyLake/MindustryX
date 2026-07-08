@@ -1,5 +1,6 @@
 package mindustryX.features.draw;
 
+import arc.*;
 import arc.graphics.*;
 import arc.math.*;
 import arc.util.*;
@@ -19,7 +20,7 @@ public class ConstructSelect{
     private static final float alpha = 0.5f;
     private static float smoothSpeed = 0f;
 
-    private static int lastId;
+    private static float lastFrameId;
     private static float lastProgress;
 
     public static void draw(ConstructBuild constructBuild){
@@ -27,12 +28,12 @@ public class ConstructSelect{
             return;
         }
 
-        if(lastId != constructBuild.id){
-            lastId = constructBuild.id;
-            lastProgress = 0f;
+        float frameId = Core.graphics.getFrameId();
+        if(frameId - lastFrameId > 1){
             smoothSpeed = 0f;
             timer.clear();
         }
+        lastFrameId = frameId;
 
         float scl = constructBuild.block.size / 4f;
         float buildHitSize = constructBuild.hitSize();
@@ -44,8 +45,9 @@ public class ConstructSelect{
         var pos = Tmp.v1.set(constructBuild).add(0, buildHitSize / 2f);//顶部
 
         if(!state.isPaused()){
+            float passTime = timer.getTime(0);
             if(timer.get(samplePeriod)){
-                float rawSpeed = (progress - lastProgress) / samplePeriod;
+                float rawSpeed = (progress - lastProgress) / passTime;
                 smoothSpeed = Mathf.lerp(smoothSpeed, rawSpeed, alpha);
                 lastProgress = progress;
             }
