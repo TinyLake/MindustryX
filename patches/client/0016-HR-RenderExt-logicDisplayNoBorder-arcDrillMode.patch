@@ -10,8 +10,8 @@ Content-Transfer-Encoding: 8bit
 
 ---
  core/src/mindustry/world/blocks/logic/LogicDisplay.java | 7 ++++++-
- core/src/mindustry/world/blocks/production/Drill.java   | 2 ++
- 2 files changed, 8 insertions(+), 1 deletion(-)
+ core/src/mindustry/world/blocks/production/Drill.java   | 1 +
+ 2 files changed, 7 insertions(+), 1 deletion(-)
 
 diff --git a/core/src/mindustry/world/blocks/logic/LogicDisplay.java b/core/src/mindustry/world/blocks/logic/LogicDisplay.java
 index 7f42ece8bcd770e96f97b59b972bf3e5efdab6fe..d204f8e8374bc52250261f435db760d4fe30b61a 100644
@@ -46,7 +46,7 @@ index 7f42ece8bcd770e96f97b59b972bf3e5efdab6fe..d204f8e8374bc52250261f435db760d4
                  }
              });
 diff --git a/core/src/mindustry/world/blocks/production/Drill.java b/core/src/mindustry/world/blocks/production/Drill.java
-index cc123b120a6e8f92719bded067915749afbf19d5..55c523bc651db449f51b1864aff33103d9ee0d73 100644
+index cc123b120a6e8f92719bded067915749afbf19d5..060fe7e067d6b60b59e40e9b140983010b5eaed7 100644
 --- a/core/src/mindustry/world/blocks/production/Drill.java
 +++ b/core/src/mindustry/world/blocks/production/Drill.java
 @@ -21,6 +21,7 @@ import mindustry.world.*;
@@ -56,12 +56,4 @@ index cc123b120a6e8f92719bded067915749afbf19d5..55c523bc651db449f51b1864aff33103
 +import mindustryX.features.*;
  
  import static mindustry.Vars.*;
- 
-@@ -260,6 +261,7 @@ public class Drill extends Block{
- 
-         @Override
-         public void drawSelect(){
-+            if(RenderExt.arcDrillMode) return;
-             drawItemSelection(dominantItem);
-         }
  

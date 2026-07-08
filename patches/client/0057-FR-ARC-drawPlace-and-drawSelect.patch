@@ -36,15 +36,7 @@ index 711d6c971c9d4df19203d42449a95adf895c30bf..b93cf1e7b4309789953d91bb29e1f707
  import mindustry.entities.*;
  import mindustry.entities.units.*;
  import mindustry.game.EventType.*;
-@@ -23,6 +26,7 @@ import mindustry.world.*;
- import mindustry.world.blocks.environment.*;
- import mindustry.world.blocks.storage.CoreBlock.*;
- import mindustry.world.modules.*;
-+import mindustryX.features.func.*;
- 
- import java.util.*;
- 
-@@ -132,7 +136,7 @@ public class ConstructBlock extends Block{
+@@ -132,7 +135,7 @@ public class ConstructBlock extends Block{
      static float calcPitch(boolean up){
          if(Time.timeSinceMillis(lastTime) < 16 * 30){
              lastTime = Time.millis();
@@ -53,48 +45,7 @@ index 711d6c971c9d4df19203d42449a95adf895c30bf..b93cf1e7b4309789953d91bb29e1f707
              if(pitchSeq > 30){
                  pitchSeq = 0;
              }
-@@ -179,6 +183,40 @@ public class ConstructBlock extends Block{
-         private @Nullable float[] totalAccumulator;
-         private @Nullable int[] itemsLeft;
- 
-+        @Override
-+        public void drawSelect(){
-+            if(team.core() == null){
-+                return;
-+            }
-+
-+            // BlockUnit之上
-+            Draw.z(Layer.flyingUnit + 0.1f);
-+
-+            float scl = block.size / 4f;
-+            float buildHitSize = hitSize();
-+
-+            // 显示建造进度
-+            var pos = Tmp.v1.set(this).add(0, buildHitSize / 2f);//顶部
-+            FuncX.drawText(pos, Strings.fixed(progress * 100, 2) + "%", scl, Pal.accent, Align.bottom);
-+
-+            // 显示物品需求
-+            StringBuilder requirements = new StringBuilder();
-+            for(int i = 0; i < current.requirements.length; i++){
-+                ItemStack stack = current.requirements[i];
-+                float consumeAmount = state.rules.buildCostMultiplier * stack.amount;
-+                int coreAmount = team.core().items.get(stack.item);
-+
-+                int investItem = (int)(progress * consumeAmount);
-+                int needItem = (int)(consumeAmount) - investItem;
-+                boolean hasItem = coreAmount >= needItem;
-+
-+                if(i != 0) requirements.append('\n');
-+                requirements.append(stack.item.emoji()).append(hasItem ? "[#ffd37f]" : "[#e55454]").append(investItem).append("/").append(needItem).append("/").append(UI.formatAmount(coreAmount)).append("[]");
-+            }
-+            pos.set(this).add(-buildHitSize / 2f, -buildHitSize / 2f);//左下角
-+            FuncX.drawText(pos, requirements.toString(), scl, Color.white, Align.topLeft);
-+        }
-+
-         @Override
-         public String getDisplayName(){
-             return Core.bundle.format("block.constructing", current.localizedName);
-@@ -268,7 +306,7 @@ public class ConstructBlock extends Block{
+@@ -268,7 +271,7 @@ public class ConstructBlock extends Block{
  
                      Draw.rect(region, x, y, current.rotate && (noOverrides || current.regionRotated2 == i || current.regionRotated1 == i) ? rotdeg() + current.visualRotationOffset : 0);
                      Draw.flush();
@@ -170,7 +121,7 @@ index 57d8b4ac27635c65154d9c1863001f3df84109d3..890d9444e6c670207929cd63f1b624c3
          indexer.eachBlock(player.team(), x * tilesize + offset, y * tilesize + offset, range, other -> other.block.canOverdrive, other -> Drawf.selected(other, Tmp.c1.set(baseColor).a(Mathf.absin(4f, 1f))));
      }
 diff --git a/core/src/mindustry/world/blocks/defense/turrets/Turret.java b/core/src/mindustry/world/blocks/defense/turrets/Turret.java
-index b38f7560fa04aeb0b416d285e4da43ee3c6e3250..ef1a7afdb810686fd09c98f51d54c3cbca6bb0fd 100644
+index 6e8f77e8ecc420912d8e3af2e772c2179aaba6af..aa87a2fddacf68400510bfbb358dbcd098a60e51 100644
 --- a/core/src/mindustry/world/blocks/defense/turrets/Turret.java
 +++ b/core/src/mindustry/world/blocks/defense/turrets/Turret.java
 @@ -31,6 +31,7 @@ import mindustry.world.*;
@@ -195,24 +146,6 @@ index b38f7560fa04aeb0b416d285e4da43ee3c6e3250..ef1a7afdb810686fd09c98f51d54c3cb
      }
  
      public static abstract class AmmoEntry{
-@@ -485,6 +493,17 @@ public class Turret extends ReloadTurret{
-             if(drawMinRange){
-                 Drawf.dashCircle(x, y, minRange(), team.color);
-             }
-+
-+            //ARC: show shoot target line
-+            if(ArcBuilds.blockWeaponTargetLine && !targetPos.isZero() && dst(targetPos) < range * 5){
-+                Lines.stroke(1f);
-+                Lines.dashLine(x, y, targetPos.x, targetPos.y, (int)(Mathf.len(targetPos.x - x, targetPos.y - y) / 8));
-+                Lines.dashCircle(targetPos.x, targetPos.y, 8);
-+                Draw.reset();
-+            }
-+            if(mindustryX.VarsX.arcTurretShowAmmoRange.get()){
-+                ArcBuilds.turretSelectDraw(this);
-+            }
-         }
- 
-         @Override
 diff --git a/core/src/mindustry/world/blocks/production/BeamDrill.java b/core/src/mindustry/world/blocks/production/BeamDrill.java
 index 839b23a763a157631db88137c2fc59e54e112abd..4e5018ffc79fbdf2f7d5b4e10acfae10e258ad2c 100644
 --- a/core/src/mindustry/world/blocks/production/BeamDrill.java

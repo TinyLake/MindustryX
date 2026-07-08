@@ -10,10 +10,10 @@ Subject: [PATCH] FR(RenderExt) deadOverlay
  3 files changed, 13 insertions(+), 10 deletions(-)
 
 diff --git a/core/src/mindustry/graphics/OverlayRenderer.java b/core/src/mindustry/graphics/OverlayRenderer.java
-index 0795b6a38f43c33ae3fae877f1ae54dd79ea0949..2033e20b8e66a248530f64be11995341e917687e 100644
+index 9d1f4b1ebf944b4dac80b78954ff0719669fb1ed..a40c3fbea2c69e39d417e2c01b1a6ba92ebb8a8c 100644
 --- a/core/src/mindustry/graphics/OverlayRenderer.java
 +++ b/core/src/mindustry/graphics/OverlayRenderer.java
-@@ -79,7 +79,7 @@ public class OverlayRenderer{
+@@ -80,7 +80,7 @@ public class OverlayRenderer{
              input.drawOtherBuildPlans();
          }
  
@@ -22,7 +22,7 @@ index 0795b6a38f43c33ae3fae877f1ae54dd79ea0949..2033e20b8e66a248530f64be11995341
  
          if(player.isBuilder()){
              input.drawBuildPlans();
-@@ -156,10 +156,10 @@ public class OverlayRenderer{
+@@ -157,10 +157,10 @@ public class OverlayRenderer{
              tile.drawConfigure();
          }
  

@@ -10,15 +10,19 @@ import arc.struct.*;
 import arc.util.*;
 import kotlin.collections.*;
 import mindustry.*;
+import mindustry.core.*;
 import mindustry.entities.*;
 import mindustry.game.EventType.*;
 import mindustry.gen.*;
 import mindustry.graphics.*;
 import mindustry.type.*;
+import mindustry.ui.*;
 import mindustry.world.*;
+import mindustry.world.blocks.ConstructBlock.*;
 import mindustry.world.blocks.defense.*;
 import mindustry.world.blocks.defense.turrets.*;
 import mindustry.world.blocks.defense.turrets.BaseTurret.*;
+import mindustry.world.blocks.defense.turrets.Turret.*;
 import mindustry.world.blocks.distribution.MassDriver.*;
 import mindustry.world.blocks.logic.*;
 import mindustry.world.blocks.logic.MessageBlock.*;
@@ -348,5 +352,66 @@ public class RenderExt{
             }
             UIExt.announce(builder.toString());
         });
+    }
+
+    public static void onDrawSelect(Building build){
+        if(arcDrillMode && build instanceof DrillBuild) return;
+        build.drawSelect();
+
+        if(build instanceof TurretBuild turretBuild){
+            Draw.z(Layer.turret + 0.1f);
+            drawTurretSelect(turretBuild);
+        }
+        if(build instanceof ConstructBuild constructBuild){
+            Draw.z(Layer.flyingUnit + 0.1f);
+            drawConstructSelect(constructBuild);
+        }
+    }
+
+    public static void drawTurretSelect(TurretBuild turretBuild){
+        Vec2 targetPos = turretBuild.targetPos;
+
+        Turret turret = (Turret)turretBuild.block;
+
+        if(ArcBuilds.blockWeaponTargetLine && !targetPos.isZero() && turretBuild.dst(targetPos) < turret.range * 5){
+            Lines.stroke(1f);
+            Lines.dashLine(turretBuild.x, turretBuild.y, targetPos.x, targetPos.y, (int)(turretBuild.dst(targetPos) / 8));
+            Lines.dashCircle(targetPos.x, targetPos.y, 8);
+            Draw.reset();
+        }
+        if(mindustryX.VarsX.arcTurretShowAmmoRange.get()){
+            ArcBuilds.turretSelectDraw(turretBuild);
+        }
+    }
+
+    public static void drawConstructSelect(ConstructBuild constructBuild){
+        if(constructBuild.team.core() == null){
+            return;
+        }
+
+        float scl = constructBuild.block.size / 4f;
+        float buildHitSize = constructBuild.hitSize();
+
+        Block current = constructBuild.current;
+        float progress = constructBuild.progress;
+
+        var pos = Tmp.v1.set(constructBuild).add(0, buildHitSize / 2f);
+        FuncX.drawText(pos, Strings.fixed(progress * 100, 2) + "%", scl, Pal.accent, Align.bottom);
+
+        StringBuilder requirements = new StringBuilder();
+        for(int i = 0; i < current.requirements.length; i++){
+            ItemStack stack = current.requirements[i];
+            float consumeAmount = state.rules.buildCostMultiplier * stack.amount;
+            int coreAmount = constructBuild.team.core().items.get(stack.item);
+
+            int investItem = (int)(progress * consumeAmount);
+            int needItem = (int)(consumeAmount) - investItem;
+            boolean hasItem = coreAmount >= needItem;
+
+            if(i != 0) requirements.append('\n');
+            requirements.append(stack.item.emoji()).append(hasItem ? "[#ffd37f]" : "[#e55454]").append(investItem).append("/").append(needItem).append("/").append(UI.formatAmount(coreAmount)).append("[]");
+        }
+        pos.set(constructBuild).add(-buildHitSize / 2f, -buildHitSize / 2f);
+        FuncX.drawText(pos, requirements.toString(), scl, Color.white, Align.topLeft);
     }
 }
