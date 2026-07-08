@@ -58,7 +58,7 @@ index 3d948c538ea91437be30224408350cf6a29aedbd..341ca42edb3cdadba7cfe6fbb8a9b5e8
  
      public void create(float x, float y, float rotation, Color color, Object data){
 diff --git a/core/src/mindustry/entities/comp/BuildingComp.java b/core/src/mindustry/entities/comp/BuildingComp.java
-index 8240ca8b76692261900a257a40e55685e9fcf1f4..b440f9b451bf7724e5497134733365223950605d 100644
+index a1c60506ec0f6e162f79fea61463438728afac38..b061bc061a32fa92e3f9bd0051cb5fc4378b8bbb 100644
 --- a/core/src/mindustry/entities/comp/BuildingComp.java
 +++ b/core/src/mindustry/entities/comp/BuildingComp.java
 @@ -2275,7 +2275,10 @@ abstract class BuildingComp implements Posc, Teamc, Healthc, Buildingc, Timerc,

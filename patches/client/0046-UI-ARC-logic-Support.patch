@@ -271,7 +271,7 @@ index 80d8f7e86ea56efd190317b75aa1e6d2f5d7ad6d..d7e899df6ae55ae528fe4ef7dc917bd9
      }
  }
 diff --git a/core/src/mindustry/world/blocks/logic/LogicBlock.java b/core/src/mindustry/world/blocks/logic/LogicBlock.java
-index 8755d029fe8f3e158d9e97108f9cf36959edaee1..a0e31fe98b6146ce17bdb613e3d604938df4dd5d 100644
+index 642516b023dd6444c0066cb61a3f72ee34ba411c..89c1a5bc2722d3bde6b3f90bfeb3d727466a69e9 100644
 --- a/core/src/mindustry/world/blocks/logic/LogicBlock.java
 +++ b/core/src/mindustry/world/blocks/logic/LogicBlock.java
 @@ -16,6 +16,7 @@ import arc.util.io.*;

@@ -22,7 +22,7 @@ index 7e7445ecae21abd00683cab2efaff471ddafb6da..48ee2ce15b19600f492a3156e152909b
  
          input.updateState();
 diff --git a/core/src/mindustry/core/World.java b/core/src/mindustry/core/World.java
-index 5b6b2e4f1861640f879010d43e2f6fae20db3f71..1be1aa92645e5c57a2d03fe274b50cbfd1cc38bb 100644
+index 306dd569ad432b15c764e28c13bd883c38b96333..bc7ece3bd6c87861097a05f662260633b9d112b9 100644
 --- a/core/src/mindustry/core/World.java
 +++ b/core/src/mindustry/core/World.java
 @@ -238,6 +238,7 @@ public class World{

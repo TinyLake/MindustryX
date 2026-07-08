@@ -61,7 +61,7 @@ index ff887d3920f905a385c9a77cad3614d86d4f0dcd..1f47387df3cf1e402ece1beebb568512
          @Override
          public void build(Table table){
 diff --git a/core/src/mindustry/world/blocks/logic/LogicBlock.java b/core/src/mindustry/world/blocks/logic/LogicBlock.java
-index 61803ca968b12d0f5f32d9fe1973ab94803348d8..8755d029fe8f3e158d9e97108f9cf36959edaee1 100644
+index 06f70d777f994c2d4c233d0ecdda6794ed119dd5..642516b023dd6444c0066cb61a3f72ee34ba411c 100644
 --- a/core/src/mindustry/world/blocks/logic/LogicBlock.java
 +++ b/core/src/mindustry/world/blocks/logic/LogicBlock.java
 @@ -27,6 +27,7 @@ import mindustry.world.*;

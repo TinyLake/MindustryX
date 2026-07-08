@@ -10,10 +10,10 @@ Subject: [PATCH] HC: Support reuse SDL-window for LoaderMod
  3 files changed, 31 insertions(+), 1 deletion(-)
 
 diff --git a/backends/backend-sdl/src/arc/backend/sdl/SdlApplication.java b/backends/backend-sdl/src/arc/backend/sdl/SdlApplication.java
-index d6c5977adb3879f6ceeb0d160e10721e8e58e671..89b5079b74f53e53f7379b51a42914be866bc70e 100644
+index 8db6a4dbe3ca4e7b704041600edba3b97a54f019..d1efd9c6259b77628226dab4bc4ebecffa1f06d4 100644
 --- a/backends/backend-sdl/src/arc/backend/sdl/SdlApplication.java
 +++ b/backends/backend-sdl/src/arc/backend/sdl/SdlApplication.java
-@@ -112,6 +112,21 @@ public class SdlApplication implements Application{
+@@ -113,6 +113,21 @@ public class SdlApplication implements Application{
  
          if(OS.isMac) restartMac();
  
@@ -36,10 +36,10 @@ index d6c5977adb3879f6ceeb0d160e10721e8e58e671..89b5079b74f53e53f7379b51a42914be
  
          SDL_SetHint("SDL_IME_SHOW_UI", "1");
 diff --git a/backends/backend-sdl3/src/arc/backend/sdl/SdlApplication.java b/backends/backend-sdl3/src/arc/backend/sdl/SdlApplication.java
-index baf2846b62416453a9c6eb1887e978d69611c91b..0bb0708e68df329f39ca3fa3818db78f0d0bdd24 100644
+index 77b10bdbf1b0e17492d4c36c707ea73ef8e078c5..73754b59d17f855d104a8b5a60d59ee4d5f2f65a 100644
 --- a/backends/backend-sdl3/src/arc/backend/sdl/SdlApplication.java
 +++ b/backends/backend-sdl3/src/arc/backend/sdl/SdlApplication.java
-@@ -125,6 +125,20 @@ public class SdlApplication implements Application{
+@@ -126,6 +126,20 @@ public class SdlApplication implements Application{
  
          if(OS.isMac) restartMac();
  

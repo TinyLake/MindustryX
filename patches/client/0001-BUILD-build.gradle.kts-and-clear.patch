@@ -7,14 +7,14 @@ clear and replce jabel(Support record)
 way-zer <himc.wicp@gmail.com> on 2024/6/9
 ---
  .gitignore                                    |   2 +-
- android/build.gradle                          | 119 ++-----
+ android/build.gradle                          | 119 ++----
  android/proguard-rules.pro                    |   4 +
  .../com/github/bsideup/jabel/Desugar.java     |  13 +
  .../javax.annotation.processing.Processor     |   6 +
- build.gradle                                  | 337 ++++--------------
+ build.gradle                                  | 338 ++++--------------
  core/build.gradle                             |   2 -
  core/build.gradle.kts                         |  73 ++++
- desktop/build.gradle                          | 159 +--------
+ desktop/build.gradle                          | 159 +-------
  gradle.properties                             |   5 +-
  gradlew                                       | 284 +++++++++------
  gradlew.bat                                   |  37 +-
@@ -23,7 +23,7 @@ way-zer <himc.wicp@gmail.com> on 2024/6/9
  settings.gradle                               |  11 +-
  tools/build.gradle                            |  63 ++--
  tools/src/mindustry/tools/Generators.java     |   2 +-
- 17 files changed, 458 insertions(+), 706 deletions(-)
+ 17 files changed, 458 insertions(+), 707 deletions(-)
  create mode 100644 annotations/src/main/java/com/github/bsideup/jabel/Desugar.java
  create mode 100644 annotations/src/main/resources/META-INF/services/javax.annotation.processing.Processor
  delete mode 100644 core/build.gradle
@@ -289,7 +289,7 @@ index 0000000000000000000000000000000000000000..181b87c1d5f3755f16a01c0528d0a89f
 +mindustry.annotations.misc.LogicStatementProcessor
 +mindustry.annotations.remote.RemoteProcess
 diff --git a/build.gradle b/build.gradle
-index b1718ba1495763ef2cc36cd18fe919a725c0f1dc..d0b7b8867edffc6baca2bb8295461f28b551384a 100644
+index e080bb974a320c72bfdc9d9821f535148556e70d..d0b7b8867edffc6baca2bb8295461f28b551384a 100644
 --- a/build.gradle
 +++ b/build.gradle
 @@ -1,9 +1,6 @@
@@ -623,7 +623,7 @@ index b1718ba1495763ef2cc36cd18fe919a725c0f1dc..d0b7b8867edffc6baca2bb8295461f28
          archiveClassifier = 'deps'
          from files(sourceSets.main.output.classesDirs)
          from{ configurations.runtimeClasspath.collect{ it.isDirectory() ? it : zipTree(it) } }
-@@ -341,26 +179,13 @@ project(":core"){
+@@ -341,27 +179,13 @@ project(":core"){
          duplicatesStrategy = DuplicatesStrategy.EXCLUDE
      }
  
@@ -635,6 +635,7 @@ index b1718ba1495763ef2cc36cd18fe919a725c0f1dc..d0b7b8867edffc6baca2bb8295461f28
      }
  
 -    task assetsJar(type: Jar){
+-        dependsOn ":tools:pack"
 -        archiveClassifier = 'assets'
 -
 -        into('assets'){
@@ -653,7 +654,7 @@ index b1718ba1495763ef2cc36cd18fe919a725c0f1dc..d0b7b8867edffc6baca2bb8295461f28
          archiveClassifier = 'music'
  
          into('assets'){
-@@ -370,8 +195,6 @@ project(":core"){
+@@ -371,8 +195,6 @@ project(":core"){
      }
  
      dependencies{
@@ -662,7 +663,7 @@ index b1718ba1495763ef2cc36cd18fe919a725c0f1dc..d0b7b8867edffc6baca2bb8295461f28
          api "at.yawk.lz4:lz4-java:1.10.2"
          api arcModule("arc-core")
          api arcModule("extensions:flabel")
-@@ -380,33 +203,27 @@ project(":core"){
+@@ -381,33 +203,27 @@ project(":core"){
          api arcModule("extensions:fx")
          api arcModule("extensions:arcnet")
          api "com.github.Anuken:rhino:$rhinoVersion"
@@ -709,7 +710,7 @@ index b1718ba1495763ef2cc36cd18fe919a725c0f1dc..d0b7b8867edffc6baca2bb8295461f28
      }
  
      gradle.taskGraph.whenReady{
-@@ -444,12 +261,6 @@ project(":tests"){
+@@ -445,12 +261,6 @@ project(":tests"){
          testRuntimeOnly "org.junit.platform:junit-platform-launcher"
      }
  
@@ -722,7 +723,7 @@ index b1718ba1495763ef2cc36cd18fe919a725c0f1dc..d0b7b8867edffc6baca2bb8295461f28
      test{
          //fork every test so mods don't interact with each other
          forkEvery = 1
-@@ -501,33 +312,11 @@ configure([":core", ":server"].collect{project(it)}){
+@@ -502,33 +312,11 @@ configure([":core", ":server"].collect{project(it)}){
      }
  }
  
@@ -1032,18 +1033,18 @@ index 0898451c271ed8f75c849d1dc68259c5329dbf35..bbab133446e5eaed169ff0ad31ddf7b8
 +}
 \ No newline at end of file
 diff --git a/gradle.properties b/gradle.properties
-index 7b328b0dea9569b35656c290852c2bdebe658e2a..adc3b35e3dedd935b52be7814379ccf6e76fe02f 100644
+index 052f94d1960080f623b8ee6e1ebe635559409329..67ffaa9c0eb21117a1b4378bd82f6b8b12b51ece 100644
 --- a/gradle.properties
 +++ b/gradle.properties
 @@ -26,4 +26,7 @@ org.gradle.caching=true
  org.gradle.internal.http.socketTimeout=100000
  org.gradle.internal.http.connectionTimeout=100000
  android.enableR8.fullMode=false
--archash=2324db649c
-+#archash=2324db649c
+-archash=12840e4a21
++#archash=12840e4a21
 +
 +#MDTX: Use "v{upstreamBuild}" by default
-+upstreamBuild=159.1
++upstreamBuild=159.2
 \ No newline at end of file
 diff --git a/gradlew b/gradlew
 index 4f906e0c811fc9e230eb44819f509cd0627f2600..f3b75f3b0d4faeb4b1c8a02b5c47007e6efb7dcd 100755

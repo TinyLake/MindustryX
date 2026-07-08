@@ -100,7 +100,7 @@ index 6f689550d4fd7e6541ad7bd78097870b7c61c40a..c72dd992945c8fbebee7a3950246b9f5
      private Seq<Team> activeTeams = new Seq<>(Team.class);
      /** Maps teams to a map of flagged tiles by flag. */
 diff --git a/core/src/mindustry/content/Blocks.java b/core/src/mindustry/content/Blocks.java
-index 270d55ac38b0df95bc2e423e5f28df82ea148882..f2d588d7a3741fa004fd42956a1ec01f5e54623a 100644
+index bd60d035505348932facdf3e46e29fab2ed359d5..e765783bff91f96e5171bc3cd5ad90a3a8707fde 100644
 --- a/core/src/mindustry/content/Blocks.java
 +++ b/core/src/mindustry/content/Blocks.java
 @@ -2110,6 +2110,7 @@ public class Blocks{

@@ -44,7 +44,7 @@ index fec80c8b4ef7ce8a1e63692d55dbea6b4bee5501..20e282fa1b46d18d0a230d0aa71b2554
                              }
                          }
 diff --git a/core/src/mindustry/ui/fragments/BlockInventoryFragment.java b/core/src/mindustry/ui/fragments/BlockInventoryFragment.java
-index ae932d60fac1ad21909257f49144bb61be89da55..ff6203979b283c5c0dce8be040a57bfd1ab6e6b4 100644
+index f48a46d63d376f78b0446cbcca8ab990e9d296ff..efcc52e2a3d76fdb4e987432ec6cbffec6dc01bd 100644
 --- a/core/src/mindustry/ui/fragments/BlockInventoryFragment.java
 +++ b/core/src/mindustry/ui/fragments/BlockInventoryFragment.java
 @@ -139,7 +139,7 @@ public class BlockInventoryFragment{
