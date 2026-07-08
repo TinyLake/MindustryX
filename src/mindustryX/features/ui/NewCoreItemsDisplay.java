@@ -268,7 +268,7 @@ public class NewCoreItemsDisplay extends Table{
 
             // BuilderComp#updateBuildLogic
             Tile tile = plan.tile();
-            if(tile.team() == Team.derelict && tile.block() == block && tile.build != null && tile.block().allowDerelictRepair && state.rules.derelictRepair){
+            if(tile == null || tile.team() == Team.derelict && tile.block() == block && tile.build != null && tile.block().allowDerelictRepair && state.rules.derelictRepair){
                 continue;
             }
 
