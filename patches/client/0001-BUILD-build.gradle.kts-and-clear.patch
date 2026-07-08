@@ -769,7 +769,7 @@ index f7f291ef1ab71577313759a7e9fdfd3c1e0833dc..00000000000000000000000000000000
 \ No newline at end of file
 diff --git a/core/build.gradle.kts b/core/build.gradle.kts
 new file mode 100644
-index 0000000000000000000000000000000000000000..016d8707c2122f8d42ee3f696b358c7fb0bf35df
+index 0000000000000000000000000000000000000000..18556f89b7a170f23e8c73192443dfe61a7fb9aa
 --- /dev/null
 +++ b/core/build.gradle.kts
 @@ -0,0 +1,73 @@
@@ -830,7 +830,7 @@ index 0000000000000000000000000000000000000000..016d8707c2122f8d42ee3f696b358c7f
 +    }
 +
 +    val allAssets by registering {
-+        dependsOn(processResources)
++        dependsOn(processResources, ":tools:pack")
 +        outputs.dir("assets")
 +        outputs.dir("../../assets")
 +    }

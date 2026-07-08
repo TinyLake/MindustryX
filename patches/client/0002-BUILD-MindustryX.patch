@@ -36,7 +36,7 @@ index d0b7b8867edffc6baca2bb8295461f28b551384a..b7b3afa858783147fd47d7fdf8a76886
      jar{
          exclude("mindustry/entities/comp/**")
 diff --git a/core/build.gradle.kts b/core/build.gradle.kts
-index 016d8707c2122f8d42ee3f696b358c7fb0bf35df..0a9d7266e69870c0ffd77d1acc317788797c75df 100644
+index 18556f89b7a170f23e8c73192443dfe61a7fb9aa..02d4ae1bda4f2c6836f5147a628119235d04b7bc 100644
 --- a/core/build.gradle.kts
 +++ b/core/build.gradle.kts
 @@ -1,10 +1,12 @@

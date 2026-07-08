@@ -20,7 +20,7 @@ Content-Transfer-Encoding: 8bit
  8 files changed, 123 insertions(+), 16 deletions(-)
 
 diff --git a/core/build.gradle.kts b/core/build.gradle.kts
-index 8fe5de91eccf8cd7f4fcfbe69f4b652594b17684..aa1073699b8a87c3b09e6a2779177cc7ffd46075 100644
+index 36ba5536564d9bfb4ca7493f2407fece2b64c1b1..1fe3cba38e53b11e66f6341b0cb6ccd02acff8ee 100644
 --- a/core/build.gradle.kts
 +++ b/core/build.gradle.kts
 @@ -7,6 +7,7 @@ plugins {
