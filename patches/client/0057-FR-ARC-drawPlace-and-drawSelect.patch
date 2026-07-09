@@ -4,18 +4,18 @@ Date: Sun, 18 Feb 2024 15:57:51 +0800
 Subject: [PATCH] FR: ARC drawPlace and drawSelect
 
 ---
- .../world/blocks/ConstructBlock.java          | 42 ++++++++++++++++++-
- .../world/blocks/defense/ForceProjector.java  |  2 +
- .../world/blocks/defense/MendProjector.java   |  5 ++-
- .../blocks/defense/OverdriveProjector.java    |  5 +++
- .../world/blocks/defense/turrets/Turret.java  | 19 +++++++++
- .../world/blocks/production/BeamDrill.java    | 12 ++----
- .../world/blocks/production/Drill.java        | 23 ++++++----
+ .../world/blocks/ConstructBlock.java          |  7 ++++--
+ .../world/blocks/defense/ForceProjector.java  |  2 ++
+ .../world/blocks/defense/MendProjector.java   |  5 +++-
+ .../blocks/defense/OverdriveProjector.java    |  5 ++++
+ .../world/blocks/defense/turrets/Turret.java  |  8 +++++++
+ .../world/blocks/production/BeamDrill.java    | 12 ++++------
+ .../world/blocks/production/Drill.java        | 23 +++++++++++++------
  .../world/blocks/storage/CoreBlock.java       |  1 +
- 8 files changed, 91 insertions(+), 18 deletions(-)
+ 8 files changed, 45 insertions(+), 18 deletions(-)
 
 diff --git a/core/src/mindustry/world/blocks/ConstructBlock.java b/core/src/mindustry/world/blocks/ConstructBlock.java
-index 711d6c971c9d4df19203d42449a95adf895c30bf..b93cf1e7b4309789953d91bb29e1f707d060a9d3 100644
+index 711d6c971c9d4df19203d42449a95adf895c30bf..943e8626a1fab97f5047b1dd3953c7c69a6ae57e 100644
 --- a/core/src/mindustry/world/blocks/ConstructBlock.java
 +++ b/core/src/mindustry/world/blocks/ConstructBlock.java
 @@ -3,14 +3,17 @@ package mindustry.world.blocks;
@@ -121,7 +121,7 @@ index 57d8b4ac27635c65154d9c1863001f3df84109d3..890d9444e6c670207929cd63f1b624c3
          indexer.eachBlock(player.team(), x * tilesize + offset, y * tilesize + offset, range, other -> other.block.canOverdrive, other -> Drawf.selected(other, Tmp.c1.set(baseColor).a(Mathf.absin(4f, 1f))));
      }
 diff --git a/core/src/mindustry/world/blocks/defense/turrets/Turret.java b/core/src/mindustry/world/blocks/defense/turrets/Turret.java
-index 6e8f77e8ecc420912d8e3af2e772c2179aaba6af..aa87a2fddacf68400510bfbb358dbcd098a60e51 100644
+index b38f7560fa04aeb0b416d285e4da43ee3c6e3250..e34eabaf4d091179f0c873ae5b4e9784ba8fe4df 100644
 --- a/core/src/mindustry/world/blocks/defense/turrets/Turret.java
 +++ b/core/src/mindustry/world/blocks/defense/turrets/Turret.java
 @@ -31,6 +31,7 @@ import mindustry.world.*;
@@ -170,7 +170,7 @@ index 839b23a763a157631db88137c2fc59e54e112abd..4e5018ffc79fbdf2f7d5b4e10acfae10
              drawPlaceText(Core.bundle.get("bar.drilltierreq"), x, y, false);
          }
 diff --git a/core/src/mindustry/world/blocks/production/Drill.java b/core/src/mindustry/world/blocks/production/Drill.java
-index 55c523bc651db449f51b1864aff33103d9ee0d73..6c9533ad625544becf6c31c24b81fb4b9125423c 100644
+index 060fe7e067d6b60b59e40e9b140983010b5eaed7..409bf59efb6e32df64b609bfaf91ebc61ece31c6 100644
 --- a/core/src/mindustry/world/blocks/production/Drill.java
 +++ b/core/src/mindustry/world/blocks/production/Drill.java
 @@ -147,12 +147,13 @@ public class Drill extends Block{
