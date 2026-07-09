@@ -81,9 +81,6 @@ public class RenderExt{
     public static final SettingsV2.CheckPref showOtherTeamState = new CheckPref("block.showOtherTeamState");
     public static final SettingsV2.CheckPref logicDisplayNoBorder0 = new CheckPref("block.logicDisplayNoBorder");
 
-    private static final Seq<Unit> tmpUnits = new Seq<>();
-
-
     static{
         if(headless) throw new RuntimeException("RenderExt should not access in Headless");
         noBulletShow.addFallback("bulletShow", (Boolean it) -> !it);
