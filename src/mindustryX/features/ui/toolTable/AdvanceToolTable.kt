@@ -4,6 +4,7 @@ import arc.graphics.Color
 import arc.math.Mathf
 import arc.scene.ui.layout.Table
 import arc.struct.Seq
+import arc.util.Reflect
 import arc.util.io.Reads
 import arc.util.io.Writes
 import mindustry.Vars
@@ -33,7 +34,11 @@ import java.io.DataOutputStream
 class AdvanceToolTable : Table() {
     val factoryDialog: UnitFactoryDialog = UnitFactoryDialog()
     private val rulesDialog = CustomRulesDialog()
-    private val mapInfoDialog: MapInfoDialog = MapInfoDialog()
+    private val mapInfoDialog = runCatching {
+        Reflect.get<MapInfoDialog>(Vars.ui.editor, "infoDialog")
+    }.getOrElse {
+        MapInfoDialog()
+    }
 
     init {
         background = Styles.black6
@@ -108,7 +113,10 @@ class AdvanceToolTable : Table() {
         row().add(i("规则："))
         with(table().growX().get()) {
             defaults().pad(4f)
-            button(Iconc.map.toString(), Styles.cleart) { mapInfoDialog.show() }.width(Vars.iconMed)
+            button(Iconc.map.toString(), Styles.cleart) {
+                Vars.ui.editor.build()
+                mapInfoDialog.show()
+            }.width(Vars.iconMed)
             button(i("无限火力"), Styles.flatToggleMenut) { Vars.player.team().rules().cheat = !Vars.player.team().rules().cheat }
                 .checked { Vars.player.team().rules().cheat }.tooltip(i("开关自己队的无限火力")).wrapLabel(false)
             button(i("编辑器"), Styles.flatToggleMenut) { Vars.state.rules.editor = !Vars.state.rules.editor }
