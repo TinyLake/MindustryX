@@ -8,11 +8,11 @@ Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 
 ---
- core/src/mindustry/ui/dialogs/ModsDialog.java | 354 ++++++++++--------
- 1 file changed, 206 insertions(+), 148 deletions(-)
+ core/src/mindustry/ui/dialogs/ModsDialog.java | 352 ++++++++++--------
+ 1 file changed, 204 insertions(+), 148 deletions(-)
 
 diff --git a/core/src/mindustry/ui/dialogs/ModsDialog.java b/core/src/mindustry/ui/dialogs/ModsDialog.java
-index 8321d5da13df2c9d58eb333dc0dd9cf8f293788f..056b4ea44447f062558bc93d3c3a6d7b38efde2f 100644
+index 8321d5da13df2c9d58eb333dc0dd9cf8f293788f..d277d95a1f6a40dbb2268967117e10d215f3d162 100644
 --- a/core/src/mindustry/ui/dialogs/ModsDialog.java
 +++ b/core/src/mindustry/ui/dialogs/ModsDialog.java
 @@ -1,6 +1,7 @@
@@ -85,7 +85,7 @@ index 8321d5da13df2c9d58eb333dc0dd9cf8f293788f..056b4ea44447f062558bc93d3c3a6d7b
  
              buttons.button("@mod.import", Icon.add, style, () -> {
                  BaseDialog dialog = new BaseDialog("@mod.import");
-@@ -170,170 +192,206 @@ public class ModsDialog extends BaseDialog{
+@@ -170,170 +192,204 @@ public class ModsDialog extends BaseDialog{
  
                  dialog.show();
  
@@ -93,11 +93,11 @@ index 8321d5da13df2c9d58eb333dc0dd9cf8f293788f..056b4ea44447f062558bc93d3c3a6d7b
 +            });
 +
 +            buttons.button("@mods.browser", Icon.menu, style, () -> browser.show());
-+
-+            buttons.row();
  
 -            buttons.button("@mods.browser", Icon.menu, style, () -> browser.show()).margin(margin);
 -        }).width(w);
++            buttons.row();
++
 +            buttons.button(VarsX.bundle.modsRecommendTitle(), Icon.list, style, UIExt.modsRecommend::show).colspan(2);
 +        }).width(modCardWidth);
  
@@ -115,10 +115,7 @@ index 8321d5da13df2c9d58eb333dc0dd9cf8f293788f..056b4ea44447f062558bc93d3c3a6d7b
 +                    }).growX();
 +                }).fillX().padBottom(4);
 +            }
- 
--            Cons<String> rebuild = query -> {
--                var cont = pane[0];
--                cont.clear();
++
 +            cont.row();
 +            cont.pane(Styles.noBarPane, modPane).scrollX(false).update(s -> scroll = s.getScrollY()).get().setScrollYForce(scroll);
 +
@@ -158,8 +155,6 @@ index 8321d5da13df2c9d58eb333dc0dd9cf8f293788f..056b4ea44447f062558bc93d3c3a6d7b
 +                });
 +                addChild(updaterElement);
 +            }).padTop(8f).width(modCardWidth).height(60f).padTop(12f).row();
-+        }else{
-+            cont.table(Styles.black6, t -> t.add("@mods.none")).height(80f);
 +        }
 +    }
 +
@@ -173,7 +168,10 @@ index 8321d5da13df2c9d58eb333dc0dd9cf8f293788f..056b4ea44447f062558bc93d3c3a6d7b
 +    private void addModGroup(Table table, String groupName, Seq<LoadedMod> mods){
 +        table.table(Tex.whiteui, modGroup -> {
 +            modGroup.add(Core.bundle.get("mods.group." + groupName) + "(" + mods.size + ")").color(Pal.accent).pad(4f).padLeft(12f).expandX().left();
-+
+ 
+-            Cons<String> rebuild = query -> {
+-                var cont = pane[0];
+-                cont.clear();
 +            modGroup.row();
 +
 +            modGroup.table(modCont -> {
