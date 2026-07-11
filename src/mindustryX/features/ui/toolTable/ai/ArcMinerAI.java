@@ -1,5 +1,6 @@
 package mindustryX.features.ui.toolTable.ai;
 
+import arc.struct.*;
 import arc.util.*;
 import mindustry.entities.units.*;
 import mindustry.gen.*;
@@ -10,12 +11,14 @@ import mindustry.world.blocks.storage.*;
 import static mindustry.Vars.*;
 
 public class ArcMinerAI extends AIController{
+    public static final Seq<Item> toMine = content.items().copy();
+
     public boolean mining = true;
     public Item targetItem;
     public Tile ore;
 
     private Item updateTargetItem(boolean canMineNonBuildable){
-        return content.items().select(i -> unit.canMine(i) && (unit.type.mineFloor ? indexer.hasOre(i) : indexer.hasWallOre(i))
+        return toMine.select(i -> unit.canMine(i) && (unit.type.mineFloor ? indexer.hasOre(i) : indexer.hasWallOre(i))
         && (canMineNonBuildable || i.buildable)
         && unit.core().acceptItem(null, i)
         ).reverse().min(i -> unit.core().items.get(i));
