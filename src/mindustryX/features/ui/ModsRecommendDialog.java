@@ -60,7 +60,12 @@ public class ModsRecommendDialog extends BaseDialog{
 
     private void rebuild(){
         if(textureCache == null){
-            textureCache = Reflect.get(Vars.ui.mods, "textureCache");
+            try{
+                textureCache = Reflect.get(Vars.ui.mods.browser, "textureCache");
+            }catch(Exception e){
+                textureCache = new ObjectMap<>();
+                Log.err(e);
+            }
         }
 
         if(meta == null){
@@ -71,7 +76,7 @@ public class ModsRecommendDialog extends BaseDialog{
 
         if(!fetchModList){
             setLoading(cont);
-            Vars.ui.mods.getModList(0, modListings -> {
+            Vars.ui.mods.browser.getModList(modListings -> {
                 // ???
                 if(modListings == null){
                     setLoadFailed(cont);
@@ -175,7 +180,7 @@ public class ModsRecommendDialog extends BaseDialog{
                 buttons.right().bottom();
                 buttons.defaults().size(32f);
 
-                buttons.button(Icon.download, Styles.cleari, 24f, () -> Vars.ui.mods.githubImportMod(modListing.repo, modListing.hasJava));
+                buttons.button(Icon.download, Styles.cleari, 24f, () -> Vars.ui.mods.githubImportMod(modListing.repo, modListing.hasJava, true));
             }));
         })).minHeight(48f).pad(8f);
     }
