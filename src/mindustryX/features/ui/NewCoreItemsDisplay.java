@@ -40,12 +40,12 @@ public class NewCoreItemsDisplay extends Table{
 
     private static final Interval timer = new Interval(2);
 
-    private final int[] itemDelta;
-    private final int[] lastItemAmount;
+    private int[] itemDelta;
+    private int[] lastItemAmount;
     public final ObjectSet<Item> usedItems = new ObjectSet<>();
     public final ObjectSet<UnitType> usedUnits = new ObjectSet<>();
 
-    private final ItemSeq planItems = new ItemSeq();
+    private int[] planItemAmounts = new int[content.items().size];
     private final ObjectIntMap<Block> planCounter = new ObjectIntMap<>();
 
     private final SettingsV2.Data<Boolean> showItem = new CheckPref("coreItems.showItem", true);
@@ -156,6 +156,10 @@ public class NewCoreItemsDisplay extends Table{
 
     private void updateItemMeans(){
         if(!timer.get(0, 60f)) return;
+        if(itemDelta.length != content.items().size){
+            itemDelta = new int[content.items().size];
+            lastItemAmount = new int[content.items().size];
+        }
         var items = player.team().items();
         for(Item item : usedItems){
             short id = item.id;
@@ -194,7 +198,7 @@ public class NewCoreItemsDisplay extends Table{
                 var planLabel = right.add("").fontScale(0.6f).height(0.01f);
 
                 amountTable.update(() -> {
-                    int planAmount = planItems.get(item);
+                    int planAmount = planItemAmounts[item.id];
                     int amount = player.team().items().get(item);
 
                     float newFontScale = 1f;
@@ -242,7 +246,10 @@ public class NewCoreItemsDisplay extends Table{
     }
 
     private void rebuildPlans(){
-        planItems.clear();
+        if(planItemAmounts.length != content.items().size){
+            planItemAmounts = new int[content.items().size];
+        }
+        Arrays.fill(planItemAmounts, 0);
         planCounter.clear();
 
         allPlans.addAll(control.input.linePlans);
@@ -267,7 +274,7 @@ public class NewCoreItemsDisplay extends Table{
             for(ItemStack stack : block.requirements){
                 int planAmount = (int)(plan.breaking ? -state.rules.buildCostMultiplier * state.rules.deconstructRefundMultiplier * stack.amount * plan.progress
                 : state.rules.buildCostMultiplier * stack.amount * (1 - plan.progress));
-                planItems.add(stack.item, planAmount);
+                planItemAmounts[stack.item.id] += planAmount;
             }
         }
         allPlans.clear();

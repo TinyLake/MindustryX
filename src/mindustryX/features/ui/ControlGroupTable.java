@@ -233,12 +233,21 @@ public class ControlGroupTable extends Table{
         public final ObjectSet<Unit> units = new ObjectSet<>();
         private final ObjectIntMap<UnitType> counter = new ObjectIntMap<>();
         private final ObjectIntMap<UnitType> selectCounter = new ObjectIntMap<>();
-        private final Bits hitMap = new Bits(Vars.content.units().size);
+        private Bits hitMap = new Bits(Vars.content.units().size);
 
         private IntSeq groupID;
 
         private int lastGroupSize = -1;
+        private int lastUnitSize = Vars.content.units().size;
         private boolean dirty;
+
+        private void ensureHitMap(){
+            int size = Vars.content.units().size;
+            if(lastUnitSize != size){
+                hitMap = new Bits(size);
+                lastUnitSize = size;
+            }
+        }
 
         public void clear(){
             units.clear();
@@ -317,14 +326,17 @@ public class ControlGroupTable extends Table{
         }
 
         public boolean isHit(UnitType type){
+            ensureHitMap();
             return hitMap.get(type.id);
         }
 
         public void hitUnit(UnitType type){
+            ensureHitMap();
             hitMap.set(type.id);
         }
 
         public void consumeHit(UnitType type){
+            ensureHitMap();
             hitMap.clear(type.id);
         }
 
