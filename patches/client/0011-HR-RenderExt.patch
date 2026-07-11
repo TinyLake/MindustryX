@@ -31,10 +31,10 @@ index 389684d7bb658688334d062df2cd3d9d7685ecf9..f25585b53208318e2b09c227e94915bf
          if(settings.getBool("drawhitboxes")){
              DebugCollisionRenderer.draw();
 diff --git a/core/src/mindustry/graphics/BlockRenderer.java b/core/src/mindustry/graphics/BlockRenderer.java
-index 2f9daf5931c006e5696a0a46e2f537071d1c4a1b..1a60d811c0d59092217dabf4f8c55206f2340485 100644
+index 71a14625763ba9069026e2f9e550eeb3e662cd15..6be6990e8bb84aeead0db7866ce58e87c0d7d0b2 100644
 --- a/core/src/mindustry/graphics/BlockRenderer.java
 +++ b/core/src/mindustry/graphics/BlockRenderer.java
-@@ -20,6 +20,7 @@ import mindustry.world.*;
+@@ -19,6 +19,7 @@ import mindustry.world.*;
  import mindustry.world.blocks.environment.*;
  import mindustry.world.blocks.environment.Floor.*;
  import mindustry.world.blocks.power.*;
@@ -42,7 +42,7 @@ index 2f9daf5931c006e5696a0a46e2f537071d1c4a1b..1a60d811c0d59092217dabf4f8c55206
  
  import java.util.*;
  
-@@ -724,7 +725,7 @@ public class BlockRenderer{
+@@ -723,7 +724,7 @@ public class BlockRenderer{
  
              if(block != Blocks.air && (visible || build.wasVisible)){
                  SpriteBatch.totalDrawCalls = 0;

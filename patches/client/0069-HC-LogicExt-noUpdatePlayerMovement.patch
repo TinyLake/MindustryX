@@ -9,7 +9,7 @@ Subject: [PATCH] HC(LogicExt) noUpdatePlayerMovement
  2 files changed, 4 insertions(+), 3 deletions(-)
 
 diff --git a/core/src/mindustry/input/DesktopInput.java b/core/src/mindustry/input/DesktopInput.java
-index 95ad83e1c0980a96a19c1f5a60912202e637b657..5c59383e07b7ab77b24218bf6b73a3102d68f199 100644
+index 44b33a4a72cfdc659bfa90e87662529bf2e518eb..7f9e88d6a94b22386afed0fd577e4352fbb3d645 100644
 --- a/core/src/mindustry/input/DesktopInput.java
 +++ b/core/src/mindustry/input/DesktopInput.java
 @@ -448,7 +448,7 @@ public class DesktopInput extends InputHandler{
@@ -21,7 +21,7 @@ index 95ad83e1c0980a96a19c1f5a60912202e637b657..5c59383e07b7ab77b24218bf6b73a310
  
              if(Core.input.keyTap(Binding.respawn)){
                  controlledType = null;
-@@ -516,7 +516,7 @@ public class DesktopInput extends InputHandler{
+@@ -522,7 +522,7 @@ public class DesktopInput extends InputHandler{
              pollInputPlayer();
          }
  

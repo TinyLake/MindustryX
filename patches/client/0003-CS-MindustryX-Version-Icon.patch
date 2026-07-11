@@ -57,7 +57,7 @@ index d42ffe6d4a318ce558f1010eae46140f88ed5c99..bf44ead5c58abfb79c500e6daae30c3e
 +    <string name="app_name">MindustryX</string>
  </resources>
 diff --git a/build.gradle b/build.gradle
-index b7b3afa858783147fd47d7fdf8a76886f5e90c67..9606b803f0aeed0659f1b6ce69c2ea6025e0b9db 100644
+index 930b7a8e5ab72fab078d9c82d6166bcd7a61a50b..c07c491990e59763863d82dc02310609f10e7289 100644
 --- a/build.gradle
 +++ b/build.gradle
 @@ -6,7 +6,11 @@ buildscript{
@@ -165,7 +165,7 @@ index ac8eec820937b09c611e9274180707da82e2f291..75850e7de0b0d7775431ef1d038744d8
          buffer.put((byte)state.rules.mode().ordinal());
          buffer.putInt(netServer.admins.getPlayerLimit());
 diff --git a/desktop/src/mindustry/desktop/DesktopLauncher.java b/desktop/src/mindustry/desktop/DesktopLauncher.java
-index 5cda3d376063501d553cb8c9d20f646b9d01312b..0bfaee751842a088fe336b2627c9de12cfe65950 100644
+index 93c08a8c57af0ca959ba72b8f21ca3117159734f..af4294e362c5874e0baa9376187f6ccdd6eb5157 100644
 --- a/desktop/src/mindustry/desktop/DesktopLauncher.java
 +++ b/desktop/src/mindustry/desktop/DesktopLauncher.java
 @@ -109,7 +109,7 @@ public class DesktopLauncher extends ClientLauncher{

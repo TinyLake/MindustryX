@@ -73,10 +73,10 @@ index a1c60506ec0f6e162f79fea61463438728afac38..b061bc061a32fa92e3f9bd0051cb5fc4
      }
  
 diff --git a/core/src/mindustry/graphics/BlockRenderer.java b/core/src/mindustry/graphics/BlockRenderer.java
-index 1a60d811c0d59092217dabf4f8c55206f2340485..593dce64908fc8a76936eee460d626a67fe6e111 100644
+index 6be6990e8bb84aeead0db7866ce58e87c0d7d0b2..4891a81b790296258ac86ff4bfeb789e6fb92a6f 100644
 --- a/core/src/mindustry/graphics/BlockRenderer.java
 +++ b/core/src/mindustry/graphics/BlockRenderer.java
-@@ -538,7 +538,7 @@ public class BlockRenderer{
+@@ -537,7 +537,7 @@ public class BlockRenderer{
          }
  
  

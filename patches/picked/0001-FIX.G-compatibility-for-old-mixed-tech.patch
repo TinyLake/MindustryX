@@ -9,10 +9,10 @@ Subject: [PATCH] FIX.G: compatibility for old mixed tech
  2 files changed, 12 insertions(+)
 
 diff --git a/core/src/mindustry/game/Rules.java b/core/src/mindustry/game/Rules.java
-index 7af81b00ca9b2077c767f3e2b46fcafc9cbafc57..8500b94c9c0cdf097e978146afe422b7ecacda3b 100644
+index d6e0c2fb85f80abadcbbb86f2be1bed64040fcb0..693d649b8fe688d9f57e9e6f3188f8b071386e42 100644
 --- a/core/src/mindustry/game/Rules.java
 +++ b/core/src/mindustry/game/Rules.java
-@@ -185,6 +185,11 @@ public class Rules{
+@@ -187,6 +187,11 @@ public class Rules{
      public ObjectSet<Block> revealedBlocks = new ObjectSet<>();
      /** Unlocked content names. Only used in multiplayer when the campaign is enabled. */
      public ObjectSet<UnlockableContent> researched = new ObjectSet<>();

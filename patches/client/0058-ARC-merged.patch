@@ -400,10 +400,10 @@ index dde5886f6020aa1c372ac3346e81aab0c7fdedf7..793e1b23c43d7beb6677d8e29f6c9e22
          ItemSeq requirements = new ItemSeq();
  
 diff --git a/core/src/mindustry/graphics/BlockRenderer.java b/core/src/mindustry/graphics/BlockRenderer.java
-index 593dce64908fc8a76936eee460d626a67fe6e111..2da3f439741432354a143bb71afd890dd4adc0b4 100644
+index 4891a81b790296258ac86ff4bfeb789e6fb92a6f..ebc8bee032dab5240eb8049f8890e8b9f5da2207 100644
 --- a/core/src/mindustry/graphics/BlockRenderer.java
 +++ b/core/src/mindustry/graphics/BlockRenderer.java
-@@ -751,10 +751,17 @@ public class BlockRenderer{
+@@ -750,10 +750,17 @@ public class BlockRenderer{
                          Draw.z(Layer.block);
                      }
  
@@ -511,7 +511,7 @@ index 2033e20b8e66a248530f64be11995341e917687e..6bdcddbaa6065546a019f95dff96f1f8
  
      public void checkApplySelection(Unit u){
 diff --git a/core/src/mindustry/input/DesktopInput.java b/core/src/mindustry/input/DesktopInput.java
-index 96e44a6886e4c62a90edde1a8c2139ae8157823d..95ad83e1c0980a96a19c1f5a60912202e637b657 100644
+index 07e4445d9d0b6662922f4a830c6d1a5d5e86089b..44b33a4a72cfdc659bfa90e87662529bf2e518eb 100644
 --- a/core/src/mindustry/input/DesktopInput.java
 +++ b/core/src/mindustry/input/DesktopInput.java
 @@ -22,8 +22,10 @@ import mindustry.gen.*;
@@ -546,7 +546,7 @@ index 96e44a6886e4c62a90edde1a8c2139ae8157823d..95ad83e1c0980a96a19c1f5a60912202
              }).margin(6f);
          });
      }
-@@ -990,11 +999,10 @@ public class DesktopInput extends InputHandler{
+@@ -996,11 +1005,10 @@ public class DesktopInput extends InputHandler{
              }
          }
  
@@ -714,7 +714,7 @@ index ae17589b7a6f849aeda3673665263a8073cd5d78..f34727c38d8d158f787e604299920383
          rect.grow(4f);
  
 diff --git a/core/src/mindustry/logic/LExecutor.java b/core/src/mindustry/logic/LExecutor.java
-index 0e9503c13a45b59bc383802f6471a5d6ed851c51..30472ce7778bda13994ef45cee728be942f52b73 100644
+index 6503e267992bc4e1f8f7e23bd742b9e7e88270c7..4ef9456b8a12bef517a282b628c45566daa93702 100644
 --- a/core/src/mindustry/logic/LExecutor.java
 +++ b/core/src/mindustry/logic/LExecutor.java
 @@ -34,6 +34,7 @@ import mindustry.world.blocks.logic.LogicDisplay.*;
@@ -725,7 +725,7 @@ index 0e9503c13a45b59bc383802f6471a5d6ed851c51..30472ce7778bda13994ef45cee728be9
  
  import static mindustry.Vars.*;
  
-@@ -1931,8 +1932,14 @@ public class LExecutor{
+@@ -1938,8 +1939,14 @@ public class LExecutor{
              }
  
              switch(type){
@@ -1002,7 +1002,7 @@ index 061214ea1abca654ad1247ef74b60333ae676086..4f2687cc9a7e89bb7834594cde1d3c7e
          table.marginRight(30f);
          //TODO: some things (e.g. reconstructor requirements) are too long and screw up the layout
 diff --git a/core/src/mindustry/ui/dialogs/CustomRulesDialog.java b/core/src/mindustry/ui/dialogs/CustomRulesDialog.java
-index b307d01daf099142c6ab002127a4fbf7e99cdba2..0c611abb7ec4412c686d8fd5817005e33adab7df 100644
+index a14ef9bd06d4192f5fb65ab02ce55f80bde72c01..01fbdd7005685679808c73d2278eadc5e7c8d65c 100644
 --- a/core/src/mindustry/ui/dialogs/CustomRulesDialog.java
 +++ b/core/src/mindustry/ui/dialogs/CustomRulesDialog.java
 @@ -3,6 +3,7 @@ package mindustry.ui.dialogs;
@@ -1013,7 +1013,7 @@ index b307d01daf099142c6ab002127a4fbf7e99cdba2..0c611abb7ec4412c686d8fd5817005e3
  import arc.scene.ui.*;
  import arc.scene.ui.ImageButton.*;
  import arc.scene.ui.layout.*;
-@@ -16,11 +17,13 @@ import mindustry.game.*;
+@@ -18,11 +19,13 @@ import mindustry.game.*;
  import mindustry.game.Rules.*;
  import mindustry.gen.*;
  import mindustry.graphics.*;
@@ -1027,7 +1027,7 @@ index b307d01daf099142c6ab002127a4fbf7e99cdba2..0c611abb7ec4412c686d8fd5817005e3
  
  import static arc.Core.*;
  import static arc.util.Time.*;
-@@ -31,6 +34,7 @@ public class CustomRulesDialog extends BaseDialog{
+@@ -33,6 +36,7 @@ public class CustomRulesDialog extends BaseDialog{
      private Table main;
      private Prov<Rules> resetter;
      private LoadoutDialog loadoutDialog;
@@ -1035,7 +1035,7 @@ index b307d01daf099142c6ab002127a4fbf7e99cdba2..0c611abb7ec4412c686d8fd5817005e3
      private BannedContentDialog<Block> bannedBlocks = new BannedContentDialog<>("@bannedblocks", ContentType.block, Block::canBeBuilt);
      private BannedContentDialog<UnitType> bannedUnits = new BannedContentDialog<>("@bannedunits", ContentType.unit, u -> !u.isHidden());
      public boolean showRuleEditRule;
-@@ -40,6 +44,7 @@ public class CustomRulesDialog extends BaseDialog{
+@@ -42,6 +46,7 @@ public class CustomRulesDialog extends BaseDialog{
      public String currentName = "";
      public String ruleSearch = "";
      public Seq<Runnable> additionalSetup; // for modding to easily add new rules
@@ -1043,7 +1043,7 @@ index b307d01daf099142c6ab002127a4fbf7e99cdba2..0c611abb7ec4412c686d8fd5817005e3
  
      public CustomRulesDialog(){
          this(false);
-@@ -59,6 +64,7 @@ public class CustomRulesDialog extends BaseDialog{
+@@ -61,6 +66,7 @@ public class CustomRulesDialog extends BaseDialog{
          additionalSetup = new Seq<>();
          categories = new Seq<>();
          categoryNames = new Seq<>();
@@ -1051,7 +1051,7 @@ index b307d01daf099142c6ab002127a4fbf7e99cdba2..0c611abb7ec4412c686d8fd5817005e3
  
          buttons.button("@edit", Icon.pencil, () -> {
              BaseDialog dialog = new BaseDialog("@edit.menu");
-@@ -67,7 +73,7 @@ public class CustomRulesDialog extends BaseDialog{
+@@ -69,7 +75,7 @@ public class CustomRulesDialog extends BaseDialog{
  
              dialog.cont.table(Tex.button, t -> {
                  var style = Styles.cleart;
@@ -1060,7 +1060,7 @@ index b307d01daf099142c6ab002127a4fbf7e99cdba2..0c611abb7ec4412c686d8fd5817005e3
  
                  t.button("@copy.clipboard", Icon.copy, style, () -> {
                      ui.showInfoFade("@copied");
-@@ -150,6 +156,7 @@ public class CustomRulesDialog extends BaseDialog{
+@@ -152,6 +158,7 @@ public class CustomRulesDialog extends BaseDialog{
          check("@rules.wavesending", b -> rules.waveSending = b, () -> rules.waveSending, () -> rules.waves);
          check("@rules.wavetimer", b -> rules.waveTimer = b, () -> rules.waveTimer, () -> rules.waves);
          check("@rules.waitForWaveToEnd", b -> rules.waitEnemies = b, () -> rules.waitEnemies, () -> rules.waves && rules.waveTimer);
@@ -1068,7 +1068,7 @@ index b307d01daf099142c6ab002127a4fbf7e99cdba2..0c611abb7ec4412c686d8fd5817005e3
          check("@rules.randomwaveai", b -> rules.randomWaveAI = b, () -> rules.randomWaveAI, () -> rules.waves);
          check("@rules.wavespawnatcores", b -> rules.wavesSpawnAtCores = b, () -> rules.wavesSpawnAtCores, () -> rules.waves);
          check("@rules.airUseSpawns", b -> rules.airUseSpawns = b, () -> rules.airUseSpawns, () -> rules.waves);
-@@ -167,7 +174,7 @@ public class CustomRulesDialog extends BaseDialog{
+@@ -169,7 +176,7 @@ public class CustomRulesDialog extends BaseDialog{
          check("@rules.reactorexplosions", b -> rules.reactorExplosions = b, () -> rules.reactorExplosions);
          check("@rules.schematic", b -> rules.schematicsAllowed = b, () -> rules.schematicsAllowed);
          check("@rules.coreincinerates", b -> rules.coreIncinerates = b, () -> rules.coreIncinerates);
@@ -1077,7 +1077,7 @@ index b307d01daf099142c6ab002127a4fbf7e99cdba2..0c611abb7ec4412c686d8fd5817005e3
          check("@rules.disableworldprocessors", b -> rules.disableWorldProcessors = b, () -> rules.disableWorldProcessors);
          number("@rules.buildcostmultiplier", false, f -> rules.buildCostMultiplier = f, () -> rules.buildCostMultiplier, () -> !rules.infiniteResources);
          number("@rules.buildspeedmultiplier", f -> rules.buildSpeedMultiplier = f, () -> rules.buildSpeedMultiplier, 0.001f, 50f);
-@@ -187,6 +194,9 @@ public class CustomRulesDialog extends BaseDialog{
+@@ -189,6 +196,9 @@ public class CustomRulesDialog extends BaseDialog{
          if(Core.bundle.get("bannedblocks").toLowerCase().contains(ruleSearch)){
              current.button("@bannedblocks", () -> bannedBlocks.show(rules.bannedBlocks)).left().width(300f).row();
          }
@@ -1087,7 +1087,7 @@ index b307d01daf099142c6ab002127a4fbf7e99cdba2..0c611abb7ec4412c686d8fd5817005e3
          check("@rules.hidebannedblocks", b -> rules.hideBannedBlocks = b, () -> rules.hideBannedBlocks);
          check("@bannedblocks.whitelist", b -> rules.blockWhitelist = b, () -> rules.blockWhitelist);
  
-@@ -223,6 +233,7 @@ public class CustomRulesDialog extends BaseDialog{
+@@ -224,6 +234,7 @@ public class CustomRulesDialog extends BaseDialog{
          check("@rules.explosions", b -> rules.damageExplosions = b, () -> rules.damageExplosions);
          check("@rules.fire", b -> rules.fire = b, () -> rules.fire);
          check("@rules.fog", b -> rules.fog = b, () -> rules.fog);
@@ -1095,7 +1095,7 @@ index b307d01daf099142c6ab002127a4fbf7e99cdba2..0c611abb7ec4412c686d8fd5817005e3
          check("@rules.lighting", b -> rules.lighting = b, () -> rules.lighting);
  
          check("@rules.limitarea", b -> rules.limitMapArea = b, () -> rules.limitMapArea, () -> !state.isGame());
-@@ -244,11 +255,42 @@ public class CustomRulesDialog extends BaseDialog{
+@@ -245,6 +256,28 @@ public class CustomRulesDialog extends BaseDialog{
                  b.add("@rules.ambientlight");
              }, () -> ui.picker.show(rules.ambientLight, rules.ambientLight::set)).left().width(250f).row();
          }
@@ -1124,7 +1124,9 @@ index b307d01daf099142c6ab002127a4fbf7e99cdba2..0c611abb7ec4412c686d8fd5817005e3
  
          if(Core.bundle.get("rules.weather").toLowerCase().contains(ruleSearch)){
              current.button("@rules.weather", this::weatherDialog).width(250f).left().row();
-         }
+@@ -276,6 +309,15 @@ public class CustomRulesDialog extends BaseDialog{
+             text -> parser.get(text) != null,
+         allowMusic);
  
 +        category("arcExperimental");
 +        check("@rules.canGameOver", b -> rules.canGameOver = b, () -> rules.canGameOver);
@@ -1138,7 +1140,7 @@ index b307d01daf099142c6ab002127a4fbf7e99cdba2..0c611abb7ec4412c686d8fd5817005e3
          category("planet");
          if(Core.bundle.get("rules.title.planet").toLowerCase().contains(ruleSearch)){
              current.table(Tex.button, t -> {
-@@ -258,10 +300,10 @@ public class CustomRulesDialog extends BaseDialog{
+@@ -285,10 +327,10 @@ public class CustomRulesDialog extends BaseDialog{
  
                  t.defaults().size(140f, 50f);
  
@@ -1153,7 +1155,7 @@ index b307d01daf099142c6ab002127a4fbf7e99cdba2..0c611abb7ec4412c686d8fd5817005e3
  
                      if(t.getChildren().size % 3 == 0){
                          t.row();
-@@ -282,10 +324,29 @@ public class CustomRulesDialog extends BaseDialog{
+@@ -308,10 +350,29 @@ public class CustomRulesDialog extends BaseDialog{
          if(showRuleEditRule){
              check("@rules.allowedit", b -> rules.allowEditRules = b, () -> rules.allowEditRules);
          }
@@ -1184,7 +1186,7 @@ index b307d01daf099142c6ab002127a4fbf7e99cdba2..0c611abb7ec4412c686d8fd5817005e3
              boolean[] shown = {false};
              Table wasCurrent = current;
  
-@@ -302,6 +363,10 @@ public class CustomRulesDialog extends BaseDialog{
+@@ -328,6 +389,10 @@ public class CustomRulesDialog extends BaseDialog{
                  current = c;
                  TeamRule teams = rules.teams.get(team);
  
@@ -1195,7 +1197,7 @@ index b307d01daf099142c6ab002127a4fbf7e99cdba2..0c611abb7ec4412c686d8fd5817005e3
                  number("@rules.blockhealthmultiplier", f -> teams.blockHealthMultiplier = f, () -> teams.blockHealthMultiplier);
                  number("@rules.blockdamagemultiplier", f -> teams.blockDamageMultiplier = f, () -> teams.blockDamageMultiplier);
  
-@@ -340,6 +405,32 @@ public class CustomRulesDialog extends BaseDialog{
+@@ -366,6 +431,32 @@ public class CustomRulesDialog extends BaseDialog{
              }, () -> shown[0]).left().growX().row();
          }
  
@@ -1228,7 +1230,7 @@ index b307d01daf099142c6ab002127a4fbf7e99cdba2..0c611abb7ec4412c686d8fd5817005e3
          additionalSetup.each(Runnable::run);
  
          for(var i = 0; i < categories.size; i++){
-@@ -374,6 +465,7 @@ public class CustomRulesDialog extends BaseDialog{
+@@ -400,6 +491,7 @@ public class CustomRulesDialog extends BaseDialog{
                      cons.get(team);
                  }).pad(1f).checked(b -> prov.get() == team).size(60f).tooltip(team.coloredName()).with(i -> i.getStyle().imageUpColor = team.color);
              }
@@ -1236,7 +1238,7 @@ index b307d01daf099142c6ab002127a4fbf7e99cdba2..0c611abb7ec4412c686d8fd5817005e3
          }).padTop(0).row();
      }
  
-@@ -406,7 +498,7 @@ public class CustomRulesDialog extends BaseDialog{
+@@ -432,7 +524,7 @@ public class CustomRulesDialog extends BaseDialog{
              t.field((prov.get()) + "", s -> cons.get(Strings.parseInt(s)))
                  .update(a -> a.setDisabled(!condition.get()))
                  .padRight(100f)
@@ -1245,7 +1247,7 @@ index b307d01daf099142c6ab002127a4fbf7e99cdba2..0c611abb7ec4412c686d8fd5817005e3
          }).padTop(0);
          ruleInfo(cell, text);
          current.row();
-@@ -421,7 +513,8 @@ public class CustomRulesDialog extends BaseDialog{
+@@ -447,7 +539,8 @@ public class CustomRulesDialog extends BaseDialog{
              t.field((integer ? (int)prov.get() : prov.get()) + "", s -> cons.get(Strings.parseFloat(s)))
              .padRight(50f)
              .update(a -> a.setDisabled(!condition.get()))
