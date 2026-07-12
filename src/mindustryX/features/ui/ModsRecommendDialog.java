@@ -16,6 +16,7 @@ import arc.util.*;
 import mindustry.*;
 import mindustry.game.EventType.*;
 import mindustry.gen.*;
+import mindustry.gen.Icon;
 import mindustry.graphics.*;
 import mindustry.io.*;
 import mindustry.mod.*;
@@ -34,10 +35,6 @@ import java.util.*;
 public class ModsRecommendDialog extends BaseDialog{
     private static final TextureRegion defaultModIcon = ((TextureRegionDrawable)Tex.nomap).getRegion();
     private static final SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'");
-
-    public static Color
-    lightBlue = Color.valueOf("#a5dee5"),
-    pink = Color.valueOf("#ffcfdf");
 
     private ObjectMap<String, TextureRegion> textureCache;
     private RecommendMeta meta;
@@ -102,44 +99,39 @@ public class ModsRecommendDialog extends BaseDialog{
 
         cont.top().clearChildren();
 
-        cont.add(new Card(Pal.lightishGray, Card.grayOuterDark, info -> {
+        cont.table(info -> {
             info.top();
-            info.defaults().expandX().center();
+            info.defaults().center();
 
-            info.add(VarsX.bundle.modsRecommendTitle()).pad(12f).row();
-            info.add(VarsX.bundle.modsRecommendLastUpdated(meta.lastUpdated)).pad(6f).row();
-            info.add(VarsX.bundle.modsRecommendInfo()).pad(6f);
+            info.image().color(Pal.darkerGray).padRight(16f).height(4f).growX();
+            info.add(VarsX.bundle.modsRecommendTitle());
+            info.image().color(Pal.darkerGray).padLeft(16f).height(4f).growX().row();
 
-            for(Element child : info.getChildren()){
-                if(child instanceof Label label){
-                    label.setColor(Pal.accent);
-                    label.setStyle(Styles.outlineLabel);
-                }
-            }
-        })).fillX();
+            info.table(bottom -> {
+                bottom.add(VarsX.bundle.modsRecommendInfo()).color(Pal.lightishGray).padRight(8f);
+                bottom.add(VarsX.bundle.modsRecommendLastUpdated(meta.lastUpdated)).color(Pal.lightishGray);
+            }).padTop(6f).colspan(3);
+        }).width(width);
 
         cont.row();
 
-        cont.pane(Styles.noBarPane, t -> {
-            t.background(Tex.whiteui).setColor(Pal.lightishGray);
-
+        cont.pane(Styles.noBarPane, table -> {
             for(RecommendModMeta modMeta : meta.modRecommend){
                 if(modMeta.listing == null){
                     Log.warn("Recommend Mod '@' not found in github.", modMeta.repo);
                     continue;
                 }
 
-                t.table(Tex.whiteui, card -> setupModCard(card, modMeta)).color(Pal.darkerGray).width(width).pad(12f).with(card -> {
-                    if(installed(modMeta)){
-                        card.addAction(Actions.color(Pal.accent, 1.5f));
-                    }
-                });
+                Table card = table.table(Tex.whiteui, t -> setupModCard(t, modMeta)).color(Pal.darkestGray).width(width).pad(12f).get();
+                if(installed(modMeta)){
+                    card.addAction(Actions.color(Pal.gray, 1.5f));
+                }
 
-                Card.cardShadow(t);
+                Card.cardShadow(table, 6f, Pal.darkerGray);
 
-                t.row();
+                table.row();
             }
-        }).scrollX(false);
+        }).scrollX(false).padTop(6f);
     }
 
     private void setupModCard(Table table, RecommendModMeta modMeta){
@@ -148,31 +140,25 @@ public class ModsRecommendDialog extends BaseDialog{
         ModListing modListing = modMeta.listing;
 
         table.table(title -> {
-            title.add(new Card(Pal.gray, Card.grayOuterDark, info -> {
+            title.table(info -> {
                 info.top();
-                info.defaults().padTop(2f).expandX().left();
+                info.defaults().padTop(4f).expandX().left();
 
-                addInfo(info, VarsX.bundle.modsRecommendModName(modListing.name)).color(Pal.accent).pad(8f);
-                addInfo(info, VarsX.bundle.modsRecommendModAuthor(modListing.author)).color(pink).padTop(4f);
-                addInfo(info, VarsX.bundle.modsRecommendModMinGameVersion(modListing.minGameVersion)).color(lightBlue);
-                addInfo(info, VarsX.bundle.modsRecommendModLastUpdated(getLastUpdatedTime(modListing))).color(lightBlue);
-                addInfo(info, VarsX.bundle.modsRecommendModStars(String.valueOf(modListing.stars))).color(lightBlue);
-
-                for(Element child : info.getChildren()){
-                    if(child instanceof Label label){
-                        label.setStyle(Styles.outlineLabel);
-                    }
-                }
-            })).pad(4f).padRight(12f).grow();
+                info.add(VarsX.bundle.modsRecommendModName(modListing.name)).padTop(12f).row();
+                info.add(VarsX.bundle.modsRecommendModAuthor(modListing.author)).color(Pal.lightishGray).padTop(8f).row();
+                info.add(VarsX.bundle.modsRecommendModMinGameVersion(modListing.minGameVersion)).color(Pal.lightishGray).row();
+                info.add(VarsX.bundle.modsRecommendModLastUpdated(getLastUpdatedTime(modListing))).color(Pal.lightishGray).row();
+                info.add(VarsX.bundle.modsRecommendModStars(String.valueOf(modListing.stars))).color(Pal.lightishGray).row();
+            }).pad(4f).padRight(12f).grow();
 
             title.add(new BorderImage(){{
-                border(Pal.darkestGray);
+                border(Pal.darkerGray);
             }}).size(128f).pad(4f).with(image -> getModIcon(modMeta.repo, image::setDrawable));
         });
 
         table.row();
 
-        table.add(new Card(Pal.gray, Card.grayOuterDark, body -> {
+        table.table(body -> {
             body.add(modMeta.reason).pad(4f).grow().wrap();
 
             body.addChild(new Table(buttons -> {
@@ -182,15 +168,7 @@ public class ModsRecommendDialog extends BaseDialog{
 
                 buttons.button(Icon.download, Styles.cleari, 24f, () -> Vars.ui.mods.githubImportMod(modListing.repo, modListing.hasJava, true));
             }));
-        })).minHeight(48f).pad(8f);
-    }
-
-    private Cell<?> addInfo(Table table, String text){
-        Cell<?> cell = table.add(text).color(pink);
-
-        table.row();
-
-        return cell;
+        }).minHeight(48f).pad(8f);
     }
 
     private boolean installed(RecommendModMeta modMeta){
