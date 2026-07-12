@@ -13,9 +13,9 @@ Content-Transfer-Encoding: 8bit
  core/src/mindustry/world/ItemBuffer.java      |  9 ++++
  .../distribution/BufferedItemBridge.java      | 48 ++++++++++++++++++-
  .../world/blocks/distribution/ItemBridge.java | 15 ++++++
- .../world/blocks/distribution/Junction.java   | 30 ++++++++++++
- .../world/blocks/distribution/Router.java     | 37 ++++++++++++++
- 6 files changed, 149 insertions(+), 1 deletion(-)
+ .../world/blocks/distribution/Junction.java   | 32 ++++++++++++-
+ .../world/blocks/distribution/Router.java     | 39 ++++++++++++++-
+ 6 files changed, 151 insertions(+), 3 deletions(-)
 
 diff --git a/core/src/mindustry/world/DirectionalItemBuffer.java b/core/src/mindustry/world/DirectionalItemBuffer.java
 index f71aa74671a3ef59579ff3e1fde127406a1401ea..d15edc5db9297ae74cfa6f91e53a60b1cf8b8009 100644
@@ -170,7 +170,7 @@ index c13e6f8826890957e3fe7a8638be97fd4b444fa0..3044a0b7a3cd1cd49f1d4f65c0c9426d
  
              Tile other = world.tile(link);
 diff --git a/core/src/mindustry/world/blocks/distribution/Junction.java b/core/src/mindustry/world/blocks/distribution/Junction.java
-index 7a740f01c7c351f5f689e298252cc41505c11f60..2260246010c89f278140577b025b4bf613a27bfd 100644
+index 7a740f01c7c351f5f689e298252cc41505c11f60..a37c570a3b5564e7e6eb733c6ca1db13a9e84a6d 100644
 --- a/core/src/mindustry/world/blocks/distribution/Junction.java
 +++ b/core/src/mindustry/world/blocks/distribution/Junction.java
 @@ -1,11 +1,17 @@
@@ -191,6 +191,15 @@ index 7a740f01c7c351f5f689e298252cc41505c11f60..2260246010c89f278140577b025b4bf6
  
  import static mindustry.Vars.*;
  
+@@ -23,7 +29,7 @@ public class Junction extends Block{
+         unloadable = false;
+         noUpdateDisabled = true;
+         drawCached = true;
+-        drawDynamic = false;
++        drawDynamic = true;
+     }
+ 
+     @Override
 @@ -92,6 +98,30 @@ public class Junction extends Block{
              return to != null && to.team == team;
          }
@@ -223,7 +232,7 @@ index 7a740f01c7c351f5f689e298252cc41505c11f60..2260246010c89f278140577b025b4bf6
          public byte version(){
              return 1;
 diff --git a/core/src/mindustry/world/blocks/distribution/Router.java b/core/src/mindustry/world/blocks/distribution/Router.java
-index 538ccb7d3154de29c4552d35548a3c8b4d495975..3716ac9c79604caafc1be4e8af2d666d0efe259f 100644
+index 538ccb7d3154de29c4552d35548a3c8b4d495975..86ed42ccf3a8fffcc17b69d41c09787dd4e3e6a7 100644
 --- a/core/src/mindustry/world/blocks/distribution/Router.java
 +++ b/core/src/mindustry/world/blocks/distribution/Router.java
 @@ -1,13 +1,17 @@
@@ -244,6 +253,15 @@ index 538ccb7d3154de29c4552d35548a3c8b4d495975..3716ac9c79604caafc1be4e8af2d666d
  
  public class Router extends Block{
      public float speed = 8f;
+@@ -23,7 +27,7 @@ public class Router extends Block{
+         unloadable = false;
+         noUpdateDisabled = true;
+         drawCached = true;
+-        drawDynamic = false;
++        drawDynamic = true;
+     }
+ 
+     public class RouterBuild extends Building implements ControlBlock{
 @@ -32,6 +36,8 @@ public class Router extends Block{
          public float time;
          public @Nullable BlockUnitc unit;

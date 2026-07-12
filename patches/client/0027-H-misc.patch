@@ -472,7 +472,7 @@ index e24a3368d190f64fdaf002130a76f4799834c9a5..0811c4520865cff648084cbc743a1413
          public float progress;
          public float lastRadius = 0f;
 diff --git a/core/src/mindustry/world/blocks/distribution/Router.java b/core/src/mindustry/world/blocks/distribution/Router.java
-index 3716ac9c79604caafc1be4e8af2d666d0efe259f..3893f15f7b62f256c2f7b3c8f71252688b297d7a 100644
+index 86ed42ccf3a8fffcc17b69d41c09787dd4e3e6a7..084cf0c49e6a2d75a5f1305d69358b290f3291e4 100644
 --- a/core/src/mindustry/world/blocks/distribution/Router.java
 +++ b/core/src/mindustry/world/blocks/distribution/Router.java
 @@ -49,7 +49,8 @@ public class Router extends Block{
