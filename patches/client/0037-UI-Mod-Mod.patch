@@ -8,11 +8,11 @@ Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 
 ---
- core/src/mindustry/ui/dialogs/ModsDialog.java | 267 +++++++++++-------
- 1 file changed, 163 insertions(+), 104 deletions(-)
+ core/src/mindustry/ui/dialogs/ModsDialog.java | 352 ++++++++++--------
+ 1 file changed, 204 insertions(+), 148 deletions(-)
 
 diff --git a/core/src/mindustry/ui/dialogs/ModsDialog.java b/core/src/mindustry/ui/dialogs/ModsDialog.java
-index 4efb7f361cbb2139195bfaf788b564caf28bb324..6b46d24f94a47d901247b2649ca884d7efd43585 100644
+index 8321d5da13df2c9d58eb333dc0dd9cf8f293788f..d277d95a1f6a40dbb2268967117e10d215f3d162 100644
 --- a/core/src/mindustry/ui/dialogs/ModsDialog.java
 +++ b/core/src/mindustry/ui/dialogs/ModsDialog.java
 @@ -1,6 +1,7 @@
@@ -23,7 +23,7 @@ index 4efb7f361cbb2139195bfaf788b564caf28bb324..6b46d24f94a47d901247b2649ca884d7
  import arc.files.*;
  import arc.func.*;
  import arc.graphics.*;
-@@ -27,6 +28,9 @@ import mindustry.io.*;
+@@ -22,6 +23,9 @@ import mindustry.graphics.*;
  import mindustry.mod.*;
  import mindustry.mod.Mods.*;
  import mindustry.ui.*;
@@ -31,39 +31,28 @@ index 4efb7f361cbb2139195bfaf788b564caf28bb324..6b46d24f94a47d901247b2649ca884d7
 +import mindustryX.features.*;
 +import mindustryX.features.ui.comp.*;
  
- import java.text.*;
  import java.util.*;
-@@ -45,6 +49,12 @@ public class ModsDialog extends BaseDialog{
  
-     private BaseDialog browser;
-     private Table browserTable;
-+
+@@ -40,11 +44,18 @@ public class ModsDialog extends BaseDialog{
+     protected ObjectSet<LoadedMod> withUpdates = new ObjectSet<>();
+     protected @Nullable Element updaterElement;
+ 
 +    private final Seq<LoadedMod> internalMods = new Seq<>(), otherMods = new Seq<>();
 +    private String modQuery;
 +    private final Table modPane;
 +
 +    private float modCardWidth, modCardHeight = 110f;
-     private float scroll = 0f;
- 
++
      public ModsDialog(){
-@@ -52,6 +62,7 @@ public class ModsDialog extends BaseDialog{
+         super("@mods");
          addCloseButton();
  
-         browser = new BaseDialog("@mods.browser");
+         buttons.button("@mods.guide", Icon.link, () -> Core.app.openURI(modGuideURL)).size(210, 64f);
 +        modPane = new Table().margin(10f).top();
  
-         browser.cont.table(table -> {
-             table.left();
-@@ -119,7 +130,7 @@ public class ModsDialog extends BaseDialog{
-         getModList(0, listener);
-     }
- 
--    void getModList(int index, Cons<Seq<ModListing>> listener){
-+   public void getModList(int index, Cons<Seq<ModListing>> listener){
-         if(index >= modJsonURLs.length) return;
- 
-         if(modList != null){
-@@ -165,8 +176,19 @@ public class ModsDialog extends BaseDialog{
+         if(!mobile){
+             buttons.button("@mods.openfolder", Icon.link, () -> Core.app.openFolder(modDirectory.absolutePath()));
+@@ -110,8 +121,19 @@ public class ModsDialog extends BaseDialog{
      }
  
      void setup(){
@@ -85,7 +74,7 @@ index 4efb7f361cbb2139195bfaf788b564caf28bb324..6b46d24f94a47d901247b2649ca884d7
  
          cont.clear();
          cont.defaults().width(Math.min(Core.graphics.getWidth() / Scl.scl(1.05f), 556f)).pad(4);
-@@ -175,9 +197,9 @@ public class ModsDialog extends BaseDialog{
+@@ -120,9 +142,9 @@ public class ModsDialog extends BaseDialog{
  
          cont.table(buttons -> {
              buttons.left().defaults().growX().height(60f).uniformX();
@@ -96,16 +85,16 @@ index 4efb7f361cbb2139195bfaf788b564caf28bb324..6b46d24f94a47d901247b2649ca884d7
  
              buttons.button("@mod.import", Icon.add, style, () -> {
                  BaseDialog dialog = new BaseDialog("@mod.import");
-@@ -225,125 +247,162 @@ public class ModsDialog extends BaseDialog{
+@@ -170,170 +192,204 @@ public class ModsDialog extends BaseDialog{
  
                  dialog.show();
  
 -            }).margin(margin);
 +            });
 +
-+            buttons.button("@mods.browser", Icon.menu, style, this::showModBrowser);
++            buttons.button("@mods.browser", Icon.menu, style, () -> browser.show());
  
--            buttons.button("@mods.browser", Icon.menu, style, this::showModBrowser).margin(margin);
+-            buttons.button("@mods.browser", Icon.menu, style, () -> browser.show()).margin(margin);
 -        }).width(w);
 +            buttons.row();
 +
@@ -129,9 +118,7 @@ index 4efb7f361cbb2139195bfaf788b564caf28bb324..6b46d24f94a47d901247b2649ca884d7
 +
 +            cont.row();
 +            cont.pane(Styles.noBarPane, modPane).scrollX(false).update(s -> scroll = s.getScrollY()).get().setScrollYForce(scroll);
- 
--            Cons<String> rebuild = query -> {
--                pane[0].clear();
++
 +            modQuery = "";
 +            rebuildModPane();
 +        }else{
@@ -139,6 +126,36 @@ index 4efb7f361cbb2139195bfaf788b564caf28bb324..6b46d24f94a47d901247b2649ca884d7
 +        }
 +
 +        cont.row();
++
++        if(withUpdates.size > 1){
++            cont.button(b -> {
++                b.margin(6f);
++                b.image(Icon.download).size(iconMed).padRight(8f);
++                b.add("@mods.update.all");
++                b.image(Icon.download).size(iconMed).padLeft(8f);
++            }, Styles.grayt, () -> {
++                var queue = withUpdates.toSeq();
++
++                int[] index = {0};
++
++                //TODO: this is an awful hack that forces mods to be downloaded in sequence
++                //handling callbacks in the functions is extremely tedious, so this is the cleanest method I could find
++                cancelledImport = false;
++                if(updaterElement != null) updaterElement.remove();
++                updaterElement = new Element();
++
++                updaterElement.update(() -> {
++                    if(index[0] >= queue.size || cancelledImport){
++                        updaterElement.remove();
++                    }else if(!ui.loadfrag.shown()){ //loading not shown, queue next one
++                        var next = queue.get(index[0] ++);
++
++                        githubImportMod(next.getRepo(), next.isJava(), null, false);
++                    }
++                });
++                addChild(updaterElement);
++            }).padTop(8f).width(modCardWidth).height(60f).padTop(12f).row();
++        }
 +    }
 +
 +    private void rebuildModPane(){
@@ -151,45 +168,40 @@ index 4efb7f361cbb2139195bfaf788b564caf28bb324..6b46d24f94a47d901247b2649ca884d7
 +    private void addModGroup(Table table, String groupName, Seq<LoadedMod> mods){
 +        table.table(Tex.whiteui, modGroup -> {
 +            modGroup.add(Core.bundle.get("mods.group." + groupName) + "(" + mods.size + ")").color(Pal.accent).pad(4f).padLeft(12f).expandX().left();
-+
+ 
+-            Cons<String> rebuild = query -> {
+-                var cont = pane[0];
+-                cont.clear();
 +            modGroup.row();
 +
 +            modGroup.table(modCont -> {
                  boolean any = false;
--                for(LoadedMod item : mods.list()){
--                    if(Strings.matches(query, item.meta.displayName)){
+-                for(LoadedMod mod : mods.list()){
+-                    if(Strings.matches(query, mod.meta.displayName)){
 -                        any = true;
--                        if(!item.enabled() && !anyDisabled[0] && mods.list().size > 0){
+-                        if(!mod.enabled() && !anyDisabled[0] && mods.list().size > 0){
 -                            anyDisabled[0] = true;
--                            pane[0].row();
--                            pane[0].image().growX().height(4f).pad(6f).color(Pal.gray).row();
+-                            cont.row();
+-                            cont.image().growX().height(4f).pad(6f).color(Pal.gray).row();
 -                        }
-+                boolean anyDisabled = false;
- 
--                        pane[0].button(t -> {
+-
+-                        cont.button(t -> {
 -                            t.top().left();
 -                            t.margin(12f);
-+                for(LoadedMod mod : mods){
-+                    if(!Strings.matches(modQuery, mod.meta.displayName)){
-+                        continue;
-+                    }
- 
--                            String stateDetails = getStateDetails(item);
+-
+-                            String stateDetails = getStateDetails(mod);
 -                            if(stateDetails != null){
 -                                t.addListener(new Tooltip(f -> f.background(Styles.black8).margin(4f).add(stateDetails).growX().width(400f).wrap()));
 -                            }
-+                    any = true;
-+                    if(!mod.enabled() && !anyDisabled && mods.any()){
-+                        anyDisabled = true;
-+                        modCont.row();
++                boolean anyDisabled = false;
  
 -                            t.defaults().left().top();
 -                            t.table(title1 -> {
 -                                title1.left();
 -
 -                                title1.add(new BorderImage(){{
--                                    if(item.iconTexture != null){
--                                        setDrawable(new TextureRegion(item.iconTexture));
+-                                    if(mod.iconTexture != null){
+-                                        setDrawable(new TextureRegion(mod.iconTexture));
 -                                    }else{
 -                                        setDrawable(Tex.nomap);
 -                                    }
@@ -197,19 +209,19 @@ index 4efb7f361cbb2139195bfaf788b564caf28bb324..6b46d24f94a47d901247b2649ca884d7
 -                                }}).size(h - 8f).padTop(-8f).padLeft(-8f).padRight(8f);
 -
 -                                title1.table(text -> {
--                                    boolean hideDisabled = !item.isSupported() || item.hasUnmetDependencies() || item.hasContentErrors();
--                                    String shortDesc = item.meta.shortDescription();
+-                                    boolean hideDisabled = !mod.isSupported() || mod.hasUnmetDependencies() || mod.hasContentErrors();
+-                                    String shortDesc = mod.meta.shortDescription();
 -
--                                    text.add("[accent]" + Strings.stripColors(item.meta.displayName) + "\n" +
+-                                    text.add("[accent]" + Strings.stripColors(mod.meta.displayName) + "\n" +
 -                                        (shortDesc.length() > 0 ? "[lightgray]" + shortDesc + "\n" : "")
 -                                        //so does anybody care about version?
 -                                        //+ "[gray]v" + Strings.stripColors(trimText(item.meta.version)) + "\n"
--                                        + (item.enabled() || hideDisabled ? "" : Core.bundle.get("mod.disabled") + ""))
+-                                        + (mod.enabled() || hideDisabled ? "" : Core.bundle.get("mod.disabled") + ""))
 -                                    .wrap().top().width(300f).growX().left();
 -
 -                                    text.row();
 -
--                                    String state = getStateText(item);
+-                                    String state = getStateText(mod);
 -                                    if(state != null){
 -                                        text.labelWrap(state).growX().row();
 -                                    }
@@ -220,48 +232,69 @@ index 4efb7f361cbb2139195bfaf788b564caf28bb324..6b46d24f94a47d901247b2649ca884d7
 -
 -                            t.table(right -> {
 -                                right.right();
--                                right.button(item.enabled() ? Icon.downOpen : Icon.upOpen, Styles.clearNonei, () -> {
--                                    mods.setEnabled(item, !item.enabled());
+-                                right.button(mod.enabled() ? Icon.downOpen : Icon.upOpen, Styles.clearNonei, () -> {
+-                                    mods.setEnabled(mod, !mod.enabled());
 -                                    setup();
--                                }).size(50f).disabled(!item.isSupported());
+-                                }).size(50f).disabled(!mod.isSupported());
 -
--                                right.button(item.hasSteamID() ? Icon.link : Icon.trash, Styles.clearNonei, () -> {
--                                    if(!item.hasSteamID()){
+-                                right.button(mod.hasSteamID() ? Icon.link : Icon.trash, Styles.clearNonei, () -> {
+-                                    if(!mod.hasSteamID()){
 -                                        ui.showConfirm("@confirm", "@mod.remove.confirm", () -> {
--                                            mods.removeMod(item);
+-                                            mods.removeMod(mod);
+-                                            withUpdates.remove(mod);
 -                                            setup();
 -                                        });
 -                                    }else{
--                                        platform.viewListing(item);
+-                                        platform.viewListing(mod);
 -                                    }
 -                                }).size(50f);
 -
--                                if(steam && !item.hasSteamID()){
+-                                if(steam && !mod.hasSteamID()){
 -                                    right.row();
 -                                    right.button(Icon.export, Styles.clearNonei, () -> {
--                                        platform.publish(item);
+-                                        platform.publish(mod);
 -                                    }).size(50f);
 -                                }
 -                            }).growX().right().padRight(-8f).padTop(-8f);
--                        }, Styles.grayt, () -> showMod(item)).size(w, h).growX().pad(4f);
--                        pane[0].row();
+-                        }, Styles.grayt, () -> showMod(mod)).size(w, h).growX().pad(4f).padTop(8f).row();
+-
+-                        if(hasUpdate(mod)){
+-                            cont.button(b -> {
+-                                b.margin(6f);
+-                                b.left();
+-                                b.image(Icon.download).color(Color.lightGray).size(iconMed).padRight(8f);
+-                                var list = modToListing.get(mod);
+-                                b.add(Core.bundle.format("mods.update.available", list == null ? "<unknown>" : list.version));
+-                            }, Styles.grayt, () -> {
+-                                githubImportMod(mod.getRepo(), mod.isJava(), null, false);
+-                            }).width(w).height(48f).padTop(-4f).row();
+-                        }
++                for(LoadedMod mod : mods){
++                    if(!Strings.matches(modQuery, mod.meta.displayName)){
++                        continue;
+                     }
++
++                    any = true;
++                    if(!mod.enabled() && !anyDisabled && mods.any()){
++                        anyDisabled = true;
++                        modCont.row();
++
 +                        modCont.table(disableLine -> {
 +                            disableLine.add("@mods.disabled").color(Color.red).pad(4f);
 +                            disableLine.image().height(4f).pad(4f).color(Pal.darkestGray).growX();
 +                        }).growX().pad(6f);
 +
 +                        modCont.row();
-                     }
++                    }
 +
-+                    addModCard(modCont, mod);
-+
++                    modCont.table(card -> addModCard(card, mod)).pad(4f);
 +                    Card.cardShadow(modCont);
 +
 +                    modCont.row();
                  }
  
                  if(!any){
--                    pane[0].add("@none.found").color(Color.lightGray).pad(4);
+-                    cont.add("@none.found").color(Color.lightGray).pad(4);
 +                    modCont.add("@none.found").color(Color.lightGray).pad(4);
                  }
 -            };
@@ -291,14 +324,11 @@ index 4efb7f361cbb2139195bfaf788b564caf28bb324..6b46d24f94a47d901247b2649ca884d7
 -                pane[0] = table1.margin(10f).top();
 -                rebuild.get("");
 -            }).scrollX(false).update(s -> scroll = s.getScrollY()).get().setScrollYForce(scroll);
--        }else{
--            cont.table(Styles.black6, t -> t.add("@mods.none")).height(80f);
--        }
 +            t.defaults().left().top();
 +            t.table(title1 -> {
 +                title1.left();
  
--        cont.row();
+-            cont.row();
 +                title1.add(new BorderImage(){{
 +                    if(mod.iconTexture != null){
 +                        setDrawable(new TextureRegion(mod.iconTexture));
@@ -307,16 +337,49 @@ index 4efb7f361cbb2139195bfaf788b564caf28bb324..6b46d24f94a47d901247b2649ca884d7
 +                    }
 +                    border(Pal.accent);
 +                }}).size(modCardHeight - 8f).padTop(-8f).padLeft(-8f).padRight(8f);
-+
+ 
+-            if(withUpdates.size > 1){
+-                cont.button(b -> {
+-                    b.margin(6f);
+-                    b.image(Icon.download).size(iconMed).padRight(8f);
+-                    b.add("@mods.update.all");
+-                    b.image(Icon.download).size(iconMed).padLeft(8f);
+-                }, Styles.grayt, () -> {
+-                    var queue = withUpdates.toSeq();
+-
+-                    int[] index = {0};
+-
+-                    //TODO: this is an awful hack that forces mods to be downloaded in sequence
+-                    //handling callbacks in the functions is extremely tedious, so this is the cleanest method I could find
+-                    cancelledImport = false;
+-                    if(updaterElement != null) updaterElement.remove();
+-                    updaterElement = new Element();
+-
+-                    updaterElement.update(() -> {
+-                        if(index[0] >= queue.size || cancelledImport){
+-                            updaterElement.remove();
+-                        }else if(!ui.loadfrag.shown()){ //loading not shown, queue next one
+-                            var next = queue.get(index[0] ++);
+-
+-                            githubImportMod(next.getRepo(), next.isJava(), null, false);
+-                        }
+-                    });
+-                    addChild(updaterElement);
+-                }).padTop(8f).width(w).height(60f).padTop(12f).row();
+-            }
+-        }else{
+-            cont.table(Styles.black6, t -> t.add("@mods.none")).height(80f);
+-        }
 +                title1.table(text -> {
 +                    boolean hideDisabled = !mod.isSupported() || mod.hasUnmetDependencies() || mod.hasContentErrors();
 +                    String shortDesc = mod.meta.shortDescription();
-+
+ 
+-        cont.row();
 +                    text.add("[accent]" + Strings.stripColors(mod.meta.displayName) + "\n" +
-+                    (shortDesc.length() > 0 ? "[lightgray]" + shortDesc + "\n" : "")
-+                    //so does anybody care about version?
-+                    //+ "[gray]v" + Strings.stripColors(trimText(item.meta.version)) + "\n"
-+                    + (mod.enabled() || hideDisabled ? "" : Core.bundle.get("mod.disabled") + ""))
++                        (shortDesc.length() > 0 ? "[lightgray]" + shortDesc + "\n" : "")
++                        //so does anybody care about version?
++                        //+ "[gray]v" + Strings.stripColors(trimText(item.meta.version)) + "\n"
++                        + (mod.enabled() || hideDisabled ? "" : Core.bundle.get("mod.disabled") + ""))
 +                    .wrap().top().width(300f).growX().left();
 +
 +                    text.row();
@@ -341,6 +404,7 @@ index 4efb7f361cbb2139195bfaf788b564caf28bb324..6b46d24f94a47d901247b2649ca884d7
 +                    if(!mod.hasSteamID()){
 +                        ui.showConfirm("@confirm", "@mod.remove.confirm", () -> {
 +                            mods.removeMod(mod);
++                            withUpdates.remove(mod);
 +                            setup();
 +                        });
 +                    }else{
@@ -355,7 +419,19 @@ index 4efb7f361cbb2139195bfaf788b564caf28bb324..6b46d24f94a47d901247b2649ca884d7
 +                    }).size(50f);
 +                }
 +            }).growX().right().padRight(-8f).padTop(-8f);
-+        }, Styles.grayt, () -> showMod(mod)).maxWidth(modCardWidth).height(modCardHeight).growX().pad(4f);
++        }, Styles.grayt, () -> showMod(mod)).maxWidth(modCardWidth).height(modCardHeight).growX().pad(4f).row();
++
++        if(hasUpdate(mod)){
++            table.button(b -> {
++                b.margin(6f);
++                b.left();
++                b.image(Icon.download).color(Color.lightGray).size(iconMed).padRight(8f);
++                var list = modToListing.get(mod);
++                b.add(Core.bundle.format("mods.update.available", list == null ? "<unknown>" : list.version));
++            }, Styles.grayt, () -> {
++                githubImportMod(mod.getRepo(), mod.isJava(), null, false);
++            }).width(modCardWidth).height(48f).padTop(-4f).row();
++        }
      }
  
      private @Nullable String getStateText(LoadedMod item){

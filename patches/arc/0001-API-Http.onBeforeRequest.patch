@@ -8,7 +8,7 @@ Subject: [PATCH] API: Http.onBeforeRequest
  1 file changed, 6 insertions(+)
 
 diff --git a/arc-core/src/arc/util/Http.java b/arc-core/src/arc/util/Http.java
-index 5be2d92ebc01f37351cc60c2b5c6f9296dabbc5b..e15e644138b4e7ea07ad0d3d483fcb8b640a7a00 100644
+index c172c5e3557b0223c62f89c54c9c4cc39099eed2..4384cc7b6c5bcf004195f01da68142b654b93ac5 100644
 --- a/arc-core/src/arc/util/Http.java
 +++ b/arc-core/src/arc/util/Http.java
 @@ -157,6 +157,8 @@ public class Http{

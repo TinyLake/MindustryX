@@ -19,10 +19,10 @@ way-zer <himc.wicp@gmail.com> on 2024/4/27 at 18:57
  5 files changed, 10 insertions(+), 8 deletions(-)
 
 diff --git a/build.gradle b/build.gradle
-index d0b7b8867edffc6baca2bb8295461f28b551384a..b7b3afa858783147fd47d7fdf8a76886f5e90c67 100644
+index af7b056084827ab019450e214ecbf4dc84c51dd6..930b7a8e5ab72fab078d9c82d6166bcd7a61a50b 100644
 --- a/build.gradle
 +++ b/build.gradle
-@@ -226,12 +226,6 @@ project(":core"){
+@@ -227,12 +227,6 @@ project(":core"){
          destinationDir = layout.buildDirectory.dir("javadoc").get().asFile
      }
  
@@ -64,7 +64,7 @@ index 18556f89b7a170f23e8c73192443dfe61a7fb9aa..02d4ae1bda4f2c6836f5147a62811923
      }
  
 diff --git a/gradle.properties b/gradle.properties
-index 67ffaa9c0eb21117a1b4378bd82f6b8b12b51ece..584ce5e826af80afff99c8860617fa480d8e575d 100644
+index edbad9a5b78f9b9cb8407e3bf44bed92b3c46171..b6fbcd5db27b7bd362433f8d8b099ed111f61788 100644
 --- a/gradle.properties
 +++ b/gradle.properties
 @@ -18,7 +18,7 @@ kapt.use.worker.api=true
@@ -90,7 +90,7 @@ index 7c1293746b6329d9904f237b94b1466869f9c47c..6085c24c1882c38982af03174166fa7c
  
      manifest{
 diff --git a/settings.gradle b/settings.gradle
-index e688b9a8ea87e6ac6e6899c0a2807fba38ff18be..1c8ab04d2d3469220b45117ec2684979a317a92f 100644
+index ac8c7b7e987dba629f2dad6c16ccaf309a8e598c..96e1b795b0fe2fbe19c978fb435c69be41104878 100644
 --- a/settings.gradle
 +++ b/settings.gradle
 @@ -9,6 +9,8 @@ if(JavaVersion.current().ordinal() < JavaVersion.VERSION_17.ordinal()){

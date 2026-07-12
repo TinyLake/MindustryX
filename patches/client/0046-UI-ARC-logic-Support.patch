@@ -122,7 +122,7 @@ index 56f52b1bb9aecab2ecbedf672bc8431dc3a9de41..b3cdfea775f6823ea4535ce05c4816d5
          public void draw(){
              float pad = 5f;
 diff --git a/core/src/mindustry/logic/LExecutor.java b/core/src/mindustry/logic/LExecutor.java
-index dfc7243b2a0b19674b520d067922197a3c82026a..0e9503c13a45b59bc383802f6471a5d6ed851c51 100644
+index 878645416e4a98c045cbe171881195e6786fca4f..6503e267992bc4e1f8f7e23bd742b9e7e88270c7 100644
 --- a/core/src/mindustry/logic/LExecutor.java
 +++ b/core/src/mindustry/logic/LExecutor.java
 @@ -48,6 +48,9 @@ public class LExecutor{
@@ -161,7 +161,7 @@ index dfc7243b2a0b19674b520d067922197a3c82026a..0e9503c13a45b59bc383802f6471a5d6
                  case pan -> {
                      control.input.logicCutscene = true;
 diff --git a/core/src/mindustry/logic/LStatements.java b/core/src/mindustry/logic/LStatements.java
-index 1f47387df3cf1e402ece1beebb56851256aaea43..12f2db1e818a72bada17ab4c3c21e1b01563cb06 100644
+index 06fe7a5390616f0b9a9ba50a3201eb8a19ef6a80..18542aeabc408f9510f04406ec2d3ca214e7119f 100644
 --- a/core/src/mindustry/logic/LStatements.java
 +++ b/core/src/mindustry/logic/LStatements.java
 @@ -4,6 +4,9 @@ import arc.*;
@@ -213,7 +213,7 @@ index 1f47387df3cf1e402ece1beebb56851256aaea43..12f2db1e818a72bada17ab4c3c21e1b0
  
              String name = name();
 diff --git a/core/src/mindustry/logic/LogicDialog.java b/core/src/mindustry/logic/LogicDialog.java
-index 80d8f7e86ea56efd190317b75aa1e6d2f5d7ad6d..d7e899df6ae55ae528fe4ef7dc917bd9d6ecedc7 100644
+index be49cdec4be645c52bc8d8162138347a3893474c..c82d44fbf2c8971304df7d95ee1d96d04a75b822 100644
 --- a/core/src/mindustry/logic/LogicDialog.java
 +++ b/core/src/mindustry/logic/LogicDialog.java
 @@ -19,6 +19,8 @@ import mindustry.logic.LStatements.*;
@@ -262,7 +262,7 @@ index 80d8f7e86ea56efd190317b75aa1e6d2f5d7ad6d..d7e899df6ae55ae528fe4ef7dc917bd9
                  });
              });
  
-@@ -365,6 +377,7 @@ public class LogicDialog extends BaseDialog{
+@@ -366,6 +378,7 @@ public class LogicDialog extends BaseDialog{
              }
          };
  

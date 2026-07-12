@@ -256,7 +256,7 @@ index b9ce86dd854634a016552adb8a426ca3b367bb32..349a7a146c339d95daf2bd45413ad7f0
          float dy = (Core.camera.position.y / tilesize);
          dx = Mathf.clamp(dx, sz, world.width() - sz);
 diff --git a/core/src/mindustry/input/DesktopInput.java b/core/src/mindustry/input/DesktopInput.java
-index 73df427ea7a6822643e665df14fb22df7e798ac0..96e44a6886e4c62a90edde1a8c2139ae8157823d 100644
+index 92c10115af4edb8bb8bfd29a6b37d11d082df050..07e4445d9d0b6662922f4a830c6d1a5d5e86089b 100644
 --- a/core/src/mindustry/input/DesktopInput.java
 +++ b/core/src/mindustry/input/DesktopInput.java
 @@ -415,6 +415,9 @@ public class DesktopInput extends InputHandler{

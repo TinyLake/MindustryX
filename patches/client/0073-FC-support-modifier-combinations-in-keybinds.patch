@@ -9,7 +9,7 @@ Subject: [PATCH] FC: support modifier combinations in keybinds
  2 files changed, 45 insertions(+), 18 deletions(-)
 
 diff --git a/core/src/mindustry/input/DesktopInput.java b/core/src/mindustry/input/DesktopInput.java
-index 5c59383e07b7ab77b24218bf6b73a3102d68f199..60dd12fef79ef72da19ae874ff1a02cae615bafb 100644
+index 7f9e88d6a94b22386afed0fd577e4352fbb3d645..b1c6a4375c26b4d1bb6847e67121ba1f83b17520 100644
 --- a/core/src/mindustry/input/DesktopInput.java
 +++ b/core/src/mindustry/input/DesktopInput.java
 @@ -28,6 +28,7 @@ import static arc.Core.*;
@@ -60,7 +60,7 @@ index 5c59383e07b7ab77b24218bf6b73a3102d68f199..60dd12fef79ef72da19ae874ff1a02ca
              if(settings.getBool("commandmodehold")){
                  commandMode = input.keyDown(Binding.commandMode);
              }else if(input.keyTap(Binding.commandMode)){
-@@ -931,7 +932,7 @@ public class DesktopInput extends InputHandler{
+@@ -937,7 +938,7 @@ public class DesktopInput extends InputHandler{
              commandTap(x, y);
          }
  
