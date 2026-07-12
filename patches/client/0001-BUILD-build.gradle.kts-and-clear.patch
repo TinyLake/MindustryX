@@ -14,7 +14,7 @@ way-zer <himc.wicp@gmail.com> on 2024/6/9
  build.gradle                                  | 338 ++++--------------
  core/build.gradle                             |   2 -
  core/build.gradle.kts                         |  73 ++++
- desktop/build.gradle                          | 134 +------
+ desktop/build.gradle                          | 157 +-------
  gradle.properties                             |   5 +-
  gradlew                                       | 284 +++++++++------
  gradlew.bat                                   |  37 +-
@@ -23,7 +23,7 @@ way-zer <himc.wicp@gmail.com> on 2024/6/9
  settings.gradle                               |  11 +-
  tools/build.gradle                            |  63 ++--
  tools/src/mindustry/tools/Generators.java     |   2 +-
- 17 files changed, 457 insertions(+), 683 deletions(-)
+ 17 files changed, 457 insertions(+), 706 deletions(-)
  create mode 100644 annotations/src/main/java/com/github/bsideup/jabel/Desugar.java
  create mode 100644 annotations/src/main/resources/META-INF/services/javax.annotation.processing.Processor
  delete mode 100644 core/build.gradle
@@ -849,12 +849,17 @@ index 0000000000000000000000000000000000000000..18556f89b7a170f23e8c73192443dfe6
 +}
 \ No newline at end of file
 diff --git a/desktop/build.gradle b/desktop/build.gradle
-index 86f36c82e87f3f50525b0b34314f25c32cd3074d..c23f42951ec0ec0b332fbfce185470dc965fb45e 100644
+index 86f36c82e87f3f50525b0b34314f25c32cd3074d..f8a551daf5bd43b87f2abe543c599d76b37e9214 100644
 --- a/desktop/build.gradle
 +++ b/desktop/build.gradle
-@@ -8,9 +8,9 @@ def ICON_DIR = new File("$rootDir/core/assets/icons/icon.icns")
- def platforms = ["Linux64", "Windows64", "MacOS"]
+@@ -3,14 +3,10 @@ sourceSets.main.java.srcDirs = ["src/"]
+ project.ext.mainClassName = "mindustry.desktop.DesktopLauncher"
+ project.ext.assetsDir = new File("../core/assets")
  
+-def JDK_DIR = "$System.env.JDK_DIR"
+-def ICON_DIR = new File("$rootDir/core/assets/icons/icon.icns")
+-def platforms = ["Linux64", "Windows64", "MacOS"]
+-
  tasks.register('run', JavaExec){
 -    dependsOn classes
 +    dependsOn classes, ":core:allAssets"
@@ -864,7 +869,7 @@ index 86f36c82e87f3f50525b0b34314f25c32cd3074d..c23f42951ec0ec0b332fbfce185470dc
      standardInput = System.in
      workingDir = project.assetsDir
      ignoreExitValue = true
-@@ -45,7 +45,7 @@ tasks.register('dist', Jar){
+@@ -45,7 +41,7 @@ tasks.register('dist', Jar){
      from files(sourceSets.main.output.classesDirs)
      from files(sourceSets.main.output.resourcesDir)
      from{ configurations.runtimeClasspath.collect{ it.isDirectory() ? it : zipTree(it) } }
@@ -873,23 +878,35 @@ index 86f36c82e87f3f50525b0b34314f25c32cd3074d..c23f42951ec0ec0b332fbfce185470dc
      exclude("config/**")
      exclude("**hs_err**.log")
      duplicatesStrategy = DuplicatesStrategy.EXCLUDE
-@@ -65,12 +65,6 @@ tasks.register('dist', Jar){
+@@ -64,150 +60,3 @@ tasks.register('dist', Jar){
+         attributes 'Multi-Release': 'true'
      }
  }
- 
+-
 -if(!project.ext.hasSprites() && System.getenv("JITPACK") != "true"){
 -    println "Scheduling sprite packing."
 -    run.dependsOn ":tools:pack"
 -    dist.dependsOn ":tools:pack"
 -}
 -
- //this is only for local testing
- //add -Prelease -PversionModifier=steam as build properties
- tasks.register('steamtest'){
-@@ -89,125 +83,3 @@ tasks.register('steamtest'){
-         }
-     }
- }
+-//this is only for local testing
+-//add -Prelease -PversionModifier=steam as build properties
+-tasks.register('steamtest'){
+-    dependsOn dist
+-    doLast{
+-        copy{
+-            from "build/libs/Mindustry.jar"
+-            if(project.hasProperty("destination")){
+-                into project.property("destination")
+-            }else if(System.properties["os.name"].contains("Mac")){
+-                into "/Users/anuke/Library/Application Support/Steam/steamapps/common/Mindustry/Mindustry.app/Contents/Resources"
+-            }else{
+-                into "/home/anuke/.steam/steam/steamapps/common/Mindustry/jre"
+-            }
+-            rename("Mindustry.jar", "desktop.jar")
+-        }
+-    }
+-}
 -
 -//required templates:
 -//- Windows32: Not provided by Packr! This uses Java 8
