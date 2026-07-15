@@ -4,10 +4,11 @@ Date: Tue, 26 Mar 2024 19:22:00 +0800
 Subject: [PATCH] HR: RenderExt
 
 ---
- core/src/mindustry/core/Renderer.java          | 3 ++-
- core/src/mindustry/graphics/BlockRenderer.java | 3 ++-
- core/src/mindustry/input/InputHandler.java     | 5 +++++
- 3 files changed, 9 insertions(+), 2 deletions(-)
+ core/src/mindustry/core/Renderer.java            | 3 ++-
+ core/src/mindustry/graphics/BlockRenderer.java   | 3 ++-
+ core/src/mindustry/graphics/OverlayRenderer.java | 3 ++-
+ core/src/mindustry/input/InputHandler.java       | 5 +++++
+ 4 files changed, 11 insertions(+), 3 deletions(-)
 
 diff --git a/core/src/mindustry/core/Renderer.java b/core/src/mindustry/core/Renderer.java
 index 389684d7bb658688334d062df2cd3d9d7685ecf9..f25585b53208318e2b09c227e94915bf291b941e 100644
@@ -51,6 +52,27 @@ index 71a14625763ba9069026e2f9e550eeb3e662cd15..6be6990e8bb84aeead0db7866ce58e87
                  Draw.reset();
                  Draw.z(Layer.block);
  
+diff --git a/core/src/mindustry/graphics/OverlayRenderer.java b/core/src/mindustry/graphics/OverlayRenderer.java
+index 0795b6a38f43c33ae3fae877f1ae54dd79ea0949..9d1f4b1ebf944b4dac80b78954ff0719669fb1ed 100644
+--- a/core/src/mindustry/graphics/OverlayRenderer.java
++++ b/core/src/mindustry/graphics/OverlayRenderer.java
+@@ -17,6 +17,7 @@ import mindustry.gen.*;
+ import mindustry.input.*;
+ import mindustry.world.*;
+ import mindustry.world.blocks.storage.CoreBlock.*;
++import mindustryX.features.*;
+ 
+ import static mindustry.Vars.*;
+ 
+@@ -217,7 +218,7 @@ public class OverlayRenderer{
+             Building build = world.buildWorld(vec.x, vec.y);
+ 
+             if(build != null && build.team == player.team()){
+-                build.drawSelect();
++                RenderExt.onDrawSelect(build);
+                 if(!build.enabled && build.block.drawDisabled){
+                    build.drawDisabled();
+                 }
 diff --git a/core/src/mindustry/input/InputHandler.java b/core/src/mindustry/input/InputHandler.java
 index 5bc3c64a44247b45c77020bd8ba4a2bfddbc8ea8..b4b3ce4c5e021f9100bf59400fe9ea137b2b31c7 100644
 --- a/core/src/mindustry/input/InputHandler.java

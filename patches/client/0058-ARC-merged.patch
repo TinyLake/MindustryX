@@ -99,7 +99,7 @@ way-zer <himc.wicp@gmail.com> on 2024/9/8
  .../mindustry/entities/comp/StatusComp.java   |   3 +
  core/src/mindustry/game/Schematic.java        | 104 +++++++++
  .../src/mindustry/graphics/BlockRenderer.java |  15 +-
- .../mindustry/graphics/OverlayRenderer.java   |  36 +++-
+ .../mindustry/graphics/OverlayRenderer.java   |  35 +++-
  core/src/mindustry/input/DesktopInput.java    |  12 +-
  core/src/mindustry/input/InputHandler.java    |  47 ++++-
  core/src/mindustry/input/MobileInput.java     |   6 +-
@@ -120,7 +120,7 @@ way-zer <himc.wicp@gmail.com> on 2024/9/8
  .../mindustry/ui/fragments/MenuFragment.java  |  24 ++-
  .../ui/fragments/PlacementFragment.java       | 164 ++++++++++++---
  .../ui/fragments/PlayerListFragment.java      |  68 +++---
- 27 files changed, 917 insertions(+), 135 deletions(-)
+ 27 files changed, 916 insertions(+), 135 deletions(-)
 
 diff --git a/core/src/mindustry/editor/MapInfoDialog.java b/core/src/mindustry/editor/MapInfoDialog.java
 index 1ee294233bdeccd9b03a24f7cff65a1d19417b77..5c76cc56cbbb4ba3a6783f864036bd93cab3cc90 100644
@@ -426,18 +426,10 @@ index 4891a81b790296258ac86ff4bfeb789e6fb92a6f..ebc8bee032dab5240eb8049f8890e8b9
                      }
                  }
 diff --git a/core/src/mindustry/graphics/OverlayRenderer.java b/core/src/mindustry/graphics/OverlayRenderer.java
-index 2033e20b8e66a248530f64be11995341e917687e..6bdcddbaa6065546a019f95dff96f1f8fa23e4cc 100644
+index a40c3fbea2c69e39d417e2c01b1a6ba92ebb8a8c..4e127fe429df9c29e15572daadedc32501bda33b 100644
 --- a/core/src/mindustry/graphics/OverlayRenderer.java
 +++ b/core/src/mindustry/graphics/OverlayRenderer.java
-@@ -17,6 +17,7 @@ import mindustry.gen.*;
- import mindustry.input.*;
- import mindustry.world.*;
- import mindustry.world.blocks.storage.CoreBlock.*;
-+import mindustryX.features.*;
- 
- import static mindustry.Vars.*;
- 
-@@ -188,9 +189,18 @@ public class OverlayRenderer{
+@@ -189,9 +189,18 @@ public class OverlayRenderer{
                      //it must be clear that there is a core here.
                      float br = state.rules.buildRadius(core.team);
                      if(/*core.wasVisible && */br > 0f && Core.camera.bounds(Tmp.r1).overlaps(Tmp.r2.setCentered(core.x, core.y, br * 2f))){
@@ -459,14 +451,14 @@ index 2033e20b8e66a248530f64be11995341e917687e..6bdcddbaa6065546a019f95dff96f1f8
                          Lines.circle(core.x, core.y, br);
                      }
                  });
-@@ -216,12 +226,14 @@ public class OverlayRenderer{
+@@ -217,12 +226,14 @@ public class OverlayRenderer{
              Vec2 vec = Core.input.mouseWorld(input.getMouseX(), input.getMouseY());
              Building build = world.buildWorld(vec.x, vec.y);
  
 -            if(build != null && build.team == player.team()){
 +            //if(build != null && build.team == player.team()){
 +            if(build != null){
-                 build.drawSelect();
+                 RenderExt.onDrawSelect(build);
                  if(!build.enabled && build.block.drawDisabled){
                     build.drawDisabled();
                  }
@@ -476,7 +468,7 @@ index 2033e20b8e66a248530f64be11995341e917687e..6bdcddbaa6065546a019f95dff96f1f8
                  if(Core.input.keyDown(Binding.rotatePlaced) && build.block.rotate && build.block.quickRotate && build.interactable(player.team())){
                      control.input.drawArrow(build.block, build.tileX(), build.tileY(), build.rotation, true);
                      Draw.color(Pal.accent, 0.3f + Mathf.absin(4f, 0.2f));
-@@ -233,12 +245,22 @@ public class OverlayRenderer{
+@@ -234,12 +245,22 @@ public class OverlayRenderer{
  
          input.drawOverSelect();
  
@@ -499,7 +491,7 @@ index 2033e20b8e66a248530f64be11995341e917687e..6bdcddbaa6065546a019f95dff96f1f8
          }
  
          //draw selection overlay when dropping item
-@@ -267,6 +289,10 @@ public class OverlayRenderer{
+@@ -268,6 +289,10 @@ public class OverlayRenderer{
                  }
              }
          }

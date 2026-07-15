@@ -15,10 +15,13 @@ import mindustry.game.EventType.*;
 import mindustry.gen.*;
 import mindustry.graphics.*;
 import mindustry.type.*;
+import mindustry.ui.*;
 import mindustry.world.*;
+import mindustry.world.blocks.ConstructBlock.*;
 import mindustry.world.blocks.defense.*;
 import mindustry.world.blocks.defense.turrets.*;
 import mindustry.world.blocks.defense.turrets.BaseTurret.*;
+import mindustry.world.blocks.defense.turrets.Turret.*;
 import mindustry.world.blocks.distribution.MassDriver.*;
 import mindustry.world.blocks.logic.*;
 import mindustry.world.blocks.logic.MessageBlock.*;
@@ -34,6 +37,7 @@ import java.util.*;
 
 import static mindustry.Vars.*;
 import static mindustryX.features.UIExt.i;
+import static mindustryX.features.func.FuncX.drawText;
 
 public class RenderExt{
     public static boolean displayAllMessage;
@@ -63,6 +67,7 @@ public class RenderExt{
 
     public static final SettingsV2.CheckPref spawnerWaveDisplay = new CheckPref("gameUI.spawnerWaveDisplay", true);
     public static final SettingsV2.CheckPref transportScan = new CheckPref("gameUI.transportScan");
+    public static final SettingsV2.CheckPref mouseInfo = new CheckPref("gameUI.mouseInfo");
     public static final SettingsV2.CheckPref announceRtsTake = new CheckPref("gameUI.announceRtsTake", true);
     public static final SettingsV2.CheckPref deadOverlay = new CheckPref("gameUI.deadOverlay");
 
@@ -75,7 +80,6 @@ public class RenderExt{
     public static final ChoosePref blockRenderLevel0 = new ChoosePref("block.renderLevel", CollectionsKt.listOf(i("隐藏全部建筑"), i("只显示建筑状态"), i("全部显示")), 2);
     public static final SettingsV2.CheckPref showOtherTeamState = new CheckPref("block.showOtherTeamState");
     public static final SettingsV2.CheckPref logicDisplayNoBorder0 = new CheckPref("block.logicDisplayNoBorder");
-
 
     static{
         if(headless) throw new RuntimeException("RenderExt should not access in Headless");
@@ -168,6 +172,7 @@ public class RenderExt{
         ArcRadar.draw();
         if(payloadPreview.get()) PayloadDropHint.draw(player);
         if(transportScan.get()) NewTransferScanMode.INSTANCE.draw();
+        if(mouseInfo.get()) drawMouseInfo();
     }
 
     public static void onGroupDraw(Drawc t){
@@ -205,6 +210,21 @@ public class RenderExt{
         if(build instanceof BaseTurretBuild turretBuild){
             Draw.z(Layer.turret);
             ArcBuilds.turretDraw(turretBuild);
+        }
+    }
+
+    public static void onDrawSelect(Building build){
+        if(arcDrillMode && build instanceof DrillBuild) return;
+        build.drawSelect();
+
+        if(build instanceof TurretBuild turretBuild){
+            Draw.z(Layer.turret + 0.1f);
+            drawTurretSelect(turretBuild);
+        }
+        if(build instanceof ConstructBuild constructBuild){
+            // BlockUnit之上
+            Draw.z(Layer.flyingUnit + 0.1f);
+            ConstructSelect.draw(constructBuild);
         }
     }
 
@@ -311,6 +331,17 @@ public class RenderExt{
         Draw.reset();
     }
 
+    private static void drawMouseInfo(){
+        Draw.z(Layer.overlayUI);
+        Vec2 pos = Core.input.mouseWorld();
+        String text = VarsX.bundle.coordinateDistance(
+        (int)(pos.x / tilesize),
+        (int)(pos.y / tilesize),
+        (int)(player.dst(pos) / tilesize)
+        );
+        drawText(pos, text);
+    }
+
     static ObjectMap<String, HashSet<Unit>> removePool = new ObjectMap<>();
 
     public static void onRtsRemoveUnit(Player player, Unit unit){
@@ -334,5 +365,22 @@ public class RenderExt{
             }
             UIExt.announce(builder.toString());
         });
+    }
+
+    public static void drawTurretSelect(TurretBuild turretBuild){
+        Vec2 targetPos = turretBuild.targetPos;
+
+        Turret turret = (Turret)turretBuild.block;
+
+        //ARC: show shoot target line
+        if(ArcBuilds.blockWeaponTargetLine && !targetPos.isZero() && turretBuild.dst(targetPos) < turret.range * 5){
+            Lines.stroke(1f);
+            Lines.dashLine(turretBuild.x, turretBuild.y, targetPos.x, targetPos.y, (int)(turretBuild.dst(targetPos) / 8));
+            Lines.dashCircle(targetPos.x, targetPos.y, 8);
+            Draw.reset();
+        }
+        if(mindustryX.VarsX.arcTurretShowAmmoRange.get()){
+            ArcBuilds.turretSelectDraw(turretBuild);
+        }
     }
 }
