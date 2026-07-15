@@ -65,6 +65,23 @@ public class NewCoreItemsDisplay extends Table{
             plansTable.clearChildren();
         });
 
+        Events.on(WorldLoadEvent.class, e -> {
+            int size = content.items().size;
+            if(planItemAmounts.length != size){
+                planItemAmounts = new int[size];
+            }
+
+            if(itemDelta.length != size){
+                itemDelta = new int[size];
+                lastItemAmount = new int[size];
+            }
+
+            itemsTable.clearChildren();
+            unitsTable.clearChildren();
+            buildItems();
+            buildUnits();
+        });
+
         setup();
     }
 
@@ -156,10 +173,6 @@ public class NewCoreItemsDisplay extends Table{
 
     private void updateItemMeans(){
         if(!timer.get(0, 60f)) return;
-        if(itemDelta.length != content.items().size){
-            itemDelta = new int[content.items().size];
-            lastItemAmount = new int[content.items().size];
-        }
         var items = player.team().items();
         for(Item item : usedItems){
             short id = item.id;
@@ -246,9 +259,6 @@ public class NewCoreItemsDisplay extends Table{
     }
 
     private void rebuildPlans(){
-        if(planItemAmounts.length != content.items().size){
-            planItemAmounts = new int[content.items().size];
-        }
         Arrays.fill(planItemAmounts, 0);
         planCounter.clear();
 
