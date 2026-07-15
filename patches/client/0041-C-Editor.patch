@@ -10,11 +10,11 @@ Content-Transfer-Encoding: 8bit
 ---
  core/src/mindustry/editor/EditorTool.java     |  5 ++-
  core/src/mindustry/editor/MapEditor.java      |  9 ++++--
- .../src/mindustry/editor/MapEditorDialog.java | 28 +++++++++++-----
+ .../src/mindustry/editor/MapEditorDialog.java | 28 ++++++++++++----
  .../src/mindustry/editor/MapResizeDialog.java |  4 +--
  core/src/mindustry/editor/MapView.java        | 32 +++++++++++++++----
  core/src/mindustry/ui/GridImage.java          |  5 +--
- 6 files changed, 60 insertions(+), 23 deletions(-)
+ 6 files changed, 61 insertions(+), 22 deletions(-)
 
 diff --git a/core/src/mindustry/editor/EditorTool.java b/core/src/mindustry/editor/EditorTool.java
 index 0d7de460ff6c67b760a28429027c8b8d19f5d55b..f19bb5a81421c9968f855097ece84ac5872a69c2 100644
@@ -68,7 +68,7 @@ index 2187b57045a1402424f4e4ca4e19040775b94803..f0afd6f8f766602bcef90863fb5946ec
  
                  if(wx < 0 || wy < 0 || wx >= width() || wy >= height()){
 diff --git a/core/src/mindustry/editor/MapEditorDialog.java b/core/src/mindustry/editor/MapEditorDialog.java
-index 5de06bed1b254d520c104f03cdf21bfab7e0af0a..e791a867451560b207ce2b8e7041a65289aa3f15 100644
+index e2b2791a3db5dd943975c22090294b3454aa042b..d1008b6d56e6cbfac04961a113d6cfffbbc1e11f 100644
 --- a/core/src/mindustry/editor/MapEditorDialog.java
 +++ b/core/src/mindustry/editor/MapEditorDialog.java
 @@ -32,6 +32,7 @@ import mindustry.world.blocks.environment.*;
@@ -127,20 +127,21 @@ index 5de06bed1b254d520c104f03cdf21bfab7e0af0a..e791a867451560b207ce2b8e7041a652
                      for(int j = 0; j < MapEditor.brushSizes.length; j++){
                          if(MapEditor.brushSizes[j] == editor.brushSize){
                              slider.setValue(j);
-@@ -854,6 +867,7 @@ public class MapEditorDialog extends Dialog implements Disposable{
-         });
+@@ -855,6 +868,7 @@ public class MapEditorDialog extends Dialog implements Disposable{
  
          int i = 0;
+         String search = searchText.trim().replaceAll(" +", " ").toLowerCase();
 +        int perRow = mobile ? 4 : 6 + mindustryX.VarsX.additionInventoryColumns.get();
  
          for(Block block : blocksOut){
              TextureRegion region = block.uiIcon;
-@@ -872,9 +886,7 @@ public class MapEditorDialog extends Dialog implements Disposable{
- 
-             if(i == 0) editor.drawBlock = block;
+@@ -871,9 +885,9 @@ public class MapEditorDialog extends Dialog implements Disposable{
+             button.update(() -> button.setChecked(editor.drawBlock == block));
+             blockSelection.add(button).size(50f).tooltip(block.localizedName);
  
 -            int cols = mobile ? 4 : 6;
--
++            if(i == 0) editor.drawBlock = block;
+ 
 -            if(++i % cols == 0){
 +            if(++i % perRow == 0){
                  blockSelection.row();
@@ -169,10 +170,10 @@ index 475cd5047abc4e0c74a02db3f34644ddcaa20634..531e545323ec177de4a0ae29a2986dfa
                  table.row();
              }
 diff --git a/core/src/mindustry/editor/MapView.java b/core/src/mindustry/editor/MapView.java
-index 0190b0081d933fe891aa96e922a658b84c06fc99..08cc0c9845a8df4866da6f0d6da7f22957f5d2ff 100644
+index ad15bb1de3729cdb593aa69b174b7fb9ad65ee46..be10e5f7e0f00864f5e88d569176c7086172bbe5 100644
 --- a/core/src/mindustry/editor/MapView.java
 +++ b/core/src/mindustry/editor/MapView.java
-@@ -258,6 +258,11 @@ public class MapView extends Element implements GestureListener{
+@@ -257,6 +257,11 @@ public class MapView extends Element implements GestureListener{
          if(grid){
              Draw.color(Color.gray);
              image.setBounds(centerx - sclwidth / 2, centery - sclheight / 2, sclwidth, sclheight);
@@ -184,7 +185,7 @@ index 0190b0081d933fe891aa96e922a658b84c06fc99..08cc0c9845a8df4866da6f0d6da7f229
              image.draw();
  
              Lines.stroke(2f);
-@@ -272,16 +277,27 @@ public class MapView extends Element implements GestureListener{
+@@ -271,16 +276,27 @@ public class MapView extends Element implements GestureListener{
              Lines.line(centerx - sclwidth/2f, centery, centerx + sclwidth/2f, centery);
              Lines.line(centerx, centery - sclheight/2f, centerx, centery + sclheight/2f);
  
@@ -214,7 +215,7 @@ index 0190b0081d933fe891aa96e922a658b84c06fc99..08cc0c9845a8df4866da6f0d6da7f229
  
          float scaling = zoom * Math.min(width, height) / editor.width();
  
-@@ -294,8 +310,8 @@ public class MapView extends Element implements GestureListener{
+@@ -293,8 +309,8 @@ public class MapView extends Element implements GestureListener{
                  float sx = v1.x, sy = v1.y;
                  Vec2 v2 = unproject(lastx, lasty).add(x, y);
  
@@ -225,7 +226,7 @@ index 0190b0081d933fe891aa96e922a658b84c06fc99..08cc0c9845a8df4866da6f0d6da7f229
              }
  
              if((tool.edit || (tool == EditorTool.line && !drawing)) && (!mobile || drawing)){
-@@ -303,10 +319,12 @@ public class MapView extends Element implements GestureListener{
+@@ -302,10 +318,12 @@ public class MapView extends Element implements GestureListener{
                  Vec2 v = unproject(p.x, p.y).add(x, y);
  
                  //pencil square outline

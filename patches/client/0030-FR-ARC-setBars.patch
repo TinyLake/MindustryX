@@ -11,7 +11,7 @@ Subject: [PATCH] FR: ARC setBars
  .../blocks/defense/OverdriveProjector.java    |  4 +++-
  .../world/blocks/defense/ShieldWall.java      | 11 +++++++++
  .../blocks/defense/turrets/ItemTurret.java    |  8 +++----
- .../blocks/defense/turrets/ReloadTurret.java  | 13 +++++++++++
+ .../blocks/defense/turrets/ReloadTurret.java  | 15 ++++++++++++
  .../world/blocks/defense/turrets/Turret.java  |  9 ++++++++
  .../world/blocks/heat/HeatConductor.java      |  4 ++--
  .../world/blocks/heat/HeatProducer.java       |  4 +++-
@@ -27,7 +27,7 @@ Subject: [PATCH] FR: ARC setBars
  .../world/blocks/units/Reconstructor.java     |  6 ++++-
  .../world/blocks/units/UnitAssembler.java     |  4 ++++
  .../world/blocks/units/UnitFactory.java       |  4 +++-
- 23 files changed, 129 insertions(+), 39 deletions(-)
+ 23 files changed, 131 insertions(+), 39 deletions(-)
 
 diff --git a/core/src/mindustry/entities/abilities/ShieldArcAbility.java b/core/src/mindustry/entities/abilities/ShieldArcAbility.java
 index 36c61c5c641f197f6f13fcab6e5cc0da3e7181a4..b2c0fe2c649602c9d46fff7d3fdd8ac029bde4e8 100644
@@ -50,7 +50,7 @@ index 36c61c5c641f197f6f13fcab6e5cc0da3e7181a4..b2c0fe2c649602c9d46fff7d3fdd8ac0
      }
  }
 diff --git a/core/src/mindustry/world/Block.java b/core/src/mindustry/world/Block.java
-index ddd688337f8639b635c81665e45f8008e930a7e6..a3507d85a6a1cda5abb412defa588a90d84c9d32 100644
+index de64a3983d01c6ea45fce61a2f6323c9d1f6024b..3ab9f3b9302a2e91332773c292a63709a65e92e4 100644
 --- a/core/src/mindustry/world/Block.java
 +++ b/core/src/mindustry/world/Block.java
 @@ -35,6 +35,7 @@ import mindustry.world.blocks.power.*;
@@ -231,7 +231,7 @@ index 2b560245fa9b3427170ebc046714c1db2ce737ee..6f1931ef6ef6d461b0d14a6d424e6a50
          );
      }
 diff --git a/core/src/mindustry/world/blocks/defense/turrets/ReloadTurret.java b/core/src/mindustry/world/blocks/defense/turrets/ReloadTurret.java
-index 6b5721987bc27225b574c857abd1b93726138cc9..459ccab8c40424b597b3215aac9699ea09fe1fc7 100644
+index 4ca81e9d207911d98c105acf14a75463bc0a9207..fad9b5eed6fe9b641d1b8802a7111af648582c47 100644
 --- a/core/src/mindustry/world/blocks/defense/turrets/ReloadTurret.java
 +++ b/core/src/mindustry/world/blocks/defense/turrets/ReloadTurret.java
 @@ -1,6 +1,10 @@
@@ -245,10 +245,13 @@ index 6b5721987bc27225b574c857abd1b93726138cc9..459ccab8c40424b597b3215aac9699ea
  import mindustry.world.consumers.*;
  import mindustry.world.meta.*;
  
-@@ -49,5 +53,14 @@ public class ReloadTurret extends BaseTurret{
-         protected boolean canReload(){
-             return reloadCounter < reload;
+@@ -45,5 +49,16 @@ public class ReloadTurret extends BaseTurret{
+         protected float baseReloadSpeed(){
+             return efficiency;
          }
++        protected boolean canReload(){
++            return reloadCounter < reload;
++        }
 +
 +        @Override
 +        public void displayBars(Table bars){
@@ -257,11 +260,10 @@ index 6b5721987bc27225b574c857abd1b93726138cc9..459ccab8c40424b597b3215aac9699ea
 +            bars.add(new Bar(() -> Core.bundle.format("bar.reloadDetail", (int)(reloadCounter * 100 / reload)), () -> Pal.ammo, () -> reloadCounter / reload));
 +            bars.row();
 +        }
-+
      }
  }
 diff --git a/core/src/mindustry/world/blocks/defense/turrets/Turret.java b/core/src/mindustry/world/blocks/defense/turrets/Turret.java
-index 393c791098d68f61efad75d2af05571b40445de4..b38f7560fa04aeb0b416d285e4da43ee3c6e3250 100644
+index c1515b3e380a16d9bcb58dd1b359eac87d246056..83cbad1c568e8654e9a99e9ecc51f7977d38753a 100644
 --- a/core/src/mindustry/world/blocks/defense/turrets/Turret.java
 +++ b/core/src/mindustry/world/blocks/defense/turrets/Turret.java
 @@ -7,6 +7,7 @@ import arc.graphics.*;
@@ -272,7 +274,7 @@ index 393c791098d68f61efad75d2af05571b40445de4..b38f7560fa04aeb0b416d285e4da43ee
  import arc.struct.*;
  import arc.util.*;
  import arc.util.io.*;
-@@ -856,6 +857,14 @@ public class Turret extends ReloadTurret{
+@@ -861,6 +862,14 @@ public class Turret extends ReloadTurret{
              rotation = oldRot;
              reloadCounter = oldReload;
          }
@@ -288,7 +290,7 @@ index 393c791098d68f61efad75d2af05571b40445de4..b38f7560fa04aeb0b416d285e4da43ee
  
      public static class BulletEntry{
 diff --git a/core/src/mindustry/world/blocks/heat/HeatConductor.java b/core/src/mindustry/world/blocks/heat/HeatConductor.java
-index 64c8980b896d8e8faa54834715ff95334771949b..b5d95a2ddb26b77050c8bc2dc1479ac588679e8c 100644
+index 0240720fc4a8154b20228abf051751d0e30cf63a..d0b5cad4745d3df2b231ca5090460e81ee5abb5c 100644
 --- a/core/src/mindustry/world/blocks/heat/HeatConductor.java
 +++ b/core/src/mindustry/world/blocks/heat/HeatConductor.java
 @@ -12,6 +12,7 @@ import mindustry.logic.*;
@@ -299,7 +301,7 @@ index 64c8980b896d8e8faa54834715ff95334771949b..b5d95a2ddb26b77050c8bc2dc1479ac5
  
  public class HeatConductor extends Block{
      public float visualMaxHeat = 15f;
-@@ -29,8 +30,7 @@ public class HeatConductor extends Block{
+@@ -30,8 +31,7 @@ public class HeatConductor extends Block{
      public void setBars(){
          super.setBars();
  
