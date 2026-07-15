@@ -100,7 +100,7 @@ index 6f689550d4fd7e6541ad7bd78097870b7c61c40a..c72dd992945c8fbebee7a3950246b9f5
      private Seq<Team> activeTeams = new Seq<>(Team.class);
      /** Maps teams to a map of flagged tiles by flag. */
 diff --git a/core/src/mindustry/content/Blocks.java b/core/src/mindustry/content/Blocks.java
-index bd60d035505348932facdf3e46e29fab2ed359d5..e765783bff91f96e5171bc3cd5ad90a3a8707fde 100644
+index 27f6a687b621e9e1e14cd6340c7348d8c8e66414..7636d0504a66610086800b833ae0b05e24bec275 100644
 --- a/core/src/mindustry/content/Blocks.java
 +++ b/core/src/mindustry/content/Blocks.java
 @@ -2110,6 +2110,7 @@ public class Blocks{
@@ -132,7 +132,7 @@ index 5e34e429ff04a9228b67c314c25128e277dcd6b8..33f6f8bca7473ace9951ca2a7247da67
  
          dynamic = new StatusEffect("dynamic"){{
 diff --git a/core/src/mindustry/core/Control.java b/core/src/mindustry/core/Control.java
-index 557351b094ceb0604f83ea486280a74565d184ed..7e7445ecae21abd00683cab2efaff471ddafb6da 100644
+index 498fea5580593b0f205ce1988d7b173f82e918c0..8b2b01e1d7f74d26c836dd8aba3e9a89173b3bf1 100644
 --- a/core/src/mindustry/core/Control.java
 +++ b/core/src/mindustry/core/Control.java
 @@ -639,7 +639,8 @@ public class Control implements ApplicationListener, Loadable{

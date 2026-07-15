@@ -121,7 +121,7 @@ index 57d8b4ac27635c65154d9c1863001f3df84109d3..890d9444e6c670207929cd63f1b624c3
          indexer.eachBlock(player.team(), x * tilesize + offset, y * tilesize + offset, range, other -> other.block.canOverdrive, other -> Drawf.selected(other, Tmp.c1.set(baseColor).a(Mathf.absin(4f, 1f))));
      }
 diff --git a/core/src/mindustry/world/blocks/defense/turrets/Turret.java b/core/src/mindustry/world/blocks/defense/turrets/Turret.java
-index b38f7560fa04aeb0b416d285e4da43ee3c6e3250..e34eabaf4d091179f0c873ae5b4e9784ba8fe4df 100644
+index 83cbad1c568e8654e9a99e9ecc51f7977d38753a..b6ebb722a42a067de5d715dffc4ddf5bd4a82f85 100644
 --- a/core/src/mindustry/world/blocks/defense/turrets/Turret.java
 +++ b/core/src/mindustry/world/blocks/defense/turrets/Turret.java
 @@ -31,6 +31,7 @@ import mindustry.world.*;

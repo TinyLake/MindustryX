@@ -62,7 +62,7 @@ index 5e93d25abd27903e3bd8246b8e9498f268d3a94b..843f8dbe00d5be3f8ed8e9b6bb77592b
  
      @Override
 diff --git a/core/src/mindustry/world/blocks/defense/turrets/PointDefenseTurret.java b/core/src/mindustry/world/blocks/defense/turrets/PointDefenseTurret.java
-index a5dd001dd963a85cdede83c8d7c0985dcfca9e02..f66cb6152d914a568eb3bd52150da8dd6449b1f0 100644
+index 786854125ca27c2f52d097eeb2d8cf1935d614b5..827c236af3342220005a32e40aa5c32680aa141e 100644
 --- a/core/src/mindustry/world/blocks/defense/turrets/PointDefenseTurret.java
 +++ b/core/src/mindustry/world/blocks/defense/turrets/PointDefenseTurret.java
 @@ -12,6 +12,7 @@ import mindustry.content.*;

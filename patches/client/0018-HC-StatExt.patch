@@ -95,7 +95,7 @@ index 4dd107300c6c350343de31f4775281632a724758..21da77ef9bc1e142dca8997e0c41f43c
          if(damage < 0) stats.add(Stat.healing, -damage * 60f, StatUnit.perSecond);
  
 diff --git a/core/src/mindustry/type/UnitType.java b/core/src/mindustry/type/UnitType.java
-index e760b55087e62a2a47b4fdebe3e6d816b8bf7b19..2b09f3f4f9fb4c4d2f013592bc3c78a8252e29b6 100644
+index 83512435d95dafeaec815b9fd3623d7a3b5db708..99332e2331aa0ad70d3ef88bd26d6b998d71a691 100644
 --- a/core/src/mindustry/type/UnitType.java
 +++ b/core/src/mindustry/type/UnitType.java
 @@ -36,6 +36,7 @@ import mindustry.world.blocks.payloads.*;
@@ -191,7 +191,7 @@ index 04723af66fdc081baf0c876f82091046c190d0eb..628a3026f563edaa238012b9100793c0
              t.row();
              t.add("[lightgray]" + Stat.inaccuracy.localized() + ": [white]" + (int)inaccuracy + " " + StatUnit.degrees.localized());
 diff --git a/core/src/mindustry/world/Block.java b/core/src/mindustry/world/Block.java
-index 50ee93dcc3e01f91d43b5c7df90e4d94229bb933..ddd688337f8639b635c81665e45f8008e930a7e6 100644
+index fb25f54dc9ea8343be30b4a3741a138bdef21138..de64a3983d01c6ea45fce61a2f6323c9d1f6024b 100644
 --- a/core/src/mindustry/world/Block.java
 +++ b/core/src/mindustry/world/Block.java
 @@ -34,6 +34,7 @@ import mindustry.world.blocks.environment.*;

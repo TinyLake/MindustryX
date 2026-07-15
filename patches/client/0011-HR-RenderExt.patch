@@ -32,7 +32,7 @@ index 389684d7bb658688334d062df2cd3d9d7685ecf9..f25585b53208318e2b09c227e94915bf
          if(settings.getBool("drawhitboxes")){
              DebugCollisionRenderer.draw();
 diff --git a/core/src/mindustry/graphics/BlockRenderer.java b/core/src/mindustry/graphics/BlockRenderer.java
-index 71a14625763ba9069026e2f9e550eeb3e662cd15..6be6990e8bb84aeead0db7866ce58e87c0d7d0b2 100644
+index e645413bd928ebab24464ce5f6c1674ed27401da..a30f261320e2b4ea785b76848fc574e69d291b03 100644
 --- a/core/src/mindustry/graphics/BlockRenderer.java
 +++ b/core/src/mindustry/graphics/BlockRenderer.java
 @@ -19,6 +19,7 @@ import mindustry.world.*;
@@ -43,7 +43,7 @@ index 71a14625763ba9069026e2f9e550eeb3e662cd15..6be6990e8bb84aeead0db7866ce58e87
  
  import java.util.*;
  
-@@ -723,7 +724,7 @@ public class BlockRenderer{
+@@ -724,7 +725,7 @@ public class BlockRenderer{
  
              if(block != Blocks.air && (visible || build.wasVisible)){
                  SpriteBatch.totalDrawCalls = 0;
@@ -74,10 +74,10 @@ index 0795b6a38f43c33ae3fae877f1ae54dd79ea0949..9d1f4b1ebf944b4dac80b78954ff0719
                     build.drawDisabled();
                  }
 diff --git a/core/src/mindustry/input/InputHandler.java b/core/src/mindustry/input/InputHandler.java
-index 5bc3c64a44247b45c77020bd8ba4a2bfddbc8ea8..b4b3ce4c5e021f9100bf59400fe9ea137b2b31c7 100644
+index a9d818c129b9b3e817d89c81c0ba0ac360d7dcdd..16da87606894814e40b8eb262f2d8fd4560250a9 100644
 --- a/core/src/mindustry/input/InputHandler.java
 +++ b/core/src/mindustry/input/InputHandler.java
-@@ -361,6 +361,11 @@ public abstract class InputHandler implements InputProcessor, GestureListener{
+@@ -360,6 +360,11 @@ public abstract class InputHandler implements InputProcessor, GestureListener{
                          ai.group = null;
                      }
  

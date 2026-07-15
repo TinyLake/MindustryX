@@ -58,7 +58,7 @@ index 3d948c538ea91437be30224408350cf6a29aedbd..341ca42edb3cdadba7cfe6fbb8a9b5e8
  
      public void create(float x, float y, float rotation, Color color, Object data){
 diff --git a/core/src/mindustry/entities/comp/BuildingComp.java b/core/src/mindustry/entities/comp/BuildingComp.java
-index a1c60506ec0f6e162f79fea61463438728afac38..b061bc061a32fa92e3f9bd0051cb5fc4378b8bbb 100644
+index bc69046b3c2d9deebd3fbb1681acb3e0f47c56c9..68a0ed31d96ed437725349e891cec12f29b33871 100644
 --- a/core/src/mindustry/entities/comp/BuildingComp.java
 +++ b/core/src/mindustry/entities/comp/BuildingComp.java
 @@ -2275,7 +2275,10 @@ abstract class BuildingComp implements Posc, Teamc, Healthc, Buildingc, Timerc,
@@ -73,7 +73,7 @@ index a1c60506ec0f6e162f79fea61463438728afac38..b061bc061a32fa92e3f9bd0051cb5fc4
      }
  
 diff --git a/core/src/mindustry/graphics/BlockRenderer.java b/core/src/mindustry/graphics/BlockRenderer.java
-index 6be6990e8bb84aeead0db7866ce58e87c0d7d0b2..4891a81b790296258ac86ff4bfeb789e6fb92a6f 100644
+index a30f261320e2b4ea785b76848fc574e69d291b03..fca9ed86be3906343e528e08d37e4bd002638604 100644
 --- a/core/src/mindustry/graphics/BlockRenderer.java
 +++ b/core/src/mindustry/graphics/BlockRenderer.java
 @@ -537,7 +537,7 @@ public class BlockRenderer{
