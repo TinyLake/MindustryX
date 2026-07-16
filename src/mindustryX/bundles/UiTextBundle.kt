@@ -156,4 +156,10 @@ interface UiTextBundle {
     fun kotlinModName(): String = "Kotlin语言标准库"
     fun confirmDeleteFile(filename: String): String = "确认删除文件?\n$filename"
     fun fileNotFound(filename: String): String = "文件不存在：$filename"
+
+    fun sdlVersionName(): String = "SDL 后端"
+    fun sdlVersionDescription(): String = "在 SDL2 和 SDL3 后端之间切换。需要重启游戏。"
+    fun sdlVersionSdl2(): String = "SDL 2"
+    fun sdlVersionSdl3(): String = "SDL 3"
+    fun sdlVersionActive(sdl: String): String = "当前 SDL: $sdl"
 }
