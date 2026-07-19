@@ -4,11 +4,11 @@ Date: Sat, 25 May 2024 20:34:18 +0800
 Subject: [PATCH] FR(RenderExt) blockRenderLevel
 
 ---
- core/src/mindustry/core/Renderer.java              | 6 ++++--
- core/src/mindustry/entities/Effect.java            | 5 ++++-
- core/src/mindustry/entities/comp/BuildingComp.java | 3 +++
- core/src/mindustry/graphics/BlockRenderer.java     | 2 +-
- 4 files changed, 12 insertions(+), 4 deletions(-)
+ core/src/mindustry/core/Renderer.java              |  6 ++++--
+ core/src/mindustry/entities/Effect.java            |  5 ++++-
+ core/src/mindustry/entities/comp/BuildingComp.java |  3 +++
+ core/src/mindustry/graphics/BlockRenderer.java     | 12 ++++++++----
+ 4 files changed, 19 insertions(+), 7 deletions(-)
 
 diff --git a/core/src/mindustry/core/Renderer.java b/core/src/mindustry/core/Renderer.java
 index a74d7e7db9dc1d629fc76365c775ec0a6bbb6b08..7174660ffad8e111b81807a646f75fde5bb3ee4d 100644
@@ -73,15 +73,53 @@ index bc69046b3c2d9deebd3fbb1681acb3e0f47c56c9..68a0ed31d96ed437725349e891cec12f
      }
  
 diff --git a/core/src/mindustry/graphics/BlockRenderer.java b/core/src/mindustry/graphics/BlockRenderer.java
-index a30f261320e2b4ea785b76848fc574e69d291b03..fca9ed86be3906343e528e08d37e4bd002638604 100644
+index f27e4b5e2c22b69967f73f9b4fa940c643804d76..b1d54f21e83124303ba16dee8a3f975d1654a12d 100644
 --- a/core/src/mindustry/graphics/BlockRenderer.java
 +++ b/core/src/mindustry/graphics/BlockRenderer.java
-@@ -537,7 +537,7 @@ public class BlockRenderer{
+@@ -50,6 +50,7 @@ public class BlockRenderer{
+     private boolean hadMapLimit;
+     private int lastCamX, lastCamY, lastRangeX, lastRangeY;
+     private Team lastTeam;
++    private int blockRenderLevel;
+     private float brokenFade = 0f;
+     private FrameBuffer shadows = new FrameBuffer();
+     private FrameBuffer dark = new FrameBuffer();
+@@ -537,7 +538,7 @@ public class BlockRenderer{
          }
  
  
 -        if(avgx == lastCamX && avgy == lastCamY && lastRangeX == rangex && lastRangeY == rangey && lastTeam == player.team()){
-+        if(RenderExt.blockRenderLevel <= 0 || avgx == lastCamX && avgy == lastCamY && lastRangeX == rangex && lastRangeY == rangey && lastTeam == player.team()){
++        if(RenderExt.blockRenderLevel <= 0 || avgx == lastCamX && avgy == lastCamY && lastRangeX == rangex && lastRangeY == rangey && lastTeam == player.team() && blockRenderLevel == RenderExt.blockRenderLevel){
              return;
          }
+ 
+@@ -570,7 +571,7 @@ public class BlockRenderer{
+             var build = tile.build;
+             var block = tile.block();
+ 
+-            if(block.drawCached){
++            if(block.drawCached && RenderExt.blockRenderLevel > 1){
+                 int coords = Point2.pack(tile.x / chunkSize, tile.y / chunkSize);
+                 if(chunksToDrawSet.add(coords)){
+                     chunksToDraw.add(coords);
+@@ -642,6 +643,7 @@ public class BlockRenderer{
+         lastCamY = avgy;
+         lastRangeX = rangex;
+         lastRangeY = rangey;
++        blockRenderLevel = RenderExt.blockRenderLevel;
+     }
+ 
+     //debug method for drawing block bounds
+@@ -725,8 +727,10 @@ public class BlockRenderer{
+ 
+             if(block != Blocks.air && (visible || build.wasVisible)){
+                 SpriteBatch.totalDrawCalls = 0;
+-                block.drawBase(tile);
+-                RenderExt.drawBlockOverlays(tile, block, build);
++                if(RenderExt.blockRenderLevel >=2){
++                    block.drawBase(tile);
++                    RenderExt.drawBlockOverlays(tile, block, build);
++                }
+                 Draw.reset();
+                 Draw.z(Layer.block);
  

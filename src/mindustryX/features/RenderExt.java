@@ -188,9 +188,8 @@ public class RenderExt{
         }
     }
 
-    public static void onBlockDraw(Tile tile, Block block, @Nullable Building build){
-        if(blockRenderLevel < 2) return;
-        block.drawBase(tile);
+    public static void drawBlockOverlays(Tile tile, Block block, @Nullable Building build){
+        if(blockRenderLevel < 2 || build == null) return;
         if(displayAllMessage && build instanceof MessageBuild){
             Draw.z(Layer.overlayUI - 0.1f);
             build.drawSelect();
@@ -203,7 +202,7 @@ public class RenderExt{
             Draw.z(Layer.effect);
             drawMassDriverLine(b);
         }
-        if(build != null && drawBars){
+        if(drawBars){
             Draw.z(Layer.turret + 4f);
             drawBars(build);
         }
