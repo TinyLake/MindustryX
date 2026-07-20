@@ -68,7 +68,7 @@ index 2ecc5c547cac9927f196d598d50669647d4b113b..ec9108d5df71963ee24b90a88ad5ef25
          }else{
              return keyboard.isTapped(axis.min) ? -1 : keyboard.isTapped(axis.max) ? 1 : 0;
 diff --git a/arc-core/src/arc/input/KeyBind.java b/arc-core/src/arc/input/KeyBind.java
-index e62d626a07bd61ada7fee19547355f5ee36cc7b9..e37199540fdc1538dafadc03ba4f927d60928d37 100644
+index 6f72b1260e1c1752f2d12252d5c32a94d0d1bbe1..35448be7641647314d67ac5afaefbebbc5246bf5 100644
 --- a/arc-core/src/arc/input/KeyBind.java
 +++ b/arc-core/src/arc/input/KeyBind.java
 @@ -3,10 +3,15 @@ package arc.input;
@@ -125,7 +125,7 @@ index e62d626a07bd61ada7fee19547355f5ee36cc7b9..e37199540fdc1538dafadc03ba4f927d
              }else{
                  value = new Axis(((Axis)defaultValue).min, ((Axis)defaultValue).max);
              }
-@@ -103,7 +112,7 @@ public class KeyBind{
+@@ -112,7 +121,7 @@ public class KeyBind{
      public boolean isDefault(){
          if(defaultValue instanceof Axis){
              if(((Axis)defaultValue).min == null){
@@ -134,8 +134,8 @@ index e62d626a07bd61ada7fee19547355f5ee36cc7b9..e37199540fdc1538dafadc03ba4f927d
              }else{
                  return ((Axis)defaultValue).max == value.max && ((Axis)defaultValue).min == value.min;
              }
-@@ -112,21 +121,37 @@ public class KeyBind{
-         }
+@@ -125,21 +134,37 @@ public class KeyBind{
+         return value.key == KeyCode.unset;
      }
  
 +    public static int modifierBit(KeyCode key){
@@ -173,7 +173,7 @@ index e62d626a07bd61ada7fee19547355f5ee36cc7b9..e37199540fdc1538dafadc03ba4f927d
          }
  
          /** Constructor for keyboards/mice, or multiple buttons on a controller. */
-@@ -134,6 +159,29 @@ public class KeyBind{
+@@ -147,6 +172,29 @@ public class KeyBind{
              this.min = min;
              this.max = max;
              this.key = null;
@@ -203,7 +203,7 @@ index e62d626a07bd61ada7fee19547355f5ee36cc7b9..e37199540fdc1538dafadc03ba4f927d
          }
  
          @Override
-@@ -142,7 +190,7 @@ public class KeyBind{
+@@ -155,7 +203,7 @@ public class KeyBind{
              if(o == null || getClass() != o.getClass()) return false;
  
              Axis axis = (Axis)o;

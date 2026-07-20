@@ -36,7 +36,7 @@ index 21b5e739a4a68cdbfba44e1d2d4f7c39c3f84d61..51ba0cfa93279f8643c192ce774e502e
          }
          Tile tile = world.tile(place.x, place.y);
 diff --git a/core/src/mindustry/game/Schematics.java b/core/src/mindustry/game/Schematics.java
-index d76c6296427dbc5d8754801e8cecba81fc12569f..8c8fc5c220ec9ad241991a2da4b5995fee5393bc 100644
+index 815c6032b2ac90dd25ad13edcde398639c37b14f..6a4574b9c624055a0ddd6b1ca45f01331754eb68 100644
 --- a/core/src/mindustry/game/Schematics.java
 +++ b/core/src/mindustry/game/Schematics.java
 @@ -36,6 +36,7 @@ import mindustry.world.blocks.sandbox.*;
@@ -47,7 +47,7 @@ index d76c6296427dbc5d8754801e8cecba81fc12569f..8c8fc5c220ec9ad241991a2da4b5995f
  
  import java.io.*;
  import java.util.zip.*;
-@@ -288,7 +289,7 @@ public class Schematics implements Loadable{
+@@ -300,7 +301,7 @@ public class Schematics implements Loadable{
      /** Creates an array of build plans from a schematic's data, centered on the provided x,y coordinates. */
      public Seq<BuildPlan> toPlans(Schematic schem, int x, int y, boolean checkHidden){
          return schem.tiles.map(t -> new BuildPlan(t.x + x - schem.width/2, t.y + y - schem.height/2, t.rotation, t.block, t.config))
@@ -56,7 +56,7 @@ index d76c6296427dbc5d8754801e8cecba81fc12569f..8c8fc5c220ec9ad241991a2da4b5995f
      }
  
      /** @return all the valid loadouts for a specific core type. */
-@@ -379,10 +380,10 @@ public class Schematics implements Loadable{
+@@ -391,10 +392,10 @@ public class Schematics implements Loadable{
      public Schematic create(int x, int y, int x2, int y2){
          Team team = headless ? null : Vars.player.team();
          NormalizeResult result = Placement.normalizeArea(x, y, x2, y2, 0, false, maxSchematicSize);
@@ -71,7 +71,7 @@ index d76c6296427dbc5d8754801e8cecba81fc12569f..8c8fc5c220ec9ad241991a2da4b5995f
  
          int ox = x, oy = y, ox2 = x2, oy2 = y2;
  
-@@ -409,7 +410,7 @@ public class Schematics implements Loadable{
+@@ -421,7 +422,7 @@ public class Schematics implements Loadable{
              }
          }
  
@@ -80,7 +80,7 @@ index d76c6296427dbc5d8754801e8cecba81fc12569f..8c8fc5c220ec9ad241991a2da4b5995f
              x = minx;
              y = miny;
              x2 = maxx;
-@@ -418,6 +419,20 @@ public class Schematics implements Loadable{
+@@ -430,6 +431,20 @@ public class Schematics implements Loadable{
              return new Schematic(new Seq<>(), new StringMap(), 1, 1);
          }
  
@@ -101,7 +101,7 @@ index d76c6296427dbc5d8754801e8cecba81fc12569f..8c8fc5c220ec9ad241991a2da4b5995f
          int width = x2 - x + 1, height = y2 - y + 1;
          int offsetX = -x, offsetY = -y;
          IntSet counted = new IntSet();
-@@ -436,6 +451,16 @@ public class Schematics implements Loadable{
+@@ -448,6 +463,16 @@ public class Schematics implements Loadable{
                  }
              }
          }

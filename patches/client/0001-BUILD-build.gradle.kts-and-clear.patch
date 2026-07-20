@@ -20,9 +20,9 @@ way-zer <himc.wicp@gmail.com> on 2024/6/9
  ios/build.gradle                              |   2 +-
  server/build.gradle                           |  45 +--
  settings.gradle                               |  11 +-
- tools/build.gradle                            |  63 ++--
+ tools/build.gradle                            |  57 ++-
  tools/src/mindustry/tools/Generators.java     |   2 +-
- 16 files changed, 457 insertions(+), 705 deletions(-)
+ 16 files changed, 454 insertions(+), 702 deletions(-)
  create mode 100644 annotations/src/main/java/com/github/bsideup/jabel/Desugar.java
  create mode 100644 annotations/src/main/resources/META-INF/services/javax.annotation.processing.Processor
  delete mode 100644 core/build.gradle
@@ -1585,7 +1585,7 @@ index 7577e3bf7a9f09fb8cfac2152625296c4e0bcfcc..ac8c7b7e987dba629f2dad6c16ccaf30
  def hasSdk = System.getenv("ANDROID_HOME") != null
  
 diff --git a/tools/build.gradle b/tools/build.gradle
-index 7ea0f843ea95af89df0da74f6a3bc4e007077914..0c8d38ad9fe673501d60a9f916b0ec6dce182e7d 100644
+index dc1eef79307c9625a3d4d0004984e83294e9df88..5f73488519001c2391454f8b7f1dfa1564563920 100644
 --- a/tools/build.gradle
 +++ b/tools/build.gradle
 @@ -1,3 +1,13 @@
@@ -1601,35 +1601,8 @@ index 7ea0f843ea95af89df0da74f6a3bc4e007077914..0c8d38ad9fe673501d60a9f916b0ec6d
 +
  sourceSets.main.java.srcDirs = ["src/"]
  
- import arc.files.Fi
-@@ -24,7 +34,7 @@ def genFolder = "../core/assets-raw/sprites_out/generated/"
- def enableAA = true
  
- @groovy.transform.CompileStatic
--static int getRGB(Pixmap image, int ix, int iy) {
-+static int getRGB(Pixmap image, int ix, int iy){
-     return image.getRaw(Math.max(Math.min(ix, image.width - 1), 0), Math.max(Math.min(iy, image.height - 1), 0))
- }
- 
-@@ -72,7 +82,7 @@ static void antialias(File file){
-                 suma.a(suma.a + color.a)
-             }
- 
--            float fm = suma.a <= 0.001f ? 0f : (float)(1f / suma.a)
-+            float fm = suma.a <= 0.001f ? 0f : (float) (1f / suma.a)
-             suma.mul(fm, fm, fm, fm)
- 
-             float total = 0
-@@ -89,7 +99,7 @@ static void antialias(File file){
-                 total += 1f
-             }
- 
--            fm = (float)(1f / total)
-+            fm = (float) (1f / total)
-             sum.mul(fm, fm, fm, fm)
-             out.setRaw(x, y, sum.rgba8888())
-             sum.set(0)
-@@ -120,9 +130,19 @@ tasks.register('tileImages'){
+@@ -41,9 +51,19 @@ tasks.register('tileImages'){
      }
  }
  
@@ -1652,7 +1625,7 @@ index 7ea0f843ea95af89df0da74f6a3bc4e007077914..0c8d38ad9fe673501d60a9f916b0ec6d
      doLast{
          //cleanup old sprites
          delete{
-@@ -139,21 +159,19 @@ tasks.register('pack'){
+@@ -60,21 +80,19 @@ tasks.register('pack'){
  
          //run generation task; generate all needed sprites
          file(genFolder).mkdirs()
@@ -1678,7 +1651,7 @@ index 7ea0f843ea95af89df0da74f6a3bc4e007077914..0c8d38ad9fe673501d60a9f916b0ec6d
  
          if(enableAA){
              ExecutorService executor = Executors.newFixedThreadPool(OS.cores)
-@@ -176,21 +194,24 @@ tasks.register('pack'){
+@@ -97,21 +115,24 @@ tasks.register('pack'){
          println("\n\nPacking normal 4096 sprites...\n\n")
  
          //pack normal sprites

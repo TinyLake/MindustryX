@@ -31,10 +31,10 @@ Content-Transfer-Encoding: 8bit
  20 files changed, 84 insertions(+), 56 deletions(-)
 
 diff --git a/core/src/mindustry/ClientLauncher.java b/core/src/mindustry/ClientLauncher.java
-index c24f36cad45a2c411f9eddadfe4d3b19079fdd22..79f6b803c4d086feec057414eddd5f38923bdc06 100644
+index a66d030178b2976a546c0eadd79bb77782204bce..3c5a2f8f084a1bdecfd5fac86ee37e81355e8c35 100644
 --- a/core/src/mindustry/ClientLauncher.java
 +++ b/core/src/mindustry/ClientLauncher.java
-@@ -43,6 +43,10 @@ public abstract class ClientLauncher extends ApplicationCore implements Platform
+@@ -40,6 +40,10 @@ public abstract class ClientLauncher extends ApplicationCore implements Platform
      @Override
      public void setup(){
          String dataDir = System.getProperty("mindustry.data.dir", OS.env("MINDUSTRY_DATA_DIR"));
@@ -45,7 +45,7 @@ index c24f36cad45a2c411f9eddadfe4d3b19079fdd22..79f6b803c4d086feec057414eddd5f38
          if(dataDir != null){
              Core.settings.setDataDirectory(files.absolute(dataDir));
          }
-@@ -262,10 +266,14 @@ public abstract class ClientLauncher extends ApplicationCore implements Platform
+@@ -261,10 +265,14 @@ public abstract class ClientLauncher extends ApplicationCore implements Platform
          }
  
          if(limitFps){
@@ -199,7 +199,7 @@ index f629548331217db2131cc231e850ad259d567565..490a9d7a0b7dbf531311bef15e977910
  
      public static int roundAmount(int number){
 diff --git a/core/src/mindustry/game/Schematics.java b/core/src/mindustry/game/Schematics.java
-index f7e2193588713d08a30c4b9122dbe2469f4a520e..d76c6296427dbc5d8754801e8cecba81fc12569f 100644
+index b5ddcf8b3ece1b739c412d7e30954568a71b4ebe..815c6032b2ac90dd25ad13edcde398639c37b14f 100644
 --- a/core/src/mindustry/game/Schematics.java
 +++ b/core/src/mindustry/game/Schematics.java
 @@ -101,7 +101,9 @@ public class Schematics implements Loadable{
@@ -213,7 +213,7 @@ index f7e2193588713d08a30c4b9122dbe2469f4a520e..d76c6296427dbc5d8754801e8cecba81
          }
      }
  
-@@ -554,7 +556,7 @@ public class Schematics implements Loadable{
+@@ -581,7 +583,7 @@ public class Schematics implements Loadable{
          try(DataInputStream stream = new DataInputStream(new InflaterInputStream(input))){
              short width = stream.readShort(), height = stream.readShort();
  
@@ -222,7 +222,7 @@ index f7e2193588713d08a30c4b9122dbe2469f4a520e..d76c6296427dbc5d8754801e8cecba81
  
              StringMap map = new StringMap();
              int tags = stream.readUnsignedByte();
-@@ -595,7 +597,7 @@ public class Schematics implements Loadable{
+@@ -622,7 +624,7 @@ public class Schematics implements Loadable{
  
              int total = stream.readInt();
  
@@ -422,10 +422,10 @@ index b807e2195df1162a09d74fde962f195bf57bc92c..cb241dd067e90851ca290d1035600eb5
          team("/t"),
          admin("/a", player::admin)
 diff --git a/core/src/mindustry/ui/fragments/PlacementFragment.java b/core/src/mindustry/ui/fragments/PlacementFragment.java
-index b6d1d695a3f66c834e5811de54c481b72373b6a5..dfa92ea73d4d58d6d8346ce9e8686e06f6b5902a 100644
+index 000060be035ba04d92178dea5d3711b2f18e008e..df34bb8d7acb2e2baded3c443020d1b82498a258 100644
 --- a/core/src/mindustry/ui/fragments/PlacementFragment.java
 +++ b/core/src/mindustry/ui/fragments/PlacementFragment.java
-@@ -776,10 +776,8 @@ public class PlacementFragment{
+@@ -788,10 +788,8 @@ public class PlacementFragment{
  
      /** @return the thing being hovered over. */
      public @Nullable Displayable hovered(){

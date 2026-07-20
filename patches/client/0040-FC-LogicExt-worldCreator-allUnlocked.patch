@@ -17,7 +17,7 @@ Content-Transfer-Encoding: 8bit
  6 files changed, 30 insertions(+), 8 deletions(-)
 
 diff --git a/core/src/mindustry/ctype/UnlockableContent.java b/core/src/mindustry/ctype/UnlockableContent.java
-index efa07717d02782b7405a5be6e87c44af6cd96364..ceaeed0996521beb74452d14c40b4169d83b0e9d 100644
+index 620fad3a69d50db94a87076142e6637cfe3d88dc..5f57651de873b7a8b06bd41e5efe0827fac812e0 100644
 --- a/core/src/mindustry/ctype/UnlockableContent.java
 +++ b/core/src/mindustry/ctype/UnlockableContent.java
 @@ -18,6 +18,7 @@ import mindustry.mod.*;
@@ -28,7 +28,7 @@ index efa07717d02782b7405a5be6e87c44af6cd96364..ceaeed0996521beb74452d14c40b4169
  
  import static mindustry.Vars.*;
  
-@@ -259,7 +260,7 @@ public abstract class UnlockableContent extends MappableContent{
+@@ -263,7 +264,7 @@ public abstract class UnlockableContent extends MappableContent{
      }
  
      public boolean unlockedNowHost(){
@@ -37,7 +37,7 @@ index efa07717d02782b7405a5be6e87c44af6cd96364..ceaeed0996521beb74452d14c40b4169
      }
  
      /** @return in multiplayer, whether this is unlocked for the host player, otherwise, whether it is unlocked for the local player (same as unlocked()) */
-@@ -271,7 +272,7 @@ public abstract class UnlockableContent extends MappableContent{
+@@ -275,7 +276,7 @@ public abstract class UnlockableContent extends MappableContent{
  
      /** @return whether this content is unlocked, or the player is in a custom (non-campaign) game. */
      public boolean unlockedNow(){
@@ -80,7 +80,7 @@ index 23e4d12cebf578dac6aea18f0e8d4ea7bc6cc7d8..81a86b8676a990d130ba7d1a268e1bfc
      }
  }
 diff --git a/core/src/mindustry/ui/fragments/PlacementFragment.java b/core/src/mindustry/ui/fragments/PlacementFragment.java
-index dfa92ea73d4d58d6d8346ce9e8686e06f6b5902a..df0464d16d57bed5ef1929b5829ff0564d704c42 100644
+index df34bb8d7acb2e2baded3c443020d1b82498a258..e16a1ae7722573b06ddd0e4e1daf9a176158bff1 100644
 --- a/core/src/mindustry/ui/fragments/PlacementFragment.java
 +++ b/core/src/mindustry/ui/fragments/PlacementFragment.java
 @@ -27,8 +27,10 @@ import mindustry.input.*;
@@ -113,7 +113,7 @@ index dfa92ea73d4d58d6d8346ce9e8686e06f6b5902a..df0464d16d57bed5ef1929b5829ff056
                          if(index++ % rowWidth == 0){
                              blockTable.row();
                          }
-@@ -765,7 +772,7 @@ public class PlacementFragment{
+@@ -777,7 +784,7 @@ public class PlacementFragment{
      }
  
      boolean unlocked(Block block){
@@ -123,7 +123,7 @@ index dfa92ea73d4d58d6d8346ce9e8686e06f6b5902a..df0464d16d57bed5ef1929b5829ff056
      }
  
 diff --git a/core/src/mindustry/world/Block.java b/core/src/mindustry/world/Block.java
-index 3ab9f3b9302a2e91332773c292a63709a65e92e4..abd4a5e48ce4de39b45effb465b68dc1243a7205 100644
+index be0475c49e0d69d93196ac5da56b8d986c39498d..f3099a6968de78a1963e34d4d92ff688b8b249e4 100644
 --- a/core/src/mindustry/world/Block.java
 +++ b/core/src/mindustry/world/Block.java
 @@ -1027,11 +1027,11 @@ public class Block extends UnlockableContent implements Senseable{
@@ -141,7 +141,7 @@ index 3ab9f3b9302a2e91332773c292a63709a65e92e4..abd4a5e48ce4de39b45effb465b68dc1
  
      @Override
 diff --git a/core/src/mindustry/world/Build.java b/core/src/mindustry/world/Build.java
-index d883b6c00bb2beba1d3f957168bd65d85cd4f9a1..c0951480531268e91a50065552b1e06b51395760 100644
+index 6d99b4e48a2e4d84ab4142c50acca305aef2bbde..871547d7f5023c6b71cf03fafa125e36f848aea5 100644
 --- a/core/src/mindustry/world/Build.java
 +++ b/core/src/mindustry/world/Build.java
 @@ -15,6 +15,7 @@ import mindustry.gen.*;
@@ -165,7 +165,7 @@ index d883b6c00bb2beba1d3f957168bd65d85cd4f9a1..c0951480531268e91a50065552b1e06b
          //the wave team can build whatever they want as long as it's visible - banned blocks are not applicable
          if(type == null || (!state.rules.editor && (checkVisible && (!type.environmentBuildable() || (!type.isPlaceable() && !(state.rules.waves && team == state.rules.waveTeam && type.isVisible())))))){
              return false;
-@@ -313,6 +320,7 @@ public class Build{
+@@ -316,6 +323,7 @@ public class Build{
      /** @return whether the tile at this position is breakable by this team */
      public static boolean validBreak(Team team, int x, int y){
          Tile tile = world.tile(x, y);

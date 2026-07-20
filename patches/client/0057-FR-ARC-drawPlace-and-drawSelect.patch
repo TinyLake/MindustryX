@@ -15,7 +15,7 @@ Subject: [PATCH] FR: ARC drawPlace and drawSelect
  8 files changed, 45 insertions(+), 18 deletions(-)
 
 diff --git a/core/src/mindustry/world/blocks/ConstructBlock.java b/core/src/mindustry/world/blocks/ConstructBlock.java
-index 711d6c971c9d4df19203d42449a95adf895c30bf..943e8626a1fab97f5047b1dd3953c7c69a6ae57e 100644
+index 0ef333e870eebe26ee345a02be06fa064e800096..8a3f089751b6607d7e40d0e837943d8ae21ff1dc 100644
 --- a/core/src/mindustry/world/blocks/ConstructBlock.java
 +++ b/core/src/mindustry/world/blocks/ConstructBlock.java
 @@ -3,14 +3,17 @@ package mindustry.world.blocks;

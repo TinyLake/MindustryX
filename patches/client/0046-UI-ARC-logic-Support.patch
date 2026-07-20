@@ -38,7 +38,7 @@ MinRi2 <2275045670@qq.com> on 2025/5/3
  6 files changed, 149 insertions(+), 17 deletions(-)
 
 diff --git a/core/src/mindustry/logic/LCanvas.java b/core/src/mindustry/logic/LCanvas.java
-index 56f52b1bb9aecab2ecbedf672bc8431dc3a9de41..b3cdfea775f6823ea4535ce05c4816d59d1a0cea 100644
+index 320b8e59cad0f196481e96e97b3abf4d6acd6006..20cdd160bb707dab96516584b58796e9d4ce94b4 100644
 --- a/core/src/mindustry/logic/LCanvas.java
 +++ b/core/src/mindustry/logic/LCanvas.java
 @@ -18,6 +18,9 @@ import mindustry.gen.*;

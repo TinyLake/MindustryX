@@ -9,7 +9,7 @@ Subject: [PATCH] FC: Allow to persist KeyCode.unset.
  2 files changed, 6 insertions(+), 5 deletions(-)
 
 diff --git a/arc-core/src/arc/input/KeyBind.java b/arc-core/src/arc/input/KeyBind.java
-index fe2570133e9560a855e72b2bdbe15d207bdc7eb2..e62d626a07bd61ada7fee19547355f5ee36cc7b9 100644
+index b9126bf85ab3457ddeadb3a510b4a413f99b96ec..6f72b1260e1c1752f2d12252d5c32a94d0d1bbe1 100644
 --- a/arc-core/src/arc/input/KeyBind.java
 +++ b/arc-core/src/arc/input/KeyBind.java
 @@ -69,12 +69,12 @@ public class KeyBind{
