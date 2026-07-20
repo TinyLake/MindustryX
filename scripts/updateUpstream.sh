@@ -28,7 +28,11 @@ echo "Arc $refHEAD_Arc -> $refRemote_Arc"
 echo "Work $refHEAD -> $refRemote"
 (cd Arc && git reset --hard FETCH_HEAD || (echo "Fail reset Arc" && exit 1))
 (cd work && git reset --hard FETCH_HEAD || (echo "Fail reset work" && exit 1))
-git add --force Arc work && git commit -m "Update HEAD -> $upstreamRef($refRemote)"
+
+version=$(echo "$upstreamRef" | sed 's/^v//')
+sed -i "s/minGameVersion: \".*\"/minGameVersion: \"$version\"/" assets/mod.hjson
+
+git add --force Arc work assets/mod.hjson && git commit -m "Update HEAD -> $upstreamRef($refRemote)"
 
 echo "Rebuilding patches"
 ./scripts/applyPatches.sh
