@@ -1041,7 +1041,7 @@ index 4fcb433314687c7199e191bfb063d1dd185e57d3..36e96efa3cc62f75ecce67f0e36cb374
 +#archash=d72b19223f
 +
 +#MDTX: Use "v{upstreamBuild}" by default
-+upstreamBuild=159.6
++upstreamBuild=159.7
 diff --git a/gradlew b/gradlew
 index 4f906e0c811fc9e230eb44819f509cd0627f2600..f3b75f3b0d4faeb4b1c8a02b5c47007e6efb7dcd 100755
 --- a/gradlew
