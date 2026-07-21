@@ -125,6 +125,12 @@ internal object UiTextBundleEn : UiTextBundle {
         else -> value.toString()
     }
 
+    override fun sdlVersionName(): String = "SDL Backend"
+    override fun sdlVersionDescription(): String = "Switch between SDL2 and SDL3 backend. Restart required."
+    override fun sdlVersionSdl2(): String = "SDL 2"
+    override fun sdlVersionSdl3(): String = "SDL 3"
+    override fun sdlVersionActive(sdl: String): String = "Current SDL: $sdl"
+
     override fun simple(key: String): String = zhToEn[key] ?: key
     override val labelsResFile: String get() = "labels_en"
 
