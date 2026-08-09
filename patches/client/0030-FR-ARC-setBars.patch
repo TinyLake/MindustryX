@@ -95,16 +95,18 @@ index 039b49606f45d196b605e63a70c6cb7d61980383..be0475c49e0d69d93196ac5da56b8d98
  
          if(consPower != null){
              boolean buffered = consPower.buffered;
-@@ -704,7 +709,11 @@ public class Block extends UnlockableContent implements Senseable{
+@@ -704,7 +709,13 @@ public class Block extends UnlockableContent implements Senseable{
  
              addBar("power", entity -> new Bar(
                  () -> buffered ? Core.bundle.format("bar.poweramount", Float.isNaN(entity.power.status * capacity) ? "<ERROR>" : UI.formatAmount((int)(entity.power.status * capacity))) :
 -                Core.bundle.get("bar.power"),
++                entity.shouldConsume() ?
 +                Iconc.power + " " + FormatDefault.percent(
-+                entity.power.status * consPower.usage * 60 * entity.timeScale() * (entity.shouldConsume() ? 1f : 0f),
-+                consPower.usage * 60 * entity.timeScale() * (entity.shouldConsume() ? 1f : 0f),
-+                entity.timeScale() * 100 * (entity.shouldConsume() ? 1f : 0f) * entity.efficiency
-+                ),
++                entity.power.status * consPower.usage * 60 * entity.timeScale(),
++                consPower.usage * 60 * entity.timeScale(),
++                entity.timeScale() * 100 * entity.efficiency
++                ) :
++                Iconc.power + " " + FormatDefault.percent(entity.power.status * 100, 100, entity.power.status, false),
                  () -> Pal.powerBar,
                  () -> Mathf.zero(consPower.requestedPower(entity)) && entity.power.graph.getPowerProduced() + entity.power.graph.getBatteryStored() > 0f ? 1f : entity.power.status)
              );
