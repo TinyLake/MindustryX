@@ -158,6 +158,7 @@ public class ControlGroupTable extends Table{
         table.defaults().minSize(Vars.iconMed).padLeft(8f);
 
         for(UnitType type : Vars.content.units()){
+            if(type.internal) continue;
             int amount = model.count(type);
             if(amount == 0) continue;
 

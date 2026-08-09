@@ -242,6 +242,7 @@ public class NewCoreItemsDisplay extends Table{
         unitsTable.background(Styles.black3);
         unitsTable.defaults().width(COLUMN_WIDTH);
         for(UnitType unit : content.units()){
+            if(unit.internal) continue;
             unitsTable.table(tt -> {
                 tt.visible(() -> usedUnits.contains(unit) || player.team().data().countType(unit) > 0 && usedUnits.add(unit));
                 tt.image(unit.uiIcon).size(iconSmall).scaling(Scaling.fit).pad(2f)

@@ -241,9 +241,7 @@ public class UnitFactoryDialog extends BaseDialog{
         table.clearChildren();
 
         stack.units.each(unit -> {
-            // block单位只会造成崩溃
-            if(unit == UnitTypes.block) return;
-
+            if(unit.internal) return;
             table.button(new TextureRegionDrawable(unit.uiIcon), Styles.clearTogglei, 32f, () -> runSafely(() -> setSpawnUnitType(unit))).margin(3).size(64f).pad(4f).tooltip(unit.localizedName).checked(b -> spawnUnit.type == unit);
 
             if(++i[0] % rows == 0){
@@ -668,7 +666,7 @@ public class UnitFactoryDialog extends BaseDialog{
                 }))).row();
 
                 buttons.button(i("装载单位"), new TextureRegionDrawable(UnitTypes.alpha.uiIcon), Styles.flatt, 32f,
-                () -> ContentSelectDialog.once(content.units(), null, unitType -> runSafely(() -> {
+                () -> ContentSelectDialog.once(content.units().select(u -> !u.internal), null, unitType -> runSafely(() -> {
                     UnitPayload payload = new UnitPayload(unitType.create(payloadUnit.team));
                     payloads.add(payload);
                     rebuildPayloadSettingTable(payloads, settingTable);
@@ -859,6 +857,7 @@ public class UnitFactoryDialog extends BaseDialog{
             classedUnits = new Seq<>();
             classedUnits.add(vanillaStack);
             content.units().each(unit -> {
+                if(unit.internal) return;
                 if(unit.isVanilla()){
                     vanillaStack.units.add(unit);
                 }else{
