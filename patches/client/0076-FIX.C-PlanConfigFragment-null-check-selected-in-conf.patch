@@ -1,0 +1,23 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: WayZer <himc.wicp@gmail.com>
+Date: Mon, 10 Aug 2026 01:07:48 +0800
+Subject: [PATCH] FIX.C(PlanConfigFragment) null-check selected in config
+ callback
+
+---
+ core/src/mindustry/ui/fragments/PlanConfigFragment.java | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/core/src/mindustry/ui/fragments/PlanConfigFragment.java b/core/src/mindustry/ui/fragments/PlanConfigFragment.java
+index 2303bbf6a6816c12bfb5bff58e1dbaffa03db2d2..bd9e12c50c933a9eca286aeb16dff121248bac01 100644
+--- a/core/src/mindustry/ui/fragments/PlanConfigFragment.java
++++ b/core/src/mindustry/ui/fragments/PlanConfigFragment.java
+@@ -50,7 +50,7 @@ public class PlanConfigFragment{
+         table, options,
+         () -> selected != null ? (selected.config instanceof UnlockableContent c ? c : null) : null,
+         content -> {
+-            selected.config = content;
++            if(selected != null) selected.config = content;
+             hide();
+         },
+         block.selectionRows, block.selectionColumns
