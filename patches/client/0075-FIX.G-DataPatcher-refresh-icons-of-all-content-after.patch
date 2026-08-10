@@ -6,27 +6,33 @@ Subject: [PATCH] FIX.G(DataPatcher) refresh icons of all content after data
 
 including internal units created by blocks (e.g. BuildTurret), so they always have a fallback icon
 ---
- core/src/mindustry/mod/DataPatcher.java       | 20 +++++++++++++++++++
- .../world/blocks/storage/Unloader.java        |  5 +++++
- 2 files changed, 25 insertions(+)
+ core/src/mindustry/mod/DataPatcher.java | 18 ++++++++++++++++++
+ 1 file changed, 18 insertions(+)
 
 diff --git a/core/src/mindustry/mod/DataPatcher.java b/core/src/mindustry/mod/DataPatcher.java
-index f4959335f0d566c1987267f5d54b0b7b6f3f54c7..98069c6ae4d967021511e32abf2009dbd54d2198 100644
+index f4959335f0d566c1987267f5d54b0b7b6f3f54c7..980620c69a7670bb8bb99be4b2db64a75166c686 100644
 --- a/core/src/mindustry/mod/DataPatcher.java
 +++ b/core/src/mindustry/mod/DataPatcher.java
-@@ -19,9 +19,11 @@ import mindustry.mod.data.*;
+@@ -1,5 +1,6 @@
+ package mindustry.mod;
+ 
++import arc.*;
+ import arc.files.*;
+ import arc.func.*;
+ import arc.struct.*;
+@@ -19,9 +20,11 @@ import mindustry.mod.data.*;
  import mindustry.type.*;
  import mindustry.world.*;
  import mindustry.world.blocks.*;
-+import mindustry.world.blocks.storage.Unloader;
++import mindustry.world.blocks.storage.*;
  import mindustry.world.consumers.*;
  import mindustry.world.draw.*;
  import mindustry.world.meta.*;
-+import mindustry.world.modules.ItemModule;
++import mindustry.world.modules.*;
  
  import java.lang.reflect.*;
  import java.util.*;
-@@ -261,6 +263,18 @@ public class DataPatcher{
+@@ -261,6 +264,18 @@ public class DataPatcher{
          }
  
          afterCallbacks.each(Runnable::run);
@@ -35,27 +41,17 @@ index f4959335f0d566c1987267f5d54b0b7b6f3f54c7..98069c6ae4d967021511e32abf2009db
 +        if(!Vars.headless){
 +            for(var arr : Vars.content.getContentMap()){
 +                for(var c : arr){
-+                    c.loadIcon();
++                    if(c instanceof UnlockableContent u){
++                        if(u.fullIcon == null) u.fullIcon = Core.atlas.find("error");
++                        if(u.uiIcon == null) u.uiIcon = u.fullIcon;
++                    }
 +                }
 +            }
 +        }
-+
-+        //keep the cached unloader item list in sync with the new content
-+        Unloader.cacheItems();
      }
  
      public void unapply(){
-@@ -274,6 +288,9 @@ public class DataPatcher{
-         Vars.content = contentLoader;
-         applied = false;
- 
-+        //keep the cached unloader item list in sync with the rolled-back content
-+        Unloader.cacheItems();
-+
-         resetters.reverse();
-         for(var reset : resetters){
-             try{
-@@ -333,6 +350,9 @@ public class DataPatcher{
+@@ -333,6 +348,9 @@ public class DataPatcher{
              }
          }
  
@@ -65,19 +61,3 @@ index f4959335f0d566c1987267f5d54b0b7b6f3f54c7..98069c6ae4d967021511e32abf2009db
          //TODO: this doesn't do anything about extensive ItemSeq usage across the codebase, which is limited to the campaign
          //TODO: this also doesn't change sectors
          needsArrayFix = false;
-diff --git a/core/src/mindustry/world/blocks/storage/Unloader.java b/core/src/mindustry/world/blocks/storage/Unloader.java
-index 9f73fbea69fac792208c035113c22ee9585630cd..bb215321008d43437d60f64ec12323b3ad0b4fb2 100644
---- a/core/src/mindustry/world/blocks/storage/Unloader.java
-+++ b/core/src/mindustry/world/blocks/storage/Unloader.java
-@@ -56,6 +56,11 @@ public class Unloader extends Block{
-     public void init(){
-         super.init();
- 
-+        cacheItems();
-+    }
-+
-+    /** Refreshes the cached item list; must be called whenever content changes, e.g. when data patches are applied or unapplied. */
-+    public static void cacheItems(){
-         allItems = content.items().toArray(Item.class);
-     }
- 

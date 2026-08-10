@@ -98,7 +98,7 @@ index 9fd37b4d9fb98ff074066c90fc7f3173942c67ce..8ddf150cb8fe5baadf9c46bac9f96400
  
              super.draw();
 diff --git a/core/src/mindustry/world/blocks/storage/Unloader.java b/core/src/mindustry/world/blocks/storage/Unloader.java
-index 90b6af2c6e9e4616f112d97608386a5ff112cd90..9f73fbea69fac792208c035113c22ee9585630cd 100644
+index 8348edcf3b4e92397e09489fa0f1cb07aa334928..46c8bd015899305f9db71c89521d3521c415ceb5 100644
 --- a/core/src/mindustry/world/blocks/storage/Unloader.java
 +++ b/core/src/mindustry/world/blocks/storage/Unloader.java
 @@ -20,6 +20,8 @@ import mindustry.world.meta.*;
@@ -110,7 +110,7 @@ index 90b6af2c6e9e4616f112d97608386a5ff112cd90..9f73fbea69fac792208c035113c22ee9
  import static mindustry.Vars.*;
  
  public class Unloader extends Block{
-@@ -235,6 +237,10 @@ public class Unloader extends Block{
+@@ -238,6 +240,10 @@ public class Unloader extends Block{
          public void draw(){
              super.draw();
  

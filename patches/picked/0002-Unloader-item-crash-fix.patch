@@ -1,0 +1,23 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: way-zer <himc.wicp@gmail.com>
+Date: Mon, 10 Aug 2026 21:57:47 +0800
+Subject: [PATCH] Unloader item crash fix
+
+---
+ core/src/mindustry/world/blocks/storage/Unloader.java | 3 +++
+ 1 file changed, 3 insertions(+)
+
+diff --git a/core/src/mindustry/world/blocks/storage/Unloader.java b/core/src/mindustry/world/blocks/storage/Unloader.java
+index 90b6af2c6e9e4616f112d97608386a5ff112cd90..8348edcf3b4e92397e09489fa0f1cb07aa334928 100644
+--- a/core/src/mindustry/world/blocks/storage/Unloader.java
++++ b/core/src/mindustry/world/blocks/storage/Unloader.java
+@@ -140,6 +140,9 @@ public class Unloader extends Block{
+             Pools.freeAll(possibleBlocks, true);
+             possibleBlocks.clear();
+ 
++            //check item length for data patches - this method is called upon world load; keep it out of the update loop
++            if(allItems.length != content.items().size) allItems = content.items().toArray(Item.class);
++
+             for(int i = 0; i < proximity.size; i++){
+                 var other = proximity.get(i);
+                 if(!other.interactable(team)) continue; //avoid blocks of the wrong team
