@@ -1,0 +1,66 @@
+diff --git a/core/src/mindustry/core/Renderer.java b/core/src/mindustry/core/Renderer.java
+index 389684d7bb..61590e7273 100644
+--- a/core/src/mindustry/core/Renderer.java
++++ b/core/src/mindustry/core/Renderer.java
+@@ -385,20 +385,21 @@ public class Renderer implements ApplicationListener{
+         float scaleFactor = 4f / renderer.getDisplayScale();
+ 
+         //draw objective markers
+-        state.rules.objectives.eachRunning(obj -> {
+-            for(var marker : obj.markers){
+-                if(marker.world){
+-                    marker.draw(marker.autoscale ? scaleFactor : 1);
+-                }
+-            }
+-        });
+-
+-        for(var marker : state.markers){
+-            if(marker.world){
+-                marker.draw(marker.autoscale ? scaleFactor : 1);
+-            }
+-        }
+-
++	if (Core.settings.getBool("showLogicMarkers", true)) {
++	        state.rules.objectives.eachRunning(obj -> {
++        	    for(var marker : obj.markers){
++                	if(marker.world){
++                   	 marker.draw(marker.autoscale ? scaleFactor : 1);
++                	}
++            	}
++        	});
++
++        	for(var marker : state.markers){
++        	    if(marker.world){
++        	        marker.draw(marker.autoscale ? scaleFactor : 1);
++        	    }
++       		 }
++	}
+         Draw.reset();
+ 
+         Draw.draw(Layer.overlayUI, overlays::drawTop);
+diff --git a/core/src/mindustry/ui/dialogs/SettingsMenuDialog.java b/core/src/mindustry/ui/dialogs/SettingsMenuDialog.java
+index 389ce62256..14c3018aba 100644
+--- a/core/src/mindustry/ui/dialogs/SettingsMenuDialog.java
++++ b/core/src/mindustry/ui/dialogs/SettingsMenuDialog.java
+@@ -528,6 +528,8 @@ public class SettingsMenuDialog extends BaseDialog{
+         graphics.checkPref("indicators", true);
+         graphics.checkPref("showweather", true);
+         graphics.checkPref("animatedwater", true);
++	xxx:graphics.checkPref("showBossHealthBar", true);
++	yyy:graphics.checkPref("showLogicMarkers", true);
+ 
+         if(Shaders.shield != null){
+             graphics.checkPref("animatedshields", true);
+diff --git a/core/src/mindustry/ui/fragments/HudFragment.java b/core/src/mindustry/ui/fragments/HudFragment.java
+index de3757fb2d..a30dcabab0 100644
+--- a/core/src/mindustry/ui/fragments/HudFragment.java
++++ b/core/src/mindustry/ui/fragments/HudFragment.java
+@@ -648,7 +648,7 @@ public class HudFragment{
+                 }
+                 return max == 0f ? 0f : val / max;
+             }).blink(Color.white).outline(new Color(0, 0, 0, 0.6f), 7f)).grow())
+-            .fillX().width(320f).height(60f).name("boss").visible(() -> state.rules.waves && state.boss() != null && !(mobile && Core.graphics.isPortrait())).padTop(7).row();
++            .fillX().width(320f).height(60f).name("boss").visible(() -> state.rules.waves && state.boss() != null && !(mobile && Core.graphics.isPortrait()) && Core.settings.getBool("showBossHealthBar", true)).padTop(7).row();
+ 
+             t.table(Styles.black3, p -> p.margin(4).label(() -> hudText).style(Styles.outlineLabel)).touchable(Touchable.disabled).with(p -> hudLabel = p)
+                 .with(p -> p.visible(() -> (p.color.a = Mathf.lerpDelta(p.color.a, Mathf.num(showHudText), 0.2f)) >= 0.001f));
