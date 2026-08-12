@@ -29,16 +29,16 @@ MinRi2 <2275045670@qq.com>
 * 清除链接建筑时更新逻辑代码
 MinRi2 <2275045670@qq.com> on 2025/5/3
 ---
- core/src/mindustry/logic/LCanvas.java         | 48 ++++++++++++++++++-
+ core/src/mindustry/logic/LCanvas.java         | 53 ++++++++++++++++++-
  core/src/mindustry/logic/LExecutor.java       |  7 ++-
- core/src/mindustry/logic/LStatements.java     | 27 +++++++++++
- core/src/mindustry/logic/LogicDialog.java     | 19 ++++++--
- .../world/blocks/logic/LogicBlock.java        | 39 +++++++++++----
- .../world/blocks/logic/MemoryBlock.java       | 26 +++++++++-
- 6 files changed, 149 insertions(+), 17 deletions(-)
+ core/src/mindustry/logic/LStatements.java     | 27 ++++++++++
+ core/src/mindustry/logic/LogicDialog.java     | 19 +++++--
+ .../world/blocks/logic/LogicBlock.java        | 39 ++++++++++----
+ .../world/blocks/logic/MemoryBlock.java       | 26 ++++++++-
+ 6 files changed, 154 insertions(+), 17 deletions(-)
 
 diff --git a/core/src/mindustry/logic/LCanvas.java b/core/src/mindustry/logic/LCanvas.java
-index 320b8e59cad0f196481e96e97b3abf4d6acd6006..20cdd160bb707dab96516584b58796e9d4ce94b4 100644
+index 320b8e59cad0f196481e96e97b3abf4d6acd6006..8aaefa9e9e130f6c5f22765f35369579b639e916 100644
 --- a/core/src/mindustry/logic/LCanvas.java
 +++ b/core/src/mindustry/logic/LCanvas.java
 @@ -18,6 +18,9 @@ import mindustry.gen.*;
@@ -75,7 +75,7 @@ index 320b8e59cad0f196481e96e97b3abf4d6acd6006..20cdd160bb707dab96516584b58796e9
  
                  t.addListener(new InputListener(){
                      float lastx, lasty;
-@@ -528,6 +533,45 @@ public class LCanvas extends Table{
+@@ -528,6 +533,50 @@ public class LCanvas extends Table{
              }
          }
  
@@ -85,8 +85,13 @@ index 320b8e59cad0f196481e96e97b3abf4d6acd6006..20cdd160bb707dab96516584b58796e9
 +            StatementElem newElem;
 +            if(st instanceof PrintStatement pst && !pst.value.isEmpty()){ //print->代码
 +                String code = pst.value.replace("_", " ");
-+                Seq<LStatement> lsStatement = LAssembler.read(code, privileged);
-+                LStatement stNew = lsStatement.first();
++                LStatement stNew;
++                try{
++                    stNew = LAssembler.read(code, privileged).first();
++                }catch(Exception e){
++                    UIExt.announce(Core.bundle.get("mdtx.logic.convertError"));
++                    return;
++                }
 +                if(stNew instanceof InvalidStatement){
 +                    UIExt.announce(Core.bundle.get("mdtx.logic.convertError"));
 +                    return;
