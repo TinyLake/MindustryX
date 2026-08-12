@@ -1,3 +1,26 @@
+From 0133fe895924d21a32c59848fe7d02a0e0e6b5df Mon Sep 17 00:00:00 2001
+From: clockworkparrot <a.playful.parrot@qq.com>
+Date: Wed, 12 Aug 2026 22:30:30 +0800
+Subject: [PATCH] feat: add settings to hide boss health bar and logic markers
+ + Chinese translation
+
+---
+ core/assets/bundles/bundle_zh_CN.properties   |  2 ++
+ core/src/mindustry/core/Renderer.java         | 29 ++++++++++---------
+ .../ui/dialogs/SettingsMenuDialog.java        |  2 ++
+ .../mindustry/ui/fragments/HudFragment.java   |  2 +-
+ 4 files changed, 20 insertions(+), 15 deletions(-)
+
+diff --git a/core/assets/bundles/bundle_zh_CN.properties b/core/assets/bundles/bundle_zh_CN.properties
+index 9f5517ac0d..b6635973c1 100644
+--- a/core/assets/bundles/bundle_zh_CN.properties
++++ b/core/assets/bundles/bundle_zh_CN.properties
+@@ -3036,3 +3036,5 @@ lenum.dragmultiplier = 环境阻力乘数
+ lenum.ban = 禁用指定内容
+ lenum.unban = 解禁指定内容
+ lenum.musicvolume = 全局音乐音量倍率。\n取值范围限制在[0,1]。
++setting.showBossHealthBar.name=显示Boss血条
++setting.showLogicMarkers.name=显示逻辑标记
 diff --git a/core/src/mindustry/core/Renderer.java b/core/src/mindustry/core/Renderer.java
 index 389684d7bb..61590e7273 100644
 --- a/core/src/mindustry/core/Renderer.java
@@ -64,3 +87,6 @@ index de3757fb2d..a30dcabab0 100644
  
              t.table(Styles.black3, p -> p.margin(4).label(() -> hudText).style(Styles.outlineLabel)).touchable(Touchable.disabled).with(p -> hudLabel = p)
                  .with(p -> p.visible(() -> (p.color.a = Mathf.lerpDelta(p.color.a, Mathf.num(showHudText), 0.2f)) >= 0.001f));
+-- 
+2.43.0
+
