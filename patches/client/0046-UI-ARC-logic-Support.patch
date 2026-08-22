@@ -28,14 +28,16 @@ MinRi2 <2275045670@qq.com>
 * 添加失效链接显示
 * 清除链接建筑时更新逻辑代码
 MinRi2 <2275045670@qq.com> on 2025/5/3
+
+JUMP按钮显示条件改为长/短条模式(useRows)：短条模式下移至积木名(半透明底,点击跳转)
 ---
- core/src/mindustry/logic/LCanvas.java         | 53 ++++++++++++++++++-
+ core/src/mindustry/logic/LCanvas.java         | 53 +++++++++++++++-
  core/src/mindustry/logic/LExecutor.java       |  7 ++-
- core/src/mindustry/logic/LStatements.java     | 27 ++++++++++
- core/src/mindustry/logic/LogicDialog.java     | 19 +++++--
- .../world/blocks/logic/LogicBlock.java        | 39 ++++++++++----
- .../world/blocks/logic/MemoryBlock.java       | 26 ++++++++-
- 6 files changed, 154 insertions(+), 17 deletions(-)
+ core/src/mindustry/logic/LStatements.java     | 62 +++++++++++++++++++
+ core/src/mindustry/logic/LogicDialog.java     | 19 +++++-
+ .../world/blocks/logic/LogicBlock.java        | 39 +++++++++---
+ .../world/blocks/logic/MemoryBlock.java       | 26 +++++++-
+ 6 files changed, 189 insertions(+), 17 deletions(-)
 
 diff --git a/core/src/mindustry/logic/LCanvas.java b/core/src/mindustry/logic/LCanvas.java
 index 320b8e59cad0f196481e96e97b3abf4d6acd6006..8aaefa9e9e130f6c5f22765f35369579b639e916 100644
@@ -166,20 +168,22 @@ index 4941d9825fac1ae88f79e933ad2ea52b6878556f..b6d449a813411aa9f24801b3429de189
                  case pan -> {
                      control.input.logicCutscene = true;
 diff --git a/core/src/mindustry/logic/LStatements.java b/core/src/mindustry/logic/LStatements.java
-index 06fe7a5390616f0b9a9ba50a3201eb8a19ef6a80..18542aeabc408f9510f04406ec2d3ca214e7119f 100644
+index 06fe7a5390616f0b9a9ba50a3201eb8a19ef6a80..021613e1bd9ecee4c9a10d17c6b617c0b3f3c8df 100644
 --- a/core/src/mindustry/logic/LStatements.java
 +++ b/core/src/mindustry/logic/LStatements.java
-@@ -4,6 +4,9 @@ import arc.*;
+@@ -4,6 +4,11 @@ import arc.*;
  import arc.audio.*;
  import arc.func.*;
  import arc.graphics.*;
++import arc.input.KeyCode;
 +import arc.math.*;
 +import arc.scene.*;
 +import arc.scene.actions.*;
++import arc.scene.event.*;
  import arc.scene.style.*;
  import arc.scene.ui.*;
  import arc.scene.ui.layout.*;
-@@ -23,6 +26,7 @@ import mindustry.ui.*;
+@@ -23,6 +28,7 @@ import mindustry.ui.*;
  import mindustry.world.*;
  import mindustry.world.meta.*;
  import mindustryX.*;
@@ -187,36 +191,82 @@ index 06fe7a5390616f0b9a9ba50a3201eb8a19ef6a80..18542aeabc408f9510f04406ec2d3ca2
  
  import static mindustry.Vars.*;
  import static mindustry.logic.LCanvas.*;
-@@ -1013,6 +1017,29 @@ public class LStatements{
+@@ -1013,6 +1019,10 @@ public class LStatements{
              table.table(this::rebuild);
  
              table.add().growX();
-+            if(!mobile || !Core.graphics.isPortrait()){
-+                table.button("JUMP", Styles.grayt, () -> {
-+                    if(dest == null) return;
-+                    //table, elem, dragLayout, table(y), scrollPane
-+                    var canvas = dest.parent.parent;
-+                    var scroll = (ScrollPane)canvas.parent;
-+                    scroll.setScrollY(scroll.getMaxY() - dest.y + scroll.getHeight() * 0.5f);
-+                    saveUI();
-+                    UIExt.announce(Core.bundle.format("mdtx.logic.jumpLine", destIndex));
-+
-+                    Element header = dest.getChildren().first();
-+                    dest.clearActions();
-+                    header.clearActions();
-+                    dest.addAction(Actions.repeat(2, Actions.sequence(
-+                    Actions.color(Pal.placing, 0.5f, Interp.smooth),
-+                    Actions.color(dest.st.category().color, 0.5f, Interp.smooth)
-+                    )));
-+                    header.addAction(Actions.repeat(2, Actions.sequence(
-+                    Actions.color(Pal.placing, 0.5f, Interp.smooth),
-+                    Actions.color(dest.st.category().color, 0.5f, Interp.smooth)
-+                    )));
-+                }).width(80f);
++            //the JUMP button only fits in the statement body in long mode
++            if(!LCanvas.useRows()){
++                table.button("JUMP", Styles.grayt, this::jumpToDest).width(80f);
 +            }
              table.add(new JumpButton(() -> dest, s -> dest = s, this.elem)).size(30).right().padLeft(-8);
  
              String name = name();
+@@ -1024,12 +1034,64 @@ public class LStatements{
+                     Label title = table.parent.find("statement-name");
+                     if(title != null){
+                         title.update(() -> title.setText((dest != null ? name + " -> " + dest.index : name)));
++                        //in compact rows mode, the statement name acts as the jump button
++                        if(LCanvas.useRows()){
++                            Label.LabelStyle style = new Label.LabelStyle(title.getStyle());
++                            //semi-transparent background with vertical padding, larger touch area
++                            BaseDrawable bg = (BaseDrawable)((TextureRegionDrawable)Tex.whiteui).tint(0, 0, 0, 0.4f);
++                            bg.setTopHeight(Scl.scl(4f));
++                            bg.setBottomHeight(Scl.scl(4f));
++                            style.background = bg;
++                            title.setStyle(style);
++                            title.addListener(new ClickListener(){
++                                @Override
++                                public boolean touchDown(InputEvent event, float x, float y, int pointer, KeyCode button){
++                                    boolean result = super.touchDown(event, x, y, pointer, button);
++                                    if(result) event.stop();
++                                    return result;
++                                }
++
++                                @Override
++                                public void clicked(InputEvent event, float x, float y){
++                                    jumpToDest();
++                                }
++                            });
++                        }
+                     }
+                 }
+             });
+ 
+         }
+ 
++        /** Scrolls the canvas to and highlights the current jump target. */
++        void jumpToDest(){
++            if(dest == null) return;
++            //table, elem, dragLayout, table(y), scrollPane
++            var canvas = dest.parent.parent;
++            if(!(canvas.parent instanceof ScrollPane scroll)) return;
++
++            //reset fling/pan state, so the visual scroll position eases to the
++            //target in ScrollPane.act() instead of teleporting instantly
++            scroll.cancel();
++            scroll.fling(0, 0, 0);
++            scroll.setVelocityY(0);
++            scroll.setScrollY(Mathf.clamp(scroll.getMaxY() - dest.y + scroll.getHeight() * 0.5f, 0, scroll.getMaxY()));
++            saveUI();
++            UIExt.announce(Core.bundle.format("mdtx.logic.jumpLine", destIndex));
++
++            Element header = dest.getChildren().first();
++            dest.clearActions();
++            header.clearActions();
++            dest.addAction(Actions.repeat(2, Actions.sequence(
++            Actions.color(Pal.placing, 0.5f, Interp.smooth),
++            Actions.color(dest.st.category().color, 0.5f, Interp.smooth)
++            )));
++            header.addAction(Actions.repeat(2, Actions.sequence(
++            Actions.color(Pal.placing, 0.5f, Interp.smooth),
++            Actions.color(dest.st.category().color, 0.5f, Interp.smooth)
++            )));
++        }
++
+         void rebuild(Table table){
+             table.clearChildren();
+             table.setColor(last);
 diff --git a/core/src/mindustry/logic/LogicDialog.java b/core/src/mindustry/logic/LogicDialog.java
 index be49cdec4be645c52bc8d8162138347a3893474c..c82d44fbf2c8971304df7d95ee1d96d04a75b822 100644
 --- a/core/src/mindustry/logic/LogicDialog.java
