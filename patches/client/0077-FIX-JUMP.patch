@@ -1,0 +1,85 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: X-fix <x-fix@local>
+Date: Mon, 24 Aug 2026 11:58:24 +0800
+Subject: [PATCH] =?UTF-8?q?FIX:=20JUMP=E6=8C=89=E9=92=AE=E5=A7=8B=E7=BB=88?=
+ =?UTF-8?q?=E6=98=BE=E7=A4=BA=E5=9C=A8=E7=A7=AF=E6=9C=A8=E5=86=85=E9=83=A8?=
+ =?UTF-8?q?(=E4=B8=8E=E9=95=BF=E6=9D=A1=E4=B8=80=E8=87=B4)=EF=BC=8C?=
+ =?UTF-8?q?=E7=9F=AD=E6=9D=A1=E6=A8=A1=E5=BC=8F=E6=94=B6=E7=BC=A9=E4=B8=A4?=
+ =?UTF-8?q?=E4=B8=AA=E6=9D=A1=E4=BB=B6=E8=BE=93=E5=85=A5=E6=A1=86=E8=85=BE?=
+ =?UTF-8?q?=E5=87=BA=E7=A9=BA=E9=97=B4?=
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+---
+ core/src/mindustry/logic/LStatements.java | 36 +++++------------------
+ 1 file changed, 8 insertions(+), 28 deletions(-)
+
+diff --git a/core/src/mindustry/logic/LStatements.java b/core/src/mindustry/logic/LStatements.java
+index 021613e1bd9ecee4c9a10d17c6b617c0b3f3c8df..71778636fff7bd8aff915f976bf5305b0151d0e8 100644
+--- a/core/src/mindustry/logic/LStatements.java
++++ b/core/src/mindustry/logic/LStatements.java
+@@ -4,7 +4,6 @@ import arc.*;
+ import arc.audio.*;
+ import arc.func.*;
+ import arc.graphics.*;
+-import arc.input.KeyCode;
+ import arc.math.*;
+ import arc.scene.*;
+ import arc.scene.actions.*;
+@@ -1019,10 +1018,7 @@ public class LStatements{
+             table.table(this::rebuild);
+ 
+             table.add().growX();
+-            //the JUMP button only fits in the statement body in long mode
+-            if(!LCanvas.useRows()){
+-                table.button("JUMP", Styles.grayt, this::jumpToDest).width(80f);
+-            }
++            table.button("JUMP", Styles.grayt, this::jumpToDest).width(80f);
+             table.add(new JumpButton(() -> dest, s -> dest = s, this.elem)).size(30).right().padLeft(-8);
+ 
+             String name = name();
+@@ -1034,29 +1030,6 @@ public class LStatements{
+                     Label title = table.parent.find("statement-name");
+                     if(title != null){
+                         title.update(() -> title.setText((dest != null ? name + " -> " + dest.index : name)));
+-                        //in compact rows mode, the statement name acts as the jump button
+-                        if(LCanvas.useRows()){
+-                            Label.LabelStyle style = new Label.LabelStyle(title.getStyle());
+-                            //semi-transparent background with vertical padding, larger touch area
+-                            BaseDrawable bg = (BaseDrawable)((TextureRegionDrawable)Tex.whiteui).tint(0, 0, 0, 0.4f);
+-                            bg.setTopHeight(Scl.scl(4f));
+-                            bg.setBottomHeight(Scl.scl(4f));
+-                            style.background = bg;
+-                            title.setStyle(style);
+-                            title.addListener(new ClickListener(){
+-                                @Override
+-                                public boolean touchDown(InputEvent event, float x, float y, int pointer, KeyCode button){
+-                                    boolean result = super.touchDown(event, x, y, pointer, button);
+-                                    if(result) event.stop();
+-                                    return result;
+-                                }
+-
+-                                @Override
+-                                public void clicked(InputEvent event, float x, float y){
+-                                    jumpToDest();
+-                                }
+-                            });
+-                        }
+                     }
+                 }
+             });
+@@ -1100,6 +1073,13 @@ public class LStatements{
+                 op = o;
+                 rebuild(table);
+             }, value, str -> value = str, compare, str -> compare = str);
++
++            //compact rows mode: shrink the condition fields so the trailing JUMP button fits in the row
++            if(LCanvas.useRows()){
++                for(Cell<?> cell : table.getCells()){
++                    if(cell.get() instanceof TextField) cell.width(104f);
++                }
++            }
+         }
+ 
+         public static void addOp(LStatement st, Table t, ConditionOp op, Cons<ConditionOp> getter, String comp0, Cons<String> set0, String comp1, Cons<String> set2){

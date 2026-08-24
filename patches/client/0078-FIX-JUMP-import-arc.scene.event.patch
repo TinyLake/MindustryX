@@ -1,0 +1,26 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: X-fix <x-fix@local>
+Date: Mon, 24 Aug 2026 12:24:09 +0800
+Subject: [PATCH] =?UTF-8?q?FIX:=20=E6=B8=85=E7=90=86JUMP=E8=B0=83=E6=95=B4?=
+ =?UTF-8?q?=E5=90=8E=E6=AE=8B=E7=95=99=E7=9A=84=E6=97=A0=E7=94=A8import=20?=
+ =?UTF-8?q?arc.scene.event?=
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+---
+ core/src/mindustry/logic/LStatements.java | 1 -
+ 1 file changed, 1 deletion(-)
+
+diff --git a/core/src/mindustry/logic/LStatements.java b/core/src/mindustry/logic/LStatements.java
+index 71778636fff7bd8aff915f976bf5305b0151d0e8..f09db5728c4153cf9a38219e9c452ed332b7b37e 100644
+--- a/core/src/mindustry/logic/LStatements.java
++++ b/core/src/mindustry/logic/LStatements.java
+@@ -7,7 +7,6 @@ import arc.graphics.*;
+ import arc.math.*;
+ import arc.scene.*;
+ import arc.scene.actions.*;
+-import arc.scene.event.*;
+ import arc.scene.style.*;
+ import arc.scene.ui.*;
+ import arc.scene.ui.layout.*;
