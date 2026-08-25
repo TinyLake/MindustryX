@@ -28,14 +28,16 @@ MinRi2 <2275045670@qq.com>
 * 添加失效链接显示
 * 清除链接建筑时更新逻辑代码
 MinRi2 <2275045670@qq.com> on 2025/5/3
+
+JUMP按钮始终显示在积木内部(长短条一致)；短条模式下收缩两个条件输入框腾出空间
 ---
  core/src/mindustry/logic/LCanvas.java         | 53 ++++++++++++++++++-
  core/src/mindustry/logic/LExecutor.java       |  7 ++-
- core/src/mindustry/logic/LStatements.java     | 27 ++++++++++
+ core/src/mindustry/logic/LStatements.java     | 39 +++++++++++++-
  core/src/mindustry/logic/LogicDialog.java     | 19 +++++--
  .../world/blocks/logic/LogicBlock.java        | 39 ++++++++++----
  .../world/blocks/logic/MemoryBlock.java       | 26 ++++++++-
- 6 files changed, 154 insertions(+), 17 deletions(-)
+ 6 files changed, 164 insertions(+), 19 deletions(-)
 
 diff --git a/core/src/mindustry/logic/LCanvas.java b/core/src/mindustry/logic/LCanvas.java
 index 320b8e59cad0f196481e96e97b3abf4d6acd6006..8aaefa9e9e130f6c5f22765f35369579b639e916 100644
@@ -166,7 +168,7 @@ index 4941d9825fac1ae88f79e933ad2ea52b6878556f..b6d449a813411aa9f24801b3429de189
                  case pan -> {
                      control.input.logicCutscene = true;
 diff --git a/core/src/mindustry/logic/LStatements.java b/core/src/mindustry/logic/LStatements.java
-index 06fe7a5390616f0b9a9ba50a3201eb8a19ef6a80..18542aeabc408f9510f04406ec2d3ca214e7119f 100644
+index 06fe7a5390616f0b9a9ba50a3201eb8a19ef6a80..3c562b6c71351f1c3c3100f3a56754ba02c2952e 100644
 --- a/core/src/mindustry/logic/LStatements.java
 +++ b/core/src/mindustry/logic/LStatements.java
 @@ -4,6 +4,9 @@ import arc.*;
@@ -187,36 +189,69 @@ index 06fe7a5390616f0b9a9ba50a3201eb8a19ef6a80..18542aeabc408f9510f04406ec2d3ca2
  
  import static mindustry.Vars.*;
  import static mindustry.logic.LCanvas.*;
-@@ -1013,6 +1017,29 @@ public class LStatements{
+@@ -1013,6 +1017,7 @@ public class LStatements{
              table.table(this::rebuild);
  
              table.add().growX();
-+            if(!mobile || !Core.graphics.isPortrait()){
-+                table.button("JUMP", Styles.grayt, () -> {
-+                    if(dest == null) return;
-+                    //table, elem, dragLayout, table(y), scrollPane
-+                    var canvas = dest.parent.parent;
-+                    var scroll = (ScrollPane)canvas.parent;
-+                    scroll.setScrollY(scroll.getMaxY() - dest.y + scroll.getHeight() * 0.5f);
-+                    saveUI();
-+                    UIExt.announce(Core.bundle.format("mdtx.logic.jumpLine", destIndex));
-+
-+                    Element header = dest.getChildren().first();
-+                    dest.clearActions();
-+                    header.clearActions();
-+                    dest.addAction(Actions.repeat(2, Actions.sequence(
-+                    Actions.color(Pal.placing, 0.5f, Interp.smooth),
-+                    Actions.color(dest.st.category().color, 0.5f, Interp.smooth)
-+                    )));
-+                    header.addAction(Actions.repeat(2, Actions.sequence(
-+                    Actions.color(Pal.placing, 0.5f, Interp.smooth),
-+                    Actions.color(dest.st.category().color, 0.5f, Interp.smooth)
-+                    )));
-+                }).width(80f);
-+            }
++            table.button("JUMP", Styles.grayt, this::jumpToDest).width(64f);
              table.add(new JumpButton(() -> dest, s -> dest = s, this.elem)).size(30).right().padLeft(-8);
  
              String name = name();
+@@ -1030,6 +1035,35 @@ public class LStatements{
+ 
+         }
+ 
++        /** Scrolls the canvas to and highlights the current jump target. */
++        void jumpToDest(){
++            if(dest == null) return;
++            //table, elem, dragLayout, table(y), scrollPane
++            var canvas = dest.parent.parent;
++            if(!(canvas.parent instanceof ScrollPane scroll)) return;
++
++            //reset fling/pan state, so the visual scroll position eases to the
++            //target in ScrollPane.act() instead of teleporting instantly
++            scroll.cancel();
++            scroll.fling(0, 0, 0);
++            scroll.setVelocityY(0);
++            scroll.setScrollY(Mathf.clamp(scroll.getMaxY() - dest.y + scroll.getHeight() * 0.5f, 0, scroll.getMaxY()));
++            saveUI();
++            UIExt.announce(Core.bundle.format("mdtx.logic.jumpLine", destIndex));
++
++            Element header = dest.getChildren().first();
++            dest.clearActions();
++            header.clearActions();
++            dest.addAction(Actions.repeat(2, Actions.sequence(
++            Actions.color(Pal.placing, 0.5f, Interp.smooth),
++            Actions.color(dest.st.category().color, 0.5f, Interp.smooth)
++            )));
++            header.addAction(Actions.repeat(2, Actions.sequence(
++            Actions.color(Pal.placing, 0.5f, Interp.smooth),
++            Actions.color(dest.st.category().color, 0.5f, Interp.smooth)
++            )));
++        }
++
+         void rebuild(Table table){
+             table.clearChildren();
+             table.setColor(last);
+@@ -1041,7 +1075,8 @@ public class LStatements{
+         }
+ 
+         public static void addOp(LStatement st, Table t, ConditionOp op, Cons<ConditionOp> getter, String comp0, Cons<String> set0, String comp1, Cons<String> set2){
+-            if(op != ConditionOp.always) st.field(t, comp0, set0);
++            //MDTX compact rows mode: shrink the condition fields so the trailing JUMP button fits in the row
++            if(op != ConditionOp.always) st.field(t, comp0, set0).minWidth(80f).growX();
+ 
+             t.button(b -> {
+                 b.add(op.symbol);
+@@ -1049,7 +1084,7 @@ public class LStatements{
+             }, Styles.logict, () -> {
+             }).size(op == ConditionOp.always ? 80f : 48f, 40f).pad(4f).color(t.color);
+ 
+-            if(op != ConditionOp.always) st.field(t, comp1, set2);
++            if(op != ConditionOp.always) st.field(t, comp1, set2).minWidth(80f).growX();
+         }
+ 
+         //elements need separate conversion logic
 diff --git a/core/src/mindustry/logic/LogicDialog.java b/core/src/mindustry/logic/LogicDialog.java
 index be49cdec4be645c52bc8d8162138347a3893474c..c82d44fbf2c8971304df7d95ee1d96d04a75b822 100644
 --- a/core/src/mindustry/logic/LogicDialog.java
