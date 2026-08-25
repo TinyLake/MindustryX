@@ -33,11 +33,11 @@ JUMP按钮始终显示在积木内部(长短条一致)；短条模式下收缩�
 ---
  core/src/mindustry/logic/LCanvas.java         | 53 ++++++++++++++++++-
  core/src/mindustry/logic/LExecutor.java       |  7 ++-
- core/src/mindustry/logic/LStatements.java     | 41 ++++++++++++++
+ core/src/mindustry/logic/LStatements.java     | 45 ++++++++++++++--
  core/src/mindustry/logic/LogicDialog.java     | 19 +++++--
  .../world/blocks/logic/LogicBlock.java        | 39 ++++++++++----
  .../world/blocks/logic/MemoryBlock.java       | 26 ++++++++-
- 6 files changed, 168 insertions(+), 17 deletions(-)
+ 6 files changed, 167 insertions(+), 22 deletions(-)
 
 diff --git a/core/src/mindustry/logic/LCanvas.java b/core/src/mindustry/logic/LCanvas.java
 index 320b8e59cad0f196481e96e97b3abf4d6acd6006..8aaefa9e9e130f6c5f22765f35369579b639e916 100644
@@ -168,7 +168,7 @@ index 4941d9825fac1ae88f79e933ad2ea52b6878556f..b6d449a813411aa9f24801b3429de189
                  case pan -> {
                      control.input.logicCutscene = true;
 diff --git a/core/src/mindustry/logic/LStatements.java b/core/src/mindustry/logic/LStatements.java
-index 06fe7a5390616f0b9a9ba50a3201eb8a19ef6a80..f09db5728c4153cf9a38219e9c452ed332b7b37e 100644
+index 06fe7a5390616f0b9a9ba50a3201eb8a19ef6a80..35844d704731360b4ebc07f473cb1d35714ac18f 100644
 --- a/core/src/mindustry/logic/LStatements.java
 +++ b/core/src/mindustry/logic/LStatements.java
 @@ -4,6 +4,9 @@ import arc.*;
@@ -189,6 +189,15 @@ index 06fe7a5390616f0b9a9ba50a3201eb8a19ef6a80..f09db5728c4153cf9a38219e9c452ed3
  
  import static mindustry.Vars.*;
  import static mindustry.logic.LCanvas.*;
+@@ -818,7 +822,7 @@ public class LStatements{
+                 JumpStatement.addOp(this, t, op, o -> {
+                     op = o;
+                     rebuild(table);
+-                }, comp0, str -> comp0 = str, comp1, str -> comp1 = str);
++                }, comp0, str -> comp0 = str, comp1, str -> comp1 = str, 144f);
+             }).left();
+ 
+             table.row();
 @@ -1013,6 +1017,7 @@ public class LStatements{
              table.table(this::rebuild);
  
@@ -197,7 +206,7 @@ index 06fe7a5390616f0b9a9ba50a3201eb8a19ef6a80..f09db5728c4153cf9a38219e9c452ed3
              table.add(new JumpButton(() -> dest, s -> dest = s, this.elem)).size(30).right().padLeft(-8);
  
              String name = name();
-@@ -1030,6 +1035,35 @@ public class LStatements{
+@@ -1030,18 +1035,48 @@ public class LStatements{
  
          }
  
@@ -233,20 +242,31 @@ index 06fe7a5390616f0b9a9ba50a3201eb8a19ef6a80..f09db5728c4153cf9a38219e9c452ed3
          void rebuild(Table table){
              table.clearChildren();
              table.setColor(last);
-@@ -1038,6 +1072,13 @@ public class LStatements{
+ 
++            //compact rows mode: shrink the condition fields so the trailing JUMP button fits in the row
+             addOp(this, table, op, o -> {
                  op = o;
                  rebuild(table);
-             }, value, str -> value = str, compare, str -> compare = str);
-+
-+            //compact rows mode: shrink the condition fields so the trailing JUMP button fits in the row
-+            if(LCanvas.useRows()){
-+                for(Cell<?> cell : table.getCells()){
-+                    if(cell.get() instanceof TextField) cell.width(104f);
-+                }
-+            }
+-            }, value, str -> value = str, compare, str -> compare = str);
++            }, value, str -> value = str, compare, str -> compare = str, LCanvas.useRows() ? 104f : 144f);
          }
  
-         public static void addOp(LStatement st, Table t, ConditionOp op, Cons<ConditionOp> getter, String comp0, Cons<String> set0, String comp1, Cons<String> set2){
+-        public static void addOp(LStatement st, Table t, ConditionOp op, Cons<ConditionOp> getter, String comp0, Cons<String> set0, String comp1, Cons<String> set2){
+-            if(op != ConditionOp.always) st.field(t, comp0, set0);
++        public static void addOp(LStatement st, Table t, ConditionOp op, Cons<ConditionOp> getter, String comp0, Cons<String> set0, String comp1, Cons<String> set2, float fieldWidth){
++            if(op != ConditionOp.always) st.field(t, comp0, set0).width(fieldWidth);
+ 
+             t.button(b -> {
+                 b.add(op.symbol);
+@@ -1049,7 +1084,7 @@ public class LStatements{
+             }, Styles.logict, () -> {
+             }).size(op == ConditionOp.always ? 80f : 48f, 40f).pad(4f).color(t.color);
+ 
+-            if(op != ConditionOp.always) st.field(t, comp1, set2);
++            if(op != ConditionOp.always) st.field(t, comp1, set2).width(fieldWidth);
+         }
+ 
+         //elements need separate conversion logic
 diff --git a/core/src/mindustry/logic/LogicDialog.java b/core/src/mindustry/logic/LogicDialog.java
 index be49cdec4be645c52bc8d8162138347a3893474c..c82d44fbf2c8971304df7d95ee1d96d04a75b822 100644
 --- a/core/src/mindustry/logic/LogicDialog.java
