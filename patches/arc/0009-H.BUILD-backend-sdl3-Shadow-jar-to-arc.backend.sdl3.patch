@@ -1,0 +1,64 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: zsd2024 <zsd_2024@outlook.com>
+Date: Wed, 15 Jul 2026 16:22:24 +0800
+Subject: [PATCH] H.BUILD(backend-sdl3): Shadow jar to arc.backend.sdl3
+
+Add shadow plugin for relocation to arc.backend.sdl3 namespace to
+avoid class conflicts with the SDL2 backend. Wire outgoing variants
+to shadowJar so projects resolve the shaded artifact directly.
+---
+ backends/backend-sdl3/build.gradle | 35 +++++++++++++++++++++++++-----
+ 1 file changed, 29 insertions(+), 6 deletions(-)
+
+diff --git a/backends/backend-sdl3/build.gradle b/backends/backend-sdl3/build.gradle
+index d79fa64cd497b21ea2e5b75adc8dc1a84358a0c6..0c797eaa4239bbd296f4d44b03c135457101c444 100644
+--- a/backends/backend-sdl3/build.gradle
++++ b/backends/backend-sdl3/build.gradle
+@@ -1,17 +1,40 @@
++plugins{
++    id "com.gradleup.shadow" version "9.3.1"
++}
++
+ sourceSets.main.java.srcDirs = ["src"]
+ 
+-configurations{
+-    natives
++shadowJar{
++    relocate "arc.backend.sdl", "arc.backend.sdl3"
++    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
++    dependencies{
++        exclude(dependency("org.lwjgl:lwjgl"))
++        exclude(dependency("org.lwjgl:lwjgl-sdl"))
++        exclude(dependency("org.lwjgl:lwjgl-jemalloc"))
++        exclude(dependency("org.lwjgl:lwjgl-opengl"))
++    }
+ }
+ 
+ jar{
+-    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+-    from{
+-        configurations.natives.collect{ it.isDirectory() ? it : zipTree(it) }
++    enabled = false
++}
++
++// make project dependency resolve to shadowJar
++configurations{
++    apiElements{
++        outgoing{
++            artifacts.clear()
++            artifact tasks.named("shadowJar").map{ it.archiveFile }
++        }
++    }
++    runtimeElements{
++        outgoing{
++            artifacts.clear()
++            artifact tasks.named("shadowJar").map{ it.archiveFile }
++        }
+     }
+ }
+ 
+ dependencies{
+-    natives libraries.lwjgl
+     api libraries.lwjgl
+ }
+\ No newline at end of file
