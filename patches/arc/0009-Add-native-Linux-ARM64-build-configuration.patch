@@ -1,0 +1,50 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: mlfc666 <1323230180@qq.com>
+Date: Mon, 7 Sep 2026 19:40:38 +0800
+Subject: [PATCH] Add: native Linux ARM64 build configuration
+
+---
+ backends/backend-sdl/build.gradle | 23 +++++++++++++++++------
+ 1 file changed, 17 insertions(+), 6 deletions(-)
+
+diff --git a/backends/backend-sdl/build.gradle b/backends/backend-sdl/build.gradle
+index 2deda3bb5d51501ef946d95dad2c2b8e23af29be..7752faabe769139ef2cb91c93fb3c62fbba1cb0f 100644
+--- a/backends/backend-sdl/build.gradle
++++ b/backends/backend-sdl/build.gradle
+@@ -3,7 +3,7 @@ plugins{
+ }
+ 
+ sourceSets.main.java.srcDirs = ["src"]
+-sourceSets.main.resources.srcDirs = ["libs/linux64", "libs/macosx64","libs/windows32", "libs/windows64"]
++sourceSets.main.resources.srcDirs = ["libs/linux64", "libs/linuxarm64", "libs/macosx64", "libs/windows32", "libs/windows64"]
+ 
+ dependencies{
+     testImplementation aproj(":arc-core")
+@@ -92,11 +92,22 @@ jnigen{
+         headerDirs = ["$mainRoot/glew-2.2.0/include"]
+     }
+ 
+-    addLinux(x64, x86){
+-        cppFlags += execCmd("sdl2-config --cflags").split(" ")
+-        cFlags = cppFlags
+-        libraries = (execCmd("sdl2-config --libs") + " -Wl,-Bdynamic -lGL").split(" ")
+-        linkerFlags = "-shared -m64".split(" ")
++    def isArm64 = System.getProperty("os.arch") == "aarch64" || System.getProperty("os.arch") == "arm64"
++
++    if(!isArm64){
++        addLinux(x64, x86){
++            cppFlags += execCmd("sdl2-config --cflags").split(" ")
++            cFlags = cppFlags
++            libraries = (execCmd("sdl2-config --libs") + " -Wl,-Bdynamic -lGL").split(" ")
++            linkerFlags = "-shared -m64".split(" ")
++        }
++    }else{
++        addLinux(x64, ARM){
++            cFlags = (execCmd("sdl2-config --cflags") + " -c -Wall -O2 -fPIC -fmessage-length=0").split(" ")
++            cppFlags = cFlags
++            libraries = (execCmd("sdl2-config --libs") + " -Wl,-Bdynamic -lGL").split(" ")
++            linkerFlags = "-shared".split(" ")
++        }
+     }
+ 
+     addWindows(x64, x86){
