@@ -28,4 +28,17 @@ tasks{
         }
     }
     processResources.configure { dependsOn(writeMindustryX) }
+
+    val packetsFile = rootDir.parentFile.resolve("assets/packets.jsonl")
+    //protocol version is the integer build (e.g. 160.1 -> 160)
+    val protocolVersion = ((project.properties["upstreamBuild"] ?: "0") as String).substringBefore('.')
+
+    val syncPackets by registering(JavaExec::class) {
+        group = "mdtx"
+        description = "Sync since/until in assets/packets.jsonl with the current packet registration order"
+        dependsOn(tasks.named("classes"))
+        classpath = sourceSets["main"].runtimeClasspath
+        mainClass.set("mindustryX.tools.PacketSync")
+        args(packetsFile.absolutePath, protocolVersion)
+    }
 }

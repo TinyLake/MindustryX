@@ -37,3 +37,8 @@ git add --force Arc work assets/mod.hjson && git commit -m "Update HEAD -> $upst
 echo "Rebuilding patches"
 ./scripts/applyPatches.sh
 ./scripts/genPatches.sh
+
+echo
+echo "Syncing packet order"
+(cd work && gradle -q :core:syncPackets)
+git --no-pager diff -- assets/packets.jsonl
