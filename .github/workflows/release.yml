@@ -42,11 +42,12 @@ jobs:
           ./scripts/applyPatches.sh
           cd work
           gradle -Pbuildversion=${RELEASE_VERSION} --parallel \
-            desktop:dist server:dist core:genLoaderModAll android:assembleRelease 
+            desktop:dist desktop:distSdl3 server:dist core:genLoaderModAll android:assembleRelease 
           
           cd ..
           mkdir artifacts
           mv work/desktop/build/libs/Mindustry.jar artifacts/MindustryX-${{env.RELEASE_VERSION}}-Desktop.jar
+          mv work/desktop/build/libs/Mindustry-SDL3.jar artifacts/MindustryX-${{env.RELEASE_VERSION}}-Desktop-SDL3.jar
           mv work/server/build/libs/server-release.jar artifacts/server-${{env.RELEASE_VERSION}}.jar
           mv work/core/build/distributions/MindustryX.loader.dex.jar artifacts/dexed-MindustryX-${{env.RELEASE_VERSION}}.loader.jar
           mv work/android/build/outputs/apk/release/android-release.apk artifacts/MindustryX-${{env.RELEASE_VERSION}}-Android.apk

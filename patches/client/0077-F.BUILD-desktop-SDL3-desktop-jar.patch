@@ -1,0 +1,135 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: WayZer <himc.wicp@gmail.com>
+Date: Fri, 11 Sep 2026 23:12:11 +0800
+Subject: [PATCH] F.BUILD(desktop): SDL3 desktop jar
+
+Add distSdl3 task producing Mindustry-SDL3.jar backed by backend-sdl3.
+Make crash message box fall back to the LWJGL SDL3 dialog.
+---
+ desktop/build.gradle                          | 77 +++++++++++++++++++
+ .../mindustry/desktop/DesktopLauncher.java    | 14 +++-
+ 2 files changed, 90 insertions(+), 1 deletion(-)
+
+diff --git a/desktop/build.gradle b/desktop/build.gradle
+index f8a551daf5bd43b87f2abe543c599d76b37e9214..18f82b63279b3f91571748e6837674a3b62804ee 100644
+--- a/desktop/build.gradle
++++ b/desktop/build.gradle
+@@ -3,6 +3,14 @@ sourceSets.main.java.srcDirs = ["src/"]
+ project.ext.mainClassName = "mindustry.desktop.DesktopLauncher"
+ project.ext.assetsDir = new File("../core/assets")
+ 
++configurations{
++    sdl3Backend
++}
++
++dependencies{
++    sdl3Backend arcModule("backends:backend-sdl3")
++}
++
+ tasks.register('run', JavaExec){
+     dependsOn classes, ":core:allAssets"
+     mainClass = project.mainClassName
+@@ -34,6 +42,43 @@ tasks.register('run', JavaExec){
+     }
+ }
+ 
++tasks.register('runSdl3', JavaExec){
++    dependsOn classes, ":core:allAssets", configurations.sdl3Backend
++    mainClass = project.mainClassName
++    classpath = files(
++        sourceSets.main.runtimeClasspath.filter{ f ->
++            !f.path.replace('\\', '/').contains("/backend-sdl/")
++        },
++        configurations.sdl3Backend,
++        tasks.getByPath(":core:allAssets")
++    )
++    standardInput = System.in
++    workingDir = project.assetsDir
++    ignoreExitValue = true
++
++    if(System.getProperty("os.name").toLowerCase().contains("mac")){
++        jvmArgs("-XstartOnFirstThread")
++    }
++
++    jvmArgs += "-XX:+ShowCodeDetailsInExceptionMessages"
++
++    if(project.hasProperty("args")){
++        args Eval.me(project.getProperties()["args"])
++    }
++
++    if(project.hasProperty("jvmArgs")){
++        jvmArgs((List<String>) Eval.me(project.getProperties()["jvmArgs"]))
++    }
++
++    if(project.hasProperty("dataDir")){
++        environment("MINDUSTRY_DATA_DIR", project.getProperties()["dataDir"])
++    }
++
++    if(args.contains("debug")){
++        mainClass = "mindustry.debug.DebugLauncher"
++    }
++}
++
+ tasks.register('dist', Jar){
+     dependsOn configurations.runtimeClasspath
+     dependsOn ":desktop:processResources"
+@@ -60,3 +105,35 @@ tasks.register('dist', Jar){
+         attributes 'Multi-Release': 'true'
+     }
+ }
++
++tasks.register('distSdl3', Jar){
++    dependsOn configurations.runtimeClasspath
++    dependsOn configurations.sdl3Backend
++    dependsOn ":desktop:processResources"
++
++    from files(sourceSets.main.output.classesDirs)
++    from files(sourceSets.main.output.resourcesDir)
++    from{
++        configurations.runtimeClasspath.filter{ f ->
++            !f.path.replace('\\', '/').contains("/backend-sdl/")
++        }.collect{ it.isDirectory() ? it : zipTree(it) }
++    }
++    from{ configurations.sdl3Backend.collect{ it.isDirectory() ? it : zipTree(it) } }
++    from(files(tasks.getByPath(":core:allAssets")))
++    exclude("config/**")
++    exclude("**hs_err**.log")
++    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
++
++    //don't include steam shared libraries unless necessary
++    if(!versionModifier.contains("steam")){
++        exclude("**steam**.so", "**steam**.dll", "**steam**.dylib")
++    }
++
++    archiveFileName = "Mindustry-SDL3.jar"
++
++    manifest{
++        attributes 'Main-Class': project.mainClassName
++        attributes 'Enable-Native-Access': 'ALL-UNNAMED'
++        attributes 'Multi-Release': 'true'
++    }
++}
+diff --git a/desktop/src/mindustry/desktop/DesktopLauncher.java b/desktop/src/mindustry/desktop/DesktopLauncher.java
+index af4294e362c5874e0baa9376187f6ccdd6eb5157..87476d7898d055412713abc7e1cb165f1ef0ca8f 100644
+--- a/desktop/src/mindustry/desktop/DesktopLauncher.java
++++ b/desktop/src/mindustry/desktop/DesktopLauncher.java
+@@ -521,6 +521,18 @@ public class DesktopLauncher extends ClientLauncher{
+     }
+ 
+     private static void message(String message){
+-        SDL.SDL_ShowSimpleMessageBox(SDL.SDL_MESSAGEBOX_ERROR, "oh no", message);
++        try{
++            SDL.SDL_ShowSimpleMessageBox(SDL.SDL_MESSAGEBOX_ERROR, "oh no", message);
++            return;
++        }catch(Throwable ignored){
++        }
++        try{
++            Class<?> box = Class.forName("org.lwjgl.sdl.SDLMessageBox");
++            int error = box.getField("SDL_MESSAGEBOX_ERROR").getInt(null);
++            box.getMethod("SDL_ShowSimpleMessageBox", int.class, CharSequence.class, CharSequence.class, long.class)
++            .invoke(null, error, "oh no", message, 0L);
++        }catch(Throwable ignored){
++            Log.err(message);
++        }
+     }
+ }

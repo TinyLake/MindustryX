@@ -296,6 +296,7 @@ internal object UiTextBundleEn : UiTextBundle {
         "标记地图位置" to "Mark map location",
         "格" to "tiles",
         "检查更新失败，请稍后再试" to "Could not check for updates.\nPlease try again later.",
+        "未找到适用于当前平台的更新包" to "No update package available for the current platform.",
         "正式版" to "Stable Releases",
         "沙漏：" to "Hourglass:",
         "沙盒" to "Sandbox",

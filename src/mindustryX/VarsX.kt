@@ -28,6 +28,9 @@ object VarsX {
     var isLoader: Boolean = System.getProperty("mdtx.loader", "0") == "1"
 
     @JvmField
+    val isSdl3: Boolean = runCatching { Class.forName("org.lwjgl.sdl.SDL") }.isSuccess
+
+    @JvmField
     val bundle: UiTextBundle
 
     init {

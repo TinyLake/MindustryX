@@ -42,12 +42,12 @@ object AutoUpdate {
             val assets = json.get("assets").asArray().asIterable()
                 .map { Asset(it.getString("name"), it.getString("browser_download_url", "")) }
                 .sortedByDescending { it.name }
-            return assets.firstOrNull {
-                when {
-                    VarsX.isLoader -> it.name.contains("loader") && it.name.endsWith(".jar")
-                    OS.isAndroid -> it.name.endsWith(".apk")
-                    else -> it.name.endsWith("Desktop.jar")
-                }
+            return when {
+                VarsX.isLoader -> assets.firstOrNull { it.name.contains("loader") && it.name.endsWith(".jar") }
+                OS.isAndroid -> assets.firstOrNull { it.name.endsWith(".apk") }
+                useSdl3.value -> assets.firstOrNull { it.name.endsWith("Desktop-SDL3.jar") }
+                    ?: assets.firstOrNull { it.name.endsWith("Desktop.jar") }
+                else -> assets.firstOrNull { it.name.endsWith("Desktop.jar") }
             }
         }
     }
@@ -60,6 +60,7 @@ object AutoUpdate {
     val newVersion: Release? get() = latest?.takeIf { it.version > VarsX.version }
 
     val showUpdateDialog = SettingsV2.CheckPref("AutoUpdate.showUpdateDialog", true).apply { addFallbackName("showUpdateDialog") }
+    val useSdl3 = SettingsV2.CheckPref("AutoUpdate.useSdl3", VarsX.isSdl3)
     val ignoreOnce = SettingsV2.Data("AutoUpdate.ignoreOnce", "")
     val ignoreUntil = SettingsV2.Data("AutoUpdate.ignoreUntil", "")
 
@@ -165,6 +166,9 @@ object AutoUpdate {
             image().fillX().height(2f).row()
             add(i("预览版(更新更快,新功能体验,BUG修复)")).row()
             buildVersionList(versions.filter { !it.isRelease })
+            if (!VarsX.isLoader && !OS.isAndroid) {
+                add(useSdl3.ui.buildUI()).growX().padTop(4f).row()
+            }
 
             image().fillX().height(2f).row()
             if (version == null) {
@@ -183,8 +187,12 @@ object AutoUpdate {
             row()
 
             button(i("自动下载更新")) {
-                if (asset == null) return@button
-                startDownload(asset.copy(url = url)) { file ->
+                val selected = version.findAsset()
+                if (selected == null) {
+                    UIExt.announce(i("未找到适用于当前平台的更新包"))
+                    return@button
+                }
+                startDownload(selected.copy(url = if (url.isNotEmpty() && url != asset?.url) url else selected.url)) { file ->
                     if (VarsX.isLoader) {
                         Vars.mods.importMod(file)
                         file.delete()
