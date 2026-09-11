@@ -10,14 +10,14 @@ Content-Transfer-Encoding: 8bit
 
 ---
  core/build.gradle.kts                      |  1 +
- core/src/mindustry/core/ContentLoader.java | 17 +++++++++
- core/src/mindustry/core/NetClient.java     |  2 ++
- core/src/mindustry/io/SaveVersion.java     | 22 ++++++++++++
- core/src/mindustry/io/TypeIO.java          | 18 ++++++++--
- core/src/mindustry/net/Net.java            | 42 +++++++++++++++++++---
- core/src/mindustry/net/NetworkIO.java      | 42 +++++++++++++++++-----
+ core/src/mindustry/core/ContentLoader.java | 17 ++++++++
+ core/src/mindustry/core/NetClient.java     |  2 +
+ core/src/mindustry/io/SaveVersion.java     | 22 +++++++++++
+ core/src/mindustry/io/TypeIO.java          | 18 +++++++--
+ core/src/mindustry/net/Net.java            | 46 +++++++++++++++++++---
+ core/src/mindustry/net/NetworkIO.java      | 42 +++++++++++++++-----
  core/src/mindustry/net/Packets.java        |  2 +-
- 8 files changed, 128 insertions(+), 18 deletions(-)
+ 8 files changed, 132 insertions(+), 18 deletions(-)
 
 diff --git a/core/build.gradle.kts b/core/build.gradle.kts
 index 36ba5536564d9bfb4ca7493f2407fece2b64c1b1..1fe3cba38e53b11e66f6341b0cb6ccd02acff8ee 100644
@@ -161,7 +161,7 @@ index 9fcb7ba9fa5b466b8be97cc01f7ae322440c2129..7959d66562250368d4b819f5f8881b38
              boolean writePlan = !headless || !net.server();
              write.b(writePlan ? 1 : 0); //always has config
 diff --git a/core/src/mindustry/net/Net.java b/core/src/mindustry/net/Net.java
-index 19d39df1e9dade1b9ea1a7692899ac4f63dfaae8..d5b24e2ed0c70319326b008c910efe92ab80ad61 100644
+index 19d39df1e9dade1b9ea1a7692899ac4f63dfaae8..0401d65cef5256ca2d257271e21ae1dcda5f3c39 100644
 --- a/core/src/mindustry/net/Net.java
 +++ b/core/src/mindustry/net/Net.java
 @@ -1,6 +1,7 @@
@@ -191,7 +191,7 @@ index 19d39df1e9dade1b9ea1a7692899ac4f63dfaae8..d5b24e2ed0c70319326b008c910efe92
  import static mindustry.Vars.*;
  
  @SuppressWarnings("unchecked")
-@@ -57,6 +58,16 @@ public class Net{
+@@ -57,6 +58,17 @@ public class Net{
          Call.registerPackets();
      }
  
@@ -199,6 +199,7 @@ index 19d39df1e9dade1b9ea1a7692899ac4f63dfaae8..d5b24e2ed0c70319326b008c910efe92
 +    private static final ProtocolMap v153ProtocolMap = new ProtocolMap("v153");
 +    private static final ProtocolMap v155ProtocolMap = new ProtocolMap("v155");
 +    private static final ProtocolMap v158ProtocolMap = new ProtocolMap("v158");
++    private static final ProtocolMap v159ProtocolMap = new ProtocolMap("v159");
 +
 +    @MindustryXApi
 +    public static Seq<Class<? extends Packet>> allPacketClasses(){
@@ -208,7 +209,7 @@ index 19d39df1e9dade1b9ea1a7692899ac4f63dfaae8..d5b24e2ed0c70319326b008c910efe92
      /** Registers a new packet type for serialization. */
      public static <T extends Packet> int registerPacket(Prov<T> cons){
          int id = packetProvs.size;
-@@ -72,13 +83,27 @@ public class Net{
+@@ -72,13 +84,30 @@ public class Net{
      }
  
      public static byte getPacketId(Packet packet){
@@ -217,6 +218,7 @@ index 19d39df1e9dade1b9ea1a7692899ac4f63dfaae8..d5b24e2ed0c70319326b008c910efe92
 +        LogicExt.mockProtocol <= 153 ? v153ProtocolMap.getId(packet) :
 +        LogicExt.mockProtocol <= 155 ? v155ProtocolMap.getId(packet) :
 +        LogicExt.mockProtocol <= 158 ? v158ProtocolMap.getId(packet) :
++        LogicExt.mockProtocol <= 159 ? v159ProtocolMap.getId(packet) :
 +        packetToId.get(packet.getClass(), -1);
          if(id == -1) throw new ArcRuntimeException("Unknown packet type: " + packet.getClass());
          return (byte)id;
@@ -233,12 +235,14 @@ index 19d39df1e9dade1b9ea1a7692899ac4f63dfaae8..d5b24e2ed0c70319326b008c910efe92
 +            id2 = v155ProtocolMap.mapId(id2);
 +        }else if(LogicExt.mockProtocol <= 158){
 +            id2 = v158ProtocolMap.mapId(id2);
++        }else if(LogicExt.mockProtocol <= 159){
++            id2 = v159ProtocolMap.mapId(id2);
 +        }
 +        return ((Prov<T>)packetProvs.get(id2)).get();
      }
  
      public Net(NetProvider provider){
-@@ -215,6 +240,7 @@ public class Net{
+@@ -215,6 +244,7 @@ public class Net{
      }
  
      public void disconnect(){
@@ -246,7 +250,7 @@ index 19d39df1e9dade1b9ea1a7692899ac4f63dfaae8..d5b24e2ed0c70319326b008c910efe92
          if(active && !server){
              Log.info("Disconnecting.");
          }
-@@ -290,7 +316,13 @@ public class Net{
+@@ -290,7 +320,13 @@ public class Net{
              return;
          }
  
