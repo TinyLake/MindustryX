@@ -6,9 +6,9 @@ Subject: [PATCH] HR(RenderExt) overdriveZone mendZone
 ---
  core/src/mindustry/core/Renderer.java         |  5 ++++
  core/src/mindustry/graphics/Layer.java        |  3 +++
- .../world/blocks/defense/MendProjector.java   |  8 +++++++
- .../blocks/defense/OverdriveProjector.java    | 24 +++++++++++++++++++
- 4 files changed, 40 insertions(+)
+ .../world/blocks/defense/MendProjector.java   |  8 ++++++
+ .../blocks/defense/OverdriveProjector.java    | 26 +++++++++++++++++++
+ 4 files changed, 42 insertions(+)
 
 diff --git a/core/src/mindustry/core/Renderer.java b/core/src/mindustry/core/Renderer.java
 index 6a5ce2a23f6e9ac4ca9f87a4c5fe3c9e8320aa3a..b6bcd7b54943a5ff9167088b82872fe26546f746 100644
@@ -67,7 +67,7 @@ index 91ee4035ba5afcd8614fab31869526311fca7b58..e1978238268e8e09f3dd7a1a2c666894
  
              if(!Lod.l2) return;
 diff --git a/core/src/mindustry/world/blocks/defense/OverdriveProjector.java b/core/src/mindustry/world/blocks/defense/OverdriveProjector.java
-index 69712beaead065bffdccbf3c12c5c1b583c5355f..b669201323e86fee02e58197ed95ccfc8b18a3e1 100644
+index 69712beaead065bffdccbf3c12c5c1b583c5355f..0a58c282323888ef45acd3c806db7bd33b438e10 100644
 --- a/core/src/mindustry/world/blocks/defense/OverdriveProjector.java
 +++ b/core/src/mindustry/world/blocks/defense/OverdriveProjector.java
 @@ -15,6 +15,7 @@ import mindustry.ui.*;
@@ -91,7 +91,7 @@ index 69712beaead065bffdccbf3c12c5c1b583c5355f..b669201323e86fee02e58197ed95ccfc
      @Override
      public boolean outputsItems(){
          return false;
-@@ -137,6 +144,23 @@ public class OverdriveProjector extends Block{
+@@ -137,6 +144,25 @@ public class OverdriveProjector extends Block{
          public void draw(){
              super.draw();
  
@@ -105,10 +105,12 @@ index 69712beaead065bffdccbf3c12c5c1b583c5355f..b669201323e86fee02e58197ed95ccfc
 +                    Draw.color();
 +                    Draw.z(Layer.overdrive - 0.3f);
 +                }else{
++                    Draw.z(Layer.overdrive);
 +                    Draw.color(phaseHeat > 0.2 ? phaseColor : baseColor, pro_Transparency);
 +                    Lines.circle(x, y, realRange);
-+                    Draw.alpha(pro_Transparency * 0.1f);
++                    Draw.alpha(pro_Transparency * 0.2f);
 +                    Fill.circle(x, y, realRange);
++                    Draw.z(Layer.overdrive - 0.3f);
 +                }
 +            }
 +

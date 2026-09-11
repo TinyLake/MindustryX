@@ -159,7 +159,7 @@ index 30629e1f178cc2629584aabf599abf5d45909b2a..ea33db2196fb3fd261bae1d5fe29768e
      public void drawPlace(int x, int y, int rotation, boolean valid){
          super.drawPlace(x, y, rotation, valid);
 diff --git a/core/src/mindustry/world/blocks/defense/OverdriveProjector.java b/core/src/mindustry/world/blocks/defense/OverdriveProjector.java
-index b669201323e86fee02e58197ed95ccfc8b18a3e1..57d8b4ac27635c65154d9c1863001f3df84109d3 100644
+index 0a58c282323888ef45acd3c806db7bd33b438e10..098e6c9ce61c19459b264505f562350d76a90ee7 100644
 --- a/core/src/mindustry/world/blocks/defense/OverdriveProjector.java
 +++ b/core/src/mindustry/world/blocks/defense/OverdriveProjector.java
 @@ -84,7 +84,9 @@ public class OverdriveProjector extends Block{
