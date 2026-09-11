@@ -80,9 +80,6 @@ object VarsX {
     val noPlayerHitBox = CheckPref("noPlayerHitBox")
 
     @JvmField
-    val githubMirror = CheckPref("githubMirror")
-
-    @JvmField
     val itemSelectionHeight = SliderPref("gameUI.itemSelectionHeight", 4, 4, 12) { bundle.itemSelectionHeight(it) }.apply {
         addFallbackName("itemSelectionHeight")
     }

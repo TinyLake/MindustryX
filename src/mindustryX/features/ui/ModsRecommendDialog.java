@@ -23,6 +23,7 @@ import mindustry.mod.*;
 import mindustry.ui.*;
 import mindustry.ui.dialogs.*;
 import mindustryX.VarsX;
+import mindustryX.features.GithubAcceleration;
 import mindustryX.features.ui.comp.*;
 
 import java.text.*;
@@ -192,7 +193,7 @@ public class ModsRecommendDialog extends BaseDialog{
             return;
         }
 
-        Http.get("https://raw.githubusercontent.com/Anuken/MindustryMods/master/icons/" + repo.replace("/", "_"), res -> {
+        GithubAcceleration.get("https://raw.githubusercontent.com/Anuken/MindustryMods/master/icons/" + repo.replace("/", "_"), null, res -> {
             Pixmap pix = new Pixmap(res.getResult());
             Core.app.post(() -> {
                 try{

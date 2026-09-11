@@ -14,6 +14,7 @@ import mindustry.*;
 import mindustry.gen.*;
 import mindustry.graphics.*;
 import mindustry.ui.*;
+import mindustryX.features.GithubAcceleration;
 import mindustryX.features.ui.CommitsTable.CommitData.*;
 
 import java.text.*;
@@ -64,19 +65,14 @@ public class CommitsTable extends Table{
         commitsTable.clearChildren();
         commitsTable.add(new FLabel("@alphaLoading")).style(Styles.outlineLabel).expand().center();
 
-        HttpRequest request = Http.get(Vars.ghApi + "/repos/" + repo + "/commits");
-        request.header("Accept", "application/vnd.github+json");
-        request.header("User-Agent", "MindustryX");
-
-        request.error(e -> Core.app.post(() -> {
-            Log.err("Failed to load commits: ", e);
-            commitsTable.clearChildren();
-            commitsTable.add(new FLabel("@alphaLoadFailed")).style(Styles.outlineLabel).expand().center().row();
-            commitsTable.add(e.toString()).style(Styles.outlineLabel).fillX().center().row();
-        }));
-        request.submit(resp -> {
-            String result = resp.getResultAsString();
-            Seq<CommitData> data = new Json().fromJson(Seq.class, CommitData.class, result);
+        GithubAcceleration.get(Vars.ghApi + "/repos/" + repo + "/commits",
+        req -> {
+            req.header("Accept", "application/vnd.github+json");
+            req.header("User-Agent", "MindustryX");
+        },
+        resp -> {
+            String body = resp.getResultAsString();
+            Seq<CommitData> data = new Json().fromJson(Seq.class, CommitData.class, body);
             Core.app.post(() -> {
                 if(data == null){
                     commitsTable.clearChildren();
@@ -91,7 +87,13 @@ public class CommitsTable extends Table{
 
                 rebuildCommitsTable();
             });
-        });
+        },
+        e -> Core.app.post(() -> {
+            Log.err("Failed to load commits: ", e);
+            commitsTable.clearChildren();
+            commitsTable.add(new FLabel("@alphaLoadFailed")).style(Styles.outlineLabel).expand().center().row();
+            commitsTable.add(e.toString()).style(Styles.outlineLabel).fillX().center().row();
+        }));
     }
 
     private void rebuildCommitsTable(){
@@ -161,7 +163,7 @@ public class CommitsTable extends Table{
         TextureRegion region = AVATAR_CACHE.get(login, TextureRegion::new);
         if(region.texture == null){
             region.set(NOT_FOUND);
-            Http.get(url, res -> {
+            GithubAcceleration.get(url, null, res -> {
                 Pixmap pix = new Pixmap(res.getResult());
                 Core.app.post(() -> {
                     try{

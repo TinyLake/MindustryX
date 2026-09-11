@@ -1,0 +1,131 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: way-zer <himc.wicp@gmail.com>
+Date: Fri, 12 Dec 2025 14:49:28 +0800
+Subject: [PATCH] API: Http request hook
+
+---
+ arc-core/src/arc/util/Http.java | 42 +++++++++++++++++++++++++++++----
+ 1 file changed, 38 insertions(+), 4 deletions(-)
+
+diff --git a/arc-core/src/arc/util/Http.java b/arc-core/src/arc/util/Http.java
+index c172c5e3557b0223c62f89c54c9c4cc39099eed2..6b217286fc308c39c8adfd2be699360606969447 100644
+--- a/arc-core/src/arc/util/Http.java
++++ b/arc-core/src/arc/util/Http.java
+@@ -54,15 +54,28 @@ public class Http{
+     public static class HttpResponse{
+         private final HttpURLConnection connection;
+         private HttpStatus status;
++        private byte[] cachedResult;
+ 
+         protected HttpResponse(HttpURLConnection connection) throws IOException{
+             this.connection = connection;
+             this.status = HttpStatus.byCode(connection.getResponseCode());
+         }
+ 
++        protected HttpResponse(HttpStatus status, byte[] result){
++            this.connection = null;
++            this.status = status;
++            this.cachedResult = result == null ? Streams.emptyBytes : result;
++        }
++
++        /** Creates a response from raw bytes, without an underlying connection. */
++        public static HttpResponse ofBytes(int statusCode, byte[] result){
++            return new HttpResponse(HttpStatus.byCode(statusCode), result);
++        }
++
+         /** @return the length of received content in bytes as a long. May throw an exception (?) */
+         public long getContentLength(){
+-            return connection.getContentLength();
++            if(cachedResult != null) return cachedResult.length;
++            return connection == null ? 0 : connection.getContentLength();
+         }
+ 
+         /**
+@@ -74,17 +87,20 @@ public class Http{
+          * timeout is specified when creating the HTTP request, with {@link HttpRequest#timeout(int)}
+          */
+         public byte[] getResult(){
++            if(cachedResult != null) return cachedResult;
++            if(connection == null) return cachedResult = Streams.emptyBytes;
++
+             InputStream input = getResultAsStream();
+ 
+             // If the response does not contain any content, input will be null.
+             if(input == null){
+-                return Streams.emptyBytes;
++                return cachedResult = Streams.emptyBytes;
+             }
+ 
+             try{
+-                return Streams.copyBytes(input, connection.getContentLength());
++                return cachedResult = Streams.copyBytes(input, connection.getContentLength());
+             }catch(IOException e){
+-                return Streams.emptyBytes;
++                return cachedResult = Streams.emptyBytes;
+             }finally{
+                 Streams.close(input);
+             }
+@@ -99,6 +115,9 @@ public class Http{
+          * timeout is specified when creating the HTTP request, with {@link HttpRequest#timeout(int)}
+          */
+         public String getResultAsString(){
++            if(cachedResult != null) return new String(cachedResult, Strings.utf8);
++            if(connection == null) return "";
++
+             InputStream input = getResultAsStream();
+ 
+             // If the response does not contain any content, input will be null.
+@@ -122,6 +141,7 @@ public class Http{
+          * @return An {@link InputStream} with the {@link HttpResponse} data.
+          */
+         public InputStream getResultAsStream(){
++            if(cachedResult != null) return new ByteArrayInputStream(cachedResult);
+             try{
+                 return connection.getInputStream();
+             }catch(IOException e){
+@@ -136,6 +156,7 @@ public class Http{
+ 
+         /** @return the value of the header with the given name as a {@link String}, or null if the header is not set. */
+         public String getHeader(String name){
++            if(connection == null) return null;
+             return connection.getHeaderField(name);
+         }
+ 
+@@ -144,6 +165,7 @@ public class Http{
+          * represent the corresponding header values.
+          */
+         public ObjectMap<String, Seq<String>> getHeaders(){
++            if(connection == null) return new ObjectMap<>();
+             //convert between the struct types
+             ObjectMap<String, Seq<String>> out = new ObjectMap<>();
+             Map<String, List<String>> fields = connection.getHeaderFields();
+@@ -157,10 +179,17 @@ public class Http{
+ 
+     }
+ 
++    /** Called before a request is sent. Return true to take over the request: Http will not send it, and
++     * the handler must invoke {@link HttpRequest#success} or the request's error handler itself (possibly
++     * asynchronously). Return false to let Http send the request normally (the url may have been changed). */
++    public static Boolf<HttpRequest> onRequest;
++
+     public static class HttpRequest{
+         public HttpMethod method = HttpMethod.GET;
+         /** The URL to send this request to.*/
+         public String url;
++        /** Success callback for this request; set by Http before {@link Http#onRequest} is called. */
++        public ConsT<HttpResponse, Exception> success;
+         public ObjectMap<String, String> headers = new ObjectMap<>();
+         /**The time to wait for the HTTP request to be processed, use 0 to block until it is done. The timeout is used for both
+          * the timeout when establishing TCP connection, and the timeout until the first byte of data is received.*/
+@@ -247,6 +276,11 @@ public class Http{
+                 return;
+             }
+ 
++            this.success = success;
++            if(onRequest != null && onRequest.get(this)){
++                return;
++            }
++
+             try{
+                 URL url;
+ 

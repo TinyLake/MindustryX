@@ -81,16 +81,18 @@ object AutoUpdate {
     }
 
     fun getReleases(repo: String, result: (List<Release>) -> Unit) {
-        Http.get("https://api.github.com/repos/$repo/releases")
-            .timeout(30000)
-            .error { Log.warn("Fetch releases fail from $repo: $it"); result(emptyList()) }
-            .submit { res ->
+        GithubAcceleration.get("https://api.github.com/repos/$repo/releases", { it.timeout(30000) }) { response ->
+            response.onSuccess { res ->
                 val json = Jval.read(res.resultAsString)
                 val releases = json.asArray().map {
                     Release(repo, it.getString("html_url"), it.getString("tag_name"), it.getString("name"), it)
                 }.sortedByDescending { it.version }
                 result(releases)
+            }.onFailure { e ->
+                Log.warn("Fetch releases fail from $repo: $e")
+                result(emptyList())
             }
+        }
     }
 
     fun checkUpdate() {
@@ -247,29 +249,30 @@ object AutoUpdate {
             setFillParent(false)
             show()
         }
-        Http.get(asset.url).timeout(30000)
-            .error {
-                dialog.hide()
-                Vars.ui.showException(it)
-            }
-            .submit { res ->
+        GithubAcceleration.get(asset.url, { it.timeout(30000) }) { response ->
+            response.onSuccess { res ->
                 if (file.exists() && file.length() == res.contentLength) {
                     dialog.hide()
                     Core.app.post { endDownload(file) }
-                    return@submit
-                }
-                length = res.contentLength.toFloat() / 1024 / 1024
-                val buffer = 1024 * 1024
-                file.write(false, buffer).use { out ->
-                    Streams.copyProgress(res.resultAsStream, out, res.contentLength, buffer) {
-                        progress = it
-                        if (canceled) res.resultAsStream.close()
+                } else {
+                    length = res.contentLength.toFloat() / 1024 / 1024
+                    val buffer = 1024 * 1024
+                    file.write(false, buffer).use { out ->
+                        Streams.copyProgress(res.resultAsStream, out, res.contentLength, buffer) {
+                            progress = it
+                            if (canceled) res.resultAsStream.close()
+                        }
+                    }
+                    if (!canceled) {
+                        Core.app.post { endDownload(file) }
+                        dialog.hide()
                     }
                 }
-                if (canceled) return@submit
-                Core.app.post { endDownload(file) }
+            }.onFailure { e ->
                 dialog.hide()
+                Vars.ui.showException(e)
             }
+        }
     }
 
     /** 启动新jar，并替换旧jar内容。
