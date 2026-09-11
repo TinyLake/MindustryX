@@ -12,17 +12,17 @@ way-zer <himc.wicp@gmail.com> on 2024/6/9
 更好的Desktop适配
 way-zer <himc.wicp@gmail.com> on 2024/8/3
 ---
- .../src/mindustryX/loader/AndroidImpl.java    | 264 ++++++++++++++++++
+ .../src/mindustryX/loader/AndroidImpl.java    | 328 ++++++++++++++++++
  core/src/mindustry/mod/ModClassLoader.java    |   7 +
- 2 files changed, 271 insertions(+)
+ 2 files changed, 335 insertions(+)
  create mode 100644 android/src/mindustryX/loader/AndroidImpl.java
 
 diff --git a/android/src/mindustryX/loader/AndroidImpl.java b/android/src/mindustryX/loader/AndroidImpl.java
 new file mode 100644
-index 0000000000000000000000000000000000000000..83afa98efc910e4b549c8c55ab1449f1fea1dfcd
+index 0000000000000000000000000000000000000000..6e87ee9f906947eb937b9e3eaf371784460e9e2c
 --- /dev/null
 +++ b/android/src/mindustryX/loader/AndroidImpl.java
-@@ -0,0 +1,264 @@
+@@ -0,0 +1,328 @@
 +package mindustryX.loader;
 +
 +import android.app.*;
@@ -54,14 +54,22 @@ index 0000000000000000000000000000000000000000..83afa98efc910e4b549c8c55ab1449f1
 +        return Reflect.get(pathList, "dexElements");
 +    }
 +
++    private File getElementPath(Object element){
++        try{
++            return Reflect.get(element, "path");
++        }catch(Throwable ignored){
++            return Reflect.get(element, "file");
++        }
++    }
++
 +    private File findFirstJar(){
-+        return Reflect.get(getDexElements(Main.class.getClassLoader())[0], "path");
++        return getElementPath(getDexElements(Main.class.getClassLoader())[0]);
 +    }
 +
 +    @Override
 +    public void withSafeClassloader(String method){
 +        try{
-+            ClassLoader classLoader = new DexClassLoader(findFirstJar().getPath(), app.getFilesDir().getPath(), null, Core.class.getClassLoader());
++            ClassLoader classLoader = new DexClassLoader(findFirstJar().getPath(), app.getFilesDir().getPath(), app.getApplicationInfo().nativeLibraryDir, Core.class.getClassLoader());
 +            Reflect.invoke(classLoader.loadClass(Main.class.getName()), method);
 +        }catch(Exception e){
 +            throw new RuntimeException(e);
@@ -71,10 +79,8 @@ index 0000000000000000000000000000000000000000..83afa98efc910e4b549c8c55ab1449f1
 +    @Override
 +    public ClassLoader createClassloader(){
 +        ClassLoader parent = Core.class.getClassLoader();
-+        File apk = Reflect.get(getDexElements(parent)[0], "path");
-+//        List<File> nativeLibrary = Reflect.get(parentPathList, "nativeLibraryDirectories");
-+        assert parent != null;
-+        ClassLoader classLoader = new DexClassLoader(findFirstJar().getPath() + File.pathSeparator + apk.getPath(), app.getFilesDir().getPath(), null, parent){
++        File apk = getElementPath(getDexElements(parent)[0]);
++        ClassLoader classLoader = new DexClassLoader(findFirstJar().getPath() + File.pathSeparator + apk.getPath(), app.getFilesDir().getPath(), app.getApplicationInfo().nativeLibraryDir, parent){
 +            @Override
 +            protected Class<?> loadClass(String name, boolean resolve) throws ClassNotFoundException{
 +                if(!overwrite(name))
@@ -132,20 +138,7 @@ index 0000000000000000000000000000000000000000..83afa98efc910e4b549c8c55ab1449f1
 +                );
 +            }
 +        };
-+        Object pathList = Reflect.get(BaseDexClassLoader.class, classLoader, "pathList");
-+        Object parentPathList = Reflect.get(BaseDexClassLoader.class, parent, "pathList");
-+        Reflect.set(pathList, "nativeLibraryDirectories", Reflect.get(parentPathList, "nativeLibraryDirectories"));
-+        Reflect.set(pathList, "nativeLibraryPathElements", Reflect.get(parentPathList, "nativeLibraryPathElements"));
 +        return classLoader;
-+    }
-+
-+    private static Object[] makeDexElements(Object dexPathList, ArrayList<File> files, File optimizedDirectory){
-+        if(Build.VERSION.SDK_INT >= 23){
-+            ArrayList<IOException> suppressedExceptions = new ArrayList<>();
-+            return Reflect.invoke(dexPathList.getClass(), "makePathElements", new Object[]{files, optimizedDirectory, suppressedExceptions}, List.class, File.class, List.class);
-+        }else{
-+            return Reflect.invoke(dexPathList.getClass(), "makeDexElements", new Object[]{files, optimizedDirectory}, ArrayList.class, File.class);
-+        }
 +    }
 +
 +    @Override
@@ -168,7 +161,8 @@ index 0000000000000000000000000000000000000000..83afa98efc910e4b549c8c55ab1449f1
 +        AndroidApplicationConfiguration config = new AndroidApplicationConfiguration();
 +        config.useImmersiveMode = true;
 +        config.hideStatusBar = true;
-+        View view = newApp.initializeForView(new ClientLauncher(){
++        config.useGL30 = true;
++        ClientLauncher client = new ClientLauncher(){
 +
 +            @Override
 +            public void hide(){
@@ -186,7 +180,9 @@ index 0000000000000000000000000000000000000000..83afa98efc910e4b549c8c55ab1449f1
 +
 +            @Override
 +            public ClassLoader loadJar(Fi jar, ClassLoader parent) throws Exception{
-+                return new DexClassLoader(jar.file().getPath(), activity.getFilesDir().getPath(), null, parent){
++                //Required to load jar files in Android 14: https://developer.android.com/about/versions/14/behavior-changes-14#safer-dynamic-code-loading
++                jar.file().setReadOnly();
++                return new DexClassLoader(jar.file().getPath(), activity.getFilesDir().getPath(), activity.getApplicationInfo().nativeLibraryDir, parent){
 +                    @Override
 +                    protected Class<?> loadClass(String name, boolean resolve) throws ClassNotFoundException{
 +                        //check for loaded state
@@ -211,32 +207,67 @@ index 0000000000000000000000000000000000000000..83afa98efc910e4b549c8c55ab1449f1
 +
 +            @Override
 +            public void showFileChooser(FileChooserParams params){
-+                Cons<Fi> cons = params.handler;
-+                params.handler = (fi) -> {
-+                    Class<?> cls = fi.getClass();
-+                    if(cls.isAnonymousClass()){
-+                        cons.get(new Fi((File)Reflect.get(fi, "file")){
-+                            @Override
-+                            public InputStream read(){
-+                                return Reflect.invoke(fi, "read");
-+                            }
-+
-+                            @Override
-+                            public OutputStream write(boolean append){
-+                                return Reflect.invoke(fi, "write", new Object[]{append}, boolean.class);
-+                            }
-+                        });
-+                    }else if(cls.getSimpleName().equals("Fi")){
-+                        cons.get(new Fi((File)Reflect.get(fi, "file")));
-+                    }else{
-+                        Vars.ui.showErrorMessage("Not Implement showFileChooser");
-+                    }
-+                };
 +                try{
-+                    Reflect.invoke(params, "checkParams");
-+                    Reflect.invoke(platform, "showFileChooser", new Object[]{params}, FileChooserParams.class);
-+                }catch(Exception e){
++                    ClassLoader platformLoader = platform.getClass().getClassLoader();
++                    Class<?> paramsClass = platformLoader.loadClass("mindustry.ui.FileChooser$FileChooserParams");
++                    Class<?> consClass = platformLoader.loadClass("arc.func.Cons");
++                    Object platformParams = paramsClass.getDeclaredConstructor().newInstance();
++
++                    for(Field field : paramsClass.getFields()){
++                        String name = field.getName();
++                        if(name.equals("handler") || name.equals("multipleHandler")) continue;
++                        try{
++                            field.set(platformParams, Reflect.get(params, name));
++                        }catch(Throwable ignored){
++                        }
++                    }
++
++                    if(params.handler != null){
++                        Reflect.set(platformParams, "handler", Proxy.newProxyInstance(platformLoader, new Class[]{consClass}, (proxy, method, args) -> {
++                            if(method.getName().equals("get") && args != null && args.length == 1){
++                                params.handler.get(convertFi(args[0]));
++                            }
++                            return null;
++                        }));
++                    }
++                    if(params.multipleHandler != null){
++                        Reflect.set(platformParams, "multipleHandler", Proxy.newProxyInstance(platformLoader, new Class[]{consClass}, (proxy, method, args) -> {
++                            if(method.getName().equals("get") && args != null && args.length == 1 && args[0] instanceof Object[]){
++                                Object[] source = (Object[])args[0];
++                                Fi[] files = new Fi[source.length];
++                                for(int i = 0; i < source.length; i++) files[i] = convertFi(source[i]);
++                                params.multipleHandler.get(files);
++                            }
++                            return null;
++                        }));
++                    }
++
++                    Reflect.invoke(platformParams, "checkParams");
++                    Reflect.invoke(platform, "showFileChooser", new Object[]{platformParams}, paramsClass);
++                }catch(Throwable e){
 +                    Log.err(e);
++                }
++            }
++
++            private Fi convertFi(Object fi){
++                Class<?> cls = fi.getClass();
++                if(cls.isAnonymousClass()){
++                    return new Fi((File)Reflect.get(fi, "file")){
++                        @Override
++                        public InputStream read(){
++                            return Reflect.invoke(fi, "read");
++                        }
++
++                        @Override
++                        public OutputStream write(boolean append){
++                            return Reflect.invoke(fi, "write", new Object[]{append}, boolean.class);
++                        }
++                    };
++                }else if(cls.getSimpleName().equals("Fi")){
++                    return new Fi((File)Reflect.get(fi, "file"));
++                }else{
++                    Vars.ui.showErrorMessage("Not Implement showFileChooser");
++                    return null;
 +                }
 +            }
 +
@@ -249,7 +280,40 @@ index 0000000000000000000000000000000000000000..83afa98efc910e4b549c8c55ab1449f1
 +            public void endForceLandscape(){
 +                activity.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_USER);
 +            }
-+        }, config);
++        };
++        View view = newApp.initializeForView(client, config);
++        activity.getApplication().registerActivityLifecycleCallbacks(new android.app.Application.ActivityLifecycleCallbacks(){
++            @Override
++            public void onActivityCreated(Activity activity, Bundle savedInstanceState){
++            }
++
++            @Override
++            public void onActivityStarted(Activity activity){
++            }
++
++            @Override
++            public void onActivityResumed(Activity activity){
++                client.resume();
++            }
++
++            @Override
++            public void onActivityPaused(Activity activity){
++                client.pause();
++            }
++
++            @Override
++            public void onActivityStopped(Activity activity){
++            }
++
++            @Override
++            public void onActivitySaveInstanceState(Activity activity, Bundle outState){
++            }
++
++            @Override
++            public void onActivityDestroyed(Activity activity){
++                client.dispose();
++            }
++        });
 +        ClassLoader loader = Main.class.getClassLoader();
 +        assert loader != null;
 +        Files origin = Core.files;
