@@ -1,14 +1,14 @@
 --- ./mindustry/gen/Call.java
 +++ ./mindustry/gen/Call.java
-@@ -30,6 +30,7 @@ import mindustry.type.UnitType;
- import mindustry.type.Weather;
+@@ -32,6 +32,7 @@ import mindustry.ui.builder.MenuResult;
+ import mindustry.ui.builder.UiBuilder;
  import mindustry.world.Block;
  import mindustry.world.Tile;
 +import mindustryX.features.*;
  
  public class Call {
    public static void adminRequest(Player other, Packets.AdminAction action, Object params) {
-@@ -328,6 +329,7 @@ public class Call {
+@@ -318,6 +319,7 @@ public class Call {
    }
  
    public static void clientPlanSnapshot(int groupId, TypeIO.ClientBuildPlans plans) {
@@ -16,7 +16,7 @@
      if(mindustry.Vars.net.client()) {
        ClientPlanSnapshotCallPacket packet = new ClientPlanSnapshotCallPacket();
        packet.groupId = groupId;
-@@ -1240,6 +1242,7 @@ public class Call {
+@@ -1417,6 +1419,7 @@ public class Call {
    }
  
    public static void pingLocation(Player player, float x, float y, String text) {
@@ -49,7 +49,7 @@
      WRITE.f(viewY);
 --- ./mindustry/gen/Player.java
 +++ ./mindustry/gen/Player.java
-@@ -1155,15 +1155,17 @@ public class Player implements Drawc, Entityc, IndexableEntity__all, IndexableEn
+@@ -1155,15 +1155,17 @@ public class Player implements Drawc, Entityc, IndexableEntity__draw, IndexableE
        read.f();
      }
      this.name = mindustry.io.TypeIO.readString(read);
@@ -76,4 +76,3 @@
      }
      if(!islocal) {
        this.shooting = read.bool();
-

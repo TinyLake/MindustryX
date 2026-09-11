@@ -15,14 +15,18 @@ way-zer <himc.wicp@gmail.com> on 2024/5/3
 API(Settings) toggle and cycle
 way-zer <himc.wicp@gmail.com> on 2024/7/1
 ---
- .../ui/dialogs/SettingsMenuDialog.java        | 87 +++++++++++++------
- 1 file changed, 62 insertions(+), 25 deletions(-)
+ .../ui/dialogs/SettingsMenuDialog.java        | 88 +++++++++++++------
+ 1 file changed, 63 insertions(+), 25 deletions(-)
 
 diff --git a/core/src/mindustry/ui/dialogs/SettingsMenuDialog.java b/core/src/mindustry/ui/dialogs/SettingsMenuDialog.java
-index 389ce62256cd8903c57c7e90fc0fc366949334c2..b57a175a652c0e6c6329b4b28650bba7e6e9170a 100644
+index c7b0a2fb4efcc02a3f5b3bf7d3a2bd80316d1f51..7d502cae408bf6db57f9af7eb9b1a6a7af8518b1 100644
 --- a/core/src/mindustry/ui/dialogs/SettingsMenuDialog.java
 +++ b/core/src/mindustry/ui/dialogs/SettingsMenuDialog.java
-@@ -25,6 +25,7 @@ import mindustry.graphics.*;
+@@ -21,9 +21,11 @@ import mindustry.core.*;
+ import mindustry.ctype.*;
+ import mindustry.game.EventType.*;
+ import mindustry.gen.*;
++import mindustry.graphics.*;
  import mindustry.input.*;
  import mindustry.type.*;
  import mindustry.ui.*;
@@ -30,7 +34,7 @@ index 389ce62256cd8903c57c7e90fc0fc366949334c2..b57a175a652c0e6c6329b4b28650bba7
  
  import java.io.*;
  import java.util.zip.*;
-@@ -53,10 +54,7 @@ public class SettingsMenuDialog extends BaseDialog{
+@@ -52,10 +54,7 @@ public class SettingsMenuDialog extends BaseDialog{
          cont.add(main = new SettingsTable());
          shouldPause = true;
  
@@ -42,7 +46,7 @@ index 389ce62256cd8903c57c7e90fc0fc366949334c2..b57a175a652c0e6c6329b4b28650bba7
  
          int[] lastRebuildSize = {Core.graphics.getWidth(), Core.graphics.getHeight()};
          onResize(() -> {
-@@ -345,14 +343,6 @@ public class SettingsMenuDialog extends BaseDialog{
+@@ -344,14 +343,6 @@ public class SettingsMenuDialog extends BaseDialog{
          menu.button("@settings.game", Icon.settings, style, isize, () -> visible(0)).marginLeft(marg).row();
          menu.button("@settings.graphics", Icon.image, style, isize, () -> visible(1)).marginLeft(marg).row();
          menu.button("@settings.sound", Icon.volumeUp, style, isize, () -> visible(2)).marginLeft(marg).row();
@@ -57,7 +61,7 @@ index 389ce62256cd8903c57c7e90fc0fc366949334c2..b57a175a652c0e6c6329b4b28650bba7
          int i = 4;
          for(var cat : categories){
              int index = i;
-@@ -363,6 +353,14 @@ public class SettingsMenuDialog extends BaseDialog{
+@@ -362,6 +353,14 @@ public class SettingsMenuDialog extends BaseDialog{
              }
              i++;
          }
@@ -72,7 +76,7 @@ index 389ce62256cd8903c57c7e90fc0fc366949334c2..b57a175a652c0e6c6329b4b28650bba7
      }
  
      void addSettings(){
-@@ -648,13 +646,13 @@ public class SettingsMenuDialog extends BaseDialog{
+@@ -644,13 +643,13 @@ public class SettingsMenuDialog extends BaseDialog{
      private void visible(int index){
          prefs.clearChildren();
  
@@ -88,7 +92,7 @@ index 389ce62256cd8903c57c7e90fc0fc366949334c2..b57a175a652c0e6c6329b4b28650bba7
      }
  
      @Override
-@@ -696,22 +694,37 @@ public class SettingsMenuDialog extends BaseDialog{
+@@ -692,22 +691,37 @@ public class SettingsMenuDialog extends BaseDialog{
              table = new SettingsTable();
              builder.get(table);
          }
@@ -127,7 +131,7 @@ index 389ce62256cd8903c57c7e90fc0fc366949334c2..b57a175a652c0e6c6329b4b28650bba7
          }
  
          public SliderSetting sliderPref(String name, int def, int min, int max, StringProcessor s){
-@@ -730,47 +743,56 @@ public class SettingsMenuDialog extends BaseDialog{
+@@ -726,47 +740,56 @@ public class SettingsMenuDialog extends BaseDialog{
              SliderSetting res;
              list.add(res = new SliderSetting(name, def, min, max, step, s, changed));
              settings.defaults(name, def);
@@ -191,7 +195,7 @@ index 389ce62256cd8903c57c7e90fc0fc366949334c2..b57a175a652c0e6c6329b4b28650bba7
              clearChildren();
  
              for(Setting setting : list){
-@@ -784,6 +806,7 @@ public class SettingsMenuDialog extends BaseDialog{
+@@ -780,6 +803,7 @@ public class SettingsMenuDialog extends BaseDialog{
                  }
                  rebuild();
              }).margin(14).width(240f).pad(6);
@@ -199,7 +203,7 @@ index 389ce62256cd8903c57c7e90fc0fc366949334c2..b57a175a652c0e6c6329b4b28650bba7
          }
  
          public abstract static class Setting{
-@@ -882,6 +905,20 @@ public class SettingsMenuDialog extends BaseDialog{
+@@ -866,6 +890,20 @@ public class SettingsMenuDialog extends BaseDialog{
              }
          }
  
@@ -220,7 +224,7 @@ index 389ce62256cd8903c57c7e90fc0fc366949334c2..b57a175a652c0e6c6329b4b28650bba7
          public static class TextSetting extends Setting{
              String def;
              Cons<String> changed;
-@@ -905,9 +942,9 @@ public class SettingsMenuDialog extends BaseDialog{
+@@ -889,9 +927,9 @@ public class SettingsMenuDialog extends BaseDialog{
                      }
                  });
  

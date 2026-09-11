@@ -13,7 +13,7 @@ Content-Transfer-Encoding: 8bit
  1 file changed, 3 insertions(+)
 
 diff --git a/core/src/mindustry/async/PhysicsProcess.java b/core/src/mindustry/async/PhysicsProcess.java
-index 97c6d747b83eaf84af8da2c634e0c8dcb284e0ed..5d394bc4e4ca932f8c0d0bb84d2b385e572acc63 100644
+index 544166f25e67833ddd52eb98646f1c41ef270211..548e9ff923aaaa3c4bbab46df615381d97d9254b 100644
 --- a/core/src/mindustry/async/PhysicsProcess.java
 +++ b/core/src/mindustry/async/PhysicsProcess.java
 @@ -1,5 +1,6 @@
@@ -23,12 +23,12 @@ index 97c6d747b83eaf84af8da2c634e0c8dcb284e0ed..5d394bc4e4ca932f8c0d0bb84d2b385e
  import arc.math.*;
  import arc.math.geom.*;
  import arc.math.geom.QuadTree.*;
-@@ -88,6 +89,8 @@ public class PhysicsProcess implements AsyncProcess{
+@@ -72,6 +73,8 @@ public class PhysicsProcess implements AsyncProcess{
          for(PhysicRef ref : refs){
              Physicsc entity = ref.entity;
  
 +            if(entity instanceof Unitc unit && unit.isLocal() && mindustryX.VarsX.noPlayerHitBox.get()) continue;
 +
              //move by delta
-             entity.move(ref.body.x - ref.x, ref.body.y - ref.y);
+             entity.move(ref.body.x - ref.startX, ref.body.y - ref.startY);
          }

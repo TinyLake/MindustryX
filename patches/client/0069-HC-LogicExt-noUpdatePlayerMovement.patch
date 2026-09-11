@@ -9,7 +9,7 @@ Subject: [PATCH] HC(LogicExt) noUpdatePlayerMovement
  2 files changed, 4 insertions(+), 3 deletions(-)
 
 diff --git a/core/src/mindustry/input/DesktopInput.java b/core/src/mindustry/input/DesktopInput.java
-index 44b33a4a72cfdc659bfa90e87662529bf2e518eb..7f9e88d6a94b22386afed0fd577e4352fbb3d645 100644
+index ea64d4f16cde613986c16bbcdd8486163aa227b9..95039d456003b4228b8084e2a53190f6abf2b163 100644
 --- a/core/src/mindustry/input/DesktopInput.java
 +++ b/core/src/mindustry/input/DesktopInput.java
 @@ -448,7 +448,7 @@ public class DesktopInput extends InputHandler{
@@ -31,7 +31,7 @@ index 44b33a4a72cfdc659bfa90e87662529bf2e518eb..7f9e88d6a94b22386afed0fd577e4352
          }
  
 diff --git a/core/src/mindustry/input/MobileInput.java b/core/src/mindustry/input/MobileInput.java
-index f34727c38d8d158f787e604299920383eab395c9..eced0763f5a5c2e22b9947b5173af744653f7167 100644
+index 1c6d945096b205d8ecae9117ce6653f8aa5eca63..8154f353c2750d62a5fe1bfe9e78cf2a68c09277 100644
 --- a/core/src/mindustry/input/MobileInput.java
 +++ b/core/src/mindustry/input/MobileInput.java
 @@ -24,6 +24,7 @@ import mindustry.type.*;

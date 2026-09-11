@@ -9,7 +9,7 @@ Subject: [PATCH] OC: Patch Lines.circleVertices to limit the number of
  1 file changed, 4 insertions(+), 1 deletion(-)
 
 diff --git a/arc-core/src/arc/graphics/g2d/Lines.java b/arc-core/src/arc/graphics/g2d/Lines.java
-index 2c7b33e186559d26cd94069c5be3d8d6dbe201b8..2b93c4a388a0fbaea7612ba23c1854a53debd296 100644
+index bafa6ea6ab670b2b773c2d34b220b77d6129720a..f4dcece36c834eca0ccafe0827e9b9957703fd3b 100644
 --- a/arc-core/src/arc/graphics/g2d/Lines.java
 +++ b/arc-core/src/arc/graphics/g2d/Lines.java
 @@ -15,6 +15,7 @@ public class Lines{

@@ -27,11 +27,11 @@ Content-Transfer-Encoding: 8bit
  .../ui/fragments/PlacementFragment.java       |  6 ++----
  .../mindustry/world/blocks/defense/Radar.java |  9 +++++++++
  .../world/blocks/distribution/Router.java     |  3 ++-
- .../world/blocks/units/Reconstructor.java     | 12 ++++-------
- 20 files changed, 84 insertions(+), 56 deletions(-)
+ .../world/blocks/units/Reconstructor.java     |  5 +++--
+ 20 files changed, 83 insertions(+), 50 deletions(-)
 
 diff --git a/core/src/mindustry/ClientLauncher.java b/core/src/mindustry/ClientLauncher.java
-index a66d030178b2976a546c0eadd79bb77782204bce..3c5a2f8f084a1bdecfd5fac86ee37e81355e8c35 100644
+index 1d3b146ab2810e748f0bdb2563efd86de76df9d2..db74a378bd3c00295842f5f5b215c8d059bbd241 100644
 --- a/core/src/mindustry/ClientLauncher.java
 +++ b/core/src/mindustry/ClientLauncher.java
 @@ -40,6 +40,10 @@ public abstract class ClientLauncher extends ApplicationCore implements Platform
@@ -45,7 +45,7 @@ index a66d030178b2976a546c0eadd79bb77782204bce..3c5a2f8f084a1bdecfd5fac86ee37e81
          if(dataDir != null){
              Core.settings.setDataDirectory(files.absolute(dataDir));
          }
-@@ -261,10 +265,14 @@ public abstract class ClientLauncher extends ApplicationCore implements Platform
+@@ -260,10 +264,14 @@ public abstract class ClientLauncher extends ApplicationCore implements Platform
          }
  
          if(limitFps){
@@ -61,10 +61,10 @@ index a66d030178b2976a546c0eadd79bb77782204bce..3c5a2f8f084a1bdecfd5fac86ee37e81
          }
  
 diff --git a/core/src/mindustry/Vars.java b/core/src/mindustry/Vars.java
-index a26d3ef281ba57dea22c080c5ee041ed1bf7713e..46a4f61cec2656d73a5294a1acb254993f8ebde7 100644
+index 14bea386e2487d847858a73b63aaf607b2251666..5cf04e18473a02516f083c5b0bb00b9efa14f5b4 100644
 --- a/core/src/mindustry/Vars.java
 +++ b/core/src/mindustry/Vars.java
-@@ -299,7 +299,8 @@ public class Vars implements Loadable{
+@@ -300,7 +300,8 @@ public class Vars implements Loadable{
      public static NetServer netServer;
      public static NetClient netClient;
  
@@ -74,7 +74,7 @@ index a26d3ef281ba57dea22c080c5ee041ed1bf7713e..46a4f61cec2656d73a5294a1acb25499
  
      @Override
      public void loadAsync(){
-@@ -435,6 +436,11 @@ public class Vars implements Loadable{
+@@ -436,6 +437,11 @@ public class Vars implements Loadable{
                  if(!headless && (ui == null || ui.consolefrag == null)){
                      logBuffer.add(result);
                  }else if(!headless){
@@ -100,10 +100,10 @@ index 6f689550d4fd7e6541ad7bd78097870b7c61c40a..c72dd992945c8fbebee7a3950246b9f5
      private Seq<Team> activeTeams = new Seq<>(Team.class);
      /** Maps teams to a map of flagged tiles by flag. */
 diff --git a/core/src/mindustry/content/Blocks.java b/core/src/mindustry/content/Blocks.java
-index 27f6a687b621e9e1e14cd6340c7348d8c8e66414..7636d0504a66610086800b833ae0b05e24bec275 100644
+index 94c11e82fa1db20aa82b7f219c14743576db0e57..5799600248613c8e4d3cd193705589ae85c60d61 100644
 --- a/core/src/mindustry/content/Blocks.java
 +++ b/core/src/mindustry/content/Blocks.java
-@@ -2110,6 +2110,7 @@ public class Blocks{
+@@ -2112,6 +2112,7 @@ public class Blocks{
              arrowSpacing = 6f;
              bufferCapacity = 14;
              crushFragile = true;
@@ -111,7 +111,7 @@ index 27f6a687b621e9e1e14cd6340c7348d8c8e66414..7636d0504a66610086800b833ae0b05e
          }};
  
          phaseConveyor = new ItemBridge("phase-conveyor"){{
-@@ -2122,6 +2123,7 @@ public class Blocks{
+@@ -2124,6 +2125,7 @@ public class Blocks{
              pulse = true;
              envEnabled |= Env.space;
              consumePower(0.30f);
@@ -132,10 +132,10 @@ index 5e34e429ff04a9228b67c314c25128e277dcd6b8..33f6f8bca7473ace9951ca2a7247da67
  
          dynamic = new StatusEffect("dynamic"){{
 diff --git a/core/src/mindustry/core/Control.java b/core/src/mindustry/core/Control.java
-index 498fea5580593b0f205ce1988d7b173f82e918c0..8b2b01e1d7f74d26c836dd8aba3e9a89173b3bf1 100644
+index db6e2f518f6480abff5361b2a4e632231c2ede80..bb8cd8e8e873bcaa800fe1ec267872c69bc75b6c 100644
 --- a/core/src/mindustry/core/Control.java
 +++ b/core/src/mindustry/core/Control.java
-@@ -639,7 +639,8 @@ public class Control implements ApplicationListener, Loadable{
+@@ -642,7 +642,8 @@ public class Control implements ApplicationListener, Loadable{
                  BaseDialog dialog = new BaseDialog("@confirm");
                  dialog.setFillParent(true);
  
@@ -146,7 +146,7 @@ index 498fea5580593b0f205ce1988d7b173f82e918c0..8b2b01e1d7f74d26c836dd8aba3e9a89
                      Core.settings.put("uiscale", 100);
                      Core.settings.put("uiscalechanged", false);
 diff --git a/core/src/mindustry/core/NetClient.java b/core/src/mindustry/core/NetClient.java
-index 00ba1ca4db32ff2be45c18b6c65e4ab95fa95b0c..ed298514f6c3681d5de9c09c17c2ae104ead99b7 100644
+index eb890fbbbf6988b538b95a85b78033ace0fe9a69..2917de338876ff5ddeb4b694a0e7cdcc7d047e57 100644
 --- a/core/src/mindustry/core/NetClient.java
 +++ b/core/src/mindustry/core/NetClient.java
 @@ -78,6 +78,10 @@ public class NetClient implements ApplicationListener{
@@ -161,10 +161,10 @@ index 00ba1ca4db32ff2be45c18b6c65e4ab95fa95b0c..ed298514f6c3681d5de9c09c17c2ae10
  
              player.admin = false;
 diff --git a/core/src/mindustry/core/UI.java b/core/src/mindustry/core/UI.java
-index f629548331217db2131cc231e850ad259d567565..490a9d7a0b7dbf531311bef15e977910f1de9ffd 100644
+index 344004b14c7ab114efccd7638e61de65d94d4854..5474fc5bc83d5f26a6fb72d97928bfbb4a679dc1 100644
 --- a/core/src/mindustry/core/UI.java
 +++ b/core/src/mindustry/core/UI.java
-@@ -645,7 +645,7 @@ public class UI implements ApplicationListener, Loadable{
+@@ -643,7 +643,7 @@ public class UI implements ApplicationListener, Loadable{
                  t.remove();
              }
          });
@@ -173,7 +173,7 @@ index f629548331217db2131cc231e850ad259d567565..490a9d7a0b7dbf531311bef15e977910
          t.pack();
          t.act(0.1f);
          Core.scene.add(t);
-@@ -789,23 +789,7 @@ public class UI implements ApplicationListener, Loadable{
+@@ -712,23 +712,7 @@ public class UI implements ApplicationListener, Loadable{
      }
  
      public static String formatAmount(long number){
@@ -232,7 +232,7 @@ index b5ddcf8b3ece1b739c412d7e30954568a71b4ebe..815c6032b2ac90dd25ad13edcde39863
              Reads read = new Reads(stream);
  
 diff --git a/core/src/mindustry/graphics/MinimapRenderer.java b/core/src/mindustry/graphics/MinimapRenderer.java
-index b9ce86dd854634a016552adb8a426ca3b367bb32..349a7a146c339d95daf2bd45413ad7f092d2dcb9 100644
+index 6c411109c36055591120bea58a52cd120a531c55..fefc585b3725bf1855174861e8740cff6b984034 100644
 --- a/core/src/mindustry/graphics/MinimapRenderer.java
 +++ b/core/src/mindustry/graphics/MinimapRenderer.java
 @@ -102,7 +102,8 @@ public class MinimapRenderer{
@@ -245,7 +245,7 @@ index b9ce86dd854634a016552adb8a426ca3b367bb32..349a7a146c339d95daf2bd45413ad7f0
      }
  
      public float getZoom(){
-@@ -321,7 +322,8 @@ public class MinimapRenderer{
+@@ -319,7 +320,8 @@ public class MinimapRenderer{
      public @Nullable TextureRegion getRegion(){
          if(texture == null) return null;
  
@@ -256,7 +256,7 @@ index b9ce86dd854634a016552adb8a426ca3b367bb32..349a7a146c339d95daf2bd45413ad7f0
          float dy = (Core.camera.position.y / tilesize);
          dx = Mathf.clamp(dx, sz, world.width() - sz);
 diff --git a/core/src/mindustry/input/DesktopInput.java b/core/src/mindustry/input/DesktopInput.java
-index 92c10115af4edb8bb8bfd29a6b37d11d082df050..07e4445d9d0b6662922f4a830c6d1a5d5e86089b 100644
+index 541a0f9c8baf44ce9ed8595901c706a44dc5d8bf..79e204a3d9e5b181c2b2da95e3d3f8900a75b391 100644
 --- a/core/src/mindustry/input/DesktopInput.java
 +++ b/core/src/mindustry/input/DesktopInput.java
 @@ -415,6 +415,9 @@ public class DesktopInput extends InputHandler{
@@ -270,10 +270,10 @@ index 92c10115af4edb8bb8bfd29a6b37d11d082df050..07e4445d9d0b6662922f4a830c6d1a5d
                  }
              }
 diff --git a/core/src/mindustry/ui/dialogs/JoinDialog.java b/core/src/mindustry/ui/dialogs/JoinDialog.java
-index f0e987b5e8b0bbb335fa54af341cf2403535d0e9..dc9f97d02664acaca86db4a282d15bfcd3eff562 100644
+index 4d317988befe097723020cd9b8fb15d2296e4d71..2f4da991d5d432de1616e517d2996ed1e8403678 100644
 --- a/core/src/mindustry/ui/dialogs/JoinDialog.java
 +++ b/core/src/mindustry/ui/dialogs/JoinDialog.java
-@@ -61,11 +61,9 @@ public class JoinDialog extends BaseDialog{
+@@ -69,11 +69,9 @@ public class JoinDialog extends BaseDialog{
  
          loadServers();
  
@@ -288,7 +288,7 @@ index f0e987b5e8b0bbb335fa54af341cf2403535d0e9..dc9f97d02664acaca86db4a282d15bfc
  
          addCloseButton(mobile ? 190f : 210f);
  
-@@ -73,9 +71,14 @@ public class JoinDialog extends BaseDialog{
+@@ -81,9 +79,14 @@ public class JoinDialog extends BaseDialog{
              renaming = null;
              add.show();
          });
@@ -307,10 +307,10 @@ index f0e987b5e8b0bbb335fa54af341cf2403535d0e9..dc9f97d02664acaca86db4a282d15bfc
          add = new BaseDialog("@joingame.title");
          add.cont.add("@joingame.ip").padRight(5f).left();
 diff --git a/core/src/mindustry/ui/dialogs/KeybindDialog.java b/core/src/mindustry/ui/dialogs/KeybindDialog.java
-index d14fd47e8d0afa17a76b9112eb89cca4badeb2b8..3e756e8d13f498a9eadaa355ce07b097254e3d70 100644
+index 55799804f59d434cdf10e04907d667a9c2fb10ed..6fd22e1e617322ba5387e764fad1dbb0cfd1fa67 100644
 --- a/core/src/mindustry/ui/dialogs/KeybindDialog.java
 +++ b/core/src/mindustry/ui/dialogs/KeybindDialog.java
-@@ -79,7 +79,7 @@ public class KeybindDialog extends Dialog{
+@@ -80,7 +80,7 @@ public class KeybindDialog extends Dialog{
          String lastCategory = null;
          var tstyle = Styles.grayt;
  
@@ -319,7 +319,7 @@ index d14fd47e8d0afa17a76b9112eb89cca4badeb2b8..3e756e8d13f498a9eadaa355ce07b097
  
          for(KeyBind keybind : KeyBind.all){
              if(!searchText.isEmpty() && !bundle.get("keybind." + keybind.name + ".name", keybind.name).toLowerCase(Locale.ROOT).contains(searchText.toLowerCase(Locale.ROOT))){
-@@ -87,8 +87,8 @@ public class KeybindDialog extends Dialog{
+@@ -88,8 +88,8 @@ public class KeybindDialog extends Dialog{
              }
  
              if(lastCategory != keybind.category && keybind.category != null){
@@ -330,7 +330,7 @@ index d14fd47e8d0afa17a76b9112eb89cca4badeb2b8..3e756e8d13f498a9eadaa355ce07b097
                  lastCategory = keybind.category;
              }
  
-@@ -118,11 +118,15 @@ public class KeybindDialog extends Dialog{
+@@ -119,11 +119,15 @@ public class KeybindDialog extends Dialog{
                      openDialog(keybind);
                  }).size(bw, bh);
              }
@@ -338,7 +338,7 @@ index d14fd47e8d0afa17a76b9112eb89cca4badeb2b8..3e756e8d13f498a9eadaa355ce07b097
 +                keybind.value = new Axis(KeyCode.unset);
 +                keybind.save();
 +            }).size(bw, bh).pad(2f).padLeft(4f);
-             table.button("@settings.resetKey", tstyle, keybind::resetToDefault).disabled(t -> keybind.isDefault()).size(bw, bh).pad(2f).padLeft(4f);
+             if(keybind != Binding.menu) table.button("@settings.resetKey", tstyle, keybind::resetToDefault).disabled(t -> keybind.isDefault()).size(bw, bh).pad(2f).padLeft(4f);
              table.row();
          }
  
@@ -348,10 +348,10 @@ index d14fd47e8d0afa17a76b9112eb89cca4badeb2b8..3e756e8d13f498a9eadaa355ce07b097
  
      void rebind(KeyBind bind, KeyCode newKey){
 diff --git a/core/src/mindustry/ui/dialogs/PausedDialog.java b/core/src/mindustry/ui/dialogs/PausedDialog.java
-index b555d0544e23cfe286f70634e13f079d3b1bb3cb..9345ed419479db6ad5780fcbaee969caa159a7e0 100644
+index bb0442435f9f7c0f2472eec9f4844188a5ff4d9f..4eb699715bbf1ac89f310dbb97caf46b5f17f7cb 100644
 --- a/core/src/mindustry/ui/dialogs/PausedDialog.java
 +++ b/core/src/mindustry/ui/dialogs/PausedDialog.java
-@@ -186,7 +186,8 @@ public class PausedDialog extends BaseDialog{
+@@ -190,7 +190,8 @@ public class PausedDialog extends BaseDialog{
          boolean wasClient = net.client();
          if(net.client()) netClient.disconnectQuietly();
  
@@ -362,7 +362,7 @@ index b555d0544e23cfe286f70634e13f079d3b1bb3cb..9345ed419479db6ad5780fcbaee969ca
              return;
          }else if(checkPlaytest()){
 diff --git a/core/src/mindustry/ui/dialogs/SettingsMenuDialog.java b/core/src/mindustry/ui/dialogs/SettingsMenuDialog.java
-index b57a175a652c0e6c6329b4b28650bba7e6e9170a..cacb8422937db6f44230f5fce39b492164435a33 100644
+index 7d502cae408bf6db57f9af7eb9b1a6a7af8518b1..6e569225c9e5a5ee20d05b8660db24f2479f4199 100644
 --- a/core/src/mindustry/ui/dialogs/SettingsMenuDialog.java
 +++ b/core/src/mindustry/ui/dialogs/SettingsMenuDialog.java
 @@ -464,14 +464,14 @@ public class SettingsMenuDialog extends BaseDialog{
@@ -383,7 +383,7 @@ index b57a175a652c0e6c6329b4b28650bba7e6e9170a..cacb8422937db6f44230f5fce39b4921
                  Core.settings.put("minzoomingamemultiplier", (float)s / 100.0f);
              }
 diff --git a/core/src/mindustry/ui/fragments/ChatFragment.java b/core/src/mindustry/ui/fragments/ChatFragment.java
-index b807e2195df1162a09d74fde962f195bf57bc92c..cb241dd067e90851ca290d1035600eb557a52303 100644
+index f319d4b84be6530116f372674363896c095e3f26..c540dcd42b45140924793fdab1f021b3240f5b0c 100644
 --- a/core/src/mindustry/ui/fragments/ChatFragment.java
 +++ b/core/src/mindustry/ui/fragments/ChatFragment.java
 @@ -5,6 +5,7 @@ import arc.Input.*;
@@ -422,7 +422,7 @@ index b807e2195df1162a09d74fde962f195bf57bc92c..cb241dd067e90851ca290d1035600eb5
          team("/t"),
          admin("/a", player::admin)
 diff --git a/core/src/mindustry/ui/fragments/PlacementFragment.java b/core/src/mindustry/ui/fragments/PlacementFragment.java
-index 000060be035ba04d92178dea5d3711b2f18e008e..df34bb8d7acb2e2baded3c443020d1b82498a258 100644
+index 54dcd456bb1d38be5dd03d8285df43af89fda63e..06932a1ac0c04d74a5cf77ef43628d7117da88b9 100644
 --- a/core/src/mindustry/ui/fragments/PlacementFragment.java
 +++ b/core/src/mindustry/ui/fragments/PlacementFragment.java
 @@ -788,10 +788,8 @@ public class PlacementFragment{
@@ -472,10 +472,10 @@ index e24a3368d190f64fdaf002130a76f4799834c9a5..0811c4520865cff648084cbc743a1413
          public float progress;
          public float lastRadius = 0f;
 diff --git a/core/src/mindustry/world/blocks/distribution/Router.java b/core/src/mindustry/world/blocks/distribution/Router.java
-index 86ed42ccf3a8fffcc17b69d41c09787dd4e3e6a7..084cf0c49e6a2d75a5f1305d69358b290f3291e4 100644
+index 26cd0f0a823fd10a2e7267e33ccdefe8054b03f8..9741b417cdce460e739400bd80c520e07965df07 100644
 --- a/core/src/mindustry/world/blocks/distribution/Router.java
 +++ b/core/src/mindustry/world/blocks/distribution/Router.java
-@@ -49,7 +49,8 @@ public class Router extends Block{
+@@ -51,7 +51,8 @@ public class Router extends Block{
  
          @Override
          public boolean canControl(){
@@ -486,44 +486,25 @@ index 86ed42ccf3a8fffcc17b69d41c09787dd4e3e6a7..084cf0c49e6a2d75a5f1305d69358b29
  
          @Override
 diff --git a/core/src/mindustry/world/blocks/units/Reconstructor.java b/core/src/mindustry/world/blocks/units/Reconstructor.java
-index af9f6c8b67a12b9a2b66e9ace7d0b1f77fe6d584..67c22e3218094361ab104ef707b4d922956b7cae 100644
+index f02fcf384cb096e87e20e8626afdbbb51d676f49..bc365699aa1dd00dbe1c8076dc176a2110984929 100644
 --- a/core/src/mindustry/world/blocks/units/Reconstructor.java
 +++ b/core/src/mindustry/world/blocks/units/Reconstructor.java
-@@ -186,7 +186,7 @@ public class Reconstructor extends UnitBlock{
+@@ -197,7 +197,7 @@ public class Reconstructor extends UnitBlock{
  
          public boolean canSetCommand(){
              var output = unit();
--            return output != null && output.commands.size > 1 && output.allowChangeCommands;
+-            return output == null || output.allowChangeCommands;
 +            return output == null || (output.commands.size > 1 && output.allowChangeCommands);
          }
  
          @Override
-@@ -203,25 +203,21 @@ public class Reconstructor extends UnitBlock{
-         public void buildConfiguration(Table table){
-             var unit = unit();
- 
--            if(unit == null){
--                deselect();
--                return;
--            }
--
-             var group = new ButtonGroup<ImageButton>();
-             group.setMinCheckCount(0);
-             int i = 0, columns = 4;
+@@ -220,7 +220,8 @@ public class Reconstructor extends UnitBlock{
  
              table.background(Styles.black6);
  
--            var list = unit().commands;
+-            var list = unit == null ? Vars.content.unitCommands().copy() : unit().commands;
 +            //MDTX: allow client to preset the command.
-+            var list = unit == null ? Vars.content.unitCommands() : unit.commands;
++            var list = unit == null ? Vars.content.unitCommands().copy() : unit.commands;
              for(var item : list){
-                 ImageButton button = table.button(item.getIcon(), Styles.clearNoneTogglei, 40f, () -> {
+                 ImageButton button = table.button(item.getIcon(), Styles.clearNoneTogglei, 44f, () -> {
                      configure(item);
-                     deselect();
-                 }).tooltip(item.localized()).group(group).get();
- 
--                button.update(() -> button.setChecked(command == item || (command == null && unit.defaultCommand == item)));
-+                button.update(() -> button.setChecked(command == item || (command == null && unit != null && unit.defaultCommand == item)));
- 
-                 if(++i % columns == 0){
-                     table.row();

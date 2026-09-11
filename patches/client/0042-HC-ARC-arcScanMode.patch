@@ -9,10 +9,10 @@ Subject: [PATCH] HC: ARC arcScanMode
  2 files changed, 7 insertions(+), 1 deletion(-)
 
 diff --git a/core/src/mindustry/world/blocks/distribution/ItemBridge.java b/core/src/mindustry/world/blocks/distribution/ItemBridge.java
-index 3044a0b7a3cd1cd49f1d4f65c0c9426d96772872..8759ea8a204bf48b0c5e872662ef1b8e10f4d5cd 100644
+index 38a5c89fc498ef24a210ba7e9d78c47f2cc441c2..a7713dbfa9f3fb0e478892cb48feaa66c3486585 100644
 --- a/core/src/mindustry/world/blocks/distribution/ItemBridge.java
 +++ b/core/src/mindustry/world/blocks/distribution/ItemBridge.java
-@@ -503,7 +503,7 @@ public class ItemBridge extends Block{
+@@ -516,7 +516,7 @@ public class ItemBridge extends Block{
              int rel = relativeTo(other.x, other.y);
              int rel2 = relativeTo(to.tileX(), to.tileY());
  
@@ -21,7 +21,7 @@ index 3044a0b7a3cd1cd49f1d4f65c0c9426d96772872..8759ea8a204bf48b0c5e872662ef1b8e
          }
  
          @Override
-@@ -549,5 +549,8 @@ public class ItemBridge extends Block{
+@@ -562,5 +562,8 @@ public class ItemBridge extends Block{
                  wasMoved = moved = read.bool();
              }
          }
@@ -32,10 +32,10 @@ index 3044a0b7a3cd1cd49f1d4f65c0c9426d96772872..8759ea8a204bf48b0c5e872662ef1b8e
  }
 \ No newline at end of file
 diff --git a/core/src/mindustry/world/blocks/distribution/MassDriver.java b/core/src/mindustry/world/blocks/distribution/MassDriver.java
-index fee8d9eed427ce7cdd621b6128315dc774b15e09..67a23180524b99690039a306ff597d424ea261d7 100644
+index 03d7f6916639cf7dd55e060f225fdc7ba0e60b4f..a36274018bca500d16d0e86cba79b7b81e181f1f 100644
 --- a/core/src/mindustry/world/blocks/distribution/MassDriver.java
 +++ b/core/src/mindustry/world/blocks/distribution/MassDriver.java
-@@ -343,6 +343,9 @@ public class MassDriver extends Block{
+@@ -349,6 +349,9 @@ public class MassDriver extends Block{
              return other instanceof MassDriverBuild entity && other.isValid() && other.efficiency > 0 && entity.block == block && entity.link == pos() && within(other, range);
          }
  

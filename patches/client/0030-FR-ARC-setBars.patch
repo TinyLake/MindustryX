@@ -15,8 +15,8 @@ Subject: [PATCH] FR: ARC setBars
  .../world/blocks/defense/turrets/Turret.java  |  9 ++++++++
  .../world/blocks/heat/HeatConductor.java      |  4 ++--
  .../world/blocks/heat/HeatProducer.java       |  4 +++-
- .../world/blocks/payloads/BlockProducer.java  |  5 +++-
- .../blocks/payloads/PayloadDeconstructor.java |  4 +++-
+ .../world/blocks/payloads/BlockProducer.java  |  9 ++++----
+ .../blocks/payloads/PayloadDeconstructor.java |  8 +++----
  .../world/blocks/power/ImpactReactor.java     | 19 +++++++++++----
  .../world/blocks/power/PowerGenerator.java    |  3 +--
  .../world/blocks/production/BeamDrill.java    |  2 +-
@@ -24,13 +24,13 @@ Subject: [PATCH] FR: ARC setBars
  .../world/blocks/production/HeatCrafter.java  |  5 ++--
  .../world/blocks/production/WallCrafter.java  |  2 +-
  .../world/blocks/sandbox/LiquidSource.java    |  7 ------
- .../world/blocks/units/Reconstructor.java     |  6 ++++-
- .../world/blocks/units/UnitAssembler.java     |  4 ++++
- .../world/blocks/units/UnitFactory.java       |  4 +++-
- 23 files changed, 131 insertions(+), 39 deletions(-)
+ .../world/blocks/units/Reconstructor.java     | 11 ++++-----
+ .../world/blocks/units/UnitAssembler.java     |  7 +++---
+ .../world/blocks/units/UnitFactory.java       |  6 ++---
+ 23 files changed, 129 insertions(+), 59 deletions(-)
 
 diff --git a/core/src/mindustry/entities/abilities/ShieldArcAbility.java b/core/src/mindustry/entities/abilities/ShieldArcAbility.java
-index 36c61c5c641f197f6f13fcab6e5cc0da3e7181a4..b2c0fe2c649602c9d46fff7d3fdd8ac029bde4e8 100644
+index 7da8364473a4b507649f0727c94bd581c50f45dd..22b7b2dc6001718aef7a6fcbb486b73130d11c95 100644
 --- a/core/src/mindustry/entities/abilities/ShieldArcAbility.java
 +++ b/core/src/mindustry/entities/abilities/ShieldArcAbility.java
 @@ -14,6 +14,7 @@ import mindustry.entities.*;
@@ -41,16 +41,16 @@ index 36c61c5c641f197f6f13fcab6e5cc0da3e7181a4..b2c0fe2c649602c9d46fff7d3fdd8ac0
  
  public class ShieldArcAbility extends Ability{
  
-@@ -229,6 +230,6 @@ public class ShieldArcAbility extends Ability{
+@@ -241,6 +242,6 @@ public class ShieldArcAbility extends Ability{
  
      @Override
      public void displayBars(Unit unit, Table bars){
--        bars.add(new Bar("stat.shieldhealth", Pal.accent, () -> data / max)).row();
-+        bars.add(new Bar(() -> (data < 0 ? "[red]" : "") + "\uE84D " + FormatDefault.percent(data, max), () -> Pal.accent, () -> data / max)).row();
+-        bars.add(new Bar("stat.shieldhealth", Pal.accent, () -> data / scaledMax(unit))).row();
++        bars.add(new Bar(() -> (data < 0 ? "[red]" : "") + "\uE84D " + FormatDefault.percent(data, scaledMax(unit)), () -> Pal.accent, () -> data / scaledMax(unit))).row();
      }
  }
 diff --git a/core/src/mindustry/world/Block.java b/core/src/mindustry/world/Block.java
-index 039b49606f45d196b605e63a70c6cb7d61980383..0e5f4dd255b381039bbb6b8b41c0dedab34e0782 100644
+index 9bc97cd463de34636856969b6af6103e0249fed6..845dc269ab3516981542e86d6bc9359ad13aa7bc 100644
 --- a/core/src/mindustry/world/Block.java
 +++ b/core/src/mindustry/world/Block.java
 @@ -35,6 +35,7 @@ import mindustry.world.blocks.power.*;
@@ -61,7 +61,7 @@ index 039b49606f45d196b605e63a70c6cb7d61980383..0e5f4dd255b381039bbb6b8b41c0deda
  
  import java.lang.reflect.*;
  import java.util.*;
-@@ -680,7 +681,7 @@ public class Block extends UnlockableContent implements Senseable{
+@@ -693,7 +694,7 @@ public class Block extends UnlockableContent implements Senseable{
  
      public void addLiquidBar(Liquid liq){
          addBar("liquid-" + liq.name, entity -> !liq.unlockedNow() ? null : new Bar(
@@ -70,7 +70,7 @@ index 039b49606f45d196b605e63a70c6cb7d61980383..0e5f4dd255b381039bbb6b8b41c0deda
              liq::barColor,
              () -> entity.liquids.get(liq) / liquidCapacity
          ));
-@@ -688,15 +689,19 @@ public class Block extends UnlockableContent implements Senseable{
+@@ -701,15 +702,19 @@ public class Block extends UnlockableContent implements Senseable{
  
      /** Adds a liquid bar that dynamically displays a liquid type. */
      public <T extends Building> void addLiquidBar(Func<T, Liquid> current){
@@ -95,7 +95,7 @@ index 039b49606f45d196b605e63a70c6cb7d61980383..0e5f4dd255b381039bbb6b8b41c0deda
  
          if(consPower != null){
              boolean buffered = consPower.buffered;
-@@ -704,7 +709,11 @@ public class Block extends UnlockableContent implements Senseable{
+@@ -717,7 +722,11 @@ public class Block extends UnlockableContent implements Senseable{
  
              addBar("power", entity -> new Bar(
                  () -> buffered ? Core.bundle.format("bar.poweramount", Float.isNaN(entity.power.status * capacity) ? "<ERROR>" : UI.formatAmount((int)(entity.power.status * capacity))) :
@@ -109,7 +109,7 @@ index 039b49606f45d196b605e63a70c6cb7d61980383..0e5f4dd255b381039bbb6b8b41c0deda
                  () -> Mathf.zero(consPower.requestedPower(entity)) && entity.power.graph.getPowerProduced() + entity.power.graph.getBatteryStored() > 0f ? 1f : entity.power.status)
              );
 diff --git a/core/src/mindustry/world/blocks/defense/ForceProjector.java b/core/src/mindustry/world/blocks/defense/ForceProjector.java
-index a19a4f3b1730c3fda1dd7a06d3ec3b7a0241ebc7..6156ad9b240199dc05361ab73027b7f07010003e 100644
+index 79c133681f8de3042956086644352ceeaa3d1a49..d2faa7ad364cc1e560eea28412a9dce9579a4e37 100644
 --- a/core/src/mindustry/world/blocks/defense/ForceProjector.java
 +++ b/core/src/mindustry/world/blocks/defense/ForceProjector.java
 @@ -25,6 +25,7 @@ import mindustry.world.blocks.*;
@@ -120,7 +120,7 @@ index a19a4f3b1730c3fda1dd7a06d3ec3b7a0241ebc7..6156ad9b240199dc05361ab73027b7f0
  
  import static mindustry.Vars.*;
  
-@@ -96,7 +97,11 @@ public class ForceProjector extends Block{
+@@ -97,7 +98,11 @@ public class ForceProjector extends Block{
      @Override
      public void setBars(){
          super.setBars();
@@ -263,7 +263,7 @@ index 4ca81e9d207911d98c105acf14a75463bc0a9207..fad9b5eed6fe9b641d1b8802a7111af6
      }
  }
 diff --git a/core/src/mindustry/world/blocks/defense/turrets/Turret.java b/core/src/mindustry/world/blocks/defense/turrets/Turret.java
-index c1515b3e380a16d9bcb58dd1b359eac87d246056..83cbad1c568e8654e9a99e9ecc51f7977d38753a 100644
+index af98c295d01ce4222331ab8ace5c48e4ba20a4ea..74dbd7598312a8252ceafbed63699681832dde4a 100644
 --- a/core/src/mindustry/world/blocks/defense/turrets/Turret.java
 +++ b/core/src/mindustry/world/blocks/defense/turrets/Turret.java
 @@ -7,6 +7,7 @@ import arc.graphics.*;
@@ -274,7 +274,7 @@ index c1515b3e380a16d9bcb58dd1b359eac87d246056..83cbad1c568e8654e9a99e9ecc51f797
  import arc.struct.*;
  import arc.util.*;
  import arc.util.io.*;
-@@ -861,6 +862,14 @@ public class Turret extends ReloadTurret{
+@@ -869,6 +870,14 @@ public class Turret extends ReloadTurret{
              rotation = oldRot;
              reloadCounter = oldReload;
          }
@@ -340,14 +340,18 @@ index fd2058c6e53cc8a001f8ef6a57e8d90554d20fce..a11aadfc8c0665a52e637dce73403486
  
      public class HeatProducerBuild extends GenericCrafterBuild implements HeatBlock{
 diff --git a/core/src/mindustry/world/blocks/payloads/BlockProducer.java b/core/src/mindustry/world/blocks/payloads/BlockProducer.java
-index 21136e906b109c89fb5416d59e86e3ca8b84b3d2..5ee91abb0f443152687c4aa6342b347138a76c87 100644
+index e93832a4b46015c60a3a7022f28db173ce349f18..0c02e8966aeb0d5d03d5485af8006ec697fa0f81 100644
 --- a/core/src/mindustry/world/blocks/payloads/BlockProducer.java
 +++ b/core/src/mindustry/world/blocks/payloads/BlockProducer.java
-@@ -71,7 +71,10 @@ public abstract class BlockProducer extends PayloadBlock{
+@@ -72,11 +72,10 @@ public abstract class BlockProducer extends PayloadBlock{
      public void setBars(){
          super.setBars();
  
--        addBar("progress", (BlockProducerBuild entity) -> new Bar("bar.progress", Pal.ammo, () -> entity.recipe() == null ? 0f : (entity.progress / entity.recipe().buildTime)));
+-        addBar("progress", (BlockProducerBuild e) -> new Bar(
+-            () -> Core.bundle.format("bar.progress", Strings.autoFixed(e.fraction() * 100f, 0)),
+-            () -> Pal.ammo,
+-            e::fraction
+-        ));
 +        addBar("progress", (BlockProducerBuild entity) ->
 +                new Bar(() -> entity.recipe() == null ? (Iconc.crafting + "") : (Iconc.crafting + " " + Strings.fixed((entity.progress / entity.recipe().buildTime) * 100f, 0)  + " %"),
 +                        () -> Pal.ammo, () -> entity.recipe() == null ? 0f : (entity.progress / entity.recipe().buildTime))
@@ -356,14 +360,18 @@ index 21136e906b109c89fb5416d59e86e3ca8b84b3d2..5ee91abb0f443152687c4aa6342b3471
  
      public abstract class BlockProducerBuild extends PayloadBlockBuild<BuildPayload>{
 diff --git a/core/src/mindustry/world/blocks/payloads/PayloadDeconstructor.java b/core/src/mindustry/world/blocks/payloads/PayloadDeconstructor.java
-index 8b151af5dcdcab792b903a02b2012e7191209140..fe80ce93eb9291cdcb7ca2d43f34ed193bd2a60f 100644
+index a5e7f4300691296cb863cd42bf6f1b6eec8fd007..1c6d423f3165fca0b5aae45b41423b5040df6ff2 100644
 --- a/core/src/mindustry/world/blocks/payloads/PayloadDeconstructor.java
 +++ b/core/src/mindustry/world/blocks/payloads/PayloadDeconstructor.java
-@@ -45,7 +45,9 @@ public class PayloadDeconstructor extends PayloadBlock{
+@@ -49,11 +49,9 @@ public class PayloadDeconstructor extends PayloadBlock{
      public void setBars(){
          super.setBars();
  
--        addBar("progress", (PayloadDeconstructorBuild e) -> new Bar("bar.progress", Pal.ammo, () -> e.progress));
+-        addBar("progress", (PayloadDeconstructorBuild e) -> new Bar(
+-            () -> Core.bundle.format("bar.progress", Strings.autoFixed(e.progress * 100f, 0)),
+-            () -> Pal.ammo,
+-            () -> e.progress
+-        ));
 +        addBar("progress", (PayloadDeconstructorBuild e) ->
 +                new Bar(() -> Iconc.crafting + " " + Strings.fixed(e.progress * 100f, 0)  + " %",
 +                        () -> Pal.ammo, () -> e.progress));
@@ -371,11 +379,11 @@ index 8b151af5dcdcab792b903a02b2012e7191209140..fe80ce93eb9291cdcb7ca2d43f34ed19
  
      public class PayloadDeconstructorBuild extends PayloadBlockBuild<Payload>{
 diff --git a/core/src/mindustry/world/blocks/power/ImpactReactor.java b/core/src/mindustry/world/blocks/power/ImpactReactor.java
-index 0e438489051997426fb151f74ef5ae562ab4d3c4..d4c21e6ab8cea1783d92454497a0742c5a20e05d 100644
+index 03783a7e7f12585a17484c17c89ffe234f75bbe1..b58706e4994197d7c4853734111cc43df024e7a7 100644
 --- a/core/src/mindustry/world/blocks/power/ImpactReactor.java
 +++ b/core/src/mindustry/world/blocks/power/ImpactReactor.java
-@@ -54,11 +54,20 @@ public class ImpactReactor extends PowerGenerator{
-     public void setBars(){
+@@ -55,11 +55,20 @@ public class ImpactReactor extends PowerGenerator{
+         stats.timePeriod = itemDuration;
          super.setBars();
  
 -        addBar("power", (GeneratorBuild entity) -> new Bar(() ->
@@ -401,10 +409,10 @@ index 0e438489051997426fb151f74ef5ae562ab4d3c4..d4c21e6ab8cea1783d92454497a0742c
  
      @Override
 diff --git a/core/src/mindustry/world/blocks/power/PowerGenerator.java b/core/src/mindustry/world/blocks/power/PowerGenerator.java
-index 9b0ef63732d2cd574bf37f9f0a5fd0f3af378fd9..4c1065a12000cc5f9f4bb5a9fedda45878b6caa2 100644
+index d51b499ada81b87f856860fa837d3fb835ce3b31..54de9855471f9025694affbd5c512d048498f434 100644
 --- a/core/src/mindustry/world/blocks/power/PowerGenerator.java
 +++ b/core/src/mindustry/world/blocks/power/PowerGenerator.java
-@@ -73,8 +73,7 @@ public class PowerGenerator extends PowerDistributor{
+@@ -88,8 +88,7 @@ public class PowerGenerator extends PowerDistributor{
  
          if(hasPower && outputsPower){
              addBar("power", (GeneratorBuild entity) -> new Bar(() ->
@@ -428,7 +436,7 @@ index 7d571d071abaa9e263a33dff128d118822d738a1..839b23a763a157631db88137c2fc59e5
  
      @Override
 diff --git a/core/src/mindustry/world/blocks/production/GenericCrafter.java b/core/src/mindustry/world/blocks/production/GenericCrafter.java
-index 0fc1ef457bc960c9a2bd7dcebb3268ff932db3a3..0cbb46e54825ef7089812682fe529ec97b87d28c 100644
+index 4c40a18753035ca258ec273844e8e52bb49cb990..25ed9be80b0ee73e05b9de6fb10a9db93a088e91 100644
 --- a/core/src/mindustry/world/blocks/production/GenericCrafter.java
 +++ b/core/src/mindustry/world/blocks/production/GenericCrafter.java
 @@ -1,5 +1,6 @@
@@ -438,7 +446,7 @@ index 0fc1ef457bc960c9a2bd7dcebb3268ff932db3a3..0cbb46e54825ef7089812682fe529ec9
  import arc.graphics.g2d.*;
  import arc.math.*;
  import arc.math.geom.*;
-@@ -13,10 +14,13 @@ import mindustry.gen.*;
+@@ -14,10 +15,13 @@ import mindustry.gen.*;
  import mindustry.logic.*;
  import mindustry.mod.*;
  import mindustry.type.*;
@@ -452,7 +460,7 @@ index 0fc1ef457bc960c9a2bd7dcebb3268ff932db3a3..0cbb46e54825ef7089812682fe529ec9
  
  import static mindustry.Vars.*;
  
-@@ -369,5 +373,15 @@ public class GenericCrafter extends Block{
+@@ -386,5 +390,15 @@ public class GenericCrafter extends Block{
              warmup = read.f();
              if(legacyReadWarmup) read.f();
          }
@@ -469,7 +477,7 @@ index 0fc1ef457bc960c9a2bd7dcebb3268ff932db3a3..0cbb46e54825ef7089812682fe529ec9
      }
  }
 diff --git a/core/src/mindustry/world/blocks/production/HeatCrafter.java b/core/src/mindustry/world/blocks/production/HeatCrafter.java
-index 26376a294d5e446fd77f8b87d93c743db5e8921a..90e965dd8531b95a798097fbf755c143f78d5a5b 100644
+index bf168f35b97fe32e70009721921a5e843abdf779..e37b18f0c2780ca2cf0568a399892ecf012917e4 100644
 --- a/core/src/mindustry/world/blocks/production/HeatCrafter.java
 +++ b/core/src/mindustry/world/blocks/production/HeatCrafter.java
 @@ -7,6 +7,7 @@ import mindustry.logic.*;
@@ -505,7 +513,7 @@ index 9ae3c98364c860ed47d03592f9d660d1af1b753c..227ae98dc7025d416d82f45f539406a0
  
      @Override
 diff --git a/core/src/mindustry/world/blocks/sandbox/LiquidSource.java b/core/src/mindustry/world/blocks/sandbox/LiquidSource.java
-index 224539af1ec0a6c643959a6950fa096d783160ea..a211f5046439079a487a3b7a8a3562450c9b1ca6 100644
+index fe2998d05ff54ea7fa3adea70612f5dc6d44dac7..2a05d506c6e5bfb3b35568b8a8be77286382e9e6 100644
 --- a/core/src/mindustry/world/blocks/sandbox/LiquidSource.java
 +++ b/core/src/mindustry/world/blocks/sandbox/LiquidSource.java
 @@ -38,13 +38,6 @@ public class LiquidSource extends Block{
@@ -523,14 +531,19 @@ index 224539af1ec0a6c643959a6950fa096d783160ea..a211f5046439079a487a3b7a8a356245
      public void drawPlanConfig(BuildPlan plan, Eachable<BuildPlan> list){
          drawPlanConfigCenter(plan, plan.config, "center", true);
 diff --git a/core/src/mindustry/world/blocks/units/Reconstructor.java b/core/src/mindustry/world/blocks/units/Reconstructor.java
-index 67c22e3218094361ab104ef707b4d922956b7cae..eaf31a9daeee32d41fdaabde3f29fbd81fe00520 100644
+index bc365699aa1dd00dbe1c8076dc176a2110984929..f053ae30280795ab2e9d485d891104e4525a65a3 100644
 --- a/core/src/mindustry/world/blocks/units/Reconstructor.java
 +++ b/core/src/mindustry/world/blocks/units/Reconstructor.java
-@@ -68,7 +68,11 @@ public class Reconstructor extends UnitBlock{
+@@ -68,12 +68,11 @@ public class Reconstructor extends UnitBlock{
      public void setBars(){
          super.setBars();
  
--        addBar("progress", (ReconstructorBuild entity) -> new Bar("bar.progress", Pal.ammo, entity::fraction));
+-        addBar("progress", (ReconstructorBuild e) -> new Bar(
+-            () -> Core.bundle.format("bar.progress", Strings.autoFixed(e.fraction() * 100f, 0)),
+-            () -> Pal.ammo,
+-            e::fraction
+-        ));
+-
 +        addBar("progress",
 +            (ReconstructorBuild e) -> new Bar(() ->
 +                    Iconc.units + " " + Strings.fixed(e.progress * 100f / constructTime, 0) + "%" + " | " +
@@ -540,32 +553,37 @@ index 67c22e3218094361ab104ef707b4d922956b7cae..eaf31a9daeee32d41fdaabde3f29fbd8
          new Bar(
              () -> e.unit() == null ? "[lightgray]" + Iconc.cancel :
 diff --git a/core/src/mindustry/world/blocks/units/UnitAssembler.java b/core/src/mindustry/world/blocks/units/UnitAssembler.java
-index c021cc697284a1df230b3793a99d775eac8b7a9a..d768390173f93df752f41c1ade70497bae97aaca 100644
+index 1e7b517766f92784116fea428a590b030f127ebb..ca67494edd76f25b6b61b6cdfb150be55c3f2864 100644
 --- a/core/src/mindustry/world/blocks/units/UnitAssembler.java
 +++ b/core/src/mindustry/world/blocks/units/UnitAssembler.java
-@@ -126,6 +126,10 @@ public class UnitAssembler extends PayloadBlock{
+@@ -125,10 +125,9 @@ public class UnitAssembler extends PayloadBlock{
+             removeBar("liquid");
          }
  
-         addBar("progress", (UnitAssemblerBuild e) -> new Bar("bar.progress", Pal.ammo, () -> e.progress));
-+        addBar("progress", (UnitAssembler.UnitAssemblerBuild e) -> new Bar(() ->
-+                Iconc.units + " " + (int)(e.progress * 100) + "%" + " | " +Strings.fixed((e.plan().time * (1-e.progress))/(60f * Vars.state.rules.unitBuildSpeed(e.team) * e.timeScale()),0) +  " s",
+-        addBar("progress", (UnitAssemblerBuild e) -> new Bar(
+-            () -> Core.bundle.format("bar.progress", Strings.autoFixed(e.progress * 100f, 0)),
+-            () -> Pal.ammo,
+-            () -> e.progress
++        addBar("progress", (UnitAssemblerBuild e) -> new Bar(() ->
++                Iconc.units + " " + (int)(e.progress * 100) + "%" + " | " + Strings.fixed((e.plan().time * (1-e.progress))/(60f * Vars.state.rules.unitBuildSpeed(e.team) * e.timeScale()),0) +  " s",
 +                () -> Pal.ammo, () -> e.progress
-+        ));
+         ));
  
          addBar("units", (UnitAssemblerBuild e) ->
-             new Bar(() ->
 diff --git a/core/src/mindustry/world/blocks/units/UnitFactory.java b/core/src/mindustry/world/blocks/units/UnitFactory.java
-index 3d39feb33667a967dc3170e1954d532aabc8735d..061771d176aca6e4d056412a1a68a25d8b7863ff 100644
+index a2dd96845f2e86bc20b5e56066b4127b10295f0c..ed076fd6897816bf297839c825ffb1c5efa25fdd 100644
 --- a/core/src/mindustry/world/blocks/units/UnitFactory.java
 +++ b/core/src/mindustry/world/blocks/units/UnitFactory.java
-@@ -118,7 +118,9 @@ public class UnitFactory extends UnitBlock{
+@@ -118,10 +118,8 @@ public class UnitFactory extends UnitBlock{
      @Override
      public void setBars(){
          super.setBars();
--        addBar("progress", (UnitFactoryBuild e) -> new Bar("bar.progress", Pal.ammo, e::fraction));
+-        addBar("progress", (UnitFactoryBuild e) -> new Bar(
+-            () -> Core.bundle.format("bar.progress", Strings.autoFixed(e.fraction() * 100f, 0)),
+-            () -> Pal.ammo,
+-            e::fraction
 +        addBar("progress", (UnitFactoryBuild e) -> new Bar(() -> e.currentPlan == -1 ? Iconc.units + "[red] " + Iconc.cancel :
 +        (Iconc.units + " " + Strings.fixed(e.progress * 100f / plans.get(e.currentPlan).time, 0) + "% | " + Strings.fixed((plans.get(e.currentPlan).time - e.progress) / (60f * Vars.state.rules.unitBuildSpeed(e.team) * e.timeScale()), 0) + " s"), () -> Pal.ammo, e::fraction
-+        ));
+         ));
  
          addBar("units", (UnitFactoryBuild e) ->
-         new Bar(

@@ -119,7 +119,7 @@ index 815c6032b2ac90dd25ad13edcde398639c37b14f..6a4574b9c624055a0ddd6b1ca45f0133
          return new Schematic(tiles, new StringMap(), width, height);
      }
 diff --git a/core/src/mindustry/input/MobileInput.java b/core/src/mindustry/input/MobileInput.java
-index 0ad4c733dba850d448cf7ba61cfae7adb558d4be..ae17589b7a6f849aeda3673665263a8073cd5d78 100644
+index 5c640c3e1718fe9e4f6f21dc67dce863a921f7dc..c1c70a7808d971b400dfb9429593ddb47c70a3a8 100644
 --- a/core/src/mindustry/input/MobileInput.java
 +++ b/core/src/mindustry/input/MobileInput.java
 @@ -235,16 +235,11 @@ public class MobileInput extends InputHandler implements GestureListener{
@@ -142,10 +142,10 @@ index 0ad4c733dba850d448cf7ba61cfae7adb558d4be..ae17589b7a6f849aeda3673665263a80
  
                              rotation = plan.rotation;
 diff --git a/core/src/mindustry/world/blocks/environment/Floor.java b/core/src/mindustry/world/blocks/environment/Floor.java
-index ab4b3366aeeef1040b1d55f7c95bc28ad2d5e652..ef6fdcddcc3b0bfcb9c765f2d0c7342a1d9eedb0 100644
+index 1f9f6617cab0d456c4c9792f8d44fdfc195685bd..53ba3ce6dca18660c6d184fb7b5c7fa9d023e10c 100644
 --- a/core/src/mindustry/world/blocks/environment/Floor.java
 +++ b/core/src/mindustry/world/blocks/environment/Floor.java
-@@ -114,6 +114,7 @@ public class Floor extends Block{
+@@ -116,6 +116,7 @@ public class Floor extends Block{
          ignoreBuildDarkness = true;
          obstructsLight = false;
          placeEffect = Fx.rotateBlock;

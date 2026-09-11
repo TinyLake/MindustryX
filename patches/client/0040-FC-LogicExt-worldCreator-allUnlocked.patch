@@ -17,7 +17,7 @@ Content-Transfer-Encoding: 8bit
  6 files changed, 30 insertions(+), 8 deletions(-)
 
 diff --git a/core/src/mindustry/ctype/UnlockableContent.java b/core/src/mindustry/ctype/UnlockableContent.java
-index 620fad3a69d50db94a87076142e6637cfe3d88dc..5f57651de873b7a8b06bd41e5efe0827fac812e0 100644
+index d68b4e1ad12d1ebbea82ba2bc2e5692bde5fa8db..ebd2c3210aa59982b57834808781206d149d2985 100644
 --- a/core/src/mindustry/ctype/UnlockableContent.java
 +++ b/core/src/mindustry/ctype/UnlockableContent.java
 @@ -18,6 +18,7 @@ import mindustry.mod.*;
@@ -28,7 +28,7 @@ index 620fad3a69d50db94a87076142e6637cfe3d88dc..5f57651de873b7a8b06bd41e5efe0827
  
  import static mindustry.Vars.*;
  
-@@ -263,7 +264,7 @@ public abstract class UnlockableContent extends MappableContent{
+@@ -267,7 +268,7 @@ public abstract class UnlockableContent extends MappableContent{
      }
  
      public boolean unlockedNowHost(){
@@ -37,7 +37,7 @@ index 620fad3a69d50db94a87076142e6637cfe3d88dc..5f57651de873b7a8b06bd41e5efe0827
      }
  
      /** @return in multiplayer, whether this is unlocked for the host player, otherwise, whether it is unlocked for the local player (same as unlocked()) */
-@@ -275,7 +276,7 @@ public abstract class UnlockableContent extends MappableContent{
+@@ -279,7 +280,7 @@ public abstract class UnlockableContent extends MappableContent{
  
      /** @return whether this content is unlocked, or the player is in a custom (non-campaign) game. */
      public boolean unlockedNow(){
@@ -47,10 +47,10 @@ index 620fad3a69d50db94a87076142e6637cfe3d88dc..5f57651de873b7a8b06bd41e5efe0827
  
      public boolean unlocked(){
 diff --git a/core/src/mindustry/ui/dialogs/DatabaseDialog.java b/core/src/mindustry/ui/dialogs/DatabaseDialog.java
-index 23e4d12cebf578dac6aea18f0e8d4ea7bc6cc7d8..81a86b8676a990d130ba7d1a268e1bfc3faa324e 100644
+index 64c276c653197c99833610808b3f3f196dd5fcc5..b5da7a2ecf6e3f1defcaa40e8e3a722144dafb42 100644
 --- a/core/src/mindustry/ui/dialogs/DatabaseDialog.java
 +++ b/core/src/mindustry/ui/dialogs/DatabaseDialog.java
-@@ -51,6 +51,11 @@ public class DatabaseDialog extends BaseDialog{
+@@ -52,6 +52,11 @@ public class DatabaseDialog extends BaseDialog{
          });
          onResize(this::rebuild);
  
@@ -62,7 +62,7 @@ index 23e4d12cebf578dac6aea18f0e8d4ea7bc6cc7d8..81a86b8676a990d130ba7d1a268e1bfc
          all.margin(20).marginTop(0f).marginRight(30f);
  
          cont.top();
-@@ -132,7 +137,7 @@ public class DatabaseDialog extends BaseDialog{
+@@ -133,7 +138,7 @@ public class DatabaseDialog extends BaseDialog{
              for(int j = 0; j < categoryContents.size; j++){
                  String tagName = categoryContents.orderedKeys().get(j);
                  Seq<UnlockableContent> array = categoryContents.get(tagName).select(u ->
@@ -71,7 +71,7 @@ index 23e4d12cebf578dac6aea18f0e8d4ea7bc6cc7d8..81a86b8676a990d130ba7d1a268e1bfc
                  (tab == Planets.sun || u.allDatabaseTabs || u.databaseTabs.contains(tab)) &&
                  (text.isEmpty() || u.localizedName.toLowerCase(Locale.ROOT).contains(text))).as();
                  if(array.isEmpty()) continue;
-@@ -239,6 +244,6 @@ public class DatabaseDialog extends BaseDialog{
+@@ -241,6 +246,6 @@ public class DatabaseDialog extends BaseDialog{
      }
  
      boolean unlocked(UnlockableContent content){
@@ -80,7 +80,7 @@ index 23e4d12cebf578dac6aea18f0e8d4ea7bc6cc7d8..81a86b8676a990d130ba7d1a268e1bfc
      }
  }
 diff --git a/core/src/mindustry/ui/fragments/PlacementFragment.java b/core/src/mindustry/ui/fragments/PlacementFragment.java
-index df34bb8d7acb2e2baded3c443020d1b82498a258..e16a1ae7722573b06ddd0e4e1daf9a176158bff1 100644
+index 06932a1ac0c04d74a5cf77ef43628d7117da88b9..9c8734e1a9f61ff0be93e848e258caeae945ecef 100644
 --- a/core/src/mindustry/ui/fragments/PlacementFragment.java
 +++ b/core/src/mindustry/ui/fragments/PlacementFragment.java
 @@ -27,8 +27,10 @@ import mindustry.input.*;
@@ -123,10 +123,10 @@ index df34bb8d7acb2e2baded3c443020d1b82498a258..e16a1ae7722573b06ddd0e4e1daf9a17
      }
  
 diff --git a/core/src/mindustry/world/Block.java b/core/src/mindustry/world/Block.java
-index 0e5f4dd255b381039bbb6b8b41c0dedab34e0782..6d5eb7550582c00cb6f21c5d49065ac0e870a959 100644
+index 845dc269ab3516981542e86d6bc9359ad13aa7bc..d803b15f6586214348c237ab0127a05b28f859c1 100644
 --- a/core/src/mindustry/world/Block.java
 +++ b/core/src/mindustry/world/Block.java
-@@ -1027,11 +1027,11 @@ public class Block extends UnlockableContent implements Senseable{
+@@ -1040,11 +1040,11 @@ public class Block extends UnlockableContent implements Senseable{
      }
  
      public boolean isVisible(){

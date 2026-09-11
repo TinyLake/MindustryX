@@ -8,10 +8,10 @@ Subject: [PATCH] OS: update TypeIO.writeRequest
  1 file changed, 3 insertions(+), 2 deletions(-)
 
 diff --git a/core/src/mindustry/io/TypeIO.java b/core/src/mindustry/io/TypeIO.java
-index c96c4cf0f45c1b84cf3cde776dfd520aba66550a..669be278c60a16b8540d094afaccc083eaebda4a 100644
+index 4ddaaa362aaf88874ee9df3f58b21ede3d79bf95..71ba5bac52cd148cd479293424cc95265a7649a3 100644
 --- a/core/src/mindustry/io/TypeIO.java
 +++ b/core/src/mindustry/io/TypeIO.java
-@@ -539,8 +539,9 @@ public class TypeIO{
+@@ -653,8 +653,9 @@ public class TypeIO{
          if(!plan.breaking){
              write.s(plan.block.id);
              write.b((byte)plan.rotation);

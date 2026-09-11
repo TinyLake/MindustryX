@@ -8,10 +8,10 @@ Subject: [PATCH] C CommitsTable in ModsDialog
  1 file changed, 10 insertions(+), 1 deletion(-)
 
 diff --git a/core/src/mindustry/ui/dialogs/ModsDialog.java b/core/src/mindustry/ui/dialogs/ModsDialog.java
-index 6c065e3eb394270682b5a1c12b1903b754a8fce4..b1f234e256a2a3bd8358bebfde21548d0e474bde 100644
+index eb9da889bbef60366af2554a826c72ca48968d02..de519b009ef0333ca02b6a5d22a4f32315a67a43 100644
 --- a/core/src/mindustry/ui/dialogs/ModsDialog.java
 +++ b/core/src/mindustry/ui/dialogs/ModsDialog.java
-@@ -25,6 +25,7 @@ import mindustry.mod.Mods.*;
+@@ -27,6 +27,7 @@ import mindustry.mod.Mods.*;
  import mindustry.ui.*;
  import mindustryX.*;
  import mindustryX.features.*;
@@ -19,7 +19,7 @@ index 6c065e3eb394270682b5a1c12b1903b754a8fce4..b1f234e256a2a3bd8358bebfde21548d
  import mindustryX.features.ui.comp.*;
  
  import java.util.*;
-@@ -369,12 +370,20 @@ public class ModsDialog extends BaseDialog{
+@@ -385,12 +386,20 @@ public class ModsDialog extends BaseDialog{
                      }
                  }).size(50f).disabled(mod.root.type() == FileType.internal);
  

@@ -8,7 +8,7 @@ Subject: [PATCH] FC(LogicExt) limitUpdate
  1 file changed, 11 insertions(+)
 
 diff --git a/core/src/mindustry/entities/EntityGroup.java b/core/src/mindustry/entities/EntityGroup.java
-index f315ac8c950741e657c692d00442a022f9daf0fb..ea468bf62ac1f08c1f8fe56043089d55b51932a0 100644
+index f112265f63b77f8b561ecf5f68ee8590181d094b..1f71e11120a1667df8098e4e1336256080b6713a 100644
 --- a/core/src/mindustry/entities/EntityGroup.java
 +++ b/core/src/mindustry/entities/EntityGroup.java
 @@ -99,6 +99,17 @@ public class EntityGroup<T extends Entityc> implements Iterable<T>{

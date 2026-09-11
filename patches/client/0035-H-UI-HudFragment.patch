@@ -14,12 +14,12 @@ AuxiliaryTools, NewCoreItemsDisplay(新制核心资源显示), WaveInfoDisplay(�
  1 file changed, 24 insertions(+), 11 deletions(-)
 
 diff --git a/core/src/mindustry/ui/fragments/HudFragment.java b/core/src/mindustry/ui/fragments/HudFragment.java
-index 481593622856540a02b70496ffa1c35db88ac201..9dc2503d110ac9330c93ce07c25a0d01902f9aee 100644
+index cb7e7b27ccbb525a0fb7ad6bc5749637f78a8c68..85b879a1397c5a20e4963c468861f931c07b2de8 100644
 --- a/core/src/mindustry/ui/fragments/HudFragment.java
 +++ b/core/src/mindustry/ui/fragments/HudFragment.java
 @@ -339,16 +339,21 @@ public class HudFragment{
              t.name = "minimap/position";
-             t.visible(() -> Core.settings.getBool("minimap") && shown);
+             t.visible(() -> Core.settings.getBool("minimap") && shown());
              //minimap
 -            t.add(new Minimap()).name("minimap");
 +            t.add(new Minimap()).name("minimap").right();
@@ -47,7 +47,7 @@ index 481593622856540a02b70496ffa1c35db88ac201..9dc2503d110ac9330c93ce07c25a0d01
              t.top().right();
          });
  
-@@ -560,12 +565,19 @@ public class HudFragment{
+@@ -561,12 +566,19 @@ public class HudFragment{
                  IntFormat mem = new IntFormat("memory");
                  IntFormat memnative = new IntFormat("memory2");
  
@@ -67,7 +67,7 @@ index 481593622856540a02b70496ffa1c35db88ac201..9dc2503d110ac9330c93ce07c25a0d01
                  if(android){
                      info.label(() -> memnative.get((int)(Core.app.getJavaHeap() / 1024 / 1024), (int)(Core.app.getNativeHeap() / 1024 / 1024))).left().style(Styles.outlineLabel).name("memory2");
                  }else{
-@@ -575,8 +587,8 @@ public class HudFragment{
+@@ -576,8 +588,8 @@ public class HudFragment{
  
                  info.label(() -> ping.get(netClient.getPing())).visible(net::client).left().style(Styles.outlineLabel).name("ping").row();
                  info.label(() -> tps.get(state.serverTps == -1 ? 60 : state.serverTps)).visible(net::client).left().style(Styles.outlineLabel).name("tps").row();
@@ -78,11 +78,11 @@ index 481593622856540a02b70496ffa1c35db88ac201..9dc2503d110ac9330c93ce07c25a0d01
          });
  
          //core info
-@@ -595,7 +607,8 @@ public class HudFragment{
+@@ -596,7 +608,8 @@ public class HudFragment{
  
              t.table(c -> {
                  //core items
--                c.top().collapser(coreItems, () -> Core.settings.getBool("coreitems") && !mobile && shown).fillX().row();
+-                c.top().collapser(coreItems, () -> Core.settings.getBool("coreitems") && !mobile && shown()).fillX().row();
 +                //MDTX: replace coreItems with UIExt.coreItems, keep but invisible for compatibility.
 +                c.top().collapser(coreItems, () -> false).fillX().visible(false).row();
  

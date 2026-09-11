@@ -8,10 +8,10 @@ Subject: [PATCH] FC: reliableSync
  1 file changed, 1 insertion(+)
 
 diff --git a/core/src/mindustry/net/Net.java b/core/src/mindustry/net/Net.java
-index a4a580ba10bac5bdb7116df6cd451527ed19685b..ae3a07a5ad2e0d7a05cd3d73ab0242415a0f8bb5 100644
+index f13f739f44c6a0be7fabd47e9de236c2722d7c79..c1b89692968a21c682fedd807d7c57887259637f 100644
 --- a/core/src/mindustry/net/Net.java
 +++ b/core/src/mindustry/net/Net.java
-@@ -250,6 +250,7 @@ public class Net{
+@@ -251,6 +251,7 @@ public class Net{
          if(server){
              provider.sendAllServer(object, reliable);
          }else{

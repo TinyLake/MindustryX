@@ -9,10 +9,10 @@ Subject: [PATCH] OC: no bullet create when hidden
  2 files changed, 3 insertions(+), 1 deletion(-)
 
 diff --git a/core/src/mindustry/entities/bullet/BulletType.java b/core/src/mindustry/entities/bullet/BulletType.java
-index d7febf0b02e6e431a5433a66bf4ca44e28c95f4a..c92fa88030973e62fca6b5c9dc0eac309ee8c403 100644
+index fffdbcb76562943f4b48bd50ab8440c11fccdf9b..d916f5b63527160129d42d0c398c2e2b64c48601 100644
 --- a/core/src/mindustry/entities/bullet/BulletType.java
 +++ b/core/src/mindustry/entities/bullet/BulletType.java
-@@ -23,6 +23,7 @@ import mindustry.graphics.*;
+@@ -24,6 +24,7 @@ import mindustry.graphics.*;
  import mindustry.type.*;
  import mindustry.world.*;
  import mindustry.world.blocks.*;
@@ -20,7 +20,7 @@ index d7febf0b02e6e431a5433a66bf4ca44e28c95f4a..c92fa88030973e62fca6b5c9dc0eac30
  
  import static mindustry.Vars.*;
  
-@@ -916,6 +917,7 @@ public class BulletType extends Content implements Cloneable{
+@@ -929,6 +930,7 @@ public class BulletType extends Content implements Cloneable{
          @Nullable Entityc owner, @Nullable Entityc shooter, Team team, float x, float y, float angle, float damage, float velocityScl,
          float lifetimeScl, Object data, @Nullable Mover mover, float aimX, float aimY, @Nullable Teamc target
      ){
@@ -29,10 +29,10 @@ index d7febf0b02e6e431a5433a66bf4ca44e28c95f4a..c92fa88030973e62fca6b5c9dc0eac30
  
          if(!Mathf.chance(createChance)) return null;
 diff --git a/core/src/mindustry/type/Weapon.java b/core/src/mindustry/type/Weapon.java
-index 628a3026f563edaa238012b9100793c09d31a611..3d42a2bab2e9951cae5cb1a780b1a946ee29b5d0 100644
+index ba335a06c8dbeff1b08ace48d68741f20426d0c4..f74d44f50c3704e262a0c81e473bd88b703f10ee 100644
 --- a/core/src/mindustry/type/Weapon.java
 +++ b/core/src/mindustry/type/Weapon.java
-@@ -539,7 +539,7 @@ public class Weapon implements Cloneable{
+@@ -546,7 +546,7 @@ public class Weapon implements Cloneable{
  
      //override to do special things to a bullet after spawning
      protected void handleBullet(Unit unit, WeaponMount mount, Bullet bullet){

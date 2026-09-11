@@ -6,11 +6,11 @@ Subject: [PATCH] FIX.G(DataPatcher) refresh icons of all content after data
 
 including internal units created by blocks (e.g. BuildTurret), so they always have a fallback icon
 ---
- core/src/mindustry/mod/DataPatcher.java | 18 ++++++++++++++++++
- 1 file changed, 18 insertions(+)
+ core/src/mindustry/mod/DataPatcher.java | 17 +++++++++++++++++
+ 1 file changed, 17 insertions(+)
 
 diff --git a/core/src/mindustry/mod/DataPatcher.java b/core/src/mindustry/mod/DataPatcher.java
-index f4959335f0d566c1987267f5d54b0b7b6f3f54c7..980620c69a7670bb8bb99be4b2db64a75166c686 100644
+index 9b5a5e0041e63396b9bbb90c7a0914192769a202..61ae4ea9029ac92350fed13f491390e24626e12f 100644
 --- a/core/src/mindustry/mod/DataPatcher.java
 +++ b/core/src/mindustry/mod/DataPatcher.java
 @@ -1,5 +1,6 @@
@@ -20,7 +20,7 @@ index f4959335f0d566c1987267f5d54b0b7b6f3f54c7..980620c69a7670bb8bb99be4b2db64a7
  import arc.files.*;
  import arc.func.*;
  import arc.struct.*;
-@@ -19,9 +20,11 @@ import mindustry.mod.data.*;
+@@ -20,6 +21,7 @@ import mindustry.mod.data.*;
  import mindustry.type.*;
  import mindustry.world.*;
  import mindustry.world.blocks.*;
@@ -28,11 +28,7 @@ index f4959335f0d566c1987267f5d54b0b7b6f3f54c7..980620c69a7670bb8bb99be4b2db64a7
  import mindustry.world.consumers.*;
  import mindustry.world.draw.*;
  import mindustry.world.meta.*;
-+import mindustry.world.modules.*;
- 
- import java.lang.reflect.*;
- import java.util.*;
-@@ -261,6 +264,18 @@ public class DataPatcher{
+@@ -268,6 +270,18 @@ public class DataPatcher{
          }
  
          afterCallbacks.each(Runnable::run);
@@ -51,7 +47,7 @@ index f4959335f0d566c1987267f5d54b0b7b6f3f54c7..980620c69a7670bb8bb99be4b2db64a7
      }
  
      public void unapply(){
-@@ -333,6 +348,9 @@ public class DataPatcher{
+@@ -362,6 +376,9 @@ public class DataPatcher{
              }
          }
  

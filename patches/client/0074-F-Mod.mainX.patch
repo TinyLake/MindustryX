@@ -8,10 +8,10 @@ Subject: [PATCH] F: Mod.mainX
  1 file changed, 9 insertions(+)
 
 diff --git a/core/src/mindustry/mod/Mods.java b/core/src/mindustry/mod/Mods.java
-index 1edb8f0e9811f82b996b6bd10d97be1636b7ca58..8b4d45f9245c39f2971a56063c18d052ee807138 100644
+index 5353e32d29734196225a98e610108d45ef8daa28..52a42b9e974c9cf8bbe30e0c4d0497709f2d4644 100644
 --- a/core/src/mindustry/mod/Mods.java
 +++ b/core/src/mindustry/mod/Mods.java
-@@ -23,6 +23,7 @@ import mindustry.graphics.MultiPacker.*;
+@@ -24,6 +24,7 @@ import mindustry.graphics.MultiPacker.*;
  import mindustry.mod.ContentParser.*;
  import mindustry.type.*;
  import mindustry.ui.*;
@@ -19,7 +19,7 @@ index 1edb8f0e9811f82b996b6bd10d97be1636b7ca58..8b4d45f9245c39f2971a56063c18d052
  import mindustryX.features.MetricCollector.*;
  
  import java.io.*;
-@@ -1101,6 +1102,11 @@ public class Mods implements Loadable{
+@@ -1111,6 +1112,11 @@ public class Mods implements Loadable{
  
              String camelized = meta.name.replace(" ", "");
              String mainClass = meta.main == null ? camelized.toLowerCase(Locale.ROOT) + "." + camelized + "Mod" : meta.main;
@@ -31,7 +31,7 @@ index 1edb8f0e9811f82b996b6bd10d97be1636b7ca58..8b4d45f9245c39f2971a56063c18d052
              String baseName = meta.name.toLowerCase(Locale.ROOT).replace(" ", "-");
  
              var other = mods.find(m -> m.name.equals(baseName));
-@@ -1391,6 +1397,9 @@ public class Mods implements Loadable{
+@@ -1407,6 +1413,9 @@ public class Mods implements Loadable{
          /** Minimum game version that this mod requires, e.g. "140.1" */
          public String minGameVersion = "0";
          public @Nullable String displayName, author, description, subtitle, version, main, repo;

@@ -55,7 +55,7 @@ index 0ef333e870eebe26ee345a02be06fa064e800096..8a3f089751b6607d7e40d0e837943d8a
  
                  Draw.color();
 diff --git a/core/src/mindustry/world/blocks/defense/ForceProjector.java b/core/src/mindustry/world/blocks/defense/ForceProjector.java
-index 6156ad9b240199dc05361ab73027b7f07010003e..b9f9b4262151e7f3c89a5db139f056d8324ef0a3 100644
+index d2faa7ad364cc1e560eea28412a9dce9579a4e37..840e0bb8c13aa34d53ba5f54892e44c7451388b6 100644
 --- a/core/src/mindustry/world/blocks/defense/ForceProjector.java
 +++ b/core/src/mindustry/world/blocks/defense/ForceProjector.java
 @@ -2,6 +2,7 @@ package mindustry.world.blocks.defense;
@@ -66,7 +66,7 @@ index 6156ad9b240199dc05361ab73027b7f07010003e..b9f9b4262151e7f3c89a5db139f056d8
  import arc.func.*;
  import arc.graphics.*;
  import arc.graphics.g2d.*;
-@@ -164,6 +165,7 @@ public class ForceProjector extends Block{
+@@ -165,6 +166,7 @@ public class ForceProjector extends Block{
          Draw.color(player.team().color);
          Lines.stroke(1f);
          Lines.poly(x * tilesize + offset, y * tilesize + offset, sides, radius, shieldRotation);
@@ -121,7 +121,7 @@ index 57d8b4ac27635c65154d9c1863001f3df84109d3..890d9444e6c670207929cd63f1b624c3
          indexer.eachBlock(player.team(), x * tilesize + offset, y * tilesize + offset, range, other -> other.block.canOverdrive, other -> Drawf.selected(other, Tmp.c1.set(baseColor).a(Mathf.absin(4f, 1f))));
      }
 diff --git a/core/src/mindustry/world/blocks/defense/turrets/Turret.java b/core/src/mindustry/world/blocks/defense/turrets/Turret.java
-index 83cbad1c568e8654e9a99e9ecc51f7977d38753a..b6ebb722a42a067de5d715dffc4ddf5bd4a82f85 100644
+index 74dbd7598312a8252ceafbed63699681832dde4a..db333f0ddbf66c99deebd6abad4e262942b8111e 100644
 --- a/core/src/mindustry/world/blocks/defense/turrets/Turret.java
 +++ b/core/src/mindustry/world/blocks/defense/turrets/Turret.java
 @@ -31,6 +31,7 @@ import mindustry.world.*;
@@ -132,7 +132,7 @@ index 83cbad1c568e8654e9a99e9ecc51f7977d38753a..b6ebb722a42a067de5d715dffc4ddf5b
  
  import static mindustry.Vars.*;
  
-@@ -253,6 +254,13 @@ public class Turret extends ReloadTurret{
+@@ -259,6 +260,13 @@ public class Turret extends ReloadTurret{
          if(drawMinRange){
              Drawf.dashCircle(x * tilesize + offset, y * tilesize + offset, minRange, Pal.placing);
          }
@@ -218,10 +218,10 @@ index 060fe7e067d6b60b59e40e9b140983010b5eaed7..409bf59efb6e32df64b609bfaf91ebc6
          returnItem = null;
          returnCount = 0;
 diff --git a/core/src/mindustry/world/blocks/storage/CoreBlock.java b/core/src/mindustry/world/blocks/storage/CoreBlock.java
-index 19ff222da83fe3cbda7486186b32a0c167239320..ecb236f2f2986f6a6d8cf00aedbc7b5d43c55394 100644
+index 57b8ffcd2deb56e8854f28e2b453fff4e969d259..d69a5a1fada5b3b21147f0e00df409f6a38d4975 100644
 --- a/core/src/mindustry/world/blocks/storage/CoreBlock.java
 +++ b/core/src/mindustry/world/blocks/storage/CoreBlock.java
-@@ -102,6 +102,7 @@ public class CoreBlock extends StorageBlock{
+@@ -103,6 +103,7 @@ public class CoreBlock extends StorageBlock{
          player.set(core);
  
          if(!net.client()){

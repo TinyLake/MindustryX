@@ -9,10 +9,10 @@ Subject: [PATCH] H MetricCollector.handleException
  2 files changed, 26 insertions(+), 4 deletions(-)
 
 diff --git a/core/src/mindustry/mod/Mods.java b/core/src/mindustry/mod/Mods.java
-index 7dbdcfe06046b71602c95dd0f9f76b27f3208de9..1edb8f0e9811f82b996b6bd10d97be1636b7ca58 100644
+index 8c3542519a07cda77ceb77fe5a8e2f37a3e21466..5353e32d29734196225a98e610108d45ef8daa28 100644
 --- a/core/src/mindustry/mod/Mods.java
 +++ b/core/src/mindustry/mod/Mods.java
-@@ -23,6 +23,7 @@ import mindustry.graphics.MultiPacker.*;
+@@ -24,6 +24,7 @@ import mindustry.graphics.MultiPacker.*;
  import mindustry.mod.ContentParser.*;
  import mindustry.type.*;
  import mindustry.ui.*;
@@ -20,7 +20,7 @@ index 7dbdcfe06046b71602c95dd0f9f76b27f3208de9..1edb8f0e9811f82b996b6bd10d97be16
  
  import java.io.*;
  import java.util.*;
-@@ -318,10 +319,15 @@ public class Mods implements Loadable{
+@@ -320,10 +321,15 @@ public class Mods implements Loadable{
          for(Seq<Content> arr : content.getContentMap()){
              arr.each(c -> {
                  if(c instanceof UnlockableContent u && c.minfo.mod != null){
@@ -41,7 +41,7 @@ index 7dbdcfe06046b71602c95dd0f9f76b27f3208de9..1edb8f0e9811f82b996b6bd10d97be16
                  }
              });
 diff --git a/core/src/mindustry/net/CrashHandler.java b/core/src/mindustry/net/CrashHandler.java
-index 8a0f36be08ae570df3a2b37d9f72e411c6e15ae0..a0fcde2b8a5efc77a55868e7a242a99738894ff4 100644
+index 23dbeabe91f085a11942f411dc6feb0b695cdd0c..0be0bfd858a167bc58af1a78149b86f97097ab6d 100644
 --- a/core/src/mindustry/net/CrashHandler.java
 +++ b/core/src/mindustry/net/CrashHandler.java
 @@ -9,6 +9,7 @@ import arc.util.io.*;

@@ -214,10 +214,10 @@ public class LogicSupport{
             t.add(LogicSupport.memoryDecimal.uiElement()).minWidth(200f).padLeft(4f);
             t.button(Icon.refresh, Styles.clearNonei, () -> {
                 vars.clearChildren();
-                buildMemoryPane(vars, build.memory);
+                buildMemoryPane(vars, build);
             });
         }).row();
-        buildMemoryPane(vars, build.memory);
+        buildMemoryPane(vars, build);
         table.pane(Styles.noBarPane, vars).touchable(Touchable.disabled).maxHeight(500f).fillX().pad(4).get().setScrollingDisabledX(true);
         vars.update(() -> {
             vars.getCells().each(cell -> {
@@ -230,16 +230,25 @@ public class LogicSupport{
         });
     }
 
-    public static void buildMemoryPane(Table t, double[] memory){
+    public static void buildMemoryPane(Table t, MemoryBuild build){
         Format format = new Format(LogicSupport.memoryDecimal.get());
-        for(int i = 0; i < memory.length; i++){
+        int length = ((MemoryBlock)build.block).memoryCapacity;
+        LVar pos = new LVar(""), out = new LVar("");
+        pos.isobj = false;
+        for(int i = 0; i < length; i++){
             int finalI = i;
             t.add("[" + i + "]").color(Color.lightGray).align(Align.left);
             t.add().width(8);
-            t.label(() -> format.format((float)memory[finalI])).growX().align(Align.right).labelAlign(Align.right)
+            t.label(() -> {
+                pos.numval = finalI;
+                build.read(pos, out);
+                return out.isobj ? String.valueOf(out.objval) : format.format((float)out.numval);
+            }).growX().align(Align.right).labelAlign(Align.right)
             .touchable(Touchable.enabled).get().tapped(() -> {
-                Core.app.setClipboardText(memory[finalI] + "");
-                UIExt.announce(VarsX.bundle.copiedMemory(memory[finalI]));
+                pos.numval = finalI;
+                build.read(pos, out);
+                Core.app.setClipboardText(out.isobj ? String.valueOf(out.objval) : format.format((float)out.numval));
+                UIExt.announce(VarsX.bundle.copiedMemory(out.isobj ? 0.0 : out.numval));
             });
             if((i + 1) % LogicSupport.memoryColumns.get() == 0) t.row();
             else t.add("|").color(((i % LogicSupport.memoryColumns.get()) % 2 == 0) ? Color.cyan : Color.acid)

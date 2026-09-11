@@ -57,7 +57,7 @@ index d42ffe6d4a318ce558f1010eae46140f88ed5c99..bf44ead5c58abfb79c500e6daae30c3e
 +    <string name="app_name">MindustryX</string>
  </resources>
 diff --git a/build.gradle b/build.gradle
-index a9daa28c2bd17be8ee69922a2c99ea23753e033f..55fe69d14b43b4af01161821b6fb1562b9f9dcb5 100644
+index 312027ad3223ccd18aae99d7907167b2fc3fc9b8..f9db5c8db9dd50d5d91c5db8c70270b81924c900 100644
 --- a/build.gradle
 +++ b/build.gradle
 @@ -4,12 +4,10 @@ buildscript{
@@ -97,7 +97,7 @@ index 02d4ae1bda4f2c6836f5147a628119235d04b7bc..36ba5536564d9bfb4ca7493f2407fece
      }
      processResources.configure {
 diff --git a/core/src/mindustry/Vars.java b/core/src/mindustry/Vars.java
-index dd0ea1d149227ccfa48e879f2523606bbaf639c7..e288d0f73b6ef429e6238d9ea29dbd8f94b7c70e 100644
+index af56fac4ac9e53e21c1d6a83bc4f0f5246c564c3..c47f98144bcb528c12176d33b4ddf6e2dcb4188f 100644
 --- a/core/src/mindustry/Vars.java
 +++ b/core/src/mindustry/Vars.java
 @@ -91,8 +91,8 @@ public class Vars implements Loadable{
@@ -112,7 +112,7 @@ index dd0ea1d149227ccfa48e879f2523606bbaf639c7..e288d0f73b6ef429e6238d9ea29dbd8f
      public static final Seq<ServerGroup> defaultServers = Seq.with();
      /** cached server list - only used if defaultServers have not been fetched */
 diff --git a/core/src/mindustry/core/NetClient.java b/core/src/mindustry/core/NetClient.java
-index dd4292c2ac8d14f1531ac310b31d54e12e3b17fe..e2b26d92a35e0cf936b7fdade158a93ebec5a951 100644
+index ea407404eaa3fd0276d91f039b15a2bc1044ca7c..b208ac04a889352f3a60c8f93a2869cbfdb045dd 100644
 --- a/core/src/mindustry/core/NetClient.java
 +++ b/core/src/mindustry/core/NetClient.java
 @@ -29,6 +29,7 @@ import mindustry.net.*;
@@ -153,10 +153,10 @@ index b2b59ddafcb5f022a51588caefd0b30121fcf7ac..24de76a2633e1f28b8d693cb91de8e57
      }
  }
 diff --git a/core/src/mindustry/net/NetworkIO.java b/core/src/mindustry/net/NetworkIO.java
-index ac8eec820937b09c611e9274180707da82e2f291..75850e7de0b0d7775431ef1d038744d87e84ddf3 100644
+index 4883bc2ef85adc8509075121c9f03c87fae2a35e..3c59aebaa1c2610f974d160e826241628a9a81f1 100644
 --- a/core/src/mindustry/net/NetworkIO.java
 +++ b/core/src/mindustry/net/NetworkIO.java
-@@ -176,7 +176,7 @@ public class NetworkIO{
+@@ -198,7 +198,7 @@ public class NetworkIO{
          buffer.putInt(Core.settings.getInt("totalPlayers", Groups.player.size()));
          buffer.putInt(state.wave);
          buffer.putInt(Version.build);

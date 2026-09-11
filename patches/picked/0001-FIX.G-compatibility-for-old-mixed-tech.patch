@@ -9,10 +9,10 @@ Subject: [PATCH] FIX.G: compatibility for old mixed tech
  2 files changed, 12 insertions(+)
 
 diff --git a/core/src/mindustry/game/Rules.java b/core/src/mindustry/game/Rules.java
-index ba9ffcaa8397b9aef0a29c27706679740016b213..a0a4cde17e64861fcc828b8252ef80939d6f4030 100644
+index 23ec0a69d07241c9b479aab3f1c66a34bf5c940c..d511344a419fa1314e16ad919bb837a3a8a914ea 100644
 --- a/core/src/mindustry/game/Rules.java
 +++ b/core/src/mindustry/game/Rules.java
-@@ -191,6 +191,11 @@ public class Rules{
+@@ -193,6 +193,11 @@ public class Rules{
      public ObjectSet<Block> revealedBlocks = new ObjectSet<>();
      /** Unlocked content names. Only used in multiplayer when the campaign is enabled. */
      public ObjectSet<UnlockableContent> researched = new ObjectSet<>();
@@ -25,7 +25,7 @@ index ba9ffcaa8397b9aef0a29c27706679740016b213..a0a4cde17e64861fcc828b8252ef8093
      public MapObjectives objectives = new MapObjectives();
      /** Flags set by objectives. Used in world processors. */
 diff --git a/core/src/mindustry/io/SaveVersion.java b/core/src/mindustry/io/SaveVersion.java
-index 55b112a7df18a3677ab21bdfebf0a3bbddbe1d23..4a2a54637b259f629b4ebbe32405329593a3af32 100644
+index 72a76670b292b982b87672cc3d696b23597021a5..80ede9b30a96e78b8f305fa23b891764e48f2ca2 100644
 --- a/core/src/mindustry/io/SaveVersion.java
 +++ b/core/src/mindustry/io/SaveVersion.java
 @@ -190,6 +190,7 @@ public abstract class SaveVersion extends SaveFileReader{

@@ -11,10 +11,10 @@ Subject: [PATCH] HR(RenderExt) overdriveZone mendZone
  4 files changed, 40 insertions(+)
 
 diff --git a/core/src/mindustry/core/Renderer.java b/core/src/mindustry/core/Renderer.java
-index f25585b53208318e2b09c227e94915bf291b941e..a74d7e7db9dc1d629fc76365c775ec0a6bbb6b08 100644
+index 6a5ce2a23f6e9ac4ca9f87a4c5fe3c9e8320aa3a..b6bcd7b54943a5ff9167088b82872fe26546f746 100644
 --- a/core/src/mindustry/core/Renderer.java
 +++ b/core/src/mindustry/core/Renderer.java
-@@ -377,6 +377,11 @@ public class Renderer implements ApplicationListener{
+@@ -408,6 +408,11 @@ public class Renderer implements ApplicationListener{
                  effectBuffer.blit(Shaders.shield);
              });
  

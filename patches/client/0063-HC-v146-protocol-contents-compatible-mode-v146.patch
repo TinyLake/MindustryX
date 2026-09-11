@@ -15,9 +15,9 @@ Content-Transfer-Encoding: 8bit
  core/src/mindustry/io/SaveVersion.java     | 22 ++++++++++++
  core/src/mindustry/io/TypeIO.java          | 18 ++++++++--
  core/src/mindustry/net/Net.java            | 42 +++++++++++++++++++---
- core/src/mindustry/net/NetworkIO.java      | 35 ++++++++++++++----
+ core/src/mindustry/net/NetworkIO.java      | 42 +++++++++++++++++-----
  core/src/mindustry/net/Packets.java        |  2 +-
- 8 files changed, 123 insertions(+), 16 deletions(-)
+ 8 files changed, 128 insertions(+), 18 deletions(-)
 
 diff --git a/core/build.gradle.kts b/core/build.gradle.kts
 index 36ba5536564d9bfb4ca7493f2407fece2b64c1b1..1fe3cba38e53b11e66f6341b0cb6ccd02acff8ee 100644
@@ -67,10 +67,10 @@ index a67fe3d93e85a2c6ec7bfd05350e59445c4928a1..887bc02aacd5b063925cb7aa8116b09a
  
      /** @return the last registered content with the specified name. Note that the content loader makes no attempt to resolve name conflicts. This method can be unreliable. */
 diff --git a/core/src/mindustry/core/NetClient.java b/core/src/mindustry/core/NetClient.java
-index ed298514f6c3681d5de9c09c17c2ae104ead99b7..016d4c233d0890d974841fb8b5e5b4a0043cdf0d 100644
+index 2917de338876ff5ddeb4b694a0e7cdcc7d047e57..66d94e9e5495bc48909344f93981cb50a14c5ecd 100644
 --- a/core/src/mindustry/core/NetClient.java
 +++ b/core/src/mindustry/core/NetClient.java
-@@ -579,6 +579,8 @@ public class NetClient implements ApplicationListener{
+@@ -598,6 +598,8 @@ public class NetClient implements ApplicationListener{
  
      @Remote(variants = Variant.both, priority = PacketPriority.low, unreliable = true)
      public static void blockSnapshot(short amount, byte[] data){
@@ -80,10 +80,10 @@ index ed298514f6c3681d5de9c09c17c2ae104ead99b7..016d4c233d0890d974841fb8b5e5b4a0
              netClient.byteStream.setBytes(data);
              DataInputStream input = netClient.dataStream;
 diff --git a/core/src/mindustry/io/SaveVersion.java b/core/src/mindustry/io/SaveVersion.java
-index 4a2a54637b259f629b4ebbe32405329593a3af32..5e68e016a7f99e14550f9ef7ebe8c2531386272f 100644
+index 80ede9b30a96e78b8f305fa23b891764e48f2ca2..7e1e18e3fa52b5a624d51dea86786911ab52183c 100644
 --- a/core/src/mindustry/io/SaveVersion.java
 +++ b/core/src/mindustry/io/SaveVersion.java
-@@ -662,4 +662,26 @@ public abstract class SaveVersion extends SaveFileReader{
+@@ -672,4 +672,26 @@ public abstract class SaveVersion extends SaveFileReader{
              }
          }
      }
@@ -111,10 +111,10 @@ index 4a2a54637b259f629b4ebbe32405329593a3af32..5e68e016a7f99e14550f9ef7ebe8c253
 +    }
  }
 diff --git a/core/src/mindustry/io/TypeIO.java b/core/src/mindustry/io/TypeIO.java
-index a5191ad4a483b2fb361d2124bb87d9ded42f334e..ef10cd25d0b48e59e5071376adf21bdb10ceee25 100644
+index 9fcb7ba9fa5b466b8be97cc01f7ae322440c2129..7959d66562250368d4b819f5f8881b3869f068d8 100644
 --- a/core/src/mindustry/io/TypeIO.java
 +++ b/core/src/mindustry/io/TypeIO.java
-@@ -27,6 +27,7 @@ import mindustry.type.*;
+@@ -29,6 +29,7 @@ import mindustry.ui.builder.UiBuilder.*;
  import mindustry.world.*;
  import mindustry.world.blocks.*;
  import mindustry.world.blocks.payloads.*;
@@ -122,9 +122,9 @@ index a5191ad4a483b2fb361d2124bb87d9ded42f334e..ef10cd25d0b48e59e5071376adf21bdb
  
  import java.io.*;
  import java.nio.*;
-@@ -57,7 +58,10 @@ public class TypeIO{
+@@ -87,7 +88,10 @@ public class TypeIO{
          }else if(object instanceof Content map){
-             write.b((byte)5);
+             write.b(contentType);
              write.b((byte)map.getContentType().ordinal());
 -            write.s(map.id);
 +            if(LogicExt.contentsCompatibleMode && map instanceof Block b)
@@ -133,8 +133,8 @@ index a5191ad4a483b2fb361d2124bb87d9ded42f334e..ef10cd25d0b48e59e5071376adf21bdb
 +                write.s(map.id);
          }else if(object instanceof IntSeq arr){
              if(arr.size > maxArraySize) throw new ArcRuntimeException("Array size too large: " + arr.size);
-             write.b((byte)6);
-@@ -462,7 +466,15 @@ public class TypeIO{
+             write.b(intSeqType);
+@@ -576,7 +580,15 @@ public class TypeIO{
      }
  
      public static void writeBlock(Writes write, Block block){
@@ -151,7 +151,7 @@ index a5191ad4a483b2fb361d2124bb87d9ded42f334e..ef10cd25d0b48e59e5071376adf21bdb
      }
  
      public static Block readBlock(Reads read){
-@@ -537,7 +549,7 @@ public class TypeIO{
+@@ -651,7 +663,7 @@ public class TypeIO{
          write.b(plan.breaking ? (byte)1 : 0);
          write.i(Point2.pack(plan.x, plan.y));
          if(!plan.breaking){
@@ -161,7 +161,7 @@ index a5191ad4a483b2fb361d2124bb87d9ded42f334e..ef10cd25d0b48e59e5071376adf21bdb
              boolean writePlan = !headless || !net.server();
              write.b(writePlan ? 1 : 0); //always has config
 diff --git a/core/src/mindustry/net/Net.java b/core/src/mindustry/net/Net.java
-index 444b3e3ca920c890bc5dbc4ecab6163378d48e9a..12b6d0a5e1d5daff0ca9db3c92ee8143064f2d61 100644
+index 19d39df1e9dade1b9ea1a7692899ac4f63dfaae8..d5b24e2ed0c70319326b008c910efe92ab80ad61 100644
 --- a/core/src/mindustry/net/Net.java
 +++ b/core/src/mindustry/net/Net.java
 @@ -1,6 +1,7 @@
@@ -191,7 +191,7 @@ index 444b3e3ca920c890bc5dbc4ecab6163378d48e9a..12b6d0a5e1d5daff0ca9db3c92ee8143
  import static mindustry.Vars.*;
  
  @SuppressWarnings("unchecked")
-@@ -56,6 +57,16 @@ public class Net{
+@@ -57,6 +58,16 @@ public class Net{
          Call.registerPackets();
      }
  
@@ -208,7 +208,7 @@ index 444b3e3ca920c890bc5dbc4ecab6163378d48e9a..12b6d0a5e1d5daff0ca9db3c92ee8143
      /** Registers a new packet type for serialization. */
      public static <T extends Packet> int registerPacket(Prov<T> cons){
          int id = packetProvs.size;
-@@ -71,13 +82,27 @@ public class Net{
+@@ -72,13 +83,27 @@ public class Net{
      }
  
      public static byte getPacketId(Packet packet){
@@ -238,7 +238,7 @@ index 444b3e3ca920c890bc5dbc4ecab6163378d48e9a..12b6d0a5e1d5daff0ca9db3c92ee8143
      }
  
      public Net(NetProvider provider){
-@@ -214,6 +239,7 @@ public class Net{
+@@ -215,6 +240,7 @@ public class Net{
      }
  
      public void disconnect(){
@@ -246,7 +246,7 @@ index 444b3e3ca920c890bc5dbc4ecab6163378d48e9a..12b6d0a5e1d5daff0ca9db3c92ee8143
          if(active && !server){
              Log.info("Disconnecting.");
          }
-@@ -289,7 +315,13 @@ public class Net{
+@@ -290,7 +316,13 @@ public class Net{
              return;
          }
  
@@ -262,7 +262,7 @@ index 444b3e3ca920c890bc5dbc4ecab6163378d48e9a..12b6d0a5e1d5daff0ca9db3c92ee8143
          if(object instanceof StreamBegin b){
              streams.put(b.id, currentStream = new StreamBuilder(b, ((Streamable)Net.newPacket(b.type)).incremental()));
 diff --git a/core/src/mindustry/net/NetworkIO.java b/core/src/mindustry/net/NetworkIO.java
-index 75850e7de0b0d7775431ef1d038744d87e84ddf3..85d165792b0cef10b129a0e7c7373cafeb6b85b9 100644
+index 3c59aebaa1c2610f974d160e826241628a9a81f1..12a0d8c55e3a9c0231dc4bfc49d6d7be848dd2be 100644
 --- a/core/src/mindustry/net/NetworkIO.java
 +++ b/core/src/mindustry/net/NetworkIO.java
 @@ -6,6 +6,7 @@ import arc.struct.*;
@@ -281,7 +281,7 @@ index 75850e7de0b0d7775431ef1d038744d87e84ddf3..85d165792b0cef10b129a0e7c7373caf
  
  import java.io.*;
  import java.nio.*;
-@@ -68,14 +70,23 @@ public class NetworkIO{
+@@ -74,15 +76,24 @@ public class NetworkIO{
          }
      }
  
@@ -289,10 +289,11 @@ index 75850e7de0b0d7775431ef1d038744d87e84ddf3..85d165792b0cef10b129a0e7c7373caf
      public static void loadWorld(InputStream is){
  
          try(DataInputStream stream = new DataInputStream(is)){
+             var writer = SaveIO.getSaveWriter();
              Time.clear();
--            SaveIO.getSaveWriter().readDataPatches(stream, new SaveReadState(world.context));
+-            writer.readDataPatches(stream, new SaveReadState(world.context));
 +            if(LogicExt.mockProtocol >= 159){
-+                SaveIO.getSaveWriter().readDataPatches(stream, new SaveReadState(world.context));
++                writer.readDataPatches(stream, new SaveReadState(world.context));
 +            }
  
              state.rules = JsonIO.read(Rules.class, stream.readUTF());
@@ -304,18 +305,21 @@ index 75850e7de0b0d7775431ef1d038744d87e84ddf3..85d165792b0cef10b129a0e7c7373caf
 +                }
 +            }
 +            if(!LogicExt.v146Mode) state.mapLocales = JsonIO.read(MapLocales.class, stream.readUTF());
-             state.map = new Map(SaveIO.getSaveWriter().readStringMap(stream));
+             state.map = new Map(writer.readStringMap(stream));
  
              state.wave = stream.readInt();
-@@ -93,14 +104,24 @@ public class NetworkIO{
+@@ -100,19 +111,32 @@ public class NetworkIO{
              player.id = id;
              player.add();
  
--            SaveIO.getSaveWriter().readContentHeader(stream);
--            SaveIO.getSaveWriter().readMap(stream, world.context);
--            SaveIO.getSaveWriter().readTeamBlocks(stream);
--            SaveIO.getSaveWriter().readMarkers(stream);
--            SaveIO.getSaveWriter().readCustomChunks(stream);
+-            var state = new SaveReadState(world.context);
+-
+-            writer.readContentHeader(stream);
+-            writer.readMap(stream, state);
+-            writer.readEntities(stream, state);
+-            writer.readMarkers(stream);
+-            writer.readCustomChunks(stream);
++            var readState = new SaveReadState(world.context);
 +            var saveWriter = SaveIO.getSaveWriter();
 +            //MDTX: Use ShortChunkSave version
 +            if(LogicExt.mockProtocol < 152){
@@ -325,11 +329,18 @@ index 75850e7de0b0d7775431ef1d038744d87e84ddf3..85d165792b0cef10b129a0e7c7373caf
 +            //MDTX: Use ShortChunkSave version
 +            if(LogicExt.mockProtocol >= 153 && LogicExt.mockProtocol < 159)
 +                saveWriter.readDataPatchesOld(stream);
-+            saveWriter.readMap(stream, world.context);
-+            saveWriter.readTeamBlocks(stream);
++            saveWriter.readMap(stream, readState);
++            if(LogicExt.mockProtocol >= 160){
++                saveWriter.readEntities(stream, readState);
++            }else{
++                saveWriter.readTeamBlocks(stream);
++            }
 +            if(!LogicExt.v146Mode)
 +                saveWriter.readMarkers(stream);
 +            saveWriter.readCustomChunks(stream);
+ 
+             Groups.all.each(e -> netClient.addRemovedEntity(e.id()));
+             Groups.unit.each(e -> netClient.addRemovedEntity(e.id()));
          }catch(IOException e){
              throw new RuntimeException(e);
          }finally{
@@ -338,10 +349,10 @@ index 75850e7de0b0d7775431ef1d038744d87e84ddf3..85d165792b0cef10b129a0e7c7373caf
          }
      }
 diff --git a/core/src/mindustry/net/Packets.java b/core/src/mindustry/net/Packets.java
-index ac2741c3f4ac45b9ff8fc59fa2197badfbbf6976..45b99e5297dd2d9f77f18dfcf8667ad298a6afd5 100644
+index c3e651b984bdbe65ca8ce33d4278ab50988fab50..b8f0199cf11edd2d1afe6c76e90d1e8c52d50f31 100644
 --- a/core/src/mindustry/net/Packets.java
 +++ b/core/src/mindustry/net/Packets.java
-@@ -151,7 +151,7 @@ public class Packets{
+@@ -155,7 +155,7 @@ public class Packets{
          @Override
          public void write(Writes buffer){
              buffer.i(clientVersion != 0 ? clientVersion : Version.build);

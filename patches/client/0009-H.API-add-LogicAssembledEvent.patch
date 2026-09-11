@@ -10,10 +10,10 @@ Subject: [PATCH] H.API: add LogicAssembledEvent
  3 files changed, 17 insertions(+), 1 deletion(-)
 
 diff --git a/core/src/mindustry/logic/LParser.java b/core/src/mindustry/logic/LParser.java
-index f77b8d15a54b3b79142d9815d131ac1906e6710e..8bbbc4ce1155b0b5b7d01776e6ab8c2c19237f66 100644
+index dcc86b8f92be839fc4c6bce355630176f885dc43..1d80f5b9e537bb1ebbca580142f42e50128048e1 100644
 --- a/core/src/mindustry/logic/LParser.java
 +++ b/core/src/mindustry/logic/LParser.java
-@@ -5,6 +5,8 @@ import arc.util.*;
+@@ -6,6 +6,8 @@ import mindustry.*;
  import mindustry.gen.*;
  import mindustry.logic.LStatements.*;
  
@@ -22,7 +22,7 @@ index f77b8d15a54b3b79142d9815d131ac1906e6710e..8bbbc4ce1155b0b5b7d01776e6ab8c2c
  public class LParser{
      private static final String[] tokens = new String[16];
      private static final int maxJumps = 500;
-@@ -170,7 +172,7 @@ public class LParser{
+@@ -210,7 +212,7 @@ public class LParser{
                          }
                      }else{
                          //unparseable statement
@@ -32,10 +32,10 @@ index f77b8d15a54b3b79142d9815d131ac1906e6710e..8bbbc4ce1155b0b5b7d01776e6ab8c2c
                  }
                  line ++;
 diff --git a/core/src/mindustry/logic/LStatements.java b/core/src/mindustry/logic/LStatements.java
-index b4153a96cf6519dfb2ad5a180d06de561b644db7..06fe7a5390616f0b9a9ba50a3201eb8a19ef6a80 100644
+index 24a59a27c2bf2c6eac6945c5cd765c7ba76f3655..1f1f0b40418f89a5e75a897b8f0d69445f8616b7 100644
 --- a/core/src/mindustry/logic/LStatements.java
 +++ b/core/src/mindustry/logic/LStatements.java
-@@ -22,6 +22,7 @@ import mindustry.type.*;
+@@ -23,6 +23,7 @@ import mindustry.type.*;
  import mindustry.ui.*;
  import mindustry.world.*;
  import mindustry.world.meta.*;
@@ -43,7 +43,7 @@ index b4153a96cf6519dfb2ad5a180d06de561b644db7..06fe7a5390616f0b9a9ba50a3201eb8a
  
  import static mindustry.Vars.*;
  import static mindustry.logic.LCanvas.*;
-@@ -47,6 +48,16 @@ public class LStatements{
+@@ -48,6 +49,16 @@ public class LStatements{
  
      @RegisterStatement("noop")
      public static class InvalidStatement extends LStatement{
@@ -61,7 +61,7 @@ index b4153a96cf6519dfb2ad5a180d06de561b644db7..06fe7a5390616f0b9a9ba50a3201eb8a
          @Override
          public void build(Table table){
 diff --git a/core/src/mindustry/world/blocks/logic/LogicBlock.java b/core/src/mindustry/world/blocks/logic/LogicBlock.java
-index 942ffe78d990e745805bfef6de5812c5de286471..044822383b1029ffa0e6e264b3344acf03f89b4d 100644
+index 9d96fb3c68b83f347d4e2b144e72eb138bcf7dc8..f1f0429095103411a4db97bd80600161dd8a1596 100644
 --- a/core/src/mindustry/world/blocks/logic/LogicBlock.java
 +++ b/core/src/mindustry/world/blocks/logic/LogicBlock.java
 @@ -27,6 +27,7 @@ import mindustry.world.*;
@@ -72,7 +72,7 @@ index 942ffe78d990e745805bfef6de5812c5de286471..044822383b1029ffa0e6e264b3344acf
  
  import java.io.*;
  import java.util.zip.*;
-@@ -427,6 +428,8 @@ public class LogicBlock extends Block{
+@@ -425,6 +426,8 @@ public class LogicBlock extends Block{
                      asm.putConst("@thisx", World.conv(x));
                      asm.putConst("@thisy", World.conv(y));
  

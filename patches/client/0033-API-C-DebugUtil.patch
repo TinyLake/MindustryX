@@ -16,10 +16,10 @@ way-zer <himc.wicp@gmail.com> on 2024/7/21
  4 files changed, 22 insertions(+), 1 deletion(-)
 
 diff --git a/core/src/mindustry/ClientLauncher.java b/core/src/mindustry/ClientLauncher.java
-index 3c5a2f8f084a1bdecfd5fac86ee37e81355e8c35..6ae4f43d9c0fd45a8cda8465b7d7c7e76a1c5e3b 100644
+index db74a378bd3c00295842f5f5b215c8d059bbd241..41c935307db38ee37c2e1cacef24c43d2557da53 100644
 --- a/core/src/mindustry/ClientLauncher.java
 +++ b/core/src/mindustry/ClientLauncher.java
-@@ -92,7 +92,7 @@ public abstract class ClientLauncher extends ApplicationCore implements Platform
+@@ -91,7 +91,7 @@ public abstract class ClientLauncher extends ApplicationCore implements Platform
          });
  
          UI.loadColors();
@@ -29,7 +29,7 @@ index 3c5a2f8f084a1bdecfd5fac86ee37e81355e8c35..6ae4f43d9c0fd45a8cda8465b7d7c7e7
          assets.setLoader(Texture.class, "." + mapExtension, new MapPreviewLoader());
  
 diff --git a/core/src/mindustry/core/Logic.java b/core/src/mindustry/core/Logic.java
-index 45790073c8f64c5cfd7a20cf3554a533b52c8230..8c7040891e015e8bf7fffba726a8e515006c10c9 100644
+index 4b530b35ec51201ee375509032f47c74bf5bc597..d605148f5a1caff3cc3409fa5ba6cc3dbb571282 100644
 --- a/core/src/mindustry/core/Logic.java
 +++ b/core/src/mindustry/core/Logic.java
 @@ -21,6 +21,7 @@ import mindustry.world.*;
@@ -40,7 +40,7 @@ index 45790073c8f64c5cfd7a20cf3554a533b52c8230..8c7040891e015e8bf7fffba726a8e515
  
  import java.util.*;
  
-@@ -498,6 +499,7 @@ public class Logic implements ApplicationListener{
+@@ -505,6 +506,7 @@ public class Logic implements ApplicationListener{
  
          PerfCounter.stateUpdate.begin();
  
@@ -48,7 +48,7 @@ index 45790073c8f64c5cfd7a20cf3554a533b52c8230..8c7040891e015e8bf7fffba726a8e515
          Events.fire(Trigger.update);
          universe.updateGlobal();
  
-@@ -608,6 +610,7 @@ public class Logic implements ApplicationListener{
+@@ -615,6 +617,7 @@ public class Logic implements ApplicationListener{
          }else if(netServer.isWaitingForPlayers() && runStateCheck){
              checkGameState();
          }
@@ -57,7 +57,7 @@ index 45790073c8f64c5cfd7a20cf3554a533b52c8230..8c7040891e015e8bf7fffba726a8e515
          PerfCounter.stateUpdate.end(PerfCounter.entityUpdate.latestValueNs());
      }
 diff --git a/core/src/mindustry/entities/EntityGroup.java b/core/src/mindustry/entities/EntityGroup.java
-index d0e4bc310870be35220edb525d731d03243a9083..f315ac8c950741e657c692d00442a022f9daf0fb 100644
+index 5a9ecf35f6710cdf5a110559e4fa64cf1ca314fd..f112265f63b77f8b561ecf5f68ee8590181d094b 100644
 --- a/core/src/mindustry/entities/EntityGroup.java
 +++ b/core/src/mindustry/entities/EntityGroup.java
 @@ -7,7 +7,9 @@ import arc.struct.*;
@@ -89,7 +89,7 @@ index d0e4bc310870be35220edb525d731d03243a9083..f315ac8c950741e657c692d00442a022
              array.items[index].update();
          }
 diff --git a/core/src/mindustry/ui/fragments/HudFragment.java b/core/src/mindustry/ui/fragments/HudFragment.java
-index de3757fb2ddf7df91f471ca96950901e20081215..481593622856540a02b70496ffa1c35db88ac201 100644
+index 51f20bcc24954275f749eefb4d100cdbe45194ac..cb7e7b27ccbb525a0fb7ad6bc5749637f78a8c68 100644
 --- a/core/src/mindustry/ui/fragments/HudFragment.java
 +++ b/core/src/mindustry/ui/fragments/HudFragment.java
 @@ -33,6 +33,8 @@ import mindustry.ui.*;
@@ -101,7 +101,7 @@ index de3757fb2ddf7df91f471ca96950901e20081215..481593622856540a02b70496ffa1c35d
  
  import static mindustry.Vars.*;
  import static mindustry.gen.Tex.*;
-@@ -560,6 +562,9 @@ public class HudFragment{
+@@ -561,6 +563,9 @@ public class HudFragment{
  
                  info.label(() -> fps.get(Core.graphics.getFramesPerSecond())).left().style(Styles.outlineLabel).name("fps");
                  info.row();

@@ -5,15 +5,15 @@ Subject: [PATCH] API: health changed event
 
 ---
  core/src/mindustry/entities/Damage.java        |  5 +++++
- core/src/mindustry/entities/Lightning.java     |  1 +
+ core/src/mindustry/entities/Lightning.java     |  3 ++-
  .../mindustry/entities/bullet/BulletType.java  |  7 +++++++
  .../mindustry/entities/comp/BuildingComp.java  |  7 ++++++-
  .../mindustry/entities/comp/HealthComp.java    | 18 ++++++++++++++++++
  .../mindustry/entities/comp/ShieldComp.java    |  3 +++
- 6 files changed, 40 insertions(+), 1 deletion(-)
+ 6 files changed, 41 insertions(+), 2 deletions(-)
 
 diff --git a/core/src/mindustry/entities/Damage.java b/core/src/mindustry/entities/Damage.java
-index 61bc01c95abd87e816f66a217335cd1a29a66b77..5041c3bd43fc7903b26771873573059e13421fe5 100644
+index 50cce3cf86fe46497cdfc6964707decd56d36d2f..c849d13bba7c9bf9a8d5623d755c87150a962963 100644
 --- a/core/src/mindustry/entities/Damage.java
 +++ b/core/src/mindustry/entities/Damage.java
 @@ -18,6 +18,7 @@ import mindustry.type.*;
@@ -24,7 +24,7 @@ index 61bc01c95abd87e816f66a217335cd1a29a66b77..5041c3bd43fc7903b26771873573059e
  
  import static mindustry.Vars.*;
  
-@@ -511,6 +512,8 @@ public class Damage{
+@@ -515,6 +516,8 @@ public class Damage{
              boolean dead = unit.dead;
  
              float amount = calculateDamage(scaled ? Math.max(0, unit.dst(x, y) - unit.type.hitSize/2) : unit.dst(x, y), radius, damage);
@@ -33,7 +33,7 @@ index 61bc01c95abd87e816f66a217335cd1a29a66b77..5041c3bd43fc7903b26771873573059e
              if(armorMult != 1){
                  unit.damageArmorMult(amount, armorMult);
              }else{
-@@ -563,6 +566,8 @@ public class Damage{
+@@ -567,6 +570,8 @@ public class Damage{
              //why? because otherwise the building would absorb everything in one cell, which means much less damage than a nearby explosion.
              //this needs to be compensated
              if(in != null && in.team != team && in.block.size > 1 && in.health > damage){
@@ -43,22 +43,24 @@ index 61bc01c95abd87e816f66a217335cd1a29a66b77..5041c3bd43fc7903b26771873573059e
                  float d = damage * Math.min((in.block.size), baseRadius * 0.4f);
                  if(source != null){
 diff --git a/core/src/mindustry/entities/Lightning.java b/core/src/mindustry/entities/Lightning.java
-index 48e42b4e5fcdb86d678ceb75355c72415634f36b..b115b9617204ed997e8337248f9562b4821fa8b7 100644
+index 1f5b3193d395f86760e5cc30e24118c53b7811c7..0b780fc50cc19542109f5a200c0665f4018e5bdc 100644
 --- a/core/src/mindustry/entities/Lightning.java
 +++ b/core/src/mindustry/entities/Lightning.java
-@@ -47,6 +47,7 @@ public class Lightning{
+@@ -47,7 +47,8 @@ public class Lightning{
          bhit = false;
  
          for(int i = 0; i < length / 2; i++){
+-            hitCreate.create(null, team, x, y, rotation, damage * (hitter == null ? 1f : hitter.damageMultiplier()), 1f, 1f, null);
 +            // MDTX: hitBullet set the owner to hitter.
-             hitCreate.create(null, team, x, y, rotation, damage * (hitter == null ? 1f : hitter.damageMultiplier()), 1f, 1f, hitter);
++            hitCreate.create(null, team, x, y, rotation, damage * (hitter == null ? 1f : hitter.damageMultiplier()), 1f, 1f, hitter);
              lines.add(new Vec2(x + Mathf.range(3f), y + Mathf.range(3f)));
  
+             if(lines.size > 1){
 diff --git a/core/src/mindustry/entities/bullet/BulletType.java b/core/src/mindustry/entities/bullet/BulletType.java
-index c92fa88030973e62fca6b5c9dc0eac309ee8c403..186d15677b3dc482d3ff4924ff8e20e7eb38ef65 100644
+index d916f5b63527160129d42d0c398c2e2b64c48601..093009a6846dce805d6183ff5b339af7b9061828 100644
 --- a/core/src/mindustry/entities/bullet/BulletType.java
 +++ b/core/src/mindustry/entities/bullet/BulletType.java
-@@ -23,6 +23,7 @@ import mindustry.graphics.*;
+@@ -24,6 +24,7 @@ import mindustry.graphics.*;
  import mindustry.type.*;
  import mindustry.world.*;
  import mindustry.world.blocks.*;
@@ -66,7 +68,7 @@ index c92fa88030973e62fca6b5c9dc0eac309ee8c403..186d15677b3dc482d3ff4924ff8e20e7
  import mindustryX.features.*;
  
  import static mindustry.Vars.*;
-@@ -461,6 +462,7 @@ public class BulletType extends Content implements Cloneable{
+@@ -469,6 +470,7 @@ public class BulletType extends Content implements Cloneable{
          }
  
          if(heals() && build.team == b.team && !(build.block instanceof ConstructBlock)){
@@ -74,7 +76,7 @@ index c92fa88030973e62fca6b5c9dc0eac309ee8c403..186d15677b3dc482d3ff4924ff8e20e7
              healEffect.at(build.x, build.y, 0f, healColor, build.block);
              build.heal(healPercent / 100f * build.maxHealth + healAmount);
              healSound.at(build, 1f + Mathf.range(0.1f), healSoundVolume);
-@@ -482,6 +484,8 @@ public class BulletType extends Content implements Cloneable{
+@@ -490,6 +492,8 @@ public class BulletType extends Content implements Cloneable{
          boolean wasDead = entity instanceof Unit u && u.dead;
  
          if(entity instanceof Healthc h){
@@ -83,7 +85,7 @@ index c92fa88030973e62fca6b5c9dc0eac309ee8c403..186d15677b3dc482d3ff4924ff8e20e7
              float damage = b.damage;
              float shield = entity instanceof Shieldc s ? Math.max(s.shield(), 0f) : 0f;
              if(maxDamageFraction > 0){
-@@ -593,7 +597,9 @@ public class BulletType extends Content implements Cloneable{
+@@ -606,7 +610,9 @@ public class BulletType extends Content implements Cloneable{
  
      public void createSplashDamage(Bullet b, float x, float y){
          if(splashDamageRadius > 0 && !b.absorbed){
@@ -92,8 +94,8 @@ index c92fa88030973e62fca6b5c9dc0eac309ee8c403..186d15677b3dc482d3ff4924ff8e20e7
 +            HealthChangedEvent.INSTANCE.isSplash = false;
  
              if(status != StatusEffects.none){
-                 Damage.status(b.team, x, y, splashDamageRadius, status, statusDuration, collidesAir, collidesGround);
-@@ -601,6 +607,7 @@ public class BulletType extends Content implements Cloneable{
+                 Damage.status(b.team, x, y, splashDamageRadius, status, statusDuration, collidesAir, collidesGround, statusChance);
+@@ -614,6 +620,7 @@ public class BulletType extends Content implements Cloneable{
  
              if(heals()){
                  indexer.eachBlock(b.team, x, y, splashDamageRadius, Building::damaged, other -> {
@@ -102,7 +104,7 @@ index c92fa88030973e62fca6b5c9dc0eac309ee8c403..186d15677b3dc482d3ff4924ff8e20e7
                      other.heal(healPercent / 100f * other.maxHealth() + healAmount);
                  });
 diff --git a/core/src/mindustry/entities/comp/BuildingComp.java b/core/src/mindustry/entities/comp/BuildingComp.java
-index 33efe1561613d5602881db3ad33d085de61a2e43..0be864c90d97b93b4a37694717ddcd647b973001 100644
+index ed05fa828806680c025d40559fb84d35bc7866e7..fe37af72c8560d6b815d4609dea75f8f201cffcf 100644
 --- a/core/src/mindustry/entities/comp/BuildingComp.java
 +++ b/core/src/mindustry/entities/comp/BuildingComp.java
 @@ -44,6 +44,7 @@ import mindustry.world.blocks.power.*;
@@ -113,7 +115,7 @@ index 33efe1561613d5602881db3ad33d085de61a2e43..0be864c90d97b93b4a37694717ddcd64
  import mindustryX.features.*;
  
  import java.util.*;
-@@ -1797,6 +1798,8 @@ abstract class BuildingComp implements Posc, Teamc, Healthc, Buildingc, Timerc,
+@@ -1796,6 +1797,8 @@ abstract class BuildingComp implements Posc, Teamc, Healthc, Buildingc, Timerc,
  
      /** Handles splash damage with a bullet source. */
      public void damage(Bullet bullet, Team source, float damage){
@@ -122,7 +124,7 @@ index 33efe1561613d5602881db3ad33d085de61a2e43..0be864c90d97b93b4a37694717ddcd64
          damage(source, damage);
          Events.fire(bulletDamageEvent.set(self(), bullet));
      }
-@@ -2089,7 +2092,9 @@ abstract class BuildingComp implements Posc, Teamc, Healthc, Buildingc, Timerc,
+@@ -2090,7 +2093,9 @@ abstract class BuildingComp implements Posc, Teamc, Healthc, Buildingc, Timerc,
  
          //TODO handle this better on the client.
          if(!net.client()){

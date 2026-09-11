@@ -8,7 +8,7 @@ Subject: [PATCH] H.BUILD: MindustryX group for publish
  1 file changed, 1 insertion(+), 1 deletion(-)
 
 diff --git a/build.gradle b/build.gradle
-index 158a38eb9c1bd4c61a8791dedb63fa0ae9608d01..728978cea5af6f9994fc304783cc1071a1fb3453 100644
+index 2ed85a5f13adc197e239147b3ef51a14f837d442..8196013ae36ae234c88c54d8410e2a3fbc245747 100644
 --- a/build.gradle
 +++ b/build.gradle
 @@ -63,7 +63,7 @@ libraries.lwjgl = [

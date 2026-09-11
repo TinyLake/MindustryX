@@ -17,7 +17,7 @@ Content-Transfer-Encoding: 8bit
  create mode 100644 android/src/mindustryX/features/ApkInstallHelper.java
 
 diff --git a/android/AndroidManifest.xml b/android/AndroidManifest.xml
-index 251e2fd347541932fd62b296a74564c8e0c879a7..1fda4a8e246e6fcc159eeb3f3c2a766610ea3f53 100644
+index 7c76478fe49ea41e28566ceda986bdbc948c0cbe..6390852b9ca305a12dda8eeac8b0af026fc9b563 100644
 --- a/android/AndroidManifest.xml
 +++ b/android/AndroidManifest.xml
 @@ -6,6 +6,7 @@
