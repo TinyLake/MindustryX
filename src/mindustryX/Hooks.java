@@ -8,6 +8,7 @@ import mindustry.game.EventType.*;
 import mindustry.gen.*;
 import mindustry.mod.*;
 import mindustryX.features.*;
+import mindustryX.features.ui.*;
 
 import java.util.*;
 
@@ -68,6 +69,11 @@ public class Hooks implements ApplicationListener{
             }
         }
         return message;
+    }
+
+    /** 返回 true 表示该 infoPopup 已被 MindustryX 接管（例如服务器积分榜），上游不应再显示原弹窗。 */
+    public static boolean onHandleInfoPopup(@Nullable String message, @Nullable String id){
+        return Vars.ui != null && BroadOverlay.tryHandleInfoPopup(message, id);
     }
 
     @Override

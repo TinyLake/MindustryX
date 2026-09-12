@@ -1,0 +1,21 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: WayZer <himc.wicp@gmail.com>
+Date: Sat, 12 Sep 2026 13:28:37 +0800
+Subject: [PATCH] HC(UI) route scoreboard info popups through Hooks
+
+---
+ core/src/mindustry/core/UI.java | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/core/src/mindustry/core/UI.java b/core/src/mindustry/core/UI.java
+index 7d864784a0d64f8f344c5b4d20d7af5f646d07fc..5ca4f7ea70f06f6d61b63c92bcdcb5523e69f0cc 100644
+--- a/core/src/mindustry/core/UI.java
++++ b/core/src/mindustry/core/UI.java
+@@ -417,6 +417,7 @@ public class UI implements ApplicationListener, Loadable{
+ 
+     /** Shows a label at some position on the screen. Does not fade. */
+     public void showInfoPopup(@Nullable String info, @Nullable String id, float duration, int align, int top, int left, int bottom, int right){
++        if(mindustryX.Hooks.onHandleInfoPopup(info, id)) return;
+         if(info == null){ // null info allows deletion of old popups provided they have ids
+             var table = popups.remove(id);
+             if(table != null) table.remove();
