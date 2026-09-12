@@ -1,0 +1,46 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: WayZer <himc.wicp@gmail.com>
+Date: Sat, 12 Sep 2026 23:35:11 +0800
+Subject: [PATCH] OS(ArcNetProvider) skip low-priority packets for loading
+ clients
+
+A client ignores priorityLow packets until it has finished loading the
+world (clientLoaded), so sending entity/state/block snapshots, unit
+spawns and hidden snapshots to a still-connecting player is pure
+bandwidth waste.
+
+Filter the all-clients send to connections with hasConnected for
+priorityLow packets.
+---
+ core/src/mindustry/net/ArcNetProvider.java | 18 ++++++++++++++++++
+ 1 file changed, 18 insertions(+)
+
+diff --git a/core/src/mindustry/net/ArcNetProvider.java b/core/src/mindustry/net/ArcNetProvider.java
+index 616e9c3e423ec447be628e9bc0affe5cbe674fbd..bc8ec3d14e24dc8da53078b875f4e9e218f0645c 100644
+--- a/core/src/mindustry/net/ArcNetProvider.java
++++ b/core/src/mindustry/net/ArcNetProvider.java
+@@ -356,6 +356,24 @@ public class ArcNetProvider implements NetProvider{
+ 
+     @Override
+     public void sendAllServer(Object object, boolean reliable){
++        //MDTX: low-priority packets are dropped by clients that are still loading the world, don't waste bandwidth on them
++        if(object instanceof Packet packet && packet.getPriority() == Packet.priorityLow){
++            var cons = writeConnections.get();
++            cons.clear();
++            for(var con : connections){
++                if(con.hasConnected) cons.add(con.connection);
++            }
++
++            if(reliable){
++                server.sendToAllTCP(object, cons);
++            }else{
++                server.sendToAllUDP(object, cons);
++            }
++
++            cons.clear();
++            return;
++        }
++
+         if(reliable){
+             server.sendToAllTCP(object);
+         }else{
