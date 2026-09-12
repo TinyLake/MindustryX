@@ -1,0 +1,32 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: WayZer <himc.wicp@gmail.com>
+Date: Sat, 12 Sep 2026 23:24:39 +0800
+Subject: [PATCH] FIX.C(Net) ignore unit spawn packets before world load
+
+UnitSpawn packets are added to the world during handled(), so receiving
+one while the world is still empty (during connect or after a reset)
+crashes in PhysicsProcess.init -> World.getQuadBounds with
+"World is empty".
+
+Drop them on the client when world.height() == 0; the unit is synced
+normally via snapshots after the world loads.
+---
+ core/src/mindustry/net/Net.java | 5 +++++
+ 1 file changed, 5 insertions(+)
+
+diff --git a/core/src/mindustry/net/Net.java b/core/src/mindustry/net/Net.java
+index 1b2ef9c95361afdc0ebdb3752a8db9ae3fe1dbb2..3010f166dfa3fd92e52c8c8eb467e09f2abf4e78 100644
+--- a/core/src/mindustry/net/Net.java
++++ b/core/src/mindustry/net/Net.java
+@@ -298,6 +298,11 @@ public class Net{
+             return;
+         }
+ 
++        //MDTX: unit spawn packets are added during handled(); ignore them while the world isn't loaded yet
++        if(object instanceof UnitSpawnCallPacket && world.height() == 0){
++            return;
++        }
++
+         try{
+             object.handled();
+         }catch(RuntimeException e){
