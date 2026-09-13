@@ -68,7 +68,7 @@ index 2ecc5c547cac9927f196d598d50669647d4b113b..ec9108d5df71963ee24b90a88ad5ef25
          }else{
              return keyboard.isTapped(axis.min) ? -1 : keyboard.isTapped(axis.max) ? 1 : 0;
 diff --git a/arc-core/src/arc/input/KeyBind.java b/arc-core/src/arc/input/KeyBind.java
-index 6f72b1260e1c1752f2d12252d5c32a94d0d1bbe1..35448be7641647314d67ac5afaefbebbc5246bf5 100644
+index df18e6ffe09a1260932c550742d9093fd7293f1e..d1c41535707bc9474d7d6586e0e0ce296ee7ab2d 100644
 --- a/arc-core/src/arc/input/KeyBind.java
 +++ b/arc-core/src/arc/input/KeyBind.java
 @@ -3,10 +3,15 @@ package arc.input;
@@ -125,7 +125,7 @@ index 6f72b1260e1c1752f2d12252d5c32a94d0d1bbe1..35448be7641647314d67ac5afaefbebb
              }else{
                  value = new Axis(((Axis)defaultValue).min, ((Axis)defaultValue).max);
              }
-@@ -112,7 +121,7 @@ public class KeyBind{
+@@ -107,7 +116,7 @@ public class KeyBind{
      public boolean isDefault(){
          if(defaultValue instanceof Axis){
              if(((Axis)defaultValue).min == null){
@@ -134,7 +134,7 @@ index 6f72b1260e1c1752f2d12252d5c32a94d0d1bbe1..35448be7641647314d67ac5afaefbebb
              }else{
                  return ((Axis)defaultValue).max == value.max && ((Axis)defaultValue).min == value.min;
              }
-@@ -125,21 +134,37 @@ public class KeyBind{
+@@ -120,21 +129,37 @@ public class KeyBind{
          return value.key == KeyCode.unset;
      }
  
@@ -173,7 +173,7 @@ index 6f72b1260e1c1752f2d12252d5c32a94d0d1bbe1..35448be7641647314d67ac5afaefbebb
          }
  
          /** Constructor for keyboards/mice, or multiple buttons on a controller. */
-@@ -147,6 +172,29 @@ public class KeyBind{
+@@ -142,6 +167,29 @@ public class KeyBind{
              this.min = min;
              this.max = max;
              this.key = null;
@@ -203,7 +203,7 @@ index 6f72b1260e1c1752f2d12252d5c32a94d0d1bbe1..35448be7641647314d67ac5afaefbebb
          }
  
          @Override
-@@ -155,7 +203,7 @@ public class KeyBind{
+@@ -150,7 +198,7 @@ public class KeyBind{
              if(o == null || getClass() != o.getClass()) return false;
  
              Axis axis = (Axis)o;

@@ -9,15 +9,15 @@ Subject: [PATCH] FC: Allow to persist KeyCode.unset.
  2 files changed, 6 insertions(+), 5 deletions(-)
 
 diff --git a/arc-core/src/arc/input/KeyBind.java b/arc-core/src/arc/input/KeyBind.java
-index b9126bf85ab3457ddeadb3a510b4a413f99b96ec..6f72b1260e1c1752f2d12252d5c32a94d0d1bbe1 100644
+index 2bb062b1202b97a66d6a1178c577d1260a8e5aa7..df18e6ffe09a1260932c550742d9093fd7293f1e 100644
 --- a/arc-core/src/arc/input/KeyBind.java
 +++ b/arc-core/src/arc/input/KeyBind.java
 @@ -69,12 +69,12 @@ public class KeyBind{
          Axis loaded;
          String name = settingsKey();
          if(settings.getBool(name + "-single", true)){
--            KeyCode key = KeyCode.byOrdinal(settings.getInt(name + "-key", KeyCode.unset.ordinal()));
--            loaded = key == KeyCode.unset ? null : new Axis(key);
+-            int ordinal = settings.getInt(name + "-key", -1);
+-            loaded = ordinal < 0 ? null : new Axis(KeyCode.byOrdinal(ordinal));
 +            KeyCode key = KeyCode.byOrdinal(settings.getInt(name + "-key", KeyCode.useDefault.ordinal()));
 +            loaded = key == KeyCode.useDefault ? null : new Axis(key);
          }else{

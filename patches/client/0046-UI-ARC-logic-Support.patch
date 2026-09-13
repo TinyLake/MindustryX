@@ -129,7 +129,7 @@ index 767af6ba1d1a438c98f093216d7cf5acd14c5903..554bfb9aac92d79349951754a00aaa95
          public void draw(){
              float pad = 5f;
 diff --git a/core/src/mindustry/logic/LExecutor.java b/core/src/mindustry/logic/LExecutor.java
-index 1268dde9f4368428ff2196eca0cca1e3c5b12c29..f61330367ec9c6cf43a84dab3dc5cd4749cd6284 100644
+index d44c123a3945f193d06b1ca5056cf85f607aff1b..d3376bf952a8d624d1b353ea19d0ab0d146ec074 100644
 --- a/core/src/mindustry/logic/LExecutor.java
 +++ b/core/src/mindustry/logic/LExecutor.java
 @@ -47,6 +47,9 @@ public class LExecutor{
@@ -168,7 +168,7 @@ index 1268dde9f4368428ff2196eca0cca1e3c5b12c29..f61330367ec9c6cf43a84dab3dc5cd47
                  case active -> p1.setbool(control.input.logicCutscene);
                  case pan -> {
 diff --git a/core/src/mindustry/logic/LStatements.java b/core/src/mindustry/logic/LStatements.java
-index 1f1f0b40418f89a5e75a897b8f0d69445f8616b7..c7519eb33325439871075d72237478e367569e6d 100644
+index 848c918c3ebaf6353c92ba60223948510a850803..93947de4fc294af57ba597bde37e07065856f724 100644
 --- a/core/src/mindustry/logic/LStatements.java
 +++ b/core/src/mindustry/logic/LStatements.java
 @@ -4,6 +4,9 @@ import arc.*;
@@ -189,7 +189,7 @@ index 1f1f0b40418f89a5e75a897b8f0d69445f8616b7..c7519eb33325439871075d72237478e3
  
  import static mindustry.Vars.*;
  import static mindustry.logic.LCanvas.*;
-@@ -973,7 +977,8 @@ public class LStatements{
+@@ -961,7 +965,8 @@ public class LStatements{
              table.table(this::rebuild);
  
              table.add().growX();
@@ -199,7 +199,7 @@ index 1f1f0b40418f89a5e75a897b8f0d69445f8616b7..c7519eb33325439871075d72237478e3
  
              String name = localizedName();
  
-@@ -990,6 +995,35 @@ public class LStatements{
+@@ -978,6 +983,35 @@ public class LStatements{
  
          }
  
@@ -235,7 +235,7 @@ index 1f1f0b40418f89a5e75a897b8f0d69445f8616b7..c7519eb33325439871075d72237478e3
          void rebuild(Table table){
              table.clearChildren();
              table.setColor(last);
-@@ -1001,16 +1035,15 @@ public class LStatements{
+@@ -989,16 +1023,15 @@ public class LStatements{
          }
  
          public static void addOp(LStatement st, Table t, ConditionOp op, Cons<ConditionOp> getter, String comp0, Cons<String> set0, String comp1, Cons<String> set2){

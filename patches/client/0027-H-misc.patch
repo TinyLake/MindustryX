@@ -307,7 +307,7 @@ index 4d317988befe097723020cd9b8fb15d2296e4d71..2f4da991d5d432de1616e517d2996ed1
          add = new BaseDialog("@joingame.title");
          add.cont.add("@joingame.ip").padRight(5f).left();
 diff --git a/core/src/mindustry/ui/dialogs/KeybindDialog.java b/core/src/mindustry/ui/dialogs/KeybindDialog.java
-index 55799804f59d434cdf10e04907d667a9c2fb10ed..6fd22e1e617322ba5387e764fad1dbb0cfd1fa67 100644
+index 248aa3d78b0b598025fe8a1fa8d449a6cd507660..3ea9f96e84a588f71f6e1af78de0bd198b4d77df 100644
 --- a/core/src/mindustry/ui/dialogs/KeybindDialog.java
 +++ b/core/src/mindustry/ui/dialogs/KeybindDialog.java
 @@ -80,7 +80,7 @@ public class KeybindDialog extends Dialog{
@@ -422,7 +422,7 @@ index f319d4b84be6530116f372674363896c095e3f26..c540dcd42b45140924793fdab1f021b3
          team("/t"),
          admin("/a", player::admin)
 diff --git a/core/src/mindustry/ui/fragments/PlacementFragment.java b/core/src/mindustry/ui/fragments/PlacementFragment.java
-index 54dcd456bb1d38be5dd03d8285df43af89fda63e..06932a1ac0c04d74a5cf77ef43628d7117da88b9 100644
+index 04b3c75ef2f94417c5d51564862627460cae8494..07deebd06e7d0383cbd7e1f7b88f221b11fd20b2 100644
 --- a/core/src/mindustry/ui/fragments/PlacementFragment.java
 +++ b/core/src/mindustry/ui/fragments/PlacementFragment.java
 @@ -788,10 +788,8 @@ public class PlacementFragment{

@@ -9,7 +9,7 @@ Subject: [PATCH] FIX.G: compatibility for old mixed tech
  2 files changed, 12 insertions(+)
 
 diff --git a/core/src/mindustry/game/Rules.java b/core/src/mindustry/game/Rules.java
-index 23ec0a69d07241c9b479aab3f1c66a34bf5c940c..d511344a419fa1314e16ad919bb837a3a8a914ea 100644
+index 95983c7e4421f53719a42fd12c04b9eaa1801163..407e42352edf3802c642f3016dae4c080fa5861e 100644
 --- a/core/src/mindustry/game/Rules.java
 +++ b/core/src/mindustry/game/Rules.java
 @@ -193,6 +193,11 @@ public class Rules{
@@ -25,10 +25,10 @@ index 23ec0a69d07241c9b479aab3f1c66a34bf5c940c..d511344a419fa1314e16ad919bb837a3
      public MapObjectives objectives = new MapObjectives();
      /** Flags set by objectives. Used in world processors. */
 diff --git a/core/src/mindustry/io/SaveVersion.java b/core/src/mindustry/io/SaveVersion.java
-index 72a76670b292b982b87672cc3d696b23597021a5..80ede9b30a96e78b8f305fa23b891764e48f2ca2 100644
+index 805f6f78e3ec6897bba40d7e517611c5275506b4..a3e521b89453a016c12965c898554ecb3ea5ad94 100644
 --- a/core/src/mindustry/io/SaveVersion.java
 +++ b/core/src/mindustry/io/SaveVersion.java
-@@ -190,6 +190,7 @@ public abstract class SaveVersion extends SaveFileReader{
+@@ -191,6 +191,7 @@ public abstract class SaveVersion extends SaveFileReader{
          )) : worldmap;
      }
  
@@ -36,7 +36,7 @@ index 72a76670b292b982b87672cc3d696b23597021a5..80ede9b30a96e78b8f305fa23b891764
      public void readRules(SaveReadState saveState){
          if(saveState.ruleString == null) return; //in NetworkIO, rules are null, not read here
          state.rules = JsonIO.read(Rules.class, saveState.ruleString);
-@@ -203,6 +204,12 @@ public abstract class SaveVersion extends SaveFileReader{
+@@ -204,6 +205,12 @@ public abstract class SaveVersion extends SaveFileReader{
              }
          }
  

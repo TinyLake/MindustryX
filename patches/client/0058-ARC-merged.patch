@@ -708,7 +708,7 @@ index c1c70a7808d971b400dfb9429593ddb47c70a3a8..1c6d945096b205d8ecae9117ce6653f8
          rect.grow(4f);
  
 diff --git a/core/src/mindustry/logic/LExecutor.java b/core/src/mindustry/logic/LExecutor.java
-index f61330367ec9c6cf43a84dab3dc5cd4749cd6284..735ffae19dfad767bd3d7be396acbbc9635ba6a3 100644
+index d3376bf952a8d624d1b353ea19d0ab0d146ec074..d757e0e5746193be9ffaea45514794d56f9646a6 100644
 --- a/core/src/mindustry/logic/LExecutor.java
 +++ b/core/src/mindustry/logic/LExecutor.java
 @@ -33,6 +33,7 @@ import mindustry.world.blocks.logic.LogicBlock.*;
@@ -934,7 +934,7 @@ index f74d44f50c3704e262a0c81e473bd88b703f10ee..e3fa7644e3bee4bb3f1bce24c960c660
      }
  
 diff --git a/core/src/mindustry/ui/Fonts.java b/core/src/mindustry/ui/Fonts.java
-index 40c0e7858e69a0ce3fe5be7acd946a877c138822..0ed436256c91f19b70a85ad69fae3bed0dbc0e18 100644
+index 33bd459410d3abc42eb7c6cd0332354b1ff2cca5..b81f59dba432adbff89f4719da381b55c0a34062 100644
 --- a/core/src/mindustry/ui/Fonts.java
 +++ b/core/src/mindustry/ui/Fonts.java
 @@ -31,7 +31,7 @@ public class Fonts{
@@ -996,7 +996,7 @@ index 227a4a1461338b36a152f9bd5e75a203dd3348f6..729da2fc06fd8844decb00613257bc05
          table.marginRight(30f);
          //TODO: some things (e.g. reconstructor requirements) are too long and screw up the layout
 diff --git a/core/src/mindustry/ui/dialogs/CustomRulesDialog.java b/core/src/mindustry/ui/dialogs/CustomRulesDialog.java
-index c0a72acaf6f18377cad991d27fa7e8617ce50433..efbf2599ac3a17da496659a2a0f376d978a4113c 100644
+index f62b656764cd9484a2837a65887c2d79d370367c..7aa6f37931ab81f71d8066964b3f150fbcfb2858 100644
 --- a/core/src/mindustry/ui/dialogs/CustomRulesDialog.java
 +++ b/core/src/mindustry/ui/dialogs/CustomRulesDialog.java
 @@ -3,6 +3,7 @@ package mindustry.ui.dialogs;
@@ -1073,7 +1073,7 @@ index c0a72acaf6f18377cad991d27fa7e8617ce50433..efbf2599ac3a17da496659a2a0f376d9
          number("@rules.buildspeedmultiplier", f -> rules.buildSpeedMultiplier = f, () -> rules.buildSpeedMultiplier, 0.001f, 50f);
 @@ -188,6 +195,9 @@ public class CustomRulesDialog extends BaseDialog{
          if(Core.bundle.get("bannedblocks").toLowerCase().contains(ruleSearch)){
-             current.button("@bannedblocks", () -> bannedBlocks.show(rules.bannedBlocks)).left().width(300f).row();
+             current.button("@bannedblocks", Icon.cancelSmall, () -> bannedBlocks.show(rules.bannedBlocks)).left().width(300f).row();
          }
 +        if(Core.bundle.get("revealedblocks").toLowerCase().contains(ruleSearch)){
 +            current.button("@revealedblocks", () -> revealedblocks.show(rules.revealedBlocks)).left().width(300f).row();
@@ -1116,9 +1116,9 @@ index c0a72acaf6f18377cad991d27fa7e8617ce50433..efbf2599ac3a17da496659a2a0f376d9
 +            }, () -> ui.picker.show(rules.dynamicColor, rules.dynamicColor::set)).left().width(250f).row();
 +        }
  
-         if(Core.bundle.get("rules.weather").toLowerCase().contains(ruleSearch)){
-             current.button("@rules.weather", this::weatherDialog).width(250f).left().row();
-@@ -281,6 +314,15 @@ public class CustomRulesDialog extends BaseDialog{
+         category("music");
+ 
+@@ -277,6 +310,15 @@ public class CustomRulesDialog extends BaseDialog{
              text -> parser.get(text) != null,
          allowMusic);
  
@@ -1134,7 +1134,7 @@ index c0a72acaf6f18377cad991d27fa7e8617ce50433..efbf2599ac3a17da496659a2a0f376d9
          category("planet");
          if(Core.bundle.get("rules.title.planet").toLowerCase().contains(ruleSearch)){
              current.table(Tex.button, t -> {
-@@ -290,10 +332,10 @@ public class CustomRulesDialog extends BaseDialog{
+@@ -286,10 +328,10 @@ public class CustomRulesDialog extends BaseDialog{
  
                  t.defaults().size(140f, 50f);
  
@@ -1149,7 +1149,7 @@ index c0a72acaf6f18377cad991d27fa7e8617ce50433..efbf2599ac3a17da496659a2a0f376d9
  
                      if(t.getChildren().size % 3 == 0){
                          t.row();
-@@ -313,10 +355,29 @@ public class CustomRulesDialog extends BaseDialog{
+@@ -309,10 +351,29 @@ public class CustomRulesDialog extends BaseDialog{
          if(showRuleEditRule){
              check("@rules.allowedit", b -> rules.allowEditRules = b, () -> rules.allowEditRules);
          }
@@ -1180,7 +1180,7 @@ index c0a72acaf6f18377cad991d27fa7e8617ce50433..efbf2599ac3a17da496659a2a0f376d9
              boolean[] shown = {false};
              Table wasCurrent = current;
  
-@@ -333,6 +394,10 @@ public class CustomRulesDialog extends BaseDialog{
+@@ -329,6 +390,10 @@ public class CustomRulesDialog extends BaseDialog{
                  current = c;
                  TeamRule teams = rules.teams.get(team);
  
@@ -1191,7 +1191,7 @@ index c0a72acaf6f18377cad991d27fa7e8617ce50433..efbf2599ac3a17da496659a2a0f376d9
                  number("@rules.blockhealthmultiplier", f -> teams.blockHealthMultiplier = f, () -> teams.blockHealthMultiplier);
                  number("@rules.blockdamagemultiplier", f -> teams.blockDamageMultiplier = f, () -> teams.blockDamageMultiplier);
  
-@@ -371,6 +436,32 @@ public class CustomRulesDialog extends BaseDialog{
+@@ -367,6 +432,32 @@ public class CustomRulesDialog extends BaseDialog{
              }, () -> shown[0]).left().growX().row();
          }
  
@@ -1224,7 +1224,7 @@ index c0a72acaf6f18377cad991d27fa7e8617ce50433..efbf2599ac3a17da496659a2a0f376d9
          additionalSetup.each(Runnable::run);
  
          for(var i = 0; i < categories.size; i++){
-@@ -405,6 +496,7 @@ public class CustomRulesDialog extends BaseDialog{
+@@ -401,6 +492,7 @@ public class CustomRulesDialog extends BaseDialog{
                      cons.get(team);
                  }).pad(1f).checked(b -> prov.get() == team).size(60f).tooltip(team.coloredName()).with(i -> i.getStyle().imageUpColor = team.color);
              }
@@ -1232,7 +1232,7 @@ index c0a72acaf6f18377cad991d27fa7e8617ce50433..efbf2599ac3a17da496659a2a0f376d9
          }).padTop(0).row();
      }
  
-@@ -437,7 +529,7 @@ public class CustomRulesDialog extends BaseDialog{
+@@ -433,7 +525,7 @@ public class CustomRulesDialog extends BaseDialog{
              t.field((prov.get()) + "", s -> cons.get(Strings.parseInt(s)))
                  .update(a -> a.setDisabled(!condition.get()))
                  .padRight(100f)
@@ -1241,7 +1241,7 @@ index c0a72acaf6f18377cad991d27fa7e8617ce50433..efbf2599ac3a17da496659a2a0f376d9
          }).padTop(0);
          ruleInfo(cell, text);
          current.row();
-@@ -452,7 +544,8 @@ public class CustomRulesDialog extends BaseDialog{
+@@ -448,7 +540,8 @@ public class CustomRulesDialog extends BaseDialog{
              t.field((integer ? (int)prov.get() : prov.get()) + "", s -> cons.get(Strings.parseFloat(s)))
              .padRight(50f)
              .update(a -> a.setDisabled(!condition.get()))
@@ -1897,7 +1897,7 @@ index 5509cfb471cd5297a5e5d213b894ab9f85db40c1..8dabb1815bd43f1fa88444b6aa3acf9f
      }
  
 diff --git a/core/src/mindustry/ui/fragments/PlacementFragment.java b/core/src/mindustry/ui/fragments/PlacementFragment.java
-index 9c8734e1a9f61ff0be93e848e258caeae945ecef..6d20a3fd31fdc22b2425f16da84201c0f0d31c7e 100644
+index 135482c2c2f4ae1feb2a0c0ddc4b48feb1bf55d9..a638a39be12d832ccd4895d7add48db4267c68c6 100644
 --- a/core/src/mindustry/ui/fragments/PlacementFragment.java
 +++ b/core/src/mindustry/ui/fragments/PlacementFragment.java
 @@ -1,6 +1,7 @@

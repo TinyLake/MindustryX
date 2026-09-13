@@ -32,7 +32,7 @@ index dcc86b8f92be839fc4c6bce355630176f885dc43..1d80f5b9e537bb1ebbca580142f42e50
                  }
                  line ++;
 diff --git a/core/src/mindustry/logic/LStatements.java b/core/src/mindustry/logic/LStatements.java
-index 24a59a27c2bf2c6eac6945c5cd765c7ba76f3655..1f1f0b40418f89a5e75a897b8f0d69445f8616b7 100644
+index 1491fa884ca5a3bd148c2da27abaee7570b96cbe..848c918c3ebaf6353c92ba60223948510a850803 100644
 --- a/core/src/mindustry/logic/LStatements.java
 +++ b/core/src/mindustry/logic/LStatements.java
 @@ -23,6 +23,7 @@ import mindustry.type.*;

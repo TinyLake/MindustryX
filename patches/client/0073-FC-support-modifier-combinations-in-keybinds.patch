@@ -70,7 +70,7 @@ index 95039d456003b4228b8084e2a53190f6abf2b163..5659ed003b1594cebafcbe85db3dc112
          }
  
 diff --git a/core/src/mindustry/ui/dialogs/KeybindDialog.java b/core/src/mindustry/ui/dialogs/KeybindDialog.java
-index 6fd22e1e617322ba5387e764fad1dbb0cfd1fa67..71bc7ffee49da85573d42f2293c5dd2fe91a39fd 100644
+index 3ea9f96e84a588f71f6e1af78de0bd198b4d77df..561405f7607b59d1a0653cbc4630d90df07a9186 100644
 --- a/core/src/mindustry/ui/dialogs/KeybindDialog.java
 +++ b/core/src/mindustry/ui/dialogs/KeybindDialog.java
 @@ -96,10 +96,8 @@ public class KeybindDialog extends Dialog{
@@ -136,7 +136,7 @@ index 6fd22e1e617322ba5387e764fad1dbb0cfd1fa67..71bc7ffee49da85573d42f2293c5dd2f
          }
          bind.save();
  
-@@ -179,6 +197,7 @@ public class KeybindDialog extends Dialog{
+@@ -180,6 +198,7 @@ public class KeybindDialog extends Dialog{
  
          rebindDialog.titleTable.getCells().first().pad(4);
          rebindDialog.addListener(new InputListener(){
@@ -144,7 +144,7 @@ index 6fd22e1e617322ba5387e764fad1dbb0cfd1fa67..71bc7ffee49da85573d42f2293c5dd2f
              @Override
              public boolean touchDown(InputEvent event, float x, float y, int pointer, KeyCode button){
                  if(Core.app.isAndroid()) return false;
-@@ -188,9 +207,16 @@ public class KeybindDialog extends Dialog{
+@@ -189,9 +208,16 @@ public class KeybindDialog extends Dialog{
  
              @Override
              public boolean keyDown(InputEvent event, KeyCode keycode){
