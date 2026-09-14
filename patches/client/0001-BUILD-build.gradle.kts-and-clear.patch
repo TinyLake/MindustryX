@@ -11,7 +11,7 @@ way-zer <himc.wicp@gmail.com> on 2024/6/9
  android/proguard-rules.pro                    |   4 +
  .../com/github/bsideup/jabel/Desugar.java     |  13 +
  .../javax.annotation.processing.Processor     |   6 +
- build.gradle                                  | 342 ++++--------------
+ build.gradle                                  | 343 ++++--------------
  core/build.gradle                             |   2 -
  core/build.gradle.kts                         |  73 ++++
  desktop/build.gradle                          | 157 +-------
@@ -22,7 +22,7 @@ way-zer <himc.wicp@gmail.com> on 2024/6/9
  settings.gradle                               |  11 +-
  tools/build.gradle                            |  57 ++-
  tools/src/mindustry/tools/Generators.java     |   2 +-
- 16 files changed, 454 insertions(+), 702 deletions(-)
+ 16 files changed, 454 insertions(+), 703 deletions(-)
  create mode 100644 annotations/src/main/java/com/github/bsideup/jabel/Desugar.java
  create mode 100644 annotations/src/main/resources/META-INF/services/javax.annotation.processing.Processor
  delete mode 100644 core/build.gradle
@@ -288,16 +288,15 @@ index 0000000000000000000000000000000000000000..181b87c1d5f3755f16a01c0528d0a89f
 +mindustry.annotations.misc.LogicStatementProcessor
 +mindustry.annotations.remote.RemoteProcess
 diff --git a/build.gradle b/build.gradle
-index 7ccf160d830bfdf06c52e7661ed7830ca2a0e59a..558cb3c87d4be2800ed7a9f52f63bc4e8366aa36 100644
+index 7ccf160d830bfdf06c52e7661ed7830ca2a0e59a..e399bef5753ac195fe759b7f25f1087ddd7f12a8 100644
 --- a/build.gradle
 +++ b/build.gradle
-@@ -1,9 +1,9 @@
+@@ -1,29 +1,16 @@
 -import java.text.SimpleDateFormat
 -
  buildscript{
 +    def modText = new File(rootDir.parent, "assets/mod.hjson").text
 +    def upstreamBuild = (modText =~ /minGameVersion\s*:\s*"([^"]+)"/)[0]?[1]
-+    def arcHash = "v${upstreamBuild}"
 +    rootProject.ext.upstreamBuild = upstreamBuild
      ext{
 -        arcHash = property("archash")
@@ -305,8 +304,10 @@ index 7ccf160d830bfdf06c52e7661ed7830ca2a0e59a..558cb3c87d4be2800ed7a9f52f63bc4e
          localArc = new File(rootDir.parent, 'Arc').exists() && !project.hasProperty("noLocalArc")
  
          arcModule = { String name ->
-@@ -12,18 +12,6 @@ buildscript{
-             return "com.github.Anuken${localArc ? "" : ".Arc"}:$name:$arcHash"
+             //skip to last submodule
+             name = name.substring(name.lastIndexOf(':') + 1)
+-            return "com.github.Anuken${localArc ? "" : ".Arc"}:$name:$arcHash"
++            return "com.github.TinyLake.MindustryX:$name:${rootProject.version}"
          }
      }
 -
@@ -324,7 +325,7 @@ index 7ccf160d830bfdf06c52e7661ed7830ca2a0e59a..558cb3c87d4be2800ed7a9f52f63bc4e
  }
  
  plugins{
-@@ -38,6 +26,7 @@ allprojects{
+@@ -38,6 +25,7 @@ allprojects{
      group = 'com.github.Anuken'
  
      ext{
@@ -332,7 +333,7 @@ index 7ccf160d830bfdf06c52e7661ed7830ca2a0e59a..558cb3c87d4be2800ed7a9f52f63bc4e
          versionNumber = '8'
          if(!project.hasProperty("versionModifier")) versionModifier = 'release'
          if(!project.hasProperty("versionType")) versionType = 'official'
-@@ -49,133 +38,10 @@ allprojects{
+@@ -49,133 +37,10 @@ allprojects{
              return new Properties().with{p -> p.load(file('../core/assets/version.properties').newReader()); return p }
          }
  
@@ -466,7 +467,7 @@ index 7ccf160d830bfdf06c52e7661ed7830ca2a0e59a..558cb3c87d4be2800ed7a9f52f63bc4e
      }
  
      repositories{
-@@ -185,65 +51,53 @@ allprojects{
+@@ -185,65 +50,53 @@ allprojects{
          maven{ url = 'https://jitpack.io' }
      }
  
@@ -570,7 +571,7 @@ index 7ccf160d830bfdf06c52e7661ed7830ca2a0e59a..558cb3c87d4be2800ed7a9f52f63bc4e
          options{
              addStringOption('Xdoclint:none', '-quiet')
              addStringOption('-release', '17')
-@@ -252,11 +106,10 @@ configure(subprojects - project(":annotations") - project(":tests")){
+@@ -252,11 +105,10 @@ configure(subprojects - project(":annotations") - project(":tests")){
      }
  }
  
@@ -583,7 +584,7 @@ index 7ccf160d830bfdf06c52e7661ed7830ca2a0e59a..558cb3c87d4be2800ed7a9f52f63bc4e
      dependencies{
          implementation project(":core")
          implementation arcModule("extensions:profiling")
-@@ -266,8 +119,6 @@ project(":desktop"){
+@@ -266,8 +118,6 @@ project(":desktop"){
          implementation arcModule("natives:natives-desktop")
          implementation arcModule("natives:natives-freetype-desktop")
  
@@ -592,7 +593,7 @@ index 7ccf160d830bfdf06c52e7661ed7830ca2a0e59a..558cb3c87d4be2800ed7a9f52f63bc4e
          implementation "com.github.Anuken:steamworks4j:$steamworksVersion"
  
          implementation arcModule("backends:backend-sdl")
-@@ -286,17 +137,7 @@ project(":core"){
+@@ -286,17 +136,7 @@ project(":core"){
          }
      }
  
@@ -611,7 +612,7 @@ index 7ccf160d830bfdf06c52e7661ed7830ca2a0e59a..558cb3c87d4be2800ed7a9f52f63bc4e
          doLast{
              def props = loadVersionProps()
              def androidVersion = props['androidBuildCode'].toInteger() - 2
-@@ -304,9 +145,9 @@ project(":core"){
+@@ -304,9 +144,9 @@ project(":core"){
              def notice = "[This is a truncated changelog, see Github for full notes]"
              def maxLength = 460
  
@@ -623,7 +624,7 @@ index 7ccf160d830bfdf06c52e7661ed7830ca2a0e59a..558cb3c87d4be2800ed7a9f52f63bc4e
                  if(result.length() + line.length() + 1 < maxLength){
                      result += line + "\n"
                  }
-@@ -320,7 +161,8 @@ project(":core"){
+@@ -320,7 +160,8 @@ project(":core"){
          }
      }
  
@@ -633,7 +634,7 @@ index 7ccf160d830bfdf06c52e7661ed7830ca2a0e59a..558cb3c87d4be2800ed7a9f52f63bc4e
          archiveClassifier = 'deps'
          from files(sourceSets.main.output.classesDirs)
          from{ configurations.runtimeClasspath.collect{ it.isDirectory() ? it : zipTree(it) } }
-@@ -342,27 +184,13 @@ project(":core"){
+@@ -342,27 +183,13 @@ project(":core"){
          duplicatesStrategy = DuplicatesStrategy.EXCLUDE
      }
  
@@ -664,7 +665,7 @@ index 7ccf160d830bfdf06c52e7661ed7830ca2a0e59a..558cb3c87d4be2800ed7a9f52f63bc4e
          archiveClassifier = 'music'
  
          into('assets'){
-@@ -372,8 +200,6 @@ project(":core"){
+@@ -372,8 +199,6 @@ project(":core"){
      }
  
      dependencies{
@@ -673,7 +674,7 @@ index 7ccf160d830bfdf06c52e7661ed7830ca2a0e59a..558cb3c87d4be2800ed7a9f52f63bc4e
          api "at.yawk.lz4:lz4-java:1.10.2"
          api arcModule("arc-core")
          api arcModule("extensions:flabel")
-@@ -382,33 +208,27 @@ project(":core"){
+@@ -382,33 +207,27 @@ project(":core"){
          api arcModule("extensions:fx")
          api arcModule("extensions:arcnet")
          api "com.github.Anuken:rhino:$rhinoVersion"
@@ -720,7 +721,7 @@ index 7ccf160d830bfdf06c52e7661ed7830ca2a0e59a..558cb3c87d4be2800ed7a9f52f63bc4e
      }
  
      gradle.taskGraph.whenReady{
-@@ -446,12 +266,6 @@ project(":tests"){
+@@ -446,12 +265,6 @@ project(":tests"){
          testRuntimeOnly "org.junit.platform:junit-platform-launcher"
      }
  
@@ -733,7 +734,7 @@ index 7ccf160d830bfdf06c52e7661ed7830ca2a0e59a..558cb3c87d4be2800ed7a9f52f63bc4e
      test{
          //fork every test so mods don't interact with each other
          forkEvery = 1
-@@ -504,33 +318,11 @@ configure([":core", ":server"].collect{project(it)}){
+@@ -504,33 +317,11 @@ configure([":core", ":server"].collect{project(it)}){
      }
  }
  
