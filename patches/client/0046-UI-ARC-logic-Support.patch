@@ -29,6 +29,9 @@ MinRi2 <2275045670@qq.com>
 * 清除链接建筑时更新逻辑代码
 MinRi2 <2275045670@qq.com> on 2025/5/3
 
+* LCanvas.toggleComment() 代码转print换用LStatement.write （原版实现会自行调用LogicIO.write）
+m1cxxzfw3q <mcxzfwq@outlook.com> 0n 2026/9/28
+
 JUMP按钮始终显示在积木内部(长短条一致)；短条模式下收缩两个条件输入框腾出空间
 ---
  core/src/mindustry/logic/LCanvas.java         | 53 ++++++++++++++++++-
@@ -102,7 +105,7 @@ index 767af6ba1d1a438c98f093216d7cf5acd14c5903..554bfb9aac92d79349951754a00aaa95
 +            }else{  //代码->print
 +                st.saveUI();
 +                StringBuilder thisText = new StringBuilder();
-+                st.write(thisText); //换用LStatement.write （原实现未考虑到模组添加的逻辑语句）
++                st.write(thisText);
 +                var stNew = new PrintStatement();
 +                stNew.value = thisText.toString().replace(' ','_');
 +                newElem = new StatementElem(stNew);
