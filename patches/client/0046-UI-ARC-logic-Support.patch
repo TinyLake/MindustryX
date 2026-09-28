@@ -102,7 +102,7 @@ index 767af6ba1d1a438c98f093216d7cf5acd14c5903..554bfb9aac92d79349951754a00aaa95
 +            }else{  //代码->print
 +                st.saveUI();
 +                StringBuilder thisText = new StringBuilder();
-+                LogicIO.write(st, thisText);
++                st.write(thisText); //换用LStatement.write （原实现未考虑到模组添加的逻辑语句）
 +                var stNew = new PrintStatement();
 +                stNew.value = thisText.toString().replace(' ','_');
 +                newElem = new StatementElem(stNew);
