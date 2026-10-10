@@ -9,6 +9,7 @@ import arc.util.serialization.Jval
 import mindustry.Vars
 import mindustryX.bundles.UiTextBundle
 import mindustryX.bundles.UiTextBundleEn
+import mindustryX.bundles.UiTextBundleVi
 import mindustryX.features.SettingsV2.CheckPref
 import mindustryX.features.SettingsV2.SliderPref
 import mindustryX.features.UIExt.i
@@ -48,6 +49,8 @@ object VarsX {
         val locale = Core.bundle?.locale ?: Locale.getDefault()
         bundle = if (locale.language.equals(Locale.CHINESE.language, ignoreCase = true)) {
             UiTextBundle.Zh
+        } else if (locale.language.equals("vi", ignoreCase = true)) {
+            UiTextBundleVi
         } else {
             UiTextBundleEn
         }

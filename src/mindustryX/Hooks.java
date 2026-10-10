@@ -93,8 +93,10 @@ public class Hooks implements ApplicationListener{
         try{
             I18NBundle originBundle = Core.bundle;
             Fi handle = Core.files.internal("bundles/bundle-mdtx");
-            Core.bundle = I18NBundle.createBundle(handle, Locale.getDefault());
-            Reflect.set(Core.bundle, "locale", originBundle.getLocale());
+            Locale locale = originBundle.getLocale();
+            // Mindustry's root bundle is English, while the MDTX root bundle is Chinese.
+            Core.bundle = I18NBundle.createBundle(handle, locale.getLanguage().isEmpty() ? Locale.ENGLISH : locale);
+            Reflect.set(Core.bundle, "locale", locale);
             Log.info("MDTX: bundle has been loaded.");
             var rootBundle = Core.bundle;
             while(rootBundle.getParent() != null){
