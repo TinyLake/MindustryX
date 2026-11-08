@@ -1,0 +1,95 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: m1cxzfw3q <mcxzfwq@outlook.com>
+Date: Mon, 9 Nov 2026 00:46:45 +0800
+Subject: [PATCH] C(Stat) Add estimated DPS display for the turret
+
+---
+ .../world/blocks/defense/turrets/ContinuousLiquidTurret.java | 2 +-
+ .../world/blocks/defense/turrets/ContinuousTurret.java       | 2 ++
+ .../world/blocks/defense/turrets/PayloadAmmoTurret.java      | 2 +-
+ .../mindustry/world/blocks/defense/turrets/PowerTurret.java  | 2 ++
+ core/src/mindustry/world/meta/StatValues.java                | 5 +++++
+ 5 files changed, 11 insertions(+), 2 deletions(-)
+
+diff --git a/core/src/mindustry/world/blocks/defense/turrets/ContinuousLiquidTurret.java b/core/src/mindustry/world/blocks/defense/turrets/ContinuousLiquidTurret.java
+index 3c7586f4e016fc1c0fdc562b3ad4bbed97ac5a60..744600bb1a7a38f4714ab755fcd134f29b625e15 100644
+--- a/core/src/mindustry/world/blocks/defense/turrets/ContinuousLiquidTurret.java
++++ b/core/src/mindustry/world/blocks/defense/turrets/ContinuousLiquidTurret.java
+@@ -34,7 +34,7 @@ public class ContinuousLiquidTurret extends ContinuousTurret{
+         //mirror stats onto each bullet (purely visual)
+         ammoTypes.each((l, b) -> b.statLiquidConsumed = liquidConsumed);
+ 
+-        stats.replace(Stat.ammo, StatValues.ammo(ammoTypes));
++        stats.replace(Stat.ammo, StatValues.ammo(ammoTypes, name));
+     }
+ 
+     @Override
+diff --git a/core/src/mindustry/world/blocks/defense/turrets/ContinuousTurret.java b/core/src/mindustry/world/blocks/defense/turrets/ContinuousTurret.java
+index 9cb43af2d5edba19cce5d3715af2d8a8bde4dcef..c37e2a798f11514b3fc3a72a6eafbab2c8c17f30 100644
+--- a/core/src/mindustry/world/blocks/defense/turrets/ContinuousTurret.java
++++ b/core/src/mindustry/world/blocks/defense/turrets/ContinuousTurret.java
+@@ -9,6 +9,7 @@ import mindustry.entities.bullet.*;
+ import mindustry.gen.*;
+ import mindustry.world.consumers.*;
+ import mindustry.world.meta.*;
++import mindustryX.features.*;
+ 
+ /** A turret that fires a continuous beam bullet with no reload or coolant necessary. The bullet only disappears when the turret stops shooting. */
+ public class ContinuousTurret extends Turret{
+@@ -30,6 +31,7 @@ public class ContinuousTurret extends Turret{
+         super.setStats();
+ 
+         stats.add(Stat.ammo, StatValues.ammo(ObjectMap.of(this, shootType)));
++        stats.add(StatExt.estimateDPS,(shootType.estimateDPS() / reload) * shoot.shots * 60f);
+         stats.remove(Stat.reload);
+         stats.remove(Stat.inaccuracy);
+     }
+diff --git a/core/src/mindustry/world/blocks/defense/turrets/PayloadAmmoTurret.java b/core/src/mindustry/world/blocks/defense/turrets/PayloadAmmoTurret.java
+index 092fd472d02413a938c68db149410add4e9bb7d6..22030a97e10f568c5fac406bdd6bd5610dccb01c 100644
+--- a/core/src/mindustry/world/blocks/defense/turrets/PayloadAmmoTurret.java
++++ b/core/src/mindustry/world/blocks/defense/turrets/PayloadAmmoTurret.java
+@@ -52,7 +52,7 @@ public class PayloadAmmoTurret extends Turret{
+         super.setStats();
+ 
+         stats.remove(Stat.itemCapacity);
+-        stats.add(Stat.ammo, StatValues.ammo(ammoTypes, true));
++        stats.add(Stat.ammo, StatValues.ammo(ammoTypes, true, name));
+     }
+ 
+     @Override
+diff --git a/core/src/mindustry/world/blocks/defense/turrets/PowerTurret.java b/core/src/mindustry/world/blocks/defense/turrets/PowerTurret.java
+index 945976e559dfe3b099dd7fe6a09ef5732d2312a6..53896e88d622f6ae679684a25237ef3b2fda2370 100644
+--- a/core/src/mindustry/world/blocks/defense/turrets/PowerTurret.java
++++ b/core/src/mindustry/world/blocks/defense/turrets/PowerTurret.java
+@@ -4,6 +4,7 @@ import arc.struct.*;
+ import mindustry.entities.bullet.*;
+ import mindustry.logic.*;
+ import mindustry.world.meta.*;
++import mindustryX.features.*;
+ 
+ public class PowerTurret extends Turret{
+     public BulletType shootType;
+@@ -17,6 +18,7 @@ public class PowerTurret extends Turret{
+     public void setStats(){
+         super.setStats();
+         stats.add(Stat.ammo, StatValues.ammo(ObjectMap.of(this, shootType)));
++        stats.add(StatExt.estimateDPS, (shootType.estimateDPS() / reload) * shoot.shots * 60f);
+     }
+ 
+     public void limitRange(float margin){
+diff --git a/core/src/mindustry/world/meta/StatValues.java b/core/src/mindustry/world/meta/StatValues.java
+index 853c6d02094d6d6b1f24c3862ce1b54a9cbb3267..0736bc54cd3e7ae3163b2c11a939181033b9e30d 100644
+--- a/core/src/mindustry/world/meta/StatValues.java
++++ b/core/src/mindustry/world/meta/StatValues.java
+@@ -1007,6 +1007,11 @@ public class StatValues{
+                         bt.add(coll);
+                     }
+ 
++                    Turret turret = blockName != null && !blockName.isEmpty() && Vars.content.block(blockName) instanceof Turret tur ? tur : null;
++                    if(turret != null){
++                        bt.row().row();
++                        bt.add("[lightgray]" + Core.bundle.get("stat.estimate_dps") + ":[stat] " + (type.estimateDPS() / turret.reload) * turret.shoot.shots * 60f);
++                    }
+                 }).padLeft(5).padTop(5).padBottom(compact ? 0 : 5).growX().margin(compact ? 0 : 10);
+                 table.row();
+             }
