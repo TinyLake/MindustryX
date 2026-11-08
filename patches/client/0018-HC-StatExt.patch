@@ -8,9 +8,6 @@ Content-Transfer-Encoding: 8bit
 
 修复一些显示错误
 way-zer <himc.wicp@gmail.com> on 2024/5/4 at 22:17
-
-为炮台增加dps显示
-m1cxzfw3q <mcxzfwq@outlook.com> on 2026/11/8 at 12:14
 ---
  core/src/mindustry/type/Item.java             |   5 +
  core/src/mindustry/type/Liquid.java           |   2 +
@@ -31,8 +28,8 @@ m1cxzfw3q <mcxzfwq@outlook.com> on 2026/11/8 at 12:14
  .../consumers/ConsumePayloadDynamic.java      |   2 +-
  core/src/mindustry/world/meta/Stat.java       |  23 +--
  core/src/mindustry/world/meta/StatCat.java    |   5 +-
- core/src/mindustry/world/meta/StatValues.java | 148 ++++++++++++++----
- 20 files changed, 217 insertions(+), 56 deletions(-)
+ core/src/mindustry/world/meta/StatValues.java | 143 ++++++++++++++----
+ 20 files changed, 212 insertions(+), 56 deletions(-)
 
 diff --git a/core/src/mindustry/type/Item.java b/core/src/mindustry/type/Item.java
 index d5334c4477a438153304045190430f74c6562e6c..ad99f127aa9fa382872d556826617a08eab7db93 100644
@@ -683,18 +680,7 @@ index fa6eb0a8b9bb85daf9666b8c89d34d22d632348f..853c6d02094d6d6b1f24c3862ce1b54a
 +
                      if(type.fragBullet != null){
                          bt.row();
-
-@@ -953,6 +1006,10 @@ public class StatValues{
-                        bt.row();
-                        bt.add(coll);
-                    }
-+                   Turret turret = blockName != null && !blockName.isEmpty() && Vars.content.block(blockName) instanceof Turret tur ? tur : null;
-+                   if(turret != null){
-+                       bt.row().row();
-+                       bt.add("[lightgray]" + Core.bundle.get("stat.estimate_dps") + ":[stat] " + (type.estimateDPS() / turret.reload) * turret.shoot.shots * 60f);
-+                   }
-                }).padLeft(5).padTop(5).padBottom(compact ? 0 : 5).growX().margin(compact ? 0 : 10);
-                table.row();
+ 
 @@ -969,6 +1022,22 @@ public class StatValues{
          });
      }
