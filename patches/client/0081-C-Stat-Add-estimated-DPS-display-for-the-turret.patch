@@ -40,7 +40,7 @@ index 9cb43af2d5edba19cce5d3715af2d8a8bde4dcef..c37e2a798f11514b3fc3a72a6eafbab2
          super.setStats();
  
          stats.add(Stat.ammo, StatValues.ammo(ObjectMap.of(this, shootType)));
-+        stats.add(StatExt.estimateDPS,(shootType.estimateDPS() / reload) * shoot.shots * 60f);
++        stats.add(StatExt.estimateDPS,(shootType.estimateDPS() / reload * type.reloadMultiplier) * shoot.shots * 60f);
          stats.remove(Stat.reload);
          stats.remove(Stat.inaccuracy);
      }
@@ -73,7 +73,7 @@ index 945976e559dfe3b099dd7fe6a09ef5732d2312a6..53896e88d622f6ae679684a25237ef3b
      public void setStats(){
          super.setStats();
          stats.add(Stat.ammo, StatValues.ammo(ObjectMap.of(this, shootType)));
-+        stats.add(StatExt.estimateDPS, (shootType.estimateDPS() / reload) * shoot.shots * 60f);
++        stats.add(StatExt.estimateDPS, (shootType.estimateDPS() / reload * type.reloadMultiplier) * shoot.shots * 60f);
      }
  
      public void limitRange(float margin){
@@ -88,7 +88,7 @@ index 853c6d02094d6d6b1f24c3862ce1b54a9cbb3267..0736bc54cd3e7ae3163b2c11a9391810
 +                    Turret turret = blockName != null && !blockName.isEmpty() && Vars.content.block(blockName) instanceof Turret tur ? tur : null;
 +                    if(turret != null){
 +                        bt.row().row();
-+                        bt.add("[lightgray]" + Core.bundle.get("stat.estimate_dps") + ":[stat] " + (type.estimateDPS() / turret.reload) * turret.shoot.shots * 60f);
++                        bt.add("[lightgray]" + Core.bundle.get("stat.estimate_dps") + ":[stat] " + (type.estimateDPS() / turret.reload * type.reloadMultiplier) * turret.shoot.shots * 60f);
 +                    }
                  }).padLeft(5).padTop(5).padBottom(compact ? 0 : 5).growX().margin(compact ? 0 : 10);
                  table.row();
