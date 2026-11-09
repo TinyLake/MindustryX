@@ -82,7 +82,7 @@ index 9cb43af2d5edba19cce5d3715af2d8a8bde4dcef..043616bba6f79e23e19d7cd8d889f22f
          super.setStats();
  
          stats.add(Stat.ammo, StatValues.ammo(ObjectMap.of(this, shootType)));
-+        stats.add(StatExt.estimateDPS, (shootType.estimateDPS() / reload * shootType.reloadMultiplier) * shoot.shots * 60f);
++        stats.add(StatExt.estimateDPS,(shootType.estimateDPS() / reload * shootType.reloadMultiplier) * shoot.shots * 60f);
          stats.remove(Stat.reload);
          stats.remove(Stat.inaccuracy);
      }
