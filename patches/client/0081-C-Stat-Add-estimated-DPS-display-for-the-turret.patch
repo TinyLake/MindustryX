@@ -1,20 +1,20 @@
 From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
 From: m1cxzfw3q <mcxzfwq@outlook.com>
 Date: Mon, 9 Nov 2026 00:46:45 +0800
-Subject: [PATCH] FC(Stat) Add estimated DPS display for the turret
+Subject: [PATCH] C(Stat) Add estimated DPS display for the turret
 
 ---
- core/src/mindustry/entities/bullet/BulletType.java | 11 ++++++++++-
- .../entities/bullet/ContinuousBulletType.java      |  4 +---
- .../mindustry/entities/bullet/LaserBulletType.java |  2 +-
- .../entities/bullet/PointLaserBulletType.java      |  2 +-
- .../mindustry/entities/pattern/ShootPattern.java   | 14 ++++++++++++++
- .../defense/turrets/ContinuousLiquidTurret.java    |  4 +++-
- .../blocks/defense/turrets/ContinuousTurret.java   |  3 +++
- .../blocks/defense/turrets/PayloadAmmoTurret.java  |  2 +-
- .../world/blocks/defense/turrets/PowerTurret.java  |  3 +++
- core/src/mindustry/world/meta/StatValues.java      |  9 +++++++++
- 10 files changed, 46 insertions(+), 8 deletions(-)
+ core/src/mindustry/entities/bullet/BulletType.java   | 11 ++++++++++-
+ .../entities/bullet/ContinuousBulletType.java        |  4 +---
+ .../mindustry/entities/bullet/LaserBulletType.java   |  2 +-
+ .../entities/bullet/PointLaserBulletType.java        |  2 +-
+ .../src/mindustry/entities/pattern/ShootPattern.java | 12 ++++++++++++
+ .../defense/turrets/ContinuousLiquidTurret.java      |  4 +++-
+ .../blocks/defense/turrets/ContinuousTurret.java     |  3 +++
+ .../blocks/defense/turrets/PayloadAmmoTurret.java    |  2 +-
+ .../world/blocks/defense/turrets/PowerTurret.java    |  3 +++
+ core/src/mindustry/world/meta/StatValues.java        |  9 +++++++++
+ 10 files changed, 44 insertions(+), 8 deletions(-)
 
 diff --git a/core/src/mindustry/entities/bullet/BulletType.java b/core/src/mindustry/entities/bullet/BulletType.java
 index f3aff7d8fa22f934453141900a0597c283e294f4..c5957b90e373cf96e50f96d19ecbfaf97f933c47 100644
@@ -93,22 +93,13 @@ index ca81ce7ad7b44a3520a1072eb059c9273cca80ce..db4243a611835ed47ca6f14d7d19347f
  
      @Override
 diff --git a/core/src/mindustry/entities/pattern/ShootPattern.java b/core/src/mindustry/entities/pattern/ShootPattern.java
-index 4cb15187df5e1ca06cafee71a852ab4b498045f0..e2817a5c2bcfc8d9f18f13ff1b9e695db4ee4ef9 100644
+index 4cb15187df5e1ca06cafee71a852ab4b498045f0..e569bc7db06ba58cd24539a545a0d45e0b3c4c22 100644
 --- a/core/src/mindustry/entities/pattern/ShootPattern.java
 +++ b/core/src/mindustry/entities/pattern/ShootPattern.java
-@@ -2,6 +2,7 @@ package mindustry.entities.pattern;
- 
- import arc.util.*;
- import mindustry.entities.*;
-+import mindustryX.MindustryXApi;
- 
- /** Handles different types of bullet patterns for shooting. */
- public class ShootPattern implements Cloneable{
-@@ -30,6 +31,19 @@ public class ShootPattern implements Cloneable{
+@@ -30,6 +30,18 @@ public class ShootPattern implements Cloneable{
  
      }
  
-+    @MindustryXApi
 +    public static int shots(ShootPattern pattern) {
 +        int cap = 0;
 +        if(pattern instanceof ShootMulti mul){
