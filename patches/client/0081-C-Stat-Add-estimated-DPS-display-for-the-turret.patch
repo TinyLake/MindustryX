@@ -39,7 +39,7 @@ index f3aff7d8fa22f934453141900a0597c283e294f4..cfe5b00c5a3882e8c797aa0ad0cfeda5
              sum += fragBullet.estimateDPS() * fragBullets / 2f;
          }
 +        if(status != StatusEffects.none) {
-+            sum += (Math.max(0f, status.damage * Math.min(1f, statusDuration / 60)) + Math.max(0f, status.intervalDamage / status.intervalDamageTime / 60)) * Math.max(0f, Math.min(1f, statusChance));
++            sum += (Math.max(0f, status.damage * Math.min(1f, statusDuration / 60f)) + (status.intervalDamageTime <= 0f ? 0f : status.intervalDamage / status.intervalDamageTime / 60f)) * Math.max(0f, Math.min(1f, statusChance));
 +        }
          for(var other : spawnBullets){
              sum += other.estimateDPS();
