@@ -4,22 +4,32 @@ Date: Mon, 9 Nov 2026 00:46:45 +0800
 Subject: [PATCH] C(Stat) Add estimated DPS display for the turret
 
 ---
- core/src/mindustry/entities/bullet/BulletType.java        | 8 +++++++-
- .../mindustry/entities/bullet/ContinuousBulletType.java   | 4 +---
- core/src/mindustry/entities/bullet/LaserBulletType.java   | 2 +-
- .../mindustry/entities/bullet/PointLaserBulletType.java   | 2 +-
- .../blocks/defense/turrets/ContinuousLiquidTurret.java    | 4 +++-
- .../world/blocks/defense/turrets/ContinuousTurret.java    | 2 ++
- .../world/blocks/defense/turrets/PayloadAmmoTurret.java   | 2 +-
- .../world/blocks/defense/turrets/PowerTurret.java         | 2 ++
- core/src/mindustry/world/meta/StatValues.java             | 7 +++++++
- 9 files changed, 25 insertions(+), 8 deletions(-)
+ core/src/mindustry/entities/bullet/BulletType.java    | 11 ++++++++++-
+ .../entities/bullet/ContinuousBulletType.java         |  4 +---
+ .../mindustry/entities/bullet/LaserBulletType.java    |  2 +-
+ .../entities/bullet/PointLaserBulletType.java         |  2 +-
+ .../defense/turrets/ContinuousLiquidTurret.java       |  4 +++-
+ .../blocks/defense/turrets/ContinuousTurret.java      |  2 ++
+ .../blocks/defense/turrets/PayloadAmmoTurret.java     |  2 +-
+ .../world/blocks/defense/turrets/PowerTurret.java     |  2 ++
+ core/src/mindustry/world/meta/StatValues.java         |  7 +++++++
+ 9 files changed, 28 insertions(+), 8 deletions(-)
 
 diff --git a/core/src/mindustry/entities/bullet/BulletType.java b/core/src/mindustry/entities/bullet/BulletType.java
-index f3aff7d8fa22f934453141900a0597c283e294f4..9c558ed07915377522e1fdb73a8295ef68c2405f 100644
+index f3aff7d8fa22f934453141900a0597c283e294f4..cfe5b00c5a3882e8c797aa0ad0cfeda5315a396b 100644
 --- a/core/src/mindustry/entities/bullet/BulletType.java
 +++ b/core/src/mindustry/entities/bullet/BulletType.java
-@@ -431,13 +431,19 @@ public class BulletType extends Content implements Cloneable{
+@@ -410,6 +410,9 @@ public class BulletType extends Content implements Cloneable{
+         super.afterPatch();
+ 
+         range = calculateRange();
++        // 当子弹被修改时重新计算dps
++        cachedDps = -1;
++        estimateDPS();
+     }
+ 
+     @Override
+@@ -431,13 +434,19 @@ public class BulletType extends Content implements Cloneable{
              return despawnUnit.estimateDps();
          }
  
@@ -29,13 +39,13 @@ index f3aff7d8fa22f934453141900a0597c283e294f4..9c558ed07915377522e1fdb73a8295ef
              sum += fragBullet.estimateDPS() * fragBullets / 2f;
          }
 +        if(status != StatusEffects.none) {
-+            sum += (Math.min(0f, status.damage * Math.min(1f, statusDuration / 60)) + Math.min(0f, status.intervalDamage / status.intervalDamageTime / 60)) * Math.min(1f, statusChance);
++            sum += (Math.max(0f, status.damage * Math.min(1f, statusDuration / 60)) + Math.max(0f, status.intervalDamage / status.intervalDamageTime / 60)) * Math.max(0f, Math.min(1f, statusChance));
 +        }
          for(var other : spawnBullets){
              sum += other.estimateDPS();
          }
 +        if(intervalBullet != null){
-+            sum += Math.min(0f, intervalBullet.estimateDPS() * intervalBullets / intervalDelay / 60);
++            sum += Math.max(0f, intervalBullet.estimateDPS() * intervalBullets / intervalDelay / 60);
 +        }
          return cachedDps = sum;
      }
@@ -137,7 +147,7 @@ index 092fd472d02413a938c68db149410add4e9bb7d6..22030a97e10f568c5fac406bdd6bd561
  
      @Override
 diff --git a/core/src/mindustry/world/blocks/defense/turrets/PowerTurret.java b/core/src/mindustry/world/blocks/defense/turrets/PowerTurret.java
-index 945976e559dfe3b099dd7fe6a09ef5732d2312a6..3776d2b2a46cdf99edd56907a1a24da7a2a3efd8 100644
+index 945976e559dfe3b099dd7fe6a09ef5732d2312a6..ff0a6e9da6c4ba8e76e1afe662f985a9bfaa158b 100644
 --- a/core/src/mindustry/world/blocks/defense/turrets/PowerTurret.java
 +++ b/core/src/mindustry/world/blocks/defense/turrets/PowerTurret.java
 @@ -4,6 +4,7 @@ import arc.struct.*;
@@ -152,7 +162,7 @@ index 945976e559dfe3b099dd7fe6a09ef5732d2312a6..3776d2b2a46cdf99edd56907a1a24da7
      public void setStats(){
          super.setStats();
          stats.add(Stat.ammo, StatValues.ammo(ObjectMap.of(this, shootType)));
-+        stats.add(StatExt.estimateDPS, (shootType.estimateDPS() / reload * shootType.reloadMultiplier) * shoot.shots * 60f);
++        stats.add(StatExt.estimateDPS, (shootType instanceof ContinuousBulletType ? shootType.estimateDPS() : (shootType.estimateDPS() / reload * shootType.reloadMultiplier)) * shoot.shots * 60f);
      }
  
      public void limitRange(float margin){
