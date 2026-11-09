@@ -4,13 +4,55 @@ Date: Mon, 9 Nov 2026 00:46:45 +0800
 Subject: [PATCH] C(Stat) Add estimated DPS display for the turret
 
 ---
- .../world/blocks/defense/turrets/ContinuousLiquidTurret.java | 2 +-
- .../world/blocks/defense/turrets/ContinuousTurret.java       | 2 ++
- .../world/blocks/defense/turrets/PayloadAmmoTurret.java      | 2 +-
- .../mindustry/world/blocks/defense/turrets/PowerTurret.java  | 2 ++
- core/src/mindustry/world/meta/StatValues.java                | 5 +++++
- 5 files changed, 11 insertions(+), 2 deletions(-)
+ core/src/mindustry/entities/bullet/BulletType.java        | 8 +++++++-
+ .../mindustry/entities/bullet/ContinuousBulletType.java   | 4 +---
+ .../blocks/defense/turrets/ContinuousLiquidTurret.java    | 2 +-
+ .../world/blocks/defense/turrets/ContinuousTurret.java    | 2 ++
+ .../world/blocks/defense/turrets/PayloadAmmoTurret.java   | 2 +-
+ .../world/blocks/defense/turrets/PowerTurret.java         | 2 ++
+ core/src/mindustry/world/meta/StatValues.java             | 5 +++++
+ 7 files changed, 19 insertions(+), 6 deletions(-)
 
+diff --git a/core/src/mindustry/entities/bullet/BulletType.java b/core/src/mindustry/entities/bullet/BulletType.java
+index f3aff7d8fa22f934453141900a0597c283e294f4..d00441b4c9524b0ad701359e97da93534b242727 100644
+--- a/core/src/mindustry/entities/bullet/BulletType.java
++++ b/core/src/mindustry/entities/bullet/BulletType.java
+@@ -431,13 +431,19 @@ public class BulletType extends Content implements Cloneable{
+             return despawnUnit.estimateDps();
+         }
+ 
+-        float sum = (damage + splashDamage*0.75f) * (pierce ? pierceCap == -1 ? 2 : Mathf.clamp(pierceCap, 1, 2) : 1f);
++        float sum = damage + splashDamage;
+         if(fragBullet != null && fragBullet != this){
+             sum += fragBullet.estimateDPS() * fragBullets / 2f;
+         }
++        if(status != null) {
++            sum += (status.damage * Math.min(60f, statusDuration) + status.intervalDamage / status.intervalDamageTime) * Math.min(1f, statusChance);
++        }
+         for(var other : spawnBullets){
+             sum += other.estimateDPS();
+         }
++        if(intervalBullet != null){
++            sum += intervalBullet.estimateDPS() * intervalBullets / intervalDelay;
++        }
+         return cachedDps = sum;
+     }
+ 
+diff --git a/core/src/mindustry/entities/bullet/ContinuousBulletType.java b/core/src/mindustry/entities/bullet/ContinuousBulletType.java
+index 9dfb85ad251e2061053b7732d310137e33bb6efa..1582b0fb0aa18e77ad227ead787b165db724bdd2 100644
+--- a/core/src/mindustry/entities/bullet/ContinuousBulletType.java
++++ b/core/src/mindustry/entities/bullet/ContinuousBulletType.java
+@@ -38,9 +38,7 @@ public class ContinuousBulletType extends BulletType{
+     @Override
+     public float estimateDPS(){
+         if(!continuous) return super.estimateDPS();
+-        //assume firing duration is about 100 by default, may not be accurate there's no way of knowing in this method
+-        //assume it pierces 3 blocks/units
+-        return damage * 100f / damageInterval * 3f;
++        return continuousDamage();
+     }
+ 
+     @Override
 diff --git a/core/src/mindustry/world/blocks/defense/turrets/ContinuousLiquidTurret.java b/core/src/mindustry/world/blocks/defense/turrets/ContinuousLiquidTurret.java
 index 3c7586f4e016fc1c0fdc562b3ad4bbed97ac5a60..744600bb1a7a38f4714ab755fcd134f29b625e15 100644
 --- a/core/src/mindustry/world/blocks/defense/turrets/ContinuousLiquidTurret.java
@@ -25,7 +67,7 @@ index 3c7586f4e016fc1c0fdc562b3ad4bbed97ac5a60..744600bb1a7a38f4714ab755fcd134f2
  
      @Override
 diff --git a/core/src/mindustry/world/blocks/defense/turrets/ContinuousTurret.java b/core/src/mindustry/world/blocks/defense/turrets/ContinuousTurret.java
-index 9cb43af2d5edba19cce5d3715af2d8a8bde4dcef..c37e2a798f11514b3fc3a72a6eafbab2c8c17f30 100644
+index 9cb43af2d5edba19cce5d3715af2d8a8bde4dcef..043616bba6f79e23e19d7cd8d889f22f29608d85 100644
 --- a/core/src/mindustry/world/blocks/defense/turrets/ContinuousTurret.java
 +++ b/core/src/mindustry/world/blocks/defense/turrets/ContinuousTurret.java
 @@ -9,6 +9,7 @@ import mindustry.entities.bullet.*;
@@ -40,7 +82,7 @@ index 9cb43af2d5edba19cce5d3715af2d8a8bde4dcef..c37e2a798f11514b3fc3a72a6eafbab2
          super.setStats();
  
          stats.add(Stat.ammo, StatValues.ammo(ObjectMap.of(this, shootType)));
-+        stats.add(StatExt.estimateDPS,(shootType.estimateDPS() / reload * shootType.reloadMultiplier) * shoot.shots * 60f);
++        stats.add(StatExt.estimateDPS, (shootType.estimateDPS() / reload * shootType.reloadMultiplier) * shoot.shots * 60f);
          stats.remove(Stat.reload);
          stats.remove(Stat.inaccuracy);
      }
@@ -58,7 +100,7 @@ index 092fd472d02413a938c68db149410add4e9bb7d6..22030a97e10f568c5fac406bdd6bd561
  
      @Override
 diff --git a/core/src/mindustry/world/blocks/defense/turrets/PowerTurret.java b/core/src/mindustry/world/blocks/defense/turrets/PowerTurret.java
-index 945976e559dfe3b099dd7fe6a09ef5732d2312a6..53896e88d622f6ae679684a25237ef3b2fda2370 100644
+index 945976e559dfe3b099dd7fe6a09ef5732d2312a6..3776d2b2a46cdf99edd56907a1a24da7a2a3efd8 100644
 --- a/core/src/mindustry/world/blocks/defense/turrets/PowerTurret.java
 +++ b/core/src/mindustry/world/blocks/defense/turrets/PowerTurret.java
 @@ -4,6 +4,7 @@ import arc.struct.*;
@@ -78,7 +120,7 @@ index 945976e559dfe3b099dd7fe6a09ef5732d2312a6..53896e88d622f6ae679684a25237ef3b
  
      public void limitRange(float margin){
 diff --git a/core/src/mindustry/world/meta/StatValues.java b/core/src/mindustry/world/meta/StatValues.java
-index 853c6d02094d6d6b1f24c3862ce1b54a9cbb3267..0736bc54cd3e7ae3163b2c11a939181033b9e30d 100644
+index 853c6d02094d6d6b1f24c3862ce1b54a9cbb3267..6297f6a5fc8ad9e4701d918ac64e383c6e7ff1aa 100644
 --- a/core/src/mindustry/world/meta/StatValues.java
 +++ b/core/src/mindustry/world/meta/StatValues.java
 @@ -1007,6 +1007,11 @@ public class StatValues{
@@ -88,7 +130,7 @@ index 853c6d02094d6d6b1f24c3862ce1b54a9cbb3267..0736bc54cd3e7ae3163b2c11a9391810
 +                    Turret turret = blockName != null && !blockName.isEmpty() && Vars.content.block(blockName) instanceof Turret tur ? tur : null;
 +                    if(turret != null){
 +                        bt.row().row();
-+                        bt.add("[lightgray]" + Core.bundle.get("stat.estimate_dps") + ":[stat] " + (type.estimateDPS() / turret.reload * type.reloadMultiplier) * turret.shoot.shots * 60f);
++                        bt.add("[lightgray]" + Core.bundle.get("stat.estimate_dps") + ":[stat] " + fixValue((type.estimateDPS() / turret.reload * type.reloadMultiplier) * turret.shoot.shots * 60f));
 +                    }
                  }).padLeft(5).padTop(5).padBottom(compact ? 0 : 5).growX().margin(compact ? 0 : 10);
                  table.row();
