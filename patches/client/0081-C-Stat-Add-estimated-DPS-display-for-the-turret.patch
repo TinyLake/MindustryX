@@ -4,20 +4,20 @@ Date: Mon, 9 Nov 2026 00:46:45 +0800
 Subject: [PATCH] C(Stat) Add estimated DPS display for the turret
 
 ---
- core/src/mindustry/entities/bullet/BulletType.java  | 13 +++++++++++--
- .../entities/bullet/ContinuousBulletType.java       |  4 +---
- .../mindustry/entities/bullet/LaserBulletType.java  |  2 +-
- .../entities/bullet/PointLaserBulletType.java       |  2 +-
- .../mindustry/entities/pattern/ShootPattern.java    | 12 ++++++++++++
- .../defense/turrets/ContinuousLiquidTurret.java     |  4 +++-
- .../blocks/defense/turrets/ContinuousTurret.java    |  3 +++
- .../blocks/defense/turrets/PayloadAmmoTurret.java   |  2 +-
- .../world/blocks/defense/turrets/PowerTurret.java   |  3 +++
- core/src/mindustry/world/meta/StatValues.java       |  9 +++++++++
- 10 files changed, 45 insertions(+), 9 deletions(-)
+ .../mindustry/entities/bullet/BulletType.java    | 16 ++++++++++++++--
+ .../entities/bullet/ContinuousBulletType.java    |  4 +---
+ .../entities/bullet/LaserBulletType.java         |  2 +-
+ .../entities/bullet/PointLaserBulletType.java    |  2 +-
+ .../mindustry/entities/pattern/ShootPattern.java | 12 ++++++++++++
+ .../defense/turrets/ContinuousLiquidTurret.java  |  4 +++-
+ .../blocks/defense/turrets/ContinuousTurret.java |  3 +++
+ .../defense/turrets/PayloadAmmoTurret.java       |  2 +-
+ .../blocks/defense/turrets/PowerTurret.java      |  3 +++
+ core/src/mindustry/world/meta/StatValues.java    |  9 +++++++++
+ 10 files changed, 48 insertions(+), 9 deletions(-)
 
 diff --git a/core/src/mindustry/entities/bullet/BulletType.java b/core/src/mindustry/entities/bullet/BulletType.java
-index f3aff7d8fa22f934453141900a0597c283e294f4..5547096919ea2b6931e5f378f47d95dfb6fcaf68 100644
+index f3aff7d8fa22f934453141900a0597c283e294f4..13fca311ae8e498bbe6436f92503b11381089aed 100644
 --- a/core/src/mindustry/entities/bullet/BulletType.java
 +++ b/core/src/mindustry/entities/bullet/BulletType.java
 @@ -410,6 +410,9 @@ public class BulletType extends Content implements Cloneable{
@@ -30,12 +30,15 @@ index f3aff7d8fa22f934453141900a0597c283e294f4..5547096919ea2b6931e5f378f47d95df
      }
  
      @Override
-@@ -431,13 +434,19 @@ public class BulletType extends Content implements Cloneable{
+@@ -431,13 +434,22 @@ public class BulletType extends Content implements Cloneable{
              return despawnUnit.estimateDps();
          }
  
 -        float sum = (damage + splashDamage*0.75f) * (pierce ? pierceCap == -1 ? 2 : Mathf.clamp(pierceCap, 1, 2) : 1f);
 +        float sum = damage + splashDamage;
++        if(lightning > 0f){
++            sum += lightning * lightningDamage;
++        }
          if(fragBullet != null && fragBullet != this){
 -            sum += fragBullet.estimateDPS() * fragBullets / 2f;
 +            sum += fragBullet.estimateDPS() * fragBullets;
