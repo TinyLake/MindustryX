@@ -1,0 +1,230 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: m1cxzfw3q <mcxzfwq@outlook.com>
+Date: Mon, 9 Nov 2026 00:46:45 +0800
+Subject: [PATCH] C(Stat) Add estimated DPS display for the turret
+
+---
+ .../mindustry/entities/bullet/BulletType.java    | 16 ++++++++++++++--
+ .../entities/bullet/ContinuousBulletType.java    |  4 +---
+ .../entities/bullet/LaserBulletType.java         |  2 +-
+ .../entities/bullet/PointLaserBulletType.java    |  2 +-
+ .../mindustry/entities/pattern/ShootPattern.java | 12 ++++++++++++
+ .../defense/turrets/ContinuousLiquidTurret.java  |  4 +++-
+ .../blocks/defense/turrets/ContinuousTurret.java |  3 +++
+ .../defense/turrets/PayloadAmmoTurret.java       |  2 +-
+ .../blocks/defense/turrets/PowerTurret.java      |  3 +++
+ core/src/mindustry/world/meta/StatValues.java    |  9 +++++++++
+ 10 files changed, 48 insertions(+), 9 deletions(-)
+
+diff --git a/core/src/mindustry/entities/bullet/BulletType.java b/core/src/mindustry/entities/bullet/BulletType.java
+index f3aff7d8fa22f934453141900a0597c283e294f4..13fca311ae8e498bbe6436f92503b11381089aed 100644
+--- a/core/src/mindustry/entities/bullet/BulletType.java
++++ b/core/src/mindustry/entities/bullet/BulletType.java
+@@ -410,6 +410,9 @@ public class BulletType extends Content implements Cloneable{
+         super.afterPatch();
+ 
+         range = calculateRange();
++        // 当子弹被修改时重新计算dps
++        cachedDps = -1;
++        estimateDPS();
+     }
+ 
+     @Override
+@@ -431,13 +434,22 @@ public class BulletType extends Content implements Cloneable{
+             return despawnUnit.estimateDps();
+         }
+ 
+-        float sum = (damage + splashDamage*0.75f) * (pierce ? pierceCap == -1 ? 2 : Mathf.clamp(pierceCap, 1, 2) : 1f);
++        float sum = damage + splashDamage;
++        if(lightning > 0f){
++            sum += lightning * lightningDamage;
++        }
+         if(fragBullet != null && fragBullet != this){
+-            sum += fragBullet.estimateDPS() * fragBullets / 2f;
++            sum += fragBullet.estimateDPS() * fragBullets;
++        }
++        if(status != StatusEffects.none) {
++            sum += (Math.max(0f, status.damage * Math.min(1f, statusDuration / 60f)) + (status.intervalDamageTime <= 0f ? 0f : status.intervalDamage / status.intervalDamageTime / 60f)) * Math.max(0f, Math.min(1f, statusChance));
+         }
+         for(var other : spawnBullets){
+             sum += other.estimateDPS();
+         }
++        if(intervalBullet != null){
++            sum += Math.max(0f, intervalBullet.estimateDPS() * intervalBullets / intervalDelay);
++        }
+         return cachedDps = sum;
+     }
+ 
+diff --git a/core/src/mindustry/entities/bullet/ContinuousBulletType.java b/core/src/mindustry/entities/bullet/ContinuousBulletType.java
+index 9dfb85ad251e2061053b7732d310137e33bb6efa..1bf9e6154aea25f78e1417082d74e33b84d435ef 100644
+--- a/core/src/mindustry/entities/bullet/ContinuousBulletType.java
++++ b/core/src/mindustry/entities/bullet/ContinuousBulletType.java
+@@ -38,9 +38,7 @@ public class ContinuousBulletType extends BulletType{
+     @Override
+     public float estimateDPS(){
+         if(!continuous) return super.estimateDPS();
+-        //assume firing duration is about 100 by default, may not be accurate there's no way of knowing in this method
+-        //assume it pierces 3 blocks/units
+-        return damage * 100f / damageInterval * 3f;
++        return damage / damageInterval;
+     }
+ 
+     @Override
+diff --git a/core/src/mindustry/entities/bullet/LaserBulletType.java b/core/src/mindustry/entities/bullet/LaserBulletType.java
+index c6c7c3de21a91270806b5bc35d9b27c9920c3c4d..a3076bf217994b4d6c353af44e09a44a5ebcfcb4 100644
+--- a/core/src/mindustry/entities/bullet/LaserBulletType.java
++++ b/core/src/mindustry/entities/bullet/LaserBulletType.java
+@@ -48,7 +48,7 @@ public class LaserBulletType extends BulletType{
+     //assume it pierces at least 3 blocks
+     @Override
+     public float estimateDPS(){
+-        return super.estimateDPS() * 3f;
++        return super.estimateDPS();
+     }
+ 
+     @Override
+diff --git a/core/src/mindustry/entities/bullet/PointLaserBulletType.java b/core/src/mindustry/entities/bullet/PointLaserBulletType.java
+index ca81ce7ad7b44a3520a1072eb059c9273cca80ce..db4243a611835ed47ca6f14d7d19347f0b48b485 100644
+--- a/core/src/mindustry/entities/bullet/PointLaserBulletType.java
++++ b/core/src/mindustry/entities/bullet/PointLaserBulletType.java
+@@ -52,7 +52,7 @@ public class PointLaserBulletType extends BulletType{
+ 
+     @Override
+     public float estimateDPS(){
+-        return damage * 100f / damageInterval * 3f;
++        return damage / damageInterval;
+     }
+ 
+     @Override
+diff --git a/core/src/mindustry/entities/pattern/ShootPattern.java b/core/src/mindustry/entities/pattern/ShootPattern.java
+index 4cb15187df5e1ca06cafee71a852ab4b498045f0..e569bc7db06ba58cd24539a545a0d45e0b3c4c22 100644
+--- a/core/src/mindustry/entities/pattern/ShootPattern.java
++++ b/core/src/mindustry/entities/pattern/ShootPattern.java
+@@ -30,6 +30,18 @@ public class ShootPattern implements Cloneable{
+ 
+     }
+ 
++    public static int shots(ShootPattern pattern) {
++        int cap = 0;
++        if(pattern instanceof ShootMulti mul){
++            for(ShootPattern dest : mul.dest){
++                cap += shots(dest);
++            }
++            cap *= shots(mul.source);
++        }
++        cap += pattern.shots;
++        return cap;
++    }
++
+     public ShootPattern copy(){
+         try{
+             return (ShootPattern)clone();
+diff --git a/core/src/mindustry/world/blocks/defense/turrets/ContinuousLiquidTurret.java b/core/src/mindustry/world/blocks/defense/turrets/ContinuousLiquidTurret.java
+index 3c7586f4e016fc1c0fdc562b3ad4bbed97ac5a60..830f741f0c36cc025f526b80ae84e6e9a8203846 100644
+--- a/core/src/mindustry/world/blocks/defense/turrets/ContinuousLiquidTurret.java
++++ b/core/src/mindustry/world/blocks/defense/turrets/ContinuousLiquidTurret.java
+@@ -9,6 +9,7 @@ import mindustry.logic.*;
+ import mindustry.type.*;
+ import mindustry.world.consumers.*;
+ import mindustry.world.meta.*;
++import mindustryX.features.*;
+ 
+ public class ContinuousLiquidTurret extends ContinuousTurret{
+     public ObjectMap<Liquid, BulletType> ammoTypes = new ObjectMap<>();
+@@ -34,7 +35,8 @@ public class ContinuousLiquidTurret extends ContinuousTurret{
+         //mirror stats onto each bullet (purely visual)
+         ammoTypes.each((l, b) -> b.statLiquidConsumed = liquidConsumed);
+ 
+-        stats.replace(Stat.ammo, StatValues.ammo(ammoTypes));
++        stats.replace(Stat.ammo, StatValues.ammo(ammoTypes, name));
++        stats.remove(StatExt.estimateDPS);
+     }
+ 
+     @Override
+diff --git a/core/src/mindustry/world/blocks/defense/turrets/ContinuousTurret.java b/core/src/mindustry/world/blocks/defense/turrets/ContinuousTurret.java
+index 9cb43af2d5edba19cce5d3715af2d8a8bde4dcef..554ea7bff00c9ca03bd937ad3c4ec33889ed4081 100644
+--- a/core/src/mindustry/world/blocks/defense/turrets/ContinuousTurret.java
++++ b/core/src/mindustry/world/blocks/defense/turrets/ContinuousTurret.java
+@@ -6,9 +6,11 @@ import arc.util.*;
+ import arc.util.io.*;
+ import mindustry.content.*;
+ import mindustry.entities.bullet.*;
++import mindustry.entities.pattern.ShootPattern;
+ import mindustry.gen.*;
+ import mindustry.world.consumers.*;
+ import mindustry.world.meta.*;
++import mindustryX.features.*;
+ 
+ /** A turret that fires a continuous beam bullet with no reload or coolant necessary. The bullet only disappears when the turret stops shooting. */
+ public class ContinuousTurret extends Turret{
+@@ -30,6 +32,7 @@ public class ContinuousTurret extends Turret{
+         super.setStats();
+ 
+         stats.add(Stat.ammo, StatValues.ammo(ObjectMap.of(this, shootType)));
++        stats.add(StatExt.estimateDPS, (shootType instanceof ContinuousBulletType || shootType instanceof PointLaserBulletType ? shootType.estimateDPS() : (shootType.estimateDPS() / reload * shootType.reloadMultiplier)) * ShootPattern.shots(shootType.shootPattern != null ? shootType.shootPattern : shoot) * 60f);
+         stats.remove(Stat.reload);
+         stats.remove(Stat.inaccuracy);
+     }
+diff --git a/core/src/mindustry/world/blocks/defense/turrets/PayloadAmmoTurret.java b/core/src/mindustry/world/blocks/defense/turrets/PayloadAmmoTurret.java
+index 092fd472d02413a938c68db149410add4e9bb7d6..22030a97e10f568c5fac406bdd6bd5610dccb01c 100644
+--- a/core/src/mindustry/world/blocks/defense/turrets/PayloadAmmoTurret.java
++++ b/core/src/mindustry/world/blocks/defense/turrets/PayloadAmmoTurret.java
+@@ -52,7 +52,7 @@ public class PayloadAmmoTurret extends Turret{
+         super.setStats();
+ 
+         stats.remove(Stat.itemCapacity);
+-        stats.add(Stat.ammo, StatValues.ammo(ammoTypes, true));
++        stats.add(Stat.ammo, StatValues.ammo(ammoTypes, true, name));
+     }
+ 
+     @Override
+diff --git a/core/src/mindustry/world/blocks/defense/turrets/PowerTurret.java b/core/src/mindustry/world/blocks/defense/turrets/PowerTurret.java
+index 945976e559dfe3b099dd7fe6a09ef5732d2312a6..9dfd3f126727e6f22471eb13964ae3e2d47deab1 100644
+--- a/core/src/mindustry/world/blocks/defense/turrets/PowerTurret.java
++++ b/core/src/mindustry/world/blocks/defense/turrets/PowerTurret.java
+@@ -2,8 +2,10 @@ package mindustry.world.blocks.defense.turrets;
+ 
+ import arc.struct.*;
+ import mindustry.entities.bullet.*;
++import mindustry.entities.pattern.ShootPattern;
+ import mindustry.logic.*;
+ import mindustry.world.meta.*;
++import mindustryX.features.*;
+ 
+ public class PowerTurret extends Turret{
+     public BulletType shootType;
+@@ -17,6 +19,7 @@ public class PowerTurret extends Turret{
+     public void setStats(){
+         super.setStats();
+         stats.add(Stat.ammo, StatValues.ammo(ObjectMap.of(this, shootType)));
++        stats.add(StatExt.estimateDPS, (shootType instanceof ContinuousBulletType || shootType instanceof PointLaserBulletType ? shootType.estimateDPS() : (shootType.estimateDPS() / reload * shootType.reloadMultiplier)) * ShootPattern.shots(shootType.shootPattern != null ? shootType.shootPattern : shoot) * 60f);
+     }
+ 
+     public void limitRange(float margin){
+diff --git a/core/src/mindustry/world/meta/StatValues.java b/core/src/mindustry/world/meta/StatValues.java
+index 853c6d02094d6d6b1f24c3862ce1b54a9cbb3267..ef40e50691931448e78224debd390e3bf9ffa8ca 100644
+--- a/core/src/mindustry/world/meta/StatValues.java
++++ b/core/src/mindustry/world/meta/StatValues.java
+@@ -18,6 +18,8 @@ import mindustry.core.*;
+ import mindustry.ctype.*;
+ import mindustry.entities.abilities.*;
+ import mindustry.entities.bullet.*;
++import mindustry.entities.pattern.ShootMulti;
++import mindustry.entities.pattern.ShootPattern;
+ import mindustry.gen.*;
+ import mindustry.graphics.*;
+ import mindustry.maps.*;
+@@ -1007,6 +1009,13 @@ public class StatValues{
+                         bt.add(coll);
+                     }
+ 
++                    Turret turret = blockName != null && !blockName.isEmpty() && Vars.content.block(blockName) instanceof Turret tur ? tur : null;
++                    if(turret != null){
++                        float dps = (type instanceof ContinuousBulletType || type instanceof PointLaserBulletType ? type.estimateDPS() : (type.estimateDPS() / turret.reload * type.reloadMultiplier)) * ShootPattern.shots(type.shootPattern != null ? type.shootPattern : turret.shoot) * 60f;
++
++                        bt.row().row();
++                        bt.add("[lightgray]" + Core.bundle.get("stat.estimate_dps") + ":[stat] " + fixValue(dps));
++                    }
+                 }).padLeft(5).padTop(5).padBottom(compact ? 0 : 5).growX().margin(compact ? 0 : 10);
+                 table.row();
+             }
