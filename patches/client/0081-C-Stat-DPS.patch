@@ -78,7 +78,7 @@ index 853c6d02094d6d6b1f24c3862ce1b54a9cbb3267..db0c101265583b61571023e39d07a0ff
 +                    Turret turret = blockName != null && Vars.content.block(blockName) instanceof Turret tur ? tur : null;
 +                    if(turret != null){
 +                        bt.row();
-+                        bt.add("[lightgray]" + Core.bundle.get("stat.estimate_dps") + ":[accent] " + DPS.estimateDPS(type, turret));
++                        bt.add("[lightgray]" + Core.bundle.get("stat.estimate_dps") + ":[accent] " + fixValue(DPS.estimateDPS(type, turret)));
 +                    }
 +
                  }).padLeft(5).padTop(5).padBottom(compact ? 0 : 5).growX().margin(compact ? 0 : 10);
