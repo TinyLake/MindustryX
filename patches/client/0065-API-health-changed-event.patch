@@ -43,16 +43,17 @@ index 50cce3cf86fe46497cdfc6964707decd56d36d2f..c849d13bba7c9bf9a8d5623d755c8715
                  float d = damage * Math.min((in.block.size), baseRadius * 0.4f);
                  if(source != null){
 diff --git a/core/src/mindustry/entities/Lightning.java b/core/src/mindustry/entities/Lightning.java
-index 4554ce7dc94c192183d158577dd194964e419e01..9d60b9cbe166b17c5e55a40fbdefde3bccb23a2c 100644
+index 607a5ec0476d6de8173fadf7d0b455b2b8b44207..433e92cb7fe05decf1dd9f729322e0c90d3bc60b 100644
 --- a/core/src/mindustry/entities/Lightning.java
 +++ b/core/src/mindustry/entities/Lightning.java
-@@ -47,7 +47,8 @@ public class Lightning{
+@@ -47,8 +47,9 @@ public class Lightning{
          bhit = false;
  
          for(int i = 0; i < length / 2; i++){
--            hitCreate.create(null, team, x, y, rotation, damage * (hitter == null ? 1f : hitter.damageMultiplier()), 1f, 1f, null);
 +            // MDTX: hitBullet set the owner to hitter.
-+            hitCreate.create(null, team, x, y, rotation, damage * (hitter == null ? 1f : hitter.damageMultiplier()), 1f, 1f, hitter);
+             hitCreate.create(hitter == null ? null : hitter.owner, team, x, y,
+-                rotation, damage * (hitter == null ? 1f : hitter.damageMultiplier()), 1f, 1f, null);
++                rotation, damage * (hitter == null ? 1f : hitter.damageMultiplier()), 1f, 1f, hitter);
              lines.add(new Vec2(x + Mathf.range(3f), y + Mathf.range(3f)));
  
              if(lines.size > 1){
@@ -104,7 +105,7 @@ index b2f5a2734800838164a0d41e91399bb57389c1c8..f3aff7d8fa22f934453141900a0597c2
                      other.heal(healPercent / 100f * other.maxHealth() + healAmount);
                  });
 diff --git a/core/src/mindustry/entities/comp/BuildingComp.java b/core/src/mindustry/entities/comp/BuildingComp.java
-index ed05fa828806680c025d40559fb84d35bc7866e7..fe37af72c8560d6b815d4609dea75f8f201cffcf 100644
+index 734b8f7b8945b4192aa637f777be4e45311ba14d..816df316f730f5ddede707836d93a9d396e8be02 100644
 --- a/core/src/mindustry/entities/comp/BuildingComp.java
 +++ b/core/src/mindustry/entities/comp/BuildingComp.java
 @@ -44,6 +44,7 @@ import mindustry.world.blocks.power.*;

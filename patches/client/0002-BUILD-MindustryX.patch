@@ -19,7 +19,7 @@ way-zer <himc.wicp@gmail.com> on 2024/4/27 at 18:57
  5 files changed, 10 insertions(+), 8 deletions(-)
 
 diff --git a/build.gradle b/build.gradle
-index 3fae1b52fd0dc0122b851bb0e76b4e2448e2a89b..df21b00d084c968490b82df79d62c6b6453d7aff 100644
+index 826a2a3a888189e95d828984ee678c10ef0fd727..dba2fb496c76793b785e8ff98a2a7b0a16692be9 100644
 --- a/build.gradle
 +++ b/build.gradle
 @@ -230,12 +230,6 @@ project(":core"){

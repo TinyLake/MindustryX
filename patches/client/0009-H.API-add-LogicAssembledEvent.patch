@@ -4,25 +4,16 @@ Date: Thu, 3 Aug 2023 12:20:38 +0800
 Subject: [PATCH] H.API: add LogicAssembledEvent
 
 ---
- core/src/mindustry/logic/LParser.java                 |  4 +++-
+ core/src/mindustry/logic/LParser.java                 |  2 +-
  core/src/mindustry/logic/LStatements.java             | 11 +++++++++++
  core/src/mindustry/world/blocks/logic/LogicBlock.java |  3 +++
- 3 files changed, 17 insertions(+), 1 deletion(-)
+ 3 files changed, 15 insertions(+), 1 deletion(-)
 
 diff --git a/core/src/mindustry/logic/LParser.java b/core/src/mindustry/logic/LParser.java
-index 9893fe8b758cfeb218be16421c3c8aea90b86911..f0f2f7cebcef9f54f2e12a4be9cf4d4d492a1efa 100644
+index 1b78a90e851ba0a81e2ea45bfd689a1f054cbc63..2db31110c4548d55078a5c0f867ac22f131b353c 100644
 --- a/core/src/mindustry/logic/LParser.java
 +++ b/core/src/mindustry/logic/LParser.java
-@@ -6,6 +6,8 @@ import mindustry.*;
- import mindustry.gen.*;
- import mindustry.logic.LStatements.*;
- 
-+import java.util.*;
-+
- public class LParser{
-     private static final String[] tokens = new String[16];
-     private static final int maxJumps = 500;
-@@ -210,7 +212,7 @@ public class LParser{
+@@ -212,7 +212,7 @@ public class LParser{
                          }
                      }else{
                          //unparseable statement

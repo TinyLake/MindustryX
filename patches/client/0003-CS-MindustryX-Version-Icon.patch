@@ -22,7 +22,7 @@ way-zer <himc.wicp@gmail.com> on 2024/9/8
  10 files changed, 14 insertions(+), 11 deletions(-)
 
 diff --git a/.gitignore b/.gitignore
-index b5b2a237c2f5343aab2fb668337c2bc47a45c1b8..308ff12c92a06e11c18b33f540098a0f1347ab5e 100644
+index 4ac37c5539e84098210a222e3f604344eadfb1f6..6354dd474039ac735bdefc3ad58370f8bfd230a3 100644
 --- a/.gitignore
 +++ b/.gitignore
 @@ -4,6 +4,7 @@ logs/
@@ -57,7 +57,7 @@ index d42ffe6d4a318ce558f1010eae46140f88ed5c99..bf44ead5c58abfb79c500e6daae30c3e
 +    <string name="app_name">MindustryX</string>
  </resources>
 diff --git a/build.gradle b/build.gradle
-index df21b00d084c968490b82df79d62c6b6453d7aff..62d2461a52f594996d78e7aee397c65245ee17a3 100644
+index dba2fb496c76793b785e8ff98a2a7b0a16692be9..941e8f822f6a223499f27a2bc299bd579ef2c769 100644
 --- a/build.gradle
 +++ b/build.gradle
 @@ -3,8 +3,6 @@ buildscript{

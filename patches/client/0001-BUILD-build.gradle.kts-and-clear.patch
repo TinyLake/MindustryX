@@ -29,10 +29,10 @@ way-zer <himc.wicp@gmail.com> on 2024/6/9
  create mode 100644 core/build.gradle.kts
 
 diff --git a/.gitignore b/.gitignore
-index 5e3b7987ef4f776a0bc35dde58fb2c74f4acdb07..b5b2a237c2f5343aab2fb668337c2bc47a45c1b8 100644
+index c7594e22db484e5639f1a344be212912f26b7ac7..4ac37c5539e84098210a222e3f604344eadfb1f6 100644
 --- a/.gitignore
 +++ b/.gitignore
-@@ -29,6 +29,7 @@ saves/
+@@ -28,6 +28,7 @@ saves/
  /core/assets-raw/fontgen/out/
  /core/assets-raw/fontgen/icons/
  /core/assets-raw/fontgen/icon_parts/
@@ -40,7 +40,7 @@ index 5e3b7987ef4f776a0bc35dde58fb2c74f4acdb07..b5b2a237c2f5343aab2fb668337c2bc4
  core/assets/saves/
  /core/assets/saves/
  steam_appid.txt
-@@ -36,7 +37,6 @@ steam_appid.txt
+@@ -35,7 +36,6 @@ steam_appid.txt
  /android/assets/mindustry-maps/
  /android/assets/mindustry-saves/
  /core/assets/gifexport/
@@ -288,7 +288,7 @@ index 0000000000000000000000000000000000000000..181b87c1d5f3755f16a01c0528d0a89f
 +mindustry.annotations.misc.LogicStatementProcessor
 +mindustry.annotations.remote.RemoteProcess
 diff --git a/build.gradle b/build.gradle
-index c6c7c3ecfdefb93d533ffb9d4a7ba051ddd512b5..3fae1b52fd0dc0122b851bb0e76b4e2448e2a89b 100644
+index f7a6c98abbe701cd8596940633ef6c30a8d795ca..826a2a3a888189e95d828984ee678c10ef0fd727 100644
 --- a/build.gradle
 +++ b/build.gradle
 @@ -1,29 +1,16 @@
@@ -671,7 +671,7 @@ index c6c7c3ecfdefb93d533ffb9d4a7ba051ddd512b5..3fae1b52fd0dc0122b851bb0e76b4e24
      dependencies{
 -        compileJava.dependsOn(preGen)
 -
-         api "at.yawk.lz4:lz4-java:1.10.2"
+         api "at.yawk.lz4:lz4-java:1.12.0"
          api arcModule("arc-core")
          api arcModule("extensions:flabel")
 @@ -382,33 +207,27 @@ project(":core"){

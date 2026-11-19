@@ -412,17 +412,17 @@ index a733cb4674c8629787dd5299c7046eb9be3135d6..60fea0730c6f7b7879a8ba0fdad79546
                  if(++i % 4 == 0) c.row();
              }
 diff --git a/core/src/mindustry/world/consumers/ConsumePayloadDynamic.java b/core/src/mindustry/world/consumers/ConsumePayloadDynamic.java
-index c2d52fcefd930ea36511420960086e0057647157..e77e03387f9e623aed7214ef34f02eee0e9a11e6 100644
+index 9d23d58a7c58d1ca122747995a2bfb80253d327b..4ffa5274c459d6993e86107f28cfa0452e063821 100644
 --- a/core/src/mindustry/world/consumers/ConsumePayloadDynamic.java
 +++ b/core/src/mindustry/world/consumers/ConsumePayloadDynamic.java
-@@ -64,7 +64,7 @@ public class ConsumePayloadDynamic extends Consume{
+@@ -69,7 +69,7 @@ public class ConsumePayloadDynamic extends Consume{
          table.table(c -> {
-             int i = 0;
-             for(var stack : pay){
+             for(int i = 0; i < pay.size; i++){
+                 var stack = pay.get(i);
 -                c.add(new ReqImage(StatValues.stack(stack.item, Math.round(stack.amount * multiplier.get(build))),
 +                c.add(new ReqImage(StatValues.stack(stack.item, Math.round(stack.amount * multiplier.get(build)), () -> build.getPayloads().get(stack.item)),
                  () -> inv.contains(stack.item, Math.round(stack.amount * multiplier.get(build))))).padRight(8);
-                 if(++i % 4 == 0) c.row();
+                 if((i + 1) % 4 == 0) c.row();
              }
 diff --git a/core/src/mindustry/world/meta/Stat.java b/core/src/mindustry/world/meta/Stat.java
 index c9e0a0bd8d5857e5df0fbf27fc7b63b587e1ce9a..b65f8bad8ba768d3b7b5e3cd3a8b3e025e8bcaab 100644

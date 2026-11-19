@@ -87,7 +87,7 @@ index 14bea386e2487d847858a73b63aaf607b2251666..5cf04e18473a02516f083c5b0bb00b9e
                          for(String code : ColorCodes.values){
                              result = result.replace(code, "");
 diff --git a/core/src/mindustry/ai/BlockIndexer.java b/core/src/mindustry/ai/BlockIndexer.java
-index 6f689550d4fd7e6541ad7bd78097870b7c61c40a..c72dd992945c8fbebee7a3950246b9f56d3f7392 100644
+index 11ea76bfd28357d517dc8851069662e6d3e0beb9..1d69e60edff7d2b8c3250a3587d6270d410f3325 100644
 --- a/core/src/mindustry/ai/BlockIndexer.java
 +++ b/core/src/mindustry/ai/BlockIndexer.java
 @@ -38,7 +38,7 @@ public class BlockIndexer{

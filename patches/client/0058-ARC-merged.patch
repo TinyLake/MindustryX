@@ -154,7 +154,7 @@ index 1ee294233bdeccd9b03a24f7cff65a1d19417b77..5c76cc56cbbb4ba3a6783f864036bd93
                      hide();
                  }).marginLeft(10f);
 diff --git a/core/src/mindustry/entities/comp/BuildingComp.java b/core/src/mindustry/entities/comp/BuildingComp.java
-index 73069f8d02beb79e0ae77010c0fa2f9dc8c35dd1..ed05fa828806680c025d40559fb84d35bc7866e7 100644
+index c87af56ba22dad7f6b8f5e434bcb428f0b9c2ea7..734b8f7b8945b4192aa637f777be4e45311ba14d 100644
 --- a/core/src/mindustry/entities/comp/BuildingComp.java
 +++ b/core/src/mindustry/entities/comp/BuildingComp.java
 @@ -44,6 +44,7 @@ import mindustry.world.blocks.power.*;
