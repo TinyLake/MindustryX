@@ -3,8 +3,11 @@ name: Build Artifacts
 on:
   push:
     branches:
-      - '*'
+      - 'main'
   workflow_dispatch:
+
+permissions:
+  contents: write
 
 jobs:
   deploy:
@@ -20,7 +23,7 @@ jobs:
       - name: Setup Gradle
         uses: gradle/actions/setup-gradle@v6
         with:
-          gradle-version: 8.12
+          gradle-version: 9.9.1
           cache-read-only: false
           build-scan-publish: true
           build-scan-terms-of-use-url: "https://gradle.com/help/legal-terms-of-use"
@@ -52,11 +55,6 @@ jobs:
           mv work/server/build/libs/server-release.jar artifacts/server-${{env.RELEASE_VERSION}}.jar
           mv work/core/build/distributions/MindustryX.loader.dex.jar artifacts/dexed-MindustryX-${{env.RELEASE_VERSION}}.loader.jar
           mv work/android/build/outputs/apk/release/android-release.apk artifacts/MindustryX-${{env.RELEASE_VERSION}}-Android.apk
-#      - name: Update Tag
-#        uses: rickstaa/action-create-tag@v1
-#        with:
-#          tag: ${{ env.RELEASE_TAG }}
-#          force_push_tag: true
       - name: Release
         uses: softprops/action-gh-release@v2.0.2
         with:
