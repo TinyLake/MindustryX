@@ -1,5 +1,5 @@
 {
-  "lastUpdated": "2025/7/25 9:20",
+  "lastUpdated": "2026/11/27 23:45",
   "modRecommend": [
     {
       "repo": "eb-wilson/toomanyitems",
@@ -8,10 +8,6 @@
     {
       "repo": "mnemotechnician/new-console",
       "reason": "NewConsole提供了新的控制台，方便调试者执行js代码\n1.保存js代码的执行记录\n2.读写简单js文件"
-    },
-    {
-      "repo": "way-zer/contentstweaker",
-      "reason": "[yellow]弃用，原版已支持[]ContentsTweaker(CT)允许地图调整内容、添加UI等"
     },
     {
       "repo": "blackdeluxecat/mapfilterext",
@@ -40,6 +36,14 @@
     {
       "repo": "xpdustry/claj",
       "reason": "提供一个简单的方式快速创建多人联机。\n依赖的服务器在海外，可能不稳定。\n无法直接安装，需要手动选择预发布版本"
+    },
+    {
+      "repo": "DeterMination-Wind/Neon",
+      "reason": "多个辅助模组的整合包。\n包括高级逻辑编辑器、单位操控体验优化、DP Diff查看等一系列Qol功能。\n总计约30个子模组可自由开关，多人兼容"
+    },
+    {
+      "repo": "Dustdustry/PatchEditor",
+      "reason": "以可视化的GUI界面编辑DP\n附带DP条目意思查询"
     }
   ]
 }
